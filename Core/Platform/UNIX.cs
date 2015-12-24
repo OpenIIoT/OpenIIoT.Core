@@ -8,24 +8,24 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core
 {
-    class WindowsPlatform : IPlatform
+    class UNIXPlatform : IPlatform
     {
-        public WindowsPlatform() { }
-        public Platform.PlatformType Type() { return Platform.PlatformType.Windows; }
+        public UNIXPlatform() { }
+        public Platform.PlatformType Type() { return Platform.PlatformType.UNIX; }
         public string Version() { return Environment.OSVersion.VersionString; }
         public ISystemInfo Info()
         {
-            return new WindowsSystemInfo();
+            return new UNIXSystemInfo();
         }
     }
 
-    class WindowsSystemInfo: ISystemInfo
+    class UNIXSystemInfo: ISystemInfo
     {
         private double cpuTime;
         private double memoryUsage;
         private List<IDiskInfo> disks;
 
-        public WindowsSystemInfo()
+        public UNIXSystemInfo()
         {
             cpuTime = 0;
             memoryUsage = 0;
@@ -53,33 +53,39 @@ namespace Symbiote.Core
             cpuTime = getCPUCounter();
             memoryUsage = getAvailableRAM();
             disks.Clear();
-            
+
             foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
                 disks.Add(new WindowsDiskInfo(drive));
             }
-
         }
 
         public double getCPUCounter()
         {
+
             PerformanceCounter cpuCounter = new PerformanceCounter();
             cpuCounter.CategoryName = "Processor";
             cpuCounter.CounterName = "% Processor Time";
             cpuCounter.InstanceName = "_Total";
 
-            cpuCounter.NextValue();
+            // will always start at 0
+            double firstValue = cpuCounter.NextValue();
             System.Threading.Thread.Sleep(250);
-            return cpuCounter.NextValue();
+            // now matches task manager reading
+            double secondValue = cpuCounter.NextValue();
+
+            return secondValue;
+
         }
 
         public double getAvailableRAM()
         {
             return new PerformanceCounter("Memory", "Available MBytes").NextValue();
         }
+
     }
 
-    class WindowsDiskInfo : IDiskInfo
+    class UNIXDiskInfo: IDiskInfo
     {
         public string Name { get; private set; }
         public string Path { get; private set; }
@@ -90,23 +96,16 @@ namespace Symbiote.Core
         public double PercentFree { get; private set; }
         public double PercentUsed { get; private set; }
 
-        public WindowsDiskInfo(DriveInfo drive)
+        public UNIXDiskInfo(DriveInfo drive)
         {
-            try
-            {
-                this.Name = drive.Name;
-                this.Path = drive.RootDirectory.ToString();
-                this.Type = drive.DriveType.ToString();
-                this.Capacity = drive.TotalSize;
-                this.FreeSpace = drive.TotalFreeSpace;
-                this.UsedSpace = Capacity - FreeSpace;
-                this.PercentFree = FreeSpace / (double)Capacity;
-                this.PercentUsed = UsedSpace / (double)Capacity;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error: " + ex.Message);
-            }
+            this.Name = drive.Name;
+            this.Path = drive.RootDirectory.ToString();
+            this.Type = drive.DriveType.ToString();
+            this.Capacity = drive.TotalSize;
+            this.FreeSpace = drive.TotalFreeSpace;
+            this.UsedSpace = Capacity - FreeSpace;
+            this.PercentFree = FreeSpace / Capacity;
+            this.PercentUsed = UsedSpace / Capacity;
         }
     }
 }

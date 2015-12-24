@@ -43,7 +43,14 @@ namespace Symbiote.Core
 
             foreach (IDiskInfo s in platform.Info().Disks())
             {
-                Console.WriteLine(s.Path());
+                Console.WriteLine("Drive: " + s.Name);
+                Console.WriteLine("Path: " + s.Path);
+                Console.WriteLine("Type: " + s.Type);
+                Console.WriteLine("Total Size: " + s.Capacity.ToString());
+                Console.WriteLine("Used Space: " + s.UsedSpace.ToString());
+                Console.WriteLine("Free Space: " + s.FreeSpace.ToString());
+                Console.WriteLine("% Used: " + (s.PercentUsed * 100).ToString() + "%");
+                Console.WriteLine("% Free: " + (s.PercentFree * 100).ToString() + "%");
             }
         }
     }

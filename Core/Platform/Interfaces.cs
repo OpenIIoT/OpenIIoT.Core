@@ -23,9 +23,13 @@ namespace Symbiote.Core
 
     interface IDiskInfo
     {
-        string Path();
-        long Capacity();
-        long UsedSpace();
-        long FreeSpace();
+        string Name { get; }
+        string Path { get; }
+        string Type { get; }
+        long Capacity { get; }
+        long UsedSpace { get; }
+        long FreeSpace { get; }
+        double PercentFree { get; }
+        double PercentUsed { get; }
     }
 }

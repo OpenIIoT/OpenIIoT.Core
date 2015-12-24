@@ -18,12 +18,12 @@ namespace Symbiote.Core
             }
             else if (GetPlatformType() == PlatformType.UNIX)
             {
-                return new WindowsPlatform();
+                return new UNIXPlatform();
             }
             return null;
         }
 
-        public static PlatformType GetPlatformType()
+        private static PlatformType GetPlatformType()
         {
             int p = (int)Environment.OSVersion.Platform;
             return ((p == 4) || (p == 6) || (p == 128) ? PlatformType.UNIX : PlatformType.Windows);
