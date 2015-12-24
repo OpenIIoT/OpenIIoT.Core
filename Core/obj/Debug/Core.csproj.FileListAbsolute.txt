@@ -1,0 +1,6 @@
+C:\Users\JP\Desktop\Projects\Symbiote\Core\bin\Debug\Core.exe.config
+C:\Users\JP\Desktop\Projects\Symbiote\Core\bin\Debug\Core.exe
+C:\Users\JP\Desktop\Projects\Symbiote\Core\bin\Debug\Core.pdb
+C:\Users\JP\Desktop\Projects\Symbiote\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
+C:\Users\JP\Desktop\Projects\Symbiote\Core\obj\Debug\Core.exe
+C:\Users\JP\Desktop\Projects\Symbiote\Core\obj\Debug\Core.pdb
