@@ -5,7 +5,6 @@ using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
-//using Symbiote.Core.Platform;
 
 namespace Symbiote.Core
 {
@@ -18,15 +17,22 @@ namespace Symbiote.Core
         {
             logger = LogManager.GetCurrentClassLogger();
 
-            logger.Trace("Intantiating platform");
-            platform = Platform.PlatformManager.GetPlatform();
+            logger.Info("Symbiote is starting...");
 
+            logger.Trace("Intantiating platform...");
+            platform = Platform.PlatformManager.GetPlatform();
             logger.Trace("Platform instantiated.");
 
+            logger.Info("Platform: " + platform.Type.ToString() + " (" + platform.Version + ")");
+
             if ((platform.Type == Platform.PlatformManager.PlatformType.Windows) && (!Environment.UserInteractive))
+            {
+                logger.Info("Platform is Windows and mode is non-interactive; starting in service mode");
                 ServiceBase.Run(new Service());
+            }
             else
             {
+                logger.Info("Starting in interactive mode");
                 Start(args);
                 Console.ReadKey(true);
                 Stop();
@@ -35,31 +41,32 @@ namespace Symbiote.Core
 
         public static void Start(string[] args)
         {
+            logger.Info("Symbiote started.");
             PrintStartupMessage();
         }
 
         public static void Stop()
         {
-            Console.WriteLine("Goodbye.");
+            logger.Info("Symbiote stopped.");
         }
 
         static void PrintStartupMessage()
         {
-            Console.WriteLine("Symbiote is starting...");
-            Console.WriteLine("Platform: " + platform.Type.ToString() + " (" + platform.Version + ")");
-            Console.WriteLine("CPU %: " + platform.Info.CPUTime.ToString());
-            Console.WriteLine("RAM: " + platform.Info.MemoryUsage.ToString());
+            logger.Info("Symbiote is starting...");
+            logger.Info("Platform: " + platform.Type.ToString() + " (" + platform.Version + ")");
+            logger.Info("CPU %: " + platform.Info.CPUTime.ToString());
+            logger.Info("RAM: " + platform.Info.MemoryUsage.ToString());
 
             foreach (Platform.IDiskInfo s in platform.Info.Disks)
             {
-                Console.WriteLine("Drive: " + s.Name);
-                Console.WriteLine("Path: " + s.Path);
-                Console.WriteLine("Type: " + s.Type);
-                Console.WriteLine("Total Size: " + s.Capacity.ToString());
-                Console.WriteLine("Used Space: " + s.UsedSpace.ToString());
-                Console.WriteLine("Free Space: " + s.FreeSpace.ToString());
-                Console.WriteLine("% Used: " + (s.PercentUsed * 100).ToString() + "%");
-                Console.WriteLine("% Free: " + (s.PercentFree * 100).ToString() + "%");
+                logger.Info("Drive: " + s.Name);
+                logger.Info("Path: " + s.Path);
+                logger.Info("Type: " + s.Type);
+                logger.Info("Total Size: " + s.Capacity.ToString());
+                logger.Info("Used Space: " + s.UsedSpace.ToString());
+                logger.Info("Free Space: " + s.FreeSpace.ToString());
+                logger.Info("% Used: " + (s.PercentUsed * 100).ToString() + "%");
+                logger.Info("% Free: " + (s.PercentFree * 100).ToString() + "%");
             }
         }
     }

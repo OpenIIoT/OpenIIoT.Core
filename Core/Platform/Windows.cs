@@ -105,7 +105,7 @@ namespace Symbiote.Core.Platform
             }
             catch (System.IO.IOException ex)
             {
-                logger.Error("Error listing drive info", ex);
+                logger.Error(ex, "Error listing drive info");
             }
         }
     }

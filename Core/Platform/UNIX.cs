@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Platform
 {
-    class UNIXPlatform : IPlatform
+    public class UNIXPlatform : IPlatform
     {
         public PlatformManager.PlatformType Type { get; private set; }
         public string Version { get; private set; }
@@ -22,7 +22,7 @@ namespace Symbiote.Core.Platform
         }
     }
 
-    class UNIXSystemInfo : ISystemInfo
+    public class UNIXSystemInfo : ISystemInfo
     {
         public double CPUTime { get; private set; }
         public double MemoryUsage { get; private set; }
@@ -66,7 +66,7 @@ namespace Symbiote.Core.Platform
         }
     }
 
-    class UNIXDiskInfo : IDiskInfo
+    public class UNIXDiskInfo : IDiskInfo
     {
         public string Name { get; private set; }
         public string Path { get; private set; }
