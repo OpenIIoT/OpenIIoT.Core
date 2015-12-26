@@ -4,24 +4,24 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Platform
 {
-    interface IPlatform
+    public interface IPlatform
     {
-        Platform.PlatformType Type();
-        string Version();
-        ISystemInfo Info();
+        PlatformManager.PlatformType Type { get; }
+        string Version { get; }
+        ISystemInfo Info { get; }
     }
 
-    interface ISystemInfo
+    public interface ISystemInfo
     {
-        double CPUTime();
-        double MemoryUsage();
-        List<IDiskInfo> Disks();
+        double CPUTime { get; }
+        double MemoryUsage { get; }
+        List<IDiskInfo> Disks { get; }
         void Refresh();
     }
 
-    interface IDiskInfo
+    public interface IDiskInfo
     {
         string Name { get; }
         string Path { get; }

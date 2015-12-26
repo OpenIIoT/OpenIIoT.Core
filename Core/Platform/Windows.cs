@@ -5,58 +5,50 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Platform
 {
-    class WindowsPlatform : IPlatform
+    public class WindowsPlatform : IPlatform
     {
-        public WindowsPlatform() { }
-        public Platform.PlatformType Type() { return Platform.PlatformType.Windows; }
-        public string Version() { return Environment.OSVersion.VersionString; }
-        public ISystemInfo Info()
+        private static Logger logger;
+
+        public PlatformManager.PlatformType Type { get; private set; }
+        public string Version { get; private set; }
+        public ISystemInfo Info { get; private set; }
+
+        public WindowsPlatform()
         {
-            return new WindowsSystemInfo();
+            logger = LogManager.GetCurrentClassLogger();
+
+            Type = PlatformManager.PlatformType.Windows;
+            Version = Environment.OSVersion.VersionString;
+            Info = new WindowsSystemInfo();
         }
     }
 
-    class WindowsSystemInfo: ISystemInfo
+    public class WindowsSystemInfo: ISystemInfo
     {
-        private double cpuTime;
-        private double memoryUsage;
-        private List<IDiskInfo> disks;
+        public double CPUTime { get; private set; }
+        public double MemoryUsage { get; private set; }
+        public List<IDiskInfo> Disks { get; private set; }
 
         public WindowsSystemInfo()
         {
-            cpuTime = 0;
-            memoryUsage = 0;
-            disks = new List<IDiskInfo>();
+            Disks = new List<IDiskInfo>();
             Refresh();
-        }
-
-        public double CPUTime()
-        {
-            return cpuTime;
-        }
-
-        public double MemoryUsage()
-        {
-            return memoryUsage;
-        }
-
-        public List<IDiskInfo> Disks()
-        {
-            return disks;
         }
 
         public void Refresh()
         {
-            cpuTime = getCPUCounter();
-            memoryUsage = getAvailableRAM();
-            disks.Clear();
+            CPUTime = getCPUCounter();
+            MemoryUsage = getAvailableRAM();
+            Disks.Clear();
             
             foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
-                disks.Add(new WindowsDiskInfo(drive));
+               if (drive.IsReady)
+                    Disks.Add(new WindowsDiskInfo(drive));
             }
 
         }
@@ -79,8 +71,10 @@ namespace Symbiote.Core
         }
     }
 
-    class WindowsDiskInfo : IDiskInfo
+    public class WindowsDiskInfo : IDiskInfo
     {
+        private static Logger logger;
+
         public string Name { get; private set; }
         public string Path { get; private set; }
         public string Type { get; private set; }
@@ -92,20 +86,26 @@ namespace Symbiote.Core
 
         public WindowsDiskInfo(DriveInfo drive)
         {
+            logger = LogManager.GetCurrentClassLogger();
             try
             {
-                this.Name = drive.Name;
-                this.Path = drive.RootDirectory.ToString();
-                this.Type = drive.DriveType.ToString();
-                this.Capacity = drive.TotalSize;
-                this.FreeSpace = drive.TotalFreeSpace;
-                this.UsedSpace = Capacity - FreeSpace;
-                this.PercentFree = FreeSpace / (double)Capacity;
-                this.PercentUsed = UsedSpace / (double)Capacity;
+                if (!drive.IsReady)
+                    throw new System.IO.IOException("Drive " + drive.Name + " is not ready; unable to retrieve information");
+                else
+                {
+                    this.Name = drive.Name;
+                    this.Path = drive.RootDirectory.ToString();
+                    this.Type = drive.DriveType.ToString();
+                    this.Capacity = drive.TotalSize;
+                    this.FreeSpace = drive.TotalFreeSpace;
+                    this.UsedSpace = Capacity - FreeSpace;
+                    this.PercentFree = FreeSpace / (double)Capacity;
+                    this.PercentUsed = UsedSpace / (double)Capacity;
+                }
             }
-            catch (Exception ex)
+            catch (System.IO.IOException ex)
             {
-                Console.WriteLine("Error: " + ex.Message);
+                logger.Error("Error listing drive info", ex);
             }
         }
     }

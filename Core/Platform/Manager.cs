@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Platform
 {
-    class Platform
+    public class PlatformManager
     {
         public enum PlatformType { Windows, UNIX }
-
+        
         public static IPlatform GetPlatform()
         {
             if (GetPlatformType() == PlatformType.Windows)

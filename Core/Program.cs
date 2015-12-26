@@ -4,17 +4,26 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
+//using Symbiote.Core.Platform;
 
 namespace Symbiote.Core
 {
     class Program
     {
-        static IPlatform platform;
+        private static Logger logger;
+        private static Platform.IPlatform platform;
+
         static void Main(string[] args)
         {
-            platform = Platform.GetPlatform();
+            logger = LogManager.GetCurrentClassLogger();
 
-            if ((platform.Type() == Platform.PlatformType.Windows) && (!Environment.UserInteractive))
+            logger.Trace("Intantiating platform");
+            platform = Platform.PlatformManager.GetPlatform();
+
+            logger.Trace("Platform instantiated.");
+
+            if ((platform.Type == Platform.PlatformManager.PlatformType.Windows) && (!Environment.UserInteractive))
                 ServiceBase.Run(new Service());
             else
             {
@@ -37,11 +46,11 @@ namespace Symbiote.Core
         static void PrintStartupMessage()
         {
             Console.WriteLine("Symbiote is starting...");
-            Console.WriteLine("Platform: " + platform.Type().ToString() + " (" + platform.Version() + ")");
-            Console.WriteLine("CPU %: " + platform.Info().CPUTime().ToString());
-            Console.WriteLine("RAM: " + platform.Info().MemoryUsage().ToString());
+            Console.WriteLine("Platform: " + platform.Type.ToString() + " (" + platform.Version + ")");
+            Console.WriteLine("CPU %: " + platform.Info.CPUTime.ToString());
+            Console.WriteLine("RAM: " + platform.Info.MemoryUsage.ToString());
 
-            foreach (IDiskInfo s in platform.Info().Disks())
+            foreach (Platform.IDiskInfo s in platform.Info.Disks)
             {
                 Console.WriteLine("Drive: " + s.Name);
                 Console.WriteLine("Path: " + s.Path);

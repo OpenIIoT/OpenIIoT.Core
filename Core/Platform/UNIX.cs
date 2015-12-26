@@ -6,86 +6,67 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Platform
 {
     class UNIXPlatform : IPlatform
     {
-        public UNIXPlatform() { }
-        public Platform.PlatformType Type() { return Platform.PlatformType.UNIX; }
-        public string Version() { return Environment.OSVersion.VersionString; }
-        public ISystemInfo Info()
+        public PlatformManager.PlatformType Type { get; private set; }
+        public string Version { get; private set; }
+        public ISystemInfo Info { get; private set; }
+
+        public UNIXPlatform()
         {
-            return new UNIXSystemInfo();
+            Type = PlatformManager.PlatformType.UNIX;
+            Version = Environment.OSVersion.VersionString;
+            Info = new UNIXSystemInfo();
         }
     }
 
-    class UNIXSystemInfo: ISystemInfo
+    class UNIXSystemInfo : ISystemInfo
     {
-        private double cpuTime;
-        private double memoryUsage;
-        private List<IDiskInfo> disks;
+        public double CPUTime { get; private set; }
+        public double MemoryUsage { get; private set; }
+        public List<IDiskInfo> Disks { get; private set; }
 
         public UNIXSystemInfo()
         {
-            cpuTime = 0;
-            memoryUsage = 0;
-            disks = new List<IDiskInfo>();
+            Disks = new List<IDiskInfo>();
             Refresh();
-        }
-
-        public double CPUTime()
-        {
-            return cpuTime;
-        }
-
-        public double MemoryUsage()
-        {
-            return memoryUsage;
-        }
-
-        public List<IDiskInfo> Disks()
-        {
-            return disks;
         }
 
         public void Refresh()
         {
-            cpuTime = getCPUCounter();
-            memoryUsage = getAvailableRAM();
-            disks.Clear();
+            CPUTime = getCPUCounter();
+            MemoryUsage = getAvailableRAM();
+            Disks.Clear();
 
             foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
-                disks.Add(new WindowsDiskInfo(drive));
+                // if (drive.IsReady)
+                Disks.Add(new UNIXDiskInfo(drive));
             }
+
         }
 
         public double getCPUCounter()
         {
-
             PerformanceCounter cpuCounter = new PerformanceCounter();
             cpuCounter.CategoryName = "Processor";
             cpuCounter.CounterName = "% Processor Time";
             cpuCounter.InstanceName = "_Total";
 
-            // will always start at 0
-            double firstValue = cpuCounter.NextValue();
+            cpuCounter.NextValue();
             System.Threading.Thread.Sleep(250);
-            // now matches task manager reading
-            double secondValue = cpuCounter.NextValue();
-
-            return secondValue;
-
+            return cpuCounter.NextValue();
         }
 
         public double getAvailableRAM()
         {
             return new PerformanceCounter("Memory", "Available MBytes").NextValue();
         }
-
     }
 
-    class UNIXDiskInfo: IDiskInfo
+    class UNIXDiskInfo : IDiskInfo
     {
         public string Name { get; private set; }
         public string Path { get; private set; }
@@ -98,14 +79,26 @@ namespace Symbiote.Core
 
         public UNIXDiskInfo(DriveInfo drive)
         {
-            this.Name = drive.Name;
-            this.Path = drive.RootDirectory.ToString();
-            this.Type = drive.DriveType.ToString();
-            this.Capacity = drive.TotalSize;
-            this.FreeSpace = drive.TotalFreeSpace;
-            this.UsedSpace = Capacity - FreeSpace;
-            this.PercentFree = FreeSpace / Capacity;
-            this.PercentUsed = UsedSpace / Capacity;
+            try
+            {
+                if (!drive.IsReady)
+                    throw new System.IO.IOException("Drive " + drive.Name + " is not ready; unable to retrieve information");
+                else
+                {
+                    this.Name = drive.Name;
+                    this.Path = drive.RootDirectory.ToString();
+                    this.Type = drive.DriveType.ToString();
+                    this.Capacity = drive.TotalSize;
+                    this.FreeSpace = drive.TotalFreeSpace;
+                    this.UsedSpace = Capacity - FreeSpace;
+                    this.PercentFree = FreeSpace / (double)Capacity;
+                    this.PercentUsed = UsedSpace / (double)Capacity;
+                }
+            }
+            catch (System.IO.IOException ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
+            }
         }
     }
 }
