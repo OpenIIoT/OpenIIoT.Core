@@ -11,6 +11,8 @@ namespace Symbiote.Core.Platform
         PlatformManager.PlatformType Type { get; }
         string Version { get; }
         ISystemInfo Info { get; }
+        List<string> GetDirectoryList(string root);
+        List<string> GetFileList(string directory, string extension);
     }
 
     public interface ISystemInfo

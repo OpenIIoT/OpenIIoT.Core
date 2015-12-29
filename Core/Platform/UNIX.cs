@@ -20,6 +20,42 @@ namespace Symbiote.Core.Platform
             Version = Environment.OSVersion.VersionString;
             Info = new UNIXSystemInfo();
         }
+
+        public List<string> GetDirectoryList(string root)
+        {
+            List<string> list = new List<string>();
+            try
+            {
+                foreach (string s in Directory.GetDirectories(root))
+                {
+                    list.Add(s);
+                }
+            }
+            catch (IOException ex)
+            {
+                //logger.Error(ex, "Error listing directories for root path '" + root + "'");
+            }
+
+            return list;
+        }
+
+        public List<string> GetFileList(string root, string searchPattern)
+        {
+            List<string> list = new List<string>();
+            try
+            {
+                foreach (string s in Directory.GetFiles(root, searchPattern))
+                {
+                    list.Add(s);
+                }
+            }
+            catch (IOException ex)
+            {
+                //logger.Error(ex, "Error listing files for directory '" + root + "' using search pattern '" + searchPattern);
+            }
+
+            return list;
+        }
     }
 
     public class UNIXSystemInfo : ISystemInfo

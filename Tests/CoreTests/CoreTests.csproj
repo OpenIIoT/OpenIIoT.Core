@@ -55,7 +55,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Core\Core.csproj">
+    <ProjectReference Include="..\..\Core\Core.csproj">
       <Project>{899d0a77-77e8-4bcf-848e-2167c8cc036f}</Project>
       <Name>Core</Name>
     </ProjectReference>

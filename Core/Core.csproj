@@ -64,10 +64,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interfaces.cs" />
     <Compile Include="Platform\Interfaces.cs" />
     <Compile Include="Platform\Manager.cs" />
     <Compile Include="Platform\UNIX.cs" />
     <Compile Include="Platform\Windows.cs" />
+    <Compile Include="Plugin\Connector.cs" />
+    <Compile Include="Plugin\Interfaces.cs" />
+    <Compile Include="Plugin\Manager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
