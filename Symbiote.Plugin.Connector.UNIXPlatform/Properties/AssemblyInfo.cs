@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("WindowsPlatform")]
+[assembly: AssemblyTitle("Symbiote.Plugin.Connector.UNIXPlatform")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WindowsPlatform")]
+[assembly: AssemblyProduct("Symbiote.Plugin.Connector.UNIXPlatform")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("ef20f973-71b7-4711-80da-f79edd3fe099")]
+[assembly: Guid("c44e3ffc-763b-439b-b968-c65cae3a5e6b")]
 
 // Version information for an assembly consists of the following four values:
 //

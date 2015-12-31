@@ -8,13 +8,13 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Platform
 {
-    public class UNIXPlatform : IPlatform
+    public class UNIX : IPlatform
     {
         public PlatformManager.PlatformType Type { get; private set; }
         public string Version { get; private set; }
         public ISystemInfo Info { get; private set; }
 
-        public UNIXPlatform()
+        public UNIX()
         {
             Type = PlatformManager.PlatformType.UNIX;
             Version = Environment.OSVersion.VersionString;

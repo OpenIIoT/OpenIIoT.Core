@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Symbiote.Core;
 using Symbiote.Core.Plugin;
 
-namespace Symbiote.Plugin.Connector
+namespace Symbiote.Plugin.Connector.UNIXPlatform
 {
-    public class WindowsPlatform : IConnector
+    public class Plugin : IConnector
     {
         public string Name { get; private set; }
         public string Namespace { get; private set; }
@@ -16,16 +15,16 @@ namespace Symbiote.Plugin.Connector
 
         private List<IConnectorItem> items;
 
-        public WindowsPlatform()
+        public Plugin()
         {
-            Name = "Windows Platform";
-            Namespace = "Symbiote.Plugin.Connector";
+            Name = "UNIX Platform Connector";
+            Namespace = "Symbiote.Plugin.Connector.UNIXPlatform";
             Version = 0.1;
 
             items = new List<IConnectorItem>();
-            items.Add(new WindowsPlatformConnectorItem("FirstRoot", "::root1"));
-            items.Add(new WindowsPlatformConnectorItem("SecondRoot", "::root2"));
-            items.Add(new WindowsPlatformConnectorItem("ThirdRoot", "::root3"));
+            items.Add(new PluginConnectorItem("FirstRoot", "::root1"));
+            items.Add(new PluginConnectorItem("SecondRoot", "::root2"));
+            items.Add(new PluginConnectorItem("ThirdRoot", "::root3"));
         }
 
         public List<IConnectorItem> Browse(IConnectorItem root)
@@ -34,15 +33,15 @@ namespace Symbiote.Plugin.Connector
         }
     }
 
-    public class WindowsPlatformConnectorItem : IConnectorItem
+    public class PluginConnectorItem : IConnectorItem
     {
         public IConnectorItem Parent { get; private set; }
         public string Name { get; private set; }
         public string Address { get; private set; }
 
-        public WindowsPlatformConnectorItem(string name, string address) : this(name, address, null) { }
+        public PluginConnectorItem(string name, string address) : this(name, address, null) { }
 
-        public WindowsPlatformConnectorItem(string name, string address, IConnectorItem parent)
+        public PluginConnectorItem(string name, string address, IConnectorItem parent)
         {
             if (parent != null) Parent = parent;
             Name = name;

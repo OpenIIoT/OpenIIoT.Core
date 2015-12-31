@@ -69,11 +69,14 @@
     <Compile Include="Platform\Manager.cs" />
     <Compile Include="Platform\UNIX.cs" />
     <Compile Include="Platform\Windows.cs" />
-    <Compile Include="Plugin\Connector.cs" />
+    <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\Interfaces.cs" />
     <Compile Include="Plugin\Manager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

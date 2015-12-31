@@ -5,13 +5,19 @@ VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{899D0A77-77E8-4BCF-848E-2167C8CC036F}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Collectors", "Collectors", "{EB242B9C-91BB-4F83-8F99-AE917F677B6A}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{50D285FC-BEAB-47BA-B262-6E853724BB87}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CoreTests", "Tests\CoreTests\CoreTests.csproj", "{87A354DF-93E5-4D2E-9998-59572D6C135A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowsPlatform", "Collectors\WindowsPlatform\WindowsPlatform.csproj", "{EF20F973-71B7-4711-80DA-F79EDD3FE099}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{CE59C89D-A00D-48D7-BE8E-EF16BF1935F3}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{7524D106-74DC-4708-846A-D1BDA3A19EFA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{544AC559-80C1-4A8F-AC81-5997166DA050}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.WindowsPlatform", "Plugins\Connectors\Symbiote.Plugin.Connector.WindowsPlatform\Symbiote.Plugin.Connector.WindowsPlatform.csproj", "{48E50C30-6D3C-4200-8850-1EDDF3784905}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.UNIXPlatform", "Symbiote.Plugin.Connector.UNIXPlatform\Symbiote.Plugin.Connector.UNIXPlatform.csproj", "{C44E3FFC-763B-439B-B968-C65CAE3A5E6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,16 +33,23 @@ Global
 		{87A354DF-93E5-4D2E-9998-59572D6C135A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87A354DF-93E5-4D2E-9998-59572D6C135A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87A354DF-93E5-4D2E-9998-59572D6C135A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EF20F973-71B7-4711-80DA-F79EDD3FE099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EF20F973-71B7-4711-80DA-F79EDD3FE099}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EF20F973-71B7-4711-80DA-F79EDD3FE099}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EF20F973-71B7-4711-80DA-F79EDD3FE099}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48E50C30-6D3C-4200-8850-1EDDF3784905}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48E50C30-6D3C-4200-8850-1EDDF3784905}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48E50C30-6D3C-4200-8850-1EDDF3784905}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48E50C30-6D3C-4200-8850-1EDDF3784905}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C44E3FFC-763B-439B-B968-C65CAE3A5E6B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C44E3FFC-763B-439B-B968-C65CAE3A5E6B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C44E3FFC-763B-439B-B968-C65CAE3A5E6B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C44E3FFC-763B-439B-B968-C65CAE3A5E6B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{87A354DF-93E5-4D2E-9998-59572D6C135A} = {50D285FC-BEAB-47BA-B262-6E853724BB87}
-		{EF20F973-71B7-4711-80DA-F79EDD3FE099} = {EB242B9C-91BB-4F83-8F99-AE917F677B6A}
+		{7524D106-74DC-4708-846A-D1BDA3A19EFA} = {CE59C89D-A00D-48D7-BE8E-EF16BF1935F3}
+		{544AC559-80C1-4A8F-AC81-5997166DA050} = {CE59C89D-A00D-48D7-BE8E-EF16BF1935F3}
+		{48E50C30-6D3C-4200-8850-1EDDF3784905} = {7524D106-74DC-4708-846A-D1BDA3A19EFA}
+		{C44E3FFC-763B-439B-B968-C65CAE3A5E6B} = {7524D106-74DC-4708-846A-D1BDA3A19EFA}
 	EndGlobalSection
 EndGlobal

@@ -7,18 +7,18 @@ using System.Reflection;
 
 namespace Symbiote.Core.Plugin
 {
-    public class Connector : IPlugin
+    public class Plugin : IPlugin
     {
         public string Name { get; private set; }
-        public string FullName { get; private set; }
+        public string Namespace { get; private set; }
         public PluginManager.PluginType PluginType { get; private set; }
         public Type Type { get; private set; }
         public Assembly Assembly { get; private set; }
 
-        public Connector(string name, string fullName, PluginManager.PluginType pluginType, Type type, Assembly assembly)
+        public Plugin(string name, string ns, PluginManager.PluginType pluginType, Type type, Assembly assembly)
         {
             Name = name;
-            FullName = fullName;
+            Namespace = ns;
             PluginType = pluginType;
             Type = type;
             Assembly = assembly;

@@ -38,8 +38,8 @@ namespace Symbiote.Core.Platform
             {
                 PlatformType platform = GetPlatformType();
 
-                if (platform == PlatformType.Windows) return new WindowsPlatform();
-                else if (platform == PlatformType.UNIX) return new UNIXPlatform();
+                if (platform == PlatformType.Windows) return new Platform.Windows();
+                else if (platform == PlatformType.UNIX) return new Platform.UNIX();
                 else throw new System.Exception("Unable to determine platform. Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
             }
             catch(Exception ex)

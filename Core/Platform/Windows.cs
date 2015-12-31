@@ -9,7 +9,7 @@ using NLog;
 
 namespace Symbiote.Core.Platform
 {
-    public class WindowsPlatform : IPlatform
+    public class Windows : IPlatform
     {
         private static Logger logger;
 
@@ -17,7 +17,7 @@ namespace Symbiote.Core.Platform
         public string Version { get; private set; }
         public ISystemInfo Info { get; private set; }
 
-        public WindowsPlatform()
+        public Windows()
         {
             logger = LogManager.GetCurrentClassLogger();
 

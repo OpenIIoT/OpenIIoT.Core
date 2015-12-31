@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{EF20F973-71B7-4711-80DA-F79EDD3FE099}</ProjectGuid>
+    <ProjectGuid>{C44E3FFC-763B-439B-B968-C65CAE3A5E6B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WindowsPlatform</RootNamespace>
-    <AssemblyName>WindowsPlatform</AssemblyName>
+    <RootNamespace>Symbiote.Plugin.Connector.UNIXPlatform</RootNamespace>
+    <AssemblyName>Symbiote.Plugin.Connector.UNIXPlatform</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -16,7 +16,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Core\bin\Debug\Plugins\</OutputPath>
+    <OutputPath>..\Core\bin\Debug\Plugins\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -40,11 +40,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WindowsPlatform.cs" />
+    <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Core\Core.csproj">
+    <ProjectReference Include="..\Core\Core.csproj">
       <Project>{899d0a77-77e8-4bcf-848e-2167c8cc036f}</Project>
       <Name>Core</Name>
       <Private>False</Private>

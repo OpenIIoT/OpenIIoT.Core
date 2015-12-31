@@ -33,6 +33,9 @@ namespace Symbiote.Core
             // load plugins
             logger.Info("Loading plugins...");
             plugins = pluginManager.GetPlugins(platform.GetFileList("Plugins", "*.dll"));
+            logger.Info("Plugins loaded; connectors: " 
+                + plugins.Where(t => t.PluginType == PluginManager.PluginType.Connector).Count() + "; services: "
+                + plugins.Where(t => t.PluginType == PluginManager.PluginType.Service).Count());
 
             if ((platform.Type == PlatformManager.PlatformType.Windows) && (!Environment.UserInteractive))
             {
@@ -41,7 +44,6 @@ namespace Symbiote.Core
             }
             else
             {
-                if (platform.Type == PlatformManager.PlatformType.Windows) Console.SetWindowSize(180, 60);
                 logger.Info("Starting in interactive mode");
                 Start(args);
                 Console.ReadKey(true);
@@ -60,15 +62,8 @@ namespace Symbiote.Core
             {
                 logger.Info("Plugin: " + p.Type);
                 IConnector test = (IConnector)Activator.CreateInstance(plugins[0].Type);
-                foreach (IConnectorItem i in test.Browse(null))
-                {
-                    logger.Info("Item: " + i.Name);
-                }
+                PrintConnectorPluginItemChildren(test, null, 0);
             }
-
-            
-
-
             logger.Info("Connector instances created.");
 
             PrintStartupMessage();
@@ -77,6 +72,15 @@ namespace Symbiote.Core
         public static void Stop()
         {
             logger.Info("Symbiote stopped.");
+        }
+
+        static void PrintConnectorPluginItemChildren(IConnector connector, IConnectorItem root, int indent)
+        {
+            foreach (IConnectorItem i in connector.Browse(root))
+            {
+                logger.Info("level: " + indent.ToString() + " Item: " + i.Name);
+                PrintConnectorPluginItemChildren(connector, i, indent + 1);
+            }
         }
 
         static void PrintStartupMessage()
@@ -102,24 +106,6 @@ namespace Symbiote.Core
         static void LoadPlugins(string path, Dictionary<string, Assembly> plugins)
         {
 
-        }
-    }
-
-    class Service : ServiceBase
-    {
-        public Service()
-        {
-            ServiceName = "Symbiote";
-        }
-
-        protected override void OnStart(string[] args)
-        {
-            Program.Start(args);
-        }
-
-        protected override void OnStop()
-        {
-            Program.Stop();
         }
     }
 }
