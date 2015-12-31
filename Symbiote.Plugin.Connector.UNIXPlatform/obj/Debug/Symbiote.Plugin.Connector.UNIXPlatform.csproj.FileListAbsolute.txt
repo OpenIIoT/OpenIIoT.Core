@@ -1,0 +1,5 @@
+C:\Users\JP\Desktop\Projects\Symbiote\Core\bin\Debug\Plugins\Symbiote.Plugin.Connector.UNIXPlatform.dll
+C:\Users\JP\Desktop\Projects\Symbiote\Core\bin\Debug\Plugins\Symbiote.Plugin.Connector.UNIXPlatform.pdb
+C:\Users\JP\Desktop\Projects\Symbiote\Symbiote.Plugin.Connector.UNIXPlatform\obj\Debug\Symbiote.Plugin.Connector.UNIXPlatform.csprojResolveAssemblyReference.cache
+C:\Users\JP\Desktop\Projects\Symbiote\Symbiote.Plugin.Connector.UNIXPlatform\obj\Debug\Symbiote.Plugin.Connector.UNIXPlatform.dll
+C:\Users\JP\Desktop\Projects\Symbiote\Symbiote.Plugin.Connector.UNIXPlatform\obj\Debug\Symbiote.Plugin.Connector.UNIXPlatform.pdb

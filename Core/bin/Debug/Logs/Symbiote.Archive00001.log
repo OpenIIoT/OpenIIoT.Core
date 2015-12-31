@@ -1,0 +1,60 @@
+2015-12-30 18:40:30.4796 [INFO] [Symbiote.Core.Program]: Symbiote is initializing... 
+2015-12-30 18:40:30.6506 [TRACE] [Symbiote.Core.Program]: Intantiating platform... 
+2015-12-30 18:40:33.2288 [TRACE] [Symbiote.Core.Program]: Platform instantiated. 
+2015-12-30 18:40:33.2398 [INFO] [Symbiote.Core.Program]: Platform: Windows (Microsoft Windows NT 6.1.7601 Service Pack 1) 
+2015-12-30 18:40:33.2398 [INFO] [Symbiote.Core.Program]: Loading plugins... 
+2015-12-30 18:40:33.2398 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Found plugin: Plugins\Symbiote.Plugin.Connector.UNIXPlatform.dll 
+2015-12-30 18:40:33.2808 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Attempting to determine assembly name... 
+2015-12-30 18:40:33.2928 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Validated assembly 'Symbiote.Plugin.Connector.UNIXPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'; attempting to load... 
+2015-12-30 18:40:33.5419 [ERROR] [Symbiote.Core.Plugin.PluginManager]: Failed to load assembly from plugin file 'Plugins\Symbiote.Plugin.Connector.UNIXPlatform.dll'.  Ignoring. System.Reflection.ReflectionTypeLoadException: Unable to load one or more of the requested types. Retrieve the LoaderExceptions property for more information.
+   at System.Reflection.RuntimeModule.GetTypes(RuntimeModule module)
+   at System.Reflection.RuntimeModule.GetTypes()
+   at System.Reflection.Assembly.GetTypes()
+   at Symbiote.Core.Plugin.PluginManager.LoadPlugins(List`1 files, List`1 plugins) in C:\Users\JP\Desktop\Projects\Symbiote\Core\Plugin\Manager.cs:line 73
+2015-12-30 18:40:33.5529 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Found plugin: Plugins\Symbiote.Plugin.Connector.WindowsPlatform.dll 
+2015-12-30 18:40:33.5529 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Attempting to determine assembly name... 
+2015-12-30 18:40:33.5869 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Validated assembly 'Symbiote.Plugin.Connector.WindowsPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'; attempting to load... 
+2015-12-30 18:40:33.6179 [INFO] [Symbiote.Core.Plugin.PluginManager]: Loaded plugin 'Plugins\Symbiote.Plugin.Connector.WindowsPlatform.dll' as type Symbiote.Plugin.Connector.WindowsPlatform.Plugin 
+2015-12-30 18:40:33.6179 [INFO] [Symbiote.Core.Program]: Plugins loaded; connectors: 1; services: 0 
+2015-12-30 18:40:33.6289 [INFO] [Symbiote.Core.Program]: Starting in interactive mode 
+2015-12-30 18:40:33.6289 [INFO] [Symbiote.Core.Program]: Symbiote started. 
+2015-12-30 18:40:33.6289 [INFO] [Symbiote.Core.Program]: Creating connector instances... 
+2015-12-30 18:40:33.6599 [INFO] [Symbiote.Core.Program]: Plugin count: 1 
+2015-12-30 18:40:33.6599 [INFO] [Symbiote.Core.Program]: Plugin: Symbiote.Plugin.Connector.WindowsPlatform.Plugin 
+2015-12-30 18:40:45.2310 [INFO] [Symbiote.Core.Program]: Symbiote is initializing... 
+2015-12-30 18:40:45.2600 [TRACE] [Symbiote.Core.Program]: Intantiating platform... 
+2015-12-30 18:40:47.4423 [TRACE] [Symbiote.Core.Program]: Platform instantiated. 
+2015-12-30 18:40:47.4423 [INFO] [Symbiote.Core.Program]: Platform: Windows (Microsoft Windows NT 6.1.7601 Service Pack 1) 
+2015-12-30 18:40:47.4543 [INFO] [Symbiote.Core.Program]: Loading plugins... 
+2015-12-30 18:40:47.4723 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Found plugin: Plugins\Symbiote.Plugin.Connector.UNIXPlatform.dll 
+2015-12-30 18:40:47.4723 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Attempting to determine assembly name... 
+2015-12-30 18:40:47.4843 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Validated assembly 'Symbiote.Plugin.Connector.UNIXPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'; attempting to load... 
+2015-12-30 18:40:47.6443 [ERROR] [Symbiote.Core.Plugin.PluginManager]: Failed to load assembly from plugin file 'Plugins\Symbiote.Plugin.Connector.UNIXPlatform.dll'.  Ignoring. System.Reflection.ReflectionTypeLoadException: Unable to load one or more of the requested types. Retrieve the LoaderExceptions property for more information.
+   at System.Reflection.RuntimeModule.GetTypes(RuntimeModule module)
+   at System.Reflection.RuntimeModule.GetTypes()
+   at System.Reflection.Assembly.GetTypes()
+   at Symbiote.Core.Plugin.PluginManager.LoadPlugins(List`1 files, List`1 plugins) in C:\Users\JP\Desktop\Projects\Symbiote\Core\Plugin\Manager.cs:line 73
+2015-12-30 18:40:47.6573 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Found plugin: Plugins\Symbiote.Plugin.Connector.WindowsPlatform.dll 
+2015-12-30 18:40:47.6573 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Attempting to determine assembly name... 
+2015-12-30 18:40:47.6763 [TRACE] [Symbiote.Core.Plugin.PluginManager]: Validated assembly 'Symbiote.Plugin.Connector.WindowsPlatform, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null'; attempting to load... 
+2015-12-30 18:40:47.6983 [INFO] [Symbiote.Core.Plugin.PluginManager]: Loaded plugin 'Plugins\Symbiote.Plugin.Connector.WindowsPlatform.dll' as type Symbiote.Plugin.Connector.WindowsPlatform.Plugin 
+2015-12-30 18:40:47.7213 [INFO] [Symbiote.Core.Program]: Plugins loaded; connectors: 1; services: 0 
+2015-12-30 18:40:47.7213 [INFO] [Symbiote.Core.Program]: Starting in interactive mode 
+2015-12-30 18:40:47.7323 [INFO] [Symbiote.Core.Program]: Symbiote started. 
+2015-12-30 18:40:47.7323 [INFO] [Symbiote.Core.Program]: Creating connector instances... 
+2015-12-30 18:40:47.7483 [INFO] [Symbiote.Core.Program]: Plugin count: 1 
+2015-12-30 18:40:47.7483 [INFO] [Symbiote.Core.Program]: Plugin: Symbiote.Plugin.Connector.WindowsPlatform.Plugin 
+2015-12-30 18:40:47.7703 [INFO] [Symbiote.Core.Program]: Item: SymbiotePlugin 
+2015-12-30 18:40:47.7703 [INFO] [Symbiote.Core.Program]: Connector instances created. 
+2015-12-30 18:40:47.7833 [INFO] [Symbiote.Core.Program]: Symbiote is starting... 
+2015-12-30 18:40:47.7833 [INFO] [Symbiote.Core.Program]: Platform: Windows (Microsoft Windows NT 6.1.7601 Service Pack 1) 
+2015-12-30 18:40:47.7933 [INFO] [Symbiote.Core.Program]: CPU %: 28.5326042175293 
+2015-12-30 18:40:47.7933 [INFO] [Symbiote.Core.Program]: RAM: 1248 
+2015-12-30 18:40:47.7933 [INFO] [Symbiote.Core.Program]: Drive: C:\ 
+2015-12-30 18:40:47.8093 [INFO] [Symbiote.Core.Program]: Path: C:\ 
+2015-12-30 18:40:47.8093 [INFO] [Symbiote.Core.Program]: Type: Fixed 
+2015-12-30 18:40:47.8093 [INFO] [Symbiote.Core.Program]: Total Size: 250056011776 
+2015-12-30 18:40:47.8243 [INFO] [Symbiote.Core.Program]: Used Space: 183912275968 
+2015-12-30 18:40:47.8243 [INFO] [Symbiote.Core.Program]: Free Space: 66143735808 
+2015-12-30 18:40:47.8243 [INFO] [Symbiote.Core.Program]: % Used: 73.5484320739901% 
+2015-12-30 18:40:47.8243 [INFO] [Symbiote.Core.Program]: % Free: 26.4515679260099% 

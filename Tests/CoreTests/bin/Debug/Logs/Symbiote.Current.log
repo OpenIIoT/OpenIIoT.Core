@@ -1,0 +1,6 @@
+2015-12-26 13:33:10.0245 [ERROR] [Symbiote.Core.Platform.WindowsDiskInfo]: Error listing drive info System.IO.IOException: Drive D:\ is not ready; unable to retrieve information
+   at Symbiote.Core.Platform.WindowsDiskInfo..ctor(DriveInfo drive) in C:\Users\JP\Desktop\Projects\Symbiote\Core\Platform\Windows.cs:line 93
+2015-12-26 13:33:10.1845 [ERROR] [Symbiote.Core.Platform.WindowsDiskInfo]: Error listing drive info System.IO.IOException: Drive E:\ is not ready; unable to retrieve information
+   at Symbiote.Core.Platform.WindowsDiskInfo..ctor(DriveInfo drive) in C:\Users\JP\Desktop\Projects\Symbiote\Core\Platform\Windows.cs:line 93
+2015-12-26 13:33:10.1925 [ERROR] [Symbiote.Core.Platform.WindowsDiskInfo]: Error listing drive info System.IO.IOException: Drive G:\ is not ready; unable to retrieve information
+   at Symbiote.Core.Platform.WindowsDiskInfo..ctor(DriveInfo drive) in C:\Users\JP\Desktop\Projects\Symbiote\Core\Platform\Windows.cs:line 93
