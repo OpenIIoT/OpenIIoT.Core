@@ -12,13 +12,13 @@ namespace Symbiote.Core.Platform
     {
         public PlatformManager.PlatformType Type { get; private set; }
         public string Version { get; private set; }
-        public ISystemInfo Info { get; private set; }
+        public ISystemInformation Info { get; private set; }
 
         public UNIX()
         {
             Type = PlatformManager.PlatformType.UNIX;
             Version = Environment.OSVersion.VersionString;
-            Info = new UNIXSystemInfo();
+            Info = new UNIXSystemInformation();
         }
 
         public List<string> GetDirectoryList(string root)
@@ -58,15 +58,16 @@ namespace Symbiote.Core.Platform
         }
     }
 
-    public class UNIXSystemInfo : ISystemInfo
+    public class UNIXSystemInformation : ISystemInformation
     {
         public double CPUTime { get; private set; }
         public double MemoryUsage { get; private set; }
-        public List<IDiskInfo> Disks { get; private set; }
+        public List<IDiskInformation> Disks { get; private set; }
+        public List<INetworkAdapterInformation> NetworkAdapters { get; private set; }
 
-        public UNIXSystemInfo()
+        public UNIXSystemInformation()
         {
-            Disks = new List<IDiskInfo>();
+            Disks = new List<IDiskInformation>();
             Refresh();
         }
 
@@ -79,7 +80,7 @@ namespace Symbiote.Core.Platform
             foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
                 // if (drive.IsReady)
-                Disks.Add(new UNIXDiskInfo(drive));
+                Disks.Add(new UNIXDiskInformation(drive));
             }
 
         }
@@ -102,18 +103,18 @@ namespace Symbiote.Core.Platform
         }
     }
 
-    public class UNIXDiskInfo : IDiskInfo
+    public class UNIXDiskInformation : IDiskInformation
     {
         public string Name { get; private set; }
         public string Path { get; private set; }
-        public string Type { get; private set; }
+        public PlatformManager.DiskType Type { get; private set; }
         public long Capacity { get; private set; }
         public long UsedSpace { get; private set; }
         public long FreeSpace { get; private set; }
         public double PercentFree { get; private set; }
         public double PercentUsed { get; private set; }
 
-        public UNIXDiskInfo(DriveInfo drive)
+        public UNIXDiskInformation(DriveInfo drive)
         {
             try
             {
@@ -123,7 +124,7 @@ namespace Symbiote.Core.Platform
                 {
                     this.Name = drive.Name;
                     this.Path = drive.RootDirectory.ToString();
-                    this.Type = drive.DriveType.ToString();
+                    this.Type = (PlatformManager.DiskType)Enum.Parse(typeof(PlatformManager.DiskType), drive.DriveType.ToString());
                     this.Capacity = drive.TotalSize;
                     this.FreeSpace = drive.TotalFreeSpace;
                     this.UsedSpace = Capacity - FreeSpace;

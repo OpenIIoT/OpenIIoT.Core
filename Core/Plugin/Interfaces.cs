@@ -7,20 +7,32 @@ using System.Reflection;
 
 namespace Symbiote.Core.Plugin
 {
-    public interface IPlugin
-    {
+    public interface IPlugin    {
         string Name { get; }
         string Namespace { get; }
+        Version Version { get; }
         PluginManager.PluginType PluginType { get; }
+    }
+
+    public interface IPluginAssembly : IPlugin
+    {
         Type Type { get; }
         Assembly Assembly { get; }
+        void Unload();
     }
-    public interface IConnector
+
+    public interface IPluginInstance : IPlugin
     {
+        string InstanceName { get; }
+    }
+
+    public interface IConnector : IPluginInstance
+    {
+        bool BrowseAble();
         List<IConnectorItem> Browse(IConnectorItem root);
     }
 
-    public interface IService
+    public interface IService : IPluginInstance
     {
         void Start();
     }
@@ -37,6 +49,7 @@ namespace Symbiote.Core.Plugin
         bool HasChildren();
         IConnectorItem AddChild(IConnectorItem child);
         IConnectorItem SetParent(IConnectorItem parent);
+        IConnectorItem SetItemAsRoot(string instanceName);
         void Refresh();
     }
 }

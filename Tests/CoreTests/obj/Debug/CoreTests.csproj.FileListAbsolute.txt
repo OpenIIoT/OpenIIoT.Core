@@ -20,3 +20,4 @@ C:\Users\JP\Desktop\Projects\Symbiote\Tests\CoreTests\bin\Debug\NLog.xml
 C:\Users\JP\Desktop\Projects\Symbiote\Tests\CoreTests\obj\Debug\CoreTests.csprojResolveAssemblyReference.cache
 C:\Users\JP\Desktop\Projects\Symbiote\Tests\CoreTests\obj\Debug\CoreTests.dll
 C:\Users\JP\Desktop\Projects\Symbiote\Tests\CoreTests\obj\Debug\CoreTests.pdb
+C:\Users\JP\Desktop\Projects\Symbiote\Tests\CoreTests\bin\Debug\Symbiote.xml

@@ -15,6 +15,8 @@ namespace Symbiote.Core.Platform
 
         // enumerations
         public enum PlatformType { Windows, UNIX }
+        public enum DiskType { Fixed, CDROM, Removable }
+        public enum NetworkAdapterType { Ethernet, Wireless }
         
         // properties
         // <none>
@@ -45,7 +47,7 @@ namespace Symbiote.Core.Platform
             catch(Exception ex)
             {
                 logger.Error(ex);
-                return null;
+                return default(IPlatform);
             }
         }
 

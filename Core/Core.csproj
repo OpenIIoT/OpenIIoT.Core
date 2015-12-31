@@ -38,6 +38,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>false</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
+    <DocumentationFile>bin\Debug\Symbiote.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -69,7 +70,7 @@
     <Compile Include="Platform\Manager.cs" />
     <Compile Include="Platform\UNIX.cs" />
     <Compile Include="Platform\Windows.cs" />
-    <Compile Include="Plugin\Plugin.cs" />
+    <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\Interfaces.cs" />
     <Compile Include="Plugin\Manager.cs" />
     <Compile Include="Program.cs" />

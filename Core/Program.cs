@@ -18,33 +18,37 @@ namespace Symbiote.Core
         private static PluginManager pluginManager = PluginManager.Instance();
 
         private static IPlatform platform;
-        private static List<IPlugin> plugins;
 
         static void Main(string[] args)
         {
             logger.Info("Symbiote is initializing...");
 
             // instantiate the platform
-            logger.Trace("Intantiating platform...");
+            logger.Info("Intantiating platform...");
             platform = platformManager.GetCurrentPlatform();
-            logger.Trace("Platform instantiated.");
             logger.Info("Platform: " + platform.Type.ToString() + " (" + platform.Version + ")");
 
             // load plugins
             logger.Info("Loading plugins...");
-            plugins = pluginManager.GetPlugins(platform.GetFileList("Plugins", "*.dll"));
-            logger.Info("Plugins loaded; connectors: " 
-                + plugins.Where(t => t.PluginType == PluginManager.PluginType.Connector).Count() + "; services: "
-                + plugins.Where(t => t.PluginType == PluginManager.PluginType.Service).Count());
+            try
+            {
+                pluginManager.LoadPlugins("Plugins", platform);
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+            }
+            logger.Info("Plugins loaded.");
 
+            // start the application
             if ((platform.Type == PlatformManager.PlatformType.Windows) && (!Environment.UserInteractive))
             {
-                logger.Info("Platform is Windows and mode is non-interactive; starting in service mode");
+                logger.Info("Starting application in service mode...");
                 ServiceBase.Run(new Service());
             }
             else
             {
-                logger.Info("Starting in interactive mode");
+                logger.Info("Starting application in interactive mode...");
                 Start(args);
                 Console.ReadKey(true);
                 Stop();
@@ -54,19 +58,19 @@ namespace Symbiote.Core
         public static void Start(string[] args)
         {
             logger.Info("Symbiote started.");
+
+
             logger.Info("Creating connector instances...");
 
-            logger.Info("Plugin count: " + plugins.Count());
+            logger.Info("Plugin count: " + pluginManager.Plugins.Count());
 
-            foreach (IPlugin p in plugins)
+            foreach (IPluginAssembly p in pluginManager.Plugins)
             {
                 logger.Info("Plugin: " + p.Type);
-                IConnector test = (IConnector)Activator.CreateInstance(plugins[0].Type);
+                IConnector test = pluginManager.CreateConnectorInstance("myinstance", p.Type);
                 PrintConnectorPluginItemChildren(test, null, 0);
             }
             logger.Info("Connector instances created.");
-
-            PrintStartupMessage();
         }
 
         public static void Stop()
@@ -78,34 +82,9 @@ namespace Symbiote.Core
         {
             foreach (IConnectorItem i in connector.Browse(root))
             {
-                logger.Info("level: " + indent.ToString() + " Item: " + i.Name);
+                logger.Info("level: " + indent.ToString() + " Item: " + i.Name + "; FQN: " + i.FQN);
                 PrintConnectorPluginItemChildren(connector, i, indent + 1);
             }
-        }
-
-        static void PrintStartupMessage()
-        {
-            logger.Info("Symbiote is starting...");
-            logger.Info("Platform: " + platform.Type.ToString() + " (" + platform.Version + ")");
-            logger.Info("CPU %: " + platform.Info.CPUTime.ToString());
-            logger.Info("RAM: " + platform.Info.MemoryUsage.ToString());
-
-            foreach (Platform.IDiskInfo s in platform.Info.Disks)
-            {
-                logger.Info("Drive: " + s.Name);
-                logger.Info("Path: " + s.Path);
-                logger.Info("Type: " + s.Type);
-                logger.Info("Total Size: " + s.Capacity.ToString());
-                logger.Info("Used Space: " + s.UsedSpace.ToString());
-                logger.Info("Free Space: " + s.FreeSpace.ToString());
-                logger.Info("% Used: " + (s.PercentUsed * 100).ToString() + "%");
-                logger.Info("% Free: " + (s.PercentFree * 100).ToString() + "%");
-            }
-        }
-
-        static void LoadPlugins(string path, Dictionary<string, Assembly> plugins)
-        {
-
         }
     }
 }

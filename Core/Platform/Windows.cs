@@ -15,7 +15,7 @@ namespace Symbiote.Core.Platform
 
         public PlatformManager.PlatformType Type { get; private set; }
         public string Version { get; private set; }
-        public ISystemInfo Info { get; private set; }
+        public ISystemInformation Info { get; private set; }
 
         public Windows()
         {
@@ -23,7 +23,7 @@ namespace Symbiote.Core.Platform
 
             Type = PlatformManager.PlatformType.Windows;
             Version = Environment.OSVersion.VersionString;
-            Info = new WindowsSystemInfo();
+            Info = new WindowsSystemInformation();
         }
 
         public List<string> GetDirectoryList(string root)
@@ -55,15 +55,16 @@ namespace Symbiote.Core.Platform
         }
     }
 
-    public class WindowsSystemInfo: ISystemInfo
+    public class WindowsSystemInformation: ISystemInformation
     {
         public double CPUTime { get; private set; }
         public double MemoryUsage { get; private set; }
-        public List<IDiskInfo> Disks { get; private set; }
+        public List<IDiskInformation> Disks { get; private set; }
+        public List<INetworkAdapterInformation> NetworkAdapters { get; private set; }
 
-        public WindowsSystemInfo()
+        public WindowsSystemInformation()
         {
-            Disks = new List<IDiskInfo>();
+            Disks = new List<IDiskInformation>();
             Refresh();
         }
 
@@ -76,7 +77,7 @@ namespace Symbiote.Core.Platform
             foreach (DriveInfo drive in DriveInfo.GetDrives())
             {
                if (drive.IsReady)
-                    Disks.Add(new WindowsDiskInfo(drive));
+                    Disks.Add(new WindowsDiskInformation(drive));
             }
 
         }
@@ -99,20 +100,20 @@ namespace Symbiote.Core.Platform
         }
     }
 
-    public class WindowsDiskInfo : IDiskInfo
+    public class WindowsDiskInformation : IDiskInformation
     {
         private static Logger logger;
 
         public string Name { get; private set; }
         public string Path { get; private set; }
-        public string Type { get; private set; }
+        public PlatformManager.DiskType Type { get; private set; }
         public long Capacity { get; private set; }
         public long UsedSpace { get; private set; }
         public long FreeSpace { get; private set; }
         public double PercentFree { get; private set; }
         public double PercentUsed { get; private set; }
 
-        public WindowsDiskInfo(DriveInfo drive)
+        public WindowsDiskInformation(DriveInfo drive)
         {
             logger = LogManager.GetCurrentClassLogger();
             try
@@ -123,7 +124,7 @@ namespace Symbiote.Core.Platform
                 {
                     this.Name = drive.Name;
                     this.Path = drive.RootDirectory.ToString();
-                    this.Type = drive.DriveType.ToString();
+                    this.Type = (PlatformManager.DiskType)Enum.Parse(typeof(PlatformManager.DiskType), drive.DriveType.ToString());
                     this.Capacity = drive.TotalSize;
                     this.FreeSpace = drive.TotalFreeSpace;
                     this.UsedSpace = Capacity - FreeSpace;

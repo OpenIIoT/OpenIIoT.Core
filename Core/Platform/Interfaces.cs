@@ -10,28 +10,40 @@ namespace Symbiote.Core.Platform
     {
         PlatformManager.PlatformType Type { get; }
         string Version { get; }
-        ISystemInfo Info { get; }
+        ISystemInformation Info { get; }
         List<string> GetDirectoryList(string root);
         List<string> GetFileList(string directory, string extension);
     }
 
-    public interface ISystemInfo
+    public interface ISystemInformation
     {
         double CPUTime { get; }
         double MemoryUsage { get; }
-        List<IDiskInfo> Disks { get; }
+        List<IDiskInformation> Disks { get; }
+        List<INetworkAdapterInformation> NetworkAdapters { get; }
         void Refresh();
     }
 
-    public interface IDiskInfo
+    public interface IDiskInformation
     {
         string Name { get; }
+        PlatformManager.DiskType Type { get; }
         string Path { get; }
-        string Type { get; }
         long Capacity { get; }
         long UsedSpace { get; }
         long FreeSpace { get; }
         double PercentFree { get; }
         double PercentUsed { get; }
+    }
+
+    public interface INetworkAdapterInformation
+    {
+        string Name { get; }
+        PlatformManager.NetworkAdapterType Type { get; }
+        string MACAddress { get; }
+        string IPAddress { get; }
+        long Bandwidth { get; }
+        long BytesSentPerSecond { get; }
+        long BytesReceivedPerSecond { get; }
     }
 }
