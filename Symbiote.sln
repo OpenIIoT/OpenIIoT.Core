@@ -17,7 +17,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{54
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.WindowsPlatform", "Plugins\Connectors\Symbiote.Plugin.Connector.WindowsPlatform\Symbiote.Plugin.Connector.WindowsPlatform.csproj", "{48E50C30-6D3C-4200-8850-1EDDF3784905}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.UNIXPlatform", "Symbiote.Plugin.Connector.UNIXPlatform\Symbiote.Plugin.Connector.UNIXPlatform.csproj", "{C44E3FFC-763B-439B-B968-C65CAE3A5E6B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.UNIXPlatform", "Plugins\Connectors\Symbiote.Plugin.Connector.UNIXPlatform\Symbiote.Plugin.Connector.UNIXPlatform.csproj", "{C44E3FFC-763B-439B-B968-C65CAE3A5E6B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
