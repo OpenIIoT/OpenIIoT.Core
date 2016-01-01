@@ -11,6 +11,15 @@ using System.ComponentModel;
 namespace Symbiote.Core.Plugin
 {
     /// <summary>
+    /// Enumeration of the different Plugin types.
+    /// </summary>
+    public enum PluginType {
+        Unknown,
+        Connector, 
+        Service
+    }
+
+    /// <summary>
     /// The PluginManager class controls the plugin subsystem.
     /// <remarks>
     /// This class is implemented using the Singleton design pattern.
@@ -29,16 +38,9 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         public List<IPluginAssembly> Plugins { get; private set; }
 
-        // enumerations
-        /// <summary>
-        /// Enumeration for Plugin type.
-        /// </summary>
-        public enum PluginType { Platform, Connector, Service }
-
         // constructor
-
         /// <summary>
-        /// Instantiates the plugin list.
+        /// Private constructor, only called by Instance()
         /// </summary>
         private PluginManager() {
             Plugins = new List<IPluginAssembly>();

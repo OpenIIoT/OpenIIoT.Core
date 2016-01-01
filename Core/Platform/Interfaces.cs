@@ -1,33 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Symbiote.Core.Platform
 {
+    /// <summary>
+    /// Defines the interface for Platform objects.
+    /// </summary>
     public interface IPlatform
     {
-        PlatformManager.PlatformType Type { get; }
+        Platform.PlatformType PlatformType { get; }
         string Version { get; }
         ISystemInformation Info { get; }
         List<string> GetDirectoryList(string root);
         List<string> GetFileList(string directory, string extension);
     }
 
+    /// <summary>
+    /// Defines the interface for System Information objects.
+    /// </summary>
     public interface ISystemInformation
     {
         double CPUTime { get; }
         double MemoryUsage { get; }
-        List<IDiskInformation> Disks { get; }
+        List<IDriveInformation> Drives { get; }
         List<INetworkAdapterInformation> NetworkAdapters { get; }
         void Refresh();
     }
 
-    public interface IDiskInformation
+    /// <summary>
+    /// Defines the interface for Drive Information objects.
+    /// </summary>
+    public interface IDriveInformation
     {
         string Name { get; }
-        PlatformManager.DiskType Type { get; }
+        Platform.DriveType Type { get; }
         string Path { get; }
         long Capacity { get; }
         long UsedSpace { get; }
@@ -36,10 +41,13 @@ namespace Symbiote.Core.Platform
         double PercentUsed { get; }
     }
 
+    /// <summary>
+    /// Defines the interface for Network Adapter Information objects.
+    /// </summary>
     public interface INetworkAdapterInformation
     {
         string Name { get; }
-        PlatformManager.NetworkAdapterType Type { get; }
+        Platform.NetworkAdapterType Type { get; }
         string MACAddress { get; }
         string IPAddress { get; }
         long Bandwidth { get; }

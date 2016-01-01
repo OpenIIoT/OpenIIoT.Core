@@ -11,7 +11,7 @@ namespace Symbiote.Core.Plugin
         string Name { get; }
         string Namespace { get; }
         Version Version { get; }
-        PluginManager.PluginType PluginType { get; }
+        PluginType PluginType { get; }
     }
 
     public interface IPluginAssembly : IPlugin

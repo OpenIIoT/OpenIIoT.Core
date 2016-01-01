@@ -15,7 +15,7 @@ namespace Symbiote.Plugin.Connector.Simulator
         public string Name { get; private set; }
         public string Namespace { get; private set; }
         public Version Version { get; private set; }
-        public PluginManager.PluginType PluginType { get; private set; }
+        public PluginType PluginType { get; private set; }
         public string InstanceName { get; private set; }
 
         public Plugin(string instanceName)

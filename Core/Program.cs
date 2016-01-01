@@ -11,6 +11,9 @@ using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core
 {
+    /// <summary>
+    /// Main application class.
+    /// </summary>
     class Program
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
@@ -19,20 +22,28 @@ namespace Symbiote.Core
 
         private static IPlatform platform;
 
+        /// <summary>
+        /// Main entry point for the application.
+        /// </summary>
+        /// <remarks>
+        /// Responsible for instantiating the platform, loading plugins and determining whether to start
+        /// the application as a Windows service or console/interactive application.
+        /// </remarks>
+        /// <param name="args">Command line arguments.</param>
         static void Main(string[] args)
         {
             logger.Info("Symbiote is initializing...");
 
             // instantiate the platform
             logger.Info("Intantiating platform...");
-            platform = platformManager.GetCurrentPlatform();
-            logger.Info("Platform: " + platform.Type.ToString() + " (" + platform.Version + ")");
+            platformManager.InstantiatePlatform();
+            logger.Info("Platform: " + platformManager.Platform.PlatformType.ToString() + " (" + platformManager.Platform.Version + ")");
 
             // load plugins
             logger.Info("Loading plugins...");
             try
             {
-                pluginManager.LoadPlugins("Plugins", platform);
+                pluginManager.LoadPlugins("Plugins", platformManager.Platform);
             }
             catch (Exception ex)
             {
@@ -41,7 +52,7 @@ namespace Symbiote.Core
             logger.Info("Plugins loaded.");
 
             // start the application
-            if ((platform.Type == PlatformManager.PlatformType.Windows) && (!Environment.UserInteractive))
+            if ((platformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
             {
                 logger.Info("Starting application in service mode...");
                 ServiceBase.Run(new Service());
@@ -55,6 +66,10 @@ namespace Symbiote.Core
             }
         }
 
+        /// <summary>
+        /// Entry point for the application logic.
+        /// </summary>
+        /// <param name="args">Command line arguments, passed from Main().</param>
         public static void Start(string[] args)
         {
             logger.Info("Symbiote started.");
@@ -73,6 +88,9 @@ namespace Symbiote.Core
             logger.Info("Connector instances created.");
         }
 
+        /// <summary>
+        /// Exit point for the application logic.
+        /// </summary>
         public static void Stop()
         {
             logger.Info("Symbiote stopped.");
