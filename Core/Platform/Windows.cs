@@ -7,9 +7,17 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog;
 
+/// <summary>
+/// The Windows class implements the platform interfaces necessary to run the application on the Windows platform.
+/// </summary>
+/// <remarks>
+/// Some wierdness in the C# compiler won't allow implicitly defined interface properties if the property is less
+/// accessible than public.  For whatever reason the properties can be public but the class can be internal.
+/// The effective accessibility for these classes and all of their members is internal.
+/// </remarks>
 namespace Symbiote.Core.Platform
 {
-    public class Windows : IPlatform
+    internal class Windows : IPlatform
     {
         private static Logger logger;
 
@@ -17,7 +25,7 @@ namespace Symbiote.Core.Platform
         public string Version { get; private set; }
         public ISystemInformation Info { get; private set; }
 
-        public Windows()
+        internal Windows()
         {
             logger = LogManager.GetCurrentClassLogger();
 
@@ -55,14 +63,14 @@ namespace Symbiote.Core.Platform
         }
     }
 
-    public class WindowsSystemInformation: ISystemInformation
+    internal class WindowsSystemInformation: ISystemInformation
     {
         public double CPUTime { get; private set; }
         public double MemoryUsage { get; private set; }
         public List<IDriveInformation> Drives { get; private set; }
         public List<INetworkAdapterInformation> NetworkAdapters { get; private set; }
 
-        public WindowsSystemInformation()
+        internal WindowsSystemInformation()
         {
             Drives = new List<IDriveInformation>();
             Refresh();
@@ -82,7 +90,7 @@ namespace Symbiote.Core.Platform
 
         }
 
-        public double getCPUCounter()
+        private double getCPUCounter()
         {
             PerformanceCounter cpuCounter = new PerformanceCounter();
             cpuCounter.CategoryName = "Processor";
@@ -94,13 +102,13 @@ namespace Symbiote.Core.Platform
             return cpuCounter.NextValue();
         }
 
-        public double getAvailableRAM()
+        private double getAvailableRAM()
         {
             return new PerformanceCounter("Memory", "Available MBytes").NextValue();
         }
     }
 
-    public class WindowsDriveInformation : IDriveInformation
+    internal class WindowsDriveInformation : IDriveInformation
     {
         private static Logger logger;
 
@@ -113,7 +121,7 @@ namespace Symbiote.Core.Platform
         public double PercentFree { get; private set; }
         public double PercentUsed { get; private set; }
 
-        public WindowsDriveInformation(DriveInfo drive)
+        internal WindowsDriveInformation(DriveInfo drive)
         {
             logger = LogManager.GetCurrentClassLogger();
             try

@@ -53,6 +53,7 @@
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.4.2.3\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -65,14 +66,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collector\CollectorManager.cs" />
+    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Interfaces.cs" />
+    <Compile Include="Platform\Enumerations.cs" />
+    <Compile Include="Plugin\Enumerations.cs" />
+    <Compile Include="ProgramManager.cs" />
+    <Compile Include="Model\ModelManager.cs" />
+    <Compile Include="Model\Model.cs" />
+    <Compile Include="Model\ModelItem.cs" />
     <Compile Include="Platform\Interfaces.cs" />
-    <Compile Include="Platform\Manager.cs" />
+    <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\UNIX.cs" />
     <Compile Include="Platform\Windows.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\Interfaces.cs" />
-    <Compile Include="Plugin\Manager.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service.cs">

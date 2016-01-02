@@ -1,63 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 using NLog;
 using Symbiote.Core.Platform;
-using System.ComponentModel;
 
 namespace Symbiote.Core.Plugin
 {
     /// <summary>
-    /// Enumeration of the different Plugin types.
-    /// </summary>
-    public enum PluginType {
-        Unknown,
-        Connector, 
-        Service
-    }
-
-    /// <summary>
     /// The PluginManager class controls the plugin subsystem.
     /// <remarks>
-    /// This class is implemented using the Singleton design pattern.
+    /// This class is implemented using the Singleton and (a variant of) Factory design patterns.
     /// </remarks>
     /// </summary>
-    public class PluginManager
+    internal class PluginManager
     {
-        // private variables
+        private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static PluginManager instance;
         private bool pluginsLoaded = false;
 
-        // properties
         /// <summary>
         /// A list of currently loaded plugin assemblies.
         /// </summary>
-        public List<IPluginAssembly> Plugins { get; private set; }
+        internal List<IPluginAssembly> Plugins { get; private set; }
 
-        // constructor
         /// <summary>
         /// Private constructor, only called by Instance()
         /// </summary>
-        private PluginManager() {
+        private PluginManager(ProgramManager manager) {
+            this.manager = manager;
             Plugins = new List<IPluginAssembly>();
         }
 
         /// <summary>
         /// Instantiates and/or returns the PluginManager instance.
         /// </summary>
-        public static PluginManager Instance()
+        internal static PluginManager Instance(ProgramManager manager)
         {
             if (instance == null)
-                instance = new PluginManager();
+                instance = new PluginManager(manager);
 
             return instance;
         }
-
-        // instance methods
 
         /// <summary>
         /// Given a list of files, validate and load each assembly found in the list.
@@ -70,7 +54,7 @@ namespace Symbiote.Core.Plugin
         /// </remarks>
         /// <param name="folder">The folder containing the plugin files to load.</param>
         /// <param name="platform">The IPlatform representing the current platform for the application.</param>
-        public void LoadPlugins(string folder, IPlatform platform)
+        internal void LoadPlugins(string folder, IPlatform platform)
         {
             // prevent assemblies from being loaded twice
             if (pluginsLoaded)
@@ -146,43 +130,19 @@ namespace Symbiote.Core.Plugin
         /// <param name="instanceName">The desired internal name of the instance</param>
         /// <param name="type">The type to be instantiated</param>
         /// <returns></returns>
-        public IPluginInstance CreatePluginInstance(string instanceName, Type type)
+        internal T CreatePluginInstance<T>(string instanceName, Type type)
         {
             try
             {
                 // create the instance and set the instance name
                 logger.Trace("Creating instance of plugin type '" + type.ToString() + "' with instance name '" + instanceName + "'");
-                IPluginInstance newInstance = (IPluginInstance)Activator.CreateInstance(type, instanceName);
-                //newInstance.SetInstanceName(instanceName);
-                return newInstance;
+                return (T)Activator.CreateInstance(type, instanceName);
             }
             catch (Exception ex)
             {
                 logger.Error(ex, "Error creating instance '" + instanceName + "' of type " + type.ToString());
-                return default(IPluginInstance);
+                return (T)default(IPluginInstance);
             }
-        }
-
-        /// <summary>
-        /// Calls CreatePluginInstance and returns the result cast as type IConnector
-        /// </summary>
-        /// <param name="instanceName">The desired internal name of the instance</param>
-        /// <param name="type">The type to be instantiated</param>
-        /// <returns></returns>
-        public IConnector CreateConnectorInstance(string instanceName, Type type)
-        {
-            return (IConnector)CreatePluginInstance(instanceName, type);
-        }
-
-        /// <summary>
-        /// Calls Create PluginInstance and returns the result cast as type IService
-        /// </summary>
-        /// <param name="instanceName">The desired internal name of the instance</param>
-        /// <param name="type">The type to be instantiated</param>
-        /// <returns></returns>
-        public IService CreateServiceInstance(string instanceName, Type type)
-        {
-            return (IService)CreatePluginInstance(instanceName, type);
         }
 
         // static methods

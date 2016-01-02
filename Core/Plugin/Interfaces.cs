@@ -28,8 +28,11 @@ namespace Symbiote.Core.Plugin
 
     public interface IConnector : IPluginInstance
     {
-        bool BrowseAble();
+        bool Browseable { get; }
         List<IConnectorItem> Browse(IConnectorItem root);
+        object Read(string item);
+        bool Writeable { get; }
+        void Write(string item, object value);
     }
 
     public interface IService : IPluginInstance

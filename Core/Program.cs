@@ -17,10 +17,8 @@ namespace Symbiote.Core
     class Program
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static PlatformManager platformManager = PlatformManager.Instance();
-        private static PluginManager pluginManager = PluginManager.Instance();
-
-        private static IPlatform platform;
+        private static ProgramManager manager;
+        private static IConnector test;
 
         /// <summary>
         /// Main entry point for the application.
@@ -34,25 +32,35 @@ namespace Symbiote.Core
         {
             logger.Info("Symbiote is initializing...");
 
-            // instantiate the platform
-            logger.Info("Intantiating platform...");
-            platformManager.InstantiatePlatform();
-            logger.Info("Platform: " + platformManager.Platform.PlatformType.ToString() + " (" + platformManager.Platform.Version + ")");
+            logger.Trace("Instantiating the program manager...");
+            try
+            {
+                manager = ProgramManager.Instance();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
+                logger.Error("Symbiote failed to initailize.");
+                return;
+            }
+            logger.Trace("The program manager was instantiated successfully.");
+            logger.Info("Platform: " + manager.Platform.PlatformType.ToString() + " (" + manager.Platform.Version + ")");
 
             // load plugins
             logger.Info("Loading plugins...");
             try
             {
-                pluginManager.LoadPlugins("Plugins", platformManager.Platform);
+                manager.PluginManager.LoadPlugins("Plugins", manager.Platform);
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
+                return;
             }
             logger.Info("Plugins loaded.");
 
             // start the application
-            if ((platformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
+            if ((manager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
             {
                 logger.Info("Starting application in service mode...");
                 ServiceBase.Run(new Service());
@@ -61,7 +69,6 @@ namespace Symbiote.Core
             {
                 logger.Info("Starting application in interactive mode...");
                 Start(args);
-                Console.ReadKey(true);
                 Stop();
             }
         }
@@ -73,19 +80,26 @@ namespace Symbiote.Core
         public static void Start(string[] args)
         {
             logger.Info("Symbiote started.");
-
-
             logger.Info("Creating connector instances...");
+            logger.Info("Plugin count: " + manager.Plugins.Count());
 
-            logger.Info("Plugin count: " + pluginManager.Plugins.Count());
 
-            foreach (IPluginAssembly p in pluginManager.Plugins)
+            foreach (IPluginAssembly p in manager.Plugins)
             {
                 logger.Info("Plugin: " + p.Type);
-                IConnector test = pluginManager.CreateConnectorInstance("myinstance", p.Type);
-                PrintConnectorPluginItemChildren(test, null, 0);
+                test = manager.PluginManager.CreatePluginInstance<IConnector>("myinstance", p.Type);
             }
+
             logger.Info("Connector instances created.");
+
+            Console.WriteLine("Press ESC to stop");
+            do
+            {
+                while (!Console.KeyAvailable)
+                {
+                    PrintConnectorPluginItemChildren(test, null, 0);
+                }
+            } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
         }
 
         /// <summary>
@@ -100,7 +114,10 @@ namespace Symbiote.Core
         {
             foreach (IConnectorItem i in connector.Browse(root))
             {
-                logger.Info("level: " + indent.ToString() + " Item: " + i.Name + "; FQN: " + i.FQN);
+                if (i.HasChildren() == false)
+                    logger.Info("level: " + indent.ToString() + " Item: " + i.Name + "; FQN: " + i.FQN + " Value: " + connector.Read(i.FQN).ToString());
+                else
+                    logger.Info("Folder: " + indent.ToString() + " Folder: " + i.Name);
                 PrintConnectorPluginItemChildren(connector, i, indent + 1);
             }
         }

@@ -10,13 +10,15 @@ namespace Symbiote.Plugin.Connector.Simulator
     public class Plugin : IConnector
     {
         private IConnectorItem itemRoot;
-        private bool browseAble = true;
+
 
         public string Name { get; private set; }
         public string Namespace { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
         public string InstanceName { get; private set; }
+        public bool Browseable { get { return true; } }
+        public bool Writeable { get { return false; } }
 
         public Plugin(string instanceName)
         {
@@ -33,12 +35,32 @@ namespace Symbiote.Plugin.Connector.Simulator
             return (root == null ? itemRoot.Children : root.Children);
         }
 
-        // <summary>
-        // Return true if the connector's items are browseable, false otherwise.
-        // </summary>
-        public bool BrowseAble()
+        public object Read(string value)
         {
-            return browseAble;
+            double val = DateTime.Now.Second;
+            switch(value.Split('.')[3])
+            {
+                case "Sine":
+                    return Math.Sin(val);
+                case "Cosine":
+                    return Math.Cos(val);
+                case "Tangent":
+                    return Math.Tan(val);
+                case "Ramp":
+                    return val;
+                case "Step":
+                    return val % 5;
+                case "Toggle":
+                    return val % 2;
+                default:
+                    return 0;
+            }
+                
+        }
+
+        public void Write(string item, object value)
+        {
+            throw new NotImplementedException();
         }
 
         private void InitializeItems()
