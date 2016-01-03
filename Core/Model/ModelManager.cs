@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Model
 {
-    internal class ModelManager
+    public class ModelManager
     {
         private ProgramManager manager;
         private static ModelManager instance;
@@ -19,7 +19,7 @@ namespace Symbiote.Core.Model
             Model = new Model();
         }
 
-        internal static ModelManager Instance(ProgramManager manager)
+        public static ModelManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new ModelManager(manager);

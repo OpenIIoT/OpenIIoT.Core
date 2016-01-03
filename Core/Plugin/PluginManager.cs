@@ -12,7 +12,7 @@ namespace Symbiote.Core.Plugin
     /// This class is implemented using the Singleton and (a variant of) Factory design patterns.
     /// </remarks>
     /// </summary>
-    internal class PluginManager
+    public class PluginManager
     {
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
@@ -22,7 +22,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// A list of currently loaded plugin assemblies.
         /// </summary>
-        internal List<IPluginAssembly> Plugins { get; private set; }
+        public List<IPluginAssembly> Plugins { get; private set; }
 
         /// <summary>
         /// Private constructor, only called by Instance()
@@ -35,7 +35,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Instantiates and/or returns the PluginManager instance.
         /// </summary>
-        internal static PluginManager Instance(ProgramManager manager)
+        public static PluginManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new PluginManager(manager);
@@ -54,7 +54,7 @@ namespace Symbiote.Core.Plugin
         /// </remarks>
         /// <param name="folder">The folder containing the plugin files to load.</param>
         /// <param name="platform">The IPlatform representing the current platform for the application.</param>
-        internal void LoadPlugins(string folder, IPlatform platform)
+        public void LoadPlugins(string folder, IPlatform platform)
         {
             // prevent assemblies from being loaded twice
             if (pluginsLoaded)
@@ -130,7 +130,7 @@ namespace Symbiote.Core.Plugin
         /// <param name="instanceName">The desired internal name of the instance</param>
         /// <param name="type">The type to be instantiated</param>
         /// <returns></returns>
-        internal T CreatePluginInstance<T>(string instanceName, Type type)
+        public T CreatePluginInstance<T>(string instanceName, Type type)
         {
             try
             {

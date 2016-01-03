@@ -11,22 +11,22 @@ using NLog;
 
 namespace Symbiote.Core
 {
-    internal class ProgramManager
+    public class ProgramManager
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ProgramManager instance;
 
-        internal PlatformManager PlatformManager { get; private set; }
-        internal IPlatform Platform { get; private set; }
+        public PlatformManager PlatformManager { get; private set; }
+        public IPlatform Platform { get; private set; }
 
-        internal ConfigurationManager ConfigurationManager { get; private set; }
-        internal Configuration.Configuration Configuration { get; private set; }
+        public ConfigurationManager ConfigurationManager { get; private set; }
+        public Configuration.Configuration Configuration { get; private set; }
 
-        internal PluginManager PluginManager { get; private set; }
-        internal List<IPluginAssembly> Plugins { get; private set; }
+        public PluginManager PluginManager { get; private set; }
+        public List<IPluginAssembly> Plugins { get; private set; }
 
-        internal ModelManager ModelManager { get; private set; }
-        internal Model.Model Model { get; private set; }
+        public ModelManager ModelManager { get; private set; }
+        public Model.Model Model { get; private set; }
 
         private ProgramManager()
         {

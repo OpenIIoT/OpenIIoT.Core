@@ -7,18 +7,18 @@ using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core.Model
 {
-    internal class ModelItem
+    public class ModelItem
     {
         private object Value;
 
-        internal string Name { get; private set; }
-        internal string Path { get; private set; }
-        internal string FQN { get; private set; }
-        internal Type Type { get; private set; }
-        internal IConnector Connector { get; private set; }
-        internal string ConnectorAddress { get; private set; }
+        public string Name { get; private set; }
+        public string Path { get; private set; }
+        public string FQN { get; private set; }
+        public Type Type { get; private set; }
+        public IConnector Connector { get; private set; }
+        public string ConnectorAddress { get; private set; }
 
-        internal ModelItem(string name, string path, string fqn, Type type)
+        public ModelItem(string name, string path, string fqn, Type type)
         {
             Name = name;
             Path = path;
@@ -27,30 +27,30 @@ namespace Symbiote.Core.Model
             ReadValue();
         }
 
-        internal ModelItem SetValue(object value)
+        public ModelItem SetValue(object value)
         {
             Value = value;
             // todo: persistence goes here
             return this;
         }
 
-        internal object ReadValue()
+        public object ReadValue()
         {
             return Value;
         }
 
-        internal object ReadValueAsync()
+        public object ReadValueAsync()
         {
             return Value;
         }
 
-        internal ModelItem WriteValue(object value)
+        public ModelItem WriteValue(object value)
         {
             Value = value;
             return this;
         }
 
-        internal ModelItem WriteValueAsync(object value)
+        public ModelItem WriteValueAsync(object value)
         {
             Value = value;
             return this;

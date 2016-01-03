@@ -9,7 +9,7 @@ namespace Symbiote.Core.Platform
     /// <remarks>
     /// This class is implemented using the Singleton and Factory design patterns.
     /// </remarks>
-    internal class PlatformManager
+    public class PlatformManager
     {
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
@@ -18,7 +18,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// The current platform.
         /// </summary>
-        internal IPlatform Platform { get; private set; }
+        public IPlatform Platform { get; private set; }
 
         /// <summary>
         /// Private constructor, only called by Instance()
@@ -33,7 +33,7 @@ namespace Symbiote.Core.Platform
         /// Instantiates and/or returns the PlatformManager instance.
         /// </summary>
         /// <returns></returns>
-        internal static PlatformManager Instance(ProgramManager manager)
+        public static PlatformManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new PlatformManager(manager);

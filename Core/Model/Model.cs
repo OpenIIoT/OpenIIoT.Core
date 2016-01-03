@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Model
 {
-    class Model
+    public class Model
     {
         public List<ModelItem> Items { get; private set; }
         public Model()

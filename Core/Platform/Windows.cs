@@ -16,7 +16,7 @@ using Symbiote.Core.Plugin;
 /// </remarks>
 namespace Symbiote.Core.Platform
 {
-    internal class Windows : IPlatform
+    public class Windows : IPlatform
     {
         private static Logger logger;
 
@@ -24,7 +24,7 @@ namespace Symbiote.Core.Platform
         public string Version { get; private set; }
         public IConnector Connector { get; private set; }
 
-        internal Windows()
+        public Windows()
         {
             logger = LogManager.GetCurrentClassLogger();
 

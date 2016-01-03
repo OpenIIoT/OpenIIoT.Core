@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Configuration
 {
-    class Configuration
+    public class Configuration
     {
     }
 }
