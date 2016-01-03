@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Symbiote.Core.Plugin
 {
-    public interface IPlugin    {
+    public interface IPlugin {
         string Name { get; }
         string Namespace { get; }
         Version Version { get; }
@@ -40,7 +40,7 @@ namespace Symbiote.Core.Plugin
         void Start();
     }
 
-    public interface IConnectorItem
+    public interface IConnectorItem 
     {
         IConnectorItem Parent { get; }
         string Name { get; }
@@ -53,6 +53,5 @@ namespace Symbiote.Core.Plugin
         IConnectorItem AddChild(IConnectorItem child);
         IConnectorItem SetParent(IConnectorItem parent);
         IConnectorItem SetItemAsRoot(string instanceName);
-        void Refresh();
     }
 }

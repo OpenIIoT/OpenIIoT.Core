@@ -71,6 +71,7 @@
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="Platform\Enumerations.cs" />
+    <Compile Include="Platform\WindowsConnector.cs" />
     <Compile Include="Plugin\Enumerations.cs" />
     <Compile Include="ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />

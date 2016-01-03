@@ -8,6 +8,7 @@ using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
+using System.Timers;
 
 namespace Symbiote.Core
 {
@@ -80,6 +81,10 @@ namespace Symbiote.Core
         public static void Start(string[] args)
         {
             logger.Info("Symbiote started.");
+
+            logger.Info("Creating Platform Connector...");
+            PrintConnectorPluginItemChildren(manager.Platform.Connector, null, 0);
+
             logger.Info("Creating connector instances...");
             logger.Info("Plugin count: " + manager.Plugins.Count());
 
@@ -91,15 +96,18 @@ namespace Symbiote.Core
             }
 
             logger.Info("Connector instances created.");
-
+            Timer atimer = new Timer(15000);
+            atimer.Elapsed += print;
+            atimer.AutoReset = true;
+            atimer.Enabled = true;
             Console.WriteLine("Press ESC to stop");
-            do
-            {
-                while (!Console.KeyAvailable)
-                {
-                    PrintConnectorPluginItemChildren(test, null, 0);
-                }
-            } while (Console.ReadKey(true).Key != ConsoleKey.Escape);
+            Console.ReadLine();
+
+
+        }
+        public static void print(Object source, ElapsedEventArgs e)
+        {
+            PrintConnectorPluginItemChildren(manager.Platform.Connector, null, 0);
         }
 
         /// <summary>

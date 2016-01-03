@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core.Platform
 {
@@ -9,36 +10,9 @@ namespace Symbiote.Core.Platform
     {
         Platform.PlatformType PlatformType { get; }
         string Version { get; }
-        ISystemInformation Info { get; }
+        IConnector Connector { get; }
         List<string> GetDirectoryList(string root);
         List<string> GetFileList(string directory, string extension);
-    }
-
-    /// <summary>
-    /// Defines the interface for System Information objects.
-    /// </summary>
-    public interface ISystemInformation
-    {
-        double CPUTime { get; }
-        double MemoryUsage { get; }
-        List<IDriveInformation> Drives { get; }
-        List<INetworkAdapterInformation> NetworkAdapters { get; }
-        void Refresh();
-    }
-
-    /// <summary>
-    /// Defines the interface for Drive Information objects.
-    /// </summary>
-    public interface IDriveInformation
-    {
-        string Name { get; }
-        Platform.DriveType Type { get; }
-        string Path { get; }
-        long Capacity { get; }
-        long UsedSpace { get; }
-        long FreeSpace { get; }
-        double PercentFree { get; }
-        double PercentUsed { get; }
     }
 
     /// <summary>
