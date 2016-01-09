@@ -19,7 +19,7 @@ namespace Symbiote.Core.Model
             Model = new Model();
         }
 
-        public static ModelManager Instance(ProgramManager manager)
+        internal static ModelManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new ModelManager(manager);

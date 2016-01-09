@@ -35,7 +35,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Instantiates and/or returns the PluginManager instance.
         /// </summary>
-        public static PluginManager Instance(ProgramManager manager)
+        internal static PluginManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new PluginManager(manager);

@@ -19,7 +19,7 @@ namespace Symbiote.Core.Configuration
             Configuration = new Configuration();
         }
 
-        public static ConfigurationManager Instance(ProgramManager manager)
+        internal static ConfigurationManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new ConfigurationManager(manager);

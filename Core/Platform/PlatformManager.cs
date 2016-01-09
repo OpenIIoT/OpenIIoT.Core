@@ -33,7 +33,7 @@ namespace Symbiote.Core.Platform
         /// Instantiates and/or returns the PlatformManager instance.
         /// </summary>
         /// <returns></returns>
-        public static PlatformManager Instance(ProgramManager manager)
+        internal static PlatformManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new PlatformManager(manager);
@@ -54,7 +54,7 @@ namespace Symbiote.Core.Platform
                 case PlatformType.UNIX:
                     return new Platform.UNIX();
                 default:
-                    throw new Exception("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
+                    throw new ApplicationException("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
             }
         }
 
