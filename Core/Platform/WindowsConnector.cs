@@ -84,8 +84,7 @@ namespace Symbiote.Core.Platform
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new WindowsConnectorItem("Items");
-            itemRoot.SetItemAsRoot(InstanceName);
+            itemRoot = new WindowsConnectorItem("Items", true, InstanceName);
 
             // create CPU items
             IConnectorItem cpuRoot = itemRoot.AddChild(new WindowsConnectorItem("CPU"));
@@ -142,8 +141,11 @@ namespace Symbiote.Core.Platform
         public List<IConnectorItem> Children { get; private set; }
         public string InstanceName { get; private set; }
 
-        public WindowsConnectorItem(string name) : this(name, typeof(void), "") { }
-        public WindowsConnectorItem(string name, Type type, string sourceAddress)
+        public WindowsConnectorItem(string name) : this(name, typeof(void), "", false, "") { }
+        public WindowsConnectorItem(string name, Type type) : this(name, type, "", false, "") { }
+        public WindowsConnectorItem(string name, bool isRoot, string instanceName) : this(name, typeof(void), "", isRoot, instanceName) { }
+        public WindowsConnectorItem(string name, Type type, string sourceAddress) : this(name, type, sourceAddress, false, "") { }
+        public WindowsConnectorItem(string name, Type type, string sourceAddress, bool isRoot, string instanceName)
         {
             Name = name;
             Path = "";
@@ -151,6 +153,13 @@ namespace Symbiote.Core.Platform
             Type = type;
             SourceAddress = sourceAddress;
             Children = new List<IConnectorItem>();
+
+            if (isRoot)
+            {
+                InstanceName = instanceName;
+                this.FQN = InstanceName;
+                this.SetParent(this);
+            }
         }
 
         public bool HasChildren()
@@ -168,14 +177,6 @@ namespace Symbiote.Core.Platform
         {
             Path = parent.FQN;
             FQN = Path + "." + Name;
-            return this;
-        }
-
-        public IConnectorItem SetItemAsRoot(string instanceName)
-        {
-            InstanceName = instanceName;
-            this.FQN = InstanceName;
-            this.SetParent(this);
             return this;
         }
     }
