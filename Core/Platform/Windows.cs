@@ -60,5 +60,15 @@ namespace Symbiote.Core.Platform
             }
             return list;
         }
+
+        public string ReadFile(string fileName)
+        {
+            return File.ReadAllText(fileName);
+        }
+
+        public void WriteFile(string fileName, string contents)
+        {
+            File.WriteAllText(fileName, contents);
+        }
     }
 }

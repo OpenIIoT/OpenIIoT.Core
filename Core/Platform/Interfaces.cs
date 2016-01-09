@@ -13,6 +13,8 @@ namespace Symbiote.Core.Platform
         IConnector Connector { get; }
         List<string> GetDirectoryList(string root);
         List<string> GetFileList(string directory, string extension);
+        string ReadFile(string fileName);
+        void WriteFile(string fileName, string text);
     }
 
     /// <summary>

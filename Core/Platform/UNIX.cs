@@ -5,12 +5,15 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
 using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core.Platform
 {
     public class UNIX : IPlatform
     {
+        private static Logger logger;
+
         public Platform.PlatformType PlatformType { get; private set; }
         public string Version { get; private set; }
         public IConnector Connector { get; private set; }
@@ -55,6 +58,31 @@ namespace Symbiote.Core.Platform
             }
 
             return list;
+        }
+
+        public string ReadFile(string fileName)
+        {
+            try
+            {
+                return File.ReadAllText(fileName);
+            }
+            catch (IOException ex)
+            {
+                logger.Error(ex, "Error reading contents of file '" + fileName + "'.");
+                return "";
+            }
+        }
+
+        public void WriteFile(string fileName, string contents)
+        {
+            try
+            {
+                File.WriteAllText(fileName, contents);
+            }
+            catch (IOException ex)
+            {
+                logger.Error(ex, "Error writing to file '" + fileName + "'.");
+            }
         }
     }
 }
