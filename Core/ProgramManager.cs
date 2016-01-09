@@ -23,7 +23,8 @@ namespace Symbiote.Core
         public Configuration.Configuration Configuration { get; private set; }
 
         public PluginManager PluginManager { get; private set; }
-        public List<IPluginAssembly> Plugins { get; private set; }
+        public List<IPluginAssembly> PluginAssemblies { get; private set; }
+        public List<IPluginInstance> PluginInstances { get; private set; }
 
         public ModelManager ModelManager { get; private set; }
         public Model.Model Model { get; private set; }
@@ -68,8 +69,8 @@ namespace Symbiote.Core
                 throw new Exception("PluginManager.Instance() returned a null instance.");
 
             logger.Trace("Resolving the list of Plugins...");
-            Plugins = PluginManager.Plugins;
-            if (Plugins == null)
+            PluginAssemblies = PluginManager.PluginAssemblies;
+            if (PluginAssemblies == null)
                 throw new Exception("Failed to resolve the list of Plugins.");
 
             logger.Trace("Plugin Manager instantiated and list of Plugins resolved.");

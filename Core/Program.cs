@@ -19,7 +19,6 @@ namespace Symbiote.Core
     {
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ProgramManager manager;
-        private static IConnector test;
 
         /// <summary>
         /// Main entry point for the application.
@@ -33,6 +32,8 @@ namespace Symbiote.Core
         {
             logger.Info("Symbiote is initializing...");
 
+            // instantiate the program manager.
+            // the program manager acts as a Service Locator for the symbiote core.
             logger.Trace("Instantiating the program manager...");
             try
             {
@@ -45,9 +46,14 @@ namespace Symbiote.Core
                 return;
             }
             logger.Trace("The program manager was instantiated successfully.");
+
+            // display platform information.  The platform manager and platform are instantiated in the constructor of 
+            // the program manager.
             logger.Info("Platform: " + manager.Platform.PlatformType.ToString() + " (" + manager.Platform.Version + ")");
 
-            // load plugins
+            // load plugins.  Calls the LoadPlugins method of the PluginManager and passes in the
+            // platform instance which contains methods used to list directory contents.  This is necessary for platform independence.
+            // 
             logger.Info("Loading plugins...");
             try
             {
@@ -58,9 +64,11 @@ namespace Symbiote.Core
                 logger.Error(ex);
                 return;
             }
-            logger.Info("Plugins loaded.");
+            logger.Info(manager.PluginAssemblies.Count() + "Plugins loaded.");
 
             // start the application
+            // if the platform is windows and it is not being run as an interactive application, Windows 
+            // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
             if ((manager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
             {
                 logger.Info("Starting application in service mode...");
@@ -80,28 +88,31 @@ namespace Symbiote.Core
         /// <param name="args">Command line arguments, passed from Main().</param>
         public static void Start(string[] args)
         {
-            logger.Info("Symbiote started.");
-
-            logger.Info("Creating Platform Connector...");
-            PrintConnectorPluginItemChildren(manager.Platform.Connector, null, 0);
-
-            logger.Info("Creating connector instances...");
-            logger.Info("Plugin count: " + manager.Plugins.Count());
-
-
-            foreach (IPluginAssembly p in manager.Plugins)
+            try
             {
-                logger.Info("Plugin: " + p.Type);
-                test = manager.PluginManager.CreatePluginInstance<IConnector>("myinstance", p.Type);
+                logger.Info("Symbiote started.");
+
+                logger.Info("Creating Platform Connector...");
+                PrintConnectorPluginItemChildren(manager.Platform.Connector, null, 0);
+
+                logger.Info("Creating an instance of the Simulation Connector...");
+
+                var sim = manager.PluginManager.CreatePluginInstance<IConnector>("simulator", manager.PluginManager.FindPluginAssembly("Symbiote.Plugin.Connector.Simulator").Type);
+                PrintConnectorPluginItemChildren(sim, null, 0);
+
+                logger.Info("Connector instances created.");
+                Timer atimer = new Timer(15000);
+                atimer.Elapsed += print;
+                atimer.AutoReset = true;
+                atimer.Enabled = true;
+                Console.WriteLine("Press ESC to stop");
+                Console.ReadLine();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex);
             }
 
-            logger.Info("Connector instances created.");
-            Timer atimer = new Timer(15000);
-            atimer.Elapsed += print;
-            atimer.AutoReset = true;
-            atimer.Enabled = true;
-            Console.WriteLine("Press ESC to stop");
-            Console.ReadLine();
 
 
         }

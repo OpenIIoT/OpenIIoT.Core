@@ -5,24 +5,21 @@ using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
 
-namespace Symbiote.Plugin.Connector.Simulator
+namespace Symbiote.Plugin.Connector.File
 {
-    public class Plugin : IConnector
+    class Text : IConnector
     {
         private IConnectorItem itemRoot;
-        
+
         public string Name { get; private set; }
         public string Namespace { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
-        public IPluginConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
-        public string Configuration { get; private set; }
-        public bool Configured { get { return true; } }
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
-        public Plugin(string instanceName)
+        public Text(string instanceName)
         {
             InstanceName = instanceName;
 
@@ -30,13 +27,7 @@ namespace Symbiote.Plugin.Connector.Simulator
             Namespace = System.Reflection.Assembly.GetEntryAssembly().GetTypes()[0].Namespace;
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
             PluginType = PluginType.Connector;
-            ConfigurationDefinition = new PluginConfigurationDefinition();
-
             InitializeItems();
-        }
-
-        public void Configure(string configuration)
-        {
         }
 
         public List<IConnectorItem> Browse(IConnectorItem root)
@@ -47,7 +38,7 @@ namespace Symbiote.Plugin.Connector.Simulator
         public object Read(string value)
         {
             double val = DateTime.Now.Second;
-            switch(value.Split('.')[3])
+            switch (value.Split('.')[3])
             {
                 case "Sine":
                     return Math.Sin(val);
@@ -64,7 +55,7 @@ namespace Symbiote.Plugin.Connector.Simulator
                 default:
                     return 0;
             }
-                
+
         }
 
         public void Write(string item, object value)
@@ -75,22 +66,23 @@ namespace Symbiote.Plugin.Connector.Simulator
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new PluginConnectorItem("Items", true, InstanceName);
+            itemRoot = new TextConnectorItem("Items");
+            itemRoot.SetItemAsRoot(InstanceName);
 
             // create some simulation items
-            IConnectorItem mathRoot = itemRoot.AddChild(new PluginConnectorItem("Math"));
-            mathRoot.AddChild(new PluginConnectorItem("Sine", typeof(double)));
-            mathRoot.AddChild(new PluginConnectorItem("Cosine", typeof(double)));
-            mathRoot.AddChild(new PluginConnectorItem("Tangent", typeof(double)));
+            IConnectorItem mathRoot = itemRoot.AddChild(new TextConnectorItem("Math"));
+            mathRoot.AddChild(new TextConnectorItem("Sine", typeof(double), "Sine"));
+            mathRoot.AddChild(new TextConnectorItem("Cosine", typeof(double), "Cosine"));
+            mathRoot.AddChild(new TextConnectorItem("Tangent", typeof(double), "Tangent"));
 
-            IConnectorItem processRoot = itemRoot.AddChild(new PluginConnectorItem("Process"));
-            processRoot.AddChild(new PluginConnectorItem("Ramp", typeof(double)));
-            processRoot.AddChild(new PluginConnectorItem("Step", typeof(double)));
-            processRoot.AddChild(new PluginConnectorItem("Toggle", typeof(double)));
+            IConnectorItem processRoot = itemRoot.AddChild(new TextConnectorItem("Process"));
+            processRoot.AddChild(new TextConnectorItem("Ramp", typeof(double), "Ramp"));
+            processRoot.AddChild(new TextConnectorItem("Step", typeof(double), "Step"));
+            processRoot.AddChild(new TextConnectorItem("Toggle", typeof(double), "Toggle"));
         }
     }
 
-    public class PluginConnectorItem : IConnectorItem
+    public class TextConnectorItem : IConnectorItem
     {
         public IConnectorItem Parent { get; private set; }
         public string Name { get; private set; }
@@ -101,11 +93,8 @@ namespace Symbiote.Plugin.Connector.Simulator
         public List<IConnectorItem> Children { get; private set; }
         public string InstanceName { get; private set; }
 
-        public PluginConnectorItem(string name) : this(name, typeof(void), "", false, "") { }
-        public PluginConnectorItem(string name, Type type) : this(name, type, "", false, "") { }
-        public PluginConnectorItem(string name, bool isRoot, string instanceName) : this(name, typeof(void), "", isRoot, instanceName) { }
-        public PluginConnectorItem(string name, Type type, string sourceAddress) : this(name, type, sourceAddress, false, "") { }
-        public PluginConnectorItem(string name, Type type, string sourceAddress, bool isRoot, string instanceName)
+        public TextConnectorItem(string name) : this(name, typeof(void), "") { }
+        public TextConnectorItem(string name, Type type, string sourceAddress)
         {
             Name = name;
             Path = "";
@@ -113,13 +102,6 @@ namespace Symbiote.Plugin.Connector.Simulator
             Type = type;
             SourceAddress = sourceAddress;
             Children = new List<IConnectorItem>();
-
-            if (isRoot)
-            {
-                InstanceName = instanceName;
-                this.FQN = InstanceName;
-                this.SetParent(this);
-            }
         }
 
         public bool HasChildren()
@@ -139,17 +121,19 @@ namespace Symbiote.Plugin.Connector.Simulator
             FQN = Path + "." + Name;
             return this;
         }
-    }
 
-    public class PluginConfigurationDefinition : IPluginConfigurationDefinition
-    {
-        public string Form { get; private set; }
-        public string Schema { get; private set; }
-
-        public PluginConfigurationDefinition()
+        public IConnectorItem SetItemAsRoot(string instanceName)
         {
-            Form = "";
-            Schema = "";
+            InstanceName = instanceName;
+            this.FQN = InstanceName;
+            this.SetParent(this);
+            return this;
+        }
+
+        public void Refresh()
+        {
+
         }
     }
+}
 }

@@ -21,7 +21,10 @@ namespace Symbiote.Core.Platform
         public string Namespace { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
+        public IPluginConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
+        public string Configuration { get; private set; }
+        public bool Configured { get { return true; } }
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
@@ -37,6 +40,12 @@ namespace Symbiote.Core.Platform
 
             InitializeItems();
         }
+
+        public void Configure(string configuration)
+        {
+
+        }
+
         public List<IConnectorItem> Browse(IConnectorItem root)
         {
             return (root == null ? itemRoot.Children : root.Children);
@@ -169,5 +178,11 @@ namespace Symbiote.Core.Platform
             this.SetParent(this);
             return this;
         }
+    }
+
+    public class WindowsConnectorConfigurationDefinition : IPluginConfigurationDefinition
+    {
+        public string Form { get; private set; }
+        public string Schema { get; private set; }
     }
 }

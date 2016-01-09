@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using NLog;
 using Symbiote.Core.Platform;
+using System.Linq;
 
 namespace Symbiote.Core.Plugin
 {
@@ -22,14 +23,20 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// A list of currently loaded plugin assemblies.
         /// </summary>
-        public List<IPluginAssembly> Plugins { get; private set; }
+        public List<IPluginAssembly> PluginAssemblies { get; private set; }
+
+        /// <summary>
+        /// A list of all plugin instances.
+        /// </summary>
+        public List<IPluginInstance> PluginInstances { get; private set; }
 
         /// <summary>
         /// Private constructor, only called by Instance()
         /// </summary>
         private PluginManager(ProgramManager manager) {
             this.manager = manager;
-            Plugins = new List<IPluginAssembly>();
+            PluginAssemblies = new List<IPluginAssembly>();
+            PluginInstances = new List<IPluginInstance>();
         }
 
         /// <summary>
@@ -94,7 +101,7 @@ namespace Symbiote.Core.Plugin
                 try
                 {
                     assembly = Assembly.Load(assemblyName);
-                    Plugins.Add(
+                    PluginAssemblies.Add(
                         new PluginAssembly(
                             assembly.GetName().Name, 
                             assembly.FullName, 
@@ -121,6 +128,16 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
+        /// Given a string containing the FQN of a loaded plugin assembly, return the matching IPluginAssembly object.
+        /// </summary>
+        /// <param name="fqn"></param>
+        /// <returns>The instance of IPluginAssembly matching the requested FQN</returns>
+        public IPluginAssembly FindPluginAssembly(string fqn)
+        {
+            return PluginAssemblies.Where(p => p.Name == fqn).FirstOrDefault();
+        }
+
+        /// <summary>
         /// Creates and returns an instance of the specified plugin type with the specified name
         /// </summary>
         /// <remarks>
@@ -132,17 +149,29 @@ namespace Symbiote.Core.Plugin
         /// <returns></returns>
         public T CreatePluginInstance<T>(string instanceName, Type type)
         {
-            try
+            // check to see if the instance name has already been used
+            if (FindPluginInstance(instanceName) == default(IPluginInstance))
             {
-                // create the instance and set the instance name
                 logger.Trace("Creating instance of plugin type '" + type.ToString() + "' with instance name '" + instanceName + "'");
-                return (T)Activator.CreateInstance(type, instanceName);
+                T newPluginInstance = (T)Activator.CreateInstance(type, instanceName);
+                PluginInstances.Add((IPluginInstance)newPluginInstance);
+                return newPluginInstance;
             }
-            catch (Exception ex)
+            else
             {
-                logger.Error(ex, "Error creating instance '" + instanceName + "' of type " + type.ToString());
-                return (T)default(IPluginInstance);
+                logger.Warn("A plugin with InstanceName '" + instanceName + "' has already been intantiated.");
+                return default(T);
             }
+        }
+
+        /// <summary>
+        /// Given an instance name string, return the matching instance of IPluginInstance.
+        /// </summary>
+        /// <param name="instanceName"></param>
+        /// <returns>The instance of IPluginInstance matching the requested InstanceName.</returns>
+        public IPluginInstance FindPluginInstance(string instanceName)
+        {
+            return PluginInstances.Where(p => p.InstanceName == instanceName).FirstOrDefault();
         }
 
         // static methods
@@ -173,16 +202,13 @@ namespace Symbiote.Core.Plugin
         /// Returns an enumeration instance representing the type of the plugin, derived from the third tuple of the plugin name.
         /// </summary>
         /// <param name="name">The fully qualified assembly name from which to parse the plugin type.</param>
+        /// <returns>An instance of PluginType corresponding to the parsed type.</returns>
         private static PluginType GetPluginType(string name)
         {
-            try
-            {
-                return (PluginType)Enum.Parse(typeof(PluginType), name.Split('.')[2], true);
-            }
-            catch (Exception ex)
-            {
-                return default(PluginType);
-            }
+            PluginType retVal;
+            if (Enum.TryParse<PluginType>(name.Split('.')[2], out retVal))
+                return retVal;
+            else return default(PluginType);
         }
     }
 }
