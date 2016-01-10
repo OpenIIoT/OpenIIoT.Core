@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using NLog;
 using Symbiote.Core.Platform;
+using Symbiote.Core.Configuration;
 using System.Linq;
 
 namespace Symbiote.Core.Plugin
@@ -33,6 +34,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Private constructor, only called by Instance()
         /// </summary>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
         private PluginManager(ProgramManager manager) {
             this.manager = manager;
             PluginAssemblies = new List<IPluginAssembly>();
@@ -42,6 +44,8 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Instantiates and/or returns the PluginManager instance.
         /// </summary>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <returns>The Singleton instance of PluginManager.</returns>
         internal static PluginManager Instance(ProgramManager manager)
         {
             if (instance == null)
@@ -55,6 +59,10 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <remarks>
         /// The checks performed on the files is as such:
+        ///      Compute the MD5 checksum of the plugin and check it against the configuration
+        ///         If it is in the authorized plugin list, proceed to the next step
+        ///         If it is in the unauthorized plugin list, continue to the next file (no further checks)
+        ///         If it is in neither list, add it to the unauthorized list and continue to the next file
         ///      Using GetAssemblyName, ensure the file is a valid assembly
         ///      Pass the retrieved assembly name to GetPluginValidationMessage to ensure the name meets the application requirements
         ///      If the name is correct, Load the assembly
@@ -76,7 +84,31 @@ namespace Symbiote.Core.Plugin
                 AssemblyName assemblyName;
                 Assembly assembly;
 
-                logger.Trace("Found plugin: " + plugin);
+                logger.Trace("Found plugin: " + plugin + "'; authorizing...");
+
+                PluginAuthorization auth = GetPluginAuthorization(plugin);
+
+                // if the plugin authorization is unknown it does not yet exist in the list of assemblies in the config file.
+                // add it to the list and, depending on configuration, either authorize it or leave it unauthorized.
+                // try to add it but we don't care if it fails.
+                if (auth == PluginAuthorization.Unknown)
+                {
+                    try
+                    {
+                        AddNewPlugin(plugin);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Trace("Failed to add new plugin '" + plugin + "' to the internal list of assemblies.");
+                    }
+                }
+                    
+                // the plugin hasn't been authorized yet, log a warning and move on to the next plugin.
+                if (auth != PluginAuthorization.Authorized) 
+                {
+                    logger.Warn("Plugin '" + plugin + "' has not been added to the list of authorized plugins and will not be loaded.");
+                    continue;
+                }
 
                 // ensure the file is a valid assembly and that the name meets the application requirements
                 logger.Trace("Attempting to determine assembly name...");
@@ -95,6 +127,9 @@ namespace Symbiote.Core.Plugin
                     logger.Error(ex, "Plugin file '" + plugin + "' is not a valid plugin assembly.");                    
                     continue;
                 }
+
+
+
 
                 // attempt to load the assembly and add it to the internal list of plugins
                 logger.Trace("Validated assembly '" + assemblyName.ToString() + "'; attempting to load...");
@@ -127,6 +162,78 @@ namespace Symbiote.Core.Plugin
             pluginsLoaded = true;
         }
 
+        private void AddNewPlugin(string fileName)
+        {
+            logger.Trace("Encountered new plugin '" + fileName + "'; adding it to the list of assemblies.");
+
+            AssemblyName assemblyName = AssemblyName.GetAssemblyName(fileName);
+
+            // check that the name meets the application requirements
+            // just forget it if we get any errors
+            string validationMessage = GetPluginValidationMessage(assemblyName);
+            if (validationMessage != null)
+                return;
+
+            PluginSectionList newPlugin = new Configuration.PluginSectionList()
+            {
+                Name = assemblyName.Name,
+                FullName = assemblyName.FullName,
+                Version = assemblyName.Version.ToString(),
+                PluginType = GetPluginType(assemblyName.Name).ToString(),
+                FileName = System.IO.Path.GetFileName(fileName),
+                Checksum = GetPluginChecksum(fileName)
+            };
+
+            logger.Trace("Adding plugin assembly to configuration file with attributes:");
+            logger.Trace("\tName: " + newPlugin.Name);
+            logger.Trace("\tFull Name: " + newPlugin.FullName);
+            logger.Trace("\tVersion: " + newPlugin.Version);
+            logger.Trace("\tPluginType: " + newPlugin.PluginType.ToString());
+            logger.Trace("\tFileName: " + newPlugin.FileName);
+            logger.Trace("\tChecksum: " + newPlugin.Checksum);
+
+            if (manager.Configuration.Plugins.AuthorizeNewPlugins)
+            {
+                newPlugin.Authorization = PluginAuthorization.Authorized;
+            }
+            else
+            {
+                newPlugin.Authorization = PluginAuthorization.Unauthorized;
+            }
+
+            logger.Trace("\tAuthorization: " + newPlugin.Authorization.ToString());
+
+            manager.Configuration.Plugins.Assemblies.Add(newPlugin);
+            manager.ConfigurationManager.SaveConfiguration();
+        }
+
+        public string GetPluginChecksum(string fileName)
+        {
+            logger.Trace("Computing checksum for plugin file '" + fileName + "'...");
+            string retVal = manager.Platform.ComputeFileChecksum(fileName);
+            logger.Trace("MD5 checksum for file '" + fileName + "' computed as '" + retVal + ".");
+            return retVal;
+        }
+        public PluginAuthorization GetPluginAuthorization(string fileName)
+        {
+            string checksum = GetPluginChecksum(fileName);
+
+            logger.Trace("Determining authorization for plugin file '" + fileName + "' with checksum '" + checksum + "'...");
+
+            Configuration.PluginSectionList retObj = manager.Configuration.Plugins.Assemblies
+                        .Where(p => p.FileName == System.IO.Path.GetFileName(fileName))
+                        .Where(p => p.Checksum == checksum)
+                        .FirstOrDefault();
+
+            if (retObj != null)
+            {
+                logger.Trace("Retrieved authoriation for plugin '" + fileName + "': " + retObj.Authorization.ToString());
+                return retObj.Authorization;
+            }
+
+            logger.Trace("Unable to find a matching entry in the assembly configuration for this plugin.  Returning Unknown authorization.");
+            return PluginAuthorization.Unknown;
+        }
         /// <summary>
         /// Given a string containing the FQN of a loaded plugin assembly, return the matching IPluginAssembly object.
         /// </summary>

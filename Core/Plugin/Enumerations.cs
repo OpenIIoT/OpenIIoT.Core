@@ -15,4 +15,11 @@ namespace Symbiote.Core.Plugin
         Connector,
         Service
     }
+
+    public enum PluginAuthorization
+    {
+        Unknown,
+        Unauthorized,
+        Authorized
+    }
 }

@@ -15,6 +15,7 @@ namespace Symbiote.Core.Platform
         List<string> GetFileList(string directory, string extension);
         string ReadFile(string fileName);
         void WriteFile(string fileName, string text);
+        string ComputeFileChecksum(string fileName);
     }
 
     /// <summary>

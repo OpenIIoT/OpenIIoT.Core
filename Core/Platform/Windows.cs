@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
 using System.Linq;
 using NLog;
 using Symbiote.Core.Plugin;
+using System.Text;
 
 /// <summary>
 /// The Windows class implements the platform interfaces necessary to run the application on the Windows platform.
@@ -69,6 +71,20 @@ namespace Symbiote.Core.Platform
         public void WriteFile(string fileName, string contents)
         {
             File.WriteAllText(fileName, contents);
+        }
+
+        public string ComputeFileChecksum(string fileName)
+        {
+            byte[] file = File.ReadAllBytes(fileName);
+            byte[] checksum = MD5.Create().ComputeHash(file);
+
+            StringBuilder retVal = new StringBuilder();
+            foreach (byte b in checksum)
+            {
+                retVal.Append(b.ToString("x2"));
+            }
+
+            return retVal.ToString();
         }
     }
 }

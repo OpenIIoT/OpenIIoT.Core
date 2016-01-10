@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
 using Symbiote.Core.Plugin;
+using System.Text;
 
 namespace Symbiote.Core.Platform
 {
@@ -83,6 +83,14 @@ namespace Symbiote.Core.Platform
             {
                 logger.Error(ex, "Error writing to file '" + fileName + "'.");
             }
+        }
+
+        public string ComputeFileChecksum(string fileName)
+        {
+            FileStream fileStream = File.OpenRead(fileName);
+            MD5 hash = MD5.Create();
+            byte[] checksum = hash.ComputeHash(fileStream);
+            return Encoding.Default.GetString(checksum);
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Private constructor, only called by Instance()
         /// </summary>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
         private PlatformManager(ProgramManager manager)
         {
             this.manager = manager;
@@ -32,7 +33,8 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Instantiates and/or returns the PlatformManager instance.
         /// </summary>
-        /// <returns></returns>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <returns>The Singleton instance of PlatformManager.</returns>
         internal static PlatformManager Instance(ProgramManager manager)
         {
             if (instance == null)

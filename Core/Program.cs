@@ -64,7 +64,7 @@ namespace Symbiote.Core
                 logger.Error(ex);
                 return;
             }
-            logger.Info(manager.PluginAssemblies.Count() + "Plugins loaded.");
+            logger.Info(manager.PluginAssemblies.Count() + " Plugins loaded.");
 
             // start the application
             // if the platform is windows and it is not being run as an interactive application, Windows 
@@ -90,21 +90,21 @@ namespace Symbiote.Core
         {
             try
             {
-                logger.Info("Symbiote started.");
+                //logger.Info("Symbiote started.");
 
-                logger.Info("Creating Platform Connector...");
-                PrintConnectorPluginItemChildren(manager.Platform.Connector, null, 0);
+                //logger.Info("Creating Platform Connector...");
+                //PrintConnectorPluginItemChildren(manager.Platform.Connector, null, 0);
 
-                logger.Info("Creating an instance of the Simulation Connector...");
+                //logger.Info("Creating an instance of the Simulation Connector...");
 
-                var sim = manager.PluginManager.CreatePluginInstance<IConnector>("simulator", manager.PluginManager.FindPluginAssembly("Symbiote.Plugin.Connector.Simulator").Type);
-                PrintConnectorPluginItemChildren(sim, null, 0);
+                //var sim = manager.PluginManager.CreatePluginInstance<IConnector>("simulator", manager.PluginManager.FindPluginAssembly("Symbiote.Plugin.Connector.Simulator").Type);
+                //PrintConnectorPluginItemChildren(sim, null, 0);
 
-                logger.Info("Connector instances created.");
-                Timer atimer = new Timer(15000);
-                atimer.Elapsed += print;
-                atimer.AutoReset = true;
-                atimer.Enabled = true;
+                //logger.Info("Connector instances created.");
+                //Timer atimer = new Timer(15000);
+                //atimer.Elapsed += print;
+                //atimer.AutoReset = true;
+                //atimer.Enabled = true;
                 Console.WriteLine("Press ESC to stop");
                 Console.ReadLine();
             }

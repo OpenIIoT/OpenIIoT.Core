@@ -10,7 +10,7 @@ namespace Symbiote.Core.Plugin
     public interface IPlugin
     {
         string Name { get; }
-        string Namespace { get; }
+        string FullName { get; }
         Version Version { get; }
         PluginType PluginType { get; }
     }

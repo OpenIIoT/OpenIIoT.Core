@@ -18,7 +18,7 @@ namespace Symbiote.Core.Platform
         private double lastCPUIdle;
 
         public string Name { get; private set; }
-        public string Namespace { get; private set; }
+        public string FullName { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
         public IPluginConfigurationDefinition ConfigurationDefinition { get; private set; }
@@ -32,7 +32,7 @@ namespace Symbiote.Core.Platform
         {
             InstanceName = instanceName;
             Name = "WindowsConnector";
-            Namespace = "Symbiote.Core.Platform.WindowsConnector";
+            FullName = "Symbiote.Core.Platform.WindowsConnector";
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
 
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
