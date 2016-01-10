@@ -4,15 +4,35 @@ using NLog;
 namespace Symbiote.Core.Platform
 {
     /// <summary>
-    /// The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
+    /// The Platform namespace allows the application to abstract itself from the platform on which it runs.
     /// </summary>
     /// <remarks>
-    /// This class is implemented using the Singleton and Factory design patterns.
+    /// The primary purposes are to assist the application in determining the run mode (e.g. interactive or Windows service) and to
+    /// allow for platform dependent code such as file IO to be substituted at run time. This allows for a single project that can 
+    /// be compiled and run on both Windows and UNIX systems with no programatic changes.
     /// </remarks>
+    [System.Runtime.CompilerServices.CompilerGenerated]
+    class NamespaceDoc { }
+
+    /// <summary>
+    /// The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
+    /// <img src="..\diagrams\PlatformManager.png"></img>
+    /// </summary>
     public class PlatformManager
     {
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
         private ProgramManager manager;
+        
+        /// <summary>
+        /// The logger for this class.
+        /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The Singleton instance of PlatformManager.
+        /// </summary>
         private static PlatformManager instance;
 
         /// <summary>
@@ -52,9 +72,9 @@ namespace Symbiote.Core.Platform
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
-                    return new Platform.Windows();
+                    return new Platform.Windows.WindowsPlatform();
                 case PlatformType.UNIX:
-                    return new Platform.UNIX();
+                    return new Platform.UNIX.UNIXPlatform();
                 default:
                     throw new ApplicationException("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
             }

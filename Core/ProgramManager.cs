@@ -11,15 +11,39 @@ using NLog;
 
 namespace Symbiote.Core
 {
+    /// <summary>
+    /// The ProgramManager acts as a Service Locator for the application and contains references to both 
+    /// the Manager for each service as well as references to the key resources contained within each namespace.
+    /// </summary>
     public class ProgramManager
     {
+        /// <summary>
+        /// The logger for this class.
+        /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+        
+        /// <summary>
+        /// The Singleton instance of ProgramManager.
+        /// </summary>
         private static ProgramManager instance;
 
+        /// <summary>
+        /// The PlatformManager for the application.
+        /// </summary>
         public PlatformManager PlatformManager { get; private set; }
+
+        /// <summary>
+        /// The Platform for the application.
+        /// </summary>
         public IPlatform Platform { get; private set; }
 
+        /// <summary>
+        /// The ConfigurationManager for the application.
+        /// </summary>
         public ConfigurationManager ConfigurationManager { get; private set; }
+        /// <summary>
+        /// The Configuration for the application.
+        /// </summary>
         public Configuration.Configuration Configuration { get; private set; }
 
         public PluginManager PluginManager { get; private set; }

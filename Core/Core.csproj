@@ -75,16 +75,20 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Platform\Enumerations.cs" />
-    <Compile Include="Platform\WindowsConnector.cs" />
+    <Compile Include="Platform\UNIX\PlatformConnector.cs" />
+    <Compile Include="Platform\UNIX\PlatformConnectorItem.cs" />
+    <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
+    <Compile Include="Platform\Windows\PlatformConnector.cs" />
+    <Compile Include="Platform\Windows\PlatformConnectorItem.cs" />
     <Compile Include="Plugin\Enumerations.cs" />
+    <Compile Include="Plugin\PluginConfigurationDefinition.cs" />
     <Compile Include="ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Model\Model.cs" />
     <Compile Include="Model\ModelItem.cs" />
     <Compile Include="Platform\Interfaces.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
-    <Compile Include="Platform\UNIX.cs" />
-    <Compile Include="Platform\Windows.cs" />
+    <Compile Include="Platform\Windows\WindowsPlatform.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\Interfaces.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
@@ -99,11 +103,14 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="doc\Diagrams\PlatformManager.cd" />
+    <None Include="doc\Diagrams\Program.cd" />
+    <None Include="doc\Diagrams\ProgramManager.cd" />
+    <None Include="doc\Diagrams\WindowsPlatform.cd" />
     <None Include="NLog.xsd">
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
-    <None Include="Symbiote.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

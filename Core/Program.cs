@@ -13,11 +13,24 @@ using System.Timers;
 namespace Symbiote.Core
 {
     /// <summary>
+    /// The Core namespace contains all of the code relating to the core functions of the application.
+    /// </summary>
+    [System.Runtime.CompilerServices.CompilerGenerated]
+    class NamespaceDoc { }
+
+    /// <summary>
     /// Main application class.
     /// </summary>
     class Program
     {
+        /// <summary>
+        /// The main logger for the application.
+        /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
         private static ProgramManager manager;
 
         /// <summary>
@@ -129,7 +142,7 @@ namespace Symbiote.Core
             logger.Info("Symbiote stopped.");
         }
 
-        static void PrintConnectorPluginItemChildren(IConnector connector, IConnectorItem root, int indent)
+        private static void PrintConnectorPluginItemChildren(IConnector connector, IConnectorItem root, int indent)
         {
             foreach (IConnectorItem i in connector.Browse(root))
             {

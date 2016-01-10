@@ -8,31 +8,35 @@ using NLog;
 using Symbiote.Core.Plugin;
 using System.Text;
 
-/// <summary>
-/// The Windows class implements the platform interfaces necessary to run the application on the Windows platform.
-/// </summary>
-/// <remarks>
-/// Some wierdness in the C# compiler won't allow implicitly defined interface properties if the property is less
-/// accessible than public.  For whatever reason the properties can be public but the class can be internal.
-/// The effective accessibility for these classes and all of their members is internal.
-/// </remarks>
-namespace Symbiote.Core.Platform
+
+namespace Symbiote.Core.Platform.Windows
 {
-    public class Windows : IPlatform
+    /// <summary>
+    /// The Windows class implements the platform interfaces necessary to run the application on the Windows platform.
+    /// </summary>
+    /// <remarks>
+    /// Some wierdness in the C# compiler won't allow implicitly defined interface properties if the property is less
+    /// accessible than public.  For whatever reason the properties can be public but the class can be internal.
+    /// The effective accessibility for these classes and all of their members is internal.
+    /// </remarks>
+    [System.Runtime.CompilerServices.CompilerGenerated]
+    public class NamespaceDoc { }
+
+    public class WindowsPlatform : IPlatform
     {
         private static Logger logger;
 
-        public Platform.PlatformType PlatformType { get; private set; }
+        public Core.Platform.PlatformType PlatformType { get; private set; }
         public string Version { get; private set; }
         public IConnector Connector { get; private set; }
 
-        public Windows()
+        public WindowsPlatform()
         {
             logger = LogManager.GetCurrentClassLogger();
 
-            PlatformType = Platform.PlatformType.Windows;
+            PlatformType = Core.Platform.PlatformType.Windows;
             Version = Environment.OSVersion.VersionString;
-            Connector = new WindowsConnector("System.Platform");
+            Connector = new PlatformConnector("System.Platform");
         }
 
         public List<string> GetDirectoryList(string root)

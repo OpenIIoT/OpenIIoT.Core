@@ -7,7 +7,7 @@ using Symbiote.Core.Plugin;
 
 namespace Symbiote.Plugin.Connector.Simulator
 {
-    public class Plugin : IConnector
+    public class SimulatorConnector : IConnector
     {
         private IConnectorItem itemRoot;
         
@@ -22,7 +22,7 @@ namespace Symbiote.Plugin.Connector.Simulator
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
-        public Plugin(string instanceName)
+        public SimulatorConnector(string instanceName)
         {
             InstanceName = instanceName;
 

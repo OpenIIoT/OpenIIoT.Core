@@ -192,6 +192,7 @@ namespace Symbiote.Core.Plugin
             logger.Trace("\tFileName: " + newPlugin.FileName);
             logger.Trace("\tChecksum: " + newPlugin.Checksum);
 
+            // TODO: check to see if the plugin exists by name only, and if so update the checksum if the config enables it
             if (manager.Configuration.Plugins.AuthorizeNewPlugins)
             {
                 newPlugin.Authorization = PluginAuthorization.Authorized;
