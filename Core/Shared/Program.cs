@@ -118,6 +118,21 @@ namespace Symbiote.Core
                 //atimer.Elapsed += print;
                 //atimer.AutoReset = true;
                 //atimer.Enabled = true;
+
+
+                //Model.ModelItem one = new Model.ModelItem("root.one");
+                //manager.Model.AddChild(one);
+
+                //Model.ModelItem two = new Model.ModelItem("root.one.two");
+                //one.AddChild(two);
+
+
+
+                //manager.ModelManager.SaveModel();
+                //manager.ConfigurationManager.SaveConfiguration();
+
+                manager.ModelManager.BuildModel();
+                PrintItemChildren(manager.Model, 0);
                 Console.WriteLine("Press ESC to stop");
                 Console.ReadLine();
             }
@@ -142,6 +157,16 @@ namespace Symbiote.Core
             logger.Info("Symbiote stopped.");
         }
 
+        private static void PrintItemChildren(Model.ModelItem root, int indent)
+        {
+            logger.Info(root.ToJson());
+
+            foreach (Model.ModelItem i in root.Children)
+            {
+                PrintItemChildren(i, indent + 1);
+            }
+        }
+
         private static void PrintConnectorPluginItemChildren(IConnector connector, IConnectorItem root, int indent)
         {
             foreach (IConnectorItem i in connector.Browse(root))
@@ -152,6 +177,26 @@ namespace Symbiote.Core
                     logger.Info("Folder: " + indent.ToString() + " Folder: " + i.Name);
                 PrintConnectorPluginItemChildren(connector, i, indent + 1);
             }
+        }
+
+        public static string GetItemName(string fqn)
+        {
+            string[] splitFQN = fqn.Split('.');
+
+            if (splitFQN.Length > 1)
+                return splitFQN[splitFQN.Length - 1];
+
+            return fqn;
+        }
+
+        public static string GetItemPath(string fqn)
+        {
+            string[] splitFQN = fqn.Split('.');
+
+            if (splitFQN.Length > 1)
+                return String.Join(".", splitFQN.Take<string>(splitFQN.Length - 1));
+
+            return fqn;
         }
     }
 }

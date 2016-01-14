@@ -13,9 +13,25 @@ namespace Symbiote.Core.Configuration
     public class Configuration
     {
         public string Symbiote;
+        public ModelSection Model;
         public PluginSection Plugins;
 
-        public Configuration() { }
+        public Configuration()
+        {
+            Model = new ModelSection();
+            Plugins = new PluginSection();
+        }
+    }
+
+    [JsonObject]
+    public class ModelSection
+    {
+        public List<string> Items { get; set; }
+
+        public ModelSection()
+        {
+            Items = new List<string>();
+        }
     }
 
     [JsonObject]
@@ -23,6 +39,11 @@ namespace Symbiote.Core.Configuration
     {
         public bool AuthorizeNewPlugins { get; set; }
         public List<PluginSectionList> Assemblies { get; set; }
+
+        public PluginSection()
+        {
+            Assemblies = new List<PluginSectionList>();
+        }
     }
 
     [JsonObject]

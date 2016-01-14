@@ -72,8 +72,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collector\CollectorManager.cs" />
+    <Compile Include="Shared\Composite.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Shared\Interfaces.cs" />
     <Compile Include="Platform\Enumerations.cs" />
     <Compile Include="Platform\UNIX\PlatformConnector.cs" />
     <Compile Include="Platform\UNIX\PlatformConnectorItem.cs" />
@@ -82,9 +84,8 @@
     <Compile Include="Platform\Windows\PlatformConnectorItem.cs" />
     <Compile Include="Plugin\Enumerations.cs" />
     <Compile Include="Plugin\PluginConfigurationDefinition.cs" />
-    <Compile Include="ProgramManager.cs" />
+    <Compile Include="Shared\ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
-    <Compile Include="Model\Model.cs" />
     <Compile Include="Model\ModelItem.cs" />
     <Compile Include="Platform\Interfaces.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
@@ -92,9 +93,9 @@
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\Interfaces.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Shared\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service.cs">
+    <Compile Include="Shared\Service.cs">
       <SubType>Component</SubType>
     </Compile>
   </ItemGroup>

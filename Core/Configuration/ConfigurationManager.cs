@@ -7,6 +7,7 @@ using NLog;
 using Newtonsoft.Json;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
+using Newtonsoft.Json.Linq;
 
 namespace Symbiote.Core.Configuration
 {
@@ -62,7 +63,6 @@ namespace Symbiote.Core.Configuration
             logger.Trace("Retrieving configuration file location from app.config");
             string configurationFile = GetConfigurationFileName();
 
-
             try
             {
                 config = LoadConfiguration(configurationFile);
@@ -106,7 +106,7 @@ namespace Symbiote.Core.Configuration
         public void SaveConfigurationAs(Configuration configuration, string fileName)
         {
             logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-            manager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration));
+            manager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented));
         }
 
         /// <summary>
@@ -133,6 +133,8 @@ namespace Symbiote.Core.Configuration
             Configuration retVal = new Configuration();
 
             retVal.Symbiote = "0.1.0";
+            retVal.Model = new ModelSection();
+            retVal.Model.Items = new List<string>();
             retVal.Plugins = new PluginSection();
             retVal.Plugins.AuthorizeNewPlugins = false;
             retVal.Plugins.Assemblies = new List<PluginSectionList>();
