@@ -161,11 +161,12 @@ namespace Symbiote.Core.Configuration
         {
             string retVal = System.Configuration.ConfigurationManager.AppSettings["ConfigurationFileName"];
 
-            if (retVal == "")
+            if ((retVal == "") || (retVal == null))
             {
                 logger.Warn("Error retrieving the configuration filename from Sybmiote.exe.config... assuming Symbiote.config");
                 retVal = "Sybmiote.config";
             }
+            logger.Trace("Retrieved '" + retVal + "' from the app configuration file.");
 
             return retVal;
         }
