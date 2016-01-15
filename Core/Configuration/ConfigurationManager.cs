@@ -119,9 +119,43 @@ namespace Symbiote.Core.Configuration
             logger.Trace("Attempting to load configuration from '" + fileName + "'...");
             string configFile = manager.Platform.ReadFile(fileName);
             logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
-            Configuration retVal = JsonConvert.DeserializeObject<Configuration>(configFile);
-            logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
-            return retVal;
+
+            Configuration retVal;
+            try
+            {
+                retVal = JsonConvert.DeserializeObject<Configuration>(configFile);
+                logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
+
+                logger.Trace("Validating configuration...");
+                ValidationResult validationResult = ValidateConfiguration(retVal);
+                if (validationResult.Result == ValidationResultCode.Valid)
+                {
+                    logger.Trace("Successfully validated configuration.");
+                    return retVal;
+                }
+                else
+                {
+                    throw new ApplicationException("Configuration validation returned a " + validationResult.Result.ToString() + "; message: " + validationResult.Message);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Error("Error deserializing conents of configuration file '" + fileName + "': " + ex.Message);
+                throw new ApplicationException("Failed to load configuration from file '" + fileName + "'.");
+            }
+        }
+
+        /// <summary>
+        /// Examines the supplied Configuration for errors and returns the result.  If returning a Warning or Invalid result code,
+        /// includes the validation message in the Message member of the return type.
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <returns>A ValidationResult containing the validation result code and, if applicable, message.</returns>
+        public ValidationResult ValidateConfiguration(Configuration configuration)
+        {
+            // TODO: validate configuration; check for duplicates, etc.
+            // issue #1
+            return new ValidationResult() { Result = ValidationResultCode.Valid, Message = "" };
         }
 
         /// <summary>
@@ -134,12 +168,20 @@ namespace Symbiote.Core.Configuration
 
             retVal.Symbiote = "0.1.0";
             retVal.Model = new ModelSection();
-            retVal.Model.Items = new List<string>();
+            retVal.Model.Items = new List<ModelItem>();
+            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote", Definition = new Model.Item("Symbiote", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder1", Definition = new Model.Item("Folder1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder1.Item1", Definition = new Model.Item("Item1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder1.Item2", Definition = new Model.Item("Item2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder2", Definition = new Model.Item("Folder2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder2.Item1", Definition = new Model.Item("Item1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder2.Item2", Definition = new Model.Item("Item2", typeof(string)).ToJson() });
+
             retVal.Plugins = new PluginSection();
             retVal.Plugins.AuthorizeNewPlugins = false;
-            retVal.Plugins.Assemblies = new List<PluginSectionList>();
+            retVal.Plugins.Assemblies = new List<PluginItem>();
             retVal.Plugins.Assemblies.Add(
-                new PluginSectionList()
+                new PluginItem()
                 {
                     Name = "Symbiote.Plugin.Connector.Simulation",
                     FullName = "Symbiote.Plugin.Connector.Simulator, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null",

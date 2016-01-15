@@ -157,11 +157,11 @@ namespace Symbiote.Core
             logger.Info("Symbiote stopped.");
         }
 
-        private static void PrintItemChildren(Model.ModelItem root, int indent)
+        private static void PrintItemChildren(Model.Item root, int indent)
         {
             logger.Info(root.ToJson());
 
-            foreach (Model.ModelItem i in root.Children)
+            foreach (Model.Item i in root.Children)
             {
                 PrintItemChildren(i, indent + 1);
             }

@@ -174,7 +174,7 @@ namespace Symbiote.Core.Plugin
             if (validationMessage != null)
                 return;
 
-            PluginSectionList newPlugin = new Configuration.PluginSectionList()
+            PluginItem newPlugin = new Configuration.PluginItem()
             {
                 Name = assemblyName.Name,
                 FullName = assemblyName.FullName,
@@ -221,7 +221,7 @@ namespace Symbiote.Core.Plugin
 
             logger.Trace("Determining authorization for plugin file '" + fileName + "' with checksum '" + checksum + "'...");
 
-            Configuration.PluginSectionList retObj = manager.Configuration.Plugins.Assemblies
+            Configuration.PluginItem retObj = manager.Configuration.Plugins.Assemblies
                         .Where(p => p.FileName == System.IO.Path.GetFileName(fileName))
                         .Where(p => p.Checksum == checksum)
                         .FirstOrDefault();

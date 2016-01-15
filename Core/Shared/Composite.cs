@@ -8,10 +8,10 @@ using Newtonsoft.Json;
 
 namespace Symbiote.Core
 {
+    [JsonObject]
     public abstract class Composite : IComposite
     {
         private object Value;
-
         [JsonIgnore]
         public IComposite Parent { get; private set; }
         public string Name { get; set; }
@@ -25,15 +25,15 @@ namespace Symbiote.Core
         public Composite(string name) : this(name, typeof(object), false) { }
         public Composite(string name, Type type) : this(name, type, false) { }
         public Composite(string name, bool isRoot) : this(name, typeof(object), isRoot) { }
-        public Composite(string name, string path, string fqn, Type type) : this(name, type) { } // used for deserialization from config
+        public Composite(string name, string path, string fqn, Type type) : this(name, type, false) { } // used for deserialization from config
         public Composite(string name, Type type, bool isRoot) 
         {
             Name = name;
+            Type = type;
             Children = new List<IComposite>();
 
             if (isRoot)
             {
-                Path = Name;
                 FQN = Name;
                 Parent = this;
             }
@@ -41,7 +41,6 @@ namespace Symbiote.Core
 
         public IComposite SetParent(IComposite parent)
         {
-            Path = parent.FQN;
             FQN = Path + '.' + Name;
             Parent = parent;
             return this;
@@ -68,6 +67,11 @@ namespace Symbiote.Core
         public string ToJson()
         {
             return JsonConvert.SerializeObject(this);
+        }
+
+        public bool IsValid()
+        {
+            return ((Name != null) && (Name.Length > 1) && (Type != null));
         }
     }
 }

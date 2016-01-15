@@ -74,9 +74,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collector\CollectorManager.cs" />
+    <Compile Include="Configuration\Enumerations.cs" />
+    <Compile Include="Configuration\ValidationResult.cs" />
     <Compile Include="Shared\Composite.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Shared\Extensions.cs" />
     <Compile Include="Shared\Interfaces.cs" />
     <Compile Include="Platform\Enumerations.cs" />
     <Compile Include="Platform\UNIX\PlatformConnector.cs" />
@@ -88,7 +91,7 @@
     <Compile Include="Plugin\PluginConfigurationDefinition.cs" />
     <Compile Include="Shared\ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
-    <Compile Include="Model\ModelItem.cs" />
+    <Compile Include="Model\Item.cs" />
     <Compile Include="Platform\Interfaces.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />
@@ -103,10 +106,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="doc\Diagrams\PlatformManager.cd" />
-    <None Include="doc\Diagrams\Program.cd" />
-    <None Include="doc\Diagrams\ProgramManager.cd" />
-    <None Include="doc\Diagrams\WindowsPlatform.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

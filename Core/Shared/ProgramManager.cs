@@ -51,7 +51,7 @@ namespace Symbiote.Core
         public List<IPluginInstance> PluginInstances { get; private set; }
 
         public ModelManager ModelManager { get; private set; }
-        public Model.ModelItem Model { get; private set; }
+        public Model.Item Model { get; private set; }
 
         private ProgramManager()
         {

@@ -26,11 +26,47 @@ namespace Symbiote.Core.Configuration
     [JsonObject]
     public class ModelSection
     {
-        public List<string> Items { get; set; }
+        public List<ModelItem> Items { get; set; }
 
         public ModelSection()
         {
-            Items = new List<string>();
+            Items = new List<ModelItem>();
+        }
+    }
+
+    /// <summary>
+    /// A generic container for model items within the configuration.
+    /// </summary>
+    [JsonObject]
+    public class ModelItem : ICloneable
+    {
+        public string FQN { get; set; }
+        public string Definition { get; set; }
+
+        public object Clone()
+        {
+            return new ModelItem() { FQN = this.FQN, Definition = this.Definition };
+        }
+
+        public override bool Equals(object obj)
+        {
+            ModelItem rightSide;
+
+            try
+            {
+                rightSide = (ModelItem)obj;
+            }
+            catch (InvalidCastException ex)
+            {
+                return false;
+            }
+
+            return (this.FQN == rightSide.FQN);
+        }
+
+        public override int GetHashCode()
+        {
+            return FQN.GetHashCode();
         }
     }
 
@@ -38,16 +74,16 @@ namespace Symbiote.Core.Configuration
     public class PluginSection
     {
         public bool AuthorizeNewPlugins { get; set; }
-        public List<PluginSectionList> Assemblies { get; set; }
+        public List<PluginItem> Assemblies { get; set; }
 
         public PluginSection()
         {
-            Assemblies = new List<PluginSectionList>();
+            Assemblies = new List<PluginItem>();
         }
     }
 
     [JsonObject]
-    public class PluginSectionList
+    public class PluginItem
     {
         public string Name { get; set; }
         public string FullName { get; set; }
