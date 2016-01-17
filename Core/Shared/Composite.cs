@@ -21,6 +21,8 @@ namespace Symbiote.Core
         public string FQN { get; set; }
         public Type Type { get; set; }
         [JsonIgnore]
+        public Guid Guid { get; set; }
+        [JsonIgnore]
         public List<IComposite> Children { get; private set; }
 
         public Composite() : this("", true) { }
@@ -30,6 +32,7 @@ namespace Symbiote.Core
         public Composite(string name, string path, string fqn, Type type) : this(name, type, false) { } // used for deserialization from config
         public Composite(string name, Type type, bool isRoot) 
         {
+            Guid = System.Guid.NewGuid();
             Name = name;
             Type = type;
             Children = new List<IComposite>();
@@ -37,6 +40,7 @@ namespace Symbiote.Core
             if (isRoot)
             {
                 FQN = Name;
+                Path = "";
                 Parent = this;
             }
         }

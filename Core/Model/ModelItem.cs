@@ -18,7 +18,14 @@ namespace Symbiote.Core.Model
 
         public override string ToString()
         {
-            return "Name = " + Name + "; Path = " + Path + "; FQN = " + FQN + "; Type: " + Type.ToString();
+            string children = "";
+
+            foreach(ModelItem mi in Children)
+            {
+                children += ", " + mi.ToString();
+            }
+
+            return "Name = " + Name + "; Path = " + Path + "; FQN = " + FQN + "; Type: " + Type.ToString() + " Guid: " + Guid + " Children: [" + children + "]";
         }
     }
 }

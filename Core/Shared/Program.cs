@@ -131,9 +131,9 @@ namespace Symbiote.Core
                 //manager.ModelManager.SaveModel();
                 //manager.ConfigurationManager.SaveConfiguration();
 
-                manager.ModelManager.BuildModel();
+                //manager.ModelManager.BuildModel();
 
-                manager.ModelManager.Model.AddChild(new Model.ModelItem("Symbiote.TEST", typeof(string)));
+                //PrintItemChildren(manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items, new Model.ModelBuildResult(),0).Model, 0);
 
                 PrintItemChildren(manager.ModelManager.Model, 0);
                 Console.WriteLine("Press ESC to stop");
@@ -162,7 +162,7 @@ namespace Symbiote.Core
 
         private static void PrintItemChildren(Model.ModelItem root, int indent)
         {
-            logger.Info(new string('\t',indent) + root.ToJson() + " children: " + root.Children.Count());
+            logger.Info(new string('\t',indent) + root.FQN + " children: " + root.Children.Count());
 
             foreach (Model.ModelItem i in root.Children)
             {

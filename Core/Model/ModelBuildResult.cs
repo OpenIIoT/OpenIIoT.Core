@@ -8,15 +8,14 @@ namespace Symbiote.Core.Model
         public ModelBuildResultCode Result { get; set; }
         public List<string> Messages { get; set; }
         public ModelItem Model { get; set; }
-        public List<ModelItem> FUCK { get; set; }
         public Dictionary<string, ModelItem> Dictionary { get; set; }
         public List<Configuration.ConfigurationModelItem> ResolvedList { get; set; }
         public List<Configuration.ConfigurationModelItem> UnresolvedList { get; set; }
 
         public ModelBuildResult()
         {
+            Result = ModelBuildResultCode.Success;
             Model = new ModelItem();
-            FUCK = new List<ModelItem>();
             Dictionary = new Dictionary<string, ModelItem>();
             Messages = new List<string>();
             ResolvedList = new List<ConfigurationModelItem>();
