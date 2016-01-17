@@ -103,39 +103,13 @@ namespace Symbiote.Core
         {
             try
             {
-                //logger.Info("Symbiote started.");
+                PrintItemChildren(manager.ModelManager.Model, 0);
 
-                //logger.Info("Creating Platform Connector...");
-                //PrintConnectorPluginItemChildren(manager.Platform.Connector, null, 0);
-
-                //logger.Info("Creating an instance of the Simulation Connector...");
-
-                //var sim = manager.PluginManager.CreatePluginInstance<IConnector>("simulator", manager.PluginManager.FindPluginAssembly("Symbiote.Plugin.Connector.Simulator").Type);
-                //PrintConnectorPluginItemChildren(sim, null, 0);
-
-                //logger.Info("Connector instances created.");
-                //Timer atimer = new Timer(15000);
-                //atimer.Elapsed += print;
-                //atimer.AutoReset = true;
-                //atimer.Enabled = true;
-
-
-                //Model.ModelItem one = new Model.ModelItem("root.one");
-                //manager.Model.AddChild(one);
-
-                //Model.ModelItem two = new Model.ModelItem("root.one.two");
-                //one.AddChild(two);
-
-
-
-                //manager.ModelManager.SaveModel();
-                //manager.ConfigurationManager.SaveConfiguration();
-
-                //manager.ModelManager.BuildModel();
-
-                //PrintItemChildren(manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items, new Model.ModelBuildResult(),0).Model, 0);
+                manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
+                manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3.ITEMMMMMMMMM"));
 
                 PrintItemChildren(manager.ModelManager.Model, 0);
+
                 Console.WriteLine("Press ESC to stop");
                 Console.ReadLine();
             }
