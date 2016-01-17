@@ -105,16 +105,25 @@ namespace Symbiote.Core
             {
                 PrintItemChildren(manager.ModelManager.Model, 0);
 
-                //manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
+                manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
 
-                //Model.ModelItem item = new Model.ModelItem("Symbiote.Folder3.ITEMMMM");
-                //manager.ModelManager.AddItem(item);
+                Model.ModelItem itemd = new Model.ModelItem("Symbiote.Folder3.DELETEME");
+                manager.ModelManager.AddItem(itemd);
 
-                //PrintItemChildren(manager.ModelManager.Model, 0);
+                Model.ModelItem itemm = new Model.ModelItem("Symbiote.Folder3.MOVEME");
+                manager.ModelManager.AddItem(itemm);
+
+                PrintItemChildren(manager.ModelManager.Model, 0);
 
                 // move an item
-                //manager.ModelManager.FindItem("Symbiote.Folder2").AddChild(item);
-                //PrintItemChildren(manager.ModelManager.Model, 0);
+                logger.Info("-------------- Moving");
+                manager.ModelManager.MoveItem(itemm, "Symbiote.Folder1.MOVEME");
+                PrintItemChildren(manager.ModelManager.Model, 0);
+
+                // remove an item
+                logger.Info("----------------- Deleting");
+                manager.ModelManager.RemoveItem(itemd);
+                PrintItemChildren(manager.ModelManager.Model, 0);
 
                 Console.WriteLine("Press ESC to stop");
                 Console.ReadLine();

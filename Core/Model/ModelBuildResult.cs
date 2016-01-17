@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Symbiote.Core.Configuration;
+using Symbiote.Core.Configuration.Model;
 
 namespace Symbiote.Core.Model
 {
@@ -9,8 +9,8 @@ namespace Symbiote.Core.Model
         public List<string> Messages { get; set; }
         public ModelItem Model { get; set; }
         public Dictionary<string, ModelItem> Dictionary { get; set; }
-        public List<Configuration.ConfigurationModelItem> ResolvedList { get; set; }
-        public List<Configuration.ConfigurationModelItem> UnresolvedList { get; set; }
+        public List<ConfigurationModelItem> ResolvedList { get; set; }
+        public List<ConfigurationModelItem> UnresolvedList { get; set; }
 
         public ModelBuildResult()
         {

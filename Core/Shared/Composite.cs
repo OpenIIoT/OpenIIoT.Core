@@ -136,6 +136,13 @@ namespace Symbiote.Core
             return this;
         }
 
+        public IComposite RemoveChild(IComposite item)
+        {
+            IComposite retVal = Children.Find(i => i.FQN == item.FQN);
+            Children.Remove(retVal);
+            return retVal;
+        }
+
         public object Write(object value)
         {
             Value = value;

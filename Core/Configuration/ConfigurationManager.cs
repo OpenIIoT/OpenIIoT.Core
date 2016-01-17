@@ -8,6 +8,10 @@ using Newtonsoft.Json;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Newtonsoft.Json.Linq;
+using Symbiote.Core.Model;
+using Symbiote.Core.Plugin;
+using Symbiote.Core.Configuration.Model;
+using Symbiote.Core.Configuration.Plugin;
 
 namespace Symbiote.Core.Configuration
 {
@@ -169,13 +173,13 @@ namespace Symbiote.Core.Configuration
             retVal.Symbiote = "0.1.0";
             retVal.Model = new ConfigurationModelSection();
             retVal.Model.Items = new List<ConfigurationModelItem>();
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Model.ModelItem("Symbiote", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1", Definition = new Model.ModelItem("Symbiote.Folder1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item1", Definition = new Model.ModelItem("Symbiote.Folder1.Item1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item2", Definition = new Model.ModelItem("Symbiote.Folder1.Item2", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2", Definition = new Model.ModelItem("Symbiote.Folder2", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item1", Definition = new Model.ModelItem("Symbiote.Folder2.Item1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item2", Definition = new Model.ModelItem("Symbiote.Folder2.Item2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new ModelItem("Symbiote", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1", Definition = new ModelItem("Symbiote.Folder1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item1", Definition = new ModelItem("Symbiote.Folder1.Item1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item2", Definition = new ModelItem("Symbiote.Folder1.Item2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2", Definition = new ModelItem("Symbiote.Folder2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item1", Definition = new ModelItem("Symbiote.Folder2.Item1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item2", Definition = new ModelItem("Symbiote.Folder2.Item2", typeof(string)).ToJson() });
 
             retVal.Plugins = new ConfigurationPluginSection();
             retVal.Plugins.AuthorizeNewPlugins = false;
@@ -189,7 +193,7 @@ namespace Symbiote.Core.Configuration
                     PluginType = "Connector",
                     FileName = "Symbiote.Plugin.Connector.Simulation.dll",
                     Checksum = "58ee417bc7df51ae70ba6b0f55bc25b3",
-                    Authorization = Plugin.PluginAuthorization.Authorized
+                    Authorization = PluginAuthorization.Authorized
                 });
 
             return retVal;

@@ -13,6 +13,7 @@ namespace Symbiote.Core
         List<IComposite> Children { get; }
         IComposite SetParent(IComposite parent);
         IComposite AddChild(IComposite item);
+        IComposite RemoveChild(IComposite item);
         object Read();
         object Write(object value);
         string ToJson();

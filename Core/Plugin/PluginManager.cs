@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using NLog;
 using Symbiote.Core.Platform;
-using Symbiote.Core.Configuration;
+using Symbiote.Core.Configuration.Plugin;
 using System.Linq;
 
 namespace Symbiote.Core.Plugin
@@ -174,7 +174,7 @@ namespace Symbiote.Core.Plugin
             if (validationMessage != null)
                 return;
 
-            ConfigurationPluginItem newPlugin = new Configuration.ConfigurationPluginItem()
+            ConfigurationPluginItem newPlugin = new ConfigurationPluginItem()
             {
                 Name = assemblyName.Name,
                 FullName = assemblyName.FullName,

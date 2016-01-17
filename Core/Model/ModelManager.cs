@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Symbiote.Core.Configuration;
+using Symbiote.Core.Configuration.Model;
 
 namespace Symbiote.Core.Model
 {
@@ -188,23 +188,36 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary from which to retrieve the item.</param>
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
         /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
-        public ModelItem FindItem(Dictionary<string, ModelItem> dictionary, string fqn)
+        private ModelItem FindItem(Dictionary<string, ModelItem> dictionary, string fqn)
         {
             return dictionary[fqn];
         }
 
-        public void AddItem(ModelItem item)
+        /// <summary>
+        /// Adds an Item to the ModelManager's instance of Model and Dictionary.
+        /// </summary>
+        /// <param name="item">The Item to add.</param>
+        /// <returns>The added Item.</returns>
+        public ModelItem AddItem(ModelItem item)
         {
-            AddItem(Model, Dictionary, item);
+            return AddItem(Model, Dictionary, item);
         }
 
-        private void AddItem(ModelItem model, Dictionary<string, ModelItem> dictionary, ModelItem item)
+        /// <summary>
+        /// Adds and Item to the given Model and Dictionary.
+        /// </summary>
+        /// <param name="model">The Model to which to add the Item.</param>
+        /// <param name="dictionary">The Dictionary to which to add the Item.</param>
+        /// <param name="item">The Item to add.</param>
+        /// <returns>The added Item.</returns>
+        private ModelItem AddItem(ModelItem model, Dictionary<string, ModelItem> dictionary, ModelItem item)
         {
             string parentFQN = GetParentFQNFromItemFQN(item.FQN);
 
-            // if the parent FQN couldn't be parsed, this is the root node so add it to the Model directly.
+            // if the parent FQN couldn't be parsed, this is the root node so clone it to the existing ModelItem representing the root.
             if (parentFQN == "")
             {
+                // only one root item can be defined.  
                 if (model.Name != "") { throw new ApplicationException("Model root has already been defined."); }
                 else
                 {
@@ -215,6 +228,7 @@ namespace Symbiote.Core.Model
                     model.Type = item.Type;
                     logger.Trace("Adding item to dictionary with key: " + item.FQN);
                     dictionary.Add(model.FQN, model);
+                    return model;
                 }
             }
             else
@@ -225,6 +239,7 @@ namespace Symbiote.Core.Model
                     FindItem(dictionary, parentFQN).AddChild(item);
                     logger.Trace("Adding item to dictionary with key: " + item.FQN);
                     dictionary.Add(item.FQN, item);
+                    return item;
                 }
                 catch (KeyNotFoundException ex)
                 {
@@ -233,6 +248,58 @@ namespace Symbiote.Core.Model
             }
         }
 
+        public ModelItem RemoveItem(ModelItem item)
+        {
+            return RemoveItem(Dictionary, item);
+        }
+
+        private ModelItem RemoveItem(Dictionary<string, ModelItem> dictionary, ModelItem item)
+        {
+            ModelItem itemInstance = FindItem(item.FQN);
+            itemInstance.Parent.RemoveChild(itemInstance);
+            dictionary.Remove(item.FQN);
+            return itemInstance;
+        }
+
+        /// <summary>
+        /// Moves the supplied ModelItem from one place in the ModelManager's instances of Model and Dictionary to another based on the supplied FQN.
+        /// </summary>
+        /// <param name="item">The Item to move.</param>
+        /// <param name="fqn">The Fully Qualified Name representing the new location for the item.</param>
+        /// <returns>The updated Item.</returns>
+        public ModelItem MoveItem(ModelItem item, string fqn)
+        {
+            return MoveItem(Model, Dictionary, item, fqn);
+        }
+
+        /// <summary>
+        /// Moves the supplied ModelItem from one place in the supplied Model and Dictionary to another based on the supplied FQN.
+        /// </summary>
+        /// <param name="model">The Model containing the supplied Item.</param>
+        /// <param name="dictionary">The Dictionary containing the supplied Item.</param>
+        /// <param name="item">The Item to move.</param>
+        /// <param name="fqn">The Fully Qualified Name representing the new location for the Item.</param>
+        /// <returns>The updated Item.</returns>
+        private ModelItem MoveItem(ModelItem model, Dictionary<string, ModelItem> dictionary, ModelItem item, string fqn)
+        {
+            // find the parent item first to ensure the provided FQN is valid
+            // this will throw an exception if it fails.
+            ModelItem parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
+
+            // delete the existing item
+            RemoveItem(dictionary, item);
+
+            // add it to the new location
+            item.FQN = fqn;
+            AddItem(model, dictionary, item);
+            return item;
+        }
+
+        /// <summary>
+        /// Parses and returns an Item path from the given FQN.
+        /// </summary>
+        /// <param name="itemFQN">The FQN from which to parse the path.</param>
+        /// <returns>The Item path.</returns>
         private static string GetParentFQNFromItemFQN(string itemFQN)
         {
             string[] retObj = itemFQN.Split('.');
@@ -240,9 +307,15 @@ namespace Symbiote.Core.Model
             if (retObj.Length > 1)
                 return String.Join(".", retObj.Take(retObj.Count() - 1));
 
+            // the root item has no path.
             return "";         
         }
 
+        /// <summary>
+        /// Parses and returns an Item name from the given FQN.
+        /// </summary>
+        /// <param name="itemFQN">The FQN from which to parse the name.</param>
+        /// <returns>The Item name.</returns>
         private static string GetItemNameFromItemFQN(string itemFQN)
         {
             return itemFQN.Split('.')[itemFQN.Split('.').Length - 1];

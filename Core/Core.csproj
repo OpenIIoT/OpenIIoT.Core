@@ -74,6 +74,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collector\CollectorManager.cs" />
+    <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
+    <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
+    <Compile Include="Configuration\Plugin\ConfigurationPluginItem.cs" />
+    <Compile Include="Configuration\Plugin\ConfigurationPluginSection.cs" />
     <Compile Include="Configuration\Enumerations.cs" />
     <Compile Include="Configuration\ConfigurationValidationResult.cs" />
     <Compile Include="Model\Enumerations.cs" />
