@@ -1,38 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Symbiote.Core.Plugin;
 using Newtonsoft.Json;
 
 namespace Symbiote.Core
 {
+    /// <summary>
+    /// A semi-generic container impementing the Composite design pattern
+    /// </summary>
     [JsonObject]
     public abstract class Composite : IComposite
     {
         private object Value;
 
         // only serialize FQN and Type; the rest is either internal or can be derived
+        /// <summary>
+        /// The Fully Qualified Name of the item.
+        /// </summary>
         public string FQN { get; set; }
+        /// <summary>
+        /// The Type of the item.
+        /// </summary>
         public Type Type { get; set; }
 
-        // don't serialize these fields
+        /// <summary>
+        /// The Item's parent Item.
+        /// </summary>
+        /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public IComposite Parent { get; private set; }
+        /// <summary>
+        /// The name of the Item; corresponds to the final tuple of the FQN.
+        /// </summary>
+        /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public string Name { get; set; }
+        /// <summary>
+        /// The path to the Item; corresponds to the FQN less the final tuple (the name).
+        /// </summary>
+        /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public string Path { get; set; }
+        /// <summary>
+        /// A Guid for the Item, generated when it is instantiated.
+        /// </summary>
+        /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public Guid Guid { get; set; }
+        /// <summary>
+        /// The collection of Items contained within this Item.
+        /// </summary>
+        /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public List<IComposite> Children { get; private set; }
 
+        /// <summary>
+        /// An empty constructor used for instantiating the root node of a model.
+        /// </summary>
         public Composite() : this("", true) { }
+        /// <summary>
+        /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object'.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         public Composite(string fqn) : this(fqn, typeof(object), false) { }
+        /// <summary>
+        /// Creates an instance of an Item with the given Fully Qualified Name and type.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="type">The Type of the Item's value.</param>
         public Composite(string fqn, Type type) : this(fqn, type, false) { }
+        /// <summary>
+        /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object'.  If isRoot is true, marks the Item as the root item in a model.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
         public Composite(string fqn, bool isRoot) : this(fqn, typeof(object), isRoot) { }
+        /// <summary>
+        /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="type">The Type of the Item's value.</param>
+        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
         public Composite(string fqn, Type type, bool isRoot) 
         {
             FQN = fqn;
@@ -51,13 +99,26 @@ namespace Symbiote.Core
 
             // if we are creating the root item, make Parent self-referential.
             if (isRoot)
+            {
+                FQN = Name;
+                Path = "";
                 Parent = this;
+            }
+
         }
 
+        /// <summary>
+        /// Sets the Item's parent Item to the supplied Item.
+        /// </summary>
+        /// <param name="parent">The Item to set as the Item's parent.</param>
+        /// <returns>The current Item.</returns>
         public IComposite SetParent(IComposite parent)
         {
+            // update the Path and FQN to match the parent values
+            // this is set in the constructor however this code will prevent issues if items are moved.
             Path = parent.FQN;
             FQN = Path + '.' + Name;
+
             Parent = parent;
             return this;
         }
