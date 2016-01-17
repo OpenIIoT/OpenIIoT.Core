@@ -170,12 +170,12 @@ namespace Symbiote.Core.Configuration
             retVal.Model = new ConfigurationModelSection();
             retVal.Model.Items = new List<ConfigurationModelItem>();
             retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Model.ModelItem("Symbiote", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1", Definition = new Model.ModelItem("Folder1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item1", Definition = new Model.ModelItem("Item1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item2", Definition = new Model.ModelItem("Item2", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2", Definition = new Model.ModelItem("Folder2", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item1", Definition = new Model.ModelItem("Item1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item2", Definition = new Model.ModelItem("Item2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1", Definition = new Model.ModelItem("Symbiote.Folder1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item1", Definition = new Model.ModelItem("Symbiote.Folder1.Item1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item2", Definition = new Model.ModelItem("Symbiote.Folder1.Item2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2", Definition = new Model.ModelItem("Symbiote.Folder2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item1", Definition = new Model.ModelItem("Symbiote.Folder2.Item1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item2", Definition = new Model.ModelItem("Symbiote.Folder2.Item2", typeof(string)).ToJson() });
 
             retVal.Plugins = new ConfigurationPluginSection();
             retVal.Plugins.AuthorizeNewPlugins = false;

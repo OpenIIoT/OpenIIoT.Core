@@ -14,11 +14,9 @@ namespace Symbiote.Core.Model
         private Logger logger = LogManager.GetCurrentClassLogger();
         private ProgramManager manager;
         private static ModelManager instance;
-        //private ModelBuildResult BuildResult;
 
         internal ModelItem Model { get; private set; }
         internal Dictionary<string, ModelItem> Dictionary { get; private set; }
-
 
         private ModelManager(ProgramManager manager)
         {

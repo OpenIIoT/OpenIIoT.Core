@@ -68,6 +68,8 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="type">The Type of the Item's value.</param>
+        /// <remarks>This constructor is used for deserialization.</remarks>
+        [JsonConstructor]
         public Composite(string fqn, Type type) : this(fqn, type, false) { }
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object'.  If isRoot is true, marks the Item as the root item in a model.
@@ -75,6 +77,7 @@ namespace Symbiote.Core
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
         public Composite(string fqn, bool isRoot) : this(fqn, typeof(object), isRoot) { }
+
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
         /// </summary>
@@ -88,7 +91,11 @@ namespace Symbiote.Core
 
             // generate Name and Path from FQN
             string[] splitFQN = fqn.Split('.');
+
+            // set the name.  if it is blank after the split, there was only one tuple in the FQN, so name = fqn
             Name = splitFQN[splitFQN.Length - 1];
+            if (Name == "") Name = FQN;
+
             Path = String.Join(".",splitFQN.Take(splitFQN.Length - 1));
 
             // create a unique Guid for this item.  useful for debugging.
@@ -148,7 +155,7 @@ namespace Symbiote.Core
 
         public bool IsValid()
         {
-            return ((Name != null) && (Name.Length > 1) && (Type != null));
+            return ((FQN != null) && (FQN.Length > 1) && (Type != null));
         }
     }
 }

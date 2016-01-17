@@ -11,10 +11,11 @@ namespace Symbiote.Core.Model
     public class ModelItem : Composite
     {
         public ModelItem() : base() { }
-        public ModelItem(string name) : base(name) { }
-        public ModelItem(string name, Type type) : base(name, type) { }
-        public ModelItem(string name, bool isRootItem) : base(name, isRootItem) { }
-        public ModelItem(string name, Type type, bool isRootItem) : base(name, type, isRootItem) { }
+        public ModelItem(string fqn) : base(fqn) { }
+        [JsonConstructor]
+        public ModelItem(string fqn, Type type) : base(fqn, type) { }
+        public ModelItem(string fqn, bool isRootItem) : base(fqn, isRootItem) { }
+        public ModelItem(string fqn, Type type, bool isRootItem) : base(fqn, type, isRootItem) { }
 
         public override string ToString()
         {
