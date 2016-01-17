@@ -75,7 +75,10 @@
   <ItemGroup>
     <Compile Include="Collector\CollectorManager.cs" />
     <Compile Include="Configuration\Enumerations.cs" />
-    <Compile Include="Configuration\ValidationResult.cs" />
+    <Compile Include="Configuration\ConfigurationValidationResult.cs" />
+    <Compile Include="Model\Enumerations.cs" />
+    <Compile Include="Model\ModelBuildResult.cs" />
+    <Compile Include="Model\Exceptions.cs" />
     <Compile Include="Shared\Composite.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
@@ -91,7 +94,7 @@
     <Compile Include="Plugin\PluginConfigurationDefinition.cs" />
     <Compile Include="Shared\ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
-    <Compile Include="Model\Item.cs" />
+    <Compile Include="Model\ModelItem.cs" />
     <Compile Include="Platform\Interfaces.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />

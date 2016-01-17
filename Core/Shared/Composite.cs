@@ -15,13 +15,15 @@ namespace Symbiote.Core
         [JsonIgnore]
         public IComposite Parent { get; private set; }
         public string Name { get; set; }
+        [JsonIgnore]
         public string Path { get; set; }
+        [JsonIgnore]
         public string FQN { get; set; }
         public Type Type { get; set; }
         [JsonIgnore]
         public List<IComposite> Children { get; private set; }
 
-        public Composite() : this(System.Reflection.Assembly.GetExecutingAssembly().GetName().Name, true) { }
+        public Composite() : this("", true) { }
         public Composite(string name) : this(name, typeof(object), false) { }
         public Composite(string name, Type type) : this(name, type, false) { }
         public Composite(string name, bool isRoot) : this(name, typeof(object), isRoot) { }
@@ -41,6 +43,7 @@ namespace Symbiote.Core
 
         public IComposite SetParent(IComposite parent)
         {
+            Path = parent.FQN;
             FQN = Path + '.' + Name;
             Parent = parent;
             return this;

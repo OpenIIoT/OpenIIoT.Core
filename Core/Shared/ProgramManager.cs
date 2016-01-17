@@ -51,7 +51,7 @@ namespace Symbiote.Core
         public List<IPluginInstance> PluginInstances { get; private set; }
 
         public ModelManager ModelManager { get; private set; }
-        public Model.Item Model { get; private set; }
+        public ModelItem Model { get; private set; }
 
         private ProgramManager()
         {
@@ -106,10 +106,10 @@ namespace Symbiote.Core
             if (ModelManager == null)
                 throw new Exception("ModelManager.Instance() returned a null instance.");
 
-            logger.Trace("Resolving the Model...");
-            Model = ModelManager.Model;
-            if (Model == null)
-                throw new Exception("Failed to resolve the Model.");
+            //logger.Trace("Resolving the Model...");
+            //Model = ModelManager.Model;
+            //if (Model == null)
+            //    throw new Exception("Failed to resolve the Model.");
 
             logger.Trace("Model manager instantiated and Model resolved.");
             logger.Trace("Program Manager member instances instantiated.");

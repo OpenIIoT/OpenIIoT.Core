@@ -9,12 +9,12 @@ namespace Symbiote.Core.Configuration
     /// <summary>
     /// Contains the ValidationResultCode and optional message resulting from a configuration validation.
     /// </summary>
-    public class ValidationResult
+    public class ConfigurationValidationResult
     {
         /// <summary>
         /// The ValidationResultCode representing the outcome of the validation;  Valid, Warning or Invalid.
         /// </summary>
-        public ValidationResultCode Result { get; set; }
+        public ConfigurationValidationResultCode Result { get; set; }
         /// <summary>
         /// If the ValidationResultCode is not Valid, contains additional information describing the reason for the Warning or Invalid result code.
         /// </summary>

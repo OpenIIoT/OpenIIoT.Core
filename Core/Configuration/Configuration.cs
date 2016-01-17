@@ -13,24 +13,24 @@ namespace Symbiote.Core.Configuration
     public class Configuration
     {
         public string Symbiote;
-        public ModelSection Model;
-        public PluginSection Plugins;
+        public ConfigurationModelSection Model;
+        public ConfigurationPluginSection Plugins;
 
         public Configuration()
         {
-            Model = new ModelSection();
-            Plugins = new PluginSection();
+            Model = new ConfigurationModelSection();
+            Plugins = new ConfigurationPluginSection();
         }
     }
 
     [JsonObject]
-    public class ModelSection
+    public class ConfigurationModelSection
     {
-        public List<ModelItem> Items { get; set; }
+        public List<ConfigurationModelItem> Items { get; set; }
 
-        public ModelSection()
+        public ConfigurationModelSection()
         {
-            Items = new List<ModelItem>();
+            Items = new List<ConfigurationModelItem>();
         }
     }
 
@@ -38,23 +38,23 @@ namespace Symbiote.Core.Configuration
     /// A generic container for model items within the configuration.
     /// </summary>
     [JsonObject]
-    public class ModelItem : ICloneable
+    public class ConfigurationModelItem : ICloneable
     {
         public string FQN { get; set; }
         public string Definition { get; set; }
 
         public object Clone()
         {
-            return new ModelItem() { FQN = this.FQN, Definition = this.Definition };
+            return new ConfigurationModelItem() { FQN = this.FQN, Definition = this.Definition };
         }
 
         public override bool Equals(object obj)
         {
-            ModelItem rightSide;
+            ConfigurationModelItem rightSide;
 
             try
             {
-                rightSide = (ModelItem)obj;
+                rightSide = (ConfigurationModelItem)obj;
             }
             catch (InvalidCastException ex)
             {
@@ -68,22 +68,27 @@ namespace Symbiote.Core.Configuration
         {
             return FQN.GetHashCode();
         }
-    }
 
-    [JsonObject]
-    public class PluginSection
-    {
-        public bool AuthorizeNewPlugins { get; set; }
-        public List<PluginItem> Assemblies { get; set; }
-
-        public PluginSection()
+        public override string ToString()
         {
-            Assemblies = new List<PluginItem>();
+            return "FQN = " + FQN + "; Definition = " + Definition;
         }
     }
 
     [JsonObject]
-    public class PluginItem
+    public class ConfigurationPluginSection
+    {
+        public bool AuthorizeNewPlugins { get; set; }
+        public List<ConfigurationPluginItem> Assemblies { get; set; }
+
+        public ConfigurationPluginSection()
+        {
+            Assemblies = new List<ConfigurationPluginItem>();
+        }
+    }
+
+    [JsonObject]
+    public class ConfigurationPluginItem
     {
         public string Name { get; set; }
         public string FullName { get; set; }

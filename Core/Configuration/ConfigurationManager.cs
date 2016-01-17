@@ -127,8 +127,8 @@ namespace Symbiote.Core.Configuration
                 logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
 
                 logger.Trace("Validating configuration...");
-                ValidationResult validationResult = ValidateConfiguration(retVal);
-                if (validationResult.Result == ValidationResultCode.Valid)
+                ConfigurationValidationResult validationResult = ValidateConfiguration(retVal);
+                if (validationResult.Result == ConfigurationValidationResultCode.Valid)
                 {
                     logger.Trace("Successfully validated configuration.");
                     return retVal;
@@ -151,11 +151,11 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         /// <param name="configuration"></param>
         /// <returns>A ValidationResult containing the validation result code and, if applicable, message.</returns>
-        public ValidationResult ValidateConfiguration(Configuration configuration)
+        public ConfigurationValidationResult ValidateConfiguration(Configuration configuration)
         {
             // TODO: validate configuration; check for duplicates, etc.
             // issue #1
-            return new ValidationResult() { Result = ValidationResultCode.Valid, Message = "" };
+            return new ConfigurationValidationResult() { Result = ConfigurationValidationResultCode.Valid, Message = "" };
         }
 
         /// <summary>
@@ -167,21 +167,21 @@ namespace Symbiote.Core.Configuration
             Configuration retVal = new Configuration();
 
             retVal.Symbiote = "0.1.0";
-            retVal.Model = new ModelSection();
-            retVal.Model.Items = new List<ModelItem>();
-            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote", Definition = new Model.Item("Symbiote", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder1", Definition = new Model.Item("Folder1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder1.Item1", Definition = new Model.Item("Item1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder1.Item2", Definition = new Model.Item("Item2", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder2", Definition = new Model.Item("Folder2", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder2.Item1", Definition = new Model.Item("Item1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ModelItem() { FQN = "Symbiote.Folder2.Item2", Definition = new Model.Item("Item2", typeof(string)).ToJson() });
+            retVal.Model = new ConfigurationModelSection();
+            retVal.Model.Items = new List<ConfigurationModelItem>();
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Model.ModelItem("Symbiote", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1", Definition = new Model.ModelItem("Folder1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item1", Definition = new Model.ModelItem("Item1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item2", Definition = new Model.ModelItem("Item2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2", Definition = new Model.ModelItem("Folder2", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item1", Definition = new Model.ModelItem("Item1", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item2", Definition = new Model.ModelItem("Item2", typeof(string)).ToJson() });
 
-            retVal.Plugins = new PluginSection();
+            retVal.Plugins = new ConfigurationPluginSection();
             retVal.Plugins.AuthorizeNewPlugins = false;
-            retVal.Plugins.Assemblies = new List<PluginItem>();
+            retVal.Plugins.Assemblies = new List<ConfigurationPluginItem>();
             retVal.Plugins.Assemblies.Add(
-                new PluginItem()
+                new ConfigurationPluginItem()
                 {
                     Name = "Symbiote.Plugin.Connector.Simulation",
                     FullName = "Symbiote.Plugin.Connector.Simulator, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null",

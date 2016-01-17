@@ -9,7 +9,11 @@ namespace Symbiote.Core.Configuration
     /// <summary>
     /// Enumeration for Configuration validation results
     /// </summary>
-    public enum ValidationResultCode {
+    public enum ConfigurationValidationResultCode {
+        /// <summary>
+        /// Default value.
+        /// </summary>
+        Unknown,
         /// <summary>
         /// Configuration is valid.
         /// </summary>
