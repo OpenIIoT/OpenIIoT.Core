@@ -35,12 +35,21 @@ namespace Symbiote.Core.Model
             return instance;
         }
 
+        /// <summary>
+        /// Builds a Model using the Model Configuration stored within the ProgramManager and returns a ModelBuildResult containing the result.
+        /// </summary>
+        /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         public ModelBuildResult BuildModel()
         {
             return BuildModel(manager.Configuration.Model.Items);
         }
 
-        public ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList)
+        /// <summary>
+        /// Builds a Model using the provided list of ConfigurationModelItems and returns a ModelBuildResult containing the result.
+        /// </summary>
+        /// <param name="itemList">A list of ConfigurationModelItems containing Model Items to build.</param>
+        /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
+        private ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList)
         {
             // clear the build result
             //BuildResult = new ModelBuildResult() { UnresolvedList = itemList.Clone() };
@@ -172,6 +181,40 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
+        /// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
+        /// </summary>
+        /// <param name="flushToDisk">Save the updated Configuration to disk.</param>
+        /// <returns>Returns true if the save succeeded, false otherwise.</returns>
+        public bool SaveModel(bool flushToDisk = false)
+        {
+            List<ConfigurationModelItem> updatedItems = SaveModel(Model, new List<ConfigurationModelItem>());
+            manager.Configuration.Model.Items = updatedItems;
+
+            if (flushToDisk)
+                return manager.ConfigurationManager.SaveConfiguration();
+
+            return true;
+        }
+
+        /// <summary>
+        /// Updates and returns the provided list of ConfigurationModelItems with the recursively listed contents of the provided ModelItem.
+        /// </summary>
+        /// <param name="itemRoot">The ModelItem from which to start recursively updating the list.</param>
+        /// <param name="configuration">The list of ConfigurationModelItems to update.</param>
+        /// <returns>Returns true if the save succeeded, false otherwise.</returns>
+        private List<ConfigurationModelItem> SaveModel(ModelItem itemRoot, List<ConfigurationModelItem> configuration)
+        {
+            configuration.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson() });
+
+            foreach(ModelItem mi in itemRoot.Children)
+            {
+                SaveModel(mi, configuration);
+            }
+
+            return configuration;
+        }
+
+        /// <summary>
         /// Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
@@ -179,7 +222,14 @@ namespace Symbiote.Core.Model
         /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
         public ModelItem FindItem(string fqn)
         {
-            return FindItem(Dictionary, fqn);
+            try
+            {
+                return FindItem(Dictionary, fqn);
+            }
+            catch (Exception ex)
+            {
+                return default(ModelItem);
+            }
         }
 
         /// <summary>
@@ -200,7 +250,15 @@ namespace Symbiote.Core.Model
         /// <returns>The added Item.</returns>
         public ModelItem AddItem(ModelItem item)
         {
-            return AddItem(Model, Dictionary, item);
+            try
+            {
+                return AddItem(Model, Dictionary, item);
+            }
+            catch (Exception ex)
+            {
+                logger.Warn("The item '" + item.FQN + "' could not be added to the model: " + ex.Message);
+                return default(ModelItem);
+            }
         }
 
         /// <summary>
@@ -233,6 +291,10 @@ namespace Symbiote.Core.Model
             }
             else
             {
+                // ensure the item hasn't been added already.
+                if (FindItem(item.FQN) != default(ModelItem))
+                    throw new ItemAlreadyAddedException("The item already exists in the dictionary.");
+
                 try
                 {
                     logger.Trace("Adding item to model as child of " + parentFQN + ": " + item.ToString());
@@ -248,14 +310,29 @@ namespace Symbiote.Core.Model
             }
         }
 
+        /// <summary>
+        /// Removes an Item from the ModelManager's Dictionary and removes it from its parent Item.
+        /// </summary>
+        /// <param name="item">The Item to remove.</param>
+        /// <returns>The removed Item.</returns>
         public ModelItem RemoveItem(ModelItem item)
         {
             return RemoveItem(Dictionary, item);
         }
 
+        /// <summary>
+        /// Removes an Item from the provided Dictionary and removes it from its parent Item.
+        /// </summary>
+        /// <param name="dictionary">The Dictionary from which to remove the Item.</param>
+        /// <param name="item">The Item to remove.</param>
+        /// <returns>The removed Item.</returns>
         private ModelItem RemoveItem(Dictionary<string, ModelItem> dictionary, ModelItem item)
         {
             ModelItem itemInstance = FindItem(item.FQN);
+
+            if (itemInstance.Parent == itemInstance)
+                throw new ModelRootRemovalException("Removing a Model's root is not permitted.");
+
             itemInstance.Parent.RemoveChild(itemInstance);
             dictionary.Remove(item.FQN);
             return itemInstance;

@@ -88,18 +88,18 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// Saves the current configuration to the file specified in app.config.
         /// </summary>
-        public void SaveConfiguration()
+        public bool SaveConfiguration()
         {
-            SaveConfigurationAs(GetConfigurationFileName());
+            return SaveConfigurationAs(GetConfigurationFileName());
         }
 
         /// <summary>
         /// Saves the current configuration to the specified file.
         /// </summary>
         /// <param name="fileName">The file in which to save the configuration.</param>
-        public void SaveConfigurationAs(string fileName)
+        public bool SaveConfigurationAs(string fileName)
         {
-            SaveConfigurationAs(Configuration, fileName);
+            return SaveConfigurationAs(Configuration, fileName);
         }
 
         /// <summary>
@@ -107,10 +107,11 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
         /// <param name="fileName">The file in which to save the configuration.</param>
-        public void SaveConfigurationAs(Configuration configuration, string fileName)
+        public bool SaveConfigurationAs(Configuration configuration, string fileName)
         {
             logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
             manager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented));
+            return true;
         }
 
         /// <summary>

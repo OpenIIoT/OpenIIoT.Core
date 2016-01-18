@@ -115,15 +115,11 @@ namespace Symbiote.Core
 
                 PrintItemChildren(manager.ModelManager.Model, 0);
 
-                // move an item
-                logger.Info("-------------- Moving");
-                manager.ModelManager.MoveItem(itemm, "Symbiote.Folder1.MOVEME");
-                PrintItemChildren(manager.ModelManager.Model, 0);
+                // save
+                logger.Info("-------------- saving");
 
-                // remove an item
-                logger.Info("----------------- Deleting");
-                manager.ModelManager.RemoveItem(itemd);
-                PrintItemChildren(manager.ModelManager.Model, 0);
+                if (manager.ModelManager.SaveModel())
+                    manager.ConfigurationManager.SaveConfiguration();
 
                 Console.WriteLine("Press ESC to stop");
                 Console.ReadLine();
