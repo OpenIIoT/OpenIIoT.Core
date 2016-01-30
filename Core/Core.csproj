@@ -72,7 +72,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Collector\CollectorManager.cs" />
     <Compile Include="Configuration\Exceptions.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
