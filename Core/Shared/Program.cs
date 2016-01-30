@@ -123,6 +123,9 @@ namespace Symbiote.Core
                 Model.ModelItem itemm = new Model.ModelItem("Symbiote.Folder3.MOVEME");
                 manager.ModelManager.AddItem(itemm);
 
+                Model.ModelItem itemx = new Model.ModelItem("Symbiote.Folder3.SATest", typeof(string), "N47:0");
+                manager.ModelManager.AddItem(itemx);
+
                 PrintItemChildren(manager.ModelManager.Model, 0);
 
                 // save
@@ -157,7 +160,7 @@ namespace Symbiote.Core
 
         private static void PrintItemChildren(Model.ModelItem root, int indent)
         {
-            logger.Info(new string('\t',indent) + root.FQN + " children: " + root.Children.Count());
+            logger.Info(new string('\t',indent) + root.FQN + " [" + root.SourceAddress + "] children: " + root.Children.Count());
 
             foreach (Model.ModelItem i in root.Children)
             {

@@ -14,8 +14,10 @@ namespace Symbiote.Core.Model
         public ModelItem(string fqn) : base(fqn) { }
         [JsonConstructor]
         public ModelItem(string fqn, Type type) : base(fqn, type) { }
+        public ModelItem(string fqn, Type type, string sourceAddress) : base(fqn, type, sourceAddress) { }
         public ModelItem(string fqn, bool isRootItem) : base(fqn, isRootItem) { }
-        public ModelItem(string fqn, Type type, bool isRootItem) : base(fqn, type, isRootItem) { }
+        public ModelItem(string fqn, string sourceAddress) : base(fqn, sourceAddress) { }
+        public ModelItem(string fqn, Type type, string sourceAddress, bool isRootItem) : base(fqn, type, sourceAddress, isRootItem) { }
 
         public override string ToString()
         {

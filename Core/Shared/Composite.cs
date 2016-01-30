@@ -42,6 +42,10 @@ namespace Symbiote.Core
         [JsonIgnore]
         public string Path { get; set; }
         /// <summary>
+        /// The fully qualified name name of the source item
+        /// </summary>
+        public string SourceAddress { get; set; }
+        /// <summary>
         /// A Guid for the Item, generated when it is instantiated.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
@@ -62,7 +66,7 @@ namespace Symbiote.Core
         /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object'.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        public Composite(string fqn) : this(fqn, typeof(object), false) { }
+        public Composite(string fqn) : this(fqn, typeof(object), "", false) { }
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.
         /// </summary>
@@ -70,24 +74,39 @@ namespace Symbiote.Core
         /// <param name="type">The Type of the Item's value.</param>
         /// <remarks>This constructor is used for deserialization.</remarks>
         [JsonConstructor]
-        public Composite(string fqn, Type type) : this(fqn, type, false) { }
+        public Composite(string fqn, Type type) : this(fqn, type, "", false) { }
+        /// <summary>
+        /// Creates an instance of an Item with the given Fully Qualified Name, type, and with the given Source Address.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="type">The Type of the Item's value.</param>
+        /// <param name="sourceAddress">The Source Address for the Item's value.</param>
+        public Composite(string fqn, Type type, string sourceAddress) : this(fqn, type, sourceAddress, false) { }
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object'.  If isRoot is true, marks the Item as the root item in a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Composite(string fqn, bool isRoot) : this(fqn, typeof(object), isRoot) { }
+        public Composite(string fqn, bool isRoot) : this(fqn, typeof(object), "", isRoot) { }
+        /// <summary>
+        /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object' and with Source Address of the given source address.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="sourceAddress">The Source Address for the Item's value.</param>
+        public Composite(string fqn, string sourceAddress) : this(fqn, typeof(object), sourceAddress, false) { }
 
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="type">The Type of the Item's value.</param>
+        /// <param name="sourceAddress">The Fully Qualified Name of the source item.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Composite(string fqn, Type type, bool isRoot) 
+        public Composite(string fqn, Type type, string sourceAddress, bool isRoot) 
         {
             FQN = fqn;
             Type = type;
+            SourceAddress = sourceAddress;
 
             // generate Name and Path from FQN
             string[] splitFQN = fqn.Split('.');

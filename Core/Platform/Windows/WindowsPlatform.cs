@@ -22,7 +22,7 @@ namespace Symbiote.Core.Platform.Windows
     [System.Runtime.CompilerServices.CompilerGenerated]
     public class NamespaceDoc { }
 
-    public class WindowsPlatform : IPlatform
+    internal class WindowsPlatform : IPlatform
     {
         private static Logger logger;
 

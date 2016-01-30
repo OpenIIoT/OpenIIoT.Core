@@ -22,7 +22,7 @@ namespace Symbiote.Core.Platform.UNIX
     [System.Runtime.CompilerServices.CompilerGenerated]
     public class NamespaceDoc { }
 
-    public class UNIXPlatform : IPlatform
+    internal class UNIXPlatform : IPlatform
     {
         private static Logger logger;
 

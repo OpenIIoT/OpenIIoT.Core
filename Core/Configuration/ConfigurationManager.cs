@@ -67,6 +67,7 @@ namespace Symbiote.Core.Configuration
             }
             catch (Exception ex)
             {
+                logger.Trace("Error loading configuration from '" + configurationFile + "':" + ex.Message);
                 logger.Warn("Failed to load configuration from '" + configurationFile + "'.  Building from scratch...");
                 config = BuildNewConfiguration();
                 SaveConfigurationAs(config, configurationFile);
