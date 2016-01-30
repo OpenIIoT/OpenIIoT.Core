@@ -162,16 +162,9 @@ namespace Symbiote.Core
             return retVal;
         }
 
-        public object Write(object value)
+        public bool HasChildren()
         {
-            Value = value;
-            // todo: persistence goes here
-            return this;
-        }
-
-        public object Read()
-        {
-            return Value;
+            return (Children.Count > 0);
         }
 
         public string ToJson()

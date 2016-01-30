@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
+using Symbiote.Core;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
     public class SimulationConnector : IConnector
     {
-        private IConnectorItem itemRoot;
+        private IComposite itemRoot;
         
         public string Name { get; private set; }
         public string FullName { get; private set; }
@@ -39,7 +40,7 @@ namespace Symbiote.Plugin.Connector.Simulation
         {
         }
 
-        public List<IConnectorItem> Browse(IConnectorItem root)
+        public List<IComposite> Browse(IComposite root)
         {
             return (root == null ? itemRoot.Children : root.Children);
         }
@@ -78,27 +79,27 @@ namespace Symbiote.Plugin.Connector.Simulation
             itemRoot = new PluginConnectorItem("Items", true, InstanceName);
 
             // create some simulation items
-            IConnectorItem mathRoot = itemRoot.AddChild(new PluginConnectorItem("Math"));
+            IComposite mathRoot = itemRoot.AddChild(new PluginConnectorItem("Math"));
             mathRoot.AddChild(new PluginConnectorItem("Sine", typeof(double)));
             mathRoot.AddChild(new PluginConnectorItem("Cosine", typeof(double)));
             mathRoot.AddChild(new PluginConnectorItem("Tangent", typeof(double)));
 
-            IConnectorItem processRoot = itemRoot.AddChild(new PluginConnectorItem("Process"));
+            IComposite processRoot = itemRoot.AddChild(new PluginConnectorItem("Process"));
             processRoot.AddChild(new PluginConnectorItem("Ramp", typeof(double)));
             processRoot.AddChild(new PluginConnectorItem("Step", typeof(double)));
             processRoot.AddChild(new PluginConnectorItem("Toggle", typeof(double)));
         }
     }
 
-    public class PluginConnectorItem : IConnectorItem
+    public class PluginConnectorItem : Composite
     {
-        public IConnectorItem Parent { get; private set; }
+        public IComposite Parent { get; private set; }
         public string Name { get; private set; }
         public string Path { get; private set; }
         public string FQN { get; private set; }
         public Type Type { get; private set; }
         public string SourceAddress { get; private set; }
-        public List<IConnectorItem> Children { get; private set; }
+        public List<IComposite> Children { get; private set; }
         public string InstanceName { get; private set; }
 
         public PluginConnectorItem(string name) : this(name, typeof(void), "", false, "") { }
@@ -112,7 +113,7 @@ namespace Symbiote.Plugin.Connector.Simulation
             FQN = "";
             Type = type;
             SourceAddress = sourceAddress;
-            Children = new List<IConnectorItem>();
+            Children = new List<IComposite>();
 
             if (isRoot)
             {
@@ -127,13 +128,13 @@ namespace Symbiote.Plugin.Connector.Simulation
             return (Children.Count > 0);
         }
 
-        public IConnectorItem AddChild(IConnectorItem child)
+        public IComposite AddChild(IComposite child)
         {
             Children.Add(child.SetParent(this));
             return child;
         }
 
-        public IConnectorItem SetParent(IConnectorItem parent)
+        public IComposite SetParent(IComposite parent)
         {
             Path = parent.FQN;
             FQN = Path + "." + Name;

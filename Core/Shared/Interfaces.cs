@@ -14,8 +14,8 @@ namespace Symbiote.Core
         IComposite SetParent(IComposite parent);
         IComposite AddChild(IComposite item);
         IComposite RemoveChild(IComposite item);
-        object Read();
-        object Write(object value);
+        bool HasChildren();
         string ToJson();
+        bool IsValid();
     }
 }

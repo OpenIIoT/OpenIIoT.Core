@@ -168,9 +168,9 @@ namespace Symbiote.Core
             }
         }
 
-        private static void PrintConnectorPluginItemChildren(IConnector connector, IConnectorItem root, int indent)
+        private static void PrintConnectorPluginItemChildren(IConnector connector, IComposite root, int indent)
         {
-            foreach (IConnectorItem i in connector.Browse(root))
+            foreach (IComposite i in connector.Browse(root))
             {
                 if (i.HasChildren() == false)
                     logger.Info("level: " + indent.ToString() + " Item: " + i.Name + "; FQN: " + i.FQN + " Value: " + connector.Read(i.FQN).ToString());

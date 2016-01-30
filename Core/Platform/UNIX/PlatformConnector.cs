@@ -10,7 +10,7 @@ namespace Symbiote.Core.Platform.UNIX
 {
     internal class PlatformConnector : IConnector
     {
-        private IConnectorItem itemRoot;
+        private IComposite itemRoot;
         private PerformanceCounter cpuUsed;
         private PerformanceCounter cpuIdle;
 
@@ -46,7 +46,7 @@ namespace Symbiote.Core.Platform.UNIX
 
         }
 
-        public List<IConnectorItem> Browse(IConnectorItem root)
+        public List<IComposite> Browse(IComposite root)
         {
             return (root == null ? itemRoot.Children : root.Children);
         }
@@ -84,10 +84,10 @@ namespace Symbiote.Core.Platform.UNIX
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new PlatformConnectorItem("Items", true, InstanceName);
+            itemRoot = new PlatformConnectorItem(InstanceName, true);
 
             // create CPU items
-            IConnectorItem cpuRoot = itemRoot.AddChild(new PlatformConnectorItem("CPU"));
+            IComposite cpuRoot = itemRoot.AddChild(new PlatformConnectorItem("CPU"));
             cpuRoot.AddChild(new PlatformConnectorItem("% Processor Time", typeof(double), ""));
             cpuRoot.AddChild(new PlatformConnectorItem("% Idle Time", typeof(double), ""));
 
@@ -98,17 +98,17 @@ namespace Symbiote.Core.Platform.UNIX
             lastCPUIdle = 0;
 
             // create memory items
-            IConnectorItem memRoot = itemRoot.AddChild(new PlatformConnectorItem("Memory"));
+            IComposite memRoot = itemRoot.AddChild(new PlatformConnectorItem("Memory"));
             memRoot.AddChild(new PlatformConnectorItem("Total", typeof(double), ""));
             memRoot.AddChild(new PlatformConnectorItem("Available", typeof(double), ""));
             memRoot.AddChild(new PlatformConnectorItem("Cached", typeof(double), ""));
             memRoot.AddChild(new PlatformConnectorItem("% Used", typeof(double), ""));
 
             // create drive items
-            IConnectorItem dRoot = itemRoot.AddChild(new PlatformConnectorItem("Drives"));
+            IComposite dRoot = itemRoot.AddChild(new PlatformConnectorItem("Drives"));
 
             // system drive
-            IConnectorItem sdRoot = dRoot.AddChild(new PlatformConnectorItem("System"));
+            IComposite sdRoot = dRoot.AddChild(new PlatformConnectorItem("System"));
             sdRoot.AddChild(new PlatformConnectorItem("Name", typeof(string), ""));
             sdRoot.AddChild(new PlatformConnectorItem("Path", typeof(string), ""));
             sdRoot.AddChild(new PlatformConnectorItem("Type", typeof(Platform.DriveType), ""));
@@ -119,7 +119,7 @@ namespace Symbiote.Core.Platform.UNIX
             sdRoot.AddChild(new PlatformConnectorItem("PercentFree", typeof(double), ""));
 
             // data drive
-            IConnectorItem ddRoot = dRoot.AddChild(new PlatformConnectorItem("Data"));
+            IComposite ddRoot = dRoot.AddChild(new PlatformConnectorItem("Data"));
             ddRoot.AddChild(new PlatformConnectorItem("Name", typeof(string), ""));
             ddRoot.AddChild(new PlatformConnectorItem("Path", typeof(string), ""));
             ddRoot.AddChild(new PlatformConnectorItem("Type", typeof(Platform.DriveType), ""));

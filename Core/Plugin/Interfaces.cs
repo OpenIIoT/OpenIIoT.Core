@@ -40,10 +40,10 @@ namespace Symbiote.Core.Plugin
     public interface IConnector : IPluginInstance
     {
         bool Browseable { get; }
-        List<IConnectorItem> Browse(IConnectorItem root);
-        object Read(string item);
+        List<IComposite> Browse(IComposite root);
+        object Read(string fqn);
         bool Writeable { get; }
-        void Write(string item, object value);
+        void Write(string fqn, object value);
     }
 
     public interface IService : IPluginInstance
@@ -51,17 +51,17 @@ namespace Symbiote.Core.Plugin
         void Start();
     }
 
-    public interface IConnectorItem 
-    {
-        IConnectorItem Parent { get; }
-        string Name { get; }
-        string Path { get; }
-        string FQN { get; }
-        Type Type { get; }
-        string SourceAddress { get; }
-        List<IConnectorItem> Children { get; }
-        bool HasChildren();
-        IConnectorItem AddChild(IConnectorItem child);
-        IConnectorItem SetParent(IConnectorItem parent);
-    }
+    //public interface IConnectorItem 
+    //{
+    //    IConnectorItem Parent { get; }
+    //    string Name { get; }
+    //    string Path { get; }
+    //    string FQN { get; }
+    //    Type Type { get; }
+    //    string SourceAddress { get; }
+    //    List<IConnectorItem> Children { get; }
+    //    bool HasChildren();
+    //    IConnectorItem AddChild(IConnectorItem child);
+    //    IConnectorItem SetParent(IConnectorItem parent);
+    //}
 }
