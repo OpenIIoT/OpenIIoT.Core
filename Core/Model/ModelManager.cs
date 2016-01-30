@@ -15,8 +15,8 @@ namespace Symbiote.Core.Model
         private ProgramManager manager;
         private static ModelManager instance;
 
-        internal ModelItem Model { get; private set; }
-        internal Dictionary<string, ModelItem> Dictionary { get; private set; }
+        internal Item Model { get; private set; }
+        internal Dictionary<string, Item> Dictionary { get; private set; }
 
         private ModelManager(ProgramManager manager)
         {
@@ -56,9 +56,9 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Builds a Model using the provided list of ConfigurationModelItems and returns a ModelBuildResult containing the result.
+        /// Builds a Model using the provided list of ConfigurationItems and returns a ModelBuildResult containing the result.
         /// </summary>
-        /// <param name="itemList">A list of ConfigurationModelItems containing Model Items to build.</param>
+        /// <param name="itemList">A list of ConfigurationItems containing Model Items to build.</param>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         public ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList)
         {
@@ -109,7 +109,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Accepts a list of Configuration.ModelItems and recursively instantiates items in the Model corresponding to the items in the list.
+        /// Accepts a list of Configuration.Items and recursively instantiates items in the Model corresponding to the items in the list.
         /// </summary>
         /// <param name="itemList">A list of model items from which to build the model.</param>
         /// <param name="result">An instance of ModelBuildResult, ideally new.  The method will recursively pass it to itself and return it to the calling method when complete.</param>
@@ -136,12 +136,12 @@ namespace Symbiote.Core.Model
             // iterate through the list of items
             foreach (ConfigurationModelItem i in items)
             {
-                ModelItem newItem;
+                Item newItem;
                 try
                 {
                     logger.Trace(new String('-', 30));
                     logger.Trace("ConfigurationModelItem: " + i.ToString());
-                    newItem = JsonConvert.DeserializeObject<ModelItem>(i.Definition);
+                    newItem = JsonConvert.DeserializeObject<Item>(i.Definition);
                     logger.Trace("Deserialized: " + newItem.ToString());
 
                     // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
@@ -213,11 +213,11 @@ namespace Symbiote.Core.Model
         /// <param name="itemRoot">The ModelItem from which to start recursively updating the list.</param>
         /// <param name="configuration">The list of ConfigurationModelItems to update.</param>
         /// <returns>Returns true if the save succeeded, false otherwise.</returns>
-        private List<ConfigurationModelItem> SaveModel(ModelItem itemRoot, List<ConfigurationModelItem> configuration)
+        private List<ConfigurationModelItem> SaveModel(Item itemRoot, List<ConfigurationModelItem> configuration)
         {
             configuration.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson() });
 
-            foreach(ModelItem mi in itemRoot.Children)
+            foreach(Item mi in itemRoot.Children)
             {
                 SaveModel(mi, configuration);
             }
@@ -231,7 +231,7 @@ namespace Symbiote.Core.Model
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
         /// <returns>The ModelItem from the Model corresponding to the supplied key.</returns>
         /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
-        public ModelItem FindItem(string fqn)
+        public Item FindItem(string fqn)
         {
             try
             {
@@ -239,7 +239,7 @@ namespace Symbiote.Core.Model
             }
             catch (Exception ex)
             {
-                return default(ModelItem);
+                return default(Item);
             }
         }
 
@@ -249,7 +249,7 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary from which to retrieve the item.</param>
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
         /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
-        private ModelItem FindItem(Dictionary<string, ModelItem> dictionary, string fqn)
+        private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
         {
             return dictionary[fqn];
         }
@@ -259,7 +259,7 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to add.</param>
         /// <returns>The added Item.</returns>
-        public ModelItem AddItem(ModelItem item)
+        public Item AddItem(Item item)
         {
             try
             {
@@ -268,7 +268,7 @@ namespace Symbiote.Core.Model
             catch (Exception ex)
             {
                 logger.Warn("The item '" + item.FQN + "' could not be added to the model: " + ex.Message);
-                return default(ModelItem);
+                return default(Item);
             }
         }
 
@@ -279,7 +279,7 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary to which to add the Item.</param>
         /// <param name="item">The Item to add.</param>
         /// <returns>The added Item.</returns>
-        private ModelItem AddItem(ModelItem model, Dictionary<string, ModelItem> dictionary, ModelItem item)
+        private Item AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
             string parentFQN = GetParentFQNFromItemFQN(item.FQN);
 
@@ -303,7 +303,7 @@ namespace Symbiote.Core.Model
             else
             {
                 // ensure the item hasn't been added already.
-                if (FindItem(item.FQN) != default(ModelItem))
+                if (FindItem(item.FQN) != default(Item))
                     throw new ItemAlreadyAddedException("The item already exists in the dictionary.");
 
                 try
@@ -316,7 +316,7 @@ namespace Symbiote.Core.Model
                 }
                 catch (KeyNotFoundException ex)
                 {
-                    throw new ItemParentMissingException(parentFQN);
+                    throw new ItemParentMissingException("The parent for item '" + model.FQN + " [" + parentFQN + "] could not be found.");
                 }
             }
         }
@@ -326,9 +326,19 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to remove.</param>
         /// <returns>The removed Item.</returns>
-        public ModelItem RemoveItem(ModelItem item)
+        public Item RemoveItem(Item item)
         {
             return RemoveItem(Dictionary, item);
+        }
+
+        public Item RemoveItem(string fqn)
+        {
+            Item foundItem = FindItem(fqn);
+
+            if (foundItem == default(Item))
+                return foundItem;
+            else
+                return RemoveItem(foundItem);
         }
 
         /// <summary>
@@ -337,42 +347,49 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary from which to remove the Item.</param>
         /// <param name="item">The Item to remove.</param>
         /// <returns>The removed Item.</returns>
-        private ModelItem RemoveItem(Dictionary<string, ModelItem> dictionary, ModelItem item)
+        private Item RemoveItem(Dictionary<string, Item> dictionary, Item item)
         {
-            ModelItem itemInstance = FindItem(item.FQN);
+            try
+            {
+                if (item == default(Item)) return item;
+                if (item.Parent == item)
+                    throw new ModelRootRemovalException("Removing a Model's root is not permitted.");
 
-            if (itemInstance.Parent == itemInstance)
-                throw new ModelRootRemovalException("Removing a Model's root is not permitted.");
 
-            itemInstance.Parent.RemoveChild(itemInstance);
-            dictionary.Remove(item.FQN);
-            return itemInstance;
+                item.Parent.RemoveChild(item);
+                dictionary.Remove(item.FQN);
+            }
+            catch (Exception ex)
+            {
+                logger.Trace("Exception thrown removing item '" + item.FQN + "' from the model: " + ex.Message);
+            }
+            return item;
         }
 
         /// <summary>
-        /// Moves the supplied ModelItem from one place in the ModelManager's instances of Model and Dictionary to another based on the supplied FQN.
+        /// Moves the supplied Item from one place in the ModelManager's instances of Model and Dictionary to another based on the supplied FQN.
         /// </summary>
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the item.</param>
         /// <returns>The updated Item.</returns>
-        public ModelItem MoveItem(ModelItem item, string fqn)
+        public Item MoveItem(Item item, string fqn)
         {
             return MoveItem(Model, Dictionary, item, fqn);
         }
 
         /// <summary>
-        /// Moves the supplied ModelItem from one place in the supplied Model and Dictionary to another based on the supplied FQN.
+        /// Moves the supplied Item from one place in the supplied Model and Dictionary to another based on the supplied FQN.
         /// </summary>
         /// <param name="model">The Model containing the supplied Item.</param>
         /// <param name="dictionary">The Dictionary containing the supplied Item.</param>
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the Item.</param>
         /// <returns>The updated Item.</returns>
-        private ModelItem MoveItem(ModelItem model, Dictionary<string, ModelItem> dictionary, ModelItem item, string fqn)
+        private Item MoveItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
             // find the parent item first to ensure the provided FQN is valid
             // this will throw an exception if it fails.
-            ModelItem parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
+            Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
 
             // delete the existing item
             RemoveItem(dictionary, item);

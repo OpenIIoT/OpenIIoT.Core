@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.Composite;
 using System.Diagnostics;
 
 namespace Symbiote.Core.Platform.Windows
 {
     internal class PlatformConnector : IConnector
     {
-        private IComposite itemRoot;
+        private Item itemRoot;
         private PerformanceCounter cpuUsed;
         private PerformanceCounter cpuIdle;
 
@@ -49,12 +48,12 @@ namespace Symbiote.Core.Platform.Windows
 
         }
 
-        public IComposite Browse()
+        public Item Browse()
         {
             return itemRoot;
         }
 
-        public List<IComposite> Browse(IComposite root)
+        public List<Item> Browse(Item root)
         {
             return root.Children;
         }
@@ -92,12 +91,12 @@ namespace Symbiote.Core.Platform.Windows
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new ReadOnlyComposite(InstanceName, true);
+            itemRoot = new Item(InstanceName);
 
             // create CPU items
-            IComposite cpuRoot = itemRoot.AddChild(new ReadOnlyComposite("CPU"));
-            cpuRoot.AddChild(new ReadOnlyComposite("CPU.% Processor Time", typeof(double), ""));
-            cpuRoot.AddChild(new ReadOnlyComposite("CPU.% Idle Time", typeof(double), ""));
+            Item cpuRoot = itemRoot.AddChild(new Item("CPU"));
+            cpuRoot.AddChild(new Item("CPU.% Processor Time", typeof(double), ""));
+            cpuRoot.AddChild(new Item("CPU.% Idle Time", typeof(double), ""));
 
             // prepare variables to use for processor time.  you need two successive values to 
             // report accurately so rather than sleeping the thread we will just keep track from 
@@ -106,36 +105,36 @@ namespace Symbiote.Core.Platform.Windows
             lastCPUIdle = 0;
 
             // create memory items
-            IComposite memRoot = itemRoot.AddChild(new ReadOnlyComposite("Memory"));
-            memRoot.AddChild(new ReadOnlyComposite("Memory.Total", typeof(double), ""));
-            memRoot.AddChild(new ReadOnlyComposite("Memory.Available", typeof(double), ""));
-            memRoot.AddChild(new ReadOnlyComposite("Memory.Cached", typeof(double), ""));
-            memRoot.AddChild(new ReadOnlyComposite("Memory.% Used", typeof(double), ""));
+            Item memRoot = itemRoot.AddChild(new Item("Memory"));
+            memRoot.AddChild(new Item("Memory.Total", typeof(double), ""));
+            memRoot.AddChild(new Item("Memory.Available", typeof(double), ""));
+            memRoot.AddChild(new Item("Memory.Cached", typeof(double), ""));
+            memRoot.AddChild(new Item("Memory.% Used", typeof(double), ""));
 
             // create drive items
-            IComposite dRoot = itemRoot.AddChild(new ReadOnlyComposite("Drives"));
+            Item dRoot = itemRoot.AddChild(new Item("Drives"));
 
             // system drive
-            IComposite sdRoot = dRoot.AddChild(new ReadOnlyComposite("Drives.System"));
-            sdRoot.AddChild(new ReadOnlyComposite("Drives.System.Name", typeof(string), ""));
-            sdRoot.AddChild(new ReadOnlyComposite("Path", typeof(string), ""));
-            sdRoot.AddChild(new ReadOnlyComposite("Type", typeof(Platform.DriveType), ""));
-            sdRoot.AddChild(new ReadOnlyComposite("Capacity", typeof(long), ""));
-            sdRoot.AddChild(new ReadOnlyComposite("UsedSpace", typeof(long), ""));
-            sdRoot.AddChild(new ReadOnlyComposite("FreeSpace", typeof(long), ""));
-            sdRoot.AddChild(new ReadOnlyComposite("PercentUsed", typeof(double), ""));
-            sdRoot.AddChild(new ReadOnlyComposite("PercentFree", typeof(double), ""));
+            Item sdRoot = dRoot.AddChild(new Item("Drives.System"));
+            sdRoot.AddChild(new Item("Drives.System.Name", typeof(string), ""));
+            sdRoot.AddChild(new Item("Path", typeof(string), ""));
+            sdRoot.AddChild(new Item("Type", typeof(Platform.DriveType), ""));
+            sdRoot.AddChild(new Item("Capacity", typeof(long), ""));
+            sdRoot.AddChild(new Item("UsedSpace", typeof(long), ""));
+            sdRoot.AddChild(new Item("FreeSpace", typeof(long), ""));
+            sdRoot.AddChild(new Item("PercentUsed", typeof(double), ""));
+            sdRoot.AddChild(new Item("PercentFree", typeof(double), ""));
 
             // data drive
-            IComposite ddRoot = dRoot.AddChild(new ReadOnlyComposite("Data"));
-            ddRoot.AddChild(new ReadOnlyComposite("Name", typeof(string), ""));
-            ddRoot.AddChild(new ReadOnlyComposite("Path", typeof(string), ""));
-            ddRoot.AddChild(new ReadOnlyComposite("Type", typeof(Platform.DriveType), ""));
-            ddRoot.AddChild(new ReadOnlyComposite("Capacity", typeof(long), ""));
-            ddRoot.AddChild(new ReadOnlyComposite("UsedSpace", typeof(long), ""));
-            ddRoot.AddChild(new ReadOnlyComposite("FreeSpace", typeof(long), ""));
-            ddRoot.AddChild(new ReadOnlyComposite("PercentUsed", typeof(double), ""));
-            ddRoot.AddChild(new ReadOnlyComposite("PercentFree", typeof(double), ""));
+            Item ddRoot = dRoot.AddChild(new Item("Data"));
+            ddRoot.AddChild(new Item("Name", typeof(string), ""));
+            ddRoot.AddChild(new Item("Path", typeof(string), ""));
+            ddRoot.AddChild(new Item("Type", typeof(Platform.DriveType), ""));
+            ddRoot.AddChild(new Item("Capacity", typeof(long), ""));
+            ddRoot.AddChild(new Item("UsedSpace", typeof(long), ""));
+            ddRoot.AddChild(new Item("FreeSpace", typeof(long), ""));
+            ddRoot.AddChild(new Item("PercentUsed", typeof(double), ""));
+            ddRoot.AddChild(new Item("PercentFree", typeof(double), ""));
         }
     }
 }

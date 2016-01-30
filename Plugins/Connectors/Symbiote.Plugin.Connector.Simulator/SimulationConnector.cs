@@ -4,14 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.Composite;
 using Symbiote.Core;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
     public class SimulationConnector : IConnector
     {
-        private IComposite itemRoot;
+        private Item itemRoot;
         
         public string Name { get; private set; }
         public string FullName { get; private set; }
@@ -41,12 +40,12 @@ namespace Symbiote.Plugin.Connector.Simulation
         {
         }
 
-        public IComposite Browse()
+        public Item Browse()
         {
             return itemRoot;
         }
 
-        public List<IComposite> Browse(IComposite root)
+        public List<Item> Browse(Item root)
         {
             return (root == null ? itemRoot.Children : root.Children);
         }
@@ -82,18 +81,18 @@ namespace Symbiote.Plugin.Connector.Simulation
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new ReadOnlyComposite(InstanceName, true);
+            itemRoot = new Item(InstanceName, true);
 
             // create some simulation items
-            IComposite mathRoot = itemRoot.AddChild(new ReadOnlyComposite("Math"));
-            mathRoot.AddChild(new ReadOnlyComposite("Sine", typeof(double)));
-            mathRoot.AddChild(new ReadOnlyComposite("Cosine", typeof(double)));
-            mathRoot.AddChild(new ReadOnlyComposite("Tangent", typeof(double)));
+            Item mathRoot = itemRoot.AddChild(new Item("Math"));
+            mathRoot.AddChild(new Item("Sine", typeof(double)));
+            mathRoot.AddChild(new Item("Cosine", typeof(double)));
+            mathRoot.AddChild(new Item("Tangent", typeof(double)));
 
-            IComposite processRoot = itemRoot.AddChild(new ReadOnlyComposite("Process"));
-            processRoot.AddChild(new ReadOnlyComposite("Ramp", typeof(double)));
-            processRoot.AddChild(new ReadOnlyComposite("Step", typeof(double)));
-            processRoot.AddChild(new ReadOnlyComposite("Toggle", typeof(double)));
+            Item processRoot = itemRoot.AddChild(new Item("Process"));
+            processRoot.AddChild(new Item("Ramp", typeof(double)));
+            processRoot.AddChild(new Item("Step", typeof(double)));
+            processRoot.AddChild(new Item("Toggle", typeof(double)));
         }
     }
 

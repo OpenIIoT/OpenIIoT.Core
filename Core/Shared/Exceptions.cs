@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Symbiote.Core.Composite
+namespace Symbiote.Core
 {
     public class CompositeException : ApplicationException
     {

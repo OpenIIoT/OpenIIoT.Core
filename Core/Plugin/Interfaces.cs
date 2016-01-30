@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
-using Symbiote.Core.Composite;
 
 namespace Symbiote.Core.Plugin
 {
@@ -41,8 +40,8 @@ namespace Symbiote.Core.Plugin
     public interface IConnector : IPluginInstance
     {
         bool Browseable { get; }
-        IComposite Browse();
-        List<IComposite> Browse(IComposite root);
+        Item Browse();
+        List<Item> Browse(Item root);
         object Read(string fqn);
         bool Writeable { get; }
         void Write(string fqn, object value);
@@ -52,18 +51,4 @@ namespace Symbiote.Core.Plugin
     {
         void Start();
     }
-
-    //public interface IConnectorItem 
-    //{
-    //    IConnectorItem Parent { get; }
-    //    string Name { get; }
-    //    string Path { get; }
-    //    string FQN { get; }
-    //    Type Type { get; }
-    //    string SourceAddress { get; }
-    //    List<IConnectorItem> Children { get; }
-    //    bool HasChildren();
-    //    IConnectorItem AddChild(IConnectorItem child);
-    //    IConnectorItem SetParent(IConnectorItem parent);
-    //}
 }

@@ -8,7 +8,6 @@ using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.Composite;
 using System.Timers;
 
 namespace Symbiote.Core
@@ -114,7 +113,22 @@ namespace Symbiote.Core
                 logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugins loaded.");
 
                 manager.ModelManager.AttachModel(manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items));
+                logger.Info("Attached model:");
                 PrintItemChildren(manager.ModelManager.Model, 0);
+
+                //----------------------------------- - - --------  - -------- -  -   -  -           -
+                // attach the Platform connector items to the model
+                //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
+                // detatch anything that was loaded from the config file
+                manager.ModelManager.RemoveItem(manager.ModelManager.FindItem("Symbiote.System.Platform"));
+                logger.Info("Removed previous platform items:");
+                PrintItemChildren(manager.ModelManager.Model, 0);
+
+                logger.Info("Attaching new platform items:");
+                manager.PlatformManager.Platform.InstantiateConnector("Symbiote.System.Platform");
+                manager.ModelManager.AddItem(new Item("Symbiote.System"));
+
+                manager.ModelManager.AddItem(manager.PlatformManager.Platform.Connector.Browse());
 
                 //manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
 
@@ -127,13 +141,13 @@ namespace Symbiote.Core
                 //Model.ModelItem itemx = new Model.ModelItem("Symbiote.Folder3.SATest", typeof(string), "N47:0");
                 //manager.ModelManager.AddItem(itemx);
 
-                //PrintItemChildren(manager.ModelManager.Model, 0);
+                PrintItemChildren(manager.ModelManager.Model, 0);
 
                 //// save
-                //logger.Info("-------------- saving");
+                logger.Info("-------------- saving");
 
-                //if (manager.ModelManager.SaveModel())
-                //    manager.ConfigurationManager.SaveConfiguration();
+                if (manager.ModelManager.SaveModel())
+                    manager.ConfigurationManager.SaveConfiguration();
 
                 PrintConnectorPluginItemChildren(manager.PlatformManager.Platform.Connector);
 
@@ -161,11 +175,11 @@ namespace Symbiote.Core
             logger.Info("Symbiote stopped.");
         }
 
-        private static void PrintItemChildren(Model.ModelItem root, int indent)
+        private static void PrintItemChildren(Item root, int indent)
         {
             logger.Info(new string('\t',indent) + root.FQN + " [" + root.SourceAddress + "] children: " + root.Children.Count());
 
-            foreach (Model.ModelItem i in root.Children)
+            foreach (Item i in root.Children)
             {
                 PrintItemChildren(i, indent + 1);
             }
@@ -173,17 +187,18 @@ namespace Symbiote.Core
 
         private static void PrintConnectorPluginItemChildren(IConnector connector)
         {
-            PrintConnectorPluginItemChildren(connector, connector.Browse(), 0);
+            logger.Info(connector.Browse().FQN);
+            PrintConnectorPluginItemChildren(connector, connector.Browse(), 1);
         }
 
-        private static void PrintConnectorPluginItemChildren(IConnector connector, IComposite root, int indent)
+        private static void PrintConnectorPluginItemChildren(IConnector connector, Item root, int indent)
         {
-            foreach (IComposite i in connector.Browse(root))
+            foreach (Item i in connector.Browse(root))
             {
                 if (i.HasChildren() == false)
-                    logger.Info("level: " + indent.ToString() + " Item: " + i.Name + "; FQN: " + i.FQN + " Value: " + connector.Read(i.FQN).ToString());
+                    logger.Info(new string('\t', indent) + i.FQN + " Value: " + connector.Read(i.FQN).ToString());
                 else
-                    logger.Info("Folder: " + indent.ToString() + " Folder: " + i.Name);
+                    logger.Info(new string('\t', indent) + i.FQN);
                 PrintConnectorPluginItemChildren(connector, i, indent + 1);
             }
         }

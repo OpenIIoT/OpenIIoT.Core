@@ -36,7 +36,12 @@ namespace Symbiote.Core.Platform.UNIX
 
             PlatformType = Core.Platform.PlatformType.Windows;
             Version = Environment.OSVersion.VersionString;
-            Connector = new PlatformConnector("System.Platform");
+        }
+
+        public IConnector InstantiateConnector(string rootPath)
+        {
+            Connector = new PlatformConnector(rootPath);
+            return Connector;
         }
 
         public List<string> GetDirectoryList(string root)
