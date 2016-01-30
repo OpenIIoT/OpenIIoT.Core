@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{544AC559-80C1-4A8F-AC81-5997166DA050}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Simulator", "Plugins\Connectors\Symbiote.Plugin.Connector.Simulator\Symbiote.Plugin.Connector.Simulator.csproj", "{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Simulation", "Plugins\Connectors\Symbiote.Plugin.Connector.Simulator\Symbiote.Plugin.Connector.Simulation.csproj", "{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

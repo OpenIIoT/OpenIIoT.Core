@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
 
-namespace Symbiote.Plugin.Connector.Simulator
+namespace Symbiote.Plugin.Connector.Simulation
 {
-    public class SimulatorConnector : IConnector
+    public class SimulationConnector : IConnector
     {
         private IConnectorItem itemRoot;
         
@@ -22,7 +22,7 @@ namespace Symbiote.Plugin.Connector.Simulator
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
-        public SimulatorConnector(string instanceName)
+        public SimulationConnector(string instanceName)
         {
             InstanceName = instanceName;
 

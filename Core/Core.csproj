@@ -73,6 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Collector\CollectorManager.cs" />
+    <Compile Include="Configuration\Exceptions.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginItem.cs" />
@@ -82,6 +83,7 @@
     <Compile Include="Model\Enumerations.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\Exceptions.cs" />
+    <Compile Include="Platform\Exceptions.cs" />
     <Compile Include="Shared\Composite.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />

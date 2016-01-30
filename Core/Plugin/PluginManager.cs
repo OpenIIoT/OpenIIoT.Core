@@ -68,15 +68,14 @@ namespace Symbiote.Core.Plugin
         ///      If the name is correct, Load the assembly
         /// </remarks>
         /// <param name="folder">The folder containing the plugin files to load.</param>
-        /// <param name="platform">The IPlatform representing the current platform for the application.</param>
-        public void LoadPlugins(string folder, IPlatform platform)
+        public void LoadPlugins(string folder)
         {
             // prevent assemblies from being loaded twice
             if (pluginsLoaded)
                 throw new Exception("Error: plugins already loaded.  Restart the application to re-load.");
 
             // fetch a list of files from the specified directory using the platform-independent GetFileList method
-            List<string> files = platform.GetFileList(folder, "*.dll");
+            List<string> files = manager.PlatformManager.Platform.GetFileList(folder, "*.dll");
 
             // iterate through the found files
             foreach (string plugin in files)
@@ -127,9 +126,6 @@ namespace Symbiote.Core.Plugin
                     logger.Error(ex, "Plugin file '" + plugin + "' is not a valid plugin assembly.");                    
                     continue;
                 }
-
-
-
 
                 // attempt to load the assembly and add it to the internal list of plugins
                 logger.Trace("Validated assembly '" + assemblyName.ToString() + "'; attempting to load...");
@@ -193,7 +189,7 @@ namespace Symbiote.Core.Plugin
             logger.Trace("\tChecksum: " + newPlugin.Checksum);
 
             // TODO: check to see if the plugin exists by name only, and if so update the checksum if the config enables it
-            if (manager.Configuration.Plugins.AuthorizeNewPlugins)
+            if (manager.ConfigurationManager.Configuration.Plugins.AuthorizeNewPlugins)
             {
                 newPlugin.Authorization = PluginAuthorization.Authorized;
             }
@@ -204,14 +200,14 @@ namespace Symbiote.Core.Plugin
 
             logger.Trace("\tAuthorization: " + newPlugin.Authorization.ToString());
 
-            manager.Configuration.Plugins.Assemblies.Add(newPlugin);
+            manager.ConfigurationManager.Configuration.Plugins.Assemblies.Add(newPlugin);
             manager.ConfigurationManager.SaveConfiguration();
         }
 
         public string GetPluginChecksum(string fileName)
         {
             logger.Trace("Computing checksum for plugin file '" + fileName + "'...");
-            string retVal = manager.Platform.ComputeFileChecksum(fileName);
+            string retVal = manager.PlatformManager.Platform.ComputeFileChecksum(fileName);
             logger.Trace("MD5 checksum for file '" + fileName + "' computed as '" + retVal + ".");
             return retVal;
         }
@@ -221,7 +217,7 @@ namespace Symbiote.Core.Plugin
 
             logger.Trace("Determining authorization for plugin file '" + fileName + "' with checksum '" + checksum + "'...");
 
-            ConfigurationPluginItem retObj = manager.Configuration.Plugins.Assemblies
+            ConfigurationPluginItem retObj = manager.ConfigurationManager.Configuration.Plugins.Assemblies
                         .Where(p => p.FileName == System.IO.Path.GetFileName(fileName))
                         .Where(p => p.Checksum == checksum)
                         .FirstOrDefault();

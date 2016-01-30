@@ -21,10 +21,6 @@ namespace Symbiote.Core.Model
         private ModelManager(ProgramManager manager)
         {
             this.manager = manager;
-
-            ModelBuildResult result = BuildModel(manager.Configuration.Model.Items);
-            Model = result.Model;
-            Dictionary = result.Dictionary;
         }
 
         internal static ModelManager Instance(ProgramManager manager)
@@ -36,12 +32,27 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
+        /// Assigns the Model and Dictionary contained within the supplied ModelBuildResult to the manager's Model and Dictionary properties.
+        /// </summary>
+        /// <param name="modelBuildResult">The built model to attach to the manager.</param>
+        public void AttachModel(ModelBuildResult modelBuildResult)
+        {
+            if (modelBuildResult.Result == ModelBuildResultCode.Success)
+            {
+                Model = modelBuildResult.Model;
+                Dictionary = modelBuildResult.Dictionary;
+            }
+            else
+                throw new ModelAttachException("Unable to attach a model that failed to build.");
+        }
+
+        /// <summary>
         /// Builds a Model using the Model Configuration stored within the ProgramManager and returns a ModelBuildResult containing the result.
         /// </summary>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         public ModelBuildResult BuildModel()
         {
-            return BuildModel(manager.Configuration.Model.Items);
+            return BuildModel(manager.ConfigurationManager.Configuration.Model.Items);
         }
 
         /// <summary>
@@ -49,7 +60,7 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="itemList">A list of ConfigurationModelItems containing Model Items to build.</param>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
-        private ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList)
+        public ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList)
         {
             // clear the build result
             //BuildResult = new ModelBuildResult() { UnresolvedList = itemList.Clone() };
@@ -104,7 +115,7 @@ namespace Symbiote.Core.Model
         /// <param name="result">An instance of ModelBuildResult, ideally new.  The method will recursively pass it to itself and return it to the calling method when complete.</param>
         /// <param name="depth">The current depth of recursion. Defaults to 0 if omitted.</param>
         /// <returns>A list containing the items from itemList that were successfully instantiated in the model.</returns>
-        public ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList, ModelBuildResult result, int depth = 0)
+        private ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList, ModelBuildResult result, int depth = 0)
         {
             // we build the model recursively starting with root items (items with only one tuple in the FQN) and in ascending order
             // of the number of tuples in the FQN, e.x., "Symbiote.Platform.CPU.% Idle Time" is considered to be at level 4. while
@@ -188,7 +199,7 @@ namespace Symbiote.Core.Model
         public bool SaveModel(bool flushToDisk = false)
         {
             List<ConfigurationModelItem> updatedItems = SaveModel(Model, new List<ConfigurationModelItem>());
-            manager.Configuration.Model.Items = updatedItems;
+            manager.ConfigurationManager.Configuration.Model.Items = updatedItems;
 
             if (flushToDisk)
                 return manager.ConfigurationManager.SaveConfiguration();

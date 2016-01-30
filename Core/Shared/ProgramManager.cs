@@ -33,25 +33,13 @@ namespace Symbiote.Core
         public PlatformManager PlatformManager { get; private set; }
 
         /// <summary>
-        /// The Platform for the application.
-        /// </summary>
-        public IPlatform Platform { get; private set; }
-
-        /// <summary>
         /// The ConfigurationManager for the application.
         /// </summary>
         public ConfigurationManager ConfigurationManager { get; private set; }
-        /// <summary>
-        /// The Configuration for the application.
-        /// </summary>
-        public Configuration.Configuration Configuration { get; private set; }
 
         public PluginManager PluginManager { get; private set; }
-        public List<IPluginAssembly> PluginAssemblies { get; private set; }
-        public List<IPluginInstance> PluginInstances { get; private set; }
 
         public ModelManager ModelManager { get; private set; }
-        public ModelItem Model { get; private set; }
 
         private ProgramManager()
         {
@@ -64,26 +52,12 @@ namespace Symbiote.Core
             if (PlatformManager == null)
                 throw new Exception("PlatformManager.Instance() returned a null instance");
 
-            logger.Trace("PlatformManager instantiated.  Resolving the Platform...");
-            Platform = PlatformManager.Platform;
-            if (Platform == null)
-                throw new Exception("PlatformManager.Platform returned a null instance of IPlatform");
-            
-            logger.Trace("Platform Manager instantiated and Platform resolved.");
-
             // Configuration Manager
             //-----------------------------------------------------------------------------------
             logger.Trace("Instantiating the Configuration Manager...");
             ConfigurationManager = ConfigurationManager.Instance(this);
             if (ConfigurationManager == null)
                 throw new Exception("ConfigurationManager.Instance() returned a null instance.");
-
-            logger.Trace("ConfigurationManager instantiated.  Resolving the Configuration...");
-            Configuration = ConfigurationManager.Configuration;
-            if (Configuration == null)
-                throw new Exception("ConfigurationManager.Configuration returned a null instance of Configuration.");
-
-            logger.Trace("Configuration Manager instantiated and Configuration resolved.");
 
             // Plugin Manager
             //-----------------------------------------------------------------------------------
@@ -92,27 +66,12 @@ namespace Symbiote.Core
             if (PluginManager == null)
                 throw new Exception("PluginManager.Instance() returned a null instance.");
 
-            logger.Trace("Resolving the list of Plugin Assemblies...");
-            PluginAssemblies = PluginManager.PluginAssemblies;
-            if (PluginAssemblies == null)
-                throw new Exception("Failed to resolve the list of Plugin Assemblies.");
-
-            logger.Trace("Plugin Manager instantiated and list of Plugins resolved.");
-
             // Model Manager
             //-----------------------------------------------------------------------------------
             logger.Trace("Instantiating the Model Manager...");
             ModelManager = ModelManager.Instance(this);
             if (ModelManager == null)
                 throw new Exception("ModelManager.Instance() returned a null instance.");
-
-            //logger.Trace("Resolving the Model...");
-            //Model = ModelManager.Model;
-            //if (Model == null)
-            //    throw new Exception("Failed to resolve the Model.");
-
-            logger.Trace("Model manager instantiated and Model resolved.");
-            logger.Trace("Program Manager member instances instantiated.");
         }
 
         internal static ProgramManager Instance()

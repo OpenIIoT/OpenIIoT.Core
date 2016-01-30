@@ -1,15 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
 using Newtonsoft.Json;
-using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
-using Newtonsoft.Json.Linq;
 using Symbiote.Core.Model;
-using Symbiote.Core.Plugin;
 using Symbiote.Core.Configuration.Model;
 using Symbiote.Core.Configuration.Plugin;
 
@@ -39,7 +33,6 @@ namespace Symbiote.Core.Configuration
         private ConfigurationManager(ProgramManager manager)
         {
             this.manager = manager;
-            Configuration = InstantiateConfiguration();
         }
 
         /// <summary>
@@ -60,7 +53,7 @@ namespace Symbiote.Core.Configuration
         /// Failing that, builds a new (default) configuration file from scratch, saves it to the location specified in app.config and returns it.
         /// </summary>
         /// <returns>An instance of Configuration containing the loaded or newly generated configuration.</returns>
-        private Configuration InstantiateConfiguration()
+        public Configuration InstantiateConfiguration()
         {
             Configuration config;
 
@@ -70,6 +63,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 config = LoadConfiguration(configurationFile);
+                logger.Info("Loaded configuration from '" + configurationFile + "'.");
             }
             catch (Exception ex)
             {
@@ -80,9 +74,12 @@ namespace Symbiote.Core.Configuration
             }
 
             if ((config == default(Configuration)) || (config == null))
-                throw new ApplicationException("Failed to instantiate a configuration from both a configuration file and by building from scratch.");
+                throw new ConfigurationInstantiationException("Failed to instantiate a configuration from both a configuration file and by building from scratch.");
             else
+            {
+                Configuration = config;
                 return config;
+            }
         }
 
         /// <summary>
@@ -110,7 +107,7 @@ namespace Symbiote.Core.Configuration
         public bool SaveConfigurationAs(Configuration configuration, string fileName)
         {
             logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-            manager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented));
+            manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented));
             return true;
         }
 
@@ -122,7 +119,7 @@ namespace Symbiote.Core.Configuration
         public Configuration LoadConfiguration(string fileName)
         {
             logger.Trace("Attempting to load configuration from '" + fileName + "'...");
-            string configFile = manager.Platform.ReadFile(fileName);
+            string configFile = manager.PlatformManager.Platform.ReadFile(fileName);
             logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
             Configuration retVal;
@@ -193,7 +190,7 @@ namespace Symbiote.Core.Configuration
                     Version = "0.1.0.0",
                     PluginType = "Connector",
                     FileName = "Symbiote.Plugin.Connector.Simulation.dll",
-                    Checksum = "58ee417bc7df51ae70ba6b0f55bc25b3",
+                    Checksum = "d0344d25547969d17a3bf2ba299d81f7",
                     Authorization = PluginAuthorization.Authorized
                 });
 

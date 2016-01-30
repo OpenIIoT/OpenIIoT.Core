@@ -37,7 +37,7 @@ namespace Symbiote.Core
         /// Main entry point for the application.
         /// </summary>
         /// <remarks>
-        /// Responsible for instantiating the platform, loading plugins and determining whether to start
+        /// Responsible for instantiating the platform, and determining whether to start
         /// the application as a Windows service or console/interactive application.
         /// </remarks>
         /// <param name="args">Command line arguments.</param>
@@ -60,29 +60,27 @@ namespace Symbiote.Core
             }
             logger.Trace("The program manager was instantiated successfully.");
 
-            // display platform information.  The platform manager and platform are instantiated in the constructor of 
-            // the program manager.
-            logger.Info("Platform: " + manager.Platform.PlatformType.ToString() + " (" + manager.Platform.Version + ")");
 
-            // load plugins.  Calls the LoadPlugins method of the PluginManager and passes in the
-            // platform instance which contains methods used to list directory contents.  This is necessary for platform independence.
-            // 
-            logger.Info("Loading plugins...");
+            // instantiate the platform.
+            logger.Trace("Instantiating the platform...");
             try
             {
-                manager.PluginManager.LoadPlugins("Plugins", manager.Platform);
+                manager.PlatformManager.InstantiatePlatform();
             }
             catch (Exception ex)
             {
                 logger.Error(ex);
+                logger.Error("Failed to instantiate the platform.");
                 return;
             }
-            logger.Info(manager.PluginAssemblies.Count() + " Plugins loaded.");
+
+            // display platform information.
+            logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
 
             // start the application
             // if the platform is windows and it is not being run as an interactive application, Windows 
             // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
-            if ((manager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
+            if ((manager.PlatformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
             {
                 logger.Info("Starting application in service mode...");
                 ServiceBase.Run(new Service());
@@ -103,6 +101,18 @@ namespace Symbiote.Core
         {
             try
             {
+                // load the configuration.
+                logger.Info("Loading configuration...");
+                manager.ConfigurationManager.InstantiateConfiguration();
+
+
+                // load plugins.  Calls the LoadPlugins method of the PluginManager and passes in the
+                // platform instance which contains methods used to list directory contents.  This is necessary for platform independence.
+                logger.Info("Loading plugins...");
+                manager.PluginManager.LoadPlugins("Plugins");
+                logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugins loaded.");
+
+                manager.ModelManager.AttachModel(manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items));
                 PrintItemChildren(manager.ModelManager.Model, 0);
 
                 manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
@@ -134,7 +144,7 @@ namespace Symbiote.Core
         }
         public static void print(Object source, ElapsedEventArgs e)
         {
-            PrintConnectorPluginItemChildren(manager.Platform.Connector, null, 0);
+            PrintConnectorPluginItemChildren(manager.PlatformManager.Platform.Connector, null, 0);
         }
 
         /// <summary>

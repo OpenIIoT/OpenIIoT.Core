@@ -30,4 +30,9 @@ namespace Symbiote.Core.Model
     {
         public ItemAlreadyAddedException(string message) : base(message) { }
     }
+
+    public class ModelAttachException : ModelException
+    {
+        public ModelAttachException(string message) : base(message) { }
+    }
 }

@@ -19,3 +19,12 @@ C:\Users\JP\Desktop\Symbiote\Core\bin\Debug\NLog.xml
 C:\Users\JP\Desktop\Symbiote\Core\obj\Debug\Symbiote.exe
 C:\Users\JP\Desktop\Symbiote\Core\obj\Debug\Symbiote.pdb
 C:\Users\JP\Desktop\Projects\Symbiote\Core\bin\Debug\Documentation.XML
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Symbiote.exe.config
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Documentation.XML
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Symbiote.exe
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Symbiote.pdb
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Newtonsoft.Json.dll
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\NLog.dll
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\obj\Debug\Symbiote.exe
+C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\obj\Debug\Symbiote.pdb
