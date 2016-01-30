@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Composite
 {
     /// <summary>
     /// A semi-generic container impementing the Composite design pattern
@@ -11,8 +11,6 @@ namespace Symbiote.Core
     [JsonObject]
     public abstract class Composite : IComposite
     {
-        private object Value;
-
         // only serialize FQN and Type; the rest is either internal or can be derived
         /// <summary>
         /// The Fully Qualified Name of the item.
@@ -45,12 +43,26 @@ namespace Symbiote.Core
         /// The fully qualified name name of the source item
         /// </summary>
         public string SourceAddress { get; set; }
+
+        /// <summary>
+        /// The value of the composite item.
+        /// </summary>
+        /// <remarks>The access modifier used is protected to restrict access to this class and others derived from it</remarks>
+        [JsonIgnore]
+        protected object Value { get; set; }
+
         /// <summary>
         /// A Guid for the Item, generated when it is instantiated.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public Guid Guid { get; set; }
+
+        public bool IsDataStructure { get; private set; }
+
+        [JsonIgnore]
+        public bool IsDataMember { get; private set; }
+
         /// <summary>
         /// The collection of Items contained within this Item.
         /// </summary>
@@ -61,39 +73,25 @@ namespace Symbiote.Core
         /// <summary>
         /// An empty constructor used for instantiating the root node of a model.
         /// </summary>
-        public Composite() : this("", true) { }
+        public Composite() : this("", typeof(object), "", false, false, true) { }
+
         /// <summary>
-        /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object'.
+        /// Creates an instance of an Item with the given Fully Qualified Name to be used as the root of a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        public Composite(string fqn) : this(fqn, typeof(object), "", false) { }
+        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
+        public Composite(string fqn, bool isRoot) : this(fqn, typeof(object), "", false, false, isRoot) { }
+
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="type">The Type of the Item's value.</param>
+        /// <param name="sourceAddress">The Fully Qualified Name of the source item.</param>
+        /// <param name="isDataStructure">True if the item is a data structure containing members (rather than a logical grouping such as a folder), false otherwise.</param>
         /// <remarks>This constructor is used for deserialization.</remarks>
         [JsonConstructor]
-        public Composite(string fqn, Type type) : this(fqn, type, "", false) { }
-        /// <summary>
-        /// Creates an instance of an Item with the given Fully Qualified Name, type, and with the given Source Address.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="type">The Type of the Item's value.</param>
-        /// <param name="sourceAddress">The Source Address for the Item's value.</param>
-        public Composite(string fqn, Type type, string sourceAddress) : this(fqn, type, sourceAddress, false) { }
-        /// <summary>
-        /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object'.  If isRoot is true, marks the Item as the root item in a model.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Composite(string fqn, bool isRoot) : this(fqn, typeof(object), "", isRoot) { }
-        /// <summary>
-        /// Creates an instance of an Item with the given Fully Qualified Name and of type 'object' and with Source Address of the given source address.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="sourceAddress">The Source Address for the Item's value.</param>
-        public Composite(string fqn, string sourceAddress) : this(fqn, typeof(object), sourceAddress, false) { }
+        public Composite(string fqn, Type type, string sourceAddress, bool isDataStructure) : this(fqn, type, sourceAddress, isDataStructure, false, false) { }
 
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
@@ -101,12 +99,16 @@ namespace Symbiote.Core
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="type">The Type of the Item's value.</param>
         /// <param name="sourceAddress">The Fully Qualified Name of the source item.</param>
+        /// <param name="isDataStructure">True if the item is a data structure containing members (rather than a logical grouping such as a folder), false otherwise.</param>
+        /// <param name="isDataMember">True if the item is a data member contained within a data structure, false otherwise.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Composite(string fqn, Type type, string sourceAddress, bool isRoot) 
+        public Composite(string fqn, Type type = null, string sourceAddress = "", bool isDataStructure = false, bool isDataMember = false, bool isRoot = false) 
         {
             FQN = fqn;
-            Type = type;
+            Type = (type == null ? typeof(object) : type);
             SourceAddress = sourceAddress;
+            IsDataStructure = isDataStructure;
+            IsDataMember = isDataMember;
 
             // generate Name and Path from FQN
             string[] splitFQN = fqn.Split('.');
@@ -127,7 +129,7 @@ namespace Symbiote.Core
             if (isRoot)
             {
                 FQN = Name;
-                Path = "";
+                Path = FQN;
                 Parent = this;
             }
 
@@ -144,15 +146,18 @@ namespace Symbiote.Core
             // this is set in the constructor however this code will prevent issues if items are moved.
             Path = parent.FQN;
             FQN = Path + '.' + Name;
-
             Parent = parent;
+
+            if (parent.IsDataStructure || parent.IsDataMember)
+                DesignateAsDataMember();
+
             return this;
         }
 
         public IComposite AddChild(IComposite item)
         {
             Children.Add(item.SetParent(this));
-            return this;
+            return item;
         }
 
         public IComposite RemoveChild(IComposite item)
@@ -167,12 +172,42 @@ namespace Symbiote.Core
             return (Children.Count > 0);
         }
 
-        public string ToJson()
+        public IComposite DesignateAsDataStucture()
+        {
+            IsDataStructure = true;
+
+            // if a parent is a data structure, all items beneath it are data members
+            // designate all first-generation children as members; the designation will recurse through the 
+            // DesignateAsDataMember() function.
+            foreach (IComposite child in Children)
+                child.DesignateAsDataMember();
+
+            return this;
+        }
+
+        public IComposite DesignateAsDataMember()
+        {
+            if (Parent.IsDataStructure || Parent.IsDataMember)
+            {
+                IsDataMember = true;
+
+                // if a parent item is a data member, that item's children are also members.
+                // designate all if the first-generation children as members; the designation will recurse.
+                foreach (IComposite child in Children)
+                    child.DesignateAsDataMember();
+
+                return this;
+            }
+            else
+                throw new ParentNotDataStructureNorMemberException("Unable to set item as data member; parent is neither a data structure nor member.");
+        }
+
+        public virtual string ToJson()
         {
             return JsonConvert.SerializeObject(this);
         }
 
-        public bool IsValid()
+        public virtual bool IsValid()
         {
             return ((FQN != null) && (FQN.Length > 1) && (Type != null));
         }

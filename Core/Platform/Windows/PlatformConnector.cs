@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.Composite;
 using System.Diagnostics;
 
 namespace Symbiote.Core.Platform.Windows
@@ -48,9 +49,14 @@ namespace Symbiote.Core.Platform.Windows
 
         }
 
+        public IComposite Browse()
+        {
+            return itemRoot;
+        }
+
         public List<IComposite> Browse(IComposite root)
         {
-            return (root == null ? itemRoot.Children : root.Children);
+            return root.Children;
         }
 
         public object Read(string fqn)
@@ -86,12 +92,12 @@ namespace Symbiote.Core.Platform.Windows
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new PlatformConnectorItem(InstanceName, true);
+            itemRoot = new ReadOnlyComposite(InstanceName, true);
 
             // create CPU items
-            IComposite cpuRoot = itemRoot.AddChild(new PlatformConnectorItem("CPU"));
-            cpuRoot.AddChild(new PlatformConnectorItem("% Processor Time", typeof(double), ""));
-            cpuRoot.AddChild(new PlatformConnectorItem("% Idle Time", typeof(double), ""));
+            IComposite cpuRoot = itemRoot.AddChild(new ReadOnlyComposite("CPU"));
+            cpuRoot.AddChild(new ReadOnlyComposite("CPU.% Processor Time", typeof(double), ""));
+            cpuRoot.AddChild(new ReadOnlyComposite("CPU.% Idle Time", typeof(double), ""));
 
             // prepare variables to use for processor time.  you need two successive values to 
             // report accurately so rather than sleeping the thread we will just keep track from 
@@ -100,36 +106,36 @@ namespace Symbiote.Core.Platform.Windows
             lastCPUIdle = 0;
 
             // create memory items
-            IComposite memRoot = itemRoot.AddChild(new PlatformConnectorItem("Memory"));
-            memRoot.AddChild(new PlatformConnectorItem("Total", typeof(double), ""));
-            memRoot.AddChild(new PlatformConnectorItem("Available", typeof(double), ""));
-            memRoot.AddChild(new PlatformConnectorItem("Cached", typeof(double), ""));
-            memRoot.AddChild(new PlatformConnectorItem("% Used", typeof(double), ""));
+            IComposite memRoot = itemRoot.AddChild(new ReadOnlyComposite("Memory"));
+            memRoot.AddChild(new ReadOnlyComposite("Memory.Total", typeof(double), ""));
+            memRoot.AddChild(new ReadOnlyComposite("Memory.Available", typeof(double), ""));
+            memRoot.AddChild(new ReadOnlyComposite("Memory.Cached", typeof(double), ""));
+            memRoot.AddChild(new ReadOnlyComposite("Memory.% Used", typeof(double), ""));
 
             // create drive items
-            IComposite dRoot = itemRoot.AddChild(new PlatformConnectorItem("Drives"));
+            IComposite dRoot = itemRoot.AddChild(new ReadOnlyComposite("Drives"));
 
             // system drive
-            IComposite sdRoot = dRoot.AddChild(new PlatformConnectorItem("System"));
-            sdRoot.AddChild(new PlatformConnectorItem("Name", typeof(string), ""));
-            sdRoot.AddChild(new PlatformConnectorItem("Path", typeof(string), ""));
-            sdRoot.AddChild(new PlatformConnectorItem("Type", typeof(Platform.DriveType), ""));
-            sdRoot.AddChild(new PlatformConnectorItem("Capacity", typeof(long), ""));
-            sdRoot.AddChild(new PlatformConnectorItem("UsedSpace", typeof(long), ""));
-            sdRoot.AddChild(new PlatformConnectorItem("FreeSpace", typeof(long), ""));
-            sdRoot.AddChild(new PlatformConnectorItem("PercentUsed", typeof(double), ""));
-            sdRoot.AddChild(new PlatformConnectorItem("PercentFree", typeof(double), ""));
+            IComposite sdRoot = dRoot.AddChild(new ReadOnlyComposite("Drives.System"));
+            sdRoot.AddChild(new ReadOnlyComposite("Drives.System.Name", typeof(string), ""));
+            sdRoot.AddChild(new ReadOnlyComposite("Path", typeof(string), ""));
+            sdRoot.AddChild(new ReadOnlyComposite("Type", typeof(Platform.DriveType), ""));
+            sdRoot.AddChild(new ReadOnlyComposite("Capacity", typeof(long), ""));
+            sdRoot.AddChild(new ReadOnlyComposite("UsedSpace", typeof(long), ""));
+            sdRoot.AddChild(new ReadOnlyComposite("FreeSpace", typeof(long), ""));
+            sdRoot.AddChild(new ReadOnlyComposite("PercentUsed", typeof(double), ""));
+            sdRoot.AddChild(new ReadOnlyComposite("PercentFree", typeof(double), ""));
 
             // data drive
-            IComposite ddRoot = dRoot.AddChild(new PlatformConnectorItem("Data"));
-            ddRoot.AddChild(new PlatformConnectorItem("Name", typeof(string), ""));
-            ddRoot.AddChild(new PlatformConnectorItem("Path", typeof(string), ""));
-            ddRoot.AddChild(new PlatformConnectorItem("Type", typeof(Platform.DriveType), ""));
-            ddRoot.AddChild(new PlatformConnectorItem("Capacity", typeof(long), ""));
-            ddRoot.AddChild(new PlatformConnectorItem("UsedSpace", typeof(long), ""));
-            ddRoot.AddChild(new PlatformConnectorItem("FreeSpace", typeof(long), ""));
-            ddRoot.AddChild(new PlatformConnectorItem("PercentUsed", typeof(double), ""));
-            ddRoot.AddChild(new PlatformConnectorItem("PercentFree", typeof(double), ""));
+            IComposite ddRoot = dRoot.AddChild(new ReadOnlyComposite("Data"));
+            ddRoot.AddChild(new ReadOnlyComposite("Name", typeof(string), ""));
+            ddRoot.AddChild(new ReadOnlyComposite("Path", typeof(string), ""));
+            ddRoot.AddChild(new ReadOnlyComposite("Type", typeof(Platform.DriveType), ""));
+            ddRoot.AddChild(new ReadOnlyComposite("Capacity", typeof(long), ""));
+            ddRoot.AddChild(new ReadOnlyComposite("UsedSpace", typeof(long), ""));
+            ddRoot.AddChild(new ReadOnlyComposite("FreeSpace", typeof(long), ""));
+            ddRoot.AddChild(new ReadOnlyComposite("PercentUsed", typeof(double), ""));
+            ddRoot.AddChild(new ReadOnlyComposite("PercentFree", typeof(double), ""));
         }
     }
 }

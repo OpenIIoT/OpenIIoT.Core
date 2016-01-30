@@ -8,6 +8,7 @@ using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.Composite;
 using System.Timers;
 
 namespace Symbiote.Core
@@ -115,24 +116,26 @@ namespace Symbiote.Core
                 manager.ModelManager.AttachModel(manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items));
                 PrintItemChildren(manager.ModelManager.Model, 0);
 
-                manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
+                //manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
 
-                Model.ModelItem itemd = new Model.ModelItem("Symbiote.Folder3.DELETEME");
-                manager.ModelManager.AddItem(itemd);
+                //Model.ModelItem itemd = new Model.ModelItem("Symbiote.Folder3.DELETEME");
+                //manager.ModelManager.AddItem(itemd);
 
-                Model.ModelItem itemm = new Model.ModelItem("Symbiote.Folder3.MOVEME");
-                manager.ModelManager.AddItem(itemm);
+                //Model.ModelItem itemm = new Model.ModelItem("Symbiote.Folder3.MOVEME");
+                //manager.ModelManager.AddItem(itemm);
 
-                Model.ModelItem itemx = new Model.ModelItem("Symbiote.Folder3.SATest", typeof(string), "N47:0");
-                manager.ModelManager.AddItem(itemx);
+                //Model.ModelItem itemx = new Model.ModelItem("Symbiote.Folder3.SATest", typeof(string), "N47:0");
+                //manager.ModelManager.AddItem(itemx);
 
-                PrintItemChildren(manager.ModelManager.Model, 0);
+                //PrintItemChildren(manager.ModelManager.Model, 0);
 
-                // save
-                logger.Info("-------------- saving");
+                //// save
+                //logger.Info("-------------- saving");
 
-                if (manager.ModelManager.SaveModel())
-                    manager.ConfigurationManager.SaveConfiguration();
+                //if (manager.ModelManager.SaveModel())
+                //    manager.ConfigurationManager.SaveConfiguration();
+
+                PrintConnectorPluginItemChildren(manager.PlatformManager.Platform.Connector);
 
                 Console.WriteLine("Press ESC to stop");
                 Console.ReadLine();
@@ -166,6 +169,11 @@ namespace Symbiote.Core
             {
                 PrintItemChildren(i, indent + 1);
             }
+        }
+
+        private static void PrintConnectorPluginItemChildren(IConnector connector)
+        {
+            PrintConnectorPluginItemChildren(connector, connector.Browse(), 0);
         }
 
         private static void PrintConnectorPluginItemChildren(IConnector connector, IComposite root, int indent)

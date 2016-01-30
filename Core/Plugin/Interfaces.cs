@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using Symbiote.Core.Composite;
 
 namespace Symbiote.Core.Plugin
 {
@@ -40,6 +41,7 @@ namespace Symbiote.Core.Plugin
     public interface IConnector : IPluginInstance
     {
         bool Browseable { get; }
+        IComposite Browse();
         List<IComposite> Browse(IComposite root);
         object Read(string fqn);
         bool Writeable { get; }

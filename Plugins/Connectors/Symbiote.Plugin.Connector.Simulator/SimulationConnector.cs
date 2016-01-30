@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.Composite;
 using Symbiote.Core;
 
 namespace Symbiote.Plugin.Connector.Simulation
@@ -38,6 +39,11 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         public void Configure(string configuration)
         {
+        }
+
+        public IComposite Browse()
+        {
+            return itemRoot;
         }
 
         public List<IComposite> Browse(IComposite root)
@@ -76,69 +82,18 @@ namespace Symbiote.Plugin.Connector.Simulation
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new PluginConnectorItem("Items", true, InstanceName);
+            itemRoot = new ReadOnlyComposite(InstanceName, true);
 
             // create some simulation items
-            IComposite mathRoot = itemRoot.AddChild(new PluginConnectorItem("Math"));
-            mathRoot.AddChild(new PluginConnectorItem("Sine", typeof(double)));
-            mathRoot.AddChild(new PluginConnectorItem("Cosine", typeof(double)));
-            mathRoot.AddChild(new PluginConnectorItem("Tangent", typeof(double)));
+            IComposite mathRoot = itemRoot.AddChild(new ReadOnlyComposite("Math"));
+            mathRoot.AddChild(new ReadOnlyComposite("Sine", typeof(double)));
+            mathRoot.AddChild(new ReadOnlyComposite("Cosine", typeof(double)));
+            mathRoot.AddChild(new ReadOnlyComposite("Tangent", typeof(double)));
 
-            IComposite processRoot = itemRoot.AddChild(new PluginConnectorItem("Process"));
-            processRoot.AddChild(new PluginConnectorItem("Ramp", typeof(double)));
-            processRoot.AddChild(new PluginConnectorItem("Step", typeof(double)));
-            processRoot.AddChild(new PluginConnectorItem("Toggle", typeof(double)));
-        }
-    }
-
-    public class PluginConnectorItem : Composite
-    {
-        public IComposite Parent { get; private set; }
-        public string Name { get; private set; }
-        public string Path { get; private set; }
-        public string FQN { get; private set; }
-        public Type Type { get; private set; }
-        public string SourceAddress { get; private set; }
-        public List<IComposite> Children { get; private set; }
-        public string InstanceName { get; private set; }
-
-        public PluginConnectorItem(string name) : this(name, typeof(void), "", false, "") { }
-        public PluginConnectorItem(string name, Type type) : this(name, type, "", false, "") { }
-        public PluginConnectorItem(string name, bool isRoot, string instanceName) : this(name, typeof(void), "", isRoot, instanceName) { }
-        public PluginConnectorItem(string name, Type type, string sourceAddress) : this(name, type, sourceAddress, false, "") { }
-        public PluginConnectorItem(string name, Type type, string sourceAddress, bool isRoot, string instanceName)
-        {
-            Name = name;
-            Path = "";
-            FQN = "";
-            Type = type;
-            SourceAddress = sourceAddress;
-            Children = new List<IComposite>();
-
-            if (isRoot)
-            {
-                InstanceName = instanceName;
-                this.FQN = InstanceName;
-                this.SetParent(this);
-            }
-        }
-
-        public bool HasChildren()
-        {
-            return (Children.Count > 0);
-        }
-
-        public IComposite AddChild(IComposite child)
-        {
-            Children.Add(child.SetParent(this));
-            return child;
-        }
-
-        public IComposite SetParent(IComposite parent)
-        {
-            Path = parent.FQN;
-            FQN = Path + "." + Name;
-            return this;
+            IComposite processRoot = itemRoot.AddChild(new ReadOnlyComposite("Process"));
+            processRoot.AddChild(new ReadOnlyComposite("Ramp", typeof(double)));
+            processRoot.AddChild(new ReadOnlyComposite("Step", typeof(double)));
+            processRoot.AddChild(new ReadOnlyComposite("Toggle", typeof(double)));
         }
     }
 
