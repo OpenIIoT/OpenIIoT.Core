@@ -10,7 +10,7 @@ namespace Symbiote.Core
     /// A semi-generic container impementing the Composite design pattern
     /// </summary>
     [JsonObject]
-    public class Item 
+    public class Item : ICloneable
     {
         // only serialize FQN and Type; the rest is either internal or can be derived
         /// <summary>
@@ -247,6 +247,26 @@ namespace Symbiote.Core
         public virtual bool IsValid()
         {
             return ((FQN != null) && (FQN.Length > 1) && (Type != null));
+        }
+
+        /// <summary>
+        /// Creates and returns a clone of the Item.
+        /// </summary>
+        /// <returns>A clone of the Item.</returns>
+        /// <remarks>We aren't using .MemberWiseClone() because of the GuID.  We need a "deep copy".</remarks>
+        public virtual object Clone()
+        {
+            Item retVal = new Item(FQN, Type, SourceAddress, IsDataStructure, IsDataMember, (Parent == this));
+            retVal.Name = Name;
+            retVal.Path = Path;
+            retVal.Parent = Parent;
+            retVal.Children = Children.Clone<Item>();
+            return retVal;
+        }
+
+        public override string ToString()
+        {
+            return FQN;
         }
     }
 }

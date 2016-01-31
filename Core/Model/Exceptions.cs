@@ -28,7 +28,11 @@ namespace Symbiote.Core.Model
     }
     public class ItemAlreadyAddedException : ModelException
     {
-        public ItemAlreadyAddedException(string message) : base(message) { }
+        public Item ExistingItem { get; private set; }
+        public ItemAlreadyAddedException(string message, Item existingItem) : base(message)
+        {
+            ExistingItem = existingItem;
+        }
     }
 
     public class ModelAttachException : ModelException

@@ -233,14 +233,7 @@ namespace Symbiote.Core.Model
         /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
         public Item FindItem(string fqn)
         {
-            try
-            {
-                return FindItem(Dictionary, fqn);
-            }
-            catch (Exception ex)
-            {
-                return default(Item);
-            }
+            return FindItem(Dictionary, fqn);
         }
 
         /// <summary>
@@ -251,7 +244,15 @@ namespace Symbiote.Core.Model
         /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
         private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
         {
-            return dictionary[fqn];
+            try
+            {
+                return dictionary[fqn];
+            }
+            catch (Exception ex)
+            {
+                return default(Item);
+            }
+
         }
 
         /// <summary>
@@ -265,6 +266,11 @@ namespace Symbiote.Core.Model
             {
                 return AddItem(Model, Dictionary, item);
             }
+            catch (ItemAlreadyAddedException ex)
+            {
+                logger.Warn("The item '" + item.FQN + "' has already been added.  Returing the existing instance.");
+                return ex.ExistingItem;
+            }
             catch (Exception ex)
             {
                 logger.Warn("The item '" + item.FQN + "' could not be added to the model: " + ex.Message);
@@ -273,7 +279,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Adds and Item to the given Model and Dictionary.
+        /// Adds an Item to the given Model and Dictionary.
         /// </summary>
         /// <param name="model">The Model to which to add the Item.</param>
         /// <param name="dictionary">The Dictionary to which to add the Item.</param>
@@ -303,8 +309,9 @@ namespace Symbiote.Core.Model
             else
             {
                 // ensure the item hasn't been added already.
-                if (FindItem(item.FQN) != default(Item))
-                    throw new ItemAlreadyAddedException("The item already exists in the dictionary.");
+                Item foundItem = FindItem(dictionary, item.FQN);
+                if (foundItem != default(Item))
+                    throw new ItemAlreadyAddedException("The item already exists in the dictionary.", foundItem);
 
                 try
                 {
@@ -322,6 +329,59 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
+        /// Attaches the provided Item to the Item with the supplied FQN.
+        /// </summary>
+        /// <param name="item">The Item to attach to the Model.</param>
+        /// <param name="parentItemFQN">The Fully Qualified Name of the Item to which the new Item should be attached.</param>
+        /// <returns>The attached Item.</returns>
+        public Item AttachItem(Item item, string parentItemFQN)
+        {
+            Item foundItem = FindItem(parentItemFQN);
+
+            if (foundItem == default(Item))
+                throw new ItemParentMissingException("The supplied Item can't be attached to '" + parentItemFQN + "' because the parent item wasn't found in the model.");
+
+            return AttachItem(item, FindItem(parentItemFQN));
+        }
+
+        /// <summary>
+        /// Attaches the provided Item to the supplied Item.
+        /// </summary>
+        /// <param name="item">The Item to attach to the Model.</param>
+        /// <param name="parentItem">The Item to which the new Item should be attached.</param>
+        /// <returns>The attached Item.</returns>
+        public Item AttachItem(Item item, Item parentItem)
+        {
+            logger.Info("Attaching " + item.ToString() + " to " + parentItem.ToString());
+
+            // create a 1:1 clone of the supplied item
+            Item newItem = (Item)item.Clone();
+
+            // set the SourceAddress of the new item to the FQN of the original item to create a link
+            newItem.SourceAddress = newItem.FQN;
+
+            // modify the FQN of the cloned item to reflect it's new path
+            newItem.FQN = parentItem.FQN + "." + newItem.Name;
+
+            // create a temporary list of the items children
+            List<Item> children = newItem.Children.Clone<Item>();
+
+            // remove the children from the item (you leave my babies!)
+            newItem.Children.Clear();
+            // they're my babies now, you commie son of a bitch!
+
+            // add the cloned and cleaned item to the model
+            AddItem(newItem);
+
+            // for each child of the original item, attach that item to the model under the cloned and cleaned parent
+            foreach(Item child in children)
+            {
+                AttachItem(child, newItem);
+            }
+            return newItem;
+        }
+
+        /// <summary>
         /// Removes an Item from the ModelManager's Dictionary and removes it from its parent Item.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
@@ -331,6 +391,11 @@ namespace Symbiote.Core.Model
             return RemoveItem(Dictionary, item);
         }
 
+        /// <summary>
+        /// Removes an Item from the Model using the supplied FQN to first find the item.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the item to remove.</param>
+        /// <returns>The item that was found by the lookup of the supplied FQN.  Returns a default Item if the lookup fails.</returns>
         public Item RemoveItem(string fqn)
         {
             Item foundItem = FindItem(fqn);
@@ -355,9 +420,35 @@ namespace Symbiote.Core.Model
                 if (item.Parent == item)
                     throw new ModelRootRemovalException("Removing a Model's root is not permitted.");
 
-
+                // pretty brutal, forcing the parent to kill one of it's children.
                 item.Parent.RemoveChild(item);
+
+                // remove the item itself from the dictionary
                 dictionary.Remove(item.FQN);
+
+                // remove any children of this item.  find any item in the dictionary with the first part of it's FQN fully matching
+                // the FQN of the removed item
+                List<string> fqnsToDelete = new List<string>();
+
+                // iterate over the list of matching items and delete them from the dictionary
+                // note that we can't iterate over dictionary itself while we are changing it, hence the temporary list.
+                foreach (KeyValuePair<string, Item> child in dictionary.Where(kvp => kvp.Key.StartsWith(item.FQN + ".")))
+                {
+                    fqnsToDelete.Add(child.Key);
+                }
+
+                foreach (string fqn in fqnsToDelete)
+                {
+                    dictionary.Remove(fqn);
+                }
+
+                logger.Info("Dictionary contents-----------------------------------------------------------------------");
+                foreach (var kvp in dictionary)
+                {
+                    logger.Info("\t\t" + kvp.Key);
+                }
+
+
             }
             catch (Exception ex)
             {

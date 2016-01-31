@@ -122,13 +122,15 @@ namespace Symbiote.Core
                 // detatch anything that was loaded from the config file
                 manager.ModelManager.RemoveItem(manager.ModelManager.FindItem("Symbiote.System.Platform"));
                 logger.Info("Removed previous platform items:");
+                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
                 PrintItemChildren(manager.ModelManager.Model, 0);
+                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
 
-                logger.Info("Attaching new platform items:");
-                manager.PlatformManager.Platform.InstantiateConnector("Symbiote.System.Platform");
-                manager.ModelManager.AddItem(new Item("Symbiote.System"));
+                //////logger.Info("Attaching new platform items:");
+                manager.PlatformManager.Platform.InstantiateConnector("Platform");
+                Item systemItem = manager.ModelManager.AddItem(new Item("Symbiote.System"));
 
-                manager.ModelManager.AddItem(manager.PlatformManager.Platform.Connector.Browse());
+                manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
 
                 //manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
 
@@ -140,16 +142,20 @@ namespace Symbiote.Core
 
                 //Model.ModelItem itemx = new Model.ModelItem("Symbiote.Folder3.SATest", typeof(string), "N47:0");
                 //manager.ModelManager.AddItem(itemx);
-
+                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
                 PrintItemChildren(manager.ModelManager.Model, 0);
+                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
 
                 //// save
-                logger.Info("-------------- saving");
+                //logger.Info("-------------- saving");
 
                 if (manager.ModelManager.SaveModel())
                     manager.ConfigurationManager.SaveConfiguration();
 
+
+                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
                 PrintConnectorPluginItemChildren(manager.PlatformManager.Platform.Connector);
+                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
 
                 Console.WriteLine("Press ESC to stop");
                 Console.ReadLine();
