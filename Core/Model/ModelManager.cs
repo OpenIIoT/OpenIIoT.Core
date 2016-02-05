@@ -156,7 +156,7 @@ namespace Symbiote.Core.Model
 
                     result.UnresolvedList.Remove(i);
                     result.ResolvedList.Add(i);
-                    logger.Info("Added item '" + newItem.FQN + "' to the Model.");    
+                    logger.Trace("Added item '" + newItem.FQN + "' to the Model.");    
                 }
                 catch (ItemParentMissingException ex)
                 {
@@ -441,14 +441,6 @@ namespace Symbiote.Core.Model
                 {
                     dictionary.Remove(fqn);
                 }
-
-                logger.Info("Dictionary contents-----------------------------------------------------------------------");
-                foreach (var kvp in dictionary)
-                {
-                    logger.Info("\t\t" + kvp.Key);
-                }
-
-
             }
             catch (Exception ex)
             {

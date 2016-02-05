@@ -75,6 +75,7 @@
     <Compile Include="Configuration\Exceptions.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
+    <Compile Include="Configuration\Plugin\ConfigurationPluginInstanceAutoBuild.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginInstance.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginAssembly.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginSection.cs" />

@@ -211,6 +211,7 @@ namespace Symbiote.Core.Plugin
             logger.Trace("MD5 checksum for file '" + fileName + "' computed as '" + retVal + ".");
             return retVal;
         }
+
         public PluginAuthorization GetPluginAuthorization(string fileName)
         {
             string checksum = GetPluginChecksum(fileName);
@@ -231,6 +232,7 @@ namespace Symbiote.Core.Plugin
             logger.Trace("Unable to find a matching entry in the assembly configuration for this plugin.  Returning Unknown authorization.");
             return PluginAuthorization.Unknown;
         }
+
         /// <summary>
         /// Given a string containing the FQN of a loaded plugin assembly, return the matching IPluginAssembly object.
         /// </summary>
@@ -307,8 +309,31 @@ namespace Symbiote.Core.Plugin
                     default:
                         throw new PluginTypeInvalidException("The specified plugin type '" + assembly.PluginType + "' couldn't be handled.");
                 }
+            }
+        }
 
-                
+        public void PerformAutoBuild()
+        {
+            PerformAutoBuild(PluginInstances, manager.ConfigurationManager.Configuration.Plugins.Instances.Where(pi => pi.AutoBuild.Enabled = true));
+        }
+
+        public void PerformAutoBuild(List<IPluginInstance> plugins, IEnumerable<ConfigurationPluginInstance> autoBuildInstances)
+        {
+            foreach (ConfigurationPluginInstance instance in autoBuildInstances)
+            {
+                logger.Trace("Attempting to auto build instance '" + instance.InstanceName + "'...");
+                IConnector foundPluginInstance = (IConnector)FindPluginInstance(instance.InstanceName);
+                if (foundPluginInstance == default(IConnector))
+                {
+                    logger.Warn("Unable to find plugin instance with InstanceName '" + instance.InstanceName + "', continuing auto build");
+                    continue;
+                }
+                else
+                {
+                    logger.Trace("Attempting to attach plugin items for instance '" + instance.InstanceName + "' to '" + instance.AutoBuild.ParentFQN + "'");
+                    manager.ModelManager.AttachItem(foundPluginInstance.Browse(), instance.AutoBuild.ParentFQN);
+                    logger.Info("AutoBuild of Plugin instance '" + instance.InstanceName + "' complete.");
+                }
             }
         }
 

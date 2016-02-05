@@ -8,7 +8,7 @@ namespace Symbiote.Core.Configuration.Plugin
     {
         public string InstanceName { get; set; }
         public string AssemblyName { get; set; }
-        public bool AutoBuildItems { get; set; }
-        public string AutoBuildParentFQN { get; set; }
+        public string Configuration { get; set; }
+        public ConfigurationPluginInstanceAutoBuild AutoBuild { get; set; }
     }
 }

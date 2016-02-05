@@ -192,11 +192,13 @@ namespace Symbiote.Core.Configuration
                 new ConfigurationPluginInstance() {
                     InstanceName = "Simulation",
                     AssemblyName = "Symbiote.Plugin.Connector.Simulation",
-                    AutoBuildItems = true,
-                    AutoBuildParentFQN = "Symbiote"
+                    Configuration = "",
+                    AutoBuild = new ConfigurationPluginInstanceAutoBuild()
+                    {
+                        Enabled = true, ParentFQN = "Symbiote"
+                    }
+
                 });
-
-
             return retVal;
         }
 

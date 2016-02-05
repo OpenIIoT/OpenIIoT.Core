@@ -27,6 +27,7 @@ namespace Symbiote.Core
         /// The main logger for the application.
         /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static Timer printTimer;
 
         /// <summary>
         /// The ProgramManager for the application.
@@ -43,6 +44,7 @@ namespace Symbiote.Core
         /// <param name="args">Command line arguments.</param>
         static void Main(string[] args)
         {
+            // TODO: put everything in one try/catch, catch and print individual exceptions
             logger.Info("Symbiote is initializing...");
 
             // instantiate the program manager.
@@ -117,19 +119,11 @@ namespace Symbiote.Core
 
                 //--------------------- - --------------------- -  -
                 // create plugin instances.
-                //      statically creates the simulation plugin instance, then creates the instances specified within the configuration
+                //      instantiates each plugin instance defined within the configuration and configures it
                 //--------------------------------------------- - -   -     -------  -     - - -  ---
                 logger.Info("Creating plugin instances...");
                 manager.PluginManager.InstantiatePlugins();
-
-
-                Utility.PrintConnectorPluginItemChildren(logger, (IConnector)manager.PluginManager.FindPluginInstance("Simulation"));
-                //manager.PluginManager.CreatePluginInstance<IConnector>("Simulation", manager.PluginManager.FindPluginAssembly("Symbiote.Plugin.Connector.Simulation").Type);
-
-                // TODO: fetch list of plugin instances from the configuration and instantiate them
-
                 logger.Info(manager.PluginManager.PluginInstances.Count() + " Plugin instance(s) created.");
-
 
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
@@ -140,36 +134,60 @@ namespace Symbiote.Core
                 manager.ModelManager.AttachModel(modelBuildResult);
                 logger.Info("Attached model.");
 
-                // debug/temporary
-                Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
-
                 //----------------------------------- - - --------  - -------- -  -   -  -           -
                 // attach the Platform connector items to the model
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
-                // detatch anything that was loaded from the config file
+                // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
+                logger.Info("Detatching potentially stale Platform items...");
                 manager.ModelManager.RemoveItem(manager.ModelManager.FindItem("Symbiote.System.Platform"));
-                logger.Info("Removed previous platform items:");
-                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
-                Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
-                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
-
-                //////logger.Info("Attaching new platform items:");
+            
+                logger.Info("Attaching new Platform items...");
+                // instantiate the Platform connector
                 manager.PlatformManager.Platform.InstantiateConnector("Platform");
-                Item systemItem = manager.ModelManager.AddItem(new Item("Symbiote.System"));
 
+                // find or create the parent for the Platform items
+                Item systemItem = manager.ModelManager.FindItem("Symbiote.System");
+                if (systemItem == default(Item))
+                    systemItem = manager.ModelManager.AddItem(new Item("Symbiote.System"));
+
+                // attach the Platform items to Symbiote.System
                 manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
+                logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
 
-                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
+                //---- - ----------------------------------------- - - ------------- --   
+                // perform the auto-build of any plugin instances with auto-build enabled
+                //----------------------------------------------------- --       -   -
+                logger.Info("Executing auto build of plugins...");
+                manager.PluginManager.PerformAutoBuild();
+                logger.Info("Auto build complete");
+
+                //----------------------------- - -       --
+                // show 'em what they've won!
+                //-------------------------------- --------- - -      -              -
+                Utility.PrintLogo(logger);
                 Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
-                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
+                Console.WriteLine("Symbiote is running.");
+                Console.WriteLine("Press any key to stop.");
 
-                Console.WriteLine("Press ESC to stop");
+                printTimer = new Timer(1000);
+                printTimer.Elapsed += new ElapsedEventHandler(Tick);
+                printTimer.Start();
+                
+
                 Console.ReadLine();
             }
             catch (Exception ex)
             {
                 logger.Error(ex, "Fatal error.");
             }
+        }
+
+        private static void Tick(object source, EventArgs args)
+        {
+            Item cpu = manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time");
+            object cpuValue = manager.PlatformManager.Platform.Connector.Read("Platform.CPU.% Processor Time");
+            cpu.Write(cpuValue);
+            LogManager.GetCurrentClassLogger().Info("CPU usage: " + cpu.Read());
         }
 
         /// <summary>
