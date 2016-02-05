@@ -137,7 +137,7 @@ namespace Symbiote.Core.Plugin
                             assembly.GetName().Name, 
                             assembly.FullName, 
                             assembly.GetName().Version, 
-                            GetPluginType(assembly.GetName().Name), 
+                            GetPluginType(assembly.GetName().Name),
                             assembly.GetTypes()[0], 
                             assembly
                         )
@@ -170,7 +170,7 @@ namespace Symbiote.Core.Plugin
             if (validationMessage != null)
                 return;
 
-            ConfigurationPluginItem newPlugin = new ConfigurationPluginItem()
+            ConfigurationPluginAssembly newPlugin = new ConfigurationPluginAssembly()
             {
                 Name = assemblyName.Name,
                 FullName = assemblyName.FullName,
@@ -217,7 +217,7 @@ namespace Symbiote.Core.Plugin
 
             logger.Trace("Determining authorization for plugin file '" + fileName + "' with checksum '" + checksum + "'...");
 
-            ConfigurationPluginItem retObj = manager.ConfigurationManager.Configuration.Plugins.Assemblies
+            ConfigurationPluginAssembly retObj = manager.ConfigurationManager.Configuration.Plugins.Assemblies
                         .Where(p => p.FileName == System.IO.Path.GetFileName(fileName))
                         .Where(p => p.Checksum == checksum)
                         .FirstOrDefault();
@@ -276,6 +276,40 @@ namespace Symbiote.Core.Plugin
         public IPluginInstance FindPluginInstance(string instanceName)
         {
             return PluginInstances.Where(p => p.InstanceName == instanceName).FirstOrDefault();
+        }
+
+        public void InstantiatePlugins()
+        {
+            InstantiatePlugins(manager.ConfigurationManager.Configuration);
+        }
+
+        public void InstantiatePlugins(Configuration.Configuration configuration)
+        {
+            foreach (ConfigurationPluginInstance instance in configuration.Plugins.Instances)
+            {
+                IPluginAssembly assembly = FindPluginAssembly(instance.AssemblyName);
+                if (assembly == default(IPluginAssembly))
+                    throw new PluginAssemblyNotFoundException("Plugin assembly '" + instance.AssemblyName + "' not found in the collection.");
+
+                // i don't care for this code but the compiler is forcing me to specify a concrete type for the generic CreatePluginInstance method
+                // and i can't think of a way around it right now.
+                // i tried to store the type in the assembly but types are handled so fucking wierdly it wasn't working
+                switch (assembly.PluginType)
+                {
+                    case PluginType.Connector:
+                        CreatePluginInstance<IConnector>(instance.InstanceName, assembly.Type);
+                        logger.Info("Instantiated " + assembly.PluginType.ToString() + " plugin '" + instance.InstanceName + "'.");
+                        continue;
+                    case PluginType.Service:
+                        CreatePluginInstance<IService>(instance.InstanceName, assembly.Type);
+                        logger.Info("Instantiated " + assembly.PluginType.ToString() + " plugin '" + instance.InstanceName + "'.");
+                        continue;
+                    default:
+                        throw new PluginTypeInvalidException("The specified plugin type '" + assembly.PluginType + "' couldn't be handled.");
+                }
+
+                
+            }
         }
 
         // static methods

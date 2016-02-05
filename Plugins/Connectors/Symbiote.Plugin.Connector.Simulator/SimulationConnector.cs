@@ -53,7 +53,7 @@ namespace Symbiote.Plugin.Connector.Simulation
         public object Read(string value)
         {
             double val = DateTime.Now.Second;
-            switch(value.Split('.')[3])
+            switch(value.Split('.')[value.Split('.').Length - 1])
             {
                 case "Sine":
                     return Math.Sin(val);

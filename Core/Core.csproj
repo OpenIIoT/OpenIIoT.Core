@@ -75,7 +75,8 @@
     <Compile Include="Configuration\Exceptions.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
-    <Compile Include="Configuration\Plugin\ConfigurationPluginItem.cs" />
+    <Compile Include="Configuration\Plugin\ConfigurationPluginInstance.cs" />
+    <Compile Include="Configuration\Plugin\ConfigurationPluginAssembly.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginSection.cs" />
     <Compile Include="Configuration\Enumerations.cs" />
     <Compile Include="Configuration\ConfigurationValidationResult.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\Exceptions.cs" />
     <Compile Include="Platform\Exceptions.cs" />
+    <Compile Include="Plugin\Exceptions.cs" />
     <Compile Include="Shared\Item.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
@@ -108,6 +110,7 @@
     <Compile Include="Shared\Service.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Shared\Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

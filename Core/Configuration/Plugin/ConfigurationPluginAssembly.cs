@@ -4,7 +4,7 @@ using Symbiote.Core.Plugin;
 namespace Symbiote.Core.Configuration.Plugin
 {
     [JsonObject]
-    public class ConfigurationPluginItem
+    public class ConfigurationPluginAssembly
     {
         public string Name { get; set; }
         public string FullName { get; set; }

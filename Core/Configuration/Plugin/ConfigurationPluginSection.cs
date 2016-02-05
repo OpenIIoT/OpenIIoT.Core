@@ -7,11 +7,13 @@ namespace Symbiote.Core.Configuration.Plugin
     public class ConfigurationPluginSection
     {
         public bool AuthorizeNewPlugins { get; set; }
-        public List<ConfigurationPluginItem> Assemblies { get; set; }
+        public List<ConfigurationPluginAssembly> Assemblies { get; set; }
+        public List<ConfigurationPluginInstance> Instances { get; set; }
 
         public ConfigurationPluginSection()
         {
-            Assemblies = new List<ConfigurationPluginItem>();
+            Assemblies = new List<ConfigurationPluginAssembly>();
+            Instances = new List<ConfigurationPluginInstance>();
         }
     }
 }

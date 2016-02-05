@@ -268,7 +268,7 @@ namespace Symbiote.Core.Model
             }
             catch (ItemAlreadyAddedException ex)
             {
-                logger.Warn("The item '" + item.FQN + "' has already been added.  Returing the existing instance.");
+                logger.Trace("The item '" + item.FQN + "' has already been added.  Returning the existing instance.");
                 return ex.ExistingItem;
             }
             catch (Exception ex)
@@ -352,7 +352,7 @@ namespace Symbiote.Core.Model
         /// <returns>The attached Item.</returns>
         public Item AttachItem(Item item, Item parentItem)
         {
-            logger.Info("Attaching " + item.ToString() + " to " + parentItem.ToString());
+            logger.Trace("Attaching " + item.ToString() + " to " + parentItem.ToString());
 
             // create a 1:1 clone of the supplied item
             Item newItem = (Item)item.Clone();

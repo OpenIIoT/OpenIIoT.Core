@@ -54,8 +54,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
-                logger.Error("Symbiote failed to initailize.");
+                logger.Error(ex, "Symbiote failed to initailize.");
                 return;
             }
             logger.Trace("The program manager was instantiated successfully.");
@@ -69,8 +68,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
-                logger.Error("Failed to instantiate the platform.");
+                logger.Error(ex, "Failed to instantiate the platform.");
                 return;
             }
 
@@ -101,20 +99,49 @@ namespace Symbiote.Core
         {
             try
             {
+                //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
+                //      reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
+                //--------------------------------------- - -  - --------            -------- -
                 logger.Info("Loading configuration...");
                 manager.ConfigurationManager.InstantiateConfiguration();
+                logger.Info("Configuration loaded.");
 
-
-                // load plugins.  Calls the LoadPlugins method of the PluginManager and passes in the
-                // platform instance which contains methods used to list directory contents.  This is necessary for platform independence.
+                //--------------------------------------------- - - --------- ----  - -    -
+                // load plugins.  
+                //      populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
+                //----------------------------------------------------------------  --  ---         ------ - 
                 logger.Info("Loading plugins...");
                 manager.PluginManager.LoadPlugins("Plugins");
-                logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugins loaded.");
+                logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
 
-                manager.ModelManager.AttachModel(manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items));
-                logger.Info("Attached model:");
-                PrintItemChildren(manager.ModelManager.Model, 0);
+                //--------------------- - --------------------- -  -
+                // create plugin instances.
+                //      statically creates the simulation plugin instance, then creates the instances specified within the configuration
+                //--------------------------------------------- - -   -     -------  -     - - -  ---
+                logger.Info("Creating plugin instances...");
+                manager.PluginManager.InstantiatePlugins();
+
+
+                Utility.PrintConnectorPluginItemChildren(logger, (IConnector)manager.PluginManager.FindPluginInstance("Simulation"));
+                //manager.PluginManager.CreatePluginInstance<IConnector>("Simulation", manager.PluginManager.FindPluginAssembly("Symbiote.Plugin.Connector.Simulation").Type);
+
+                // TODO: fetch list of plugin instances from the configuration and instantiate them
+
+                logger.Info(manager.PluginManager.PluginInstances.Count() + " Plugin instance(s) created.");
+
+
+                //------------- - ----------------------- - - -------------------  -- - --- - 
+                // instantiate the item model.
+                //      builds and attaches the model stored within the configuration file to the Model Manager.
+                //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
+                logger.Info("Attaching model...");
+                Model.ModelBuildResult modelBuildResult = manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items);
+                manager.ModelManager.AttachModel(modelBuildResult);
+                logger.Info("Attached model.");
+
+                // debug/temporary
+                Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
 
                 //----------------------------------- - - --------  - -------- -  -   -  -           -
                 // attach the Platform connector items to the model
@@ -123,7 +150,7 @@ namespace Symbiote.Core
                 manager.ModelManager.RemoveItem(manager.ModelManager.FindItem("Symbiote.System.Platform"));
                 logger.Info("Removed previous platform items:");
                 logger.Info("---------------------------------------------------------------------------------------------------------------------------");
-                PrintItemChildren(manager.ModelManager.Model, 0);
+                Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
                 logger.Info("---------------------------------------------------------------------------------------------------------------------------");
 
                 //////logger.Info("Attaching new platform items:");
@@ -132,29 +159,8 @@ namespace Symbiote.Core
 
                 manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
 
-                //manager.ModelManager.AddItem(new Model.ModelItem("Symbiote.Folder3"));
-
-                //Model.ModelItem itemd = new Model.ModelItem("Symbiote.Folder3.DELETEME");
-                //manager.ModelManager.AddItem(itemd);
-
-                //Model.ModelItem itemm = new Model.ModelItem("Symbiote.Folder3.MOVEME");
-                //manager.ModelManager.AddItem(itemm);
-
-                //Model.ModelItem itemx = new Model.ModelItem("Symbiote.Folder3.SATest", typeof(string), "N47:0");
-                //manager.ModelManager.AddItem(itemx);
                 logger.Info("---------------------------------------------------------------------------------------------------------------------------");
-                PrintItemChildren(manager.ModelManager.Model, 0);
-                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
-
-                //// save
-                //logger.Info("-------------- saving");
-
-                if (manager.ModelManager.SaveModel())
-                    manager.ConfigurationManager.SaveConfiguration();
-
-
-                logger.Info("---------------------------------------------------------------------------------------------------------------------------");
-                PrintConnectorPluginItemChildren(manager.PlatformManager.Platform.Connector);
+                Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
                 logger.Info("---------------------------------------------------------------------------------------------------------------------------");
 
                 Console.WriteLine("Press ESC to stop");
@@ -162,15 +168,8 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Error(ex);
+                logger.Error(ex, "Fatal error.");
             }
-
-
-
-        }
-        public static void print(Object source, ElapsedEventArgs e)
-        {
-            PrintConnectorPluginItemChildren(manager.PlatformManager.Platform.Connector, null, 0);
         }
 
         /// <summary>
@@ -178,55 +177,21 @@ namespace Symbiote.Core
         /// </summary>
         public static void Stop()
         {
+            logger.Info("Symbiote is stopping.  Saving configuration...");
+
+            try
+            {
+                if (manager.ModelManager.SaveModel())
+                    manager.ConfigurationManager.SaveConfiguration();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, "Error saving configuration.");
+            }
+
+            logger.Info("Configuration saved.");
+
             logger.Info("Symbiote stopped.");
-        }
-
-        private static void PrintItemChildren(Item root, int indent)
-        {
-            logger.Info(new string('\t',indent) + root.FQN + " [" + root.SourceAddress + "] children: " + root.Children.Count());
-
-            foreach (Item i in root.Children)
-            {
-                PrintItemChildren(i, indent + 1);
-            }
-        }
-
-        private static void PrintConnectorPluginItemChildren(IConnector connector)
-        {
-            logger.Info(connector.Browse().FQN);
-            PrintConnectorPluginItemChildren(connector, connector.Browse(), 1);
-        }
-
-        private static void PrintConnectorPluginItemChildren(IConnector connector, Item root, int indent)
-        {
-            foreach (Item i in connector.Browse(root))
-            {
-                if (i.HasChildren() == false)
-                    logger.Info(new string('\t', indent) + i.FQN + " Value: " + connector.Read(i.FQN).ToString());
-                else
-                    logger.Info(new string('\t', indent) + i.FQN);
-                PrintConnectorPluginItemChildren(connector, i, indent + 1);
-            }
-        }
-
-        public static string GetItemName(string fqn)
-        {
-            string[] splitFQN = fqn.Split('.');
-
-            if (splitFQN.Length > 1)
-                return splitFQN[splitFQN.Length - 1];
-
-            return fqn;
-        }
-
-        public static string GetItemPath(string fqn)
-        {
-            string[] splitFQN = fqn.Split('.');
-
-            if (splitFQN.Length > 1)
-                return String.Join(".", splitFQN.Take<string>(splitFQN.Length - 1));
-
-            return fqn;
         }
     }
 }

@@ -173,27 +173,29 @@ namespace Symbiote.Core.Configuration
             retVal.Model = new ConfigurationModelSection();
             retVal.Model.Items = new List<ConfigurationModelItem>();
             retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Item("Symbiote", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1", Definition = new Item("Symbiote.Folder1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item1", Definition = new Item("Symbiote.Folder1.Item1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder1.Item2", Definition = new Item("Symbiote.Folder1.Item2", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2", Definition = new Item("Symbiote.Folder2", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item1", Definition = new Item("Symbiote.Folder2.Item1", typeof(string)).ToJson() });
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote.Folder2.Item2", Definition = new Item("Symbiote.Folder2.Item2", typeof(string)).ToJson() });
 
             retVal.Plugins = new ConfigurationPluginSection();
             retVal.Plugins.AuthorizeNewPlugins = false;
-            retVal.Plugins.Assemblies = new List<ConfigurationPluginItem>();
             retVal.Plugins.Assemblies.Add(
-                new ConfigurationPluginItem()
+                new ConfigurationPluginAssembly()
                 {
                     Name = "Symbiote.Plugin.Connector.Simulation",
                     FullName = "Symbiote.Plugin.Connector.Simulator, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null",
                     Version = "0.1.0.0",
                     PluginType = "Connector",
                     FileName = "Symbiote.Plugin.Connector.Simulation.dll",
-                    Checksum = "d0344d25547969d17a3bf2ba299d81f7",
+                    Checksum = "ebd00eba08516bbed4e3c50f88ffa8db",
                     Authorization = PluginAuthorization.Authorized
                 });
+
+            retVal.Plugins.Instances.Add(
+                new ConfigurationPluginInstance() {
+                    InstanceName = "Simulation",
+                    AssemblyName = "Symbiote.Plugin.Connector.Simulation",
+                    AutoBuildItems = true,
+                    AutoBuildParentFQN = "Symbiote"
+                });
+
 
             return retVal;
         }

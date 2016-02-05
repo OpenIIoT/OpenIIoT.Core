@@ -34,6 +34,7 @@ namespace Symbiote.Core.Platform.UNIX
             Name = "WindowsConnector";
             FullName = "Symbiote.Core.Platform.Windows.PlatformConnector";
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            PluginType = PluginType.Connector;
 
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");

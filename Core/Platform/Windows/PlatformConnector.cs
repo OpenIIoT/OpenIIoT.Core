@@ -34,6 +34,7 @@ namespace Symbiote.Core.Platform.Windows
             Name = "WindowsConnector";
             FullName = "Symbiote.Core.Platform.Windows.PlatformConnector";
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            PluginType = PluginType.Connector;
 
             ConfigurationDefinition = new PluginConfigurationDefinition();
 
