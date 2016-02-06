@@ -30,7 +30,8 @@ namespace Symbiote.Core
 
         internal static void PrintItemChildren(Logger logger, Item root, int indent)
         {
-            logger.Info(new string('\t', indent) + root.FQN + " [" + root.SourceAddress + "] children: " + root.Children.Count());
+            string source = (root.SourceItem == null ? "" : root.SourceItem.FQN);
+            logger.Info(new string('\t', indent) + root.FQN + " [" + source + "] children: " + root.Children.Count());
 
             foreach (Item i in root.Children)
             {

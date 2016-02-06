@@ -47,7 +47,7 @@ namespace Symbiote.Core
         /// The Item instance resolved from the SourceAddress.
         /// </summary>
         [JsonIgnore]
-        public Item SourceItem { get; private set; }
+        public Item SourceItem { get; set; }
         
         /// <summary>
         /// The Type of the item.

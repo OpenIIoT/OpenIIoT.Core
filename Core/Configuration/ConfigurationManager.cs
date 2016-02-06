@@ -175,7 +175,7 @@ namespace Symbiote.Core.Configuration
             retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Item("Symbiote", typeof(string)).ToJson() });
 
             retVal.Plugins = new ConfigurationPluginSection();
-            retVal.Plugins.AuthorizeNewPlugins = false;
+            retVal.Plugins.AuthorizeNewPlugins = true;
             retVal.Plugins.Assemblies.Add(
                 new ConfigurationPluginAssembly()
                 {
@@ -184,7 +184,7 @@ namespace Symbiote.Core.Configuration
                     Version = "0.1.0.0",
                     PluginType = "Connector",
                     FileName = "Symbiote.Plugin.Connector.Simulation.dll",
-                    Checksum = "ebd00eba08516bbed4e3c50f88ffa8db",
+                    Checksum = "455a4de00418691328207208c3404d17",
                     Authorization = PluginAuthorization.Authorized
                 });
 

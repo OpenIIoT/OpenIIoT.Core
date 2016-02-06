@@ -47,6 +47,24 @@ namespace Symbiote.Core.Platform.UNIX
 
         }
 
+        public Item FindItem(string fqn)
+        {
+            return FindItem(itemRoot, fqn);
+        }
+
+        private Item FindItem(Item root, string fqn)
+        {
+            if (root.FQN == fqn) return root;
+
+            Item found = default(Item);
+            foreach (Item child in root.Children)
+            {
+                found = FindItem(child, fqn);
+                if (found != default(Item)) break;
+            }
+            return found;
+        }
+
         public Item Browse()
         {
             return itemRoot;

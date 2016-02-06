@@ -39,6 +39,7 @@ namespace Symbiote.Core.Plugin
 
     public interface IConnector : IPluginInstance
     {
+        Item FindItem(string fqn);
         bool Browseable { get; }
         Item Browse();
         List<Item> Browse(Item root);

@@ -28,6 +28,11 @@ namespace Symbiote.Core
         private static ProgramManager instance;
 
         /// <summary>
+        /// The name of the product
+        /// </summary>
+        public string ProductName { get; private set; }
+
+        /// <summary>
         /// The PlatformManager for the application.
         /// </summary>
         public PlatformManager PlatformManager { get; private set; }
@@ -86,6 +91,15 @@ namespace Symbiote.Core
 
             logger.Trace("Returning ProgramManager instance...");
             return instance;
+        }
+
+        /// <summary>
+        /// Sets the ProductName property to the given value.
+        /// </summary>
+        /// <param name="name">The name of the product.</param>
+        internal void SetProductName(string name)
+        {
+            ProductName = name;
         }
     }
 }

@@ -35,6 +35,17 @@ namespace Symbiote.Core.Model
         }
     }
 
+    public class ItemSourceUnresolvedException : ModelException
+    {
+        public Item Item { get; private set; }
+        public string SourceAddress { get; private set; }
+        public ItemSourceUnresolvedException(string message, Item item, string sourceAddress) : base(message)
+        {
+            Item = item;
+            SourceAddress = sourceAddress;
+        }
+    }
+
     public class ModelAttachException : ModelException
     {
         public ModelAttachException(string message) : base(message) { }

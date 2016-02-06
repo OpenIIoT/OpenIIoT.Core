@@ -152,6 +152,20 @@ namespace Symbiote.Core.Model
                     if (newItem == null) throw new ItemJsonInvalidException(i.ToString());
                     if (newItem.IsValid() != true) throw new ItemValidationException(i.ToString());
 
+                    // resolve the SourceAddress of the new item to an existing item
+                    if (newItem.SourceAddress != "")
+                    {
+                        logger.Trace("Attempting to resolve " + newItem.SourceAddress + "...");
+                        Item resolvedItem = AddressResolver.Resolve(newItem.SourceAddress);
+                        if (resolvedItem == default(Item))
+                            throw new ItemSourceUnresolvedException("Address resolver returned default Item.", newItem, newItem.SourceAddress);
+                        else
+                        {
+                            newItem.SourceItem = resolvedItem;
+                            logger.Trace("Successfully resolved SourceAddress of Item '" + newItem.FQN + "' to '" + newItem.SourceItem.FQN + "'.");
+                        }
+                    }
+                    
                     AddItem(result.Model, result.Dictionary, newItem);
 
                     result.UnresolvedList.Remove(i);
@@ -175,6 +189,12 @@ namespace Symbiote.Core.Model
                     result.Result = ModelBuildResultCode.Warning;
                     result.Messages.Add("Configuration json for item '" + i.FQN + "' deserialized to an invalid item; ignoring.");
                     logger.Trace("ItemValidationException thrown: " + ex.Message);
+                }
+                catch (ItemSourceUnresolvedException ex)
+                {
+                    result.Result = ModelBuildResultCode.Warning;
+                    result.Messages.Add("Source item for '" + ex.Item.FQN + "' (" + ex.SourceAddress + ") could not be resolved; ignoring.");
+                    logger.Trace("ItemSourceUnresolvedException thrown: " + ex.Message + " Item: " + ex.Item.FQN + " SourceAddress: " + ex.SourceAddress);
                 }
                 catch (Exception ex)
                 {
@@ -359,6 +379,7 @@ namespace Symbiote.Core.Model
 
             // set the SourceAddress of the new item to the FQN of the original item to create a link
             newItem.SourceAddress = newItem.FQN;
+            newItem.SourceItem = AddressResolver.Resolve(newItem.SourceAddress);
 
             // modify the FQN of the cloned item to reflect it's new path
             newItem.FQN = parentItem.FQN + "." + newItem.Name;

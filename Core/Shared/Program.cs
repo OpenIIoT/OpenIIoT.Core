@@ -46,7 +46,7 @@ namespace Symbiote.Core
         static void Main(string[] args)
         {
             // TODO: put everything in one try/catch, catch and print individual exceptions
-            logger.Info("Symbiote is initializing...");
+            logger.Info("Initializing...");
 
             // instantiate the program manager.
             // the program manager acts as a Service Locator for the symbiote core.
@@ -54,10 +54,11 @@ namespace Symbiote.Core
             try
             {
                 manager = ProgramManager.Instance();
+                manager.SetProductName("Symbiote");
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Symbiote failed to initailize.");
+                logger.Error(ex, manager.ProductName + " failed to initailize.");
                 return;
             }
             logger.Trace("The program manager was instantiated successfully.");
@@ -126,6 +127,13 @@ namespace Symbiote.Core
                 manager.PluginManager.InstantiatePlugins();
                 logger.Info(manager.PluginManager.PluginInstances.Count() + " Plugin instance(s) created.");
 
+                //------------------ - --           --          --  - -
+                // create the platform connector plugin instance.
+                //      instantiates the connector plugin and adds it to the PluginManager so that it can be treated as a regular plugin
+                //------ - -      ---------------------- - -     ----------------------------- - - -
+                manager.PlatformManager.Platform.InstantiateConnector("Platform");
+                manager.PluginManager.PluginInstances.Add(manager.PlatformManager.Platform.Connector);
+
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
                 //      builds and attaches the model stored within the configuration file to the Model Manager.
@@ -140,16 +148,14 @@ namespace Symbiote.Core
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
                 // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
                 logger.Info("Detatching potentially stale Platform items...");
-                manager.ModelManager.RemoveItem(manager.ModelManager.FindItem("Symbiote.System.Platform"));
-            
+                manager.ModelManager.RemoveItem(manager.ModelManager.FindItem(manager.ProductName + ".System.Platform"));
+
                 logger.Info("Attaching new Platform items...");
-                // instantiate the Platform connector
-                manager.PlatformManager.Platform.InstantiateConnector("Platform");
 
                 // find or create the parent for the Platform items
-                Item systemItem = manager.ModelManager.FindItem("Symbiote.System");
+                Item systemItem = manager.ModelManager.FindItem(manager.ProductName + ".System");
                 if (systemItem == default(Item))
-                    systemItem = manager.ModelManager.AddItem(new Item("Symbiote.System"));
+                    systemItem = manager.ModelManager.AddItem(new Item(manager.ProductName + ".System"));
 
                 // attach the Platform items to Symbiote.System
                 manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
@@ -167,13 +173,13 @@ namespace Symbiote.Core
                 //-------------------------------- --------- - -      -              -
                 Utility.PrintLogo(logger);
                 Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
-                Console.WriteLine("Symbiote is running.");
+                Console.WriteLine(manager.ProductName + " is running.");
                 Console.WriteLine("Press any key to stop.");
 
                 printTimer = new Timer(1000);
                 printTimer.Elapsed += new ElapsedEventHandler(Tick);
                 printTimer.Start();
-                
+
 
                 Console.ReadLine();
             }
@@ -185,10 +191,10 @@ namespace Symbiote.Core
 
         private static void Tick(object source, EventArgs args)
         {
-            Item cpu = manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time");
-            //object cpuValue = manager.PlatformManager.Platform.Connector.Read("Platform.CPU.% Processor Time");
-            //cpu.Write(cpuValue);
-            LogManager.GetCurrentClassLogger().Info("CPU usage: " + cpu.ReadFromSource());
+            logger.Info("CPU usage: " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").ReadFromSource());
+            logger.Info("Sine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Sine").ReadFromSource());
+            logger.Info("Cosine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Cosine").ReadFromSource());
+            logger.Info("Tangent: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Tangent").ReadFromSource());
         }
 
         /// <summary>
@@ -196,7 +202,7 @@ namespace Symbiote.Core
         /// </summary>
         public static void Stop()
         {
-            logger.Info("Symbiote is stopping.  Saving configuration...");
+            logger.Info(manager.ProductName + " is stopping.  Saving configuration...");
 
             try
             {
@@ -210,7 +216,7 @@ namespace Symbiote.Core
 
             logger.Info("Configuration saved.");
 
-            logger.Info("Symbiote stopped.");
+            logger.Info(manager.ProductName + " stopped.");
         }
     }
 }

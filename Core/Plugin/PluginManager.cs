@@ -321,7 +321,7 @@ namespace Symbiote.Core.Plugin
         {
             foreach (ConfigurationPluginInstance instance in autoBuildInstances)
             {
-                logger.Trace("Attempting to auto build instance '" + instance.InstanceName + "'...");
+                logger.Info("Attempting to auto build instance '" + instance.InstanceName + "'...");
                 IConnector foundPluginInstance = (IConnector)FindPluginInstance(instance.InstanceName);
                 if (foundPluginInstance == default(IConnector))
                 {
