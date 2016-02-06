@@ -86,6 +86,7 @@
     <Compile Include="Model\Exceptions.cs" />
     <Compile Include="Platform\Exceptions.cs" />
     <Compile Include="Plugin\Exceptions.cs" />
+    <Compile Include="Plugin\PluginItem.cs" />
     <Compile Include="Shared\Item.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />

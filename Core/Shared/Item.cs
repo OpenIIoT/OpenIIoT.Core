@@ -12,57 +12,61 @@ namespace Symbiote.Core
     [JsonObject]
     public class Item : ICloneable
     {
-        // only serialize FQN and Type; the rest is either internal or can be derived
-        /// <summary>
-        /// The Fully Qualified Name of the item.
-        /// </summary>
-        public string FQN { get; set; }
-        /// <summary>
-        /// The Type of the item.
-        /// </summary>
-        public Type Type { get; set; }
-
         /// <summary>
         /// The Item's parent Item.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public Item Parent { get; private set; }
+
         /// <summary>
         /// The name of the Item; corresponds to the final tuple of the FQN.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public string Name { get; set; }
+
+        /// <summary>
+        /// The Fully Qualified Name of the item.
+        /// </summary>
+        public string FQN { get; set; }
+        
         /// <summary>
         /// The path to the Item; corresponds to the FQN less the final tuple (the name).
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
         public string Path { get; set; }
+
         /// <summary>
         /// The fully qualified name name of the source item
         /// </summary>
         public string SourceAddress { get; set; }
 
         /// <summary>
-        /// The value of the composite item.
+        /// The Item instance resolved from the SourceAddress.
         /// </summary>
-        /// <remarks>The access modifier used is protected to restrict access to this class and others derived from it</remarks>
         [JsonIgnore]
-        protected object Value { get; set; }
+        public Item SourceItem { get; private set; }
+        
+        /// <summary>
+        /// The Type of the item.
+        /// </summary>
+        public Type Type { get; set; }
 
         /// <summary>
         /// A Guid for the Item, generated when it is instantiated.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
         [JsonIgnore]
-        public Guid Guid { get; set; }
+        public Guid Guid { get; private set; }
 
         public bool IsDataStructure { get; private set; }
 
         [JsonIgnore]
         public bool IsDataMember { get; private set; }
+        public bool IsReadable { get { return true; } }
+        public bool IsWriteable { get { return true; } }
 
         /// <summary>
         /// The collection of Items contained within this Item.
@@ -71,8 +75,15 @@ namespace Symbiote.Core
         [JsonIgnore]
         public List<Item> Children { get; private set; }
 
-        public bool IsReadable { get { return true; } }
-        public bool IsWriteable { get { return true; } }
+        /// <summary>
+        /// The value of the composite item.
+        /// </summary>
+        /// <remarks>
+        /// The access modifier used is protected to restrict access to this class and others derived from it.
+        /// We want to control all access to the value with read/write methods.
+        /// </remarks>
+        [JsonIgnore]
+        protected object Value { get; set; }
 
         /// <summary>
         /// An empty constructor used for instantiating the root node of a model.
@@ -144,7 +155,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="parent">The Item to set as the Item's parent.</param>
         /// <returns>The current Item.</returns>
-        public Item SetParent(Item parent)
+        public virtual Item SetParent(Item parent)
         {
             // update the Path and FQN to match the parent values
             // this is set in the constructor however this code will prevent issues if items are moved.
@@ -158,13 +169,13 @@ namespace Symbiote.Core
             return this;
         }
 
-        public Item AddChild(Item item)
+        public virtual Item AddChild(Item item)
         {
             Children.Add(item.SetParent(this));
             return item;
         }
 
-        public Item RemoveChild(Item item)
+        public virtual Item RemoveChild(Item item)
         {
             Item retVal = Children.Find(i => i.FQN == item.FQN);
             Children.Remove(retVal);
@@ -209,7 +220,7 @@ namespace Symbiote.Core
         public virtual object Read()
         {
             if (!IsReadable)
-                throw new ItemNotReadableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
+                throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
 
             return Value;
         }
@@ -217,8 +228,26 @@ namespace Symbiote.Core
         public virtual Task<object> ReadAsync()
         {
             if (!IsReadable)
-                throw new ItemNotReadableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
+                throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
 
+            // TODO: implement this
+            return null;
+        }
+
+        public virtual object ReadFromSource()
+        {
+            if (!IsReadable)
+                throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
+
+            return SourceItem.ReadFromSource();
+        }
+
+        public virtual Task<object> ReadFromSourceAsync()
+        {
+            if (!IsReadable)
+                throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
+
+            // TODO: implement this
             return null;
         }
 
@@ -236,6 +265,24 @@ namespace Symbiote.Core
             if (!IsWriteable)
                 throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
 
+            // TODO: implement this
+            return null;
+        }
+
+        public virtual bool WriteToSource(object value)
+        {
+            if (!IsWriteable)
+                throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
+
+            return SourceItem.WriteToSource(value);
+        }
+
+        public virtual Task<bool> WriteToSourceAsync(object value)
+        {
+            if (!IsWriteable)
+                throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
+
+            // TODO: implement this
             return null;
         }
 

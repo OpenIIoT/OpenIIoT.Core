@@ -10,7 +10,7 @@ namespace Symbiote.Core.Platform.Windows
 {
     internal class PlatformConnector : IConnector
     {
-        private Item itemRoot;
+        private PluginItem itemRoot;
         private PerformanceCounter cpuUsed;
         private PerformanceCounter cpuIdle;
 
@@ -84,7 +84,7 @@ namespace Symbiote.Core.Platform.Windows
             }
         }
 
-        public void Write(string fqn, object value)
+        public bool Write(string fqn, object value)
         {
             throw new NotImplementedException();
         }
@@ -92,12 +92,12 @@ namespace Symbiote.Core.Platform.Windows
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new Item(InstanceName);
+            itemRoot = new PluginItem(this, InstanceName);
 
             // create CPU items
-            Item cpuRoot = itemRoot.AddChild(new Item("CPU"));
-            cpuRoot.AddChild(new Item("CPU.% Processor Time", typeof(double), ""));
-            cpuRoot.AddChild(new Item("CPU.% Idle Time", typeof(double), ""));
+            Item cpuRoot = itemRoot.AddChild(new PluginItem(this, "CPU"));
+            cpuRoot.AddChild(new PluginItem(this, "CPU.% Processor Time", typeof(double), ""));
+            cpuRoot.AddChild(new PluginItem(this, "CPU.% Idle Time", typeof(double), ""));
 
             // prepare variables to use for processor time.  you need two successive values to 
             // report accurately so rather than sleeping the thread we will just keep track from 
@@ -106,36 +106,36 @@ namespace Symbiote.Core.Platform.Windows
             lastCPUIdle = 0;
 
             // create memory items
-            Item memRoot = itemRoot.AddChild(new Item("Memory"));
-            memRoot.AddChild(new Item("Memory.Total", typeof(double), ""));
-            memRoot.AddChild(new Item("Memory.Available", typeof(double), ""));
-            memRoot.AddChild(new Item("Memory.Cached", typeof(double), ""));
-            memRoot.AddChild(new Item("Memory.% Used", typeof(double), ""));
+            Item memRoot = itemRoot.AddChild(new PluginItem(this, "Memory"));
+            memRoot.AddChild(new PluginItem(this, "Memory.Total", typeof(double), ""));
+            memRoot.AddChild(new PluginItem(this, "Memory.Available", typeof(double), ""));
+            memRoot.AddChild(new PluginItem(this, "Memory.Cached", typeof(double), ""));
+            memRoot.AddChild(new PluginItem(this, "Memory.% Used", typeof(double), ""));
 
             // create drive items
-            Item dRoot = itemRoot.AddChild(new Item("Drives"));
+            PluginItem dRoot = itemRoot.AddChild(new PluginItem(this, "Drives"));
 
             // system drive
-            Item sdRoot = dRoot.AddChild(new Item("Drives.System"));
-            sdRoot.AddChild(new Item("Drives.System.Name", typeof(string), ""));
-            sdRoot.AddChild(new Item("Path", typeof(string), ""));
-            sdRoot.AddChild(new Item("Type", typeof(Platform.DriveType), ""));
-            sdRoot.AddChild(new Item("Capacity", typeof(long), ""));
-            sdRoot.AddChild(new Item("UsedSpace", typeof(long), ""));
-            sdRoot.AddChild(new Item("FreeSpace", typeof(long), ""));
-            sdRoot.AddChild(new Item("PercentUsed", typeof(double), ""));
-            sdRoot.AddChild(new Item("PercentFree", typeof(double), ""));
+            PluginItem sdRoot = dRoot.AddChild(new PluginItem(this, "Drives.System"));
+            sdRoot.AddChild(new PluginItem(this, "Drives.System.Name", typeof(string), ""));
+            sdRoot.AddChild(new PluginItem(this, "Path", typeof(string), ""));
+            sdRoot.AddChild(new PluginItem(this, "Type", typeof(Platform.DriveType), ""));
+            sdRoot.AddChild(new PluginItem(this, "Capacity", typeof(long), ""));
+            sdRoot.AddChild(new PluginItem(this, "UsedSpace", typeof(long), ""));
+            sdRoot.AddChild(new PluginItem(this, "FreeSpace", typeof(long), ""));
+            sdRoot.AddChild(new PluginItem(this, "PercentUsed", typeof(double), ""));
+            sdRoot.AddChild(new PluginItem(this, "PercentFree", typeof(double), ""));
 
             // data drive
-            Item ddRoot = dRoot.AddChild(new Item("Data"));
-            ddRoot.AddChild(new Item("Name", typeof(string), ""));
-            ddRoot.AddChild(new Item("Path", typeof(string), ""));
-            ddRoot.AddChild(new Item("Type", typeof(Platform.DriveType), ""));
-            ddRoot.AddChild(new Item("Capacity", typeof(long), ""));
-            ddRoot.AddChild(new Item("UsedSpace", typeof(long), ""));
-            ddRoot.AddChild(new Item("FreeSpace", typeof(long), ""));
-            ddRoot.AddChild(new Item("PercentUsed", typeof(double), ""));
-            ddRoot.AddChild(new Item("PercentFree", typeof(double), ""));
+            PluginItem ddRoot = dRoot.AddChild(new PluginItem(this, "Data"));
+            ddRoot.AddChild(new PluginItem(this, "Name", typeof(string), ""));
+            ddRoot.AddChild(new PluginItem(this, "Path", typeof(string), ""));
+            ddRoot.AddChild(new PluginItem(this, "Type", typeof(Platform.DriveType), ""));
+            ddRoot.AddChild(new PluginItem(this, "Capacity", typeof(long), ""));
+            ddRoot.AddChild(new PluginItem(this, "UsedSpace", typeof(long), ""));
+            ddRoot.AddChild(new PluginItem(this, "FreeSpace", typeof(long), ""));
+            ddRoot.AddChild(new PluginItem(this, "PercentUsed", typeof(double), ""));
+            ddRoot.AddChild(new PluginItem(this, "PercentFree", typeof(double), ""));
         }
     }
 }

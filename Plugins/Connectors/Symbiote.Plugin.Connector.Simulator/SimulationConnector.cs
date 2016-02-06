@@ -10,7 +10,7 @@ namespace Symbiote.Plugin.Connector.Simulation
 {
     public class SimulationConnector : IConnector
     {
-        private Item itemRoot;
+        private PluginItem itemRoot;
         
         public string Name { get; private set; }
         public string FullName { get; private set; }
@@ -73,7 +73,7 @@ namespace Symbiote.Plugin.Connector.Simulation
                 
         }
 
-        public void Write(string item, object value)
+        public bool Write(string item, object value)
         {
             throw new NotImplementedException();
         }
@@ -81,18 +81,18 @@ namespace Symbiote.Plugin.Connector.Simulation
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new Item(InstanceName, true);
+            itemRoot = new PluginItem(this, InstanceName, true);
 
             // create some simulation items
-            Item mathRoot = itemRoot.AddChild(new Item("Math"));
-            mathRoot.AddChild(new Item("Sine", typeof(double)));
-            mathRoot.AddChild(new Item("Cosine", typeof(double)));
-            mathRoot.AddChild(new Item("Tangent", typeof(double)));
+            PluginItem mathRoot = itemRoot.AddChild(new PluginItem(this, "Math"));
+            mathRoot.AddChild(new PluginItem(this, "Sine", typeof(double)));
+            mathRoot.AddChild(new PluginItem(this, "Cosine", typeof(double)));
+            mathRoot.AddChild(new PluginItem(this, "Tangent", typeof(double)));
 
-            Item processRoot = itemRoot.AddChild(new Item("Process"));
-            processRoot.AddChild(new Item("Ramp", typeof(double)));
-            processRoot.AddChild(new Item("Step", typeof(double)));
-            processRoot.AddChild(new Item("Toggle", typeof(double)));
+            PluginItem processRoot = itemRoot.AddChild(new PluginItem(this, "Process"));
+            processRoot.AddChild(new PluginItem(this, "Ramp", typeof(double)));
+            processRoot.AddChild(new PluginItem(this, "Step", typeof(double)));
+            processRoot.AddChild(new PluginItem(this, "Toggle", typeof(double)));
         }
     }
 

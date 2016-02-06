@@ -44,7 +44,7 @@ namespace Symbiote.Core.Plugin
         List<Item> Browse(Item root);
         object Read(string fqn);
         bool Writeable { get; }
-        void Write(string fqn, object value);
+        bool Write(string fqn, object value);
     }
 
     public interface IService : IPluginInstance

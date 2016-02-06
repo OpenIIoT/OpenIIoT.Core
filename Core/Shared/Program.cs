@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
@@ -185,9 +186,9 @@ namespace Symbiote.Core
         private static void Tick(object source, EventArgs args)
         {
             Item cpu = manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time");
-            object cpuValue = manager.PlatformManager.Platform.Connector.Read("Platform.CPU.% Processor Time");
-            cpu.Write(cpuValue);
-            LogManager.GetCurrentClassLogger().Info("CPU usage: " + cpu.Read());
+            //object cpuValue = manager.PlatformManager.Platform.Connector.Read("Platform.CPU.% Processor Time");
+            //cpu.Write(cpuValue);
+            LogManager.GetCurrentClassLogger().Info("CPU usage: " + cpu.ReadFromSource());
         }
 
         /// <summary>
