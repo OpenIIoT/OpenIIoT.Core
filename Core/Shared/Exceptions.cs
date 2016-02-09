@@ -2,17 +2,17 @@
 
 namespace Symbiote.Core
 {
-    public class CompositeException : ApplicationException
+    public class ItemException : ApplicationException
     {
-        public CompositeException(string message) : base(message) { }
+        public ItemException(string message) : base(message) { }
     }
     
-    public class ParentNotDataStructureNorMemberException : CompositeException
+    public class ParentNotDataStructureNorMemberException : ItemException
     {
         public ParentNotDataStructureNorMemberException(string message) : base(message) { }
     }
 
-    public class ItemAccessException : CompositeException
+    public class ItemAccessException : ItemException
     {
         public ItemAccessException(string message) : base(message) { }
     }
@@ -25,5 +25,10 @@ namespace Symbiote.Core
     public class ItemNotWriteableException : ItemAccessException
     {
         public ItemNotWriteableException(string message) : base(message) { }
+    }
+
+    public class SourceItemInvalidException : ItemException
+    {
+        public SourceItemInvalidException(string message) : base(message) { }
     }
 }

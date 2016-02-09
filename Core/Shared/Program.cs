@@ -191,10 +191,11 @@ namespace Symbiote.Core
 
         private static void Tick(object source, EventArgs args)
         {
-            logger.Info("CPU usage: " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").ReadFromSource());
+            logger.Info("CPU usage (readfromsource): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").ReadFromSource());
             logger.Info("Sine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Sine").ReadFromSource());
             logger.Info("Cosine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Cosine").ReadFromSource());
             logger.Info("Tangent: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Tangent").ReadFromSource());
+            logger.Info("CPU usage (read): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").Read());
         }
 
         /// <summary>

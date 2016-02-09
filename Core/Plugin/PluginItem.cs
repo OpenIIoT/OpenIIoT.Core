@@ -66,11 +66,19 @@ namespace Symbiote.Core.Plugin
             return (PluginItem)base.RemoveChild(pluginItem);
         }
 
+        public override object Read()
+        {
+            return ReadFromSource();
+        }
         public override object ReadFromSource()
         {
             return Plugin.Read(this.FQN);
         }
 
+        public override bool Write(object value)
+        {
+            return WriteToSource(value);
+        }
         public override bool WriteToSource(object value)
         {
             return Plugin.Write(this.FQN, value);

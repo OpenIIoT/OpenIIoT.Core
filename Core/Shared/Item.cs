@@ -239,7 +239,11 @@ namespace Symbiote.Core
             if (!IsReadable)
                 throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
 
-            return SourceItem.ReadFromSource();
+            if ((SourceItem == null) || (SourceItem == default(Item)))
+                throw new SourceItemInvalidException("Error reading '" + this.FQN + "' from source; the source Item is invalid.");
+
+            Write(SourceItem.ReadFromSource());
+            return Value;
         }
 
         public virtual Task<object> ReadFromSourceAsync()
@@ -274,7 +278,11 @@ namespace Symbiote.Core
             if (!IsWriteable)
                 throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
 
-            return SourceItem.WriteToSource(value);
+            if ((SourceItem == null) || (SourceItem == default(Item)))
+                throw new SourceItemInvalidException("Error writing to '" + this.FQN + "' source; the source Item is invalid.");
+
+            Write(value);
+            return SourceItem.WriteToSource(Value);
         }
 
         public virtual Task<bool> WriteToSourceAsync(object value)
