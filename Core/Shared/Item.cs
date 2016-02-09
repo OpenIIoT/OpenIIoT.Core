@@ -242,7 +242,11 @@ namespace Symbiote.Core
             if ((SourceItem == null) || (SourceItem == default(Item)))
                 throw new SourceItemInvalidException("Error reading '" + this.FQN + "' from source; the source Item is invalid.");
 
-            Write(SourceItem.ReadFromSource());
+            object retVal = SourceItem.ReadFromSource();
+
+            if ((retVal != null) && (retVal != default(object)))
+                Write(retVal);
+
             return Value;
         }
 
@@ -281,8 +285,10 @@ namespace Symbiote.Core
             if ((SourceItem == null) || (SourceItem == default(Item)))
                 throw new SourceItemInvalidException("Error writing to '" + this.FQN + "' source; the source Item is invalid.");
 
-            Write(value);
-            return SourceItem.WriteToSource(Value);
+            bool retVal = SourceItem.WriteToSource(value);
+
+            if (retVal) Write(value);
+            return retVal;
         }
 
         public virtual Task<bool> WriteToSourceAsync(object value)
