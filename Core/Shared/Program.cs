@@ -10,6 +10,7 @@ using System.Reflection;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using System.Timers;
+using Microsoft.Owin.Hosting;
 
 namespace Symbiote.Core
 {
@@ -173,6 +174,14 @@ namespace Symbiote.Core
                 //-------------------------------- --------- - -      -              -
                 Utility.PrintLogo(logger);
                 Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
+
+                //---------------------------------------------- - - ------------ - -      - - - - 
+                // start the web server
+                //----------- - - - ---------------   -                               -  - - - ---- - 
+                logger.Info("Starting web server...");
+                WebApp.Start("http://*:" + 80);
+                logger.Info("Web server started on port 80.");
+
                 Console.WriteLine(manager.ProductName + " is running.");
                 Console.WriteLine("Press any key to stop.");
 
@@ -191,11 +200,11 @@ namespace Symbiote.Core
 
         private static void Tick(object source, EventArgs args)
         {
-            logger.Info("CPU usage (readfromsource): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").ReadFromSource());
-            logger.Info("Sine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Sine").ReadFromSource());
-            logger.Info("Cosine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Cosine").ReadFromSource());
-            logger.Info("Tangent: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Tangent").ReadFromSource());
-            logger.Info("CPU usage (read): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").Read());
+            //logger.Info("CPU usage (readfromsource): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").ReadFromSource());
+            //logger.Info("Sine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Sine").ReadFromSource());
+            //logger.Info("Cosine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Cosine").ReadFromSource());
+            //logger.Info("Tangent: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Tangent").ReadFromSource());
+            //logger.Info("CPU usage (read): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").Read());
         }
 
         /// <summary>

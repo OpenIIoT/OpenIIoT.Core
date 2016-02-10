@@ -125,6 +125,8 @@ namespace Symbiote.Core
             IsDataStructure = isDataStructure;
             IsDataMember = isDataMember;
 
+            Value = "";
+
             // generate Name and Path from FQN
             string[] splitFQN = fqn.Split('.');
 
@@ -303,6 +305,11 @@ namespace Symbiote.Core
         public virtual string ToJson()
         {
             return JsonConvert.SerializeObject(this);
+        }
+
+        public virtual string ToAPIJson()
+        {
+            return "{" + FQN + ":" + Value.ToString() + "}";
         }
 
         public virtual bool IsValid()
