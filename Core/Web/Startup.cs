@@ -16,32 +16,38 @@ namespace Symbiote.Core.Web
 {
     public class Startup
     {
+        private ProgramManager manager = ProgramManager.Instance();
+
         public void Configuration(IAppBuilder app)
         {
             app.UseCors(CorsOptions.AllowAll);
             app.MapSignalR();
-            Type valuesControllerType = typeof(Symbiote.Core.Web.API.ValuesController);
+
+            //Type valuesControllerType = typeof(Symbiote.Core.Web.API.ValuesController);
+
+            string webRoot = manager.ConfigurationManager.Configuration.Web.Root;
 
             HttpConfiguration config = new HttpConfiguration();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
+                routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : "") + "api/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional }
             );
 
             config.Formatters.Clear();
             config.Formatters.Add(new JsonMediaTypeFormatter());
             config.Formatters.JsonFormatter.SerializerSettings =
-            new JsonSerializerSettings
-            {
-                ContractResolver = new CamelCasePropertyNamesContractResolver()
-            };
+            new JsonSerializerSettings { ContractResolver = new DefaultContractResolver() };
 
             app.UseWebApi(config);
 
             // use Path.Combine to build the path to the filesystem for cross platform compatibility
             // windows uses web\content, linux uses web/content. 
-            app.UseFileServer(new FileServerOptions() { FileSystem = new PhysicalFileSystem(Path.Combine("Web", "Console")) });
+            app.UseFileServer(new FileServerOptions()
+            {
+                FileSystem = new PhysicalFileSystem(Path.Combine("Web", "Console")),
+                RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : "") + webRoot)
+            });
         }
     }
 }

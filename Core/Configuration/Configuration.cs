@@ -8,11 +8,13 @@ namespace Symbiote.Core.Configuration
     public class Configuration
     {
         public string Symbiote;
+        public ConfigurationWebSection Web;
         public ConfigurationModelSection Model;
         public ConfigurationPluginSection Plugins;
 
         public Configuration()
         {
+            Web = new ConfigurationWebSection();
             Model = new ConfigurationModelSection();
             Plugins = new ConfigurationPluginSection();
         }

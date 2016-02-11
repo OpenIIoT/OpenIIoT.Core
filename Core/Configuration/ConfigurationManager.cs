@@ -21,6 +21,8 @@ namespace Symbiote.Core.Configuration
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ConfigurationManager instance;
 
+        private static string[] ignoredItemSerializationProperties = { "Parent", "Name", "Path", "SourceItem", "Guid", "IsDataMember", "Children", "Value" };
+
         /// <summary>
         /// The current configuration.
         /// </summary>
@@ -170,9 +172,13 @@ namespace Symbiote.Core.Configuration
             Configuration retVal = new Configuration();
 
             retVal.Symbiote = "0.1.0";
+
+            retVal.Web.Port = 80;
+            retVal.Web.Root = "";
+
             retVal.Model = new ConfigurationModelSection();
             retVal.Model.Items = new List<ConfigurationModelItem>();
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Item("Symbiote", typeof(string)).ToJson() });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Item("Symbiote", typeof(string)).ToJson(new ContractResolver(ignoredItemSerializationProperties)) });
 
             retVal.Plugins = new ConfigurationPluginSection();
             retVal.Plugins.AuthorizeNewPlugins = true;

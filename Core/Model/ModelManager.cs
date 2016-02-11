@@ -15,6 +15,8 @@ namespace Symbiote.Core.Model
         private ProgramManager manager;
         private static ModelManager instance;
 
+        private static string[] ignoredItemSerializationProperties = { "Parent", "Name", "Path", "SourceItem", "Guid", "IsDataMember", "Children", "Value" };
+
         internal Item Model { get; private set; }
         internal Dictionary<string, Item> Dictionary { get; private set; }
 
@@ -235,7 +237,7 @@ namespace Symbiote.Core.Model
         /// <returns>Returns true if the save succeeded, false otherwise.</returns>
         private List<ConfigurationModelItem> SaveModel(Item itemRoot, List<ConfigurationModelItem> configuration)
         {
-            configuration.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson() });
+            configuration.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson(new ContractResolver(ignoredItemSerializationProperties)) });
 
             foreach(Item mi in itemRoot.Children)
             {

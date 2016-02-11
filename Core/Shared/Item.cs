@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Serialization;
 
 namespace Symbiote.Core
 {
@@ -16,14 +17,14 @@ namespace Symbiote.Core
         /// The Item's parent Item.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
-        [JsonIgnore]
+        //[JsonIgnore]
         public Item Parent { get; private set; }
 
         /// <summary>
         /// The name of the Item; corresponds to the final tuple of the FQN.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
-        [JsonIgnore]
+        //[JsonIgnore]
         public string Name { get; set; }
 
         /// <summary>
@@ -35,7 +36,7 @@ namespace Symbiote.Core
         /// The path to the Item; corresponds to the FQN less the final tuple (the name).
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
-        [JsonIgnore]
+        //[JsonIgnore]
         public string Path { get; set; }
 
         /// <summary>
@@ -46,7 +47,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The Item instance resolved from the SourceAddress.
         /// </summary>
-        [JsonIgnore]
+        //[JsonIgnore]
         public Item SourceItem { get; set; }
         
         /// <summary>
@@ -58,12 +59,12 @@ namespace Symbiote.Core
         /// A Guid for the Item, generated when it is instantiated.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
-        [JsonIgnore]
+        //[JsonIgnore]
         public Guid Guid { get; private set; }
 
         public bool IsDataStructure { get; private set; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         public bool IsDataMember { get; private set; }
         public bool IsReadable { get { return true; } }
         public bool IsWriteable { get { return true; } }
@@ -72,7 +73,7 @@ namespace Symbiote.Core
         /// The collection of Items contained within this Item.
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
-        [JsonIgnore]
+        //[JsonIgnore]
         public List<Item> Children { get; private set; }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace Symbiote.Core
         /// The access modifier used is protected to restrict access to this class and others derived from it.
         /// We want to control all access to the value with read/write methods.
         /// </remarks>
-        [JsonIgnore]
+        //[JsonIgnore]
         protected object Value { get; set; }
 
         /// <summary>
@@ -304,7 +305,12 @@ namespace Symbiote.Core
 
         public virtual string ToJson()
         {
-            return JsonConvert.SerializeObject(this);
+            return ToJson(new ContractResolver(new string[] { "Parent", "SourceItem", "Children" }));
+        }
+
+        public virtual string ToJson(DefaultContractResolver contractResolver)
+        {
+            return JsonConvert.SerializeObject(this, new JsonSerializerSettings() { ContractResolver = contractResolver });
         }
 
         public virtual string ToAPIJson()

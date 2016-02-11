@@ -150,11 +150,11 @@
     <Compile Include="Plugin\Exceptions.cs" />
     <Compile Include="Plugin\PluginItem.cs" />
     <Compile Include="Shared\AddressResolver.cs" />
+    <Compile Include="Shared\ContractResolver.cs" />
     <Compile Include="Shared\Item.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Shared\Extensions.cs" />
-    <Compile Include="Shared\Interfaces.cs" />
     <Compile Include="Platform\Enumerations.cs" />
     <Compile Include="Platform\UNIX\PlatformConnector.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
@@ -177,6 +177,7 @@
     </Compile>
     <Compile Include="Shared\Utility.cs" />
     <Compile Include="Web\API\ItemController.cs" />
+    <Compile Include="Web\API\BrowseController.cs" />
     <Compile Include="Web\API\ValuesController.cs" />
     <Compile Include="Web\Startup.cs" />
   </ItemGroup>
@@ -212,4 +213,9 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="AfterBuild">
+    <ItemGroup>
+      <MoveToLibFolder Include="$(OutputPath)*.dll ; $(OutputPath)*.pdb ; $(OutputPath)*.xml" />
+    </ItemGroup>
+  </Target>
 </Project>
