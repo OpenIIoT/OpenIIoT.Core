@@ -85,6 +85,12 @@ namespace Symbiote.Plugin.Connector.Simulation
                     return val % 5;
                 case "Toggle":
                     return val % 2;
+                case "Time":
+                    return DateTime.Now.ToString("HH:mm:ss");
+                case "Date":
+                    return DateTime.Now.ToString("MM/dd/yyyy");
+                case "TimeZone":
+                    return DateTime.Now.ToString("zzz");
                 default:
                     return 0;
             }
@@ -111,6 +117,12 @@ namespace Symbiote.Plugin.Connector.Simulation
             processRoot.AddChild(new PluginItem(this, "Ramp", typeof(double)));
             processRoot.AddChild(new PluginItem(this, "Step", typeof(double)));
             processRoot.AddChild(new PluginItem(this, "Toggle", typeof(double)));
+
+            PluginItem timeRoot = itemRoot.AddChild(new PluginItem(this, "DateTime"));
+            timeRoot.AddChild(new PluginItem(this, "Time", typeof(string)));
+            timeRoot.AddChild(new PluginItem(this, "Date", typeof(string)));
+            timeRoot.AddChild(new PluginItem(this, "TimeZone", typeof(string)));
+            timeRoot.DesignateAsDataStucture();
         }
     }
 

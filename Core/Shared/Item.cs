@@ -13,18 +13,16 @@ namespace Symbiote.Core
     [JsonObject]
     public class Item : ICloneable
     {
+        #region Properties
+
         /// <summary>
         /// The Item's parent Item.
         /// </summary>
-        /// <remarks>Non-serializing.</remarks>
-        //[JsonIgnore]
         public Item Parent { get; private set; }
 
         /// <summary>
         /// The name of the Item; corresponds to the final tuple of the FQN.
         /// </summary>
-        /// <remarks>Non-serializing.</remarks>
-        //[JsonIgnore]
         public string Name { get; set; }
 
         /// <summary>
@@ -36,7 +34,6 @@ namespace Symbiote.Core
         /// The path to the Item; corresponds to the FQN less the final tuple (the name).
         /// </summary>
         /// <remarks>Non-serializing.</remarks>
-        //[JsonIgnore]
         public string Path { get; set; }
 
         /// <summary>
@@ -47,7 +44,6 @@ namespace Symbiote.Core
         /// <summary>
         /// The Item instance resolved from the SourceAddress.
         /// </summary>
-        //[JsonIgnore]
         public Item SourceItem { get; set; }
         
         /// <summary>
@@ -58,33 +54,41 @@ namespace Symbiote.Core
         /// <summary>
         /// A Guid for the Item, generated when it is instantiated.
         /// </summary>
-        /// <remarks>Non-serializing.</remarks>
-        //[JsonIgnore]
         public Guid Guid { get; private set; }
 
+        /// <summary>
+        /// True if this item is a data structure containing members, false otherwise.
+        /// </summary>
         public bool IsDataStructure { get; private set; }
 
-        //[JsonIgnore]
+        /// <summary>
+        /// True if this item is part of a data structure, false otherwise.
+        /// </summary>
         public bool IsDataMember { get; private set; }
+
+        /// <summary>
+        /// True if this item is readable, false otherwise.  If false, read methods will throw an error when called.
+        /// </summary>
         public bool IsReadable { get { return true; } }
+
+        /// <summary>
+        /// True if this item is writeable, false otherwise.  If false, write methods will throw an error when called.
+        /// </summary>
         public bool IsWriteable { get { return true; } }
 
+         /// <summary>
+        /// The value of the composite item.
+        /// </summary>
+        public object Value { get; private set; }
+        
         /// <summary>
         /// The collection of Items contained within this Item.
         /// </summary>
-        /// <remarks>Non-serializing.</remarks>
-        //[JsonIgnore]
         public List<Item> Children { get; private set; }
 
-        /// <summary>
-        /// The value of the composite item.
-        /// </summary>
-        /// <remarks>
-        /// The access modifier used is protected to restrict access to this class and others derived from it.
-        /// We want to control all access to the value with read/write methods.
-        /// </remarks>
-        //[JsonIgnore]
-        protected object Value { get; set; }
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// An empty constructor used for instantiating the root node of a model.
@@ -152,6 +156,10 @@ namespace Symbiote.Core
             }
 
         }
+
+        #endregion
+
+        #region Instance Methods
 
         /// <summary>
         /// Sets the Item's parent Item to the supplied Item.
@@ -245,6 +253,16 @@ namespace Symbiote.Core
             if ((SourceItem == null) || (SourceItem == default(Item)))
                 throw new SourceItemInvalidException("Error reading '" + this.FQN + "' from source; the source Item is invalid.");
 
+            // experimental!
+            // if this item is a data structure or is a member of a data structure, call ReadFromSource() for all children.
+            // eventually this code needs to be updated to find the parent data structure and call ReadFromSource() on it if this is a data member
+            // this OR is really not correct but it works for now.
+            if ((IsDataStructure) || (IsDataMember))
+            {
+                foreach (Item child in Children)
+                    child.ReadFromSource();
+            }
+
             object retVal = SourceItem.ReadFromSource();
 
             if ((retVal != null) && (retVal != default(object)))
@@ -313,11 +331,6 @@ namespace Symbiote.Core
             return JsonConvert.SerializeObject(this, new JsonSerializerSettings() { ContractResolver = contractResolver });
         }
 
-        public virtual string ToAPIJson()
-        {
-            return "{" + FQN + ":" + Value.ToString() + "}";
-        }
-
         public virtual bool IsValid()
         {
             return ((FQN != null) && (FQN.Length > 1) && (Type != null));
@@ -342,5 +355,7 @@ namespace Symbiote.Core
         {
             return FQN;
         }
+
+        #endregion
     }
 }

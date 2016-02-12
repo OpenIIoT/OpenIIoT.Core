@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace Symbiote.Core.Web.API
 {
-    public class BrowseController : ApiController
+    public class ReadController : ApiController
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Item model = manager.ModelManager.Model;
@@ -20,8 +20,20 @@ namespace Symbiote.Core.Web.API
 
         public HttpResponseMessage Get(string fqn)
         {
+            return Get(fqn, false);
+        }
+
+        public HttpResponseMessage Get(string fqn, bool fromSource)
+        {
             List<Item> result = new List<Item>();
-            result.Add(AddressResolver.Resolve(fqn));
+            Item foundItem = AddressResolver.Resolve(fqn);
+
+            if (fromSource)
+                foundItem.ReadFromSource();
+            
+            result.Add(foundItem);
+
+
             return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter());
         }
 
@@ -35,7 +47,11 @@ namespace Symbiote.Core.Web.API
                     DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                     NullValueHandling = NullValueHandling.Ignore,
                     Formatting = Formatting.Indented,
-                    ContractResolver = new ContractResolver(new string[] { "Parent", "SourceItem", "Guid", "Value" })
+                    ContractResolver = new ContractResolver(new string[] 
+                    {
+                        "Parent", "Name", "Path", "SourceAddress", "SourceItem", "Type",
+                        "Guid", "IsDataStructure", "IsDataMember", "IsReadable", "IsWriteable" 
+                    })
                 }
             };
         }

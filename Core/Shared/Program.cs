@@ -189,8 +189,11 @@ namespace Symbiote.Core
                 printTimer.Elapsed += new ElapsedEventHandler(Tick);
                 printTimer.Start();
 
-
                 Console.ReadLine();
+            }
+            catch (TargetInvocationException ex)
+            {
+                logger.Error(ex, "Unable to start the web server.  Is " + manager.ProductName + " running under an account with administrative privilege?");
             }
             catch (Exception ex)
             {

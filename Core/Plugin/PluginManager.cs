@@ -94,7 +94,8 @@ namespace Symbiote.Core.Plugin
                 {
                     try
                     {
-                        AddNewPlugin(plugin);
+                        // update auth with the result of AddNewPlugin.  If AuthorizeNewPlugins is true this will result in authorization.
+                        auth = AddNewPlugin(plugin);
                     }
                     catch (Exception ex)
                     {
@@ -158,9 +159,9 @@ namespace Symbiote.Core.Plugin
             pluginsLoaded = true;
         }
 
-        private void AddNewPlugin(string fileName)
+        private PluginAuthorization AddNewPlugin(string fileName)
         {
-            logger.Trace("Encountered new plugin '" + fileName + "'; adding it to the list of assemblies.");
+            logger.Info("Encountered new plugin '" + fileName + "'; adding it to the list of assemblies.");
 
             AssemblyName assemblyName = AssemblyName.GetAssemblyName(fileName);
 
@@ -168,7 +169,7 @@ namespace Symbiote.Core.Plugin
             // just forget it if we get any errors
             string validationMessage = GetPluginValidationMessage(assemblyName);
             if (validationMessage != null)
-                return;
+                return PluginAuthorization.Unknown;
 
             ConfigurationPluginAssembly newPlugin = new ConfigurationPluginAssembly()
             {
@@ -201,7 +202,8 @@ namespace Symbiote.Core.Plugin
             logger.Trace("\tAuthorization: " + newPlugin.Authorization.ToString());
 
             manager.ConfigurationManager.Configuration.Plugins.Assemblies.Add(newPlugin);
-            manager.ConfigurationManager.SaveConfiguration();
+            return newPlugin.Authorization;
+            //manager.ConfigurationManager.SaveConfiguration();
         }
 
         public string GetPluginChecksum(string fileName)
