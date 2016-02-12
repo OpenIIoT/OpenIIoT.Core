@@ -34,7 +34,7 @@ namespace Symbiote.Core.Platform.UNIX
         {
             logger = LogManager.GetCurrentClassLogger();
 
-            PlatformType = Core.Platform.PlatformType.Windows;
+            PlatformType = Core.Platform.PlatformType.UNIX;
             Version = Environment.OSVersion.VersionString;
         }
 

@@ -179,8 +179,9 @@ namespace Symbiote.Core
                 // start the web server
                 //----------- - - - ---------------   -                               -  - - - ---- - 
                 logger.Info("Starting web server...");
-                WebApp.Start("http://*:" + 80);
-                logger.Info("Web server started on port 80.");
+                int port = manager.ConfigurationManager.Configuration.Web.Port;
+                WebApp.Start("http://*:" + port);
+                logger.Info("Web server started on port " + port + ".");
 
                 Console.WriteLine(manager.ProductName + " is running.");
                 Console.WriteLine("Press any key to stop.");
