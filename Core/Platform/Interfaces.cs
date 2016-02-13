@@ -13,9 +13,16 @@ namespace Symbiote.Core.Platform
         IConnector Connector { get; }
         IConnector InstantiateConnector(string rootPath);
         List<string> GetDirectoryList(string root);
-        List<string> GetFileList(string directory, string extension);
+        List<string> GetFileList(string directory, string searchPattern);
+        List<string> GetZipFileList(string zipFile, string searchPattern);
+        bool ExtractZip(string zipFile, string destination, bool clearDestination);
+        string ExtractFileFromZip(string zipFile, string file, string destination, bool overwrite);
+        bool DeleteDirectory(string directory);
+        bool ClearDirectory(string directory);
+        string CreateDirectory(string directory);
         string ReadFile(string fileName);
         void WriteFile(string fileName, string text);
+        string GetApplicationDirectory();
         string ComputeFileChecksum(string fileName);
     }
 }

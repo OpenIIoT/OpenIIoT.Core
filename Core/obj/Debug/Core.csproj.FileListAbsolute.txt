@@ -28,7 +28,6 @@ C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\NLog.dll
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\obj\Debug\Symbiote.exe
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\obj\Debug\Symbiote.pdb
-C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Web\Console\index.html
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Microsoft.AspNet.SignalR.Core.dll
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Microsoft.AspNet.SignalR.SystemWeb.dll
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\Microsoft.Owin.Cors.dll

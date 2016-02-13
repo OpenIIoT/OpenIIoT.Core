@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Symbiote.Core
@@ -37,6 +38,14 @@ namespace Symbiote.Core
             {
                 PrintItemChildren(logger, i, indent + 1);
             }
+        }
+
+        internal static string WildcardToRegex(string pattern)
+        {
+            return "^" + Regex.Escape(pattern)
+                              .Replace(@"\*", ".*")
+                              .Replace(@"\?", ".")
+                       + "$";
         }
 
         internal static void PrintLogo(Logger logger)

@@ -178,10 +178,15 @@ namespace Symbiote.Core
                 //---------------------------------------------- - - ------------ - -      - - - - 
                 // start the web server
                 //----------- - - - ---------------   -                               -  - - - ---- - 
-                logger.Info("Starting web server...");
-                int port = manager.ConfigurationManager.Configuration.Web.Port;
-                WebApp.Start("http://*:" + port);
-                logger.Info("Web server started on port " + port + ".");
+                //logger.Info("Starting web server...");
+                //int port = manager.ConfigurationManager.Configuration.Web.Port;
+                //WebApp.Start("http://*:" + port);
+                //logger.Info("Web server started on port " + port + ".");
+
+                foreach (string file in manager.PlatformManager.Platform.GetZipFileList(@"\Data\Apps\Symbiote.App.Console.zip", "symbioteApp.config"))
+                {
+                    logger.Info("File: " + file);
+                }
 
                 Console.WriteLine(manager.ProductName + " is running.");
                 Console.WriteLine("Press any key to stop.");

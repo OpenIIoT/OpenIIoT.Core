@@ -7,7 +7,8 @@ using System.Linq;
 using NLog;
 using Symbiote.Core.Plugin;
 using System.Text;
-
+using System.Text.RegularExpressions;
+using System.IO.Compression;
 
 namespace Symbiote.Core.Platform.UNIX
 {
@@ -72,6 +73,74 @@ namespace Symbiote.Core.Platform.UNIX
             return list;
         }
 
+        public List<string> GetZipFileList(string zipFile, string searchPattern)
+        {
+            List<string> retVal = new List<string>();
+            Regex regex = new Regex(Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
+
+            // append the application path to the given file
+            // this forces local loading
+            zipFile = GetApplicationDirectory() + zipFile;
+
+            using (ZipArchive archive = ZipFile.OpenRead(zipFile))
+            {
+                foreach (ZipArchiveEntry entry in archive.Entries)
+                {
+                    if (regex.IsMatch(entry.Name))
+                        retVal.Add(entry.Name);
+                }
+            }
+            return retVal;
+        }
+
+        public bool ExtractZip(string zipFile, string destination, bool clearDestination = true)
+        {
+            if (clearDestination)
+            {
+                if (!ClearDirectory(destination))
+                    return false;
+            }
+
+            ZipFile.ExtractToDirectory(zipFile, destination);
+            return true;
+        }
+
+        public string ExtractFileFromZip(string zipFile, string file, string destination, bool overwrite = true)
+        {
+            using (ZipArchive archive = ZipFile.Open(zipFile, ZipArchiveMode.Update))
+            {
+                ZipArchiveEntry entry = archive.GetEntry(file);
+                entry.ExtractToFile(destination + entry.Name);
+                return destination + entry.Name;
+            }
+        }
+
+        public bool DeleteDirectory(string directory)
+        {
+            DirectoryInfo di = new DirectoryInfo(directory);
+            di.Delete(true);
+            return true;
+        }
+        public bool ClearDirectory(string directory)
+        {
+            DirectoryInfo di = new DirectoryInfo(directory);
+
+            foreach (FileInfo file in di.GetFiles())
+            {
+                file.Delete();
+            }
+            foreach (DirectoryInfo dir in di.GetDirectories())
+            {
+                dir.Delete(true);
+            }
+            return true;
+        }
+
+        public string CreateDirectory(string directory)
+        {
+            return Directory.CreateDirectory(directory).FullName;
+        }
+
         public string ReadFile(string fileName)
         {
             return File.ReadAllText(fileName);
@@ -80,6 +149,11 @@ namespace Symbiote.Core.Platform.UNIX
         public void WriteFile(string fileName, string contents)
         {
             File.WriteAllText(fileName, contents);
+        }
+
+        public string GetApplicationDirectory()
+        {
+            return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         }
 
         public string ComputeFileChecksum(string fileName)
