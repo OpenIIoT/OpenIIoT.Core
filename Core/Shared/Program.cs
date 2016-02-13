@@ -204,6 +204,7 @@ namespace Symbiote.Core
 
         private static void Tick(object source, EventArgs args)
         {
+            //logger.Info("Array: " + manager.ModelManager.FindItem("Symbiote.Simulation.Array").ToJson());
             //logger.Info("CPU usage (readfromsource): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").ReadFromSource());
             //logger.Info("Sine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Sine").ReadFromSource());
             //logger.Info("Cosine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Cosine").ReadFromSource());

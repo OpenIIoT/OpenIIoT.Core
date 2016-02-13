@@ -21,7 +21,7 @@ namespace Symbiote.Core.Configuration
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ConfigurationManager instance;
 
-        private static string[] ignoredItemSerializationProperties = { "Parent", "Name", "Path", "SourceItem", "Guid", "IsDataMember", "Children", "Value" };
+        private static List<string> ignoredItemSerializationProperties = new List<string>(new string[] { "FQN", "SourceAddress", "Type", "IsDataStructure", "IsReadable", "IsWriteable" });
 
         /// <summary>
         /// The current configuration.

@@ -15,7 +15,7 @@ namespace Symbiote.Core.Model
         private ProgramManager manager;
         private static ModelManager instance;
 
-        private static string[] ignoredItemSerializationProperties = { "Parent", "Name", "Path", "SourceItem", "Guid", "IsDataMember", "Children", "Value" };
+        private static List<string> ignoredItemSerializationProperties = new List<string>(new string[] { "FQN", "SourceAddress", "Type", "IsDataStructure", "IsReadable", "IsWriteable" });
 
         internal Item Model { get; private set; }
         internal Dictionary<string, Item> Dictionary { get; private set; }

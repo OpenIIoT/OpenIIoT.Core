@@ -62,6 +62,11 @@ namespace Symbiote.Core
         public bool IsDataStructure { get; private set; }
 
         /// <summary>
+        /// True if this item is an array, false otherwise.
+        /// </summary>
+        public bool IsArray { get { return Type.IsArray; } }
+
+        /// <summary>
         /// True if this item is part of a data structure, false otherwise.
         /// </summary>
         public bool IsDataMember { get; private set; }
@@ -323,7 +328,7 @@ namespace Symbiote.Core
 
         public virtual string ToJson()
         {
-            return ToJson(new ContractResolver(new string[] { "Parent", "SourceItem", "Children" }));
+            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
         }
 
         public virtual string ToJson(DefaultContractResolver contractResolver)

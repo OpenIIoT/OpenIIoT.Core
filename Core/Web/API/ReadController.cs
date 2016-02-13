@@ -47,11 +47,7 @@ namespace Symbiote.Core.Web.API
                     DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                     NullValueHandling = NullValueHandling.Ignore,
                     Formatting = Formatting.Indented,
-                    ContractResolver = new ContractResolver(new string[] 
-                    {
-                        "Parent", "Name", "Path", "SourceAddress", "SourceItem", "Type",
-                        "Guid", "IsDataStructure", "IsDataMember", "IsReadable", "IsWriteable" 
-                    })
+                    ContractResolver = new ContractResolver(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), true)
                 }
             };
         }

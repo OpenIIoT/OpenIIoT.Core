@@ -4,17 +4,20 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
+using NLog;
 
 namespace Symbiote.Core.Web.API
 {
     public class BrowseController : ApiController
     {
         private static ProgramManager manager = ProgramManager.Instance();
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         private static Item model = manager.ModelManager.Model;
 
         public HttpResponseMessage Get()
         {
             List<Item> result = model.Children;
+            logger.Info("API request for " + this + "; returning HTTP 200/OK");
             return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter());
         }
 
@@ -35,7 +38,7 @@ namespace Symbiote.Core.Web.API
                     DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                     NullValueHandling = NullValueHandling.Ignore,
                     Formatting = Formatting.Indented,
-                    ContractResolver = new ContractResolver(new string[] { "Parent", "SourceItem", "Guid", "Value" })
+                    ContractResolver = new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Guid", "Value" }), ContractResolverType.OptOut)
                 }
             };
         }

@@ -71,7 +71,7 @@ namespace Symbiote.Plugin.Connector.Simulation
         public object Read(string value)
         {
             double val = DateTime.Now.Second;
-            switch(value.Split('.')[value.Split('.').Length - 1])
+            switch (value.Split('.')[value.Split('.').Length - 1])
             {
                 case "Sine":
                     return Math.Sin(val);
@@ -91,11 +91,18 @@ namespace Symbiote.Plugin.Connector.Simulation
                     return DateTime.Now.ToString("MM/dd/yyyy");
                 case "TimeZone":
                     return DateTime.Now.ToString("zzz");
+                case "Array":
+                    return new int[5] { 1, 2, 3, 4, 5 };
+                case "Motor":
+                    return new Motor("Test Motor", "ABC123XYZ", 30, false);
+                case "MotorArray":
+                    return Motor.GetMotorArray();
                 default:
                     return 0;
             }
                 
         }
+
 
         public bool Write(string item, object value)
         {
@@ -123,6 +130,13 @@ namespace Symbiote.Plugin.Connector.Simulation
             timeRoot.AddChild(new PluginItem(this, "Date", typeof(string)));
             timeRoot.AddChild(new PluginItem(this, "TimeZone", typeof(string)));
             timeRoot.DesignateAsDataStucture();
+
+            PluginItem arrayRoot = itemRoot.AddChild(new PluginItem(this, "Array", typeof(object[])));
+
+            PluginItem motorRoot = itemRoot.AddChild(new PluginItem(this, "Motor", typeof(object)));
+
+            PluginItem motorArrayRoot = itemRoot.AddChild(new PluginItem(this, "MotorArray", typeof(List<object>)));
+
         }
     }
 
@@ -135,6 +149,31 @@ namespace Symbiote.Plugin.Connector.Simulation
         {
             Form = "";
             Schema = "";
+        }
+    }
+
+    public class Motor
+    {
+        public string Name { get; set; }
+        public string Model { get; set; }
+        public int HorsePower { get; set; }
+        public bool IsRunning { get; set; }
+
+        public Motor(string name, string model, int horsePower, bool isRunning)
+        {
+            Name = name;
+            Model = model;
+            HorsePower = horsePower;
+            IsRunning = isRunning;
+        }
+
+        public static List<Motor> GetMotorArray()
+        {
+            List<Motor> retVal = new List<Motor>();
+            retVal.Add(new Motor("Motor A", "ABC123XYZ.1", 30, true));
+            retVal.Add(new Motor("Motor B", "ABC123XYZ.2", 30, false));
+            retVal.Add(new Motor("Motor C", "ABC123XYZ.x", 35, true));
+            return retVal;
         }
     }
 }
