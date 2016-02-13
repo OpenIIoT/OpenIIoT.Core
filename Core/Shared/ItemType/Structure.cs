@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.ItemType
 {
-    public class Folder
+    public class Structure
     {
         public override string ToString()
         {
-            return "Folder";
+            return "Structure";
         }
     }
 }

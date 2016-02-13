@@ -163,6 +163,7 @@
     <Compile Include="Plugin\Enumerations.cs" />
     <Compile Include="Plugin\PluginConfigurationDefinition.cs" />
     <Compile Include="Shared\Exceptions.cs" />
+    <Compile Include="Shared\ItemType\Structure.cs" />
     <Compile Include="Shared\ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Platform\Interfaces.cs" />

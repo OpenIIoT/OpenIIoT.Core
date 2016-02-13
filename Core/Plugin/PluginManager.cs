@@ -273,13 +273,37 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
+        /// Attempts to resolve the supplied plugin item Fully Qualified Name to an instance of Item contained in a Connector plugin.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the instance to find.</param>
+        /// <returns>The found Item.</returns>
+        public Item FindPluginItem(string fqn)
+        {
+            logger.Trace("Attempting to find Connector Item '" + fqn + "'...");
+            IConnector originPlugin = (IConnector)FindPluginInstance(fqn.Split('.')[0]);
+
+            if (originPlugin != default(IConnector))
+            {
+                logger.Trace("Origin Plugin is '" + originPlugin.ToString() + "'.  Passing FQN to plugin FindItem() method...");
+
+                Item retVal = originPlugin.FindItem(fqn);
+                logger.Trace("Resolved Item: " + retVal.ToJson());
+                return retVal;
+            }
+
+            logger.Trace("Origin plugin '" + fqn.Split('.')[0] + "' not found.");
+            return default(Item);
+        }
+
+        /// <summary>
         /// Given an instance name string, return the matching instance of IPluginInstance.
         /// </summary>
-        /// <param name="instanceName"></param>
+        /// <param name="instanceName">The name of the instance to find.</param>
+        /// <param name="pluginType">The Type of instance to find.</param>
         /// <returns>The instance of IPluginInstance matching the requested InstanceName.</returns>
-        public IPluginInstance FindPluginInstance(string instanceName)
+        public IPluginInstance FindPluginInstance(string instanceName, PluginType pluginType = PluginType.Connector)
         {
-            return PluginInstances.Where(p => p.InstanceName == instanceName).FirstOrDefault();
+            return PluginInstances.Where(p => p.PluginType == pluginType).Where(p => p.InstanceName == instanceName).FirstOrDefault();
         }
 
         public void InstantiatePlugins()
