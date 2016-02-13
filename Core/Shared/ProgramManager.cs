@@ -7,6 +7,7 @@ using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Web;
 using NLog;
 
 namespace Symbiote.Core
@@ -42,41 +43,69 @@ namespace Symbiote.Core
         /// </summary>
         public ConfigurationManager ConfigurationManager { get; private set; }
 
+        /// <summary>
+        /// The PluginManager for the application.
+        /// </summary>
         public PluginManager PluginManager { get; private set; }
 
+        /// <summary>
+        /// The ModelManager for the application.
+        /// </summary>
         public ModelManager ModelManager { get; private set; }
+
+        /// <summary>
+        /// The WebManager for the application.
+        /// </summary>
+        public WebManager WebManager { get; private set; }
 
         private ProgramManager()
         {
             logger.Trace("Instantiating ProgramManager member instances...");
 
+            //------- - ------- -         --
             // Platform Manager
-            //-----------------------------------------------------------------------------------
+            //----------------------- -- -------------   - -- ------------
             logger.Trace("Instantiating the PlatformManager...");
             PlatformManager = PlatformManager.Instance(this);
             if (PlatformManager == null)
                 throw new Exception("PlatformManager.Instance() returned a null instance");
+            else logger.Trace("Successfully instantiated the Platform Manager.");
 
+            //------------ -        -- -   -
             // Configuration Manager
-            //-----------------------------------------------------------------------------------
+            //--------------- --- ---       -
             logger.Trace("Instantiating the Configuration Manager...");
             ConfigurationManager = ConfigurationManager.Instance(this);
             if (ConfigurationManager == null)
                 throw new Exception("ConfigurationManager.Instance() returned a null instance.");
+            else logger.Trace("Successfully instantiated the Configuration Manager.");
 
+            //------- - - ------------------ - - ------------
             // Plugin Manager
-            //-----------------------------------------------------------------------------------
+            //----------------------------- ------ -- --
             logger.Trace("Instantiating the Plugin Manager...");
             PluginManager = PluginManager.Instance(this);
             if (PluginManager == null)
                 throw new Exception("PluginManager.Instance() returned a null instance.");
+            else logger.Trace("Successfully instantiated the Plugin Manager.");
 
+            //-------- -------------- -    -
             // Model Manager
-            //-----------------------------------------------------------------------------------
+            //---- - -----------  -----
             logger.Trace("Instantiating the Model Manager...");
             ModelManager = ModelManager.Instance(this);
             if (ModelManager == null)
                 throw new Exception("ModelManager.Instance() returned a null instance.");
+            else logger.Trace("Successfully instantiated the Model Manager.");
+
+            //-------------------- - - -
+            // Web Manager
+            //------------------- - - ---- -        -
+            logger.Trace("Instantiating the Web Manager...");
+            WebManager = WebManager.Instance(this);
+            if (WebManager == null)
+                throw new Exception("WebManager.Instance() returned a null instance.");
+            else logger.Trace("Successfully instantiated the Web Manager.");
         }
 
         internal static ProgramManager Instance()

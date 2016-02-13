@@ -183,11 +183,9 @@
     <Compile Include="Web\API\BrowseController.cs" />
     <Compile Include="Web\API\ValuesController.cs" />
     <Compile Include="Web\Startup.cs" />
+    <Compile Include="Web\WebManager.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Web\Console\index.html">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
