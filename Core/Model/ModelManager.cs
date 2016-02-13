@@ -15,8 +15,6 @@ namespace Symbiote.Core.Model
         private ProgramManager manager;
         private static ModelManager instance;
 
-        private static List<string> ignoredItemSerializationProperties = new List<string>(new string[] { "FQN", "SourceAddress", "Type", "IsDataStructure", "IsReadable", "IsWriteable" });
-
         internal Item Model { get; private set; }
         internal Dictionary<string, Item> Dictionary { get; private set; }
 
@@ -220,7 +218,7 @@ namespace Symbiote.Core.Model
         /// <returns>Returns true if the save succeeded, false otherwise.</returns>
         public bool SaveModel(bool flushToDisk = false)
         {
-            List<ConfigurationModelItem> updatedItems = SaveModel(Model, new List<ConfigurationModelItem>());
+            List<ConfigurationModelItem> updatedItems = SaveModel(Model, new List<ConfigurationModelItem>(), manager.ConfigurationManager.ItemSerializationProperties);
             manager.ConfigurationManager.Configuration.Model.Items = updatedItems;
 
             if (flushToDisk)
@@ -234,14 +232,15 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="itemRoot">The ModelItem from which to start recursively updating the list.</param>
         /// <param name="configuration">The list of ConfigurationModelItems to update.</param>
+        /// <param name="itemSerializationProperties">A list of propery names to include in the serialization of the model items.</param>
         /// <returns>Returns true if the save succeeded, false otherwise.</returns>
-        private List<ConfigurationModelItem> SaveModel(Item itemRoot, List<ConfigurationModelItem> configuration)
+        private List<ConfigurationModelItem> SaveModel(Item itemRoot, List<ConfigurationModelItem> configuration, List<string> itemSerializationProperties)
         {
-            configuration.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson(new ContractResolver(ignoredItemSerializationProperties)) });
+            configuration.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson(new ContractResolver(itemSerializationProperties)) });
 
             foreach(Item mi in itemRoot.Children)
             {
-                SaveModel(mi, configuration);
+                SaveModel(mi, configuration, itemSerializationProperties);
             }
 
             return configuration;

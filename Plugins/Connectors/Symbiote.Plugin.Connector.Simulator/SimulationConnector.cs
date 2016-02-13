@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.ItemType;
 using Symbiote.Core;
 
 namespace Symbiote.Plugin.Connector.Simulation
@@ -115,21 +116,21 @@ namespace Symbiote.Plugin.Connector.Simulation
             itemRoot = new PluginItem(this, InstanceName, true);
 
             // create some simulation items
-            PluginItem mathRoot = itemRoot.AddChild(new PluginItem(this, "Math"));
+            PluginItem mathRoot = itemRoot.AddChild(new PluginItem(this, "Math", typeof(Folder)));
             mathRoot.AddChild(new PluginItem(this, "Sine", typeof(double)));
             mathRoot.AddChild(new PluginItem(this, "Cosine", typeof(double)));
             mathRoot.AddChild(new PluginItem(this, "Tangent", typeof(double)));
 
-            PluginItem processRoot = itemRoot.AddChild(new PluginItem(this, "Process"));
+            PluginItem processRoot = itemRoot.AddChild(new PluginItem(this, "Process", typeof(Folder)));
             processRoot.AddChild(new PluginItem(this, "Ramp", typeof(double)));
             processRoot.AddChild(new PluginItem(this, "Step", typeof(double)));
             processRoot.AddChild(new PluginItem(this, "Toggle", typeof(double)));
 
-            PluginItem timeRoot = itemRoot.AddChild(new PluginItem(this, "DateTime"));
+            PluginItem timeRoot = itemRoot.AddChild(new PluginItem(this, "DateTime", typeof(Structure)));
             timeRoot.AddChild(new PluginItem(this, "Time", typeof(string)));
             timeRoot.AddChild(new PluginItem(this, "Date", typeof(string)));
             timeRoot.AddChild(new PluginItem(this, "TimeZone", typeof(string)));
-            timeRoot.DesignateAsDataStucture();
+            //timeRoot.DesignateAsDataStucture();
 
             PluginItem arrayRoot = itemRoot.AddChild(new PluginItem(this, "Array", typeof(object[])));
 

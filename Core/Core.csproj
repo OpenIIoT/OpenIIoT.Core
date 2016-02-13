@@ -176,6 +176,7 @@
     <Compile Include="Shared\Service.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Shared\ItemType\Folder.cs" />
     <Compile Include="Shared\Utility.cs" />
     <Compile Include="Web\API\ReadController.cs" />
     <Compile Include="Web\API\BrowseController.cs" />

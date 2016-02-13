@@ -14,21 +14,34 @@ namespace Symbiote.Core.Web.API
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static Item model = manager.ModelManager.Model;
 
-        public HttpResponseMessage Get()
+        private static List<string> conciseSerializationProperties = new List<string>(new string[] { "FQN", "Children" });
+        private static List<string> verboseSerializationProperties = new List<string>(new string[] { "Parent", "SourceItem", "Guid", "Value" });
+
+        public HttpResponseMessage Get(string verbosity = "verbose")
         {
-            List<Item> result = model.Children;
-            logger.Info("API request for " + this + "; returning HTTP 200/OK");
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter());
+            return Get(model.FQN, verbosity);
         }
 
-        public HttpResponseMessage Get(string fqn)
+        public HttpResponseMessage Get(string fqn, string verbosity = "verbose")
         {
             List<Item> result = new List<Item>();
             result.Add(AddressResolver.Resolve(fqn));
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter());
+
+            JsonMediaTypeFormatter formatter;
+
+            if (verbosity == "concise") formatter = JsonFormatter(conciseSerializationProperties, ContractResolverType.OptIn);
+            else formatter = JsonFormatter();
+
+            logger.Info("API request; FQN:" + fqn + "; Verbosity: " + verbosity + ". Remote IP: " + Request.GetOwinContext().Request.RemoteIpAddress + "; returning HTTP 200/OK");
+            return Request.CreateResponse(HttpStatusCode.OK, result, formatter);
         }
 
         private static JsonMediaTypeFormatter JsonFormatter()
+        {
+            return JsonFormatter(verboseSerializationProperties, ContractResolverType.OptOut);
+        }
+
+        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
         {
             return new JsonMediaTypeFormatter()
             {
@@ -38,7 +51,7 @@ namespace Symbiote.Core.Web.API
                     DateTimeZoneHandling = DateTimeZoneHandling.Utc,
                     NullValueHandling = NullValueHandling.Ignore,
                     Formatting = Formatting.Indented,
-                    ContractResolver = new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Guid", "Value" }), ContractResolverType.OptOut)
+                    ContractResolver = new ContractResolver(serializationProperties, contractResolverType)
                 }
             };
         }

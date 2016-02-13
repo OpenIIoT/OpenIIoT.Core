@@ -21,7 +21,10 @@ namespace Symbiote.Core.Configuration
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ConfigurationManager instance;
 
-        private static List<string> ignoredItemSerializationProperties = new List<string>(new string[] { "FQN", "SourceAddress", "Type", "IsDataStructure", "IsReadable", "IsWriteable" });
+        /// <summary>
+        /// The list of properties to be used when serializing/deserializing configuration items.
+        /// </summary>
+        public List<string> ItemSerializationProperties { get { return new List<string>(new string[] { "FQN", "SourceAddress", "Type", "IsReadable", "IsWriteable" }); } }
 
         /// <summary>
         /// The current configuration.
@@ -178,7 +181,7 @@ namespace Symbiote.Core.Configuration
 
             retVal.Model = new ConfigurationModelSection();
             retVal.Model.Items = new List<ConfigurationModelItem>();
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Item("Symbiote", typeof(string)).ToJson(new ContractResolver(ignoredItemSerializationProperties)) });
+            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Item("Symbiote", typeof(string)).ToJson(new ContractResolver(ItemSerializationProperties)) });
 
             retVal.Plugins = new ConfigurationPluginSection();
             retVal.Plugins.AuthorizeNewPlugins = true;
