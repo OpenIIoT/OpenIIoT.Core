@@ -9,6 +9,7 @@ using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Web;
 using NLog;
+using Symbiote.Core.App;
 
 namespace Symbiote.Core
 {
@@ -58,6 +59,11 @@ namespace Symbiote.Core
         /// </summary>
         public WebManager WebManager { get; private set; }
 
+        /// <summary>
+        /// The AppManager for the application.
+        /// </summary>
+        public AppManager AppManager { get; private set; }
+
         private ProgramManager()
         {
             logger.Trace("Instantiating ProgramManager member instances...");
@@ -106,6 +112,15 @@ namespace Symbiote.Core
             if (WebManager == null)
                 throw new Exception("WebManager.Instance() returned a null instance.");
             else logger.Trace("Successfully instantiated the Web Manager.");
+
+            //--------- - ---------------------------
+            // App Manager
+            //- -- -   ------------- - - --  - -  --------------   -  
+            logger.Trace("Instantiating the App Manager...");
+            AppManager = AppManager.Instance(this);
+            if (AppManager == null)
+                throw new Exception("AppManager.Instance() returned a null instance.");
+            else logger.Trace("Successfully instantiated the App Manager.");
         }
 
         internal static ProgramManager Instance()
