@@ -40,7 +40,7 @@ namespace Symbiote.Core
             }
         }
 
-        internal static string WildcardToRegex(string pattern)
+        internal static string WildcardToRegex(string pattern = "")
         {
             return "^" + Regex.Escape(pattern)
                               .Replace(@"\*", ".*")

@@ -18,7 +18,7 @@ namespace Symbiote.Core.Platform.UNIX
         private double lastCPUIdle;
 
         public string Name { get; private set; }
-        public string FullName { get; private set; }
+        public string FQN { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
         public IPluginConfigurationDefinition ConfigurationDefinition { get; private set; }
@@ -31,8 +31,8 @@ namespace Symbiote.Core.Platform.UNIX
         public PlatformConnector(string instanceName)
         {
             InstanceName = instanceName;
-            Name = "WindowsConnector";
-            FullName = "Symbiote.Core.Platform.Windows.PlatformConnector";
+            Name = "UNIXConnector";
+            FQN = "Symbiote.Core.Platform.UNIX.PlatformConnector";
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
             PluginType = PluginType.Connector;
 

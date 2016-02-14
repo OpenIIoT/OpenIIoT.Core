@@ -14,7 +14,7 @@ namespace Symbiote.Plugin.Connector.Simulation
         private PluginItem itemRoot;
         
         public string Name { get; private set; }
-        public string FullName { get; private set; }
+        public string FQN { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
         public IPluginConfigurationDefinition ConfigurationDefinition { get; private set; }
@@ -29,7 +29,7 @@ namespace Symbiote.Plugin.Connector.Simulation
             InstanceName = instanceName;
 
             Name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
-            FullName = System.Reflection.Assembly.GetEntryAssembly().GetTypes()[0].Namespace;
+            FQN = System.Reflection.Assembly.GetEntryAssembly().GetTypes()[0].Namespace;
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
             PluginType = PluginType.Connector;
             ConfigurationDefinition = new PluginConfigurationDefinition();

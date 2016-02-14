@@ -16,10 +16,16 @@ namespace Symbiote.Core.Plugin
     /// </summary>
     public class PluginManager
     {
+        #region Variables
+
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static PluginManager instance;
         private bool pluginsLoaded = false;
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// A list of currently loaded plugin assemblies.
@@ -30,6 +36,10 @@ namespace Symbiote.Core.Plugin
         /// A list of all plugin instances.
         /// </summary>
         public List<IPluginInstance> PluginInstances { get; private set; }
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Private constructor, only called by Instance()
@@ -53,6 +63,10 @@ namespace Symbiote.Core.Plugin
 
             return instance;
         }
+
+        #endregion
+
+        #region Instance Methods
 
         /// <summary>
         /// Given a list of files, validate and load each assembly found in the list.
@@ -363,7 +377,9 @@ namespace Symbiote.Core.Plugin
             }
         }
 
-        // static methods
+        #endregion
+
+        #region Static Methods
 
         /// <summary>
         /// Evaluates the supplied assembly name for correctness and returns an error message if it is incorrect.
@@ -399,5 +415,7 @@ namespace Symbiote.Core.Plugin
                 return retVal;
             else return default(PluginType);
         }
+
+        #endregion
     }
 }

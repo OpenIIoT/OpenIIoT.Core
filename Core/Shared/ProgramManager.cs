@@ -30,9 +30,9 @@ namespace Symbiote.Core
         private static ProgramManager instance;
 
         /// <summary>
-        /// The name of the product
+        /// Encapsulates various internal application settings.
         /// </summary>
-        public string ProductName { get; private set; }
+        public InternalSettings InternalSettings { get; private set; }
 
         /// <summary>
         /// The PlatformManager for the application.
@@ -67,6 +67,11 @@ namespace Symbiote.Core
         private ProgramManager()
         {
             logger.Trace("Instantiating ProgramManager member instances...");
+
+            //--- - - 
+            // Internal Settings
+            //--------- - -
+            InternalSettings = new InternalSettings();
 
             //------- - ------- -         --
             // Platform Manager
@@ -135,15 +140,6 @@ namespace Symbiote.Core
 
             logger.Trace("Returning ProgramManager instance...");
             return instance;
-        }
-
-        /// <summary>
-        /// Sets the ProductName property to the given value.
-        /// </summary>
-        /// <param name="name">The name of the product.</param>
-        internal void SetProductName(string name)
-        {
-            ProductName = name;
         }
     }
 }

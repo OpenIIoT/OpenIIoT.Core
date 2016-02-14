@@ -24,4 +24,27 @@ namespace Symbiote.Core
         /// </summary>
         OptOut
     }
+
+    /// <summary>
+    /// Defines the return result of an action
+    /// </summary>
+    public enum ActionResultCode
+    {
+        /// <summary>
+        /// The default return type
+        /// </summary>
+        Unknown,
+        /// <summary>
+        /// The action succeeded
+        /// </summary>
+        Success,
+        /// <summary>
+        /// The action encountered recoverable issues but ultimately succeeded
+        /// </summary>
+        Warning,
+        /// <summary>
+        /// The action encountered unrecoverable errors and did not succeed
+        /// </summary>
+        Failure
+    }
 }

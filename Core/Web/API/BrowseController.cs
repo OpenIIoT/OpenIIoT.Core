@@ -17,12 +17,24 @@ namespace Symbiote.Core.Web.API
         private static List<string> conciseSerializationProperties = new List<string>(new string[] { "FQN", "Children" });
         private static List<string> verboseSerializationProperties = new List<string>(new string[] { "Parent", "SourceItem", "Guid", "Value" });
 
-        public HttpResponseMessage Get(string verbosity = "verbose")
+
+        [Route("api/browse")]
+        [HttpGet]
+        public HttpResponseMessage Browse()
         {
-            return Get(model.FQN, verbosity);
+            return Browse("verbose");
         }
 
-        public HttpResponseMessage Get(string fqn, string verbosity = "verbose")
+        [Route("api/browse/{verbosity}")]
+        [HttpGet]
+        public HttpResponseMessage Browse(string verbosity)
+        {
+            return Browse(model.FQN, verbosity);
+        }
+
+        [Route("api/browse/{fqn}/{verbosity}")]
+        [HttpGet]
+        public HttpResponseMessage Browse(string fqn, string verbosity = "verbose")
         {
             List<Item> result = new List<Item>();
             result.Add(AddressResolver.Resolve(fqn));
@@ -43,17 +55,18 @@ namespace Symbiote.Core.Web.API
 
         private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
         {
-            return new JsonMediaTypeFormatter()
-            {
-                SerializerSettings = new JsonSerializerSettings()
-                {
-                    DateFormatHandling = DateFormatHandling.MicrosoftDateFormat,
-                    DateTimeZoneHandling = DateTimeZoneHandling.Utc,
-                    NullValueHandling = NullValueHandling.Ignore,
-                    Formatting = Formatting.Indented,
-                    ContractResolver = new ContractResolver(serializationProperties, contractResolverType)
-                }
-            };
+            JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
+
+            retVal.SerializerSettings = new JsonSerializerSettings();
+
+            retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
+            retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
+            retVal.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            retVal.SerializerSettings.Formatting = Formatting.Indented;
+            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
+            retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
+
+            return retVal;
         }
     }
 }

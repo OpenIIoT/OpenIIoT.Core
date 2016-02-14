@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Reflection;
 
 namespace Symbiote.Core.Plugin
@@ -10,7 +7,7 @@ namespace Symbiote.Core.Plugin
     public interface IPlugin
     {
         string Name { get; }
-        string FullName { get; }
+        string FQN { get; }
         Version Version { get; }
         PluginType PluginType { get; }
     }
@@ -31,7 +28,7 @@ namespace Symbiote.Core.Plugin
         void Configure(string configuration);
     }
 
-    public interface IPluginConfigurationDefinition
+    public interface IPluginConfigurationDefinition : IConfigurationDefinition
     {
         string Form { get; }
         string Schema { get; }

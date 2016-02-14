@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using NLog;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -7,34 +8,27 @@ using System.Web.Http;
 
 namespace Symbiote.Core.Web.API
 {
-    public class ReadController : ApiController
+    public class AppController : ApiController
     {
         private static ProgramManager manager = ProgramManager.Instance();
-        private static Item model = manager.ModelManager.Model;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        public HttpResponseMessage Get()
+        private static List<string> serializationProperties = new List<string>(new string[] { "FQN", "Version", "AppType" });
+         
+        [Route("api/app")]
+        [HttpGet]
+        public HttpResponseMessage ListApps()
         {
-            List<Item> result = model.Children;
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn));
+            return Request.CreateResponse(HttpStatusCode.OK, manager.AppManager.AppArchives , JsonFormatter(serializationProperties, ContractResolverType.OptIn));
         }
 
-        public HttpResponseMessage Get(string fqn)
+        [Route("api/app/{fqn}/install")]
+        [HttpGet]
+        public HttpResponseMessage InstallApp(string fqn)
         {
-            return Get(fqn, false);
-        }
+            ActionResult result = manager.AppManager.InstallApp(fqn);
 
-        public HttpResponseMessage Get(string fqn, bool fromSource)
-        {
-            List<Item> result = new List<Item>();
-            Item foundItem = AddressResolver.Resolve(fqn);
-
-            if (fromSource)
-                foundItem.ReadFromSource();
-            
-            result.Add(foundItem);
-
-
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn));
+            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "Result" }), ContractResolverType.OptIn));
         }
 
         private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)

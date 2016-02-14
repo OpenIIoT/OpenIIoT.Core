@@ -23,11 +23,10 @@ namespace Symbiote.Core.Web
             app.UseCors(CorsOptions.AllowAll);
             app.MapSignalR();
 
-            //Type valuesControllerType = typeof(Symbiote.Core.Web.API.ValuesController);
-
             string webRoot = manager.ConfigurationManager.Configuration.Web.Root;
 
             HttpConfiguration config = new HttpConfiguration();
+            config.MapHttpAttributeRoutes();
             config.Routes.MapHttpRoute(
                 name: "DefaultApi",
                 routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : "") + "api/{controller}/{id}",
@@ -45,7 +44,7 @@ namespace Symbiote.Core.Web
             // windows uses web\content, linux uses web/content. 
             app.UseFileServer(new FileServerOptions()
             {
-                FileSystem = new PhysicalFileSystem(Path.Combine("Web", "Console")),
+                FileSystem = new PhysicalFileSystem(Path.Combine("Web")),
                 RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : "") + webRoot)
             });
         }

@@ -78,10 +78,6 @@ namespace Symbiote.Core.Platform.Windows
             List<string> retVal = new List<string>();
             Regex regex = new Regex(Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
 
-            // append the application path to the given file
-            // this forces local loading
-            zipFile = GetApplicationDirectory() + zipFile;
-
             using (ZipArchive archive = ZipFile.OpenRead(zipFile))
             {
                 foreach (ZipArchiveEntry entry in archive.Entries)
@@ -107,11 +103,15 @@ namespace Symbiote.Core.Platform.Windows
 
         public string ExtractFileFromZip(string zipFile, string file, string destination, bool overwrite = true)
         {
+
             using (ZipArchive archive = ZipFile.Open(zipFile, ZipArchiveMode.Update))
             {
                 ZipArchiveEntry entry = archive.GetEntry(file);
-                entry.ExtractToFile(destination + entry.Name);
-                return destination + entry.Name;
+
+                string extractedFile = Path.Combine(destination, entry.Name);
+
+                entry.ExtractToFile(extractedFile, overwrite);
+                return extractedFile;
             }
         }
 

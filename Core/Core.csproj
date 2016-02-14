@@ -135,7 +135,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="App\App.cs" />
+    <Compile Include="App\AppConfigurationDefinition.cs" />
+    <Compile Include="App\AppInstance.cs" />
+    <Compile Include="App\AppParseResult.cs" />
+    <Compile Include="App\AppLoadResult.cs" />
     <Compile Include="App\AppManager.cs" />
+    <Compile Include="App\Enumerations.cs" />
+    <Compile Include="App\Exceptions.cs" />
+    <Compile Include="App\Interfaces.cs" />
     <Compile Include="Configuration\Exceptions.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
@@ -155,6 +163,8 @@
     <Compile Include="Shared\AddressResolver.cs" />
     <Compile Include="Shared\ContractResolver.cs" />
     <Compile Include="Shared\Enumerations.cs" />
+    <Compile Include="Shared\Interfaces.cs" />
+    <Compile Include="Shared\InternalSettings.cs" />
     <Compile Include="Shared\Item.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
@@ -182,8 +192,10 @@
     </Compile>
     <Compile Include="Shared\ItemType\Folder.cs" />
     <Compile Include="Shared\Utility.cs" />
+    <Compile Include="Shared\ActionResult.cs" />
     <Compile Include="Web\API\ReadController.cs" />
     <Compile Include="Web\API\BrowseController.cs" />
+    <Compile Include="Web\API\AppController.cs" />
     <Compile Include="Web\API\ValuesController.cs" />
     <Compile Include="Web\Startup.cs" />
     <Compile Include="Web\WebManager.cs" />
