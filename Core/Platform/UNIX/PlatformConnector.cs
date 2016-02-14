@@ -21,10 +21,10 @@ namespace Symbiote.Core.Platform.UNIX
         public string FQN { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
-        public IPluginConfigurationDefinition ConfigurationDefinition { get; private set; }
+        public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
         public string Configuration { get; private set; }
-        public bool Configured { get { return true; } }
+        public bool IsConfigured { get { return true; } }
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 

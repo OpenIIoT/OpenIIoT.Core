@@ -14,14 +14,14 @@ namespace Symbiote.Core.App
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static AppManager instance;
 
-        public List<IApp> AppArchives { get; private set; }
-        public List<IApp> InstalledApps { get; private set; }
-
-        public List<IAppInstance> LoadedApps { get; private set; }
+        public List<AppArchive> AppArchives { get; private set; }
+        public List<App> Apps { get; private set; }
 
         private AppManager(ProgramManager manager)
         {
             this.manager = manager;
+            AppArchives = new List<AppArchive>();
+            Apps = new List<App>();
         }
 
         internal static AppManager Instance(ProgramManager manager)
@@ -32,30 +32,91 @@ namespace Symbiote.Core.App
             return instance;
         }
 
-        public ActionResult InstallApp(string fqn)
+        public ActionResult<List<App>> LoadApps()
         {
-            return new ActionResult();
+            // TODO: grab the list of apps from the configuration, fix them up and add them to the list of installed apps
+            // TODO: check that the filename exists and that the URL folder exists and contains at least a config file and index.html
+            return null;
         }
 
-        public List<IApp> ReloadAppArchives()
+        public AppArchive FindAppArchive(string fqn)
+        {
+            return AppArchives.Where(a => a.FQN == fqn).FirstOrDefault();
+        }
+
+        public App FindInstalledApp(string fqn)
+        {
+            return Apps.Where(i => i.FQN == fqn).FirstOrDefault();
+        }
+
+        public async Task<ActionResult<App>> InstallAppAsync(string fqn)
+        {
+            AppArchive foundArchive = FindAppArchive(fqn);
+
+            if (foundArchive != default(AppArchive))
+                return await InstallAppAsync(foundArchive);
+            else
+                return new ActionResult<App>().AddError("Unable to find App Archive with Fully Qualified Name '" + fqn + "'."); 
+        }
+
+        public async Task<ActionResult<App>> InstallAppAsync(AppArchive appArchive, string configuration = "")
+        {
+            ActionResult<App> retVal = new ActionResult<App>();
+
+            if (FindInstalledApp(appArchive.FQN) != null)
+                retVal.AddError("The App Archive '" + appArchive.FQN + "' has already been installed.  Use the reinstall function to reinstall install it.");
+            else
+            {
+                try
+                {
+                    logger.Info("Installing App '" + appArchive.Name + "' from archive '" + appArchive.FQN + "...");
+                    string destination = System.IO.Path.Combine(manager.InternalSettings.WebDirectory, appArchive.Name);
+                    logger.Trace("Destination: " + destination);
+                    manager.PlatformManager.Platform.ExtractZip(appArchive.FileName, destination, true);
+                    logger.Trace("Successfully extracted the archive '" + System.IO.Path.GetFileName(appArchive.FileName) + "' to '" + destination + "'.");
+
+                    string relativeDestination = destination.Replace(manager.InternalSettings.RootDirectory, "");
+                    logger.Info("Successfully installed App '" + appArchive.Name + "' to '" + relativeDestination + "'.");
+
+                    retVal.Result = new App(appArchive);
+                    retVal.Result.SetURL("/" + appArchive.Name.ToLower() + "/");
+
+                    // if a configuration was passed to the method, configure the InstalledApp with it
+                    if (configuration != "")
+                        retVal.Result.Configure(configuration);
+
+                    // add the new app to the list of installed apps
+                    Apps.Add(retVal.Result);
+                }
+                catch (Exception ex)
+                {
+                    logger.Warn(ex, "Encountered an error installing App from '" + appArchive.FileName + "'.");
+                    retVal.AddError("Encountered an error while installing the App: " + ex.ToString());
+                }
+            }
+
+            return retVal;
+        }
+
+        public List<AppArchive> ReloadAppArchives()
         {
             return LoadAppArchives();
         }
 
-        public List<IApp> LoadAppArchives()
+        public List<AppArchive> LoadAppArchives()
         {
             AppArchives = ParseAppArchives();
             return AppArchives;
         }
 
-        public List<IApp> ParseAppArchives()
+        private List<AppArchive> ParseAppArchives()
         {
             return ParseAppArchives(manager.InternalSettings.AppDirectory, manager.InternalSettings.AppExtension);
         }
 
-        public List<IApp> ParseAppArchives(string folder, string searchPattern)
+        private List<AppArchive> ParseAppArchives(string folder, string searchPattern)
         {
-            List<IApp> foundApps = new List<IApp>();
+            List<AppArchive> foundApps = new List<AppArchive>();
 
             logger.Trace("Searching for Apps in '" + folder + "' with searchPattern = '" + searchPattern);
             List<string> files = manager.PlatformManager.Platform.GetFileList(folder, searchPattern);
@@ -63,27 +124,27 @@ namespace Symbiote.Core.App
 
             foreach (string file in files)
             {
-                AppParseResult validationResult = ParseAppArchive(file);
+                ActionResult<AppArchive> parseResult = ParseAppArchive(file);
 
-                if (validationResult.Result == ActionResultCode.Success)
+                if (parseResult.ResultCode == ActionResultCode.Success)
                 {
-                    if (foundApps.Find(a => a.FQN == validationResult.App.FQN) == null)
-                        foundApps.Add(validationResult.App);
+                    if (foundApps.Find(a => a.FQN == parseResult.Result.FQN) == null)
+                        foundApps.Add(parseResult.Result);
                     else
-                        logger.Warn("The App archive '" + System.IO.Path.GetFileName(validationResult.App.FileName) + "' contains an App with the same Fully Qualified Name as a previously parsed App.  The duplicate App will not be available to install.");
+                        logger.Warn("The App archive '" + System.IO.Path.GetFileName(parseResult.Result.FileName) + "' contains an App with the same Fully Qualified Name as a previously parsed App.  The duplicate App will not be available to install.");
                 }
             }
             return foundApps;
         }
 
-        public AppParseResult ParseAppArchive(string fileName)
+        private ActionResult<AppArchive> ParseAppArchive(string fileName)
         {
             return ParseAppArchive(fileName, manager.InternalSettings.AppConfigurationFileName);
         }
 
-        public AppParseResult ParseAppArchive(string fileName, string configFileName)
+        private ActionResult<AppArchive> ParseAppArchive(string fileName, string configFileName)
         {
-            AppParseResult retVal = new AppParseResult();
+            ActionResult<AppArchive> retVal = new ActionResult<AppArchive>();
             logger.Info("Found App archive '" + System.IO.Path.GetFileName(fileName) + "'.  Parsing...");
             try
             {
@@ -97,13 +158,13 @@ namespace Symbiote.Core.App
                     logger.Trace("Extracted config file to '" + extractedConfigFile + "'.  Reading contents...");
                     string config = manager.PlatformManager.Platform.ReadFile(extractedConfigFile);
                     logger.Trace("Fetched contents.  Deserializing contents...");
-                    retVal.App = JsonConvert.DeserializeObject<App>(config);
+                    retVal.Result = JsonConvert.DeserializeObject<AppArchive>(config);
                     logger.Trace("Successfully deserialized the contents of '" + extractedConfigFile + "' to an App object.");
 
-                    retVal.App.FileName = fileName;
+                    retVal.Result.SetFileName(fileName);
 
                     logger.Trace("Validating deserialized App object...");
-                    App a = retVal.App;
+                    AppArchive a = retVal.Result;
 
                     if (a.Name == "") retVal.AddError("The Name field is blank.");
                     if (a.FQN == "") retVal.AddError("The FQN field is blank.");
@@ -115,9 +176,9 @@ namespace Symbiote.Core.App
                     if (sfqn[1] != "App") retVal.AddError("The second tuple of the FQN field isn't 'App'");
                     if (sfqn[2] != a.Name) retVal.AddError("The FQN field doesn't end with Name.");
 
-                    if ((retVal.Result == ActionResultCode.Success) || (retVal.Result == ActionResultCode.Warning))
+                    if ((retVal.ResultCode == ActionResultCode.Success) || (retVal.ResultCode == ActionResultCode.Warning))
                     {
-                        logger.Info("Successfully parsed App '" + retVal.App.FQN + "' from archive '" + System.IO.Path.GetFileName(retVal.App.FileName) + "'.");
+                        logger.Info("Successfully parsed App '" + retVal.Result.FQN + "' from archive '" + System.IO.Path.GetFileName(retVal.Result.FileName) + "'.");
                     }
                     else
                     {
@@ -149,11 +210,6 @@ namespace Symbiote.Core.App
             }
 
             return retVal;
-        }
-
-        public void LoadApps(string folder)
-        {
-
         }
     }
 }

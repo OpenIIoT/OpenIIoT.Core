@@ -12,11 +12,4 @@ namespace Symbiote.Core.App
         App,
         Console
     }
-
-    public enum AppAuthorization
-    {
-        Unknown,
-        Unauthorized,
-        Authorized
-    }
 }

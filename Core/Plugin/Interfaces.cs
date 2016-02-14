@@ -22,16 +22,10 @@ namespace Symbiote.Core.Plugin
     public interface IPluginInstance : IPlugin
     {
         string InstanceName { get; }
-        IPluginConfigurationDefinition ConfigurationDefinition { get; }
+        ConfigurationDefinition ConfigurationDefinition { get; }
         string Configuration { get; }
-        bool Configured { get; }
+        bool IsConfigured { get; }
         void Configure(string configuration);
-    }
-
-    public interface IPluginConfigurationDefinition : IConfigurationDefinition
-    {
-        string Form { get; }
-        string Schema { get; }
     }
 
     public interface IConnector : IPluginInstance

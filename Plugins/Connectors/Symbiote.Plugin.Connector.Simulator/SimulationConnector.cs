@@ -17,10 +17,10 @@ namespace Symbiote.Plugin.Connector.Simulation
         public string FQN { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
-        public IPluginConfigurationDefinition ConfigurationDefinition { get; private set; }
+        public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
         public string Configuration { get; private set; }
-        public bool Configured { get { return true; } }
+        public bool IsConfigured { get { return true; } }
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
@@ -32,7 +32,7 @@ namespace Symbiote.Plugin.Connector.Simulation
             FQN = System.Reflection.Assembly.GetEntryAssembly().GetTypes()[0].Namespace;
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
             PluginType = PluginType.Connector;
-            ConfigurationDefinition = new PluginConfigurationDefinition();
+            ConfigurationDefinition = new ConfigurationDefinition();
 
             InitializeItems();
         }
@@ -141,17 +141,17 @@ namespace Symbiote.Plugin.Connector.Simulation
         }
     }
 
-    public class PluginConfigurationDefinition : IPluginConfigurationDefinition
-    {
-        public string Form { get; private set; }
-        public string Schema { get; private set; }
+    //public class PluginConfigurationDefinition : IPluginConfigurationDefinition
+    //{
+    //    public string Form { get; private set; }
+    //    public string Schema { get; private set; }
 
-        public PluginConfigurationDefinition()
-        {
-            Form = "";
-            Schema = "";
-        }
-    }
+    //    public PluginConfigurationDefinition()
+    //    {
+    //        Form = "";
+    //        Schema = "";
+    //    }
+    //}
 
     public class Motor
     {

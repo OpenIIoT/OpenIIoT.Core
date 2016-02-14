@@ -73,10 +73,12 @@ namespace Symbiote.Core
             try
             {
                 manager.PlatformManager.InstantiatePlatform();
-                manager.InternalSettings.SetDataDirectory(System.IO.Path.Combine(manager.PlatformManager.Platform.GetApplicationDirectory(),"Data"));
+                manager.InternalSettings.SetRootDirectory(manager.PlatformManager.Platform.GetApplicationDirectory());
+                manager.InternalSettings.SetDataDirectory("Data");
                 manager.InternalSettings.SetAppDirectory("Apps");
                 manager.InternalSettings.SetPluginDirectory("Plugins");
                 manager.InternalSettings.SetTempDirectory("Temp");
+                manager.InternalSettings.SetWebDirectory("Web");
             }
             catch (Exception ex)
             {

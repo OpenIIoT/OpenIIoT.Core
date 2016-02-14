@@ -11,12 +11,14 @@ namespace Symbiote.Core.Configuration
         public ConfigurationWebSection Web;
         public ConfigurationModelSection Model;
         public ConfigurationPluginSection Plugins;
+        public ConfigurationAppSection Apps;
 
         public Configuration()
         {
             Web = new ConfigurationWebSection();
             Model = new ConfigurationModelSection();
             Plugins = new ConfigurationPluginSection();
+            Apps = new ConfigurationAppSection();
         }
     }
 }

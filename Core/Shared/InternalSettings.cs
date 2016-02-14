@@ -17,6 +17,11 @@ namespace Symbiote.Core
         public string ProductName { get; private set; }
 
         /// <summary>
+        /// The root directory for the application.
+        /// </summary>
+        public string RootDirectory { get; private set; }
+
+        /// <summary>
         /// The directory (relative to the application root) where data is stored.
         /// </summary>
         public string DataDirectory { get; private set; }
@@ -35,6 +40,11 @@ namespace Symbiote.Core
         /// The directory (relative to the data root) where temporary data is stored.
         /// </summary>
         public string TempDirectory { get; private set; }
+
+        /// <summary>
+        /// The directory (relative to the application root) where static web content is stored.
+        /// </summary>
+        public string WebDirectory { get; private set; }
 
         /// <summary>
         /// The file extension for apps archives.
@@ -61,12 +71,21 @@ namespace Symbiote.Core
         }
 
         /// <summary>
+        /// Sets the RootDirectory property to the supplied value.
+        /// </summary>
+        /// <param name="directory">The root directory for the application.</param>
+        internal void SetRootDirectory(string directory)
+        {
+            RootDirectory = directory;
+        }
+
+        /// <summary>
         /// Sets the DataDirectory property to the supplied value.
         /// </summary>
         /// <param name="directory">The directory (relative to the application root) where data is stored.</param>
         internal void SetDataDirectory(string directory)
         {
-            DataDirectory = directory;
+            DataDirectory = System.IO.Path.Combine(RootDirectory, directory);
         }
 
         /// <summary>
@@ -90,10 +109,19 @@ namespace Symbiote.Core
         /// <summary>
         /// Sets the TempDirectory property to the supplied value.
         /// </summary>
-        /// <param name="directory"></param>
+        /// <param name="directory">The directory (relative to the data root) where temporary data is stored.</param>
         internal void SetTempDirectory(string directory)
         {
             TempDirectory = System.IO.Path.Combine(DataDirectory, directory);
+        }
+
+        /// <summary>
+        /// Sets the WebDirectory property to the supplied value.
+        /// </summary>
+        /// <param name="directory">The directory (relative to the application root) where static web content is stored.</param>
+        internal void SetWebDirectory(string directory)
+        {
+            WebDirectory = System.IO.Path.Combine(RootDirectory, directory);
         }
 
         /// <summary>

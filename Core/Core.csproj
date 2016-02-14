@@ -135,15 +135,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App\App.cs" />
-    <Compile Include="App\AppConfigurationDefinition.cs" />
-    <Compile Include="App\AppInstance.cs" />
-    <Compile Include="App\AppParseResult.cs" />
-    <Compile Include="App\AppLoadResult.cs" />
+    <Compile Include="App\AppArchive.cs" />
+    <Compile Include="App\InstalledApp.cs" />
     <Compile Include="App\AppManager.cs" />
     <Compile Include="App\Enumerations.cs" />
     <Compile Include="App\Exceptions.cs" />
-    <Compile Include="App\Interfaces.cs" />
+    <Compile Include="Configuration\App\ConfigurationAppSection.cs" />
+    <Compile Include="Configuration\App\ConfigurationInstalledApp.cs" />
     <Compile Include="Configuration\Exceptions.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
@@ -161,6 +159,7 @@
     <Compile Include="Plugin\Exceptions.cs" />
     <Compile Include="Plugin\PluginItem.cs" />
     <Compile Include="Shared\AddressResolver.cs" />
+    <Compile Include="Shared\ConfigurationDefinition.cs" />
     <Compile Include="Shared\ContractResolver.cs" />
     <Compile Include="Shared\Enumerations.cs" />
     <Compile Include="Shared\Interfaces.cs" />
@@ -174,7 +173,6 @@
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\Windows\PlatformConnector.cs" />
     <Compile Include="Plugin\Enumerations.cs" />
-    <Compile Include="Plugin\PluginConfigurationDefinition.cs" />
     <Compile Include="Shared\Exceptions.cs" />
     <Compile Include="Shared\ItemType\Structure.cs" />
     <Compile Include="Shared\ProgramManager.cs" />

@@ -1,9 +1,11 @@
 ﻿using Newtonsoft.Json;
 using NLog;
+using Symbiote.Core.App;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
+using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace Symbiote.Core.Web.API
@@ -13,25 +15,32 @@ namespace Symbiote.Core.Web.API
         private static ProgramManager manager = ProgramManager.Instance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        private static List<string> serializationProperties = new List<string>(new string[] { "FQN", "Version", "AppType" });
+        private static List<string> serializationProperties = new List<string>(new string[] { "FQN", "Version", "AppType", "ConfigurationDefinition" });
          
         [Route("api/app")]
         [HttpGet]
         public HttpResponseMessage ListApps()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, manager.AppManager.AppArchives , JsonFormatter(serializationProperties, ContractResolverType.OptIn));
+            return Request.CreateResponse(HttpStatusCode.OK, manager.AppManager.Apps , JsonFormatter(serializationProperties, ContractResolverType.OptIn, true));
         }
 
-        [Route("api/app/{fqn}/install")]
+        [Route("api/app/archive")]
         [HttpGet]
-        public HttpResponseMessage InstallApp(string fqn)
+        public HttpResponseMessage ListAppArchives()
         {
-            ActionResult result = manager.AppManager.InstallApp(fqn);
-
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "Result" }), ContractResolverType.OptIn));
+            return Request.CreateResponse(HttpStatusCode.OK, manager.AppManager.AppArchives, JsonFormatter(serializationProperties, ContractResolverType.OptIn, true));
         }
 
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
+        [Route("api/app/archive/{fqn}/install")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> InstallApp(string fqn)
+        {
+            ActionResult<App.App> result = await manager.AppManager.InstallAppAsync(fqn);
+
+            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+        }
+
+        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 
@@ -39,9 +48,8 @@ namespace Symbiote.Core.Web.API
 
             retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
             retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            retVal.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
             retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
+            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType, includeSecondaryTypes);
             retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             return retVal;

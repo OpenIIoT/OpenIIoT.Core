@@ -4,28 +4,28 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Plugin
+namespace Symbiote.Core
 {
-    class PluginConfigurationDefinition : IPluginConfigurationDefinition
+    public class ConfigurationDefinition
     {
         public string Form { get; private set; }
         public string Schema { get; private set; }
 
-        public PluginConfigurationDefinition() : this("", "") { }
+        public ConfigurationDefinition() : this("", "") { }
 
-        public PluginConfigurationDefinition(string form, string schema)
+        public ConfigurationDefinition(string form, string schema)
         {
             Form = form;
             Schema = schema;
         }
 
-        public PluginConfigurationDefinition SetForm(string form)
+        public ConfigurationDefinition SetForm(string form)
         {
             Form = form;
             return this;
         }
 
-        public PluginConfigurationDefinition SetSchema(string schema)
+        public ConfigurationDefinition SetSchema(string schema)
         {
             Schema = schema;
             return this;

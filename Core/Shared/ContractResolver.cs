@@ -92,7 +92,7 @@ namespace Symbiote.Core
             secondaryProperties = baseProperties.Where(p => p.DeclaringType.Namespace.Contains("Plugin.Connector"));
 
             // remove the secondary properties so we can manipulate the base type properties unambiguously
-            baseProperties = baseProperties.Where(p => p.DeclaringType.Name == type.Name);
+            baseProperties = baseProperties.Where(p => !p.DeclaringType.Namespace.Contains("Plugin.Connector"));
 
             // if the resolver type is OptIn, filter baseProperties of any fields that don't appear in the supplied list of properties
             if (contractResolverType == ContractResolverType.OptIn)
