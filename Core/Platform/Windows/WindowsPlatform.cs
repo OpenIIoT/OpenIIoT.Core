@@ -141,6 +141,11 @@ namespace Symbiote.Core.Platform.Windows
             return Directory.CreateDirectory(directory).FullName;
         }
 
+        public bool DirectoryExists(string directory)
+        {
+            return Directory.Exists(directory);
+        }
+
         public string ReadFile(string fileName)
         {
             return File.ReadAllText(fileName);

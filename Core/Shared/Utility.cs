@@ -48,6 +48,11 @@ namespace Symbiote.Core
                        + "$";
         }
 
+        internal static string ShortGuid()
+        {
+            return Guid.NewGuid().ToString().Split('-')[0];
+        }
+
         internal static void PrintLogo(Logger logger)
         {
             logger.Info("--------------------------------------------------------- - ------- ------------------- - -- --  -  -- - ----- - -  - - ---");

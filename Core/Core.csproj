@@ -136,12 +136,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App\AppArchive.cs" />
-    <Compile Include="App\InstalledApp.cs" />
+    <Compile Include="App\App.cs" />
     <Compile Include="App\AppManager.cs" />
     <Compile Include="App\Enumerations.cs" />
     <Compile Include="App\Exceptions.cs" />
     <Compile Include="Configuration\App\ConfigurationAppSection.cs" />
-    <Compile Include="Configuration\App\ConfigurationInstalledApp.cs" />
+    <Compile Include="Configuration\App\ConfigurationApp.cs" />
     <Compile Include="Configuration\Exceptions.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
@@ -190,11 +190,13 @@
     </Compile>
     <Compile Include="Shared\ItemType\Folder.cs" />
     <Compile Include="Shared\Utility.cs" />
-    <Compile Include="Shared\ActionResult.cs" />
+    <Compile Include="Shared\OperationResult.cs" />
+    <Compile Include="Web\API\ConfigurationController.cs" />
     <Compile Include="Web\API\ReadController.cs" />
     <Compile Include="Web\API\BrowseController.cs" />
     <Compile Include="Web\API\AppController.cs" />
     <Compile Include="Web\API\ValuesController.cs" />
+    <Compile Include="Web\RequestInfo.cs" />
     <Compile Include="Web\Startup.cs" />
     <Compile Include="Web\WebManager.cs" />
   </ItemGroup>

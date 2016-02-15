@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Symbiote.Core.Configuration.Model;
 using Symbiote.Core.Configuration.Plugin;
+using Symbiote.Core.Configuration.App;
 
 namespace Symbiote.Core.Configuration
 {

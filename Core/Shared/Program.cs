@@ -191,6 +191,7 @@ namespace Symbiote.Core
                 // start the app manager
                 //-- - - - - ------------- - - - ---------------------- -          -
                 logger.Info("Searching for Apps...");
+                manager.AppManager.LoadConfiguration();
                 manager.AppManager.LoadAppArchives();
                 logger.Info("Apps loaded.");
 

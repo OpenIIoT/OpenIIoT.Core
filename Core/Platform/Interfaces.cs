@@ -20,6 +20,7 @@ namespace Symbiote.Core.Platform
         bool DeleteDirectory(string directory);
         bool ClearDirectory(string directory);
         string CreateDirectory(string directory);
+        bool DirectoryExists(string directory);
         string ReadFile(string fileName);
         void WriteFile(string fileName, string text);
         string GetApplicationDirectory();
