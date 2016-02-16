@@ -4,7 +4,7 @@ namespace Symbiote.Core.App
 {
     public class App : AppArchive
     {
-        public string URL { get { return "/" + Name.ToLower() + "/"; } }
+        public string URL { get { return "/" + (AppType == AppType.Console ? "console" : Name.ToLower()) + "/"; } }
         public string Configuration { get; private set; }
         public bool IsConfigured { get; private set; }
 

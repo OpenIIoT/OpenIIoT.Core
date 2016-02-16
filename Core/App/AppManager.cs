@@ -182,20 +182,27 @@ namespace Symbiote.Core.App
         /// Saves the current App list to the ConfigurationManager.
         /// </summary>
         /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult SaveConfiguration()
+        public OperationResult<List<ConfigurationApp>> SaveConfiguration()
         {
             OperationResult<List<ConfigurationApp>> retVal = SaveConfiguration(Apps);
             manager.ConfigurationManager.Configuration.Apps.Apps = retVal.Result;
             return retVal;
         }
 
+        /// <summary>
+        /// Creates a list of ConfigurationApp objects based on the provided list of Apps and returns the list.
+        /// </summary>
+        /// <param name="apps">The list of Apps to copy to the list of ConfigurationApps.</param>
+        /// <returns>An OperationResult containing The list of ConfigurationApps created from the supplied App list.</returns>
         private OperationResult<List<ConfigurationApp>> SaveConfiguration(List<App> apps)
         {
             OperationResult<List<ConfigurationApp>> retVal = new OperationResult<List<ConfigurationApp>>();
             retVal.Result = new List<ConfigurationApp>();
 
+            // iterate over the list of Apps
             foreach (App app in apps)
             {
+                // create a new ConfigurationApp and copy the properties from the current App
                 ConfigurationApp newApp = new ConfigurationApp() {
                     FQN = app.FQN,
                     Version = app.Version,
@@ -205,20 +212,29 @@ namespace Symbiote.Core.App
                     ConfigurationDefinition = app.ConfigurationDefinition
                 };
 
+                // add the new ConfigurationApp to the list of ConfigurationApps
                 retVal.Result.Add(newApp);
             }
 
             return retVal;
         }
 
+        /// <summary>
+        /// Searches the AppArchive list for an AppArchive with the supplied FQN and, if found, returns it.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the AppArchive to find.</param>
         public AppArchive FindAppArchive(string fqn)
         {
             return AppArchives.Where(a => a.FQN == fqn).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Searches the App list for an App with the supplied FQN and, if found, returns it.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the App to find.</param>
+        /// <returns></returns>
         public App FindApp(string fqn)
         {
-
             return Apps.Where(i => i.FQN == fqn).FirstOrDefault();
         }
 
@@ -253,37 +269,53 @@ namespace Symbiote.Core.App
         {
             OperationResult<App> retVal = new OperationResult<App>();
 
+            // if the app we are installing is a Console, check to make sure an existing Console hasn't already been installed.
+            if (appArchive.AppType == AppType.Console)
+            {
+                App existingConsole = Apps.Where(a => a.AppType == AppType.Console).FirstOrDefault();
+                if (existingConsole != default(App))
+                {
+                    retVal.AddError("A Console App ('" + existingConsole.Name + "') has already been installed.");
+                    return retVal;
+                }
+            }
+            // make sure the app hasn't been installed already.
             if (FindApp(appArchive.FQN) != null)
                 retVal.AddError("The App Archive '" + appArchive.FQN + "' has already been installed.  Use the reinstall function to reinstall install it.");
             else
             {
                 try
                 {
+                    // set the InstallInProgress flag to prevent repeated calls from colliding
                     InstallInProgress = true;
 
                     logger.Info("Installing App '" + appArchive.Name + "' from archive '" + appArchive.FQN + "...");
-                    string destination = System.IO.Path.Combine(manager.InternalSettings.WebDirectory, appArchive.Name);
+                    string destination = System.IO.Path.Combine(manager.InternalSettings.WebDirectory, (appArchive.AppType == AppType.Console ? "Console" : appArchive.Name));
                     logger.Trace("Destination: " + destination);
 
+                    // if the destination directory doesn't exist, create it.
                     if (!platform.DirectoryExists(destination))
                     {
                         logger.Trace("Destination directory doesn't exist.  Creating...");
                         platform.CreateDirectory(destination);
                         logger.Trace("Destination directory created.");
                     }
-                    
+
+                    // extract the archive to the destination
                     platform.ExtractZip(appArchive.FileName, destination, true);
                     logger.Trace("Successfully extracted the archive '" + System.IO.Path.GetFileName(appArchive.FileName) + "' to '" + destination + "'.");
 
+                    // clean up the name and print it to the logger
                     string relativeDestination = destination.Replace(manager.InternalSettings.RootDirectory, "");
                     logger.Trace("Successfully installed App '" + appArchive.Name + "' to '" + relativeDestination + "'.");
 
+                    // create a new App
                     retVal.Result = new App(appArchive);
-                    retVal.Result.SetFileName(appArchive.FileName);
 
                     // add the new app to the list of installed apps
                     Apps.Add(retVal.Result);
 
+                    // save the updated App list to the configuration manager
                     SaveConfiguration();
                 }
                 catch (Exception ex)
@@ -330,7 +362,7 @@ namespace Symbiote.Core.App
         private async Task<OperationResult> UninstallAppAsync(App app, IPlatform platform)
         {
             OperationResult retVal = new OperationResult();
-            string appDirectory = System.IO.Path.Combine(manager.InternalSettings.WebDirectory, app.Name);
+            string appDirectory = System.IO.Path.Combine(manager.InternalSettings.WebDirectory, (app.AppType == AppType.Console ? "Console" : app.Name));
 
             logger.Trace("Attempting to uninstall app from '" + appDirectory + "'...");
 
