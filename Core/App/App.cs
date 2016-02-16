@@ -8,9 +8,9 @@ namespace Symbiote.Core.App
         public string Configuration { get; private set; }
         public bool IsConfigured { get; private set; }
 
-        public App(AppArchive archive) : this(archive.Name, archive.FQN, archive.Version, archive.AppType, archive.ConfigurationDefinition) { }
+        public App(AppArchive archive) : this(archive.Name, archive.FQN, archive.Version, archive.AppType, archive.ConfigurationDefinition, archive.FileName) { }
 
-        public App(string name, string fqn, Version version, AppType appType, ConfigurationDefinition configurationDefinition) : base(name, fqn, version, appType, configurationDefinition)
+        public App(string name, string fqn, Version version, AppType appType, ConfigurationDefinition configurationDefinition, string fileName = "") : base(name, fqn, version, appType, configurationDefinition, fileName)
         {
             Configuration = "";
         }

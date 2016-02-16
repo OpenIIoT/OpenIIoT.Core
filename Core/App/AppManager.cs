@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using Newtonsoft.Json;
@@ -10,26 +9,61 @@ using Symbiote.Core.Platform;
 
 namespace Symbiote.Core.App
 {
+    /// <summary>
+    /// The App namespace abstracts the platform on which the app runs.
+    /// </summary>
+    [System.Runtime.CompilerServices.CompilerGenerated]
+    class NamespaceDoc { }
+
+    /// <summary>
+    /// The AppManager class manages the Apps for the application.
+    /// </summary>
     public class AppManager
     {
         #region Variables
 
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
         private ProgramManager manager;
+
+        /// <summary>
+        /// The Logger for this class.
+        /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The Singleton instance of AppManager.
+        /// </summary>
         private static AppManager instance;
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// A list of the available App Archives.
+        /// </summary>
         public List<AppArchive> AppArchives { get; private set; }
+
+        /// <summary>
+        /// A list of the installed Apps.
+        /// </summary>
         public List<App> Apps { get; private set; }
+
+        /// <summary>
+        /// True if an App installation is currently in progress, false otherwise.
+        /// </summary>
         public bool InstallInProgress { get; private set; }
 
         #endregion
 
         #region Constructors
 
+        /// <summary>
+        /// Private constructor, only called by Instance()
+        /// </summary>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
         private AppManager(ProgramManager manager)
         {
             this.manager = manager;
@@ -38,6 +72,11 @@ namespace Symbiote.Core.App
             InstallInProgress = false;
         }
 
+        /// <summary>
+        /// Instantiates and/or returns the AppManager instance.
+        /// </summary>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <returns>The Singleton instance of AppManager.</returns>
         internal static AppManager Instance(ProgramManager manager)
         {
             if (instance == null)
@@ -50,33 +89,49 @@ namespace Symbiote.Core.App
 
         #region Instance Methods
 
-        public OperationResult<List<App>> LoadConfiguration()
+        /// <summary>
+        /// Loads the App configuration from the ConfigurationManager and sets the App property equal to the resulting list of Apps.
+        /// </summary>
+        /// <returns>An OperationResult containing the loaded list of Apps in the Apps property.</returns>
+        public OperationResult<List<App>> LoadConfiguration(bool throwExceptionOnFailure = false)
         {
             logger.Info("Loading App configuration...");
+
+            // load the App configuration section from the Configuration Manager.
             OperationResult<List<App>> retVal = LoadConfiguration(manager.ConfigurationManager.Configuration.Apps);
 
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
+                // the load succeeded, with or without warnings.
                 if (retVal.ResultCode == OperationResultCode.Success)
-                {
                     logger.Info("App configuration load was successful.");
-                }
+                
+                // if any warnings were generated during the load, send them to the logger.
                 else if (retVal.ResultCode == OperationResultCode.Warning)
-                {
-                    logger.Info("App configuration load generated warnings:");
-                    foreach(OperationResultMessage message in retVal.Messages)
-                    {
-                        logger.Info("\t" + message);
-                    }
-                }
+                    retVal.LogAllMessagesAsWarn(logger, "The following warnings were generated during the load:");
 
                 logger.Info(retVal.Result.Count() + " App(s) loaded.");
                 Apps = retVal.Result;
+            }
+            else
+            {
+                // the load failed.  send the message to the logger and print the list of messages.
+                string msg = "Failed to load the App configuration.";
+                logger.Error(msg);
+                retVal.LogAllMessagesAsError(logger, "The following messages were generated during the load:");
+
+                // if the throwExceptionOnFailure parameter is true, throw an exception
+                if (throwExceptionOnFailure) throw new AppLoadException(msg);
             }
 
             return retVal;
         }
 
+        /// <summary>
+        /// Loads the App configuration in the specified ConfigurationAppSection object and returns an OperationResult containing a list of the loaded Apps.
+        /// </summary>
+        /// <param name="configuration">The ConfigurationAppSection from which to load the App configuration.</param>
+        /// <returns>An OperationResult containing the list of loaded Apps.</returns>
         private OperationResult<List<App>> LoadConfiguration(ConfigurationAppSection configuration)
         {
             OperationResult<List<App>> retVal = new OperationResult<List<App>>();
@@ -84,19 +139,20 @@ namespace Symbiote.Core.App
 
             logger.Trace("Loading configuration... supplied list contains " + configuration.Apps.Count() + " entries.");
 
-            foreach(ConfigurationApp app in configuration.Apps)
+            // iterate over the ConfigurationApps stored in the configuration
+            foreach(ConfigurationApp configApp in configuration.Apps)
             {
-                logger.Trace("Validaing app entry " + app.FQN + "...");
+                logger.Trace("Validaing app entry " + configApp.FQN + "...");
+
                 // validate the app fetched from the configuration
-                if (app.FQN == "") retVal.AddWarning("The FQN field is blank.");
+                if (configApp.FQN == "") retVal.AddWarning("The FQN field is blank.");
+                if (configApp.FQN != System.IO.Path.GetFileNameWithoutExtension(configApp.FileName)) retVal.AddWarning("The FQN field doesn't match the archive name.");
 
-                if (app.FQN != System.IO.Path.GetFileNameWithoutExtension(app.FileName)) retVal.AddWarning("The FQN field doesn't match the archive name.");
-
-                string[] sfqn = app.FQN.Split('.');
+                string[] sfqn = configApp.FQN.Split('.');
                 if (sfqn[0] != manager.InternalSettings.ProductName) retVal.AddWarning("The FQN field doesn't start with '" + manager.InternalSettings.ProductName + "'.");
                 if (sfqn[1] != "App") retVal.AddWarning("The second tuple of the FQN field isn't 'App'");
 
-                if (app.FileName == "") retVal.AddWarning("The FileName field is blank.");
+                if (configApp.FileName == "") retVal.AddWarning("The FileName field is blank.");
 
                 // if we encountered any errors or warning when validating the configuration, skip it and move to the next.
                 if (retVal.ResultCode != OperationResultCode.Success)
@@ -105,16 +161,14 @@ namespace Symbiote.Core.App
                     continue;
                 }
 
-                logger.Trace("App entry '" + app.FQN + "' validated successfully.  Creating App instance...");
+                logger.Trace("App entry '" + configApp.FQN + "' validated successfully.  Creating App instance...");
 
-                // create a new App instance to add to the result list
-                App newApp = new App(app.FQN.Split('.')[app.FQN.Split('.').Length - 1], app.FQN, app.Version, app.AppType, app.ConfigurationDefinition);
+                // create a new App instance, configure it, then to add to the result list
+                App newApp = new App(configApp.FQN.Split('.')[configApp.FQN.Split('.').Length - 1], configApp.FQN, configApp.Version, configApp.AppType, configApp.ConfigurationDefinition, configApp.FileName);
 
-                logger.Trace("App instantiated.  Setting FileName...");
-                newApp.SetFileName(app.FileName);
-
-                logger.Trace("App FileName set, configuring...");
-                newApp.Configure(app.Configuration);
+                logger.Trace("Configuring app...");
+                newApp.Configure(configApp.Configuration);
+                logger.Trace("Configured app.");
 
                 logger.Trace("Adding App '" + newApp.FQN + "' to result list.");
                 retVal.Result.Add(newApp);
@@ -124,6 +178,10 @@ namespace Symbiote.Core.App
             return retVal;
         }
 
+        /// <summary>
+        /// Saves the current App list to the ConfigurationManager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult SaveConfiguration()
         {
             OperationResult<List<ConfigurationApp>> retVal = SaveConfiguration(Apps);
@@ -355,7 +413,7 @@ namespace Symbiote.Core.App
                     retVal.Result = JsonConvert.DeserializeObject<AppArchive>(config);
                     logger.Trace("Successfully deserialized the contents of '" + extractedConfigFile + "' to an App object.");
 
-                    retVal.Result.SetFileName(fileName);
+                    retVal.Result.FileName = fileName;
 
                     logger.Trace("Validating deserialized App object...");
                     AppArchive a = retVal.Result;

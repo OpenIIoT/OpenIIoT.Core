@@ -4,7 +4,7 @@ using NLog;
 namespace Symbiote.Core.Platform
 {
     /// <summary>
-    /// The Platform namespace allows the application to abstract itself from the platform on which it runs.
+    /// The Platform namespace abstracts the platform on which the app runs.
     /// </summary>
     /// <remarks>
     /// The primary purposes are to assist the application in determining the run mode (e.g. interactive or Windows service) and to

@@ -9,19 +9,15 @@ namespace Symbiote.Core.App
         public Version Version { get; private set; }
         public AppType AppType { get; private set; }
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
-        public string FileName { get; private set; }
+        public string FileName { get; set; }
 
-        public AppArchive(string name, string fqn, Version version, AppType appType, ConfigurationDefinition configurationDefinition)
+        public AppArchive(string name, string fqn, Version version, AppType appType, ConfigurationDefinition configurationDefinition, string fileName = "")
         {
             Name = name;
             FQN = fqn;
             Version = version;
             AppType = appType;
             ConfigurationDefinition = configurationDefinition;
-        }
-
-        public virtual void SetFileName(string fileName)
-        {
             FileName = fileName;
         }
     }
