@@ -92,37 +92,37 @@ namespace Symbiote.Core
 
         public void LogAllMessagesAsInfo(NLog.ILogger logger, string header = "", string footer = "")
         {
-            logger.Info(header);
+            if (header != "") logger.Info(header);
             foreach (OperationResultMessage message in Messages) logger.Info("\t" + message);
-            logger.Info(footer);
+            if (footer != "") logger.Info(footer);
         }
 
         public void LogAllMessagesAsWarn(NLog.ILogger logger, string header = "", string footer = "")
         {
-            logger.Warn(header);
+            if (header != "") logger.Warn(header);
             foreach (OperationResultMessage message in Messages) logger.Warn("\t" + message);
-            logger.Warn(footer);
+            if (footer != "") logger.Warn(footer);
         }
 
         public void LogAllMessagesAsError(NLog.ILogger logger, string header = "", string footer = "")
         {
-            logger.Error(header);
+            if (header != "") logger.Warn(header);
             foreach (OperationResultMessage message in Messages) logger.Error("\t" + message);
-            logger.Error(footer);
+            if (footer != "") logger.Error(footer);
         }
 
         public void LogAllMessagesAsDebug(NLog.ILogger logger, string header = "", string footer = "")
         {
-            logger.Debug(header);
+            if (header != "") logger.Debug(header);
             foreach (OperationResultMessage message in Messages) logger.Debug("\t" + message);
-            logger.Debug(footer);
+            if (footer != "") logger.Debug(footer);
         }
 
         public void LogAllMessagesAsTrace(NLog.ILogger logger, string header = "", string footer = "")
         {
-            logger.Trace(header);
+            if (header != "") logger.Trace(header);
             foreach (OperationResultMessage message in Messages) logger.Trace("\t" + message);
-            logger.Trace(footer);
+            if (footer != "") logger.Trace(footer);
         }
     }
 

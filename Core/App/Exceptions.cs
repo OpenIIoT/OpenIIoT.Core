@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Symbiote.Core.App
 {
     /// <summary>
-    /// Base Exception for the App namespace
+    /// Base Exception for the App namespace.
     /// </summary>
     public class AppException : Exception
     {
@@ -20,7 +20,7 @@ namespace Symbiote.Core.App
     }
 
     /// <summary>
-    /// Exception raised during an App load operation
+    /// Exception raised during an App load operation.
     /// </summary>
     public class AppLoadException : AppException
     {
@@ -33,7 +33,7 @@ namespace Symbiote.Core.App
     }
 
     /// <summary>
-    /// Exception raised during a configuration save operation
+    /// Exception raised during a configuration save operation.
     /// </summary>
     public class AppConfigurationSaveException : AppException
     {

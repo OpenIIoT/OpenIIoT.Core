@@ -10,60 +10,66 @@ using System.Web.Http;
 
 namespace Symbiote.Core.Web.API
 {
-    public class AppController : ApiController
+    public class AppArchiveController : ApiController
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        private static List<string> appSerializationProperties = new List<string>(new string[] { "FQN", "URL", "Version", "AppType", "ConfigurationDefinition" });
         private static List<string> appArchiveSerializationProperties = new List<string>(new string[] { "FQN", "FileName", "Version", "AppType", "ConfigurationDefinition" });
 
-
-        [Route("api/app")]
+        [Route("api/apparchive")]
         [HttpGet]
-        public HttpResponseMessage ListApps()
+        public HttpResponseMessage ListAppArchives()
         {
-            APIRequest<List<App.App>> retVal = new APIRequest<List<App.App>>(Request, logger);
+            APIRequest<List<AppArchive>> retVal = new APIRequest<List<AppArchive>>(Request, logger);
 
-            retVal.Result = manager.AppManager.Apps;
-
-            return retVal.CreateResponse(JsonFormatter(appSerializationProperties, ContractResolverType.OptIn, true));
+            retVal.Result = manager.AppManager.AppArchives;
+        
+            return retVal.CreateResponse(JsonFormatter(appArchiveSerializationProperties, ContractResolverType.OptIn, true));
         }
 
-        [Route("api/app/{fqn}")]
+        [Route("api/apparchive/reload")]
         [HttpGet]
-        public HttpResponseMessage GetApp(string fqn)
+        public HttpResponseMessage ReloadAppArchives()
         {
-            APIRequest<App.App> retVal = new APIRequest<App.App>(Request, logger);
-            retVal.Result = manager.AppManager.FindApp(fqn);
+            APIRequest<OperationResult<List<AppArchive>>> retVal = new APIRequest<OperationResult<List<AppArchive>>>(Request, logger);
 
-            if (retVal.Result == default(App.App))
+            retVal.Result = manager.AppManager.ReloadAppArchives();
+
+            if (retVal.Result.ResultCode == OperationResultCode.Failure)
+                retVal.StatusCode = HttpStatusCode.InternalServerError;
+
+            return retVal.CreateResponse(JsonFormatter(appArchiveSerializationProperties, ContractResolverType.OptIn, true));
+        }
+
+        [Route("api/apparchive/{fqn}")]
+        [HttpGet]
+        public HttpResponseMessage GetAppArchive(string fqn)
+        {
+            APIRequest<AppArchive> retVal = new APIRequest<AppArchive>(Request, logger);
+
+            retVal.Result = manager.AppManager.FindAppArchive(fqn);
+
+            if (retVal.Result == default(AppArchive))
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
         }
 
-        [Route("api/app/{fqn}/reinstall")]
+        [Route("api/apparchive/{fqn}/install")]
         [HttpGet]
-        public async Task<HttpResponseMessage> ReinstallApp(string fqn)
+        public async Task<HttpResponseMessage> InstallApp(string fqn)
         {
             APIRequest<OperationResult<App.App>> retVal = new APIRequest<OperationResult<App.App>>(Request, logger);
 
             if (manager.AppManager.InstallInProgress)
-                retVal.Result = new OperationResult<App.App>().AddError("An installation is already in progress.");
+                retVal.Result = new OperationResult<App.App>().AddError("Another install is already in progress.");
             else
-                retVal.Result = await manager.AppManager.ReinstallAppAsync(fqn);
+                retVal.Result = await manager.AppManager.InstallAppAsync(fqn);
 
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
-        }
+            if (retVal.Result.ResultCode == OperationResultCode.Failure)
+                retVal.StatusCode = HttpStatusCode.InternalServerError;
 
-        [Route("api/app/{fqn}/uninstall")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> UninstallApp(string fqn)
-        {
-            APIRequest<OperationResult> retVal = new APIRequest<OperationResult>(Request, logger);
-
-            retVal.Result = await manager.AppManager.UninstallAppAsync(fqn);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
         }
 

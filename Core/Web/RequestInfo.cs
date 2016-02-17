@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,6 +24,11 @@ namespace Symbiote.Core.Web
         public override string ToString()
         {
             return "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP;
+        }
+
+        public string ReturnString(HttpStatusCode returnCode)
+        {
+            return ToString() + " returned " + returnCode;
         }
     }
 }
