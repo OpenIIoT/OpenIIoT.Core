@@ -38,7 +38,7 @@ namespace Symbiote.Core.Web
                 logger.Info("\t" + header.Key.ToString() + ": " + Request.Headers.GetValues(header.Key).FirstOrDefault());
         }
 
-        private void LogResponse(Logger logger)
+        protected void LogResponse(Logger logger)
         {
             logger.Info("API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP + "; Response: " + StatusCode);
         }
