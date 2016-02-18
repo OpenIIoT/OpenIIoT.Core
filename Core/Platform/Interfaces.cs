@@ -22,8 +22,10 @@ namespace Symbiote.Core.Platform
         string CreateDirectory(string directory);
         bool DirectoryExists(string directory);
         string ReadFile(string fileName);
+        string[] ReadAllLinesFromFile(string fileName);
         void WriteFile(string fileName, string text);
         string GetApplicationDirectory();
+        string GetLogFile(string logDirectory);
         string ComputeFileChecksum(string fileName);
     }
 }

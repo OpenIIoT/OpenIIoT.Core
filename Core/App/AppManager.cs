@@ -103,30 +103,15 @@ namespace Symbiote.Core.App
 
             // load the App configuration section from the Configuration Manager.
             OperationResult<List<App>> retVal = LoadConfiguration(manager.ConfigurationManager.Configuration.Apps);
-
+            
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
-                // the load succeeded, with or without warnings.
-                logger.Info("App configuration load was successful.");
-                
-                // if any warnings were generated during the load, send them to the logger.
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessagesAsWarn(logger, "The following warnings were generated during the load:");
-
-                logger.Info(retVal.Result.Count() + " App(s) loaded.");
                 Apps = retVal.Result;
             }
-            else
-            {
-                // the load failed.  send the message to the logger and print the list of messages.
-                string msg = "Failed to load the App configuration.";
-                logger.Error(msg);
-                retVal.LogAllMessagesAsError(logger, "The following messages were generated during the load:");
+            else if (throwExceptionOnFailure) throw new AppLoadException();
 
-                // if the throwExceptionOnFailure parameter is true, throw an exception
-                if (throwExceptionOnFailure) throw new AppLoadException(msg);
-            }
-
+            retVal.LogResult(logger);
+            logger.Info(retVal.Result.Count() + " App(s) loaded.");            
             return retVal;
         }
 
@@ -194,20 +179,10 @@ namespace Symbiote.Core.App
             // save succeeded
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
-                logger.Info("Successfully saved the App configuration.");
-
-                // if warnings were generated, print them to the logger
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessagesAsWarn(logger, "The following warnings were generated during the save:");
-
                 manager.ConfigurationManager.Configuration.Apps.Apps = retVal.Result;
             }
-            else
-            {
-                logger.Error("Failed to save the App configuration.");
-                retVal.LogAllMessagesAsError(logger, "The following messages were generated during the save:");
-            }
-                
+
+            retVal.LogResult(logger);  
             return retVal;
         }
 
@@ -265,34 +240,23 @@ namespace Symbiote.Core.App
 
             // make sure an archive matching the supplied FQN exists
             if (foundArchive != default(AppArchive))
+            {
+                logger.Trace("Found AppArchive '" + foundArchive.FQN + ", installing...");
                 retVal = await InstallAppAsync(foundArchive, manager.PlatformManager.Platform);
+            }
             else
             {
                 retVal = new OperationResult<App>().AddError("Unable to find App Archive with Fully Qualified Name '" + fqn + "'.");
                 return retVal;
             }
 
-            // the installation suceeed, with or without warnings
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
-                logger.Info("Successfully installed App '" + retVal.Result.FQN + "'.");
-
-                // if any warnings were generated, print them to the logger
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessagesAsWarn(logger, "Warnings were generated during the installation:");
-
-                // add the new app to the list of installed apps
                 Apps.Add(retVal.Result);
-
-                // save the updated App list to the configuration manager
                 SaveConfiguration();
             }
-            else
-            {
-                logger.Warn("Failed to install App '" + foundArchive.FQN + "' from App Archive '" + foundArchive.FileName + "'.");
-                retVal.LogAllMessagesAsWarn(logger, "The following messages were generated during the installation:");
-            }
 
+            retVal.LogResult(logger);
             return retVal;
         }
 
@@ -304,7 +268,6 @@ namespace Symbiote.Core.App
         /// <returns></returns>
         private async Task<OperationResult<App>> InstallAppAsync(AppArchive appArchive, IPlatform platform)
         {
-
             OperationResult<App> retVal = new OperationResult<App>();
 
             // if the app we are installing is a Console, check to make sure an existing Console hasn't already been installed.
@@ -390,21 +353,10 @@ namespace Symbiote.Core.App
             // if the operation succeeded
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
-                logger.Info("Successfully uninstalled App '" + foundApp.FQN + "'.");
-
-                // if any warnings were generated, print them to the logger
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessagesAsWarn(logger, "Warnings were generated during the uninstallation:");
-
-                // save the updated App list to the configuration manager
                 SaveConfiguration();
             }
-            else
-            {
-                logger.Warn("Failed to uninstall App '" + foundApp.FQN + "'.");
-                retVal.LogAllMessagesAsWarn(logger, "The following messages were generated during the uninstallation:");
-            }
 
+            retVal.LogResult(logger);
             return retVal;
         }
 
@@ -453,21 +405,7 @@ namespace Symbiote.Core.App
             else
                 retVal = new OperationResult<App>().AddError("The specified App isn't installed.");
 
-            // if the operation succeeded
-            if (retVal.ResultCode != OperationResultCode.Failure)
-            {
-                logger.Info("Successfully reinstalled App '" + foundApp.FQN + "'.");
-
-                // if any warnings were generated, print them to the logger
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessagesAsWarn(logger, "Warnings were generated during the reinstallation:");
-            }
-            else
-            {
-                logger.Warn("Failed to uninstall App '" + foundApp.FQN + "'.");
-                retVal.LogAllMessagesAsWarn(logger, "The following messages were generated during the reinstallation:");
-            }
-
+            retVal.LogResult(logger);
             return retVal;
         }
 
@@ -552,27 +490,12 @@ namespace Symbiote.Core.App
             // load succeeded
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
-                logger.Info("App Archives loaded.");
-
-                // if warnings were generated, print them to the logger
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessagesAsWarn(logger, "The following warnings were generated during the load:");
-
-                logger.Info(retVal.Result.Count() + " App Archives loaded.");
-
                 AppArchives = retVal.Result;
             }
-            else
-            {
-                // the load failed.  send the message to the logger and print the list of messages.
-                string msg = "Failed to load App Archives.";
-                logger.Error(msg);
-                retVal.LogAllMessagesAsError(logger, "The following messages were generated during the load:");
+            else if (throwExceptionOnFailure) throw new AppLoadException();
 
-                // if the throwExceptionOnFailure parameter is true, throw an exception
-                if (throwExceptionOnFailure) throw new AppLoadException(msg);
-            }
-
+            retVal.LogResult(logger);
+            logger.Info(retVal.Result.Count() + " App Archives loaded.");
             return retVal;
         }
 
@@ -643,21 +566,7 @@ namespace Symbiote.Core.App
         {
             OperationResult<AppArchive> retVal = ParseAppArchive(fileName, manager.InternalSettings.AppConfigurationFileName, manager.PlatformManager.Platform);
 
-            // the installation suceeed, with or without warnings
-            if (retVal.ResultCode != OperationResultCode.Failure)
-            {
-                logger.Trace("Successfully parsed App '" + retVal.Result.FQN + "' from archive '" + System.IO.Path.GetFileName(retVal.Result.FileName) + "'.");
-
-                // if any warnings were generated, print them to the logger
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessagesAsTrace(logger, "Warnings were generated during the parse:");
-            }
-            else
-            {
-                logger.Trace("Failed to parse a valid App from archive '" + System.IO.Path.GetFileName(fileName) + "'.");
-                retVal.LogAllMessagesAsWarn(logger, "The following messages were generated during the parse:", "The App will not be available to install.");
-            }
-
+            retVal.LogResult(logger, "Trace", "Trace", "Trace");
             return retVal;
         }
 

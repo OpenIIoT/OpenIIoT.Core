@@ -151,6 +151,11 @@ namespace Symbiote.Core.Platform.Windows
             return File.ReadAllText(fileName);
         }
 
+        public string[] ReadAllLinesFromFile(string fileName)
+        {
+            return File.ReadAllLines(fileName);
+        }
+
         public void WriteFile(string fileName, string contents)
         {
             File.WriteAllText(fileName, contents);
@@ -159,6 +164,11 @@ namespace Symbiote.Core.Platform.Windows
         public string GetApplicationDirectory()
         {
             return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+        }
+
+        public string GetLogFile(string logDirectory)
+        {
+            return Path.Combine(logDirectory, new DirectoryInfo(logDirectory).GetFiles().OrderByDescending(f => f.LastWriteTime).First().ToString());
         }
 
         public string ComputeFileChecksum(string fileName)

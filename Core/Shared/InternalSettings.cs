@@ -47,6 +47,11 @@ namespace Symbiote.Core
         public string WebDirectory { get; private set; }
 
         /// <summary>
+        /// The directory (relative to the application root) where logs are stored.
+        /// </summary>
+        public string LogDirectory { get; private set; }
+
+        /// <summary>
         /// The file extension for apps archives.
         /// </summary>
         public string AppExtension { get; private set; }
@@ -122,6 +127,15 @@ namespace Symbiote.Core
         internal void SetWebDirectory(string directory)
         {
             WebDirectory = System.IO.Path.Combine(RootDirectory, directory);
+        }
+
+        /// <summary>
+        /// Sets the LogDirectory property to the supplied value.
+        /// </summary>
+        /// <param name="directory">The directory (relative to the application root) where log files are stored.</param>
+        internal void SetLogDirectory(string directory)
+        {
+            LogDirectory = System.IO.Path.Combine(RootDirectory, directory);
         }
 
         /// <summary>

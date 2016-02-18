@@ -79,6 +79,7 @@ namespace Symbiote.Core
                 manager.InternalSettings.SetPluginDirectory("Plugins");
                 manager.InternalSettings.SetTempDirectory("Temp");
                 manager.InternalSettings.SetWebDirectory("Web");
+                manager.InternalSettings.SetLogDirectory("Logs");
             }
             catch (Exception ex)
             {

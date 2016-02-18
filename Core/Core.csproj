@@ -191,7 +191,8 @@
     <Compile Include="Shared\ItemType\Folder.cs" />
     <Compile Include="Shared\Utility.cs" />
     <Compile Include="Shared\OperationResult.cs" />
-    <Compile Include="Web\APIRequest.cs" />
+    <Compile Include="Web\APIOperationResult.cs" />
+    <Compile Include="Web\API\LogController.cs" />
     <Compile Include="Web\API\AppArchiveController.cs" />
     <Compile Include="Web\API\ConfigurationController.cs" />
     <Compile Include="Web\API\ReadController.cs" />

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Web
 {
-    class APIRequest
+    class APIOperationResult
     {
         public HttpRequestMessage Request { get; private set; }
         public string ShortGuid { get; private set; }
@@ -21,7 +21,7 @@ namespace Symbiote.Core.Web
         public HttpResponseMessage Response { get; set; }
         public Logger Logger { get; set; }
 
-        public APIRequest(HttpRequestMessage request, Logger logger)
+        public APIOperationResult(HttpRequestMessage request, Logger logger)
         {
             Request = request;
             Logger = logger;
@@ -45,7 +45,7 @@ namespace Symbiote.Core.Web
 
     }
 
-    class APIRequest<T> : APIRequest
+    class APIRequest<T> : APIOperationResult
     {
         public RequestInfo RequestInfo { get; set; }
         public HttpStatusCode ReturnCode { get; set; }
