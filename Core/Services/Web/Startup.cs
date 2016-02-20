@@ -10,9 +10,9 @@ using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-[assembly: OwinStartup(typeof(Symbiote.Core.Web.Startup))]
+[assembly: OwinStartup(typeof(Symbiote.Core.Services.Web.Startup))]
 
-namespace Symbiote.Core.Web
+namespace Symbiote.Core.Services.Web
 {
     public class Startup
     {

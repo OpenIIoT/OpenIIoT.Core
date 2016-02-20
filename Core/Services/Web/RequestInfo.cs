@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Web
+namespace Symbiote.Core.Services.Web
 {
     public class RequestInfo
     {

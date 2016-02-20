@@ -8,7 +8,7 @@ using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace Symbiote.Core.Web.API
+namespace Symbiote.Core.Services.Web.API
 {
     public class ConfigurationController : ApiController
     {

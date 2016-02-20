@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http;
 
-namespace Symbiote.Core.Web.API
+namespace Symbiote.Core.Services.Web.API
 {
     public class ValuesController : ApiController
     {

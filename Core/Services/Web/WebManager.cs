@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using NLog;
 using Microsoft.Owin.Hosting;
 
-namespace Symbiote.Core.Web
+namespace Symbiote.Core.Services.Web
 {
     public class WebManager
     {

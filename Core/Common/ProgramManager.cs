@@ -7,7 +7,7 @@ using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
-using Symbiote.Core.Web;
+using Symbiote.Core.Services.Web;
 using NLog;
 using Symbiote.Core.App;
 

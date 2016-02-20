@@ -1,5 +1,5 @@
 ﻿using NLog;
-using Symbiote.Core.Web;
+using Symbiote.Core.Services.Web;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Net.Http.Formatting;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Web
+namespace Symbiote.Core.Services.Web
 {
     class APIOperationResult
     {

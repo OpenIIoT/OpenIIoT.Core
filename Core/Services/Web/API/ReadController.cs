@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 
-namespace Symbiote.Core.Web.API
+namespace Symbiote.Core.Services.Web.API
 {
     public class ReadController : ApiController
     {
