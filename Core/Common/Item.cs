@@ -4,7 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
-using Symbiote.Core.ItemType;
+using Symbiote.Core;
 
 namespace Symbiote.Core
 {

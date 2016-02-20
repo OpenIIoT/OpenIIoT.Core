@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.ItemType;
 using Symbiote.Core;
 
 namespace Symbiote.Plugin.Connector.Simulation
