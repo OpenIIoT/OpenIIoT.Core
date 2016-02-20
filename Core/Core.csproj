@@ -158,24 +158,24 @@
     <Compile Include="Platform\Exceptions.cs" />
     <Compile Include="Plugin\Exceptions.cs" />
     <Compile Include="Plugin\PluginItem.cs" />
-    <Compile Include="Shared\AddressResolver.cs" />
-    <Compile Include="Shared\ConfigurationDefinition.cs" />
-    <Compile Include="Shared\ContractResolver.cs" />
-    <Compile Include="Shared\Enumerations.cs" />
-    <Compile Include="Shared\Interfaces.cs" />
-    <Compile Include="Shared\InternalSettings.cs" />
-    <Compile Include="Shared\Item.cs" />
+    <Compile Include="Common\AddressResolver.cs" />
+    <Compile Include="Common\ConfigurationDefinition.cs" />
+    <Compile Include="Common\ContractResolver.cs" />
+    <Compile Include="Common\Enumerations.cs" />
+    <Compile Include="Common\Interfaces.cs" />
+    <Compile Include="Common\InternalSettings.cs" />
+    <Compile Include="Common\Item.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
-    <Compile Include="Shared\Extensions.cs" />
+    <Compile Include="Common\Extensions.cs" />
     <Compile Include="Platform\Enumerations.cs" />
     <Compile Include="Platform\UNIX\PlatformConnector.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\Windows\PlatformConnector.cs" />
     <Compile Include="Plugin\Enumerations.cs" />
-    <Compile Include="Shared\Exceptions.cs" />
-    <Compile Include="Shared\ItemType\Structure.cs" />
-    <Compile Include="Shared\ProgramManager.cs" />
+    <Compile Include="Common\Exceptions.cs" />
+    <Compile Include="Common\ItemType\Structure.cs" />
+    <Compile Include="Common\ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Platform\Interfaces.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
@@ -183,21 +183,21 @@
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\Interfaces.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
-    <Compile Include="Shared\Program.cs" />
+    <Compile Include="Common\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shared\Service.cs">
+    <Compile Include="Common\Service.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Shared\ItemType\Folder.cs" />
-    <Compile Include="Shared\Utility.cs" />
-    <Compile Include="Shared\OperationResult.cs" />
+    <Compile Include="Common\ItemType\Folder.cs" />
+    <Compile Include="Common\Utility.cs" />
+    <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Web\APIOperationResult.cs" />
-    <Compile Include="Web\API\LogController.cs" />
     <Compile Include="Web\API\AppArchiveController.cs" />
-    <Compile Include="Web\API\ConfigurationController.cs" />
-    <Compile Include="Web\API\ReadController.cs" />
-    <Compile Include="Web\API\BrowseController.cs" />
     <Compile Include="Web\API\AppController.cs" />
+    <Compile Include="Web\API\BrowseController.cs" />
+    <Compile Include="Web\API\ConfigurationController.cs" />
+    <Compile Include="Web\API\LogController.cs" />
+    <Compile Include="Web\API\ReadController.cs" />
     <Compile Include="Web\API\ValuesController.cs" />
     <Compile Include="Web\RequestInfo.cs" />
     <Compile Include="Web\Startup.cs" />
@@ -219,7 +219,9 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Services\Web\API\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
