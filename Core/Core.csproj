@@ -196,7 +196,6 @@
     <Compile Include="Services\Web\API\LogController.cs" />
     <Compile Include="Services\Web\API\ReadController.cs" />
     <Compile Include="Services\Web\API\ValuesController.cs" />
-    <Compile Include="Services\Web\RequestInfo.cs" />
     <Compile Include="Services\Web\Startup.cs" />
     <Compile Include="Services\Web\WebManager.cs" />
   </ItemGroup>

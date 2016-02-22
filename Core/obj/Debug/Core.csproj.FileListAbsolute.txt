@@ -43,3 +43,4 @@ C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\System.Net.Http.Form
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\System.Web.Cors.dll
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\System.Web.Http.dll
 C:\Users\JP.WHATNET\OneDrive\Symbiote\Source\Core\bin\Debug\System.Web.Http.Owin.dll
+C:\Users\jp\Desktop\Symbiote\Core\bin\Debug\Documentation.XML
