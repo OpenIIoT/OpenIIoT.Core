@@ -9,14 +9,45 @@ using Symbiote.Core.Configuration.Model;
 
 namespace Symbiote.Core.Model
 {
+    /// <summary>
+    /// The ModelManager class manages the Model for the application.
+    /// </summary>
     public class ModelManager
     {
-        private Logger logger = LogManager.GetCurrentClassLogger();
+        #region Variables
+
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
         private ProgramManager manager;
+
+        /// <summary>
+        /// The Logger for this class.
+        /// </summary>
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The Singleton instance of AppManager.
+        /// </summary>
         private static ModelManager instance;
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The root Item for the model.
+        /// </summary>
         internal Item Model { get; private set; }
+
+        /// <summary>
+        /// A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
+        /// </summary>
         internal Dictionary<string, Item> Dictionary { get; private set; }
+
+        #endregion
+
+        #region Constructors
 
         private ModelManager(ProgramManager manager)
         {
@@ -31,19 +62,36 @@ namespace Symbiote.Core.Model
             return instance;
         }
 
+        #endregion
+
+        #region Instance Methods
+
         /// <summary>
-        /// Assigns the Model and Dictionary contained within the supplied ModelBuildResult to the manager's Model and Dictionary properties.
+        /// Assigns the Model and Dictionary contained within the supplied ModelBuildResult to the supplied model and dictionary.
         /// </summary>
-        /// <param name="modelBuildResult">The built model to attach to the manager.</param>
-        public void AttachModel(ModelBuildResult modelBuildResult)
+        /// <param name="model">The model to which to attach the model contained within the ModelBuildResult.</param>
+        /// <param name="dictionary">The dictionary to which to attach the dictionary contained within the ModelBuildResult.</param>
+        /// <param name="modelBuildResult">The built model to attach.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult AttachModel(ModelBuildResult modelBuildResult)
         {
-            if (modelBuildResult.Result == ModelBuildResultCode.Success)
+            OperationResult retVal = new OperationResult();
+
+            // if the ModelBuildResult that was passed in built successfully, update the Model and Dictionary properties with the contents of the build result
+            if (modelBuildResult.ResultCode == OperationResultCode.Success)
             {
                 Model = modelBuildResult.Model;
                 Dictionary = modelBuildResult.Dictionary;
             }
             else
-                throw new ModelAttachException("Unable to attach a model that failed to build.");
+                retVal.AddError("Unable to attach a model that failed to build.");
+
+            // if we didn't encounter any errors, save the model
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                SaveModel();
+
+            retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
@@ -62,50 +110,27 @@ namespace Symbiote.Core.Model
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         public ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList)
         {
-            // clear the build result
-            //BuildResult = new ModelBuildResult() { UnresolvedList = itemList.Clone() };
-            // build the model
-            ModelBuildResult BuildResult = BuildModel(itemList, new ModelBuildResult() { UnresolvedList = itemList.Clone() });
+            ModelBuildResult retVal = BuildModel(itemList, new ModelBuildResult() { UnresolvedList = itemList.Clone() });
 
             // if the model was built successfully (with or without warnings), report the success and show some statistics.
-            if ((BuildResult.Result == ModelBuildResultCode.Success) || (BuildResult.Result == ModelBuildResultCode.Warning))
+            if (retVal.ResultCode != OperationResultCode.Failure)
             {
                 logger.Info("The Model was built successfully.");
-                logger.Info(BuildResult.ResolvedList.Count() + " items were resolved.");
+                logger.Info(retVal.ResolvedList.Count() + " items were resolved.");
 
                 // if any items were unresolved, print them.
-                if (BuildResult.UnresolvedList.Count() > 0)
+                if (retVal.UnresolvedList.Count() > 0)
                 {
                     logger.Info("Unresolved items:");
-                    foreach (ConfigurationModelItem mi in BuildResult.UnresolvedList)
+                    foreach (ConfigurationModelItem mi in retVal.UnresolvedList)
                     {
                         logger.Info("\t" + mi.FQN);
                     }
                 }
-
-                // if any warnings were generated, print the list of messages.
-                if (BuildResult.Result == ModelBuildResultCode.Warning)
-                {
-                    logger.Warn("The following warning(s) were generated during the build:");
-
-                    foreach (string message in BuildResult.Messages)
-                    {
-                        logger.Warn("\t" + message);
-                    }
-                    //return ModelBuildResultCode.Warning;
-                }
-                //return ModelBuildResultCode.Success;
             }
-            else if (BuildResult.Result == ModelBuildResultCode.Failure)
-            {
-                logger.Error("The Model failed to build.  The following errors and warnings were generated during the build:");
-                foreach (string message in BuildResult.Messages)
-                {
-                    logger.Error("\t" + message);
-                }
-                //return ModelBuildResultCode.Failure;
-            }
-            return BuildResult;
+
+            retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
@@ -114,7 +139,7 @@ namespace Symbiote.Core.Model
         /// <param name="itemList">A list of model items from which to build the model.</param>
         /// <param name="result">An instance of ModelBuildResult, ideally new.  The method will recursively pass it to itself and return it to the calling method when complete.</param>
         /// <param name="depth">The current depth of recursion. Defaults to 0 if omitted.</param>
-        /// <returns>A list containing the items from itemList that were successfully instantiated in the model.</returns>
+        /// <returns>A ModelBuildResult containing the result of the build operation.</returns>
         private ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList, ModelBuildResult result, int depth = 0)
         {
             // we build the model recursively starting with root items (items with only one tuple in the FQN) and in ascending order
@@ -174,26 +199,26 @@ namespace Symbiote.Core.Model
                 }
                 catch (ItemParentMissingException ex)
                 {
-                    result.Result = ModelBuildResultCode.Warning;
-                    result.Messages.Add("The parent item for item '" + i.FQN + "' was not found in the model; ignoring.");
+                    result.ResultCode = OperationResultCode.Warning;
+                    result.AddWarning("The parent item for item '" + i.FQN + "' was not found in the model; ignoring.");
                     logger.Trace("ItemParentMissingException thrown: " + ex.Message);
                 }
                 catch (ItemJsonInvalidException ex)
                 {
-                    result.Result = ModelBuildResultCode.Warning;
-                    result.Messages.Add("Invalid configuration json for item '" + i.FQN + "'; ignoring.");
+                    result.ResultCode = OperationResultCode.Warning;
+                    result.AddWarning("Invalid configuration json for item '" + i.FQN + "'; ignoring.");
                     logger.Trace("ItemJsonInvalidException thrown: " + ex.Message);
                 }
                 catch (ItemValidationException ex)
                 {
-                    result.Result = ModelBuildResultCode.Warning;
-                    result.Messages.Add("Configuration json for item '" + i.FQN + "' deserialized to an invalid item; ignoring.");
+                    result.ResultCode = OperationResultCode.Warning;
+                    result.AddWarning("Configuration json for item '" + i.FQN + "' deserialized to an invalid item; ignoring.");
                     logger.Trace("ItemValidationException thrown: " + ex.Message);
                 }
                 catch (ItemSourceUnresolvedException ex)
                 {
-                    result.Result = ModelBuildResultCode.Warning;
-                    result.Messages.Add("Source item for '" + ex.Item.FQN + "' (" + ex.SourceAddress + ") could not be resolved; ignoring.");
+                    result.ResultCode = OperationResultCode.Warning;
+                    result.AddWarning("Source item for '" + ex.Item.FQN + "' (" + ex.SourceAddress + ") could not be resolved; ignoring.");
                     logger.Trace("ItemSourceUnresolvedException thrown: " + ex.Message + " Item: " + ex.Item.FQN + " SourceAddress: " + ex.SourceAddress);
                 }
                 catch (Exception ex)
@@ -215,28 +240,39 @@ namespace Symbiote.Core.Model
         /// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
         /// </summary>
         /// <param name="flushToDisk">Save the updated Configuration to disk.</param>
-        /// <returns>Returns true if the save succeeded, false otherwise.</returns>
-        public bool SaveModel(bool flushToDisk = false)
+        /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
+        public OperationResult<List<ConfigurationModelItem>> SaveModel(bool flushToDisk = false)
         {
-            List<ConfigurationModelItem> updatedItems = SaveModel(Model, new List<ConfigurationModelItem>(), manager.ConfigurationManager.ItemSerializationProperties);
-            manager.ConfigurationManager.Configuration.Model.Items = updatedItems;
+            OperationResult<List<ConfigurationModelItem>> configuration = new OperationResult<List<ConfigurationModelItem>>();
+            configuration.Result = new List<ConfigurationModelItem>();
 
-            if (flushToDisk)
-                return manager.ConfigurationManager.SaveConfiguration();
+            OperationResult<List<ConfigurationModelItem>> retVal = SaveModel(Model, configuration, manager.ConfigurationManager.ItemSerializationProperties);
 
-            return true;
+            if (retVal.ResultCode != OperationResultCode.Failure)
+            {
+                manager.ConfigurationManager.Configuration.Model.Items = retVal.Result;
+
+                if (flushToDisk)
+                {
+                    if (!manager.ConfigurationManager.SaveConfiguration())
+                        retVal.AddWarning("The model was saved to the ConfigurationManager, however the flush to disk failed.");
+                }
+            }
+
+            retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
-        /// Updates and returns the provided list of ConfigurationModelItems with the recursively listed contents of the provided ModelItem.
+        /// Updates and returns the provided OperationResult containing the list of ConfigurationModelItems with the recursively listed contents of the provided ModelItem.
         /// </summary>
         /// <param name="itemRoot">The ModelItem from which to start recursively updating the list.</param>
-        /// <param name="configuration">The list of ConfigurationModelItems to update.</param>
+        /// <param name="configuration">An OperationResult containing the list of ConfigurationModelItems to update.</param>
         /// <param name="itemSerializationProperties">A list of propery names to include in the serialization of the model items.</param>
-        /// <returns>Returns true if the save succeeded, false otherwise.</returns>
-        private List<ConfigurationModelItem> SaveModel(Item itemRoot, List<ConfigurationModelItem> configuration, List<string> itemSerializationProperties)
+        /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
+        private OperationResult<List<ConfigurationModelItem>> SaveModel(Item itemRoot, OperationResult<List<ConfigurationModelItem>> configuration, List<string> itemSerializationProperties)
         {
-            configuration.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson(new ContractResolver(itemSerializationProperties)) });
+            configuration.Result.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson(new ContractResolver(itemSerializationProperties)) });
 
             foreach(Item mi in itemRoot.Children)
             {
@@ -247,56 +283,18 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
-        /// <returns>The ModelItem from the Model corresponding to the supplied key.</returns>
-        /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
-        public Item FindItem(string fqn)
-        {
-            return FindItem(Dictionary, fqn);
-        }
-
-        /// <summary>
-        /// Returns the ModelItem from the supplied Dictionary matching the supplied key.
-        /// </summary>
-        /// <param name="dictionary">The Dictionary from which to retrieve the item.</param>
-        /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
-        /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
-        private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
-        {
-            try
-            {
-                return dictionary[fqn];
-            }
-            catch (Exception ex)
-            {
-                return default(Item);
-            }
-
-        }
-
-        /// <summary>
         /// Adds an Item to the ModelManager's instance of Model and Dictionary.
         /// </summary>
         /// <param name="item">The Item to add.</param>
-        /// <returns>The added Item.</returns>
-        public Item AddItem(Item item)
+        /// <returns>An OperationResult containing the added Item.</returns>
+        public OperationResult<Item> AddItem(Item item)
         {
-            try
-            {
-                return AddItem(Model, Dictionary, item);
-            }
-            catch (ItemAlreadyAddedException ex)
-            {
-                logger.Trace("The item '" + item.FQN + "' has already been added.  Returning the existing instance.");
-                return ex.ExistingItem;
-            }
-            catch (Exception ex)
-            {
-                logger.Warn("The item '" + item.FQN + "' could not be added to the model: " + ex.Message);
-                return default(Item);
-            }
+            OperationResult<Item> retVal = AddItem(Model, Dictionary, item);
+
+            if (retVal.ResultCode != OperationResultCode.Success)
+                retVal.LogResult(logger);
+
+            return retVal;
         }
 
         /// <summary>
@@ -305,18 +303,21 @@ namespace Symbiote.Core.Model
         /// <param name="model">The Model to which to add the Item.</param>
         /// <param name="dictionary">The Dictionary to which to add the Item.</param>
         /// <param name="item">The Item to add.</param>
-        /// <returns>The added Item.</returns>
-        private Item AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
+        /// <returns>An OperationResult containing the added Item.</returns>
+        private OperationResult<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
             string parentFQN = GetParentFQNFromItemFQN(item.FQN);
 
             // if the parent FQN couldn't be parsed, this is the root node so clone it to the existing ModelItem representing the root.
             if (parentFQN == "")
             {
                 // only one root item can be defined.  
-                if (model.Name != "") { throw new ApplicationException("Model root has already been defined."); }
+                if (model.Name != "") { retVal.AddError("The Model root has already been defined."); }
                 else
                 {
+                    // update the model root item with the details of the supplied item
                     logger.Trace("Setting Model root to a new instance of ModelItem()");
                     model.Name = item.Name;
                     model.FQN = item.FQN;
@@ -324,7 +325,8 @@ namespace Symbiote.Core.Model
                     model.Type = item.Type;
                     logger.Trace("Adding item to dictionary with key: " + item.FQN);
                     dictionary.Add(model.FQN, model);
-                    return model;
+
+                    retVal.Result = model;
                 }
             }
             else
@@ -332,21 +334,26 @@ namespace Symbiote.Core.Model
                 // ensure the item hasn't been added already.
                 Item foundItem = FindItem(dictionary, item.FQN);
                 if (foundItem != default(Item))
-                    throw new ItemAlreadyAddedException("The item already exists in the dictionary.", foundItem);
+                    retVal.AddError("The item already exists in the dictionary.");
+                else
+                {
+                    try
+                    {
+                        logger.Trace("Adding item to model as child of " + parentFQN + ": " + item.ToString());
+                        FindItem(dictionary, parentFQN).AddChild(item);
+                        logger.Trace("Adding item to dictionary with key: " + item.FQN);
+                        dictionary.Add(item.FQN, item);
 
-                try
-                {
-                    logger.Trace("Adding item to model as child of " + parentFQN + ": " + item.ToString());
-                    FindItem(dictionary, parentFQN).AddChild(item);
-                    logger.Trace("Adding item to dictionary with key: " + item.FQN);
-                    dictionary.Add(item.FQN, item);
-                    return item;
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw new ItemParentMissingException("The parent for item '" + model.FQN + " [" + parentFQN + "] could not be found.");
+                        retVal.Result = item;
+                    }
+                    catch (KeyNotFoundException ex)
+                    {
+                        retVal.AddError("The parent for item '" + model.FQN + " [" + parentFQN + "] could not be found.");
+                    }
                 }
             }
+
+            return retVal;
         }
 
         /// <summary>
@@ -407,25 +414,18 @@ namespace Symbiote.Core.Model
         /// Removes an Item from the ModelManager's Dictionary and removes it from its parent Item.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
-        /// <returns>The removed Item.</returns>
-        public Item RemoveItem(Item item)
+        /// <returns>An OperationResult containing the removed Item.</returns>
+        public OperationResult<Item> RemoveItem(Item item)
         {
-            return RemoveItem(Dictionary, item);
-        }
+            logger.Info("Removing Item '" + item.FQN + "' from model...");
 
-        /// <summary>
-        /// Removes an Item from the Model using the supplied FQN to first find the item.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the item to remove.</param>
-        /// <returns>The item that was found by the lookup of the supplied FQN.  Returns a default Item if the lookup fails.</returns>
-        public Item RemoveItem(string fqn)
-        {
-            Item foundItem = FindItem(fqn);
+            OperationResult<Item> retVal = RemoveItem(Dictionary, item);
 
-            if (foundItem == default(Item))
-                return foundItem;
-            else
-                return RemoveItem(foundItem);
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                SaveModel();
+
+            retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
@@ -433,42 +433,53 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="dictionary">The Dictionary from which to remove the Item.</param>
         /// <param name="item">The Item to remove.</param>
-        /// <returns>The removed Item.</returns>
-        private Item RemoveItem(Dictionary<string, Item> dictionary, Item item)
+        /// <returns>An OperationResult containing the removed Item.</returns>
+        private OperationResult<Item> RemoveItem(Dictionary<string, Item> dictionary, Item item)
         {
+            OperationResult<Item> retVal = new OperationResult<Item>();
+            retVal.Result = item;
+
             try
             {
-                if (item == default(Item)) return item;
-                if (item.Parent == item)
-                    throw new ModelRootRemovalException("Removing a Model's root is not permitted.");
-
-                // pretty brutal, forcing the parent to kill one of it's children.
-                item.Parent.RemoveChild(item);
-
-                // remove the item itself from the dictionary
-                dictionary.Remove(item.FQN);
-
-                // remove any children of this item.  find any item in the dictionary with the first part of it's FQN fully matching
-                // the FQN of the removed item
-                List<string> fqnsToDelete = new List<string>();
-
-                // iterate over the list of matching items and delete them from the dictionary
-                // note that we can't iterate over dictionary itself while we are changing it, hence the temporary list.
-                foreach (KeyValuePair<string, Item> child in dictionary.Where(kvp => kvp.Key.StartsWith(item.FQN + ".")))
+                if (item == default(Item))
                 {
-                    fqnsToDelete.Add(child.Key);
+                    retVal.AddError("The supplied Item is invalid.");
                 }
-
-                foreach (string fqn in fqnsToDelete)
+                else if (item.Parent == item)
                 {
-                    dictionary.Remove(fqn);
+                    retVal.AddError("Removing the root Item in the model is not permitted.");
+                }
+                else
+                {
+                    // pretty brutal, forcing the parent to kill one of it's children.
+                    item.Parent.RemoveChild(item);
+
+                    // remove the item itself from the dictionary
+                    dictionary.Remove(item.FQN);
+
+                    // remove any children of this item.  find any item in the dictionary with the first part of it's FQN fully matching
+                    // the FQN of the removed item
+                    List<string> fqnsToDelete = new List<string>();
+
+                    // iterate over the list of matching items and delete them from the dictionary
+                    // note that we can't iterate over dictionary itself while we are changing it, hence the temporary list.
+                    foreach (KeyValuePair<string, Item> child in dictionary.Where(kvp => kvp.Key.StartsWith(item.FQN + ".")))
+                    {
+                        fqnsToDelete.Add(child.Key);
+                    }
+
+                    foreach (string fqn in fqnsToDelete)
+                    {
+                        dictionary.Remove(fqn);
+                    }
                 }
             }
             catch (Exception ex)
             {
                 logger.Trace("Exception thrown removing item '" + item.FQN + "' from the model: " + ex.Message);
+                retVal.AddError("Exception thrown removing item '" + item.FQN + "'.");
             }
-            return item;
+            return retVal;
         }
 
         /// <summary>
@@ -476,10 +487,17 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the item.</param>
-        /// <returns>The updated Item.</returns>
-        public Item MoveItem(Item item, string fqn)
+        /// <returns>An OperationResult containing the moved Item.</returns>
+        public OperationResult<Item> MoveItem(Item item, string fqn)
         {
-            return MoveItem(Model, Dictionary, item, fqn);
+            logger.Info("Moving Item '" + item.FQN + "' to new FQN '" + fqn + "'...");
+            OperationResult<Item> retVal = MoveItem(Model, Dictionary, item, fqn);
+
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                SaveModel();
+
+            retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
@@ -489,21 +507,62 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary containing the supplied Item.</param>
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the Item.</param>
-        /// <returns>The updated Item.</returns>
-        private Item MoveItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
+        /// <returns>An OperationResult containing the moved Item.</returns>
+        private OperationResult<Item> MoveItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
             // find the parent item first to ensure the provided FQN is valid
-            // this will throw an exception if it fails.
             Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
 
-            // delete the existing item
-            RemoveItem(dictionary, item);
+            if (parent == default(Item))
+                retVal.AddError("The parent item '" + GetParentFQNFromItemFQN(fqn) + "' was not found in the model.");
+            else
+            {
+                // delete the existing item
+                RemoveItem(dictionary, item);
 
-            // add it to the new location
-            item.FQN = fqn;
-            AddItem(model, dictionary, item);
-            return item;
+                // add it to the new location
+                item.FQN = fqn;
+                AddItem(model, dictionary, item);
+                retVal.Result = item;
+            }
+            return retVal;
         }
+
+        /// <summary>
+        /// Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
+        /// <returns>The ModelItem from the Model corresponding to the supplied key.</returns>
+        /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
+        public Item FindItem(string fqn)
+        {
+            return FindItem(Dictionary, fqn);
+        }
+
+        /// <summary>
+        /// Returns the ModelItem from the supplied Dictionary matching the supplied key.
+        /// </summary>
+        /// <param name="dictionary">The Dictionary from which to retrieve the item.</param>
+        /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
+        /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
+        private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
+        {
+            try
+            {
+                return dictionary[fqn];
+            }
+            catch (Exception ex)
+            {
+                return default(Item);
+            }
+
+        }
+
+        #endregion
+
+        #region Static Methods
 
         /// <summary>
         /// Parses and returns an Item path from the given FQN.
@@ -530,5 +589,7 @@ namespace Symbiote.Core.Model
         {
             return itemFQN.Split('.')[itemFQN.Split('.').Length - 1];
         }
+
+        #endregion
     }
 }

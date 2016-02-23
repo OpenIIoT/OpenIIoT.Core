@@ -153,7 +153,6 @@
     <Compile Include="Configuration\Enumerations.cs" />
     <Compile Include="Configuration\ConfigurationValidationResult.cs" />
     <Compile Include="Configuration\Web\ConfigurationWebSection.cs" />
-    <Compile Include="Model\Enumerations.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\Exceptions.cs" />
     <Compile Include="Platform\Exceptions.cs" />

@@ -169,7 +169,7 @@ namespace Symbiote.Core
                 // find or create the parent for the Platform items
                 Item systemItem = manager.ModelManager.FindItem(manager.InternalSettings.ProductName + ".System");
                 if (systemItem == default(Item))
-                    systemItem = manager.ModelManager.AddItem(new Item(manager.InternalSettings.ProductName + ".System"));
+                    systemItem = manager.ModelManager.AddItem(new Item(manager.InternalSettings.ProductName + ".System")).Result;
 
                 // attach the Platform items to Symbiote.System
                 manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
@@ -241,7 +241,7 @@ namespace Symbiote.Core
 
             try
             {
-                if (manager.ModelManager.SaveModel())
+                if (manager.ModelManager.SaveModel().ResultCode != OperationResultCode.Failure)
                     manager.ConfigurationManager.SaveConfiguration();
             }
             catch (Exception ex)

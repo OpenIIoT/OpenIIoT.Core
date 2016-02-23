@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Reflection;
 
 namespace Symbiote.Core
@@ -205,7 +206,8 @@ namespace Symbiote.Core
             if (ResultCode != OperationResultCode.Failure)
             {
                 logger.Trace("Success...");
-                Log(logger, successLogLevel, "The operation completed successfully.");
+                
+                Log(logger, successLogLevel, "The operation '" + (new StackTrace()).GetFrame(1).GetMethod().Name + "' completed successfully.");
 
 
                 // if any warnings were generated, print them to the logger
@@ -275,7 +277,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
-        public virtual OperationResult<T> AddInfo(string message)
+        new public virtual OperationResult<T> AddInfo(string message)
         {
             base.AddInfo(message);
             return this;
@@ -286,7 +288,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
-        public virtual OperationResult<T> AddWarning(string message)
+        new public virtual OperationResult<T> AddWarning(string message)
         {
             base.AddWarning(message);
             return this;
@@ -297,7 +299,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
-        public virtual OperationResult<T> AddError(string message)
+        new public virtual OperationResult<T> AddError(string message)
         {
             base.AddError(message);
             return this;
