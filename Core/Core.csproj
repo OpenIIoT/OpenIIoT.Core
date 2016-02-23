@@ -188,7 +188,7 @@
     </Compile>
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Common\OperationResult.cs" />
-    <Compile Include="Services\Web\APIOperationResult.cs" />
+    <Compile Include="Services\Web\API\APIOperationResult.cs" />
     <Compile Include="Services\Web\API\AppArchiveController.cs" />
     <Compile Include="Services\Web\API\AppController.cs" />
     <Compile Include="Services\Web\API\BrowseController.cs" />

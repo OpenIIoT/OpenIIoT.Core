@@ -23,10 +23,12 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage ListApps()
         {
-            APIRequest<List<App.App>> retVal = new APIRequest<List<App.App>>(Request, logger);
+            APIOperationResult<List<App.App>> retVal = new APIOperationResult<List<App.App>>(Request);
+            retVal.LogRequest(logger);
 
             retVal.Result = manager.AppManager.Apps;
 
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(appSerializationProperties, ContractResolverType.OptIn, true));
         }
 
@@ -34,7 +36,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage GetApp(string fqn)
         {
-            APIRequest<App.App> retVal = new APIRequest<App.App>(Request, logger);
+            APIOperationResult<App.App> retVal = new APIOperationResult<App.App>(Request);
             retVal.Result = manager.AppManager.FindApp(fqn);
 
             if (retVal.Result == default(App.App))
@@ -47,7 +49,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public async Task<HttpResponseMessage> ReinstallApp(string fqn)
         {
-            APIRequest<OperationResult<App.App>> retVal = new APIRequest<OperationResult<App.App>>(Request, logger);
+            APIOperationResult<OperationResult<App.App>> retVal = new APIOperationResult<OperationResult<App.App>>(Request);
 
             if (manager.AppManager.InstallInProgress)
                 retVal.Result = new OperationResult<App.App>().AddError("An installation is already in progress.");
@@ -61,7 +63,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public async Task<HttpResponseMessage> UninstallApp(string fqn)
         {
-            APIRequest<OperationResult> retVal = new APIRequest<OperationResult>(Request, logger);
+            APIOperationResult<OperationResult> retVal = new APIOperationResult<OperationResult>(Request);
 
             retVal.Result = await manager.AppManager.UninstallAppAsync(fqn);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));

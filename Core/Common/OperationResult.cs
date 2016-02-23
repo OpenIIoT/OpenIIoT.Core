@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Symbiote.Core
 {
@@ -58,6 +55,8 @@ namespace Symbiote.Core
     /// </summary>
     public class OperationResultMessage
     {
+        #region Properties
+
         /// <summary>
         /// The type of the message.
         /// </summary>
@@ -67,6 +66,10 @@ namespace Symbiote.Core
         /// The message.
         /// </summary>
         public string Message { get; set; }
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Constructs a message of the optionally supplied type with the optionally supplied message.
@@ -79,6 +82,10 @@ namespace Symbiote.Core
             Message = message;
         }
 
+        #endregion
+
+        #region Instance Methods
+
         /// <summary>
         /// Returns a formatted string representation of the message
         /// </summary>
@@ -87,25 +94,59 @@ namespace Symbiote.Core
         {
             return "[" + Type.ToString().ToUpper() + "] " + Message;
         }
+
+        #endregion
     }
 
+    /// <summary>
+    /// Encapsulates the result of any operation, including a result code and list of messages generated during the operation.
+    /// </summary>
     public class OperationResult
     {
+        #region Properties
+
+        /// <summary>
+        /// The result of the operation.
+        /// </summary>
         public OperationResultCode ResultCode { get; set; }
+        /// <summary>
+        /// The list of messages generated during the operation.
+        /// </summary>
         public List<OperationResultMessage> Messages { get; set; }
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructs a new OperationResult with a Resultcode of Success and an empty list of messages.
+        /// </summary>
         public OperationResult()
         {
             ResultCode = OperationResultCode.Success;
             Messages = new List<OperationResultMessage>();
         }
 
+        #endregion
+
+        #region Instance Methods
+
+        /// <summary>
+        /// Adds a message of type Info to the message list.
+        /// </summary>
+        /// <param name="message">The message to add.</param>
+        /// <returns>The OperationResult.</returns>
         public virtual OperationResult AddInfo(string message)
         {
             Messages.Add(new OperationResultMessage(OperationResultMessageType.Info, message));
             return this;
         }
 
+        /// <summary>
+        /// Adds a message of type Warning to the message list and sets the ResultCode to Warning.
+        /// </summary>
+        /// <param name="message">The message to add.</param>
+        /// <returns>The OperationResult.</returns>
         public virtual OperationResult AddWarning(string message)
         {
             Messages.Add(new OperationResultMessage(OperationResultMessageType.Warning, message));
@@ -113,6 +154,11 @@ namespace Symbiote.Core
             return this;
         }
 
+        /// <summary>
+        /// Adds a message of type Error to the message list and sets the ResultCode to Error.
+        /// </summary>
+        /// <param name="message">The message to add.</param>
+        /// <returns>The OperationResult.</returns>
         public virtual OperationResult AddError(string message)
         {
             Messages.Add(new OperationResultMessage(OperationResultMessageType.Error, message));
@@ -121,13 +167,13 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Logs the supplied message to the supplied logger with the supplied logging level
+        /// Logs the supplied message to the supplied logger with the supplied logging level.
         /// </summary>
-        /// <param name="logger">The logger to log the message to.</param>
+        /// <param name="logger">The logger to which to log the message.</param>
         /// <param name="logLevel">The logging level to apply to the message.</param>
         /// <param name="message">The message.</param>
-        /// <remarks>The accessibility for this method is set to private as there is no use case for this beyond the support of the other logging methods in this class.</remarks>
-        private void Log(NLog.Logger logger, string logLevel = "Info", string message = "")
+        /// <remarks>The accessibility for this method is set to protected as there is no use case for this beyond the support of the other logging methods in this class or derived classes.</remarks>
+        protected void Log(NLog.Logger logger, string logLevel = "Info", string message = "")
         {
             try
             {
@@ -145,7 +191,14 @@ namespace Symbiote.Core
 
         }
 
-        public void LogResult(NLog.Logger logger, string successLogLevel = "Info", string warningLogLevel = "Warn", string failureLogLevel = "Error")
+        /// <summary>
+        /// Logs the result of the operation to the supplied logger and with the supplied logging levels.
+        /// </summary>
+        /// <param name="logger">The logger to which to log the message.</param>
+        /// <param name="successLogLevel">The logging level to apply to successful messages.</param>
+        /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
+        /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
+        public virtual void LogResult(NLog.Logger logger, string successLogLevel = "Info", string warningLogLevel = "Warn", string failureLogLevel = "Error")
         {
             logger.Trace("Starting print...");
             // the operation suceeded, with or without warnings
@@ -168,7 +221,14 @@ namespace Symbiote.Core
             }
         }
 
-        public void LogAllMessages(NLog.Logger logger, string logLevel = "Info", string header = "", string footer = "")
+        /// <summary>
+        /// Logs all messages in the message list to the supplied logger and with the supplied logging level.  If specified, logs a header and footer message before and after the list, respectively.
+        /// </summary>
+        /// <param name="logger">The logger to which to log the messages.</param>
+        /// <param name="logLevel">The logging level to apply to messages.</param>
+        /// <param name="header">A header message to log prior to the list of messages.</param>
+        /// <param name="footer">A footer message to display after the list of messages.</param>
+        public virtual void LogAllMessages(NLog.Logger logger, string logLevel = "Info", string header = "", string footer = "")
         {
             if (header != "") Log(logger, logLevel, header);
 
@@ -177,33 +237,72 @@ namespace Symbiote.Core
 
             if (footer != "") Log(logger, logLevel, footer);
         }
+
+        #endregion
     }
 
+    /// <summary>
+    /// Encapsulates the result of any operation, including a result code, a list of messages generated during the operation, and an object of type T.
+    /// </summary>
+    /// <typeparam name="T">The type of the Result object.</typeparam>
     public class OperationResult<T> : OperationResult
     {
+        #region Properties
+
+        /// <summary>
+        /// An object containing the result of the operation.
+        /// </summary>
         public T Result { get; set; }
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Constructs a default OperationResult.
+        /// </summary>
         public OperationResult() : base()
         {
             Result = default(T);
         }
 
+        #endregion
+
+        #region Instance Methods
+
+        /// <summary>
+        /// Adds a message of type Info to the message list.
+        /// </summary>
+        /// <param name="message">The message to add.</param>
+        /// <returns>The OperationResult.</returns>
         public virtual OperationResult<T> AddInfo(string message)
         {
             base.AddInfo(message);
             return this;
         }
 
+        /// <summary>
+        /// Adds a message of type Warning to the message list.
+        /// </summary>
+        /// <param name="message">The message to add.</param>
+        /// <returns>The OperationResult.</returns>
         public virtual OperationResult<T> AddWarning(string message)
         {
             base.AddWarning(message);
             return this;
         }
 
+        /// <summary>
+        /// Adds a message of type Error to the message list.
+        /// </summary>
+        /// <param name="message">The message to add.</param>
+        /// <returns>The OperationResult.</returns>
         public virtual OperationResult<T> AddError(string message)
         {
             base.AddError(message);
             return this;
         }
+
+        #endregion
     }
 }

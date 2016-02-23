@@ -45,10 +45,12 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage ListAppArchives()
         {
-            APIRequest<List<AppArchive>> retVal = new APIRequest<List<AppArchive>>(Request, logger);
+            APIOperationResult<List<AppArchive>> retVal = new APIOperationResult<List<AppArchive>>(Request);
+            retVal.LogRequest(logger);
 
             retVal.Result = manager.AppManager.AppArchives;
-        
+
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(appArchiveSerializationProperties, ContractResolverType.OptIn, true));
         }
 
@@ -60,13 +62,15 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage ReloadAppArchives()
         {
-            APIRequest<OperationResult<List<AppArchive>>> retVal = new APIRequest<OperationResult<List<AppArchive>>>(Request, logger);
+            APIOperationResult<OperationResult<List<AppArchive>>> retVal = new APIOperationResult<OperationResult<List<AppArchive>>>(Request);
+            retVal.LogRequest(logger);
 
             retVal.Result = manager.AppManager.ReloadAppArchives();
 
             if (retVal.Result.ResultCode == OperationResultCode.Failure)
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(appArchiveSerializationProperties, ContractResolverType.OptIn, true));
         }
 
@@ -79,13 +83,15 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage GetAppArchive(string fqn)
         {
-            APIRequest<AppArchive> retVal = new APIRequest<AppArchive>(Request, logger);
+            APIOperationResult<AppArchive> retVal = new APIOperationResult<AppArchive>(Request);
+            retVal.LogRequest(logger);
 
             retVal.Result = manager.AppManager.FindAppArchive(fqn);
 
             if (retVal.Result == default(AppArchive))
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
         }
 
@@ -98,7 +104,8 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public async Task<HttpResponseMessage> InstallApp(string fqn)
         {
-            APIRequest<OperationResult<App.App>> retVal = new APIRequest<OperationResult<App.App>>(Request, logger);
+            APIOperationResult<OperationResult<App.App>> retVal = new APIOperationResult<OperationResult<App.App>>(Request);
+            retVal.LogRequest(logger);
 
             if (manager.AppManager.InstallInProgress)
                 retVal.Result = new OperationResult<App.App>().AddError("Another install is already in progress.");
@@ -108,6 +115,7 @@ namespace Symbiote.Core.Services.Web.API
             if ((retVal.Result == default(OperationResult<App.App>)) || (retVal.Result.ResultCode == OperationResultCode.Failure))
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
         }
 
