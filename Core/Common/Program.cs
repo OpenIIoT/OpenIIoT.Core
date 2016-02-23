@@ -172,7 +172,7 @@ namespace Symbiote.Core
                     systemItem = manager.ModelManager.AddItem(new Item(manager.InternalSettings.ProductName + ".System")).Result;
 
                 // attach the Platform items to Symbiote.System
-                manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
+                manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem, true);
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
 
                 //---- - ----------------------------------------- - - ------------- --   

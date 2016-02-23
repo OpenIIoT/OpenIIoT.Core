@@ -75,6 +75,8 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult AttachModel(ModelBuildResult modelBuildResult)
         {
+            logger.Info("Attaching Model...");
+
             OperationResult retVal = new OperationResult();
 
             // if the ModelBuildResult that was passed in built successfully, update the Model and Dictionary properties with the contents of the build result
@@ -85,10 +87,6 @@ namespace Symbiote.Core.Model
             }
             else
                 retVal.AddError("Unable to attach a model that failed to build.");
-
-            // if we didn't encounter any errors, save the model
-            if (retVal.ResultCode != OperationResultCode.Failure)
-                SaveModel();
 
             retVal.LogResult(logger);
             return retVal;
@@ -110,6 +108,8 @@ namespace Symbiote.Core.Model
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         public ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList)
         {
+            logger.Info("Building Model...");
+
             ModelBuildResult retVal = BuildModel(itemList, new ModelBuildResult() { UnresolvedList = itemList.Clone() });
 
             // if the model was built successfully (with or without warnings), report the success and show some statistics.
@@ -243,6 +243,8 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
         public OperationResult<List<ConfigurationModelItem>> SaveModel(bool flushToDisk = false)
         {
+            logger.Info("Saving Model" + (flushToDisk ? " and flushing the Configuration to disk" : "") + "...");
+
             OperationResult<List<ConfigurationModelItem>> configuration = new OperationResult<List<ConfigurationModelItem>>();
             configuration.Result = new List<ConfigurationModelItem>();
 
@@ -286,13 +288,15 @@ namespace Symbiote.Core.Model
         /// Adds an Item to the ModelManager's instance of Model and Dictionary.
         /// </summary>
         /// <param name="item">The Item to add.</param>
+        /// <param name="suppressLogging">True if log messages should be suppressed during the operation, false otherwise.</param>
         /// <returns>An OperationResult containing the added Item.</returns>
-        public OperationResult<Item> AddItem(Item item)
+        public OperationResult<Item> AddItem(Item item, bool suppressLogging = true)
         {
+            if (!suppressLogging) logger.Info("Adding Item '" + item.FQN + "' to the Model...");
+
             OperationResult<Item> retVal = AddItem(Model, Dictionary, item);
 
-            if (retVal.ResultCode != OperationResultCode.Success)
-                retVal.LogResult(logger);
+            if (!suppressLogging) retVal.LogResult(logger);
 
             return retVal;
         }
@@ -361,15 +365,16 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to attach to the Model.</param>
         /// <param name="parentItemFQN">The Fully Qualified Name of the Item to which the new Item should be attached.</param>
+        /// <param name="suppressLogging">True if log messages should be suppressed during the operation, false otherwise.</param>
         /// <returns>The attached Item.</returns>
-        public Item AttachItem(Item item, string parentItemFQN)
+        public OperationResult<Item> AttachItem(Item item, string parentItemFQN, bool suppressLogging = true)
         {
             Item foundItem = FindItem(parentItemFQN);
 
             if (foundItem == default(Item))
-                throw new ItemParentMissingException("The supplied Item can't be attached to '" + parentItemFQN + "' because the parent item wasn't found in the model.");
+                return new OperationResult<Item>().AddError("The parent item '" + parentItemFQN + "' could not be found.");
 
-            return AttachItem(item, FindItem(parentItemFQN));
+            return AttachItem(item, foundItem);
         }
 
         /// <summary>
@@ -377,41 +382,64 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to attach to the Model.</param>
         /// <param name="parentItem">The Item to which the new Item should be attached.</param>
+        /// <param name="suppressLogging">True if log messages should be suppressed during the operation, false otherwise.</param>
         /// <returns>The attached Item.</returns>
-        public Item AttachItem(Item item, Item parentItem)
+        public OperationResult<Item> AttachItem(Item item, Item parentItem, bool suppressLogging = true)
         {
-            logger.Trace("Attaching " + item.ToString() + " to " + parentItem.ToString());
+            if (!suppressLogging) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
 
-            // create a 1:1 clone of the supplied item
-            Item newItem = (Item)item.Clone();
+            OperationResult<Item> retVal = new OperationResult<Item>();
 
-            // set the SourceAddress of the new item to the FQN of the original item to create a link
-            newItem.SourceAddress = newItem.FQN;
-            newItem.SourceItem = AddressResolver.Resolve(newItem.SourceAddress);
-
-            // modify the FQN of the cloned item to reflect it's new path
-            newItem.FQN = parentItem.FQN + "." + newItem.Name;
-
-            // create a temporary list of the items children
-            List<Item> children = newItem.Children.Clone<Item>();
-
-            // remove the children from the item (you leave my babies!)
-            newItem.Children.Clear();
-            // they're my babies now, you commie son of a bitch!
-
-            // add the cloned and cleaned item to the model
-            AddItem(newItem);
-
-            // for each child of the original item, attach that item to the model under the cloned and cleaned parent
-            foreach(Item child in children)
+            try
             {
-                AttachItem(child, newItem);
+                // create a 1:1 clone of the supplied item
+                retVal.Result = (Item)item.Clone();
+
+                // set the SourceAddress of the new item to the FQN of the original item to create a link
+                retVal.Result.SourceAddress = retVal.Result.FQN;
+                retVal.Result.SourceItem = AddressResolver.Resolve(retVal.Result.SourceAddress);
+
+                // modify the FQN of the cloned item to reflect it's new path
+                retVal.Result.FQN = parentItem.FQN + "." + retVal.Result.Name;
+
+                // create a temporary list of the items children
+                List<Item> children = retVal.Result.Children.Clone<Item>();
+
+                // remove the children from the item (you leave my babies!)
+                retVal.Result.Children.Clear();
+                // they're my babies now, you commie son of a bitch!
+
+                // add the cloned and cleaned item to the model
+                AddItem(retVal.Result);
+
+                // for each child of the original item, attach that item to the model under the cloned and cleaned parent
+                foreach (Item child in children)
+                {
+                    AttachItem(child, retVal.Result, suppressLogging);
+                }
             }
-            return newItem;
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown when attempting to Attach Item '" + item.FQN + "':" + ex);
+                retVal.Result = default(Item);
+            }
+
+            if (!suppressLogging) retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
-        /// Removes an Item from the ModelManager's Dictionary and removes it from its parent Item.
+        /// Removes an Item matching the supplied FQN from the ModelManager's Dictionary and its parent Item.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to remove.</param>
+        /// <returns>An OperationResult containing the removed Item.</returns>
+        public OperationResult<Item> RemoveItem(string fqn)
+        {
+            return RemoveItem(FindItem(fqn));
+        }
+
+        /// <summary>
+        /// Removes an Item from the ModelManager's Dictionary and from its parent Item.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
         /// <returns>An OperationResult containing the removed Item.</returns>
@@ -420,9 +448,6 @@ namespace Symbiote.Core.Model
             logger.Info("Removing Item '" + item.FQN + "' from model...");
 
             OperationResult<Item> retVal = RemoveItem(Dictionary, item);
-
-            if (retVal.ResultCode != OperationResultCode.Failure)
-                SaveModel();
 
             retVal.LogResult(logger);
             return retVal;
