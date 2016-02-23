@@ -80,13 +80,16 @@ namespace Symbiote.Core.Model
             OperationResult retVal = new OperationResult();
 
             // if the ModelBuildResult that was passed in built successfully, update the Model and Dictionary properties with the contents of the build result
-            if (modelBuildResult.ResultCode == OperationResultCode.Success)
+            if (modelBuildResult.ResultCode != OperationResultCode.Failure)
             {
                 Model = modelBuildResult.Model;
                 Dictionary = modelBuildResult.Dictionary;
             }
             else
+            {
                 retVal.AddError("Unable to attach a model that failed to build.");
+                throw new ModelAttachException("Unable to attach a model that failed to build.");
+            }
 
             retVal.LogResult(logger);
             return retVal;
@@ -110,12 +113,15 @@ namespace Symbiote.Core.Model
         {
             logger.Info("Building Model...");
 
-            ModelBuildResult retVal = BuildModel(itemList, new ModelBuildResult() { UnresolvedList = itemList.Clone() });
+            ModelBuildResult retVal = new ModelBuildResult() { ResultCode = OperationResultCode.Success, UnresolvedList = itemList.Clone() };
+
+            BuildModel(itemList, retVal);
+
+            retVal.LogResult(logger);
 
             // if the model was built successfully (with or without warnings), report the success and show some statistics.
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
-                logger.Info("The Model was built successfully.");
                 logger.Info(retVal.ResolvedList.Count() + " items were resolved.");
 
                 // if any items were unresolved, print them.
@@ -123,13 +129,10 @@ namespace Symbiote.Core.Model
                 {
                     logger.Info("Unresolved items:");
                     foreach (ConfigurationModelItem mi in retVal.UnresolvedList)
-                    {
                         logger.Info("\t" + mi.FQN);
-                    }
                 }
             }
 
-            retVal.LogResult(logger);
             return retVal;
         }
 
@@ -199,31 +202,27 @@ namespace Symbiote.Core.Model
                 }
                 catch (ItemParentMissingException ex)
                 {
-                    result.ResultCode = OperationResultCode.Warning;
                     result.AddWarning("The parent item for item '" + i.FQN + "' was not found in the model; ignoring.");
                     logger.Trace("ItemParentMissingException thrown: " + ex.Message);
                 }
                 catch (ItemJsonInvalidException ex)
                 {
-                    result.ResultCode = OperationResultCode.Warning;
                     result.AddWarning("Invalid configuration json for item '" + i.FQN + "'; ignoring.");
                     logger.Trace("ItemJsonInvalidException thrown: " + ex.Message);
                 }
                 catch (ItemValidationException ex)
                 {
-                    result.ResultCode = OperationResultCode.Warning;
                     result.AddWarning("Configuration json for item '" + i.FQN + "' deserialized to an invalid item; ignoring.");
                     logger.Trace("ItemValidationException thrown: " + ex.Message);
                 }
                 catch (ItemSourceUnresolvedException ex)
                 {
-                    result.ResultCode = OperationResultCode.Warning;
                     result.AddWarning("Source item for '" + ex.Item.FQN + "' (" + ex.SourceAddress + ") could not be resolved; ignoring.");
                     logger.Trace("ItemSourceUnresolvedException thrown: " + ex.Message + " Item: " + ex.Item.FQN + " SourceAddress: " + ex.SourceAddress);
                 }
                 catch (Exception ex)
                 {
-                    logger.Warn("Failed to add the item '" + i.FQN + "' to the model; ignoring.");
+                    result.AddWarning("Failed to add the item '" + i.FQN + "' to the model; ignoring.");
                     logger.Trace("Exception: " + ex.Message);
                     continue;
                 }

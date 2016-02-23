@@ -205,14 +205,13 @@ namespace Symbiote.Core
             // the operation suceeded, with or without warnings
             if (ResultCode != OperationResultCode.Failure)
             {
-                logger.Trace("Success...");
+                logger.Trace("Not a failure.  Result: " + ResultCode);
                 
                 Log(logger, successLogLevel, "The operation '" + (new StackTrace()).GetFrame(1).GetMethod().Name + "' completed successfully.");
 
-
                 // if any warnings were generated, print them to the logger
                 if (ResultCode == OperationResultCode.Warning)
-                    LogAllMessages(logger, "Trace", "The following warnings were generated during the operation:");
+                    LogAllMessages(logger, warningLogLevel, "The following warnings were generated during the operation:");
             }
             // the operation failed
             else
