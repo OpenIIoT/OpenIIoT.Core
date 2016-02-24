@@ -17,9 +17,26 @@ namespace Symbiote.Core.Configuration
     /// </remarks>
     public class ConfigurationManager
     {
+        #region Variables
+
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
         private ProgramManager manager;
+
+        /// <summary>
+        /// The Logger for this class.
+        /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The Singleton instance of ConfigurationManager.
+        /// </summary>
         private static ConfigurationManager instance;
+
+        #endregion
+
+        #region Properties
 
         /// <summary>
         /// The list of properties to be used when serializing/deserializing configuration items.
@@ -30,6 +47,10 @@ namespace Symbiote.Core.Configuration
         /// The current configuration.
         /// </summary>
         public Configuration Configuration { get; private set; }
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Private constructor, only called by Instance()
@@ -53,56 +74,128 @@ namespace Symbiote.Core.Configuration
             return instance;
         }
 
+        #endregion
+
+        #region Instance Methods
+
         /// <summary>
         /// Attempts to load and return the application configuration file from the location specified in app.config.
         /// Failing that, builds a new (default) configuration file from scratch, saves it to the location specified in app.config and returns it.
         /// </summary>
         /// <returns>An instance of Configuration containing the loaded or newly generated configuration.</returns>
-        public Configuration InstantiateConfiguration()
+        public OperationResult<Configuration> LoadConfiguration()
         {
-            Configuration config;
+            logger.Info("Loading Configuration...");
 
-            logger.Trace("Retrieving configuration file location from app.config");
             string configurationFile = GetConfigurationFileName();
+
+            OperationResult<Configuration> retVal = LoadConfiguration(configurationFile);
+
+            if (retVal.ResultCode == OperationResultCode.Failure)
+            {
+                retVal.LogAllMessages(logger, "Warn", "Failed to load the Configuration from '" + configurationFile + "'.  The following messages were generated during the load:");
+
+                logger.Info("Building a new Configuration from scratch...");
+                retVal = BuildNewConfiguration();
+
+                // log any issues we encounter during the build
+                if (retVal.ResultCode != OperationResultCode.Success)
+                {
+                    if (retVal.ResultCode == OperationResultCode.Warning)
+                        retVal.LogAllMessages(logger, "Warn", "Successfully built the Configuration from scratch, however the following messages were generated during the build:");
+                    else
+                        retVal.AddError("Failed to load the Configuration from the configuration file and also failed to build it from scratch.");
+                }
+                else
+                {
+                    logger.Info("The new Configuration was built successfully.");
+                    logger.Info("Saving the new Configuration...");
+
+                    OperationResult saveResult = SaveConfiguration(retVal.Result, configurationFile);
+                    if (saveResult.ResultCode != OperationResultCode.Success)
+                    {
+                        if (saveResult.ResultCode == OperationResultCode.Warning)
+                            saveResult.LogAllMessages(logger, "Warn", "Successfully saved the Configuration, however the following messages were generated during the save:");
+                        else
+                            retVal.AddError("Failed to save the Configuration.");
+                    }
+                    else
+                        logger.Info("Successfully saved the new Configuration to '" + configurationFile + "'.");
+                }
+            }
+
+            retVal.LogResult(logger);
+            Configuration = retVal.Result;
+            logger.Info("Loaded Configuration from '" + configurationFile + "'.");
+            return retVal;
+        }
+
+        /// <summary>
+        /// Reads the given file and attempts to deserialize it to an instance of Configuration
+        /// </summary>
+        /// <param name="fileName">The file to read and deserialize.</param>
+        /// <returns>An OperationResult containing the Configuration instance created from the file.</returns>
+        public OperationResult<Configuration> LoadConfiguration(string fileName)
+        {
+            OperationResult<Configuration> retVal = new OperationResult<Configuration>();
 
             try
             {
-                config = LoadConfiguration(configurationFile);
-                logger.Info("Loaded configuration from '" + configurationFile + "'.");
+                logger.Trace("Attempting to load configuration from '" + fileName + "'...");
+                string configFile = manager.PlatformManager.Platform.ReadFile(fileName);
+                logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
+
+                retVal.Result = JsonConvert.DeserializeObject<Configuration>(configFile);
+                logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
+
+                logger.Trace("Validating configuration...");
+                OperationResult validationResult = ValidateConfiguration(retVal.Result);
+
+                // if the validation didn't complete "cleanly", add appropriate messages to the OperationResult
+                if (validationResult.ResultCode != OperationResultCode.Success)
+                {
+                    // if it failed, add the failure as a warning message
+                    if (validationResult.ResultCode == OperationResultCode.Failure)
+                    {
+                        retVal.AddError("The configuration validation failed with the following messages:");
+                        foreach (OperationResultMessage message in validationResult.Messages)
+                            retVal.AddWarning(message.Message);
+                    }
+                    // if it succeeded with warnings, add the warnings
+                    else
+                    {
+                        retVal.AddWarning("The configuration validation succeeded, however the following messages were generated:");
+                        foreach (OperationResultMessage message in validationResult.Messages)
+                            retVal.AddWarning(message.Message);
+                    }
+                }
             }
             catch (Exception ex)
             {
-                logger.Trace("Error loading configuration from '" + configurationFile + "':" + ex.Message);
-                logger.Warn("Failed to load configuration from '" + configurationFile + "'.  Building from scratch...");
-                config = BuildNewConfiguration();
-                SaveConfigurationAs(config, configurationFile);
-                logger.Info("Created new configuration file in '" + configurationFile + ".");
+                retVal.AddError("Exception thrown while loading Configuration from '" + fileName + "': " + ex.Message);
             }
-
-            if ((config == default(Configuration)) || (config == null))
-                throw new ConfigurationInstantiationException("Failed to instantiate a configuration from both a configuration file and by building from scratch.");
-            else
-            {
-                Configuration = config;
-                return config;
-            }
+            return retVal;
         }
 
         /// <summary>
         /// Saves the current configuration to the file specified in app.config.
         /// </summary>
-        public bool SaveConfiguration()
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult SaveConfiguration()
         {
-            return SaveConfigurationAs(GetConfigurationFileName());
+            return SaveConfiguration(GetConfigurationFileName());
         }
 
         /// <summary>
         /// Saves the current configuration to the specified file.
         /// </summary>
         /// <param name="fileName">The file in which to save the configuration.</param>
-        public bool SaveConfigurationAs(string fileName)
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult SaveConfiguration(string fileName)
         {
-            return SaveConfigurationAs(Configuration, fileName);
+            OperationResult retVal = SaveConfiguration(Configuration, fileName);
+            retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
@@ -110,82 +203,58 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
         /// <param name="fileName">The file in which to save the configuration.</param>
-        public bool SaveConfigurationAs(Configuration configuration, string fileName)
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult SaveConfiguration(Configuration configuration, string fileName)
         {
-            logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-            manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented));
-            return true;
-        }
+            OperationResult retVal = new OperationResult();
 
-        /// <summary>
-        /// Reads the given file and attempts to deserialize it to an instance of Configuration
-        /// </summary>
-        /// <param name="fileName">The file to read and deserialize.</param>
-        /// <returns>The Configuration instance created from the file.</returns>
-        public Configuration LoadConfiguration(string fileName)
-        {
-            logger.Trace("Attempting to load configuration from '" + fileName + "'...");
-            string configFile = manager.PlatformManager.Platform.ReadFile(fileName);
-            logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
-
-            Configuration retVal;
             try
             {
-                retVal = JsonConvert.DeserializeObject<Configuration>(configFile);
-                logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
-
-                logger.Trace("Validating configuration...");
-                ConfigurationValidationResult validationResult = ValidateConfiguration(retVal);
-                if (validationResult.Result == ConfigurationValidationResultCode.Valid)
-                {
-                    logger.Trace("Successfully validated configuration.");
-                    return retVal;
-                }
-                else
-                {
-                    throw new ApplicationException("Configuration validation returned a " + validationResult.Result.ToString() + "; message: " + validationResult.Message);
-                }
+                logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
+                manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented));
             }
             catch (Exception ex)
             {
-                logger.Error("Error deserializing conents of configuration file '" + fileName + "': " + ex.Message);
-                throw new ApplicationException("Failed to load configuration from file '" + fileName + "'.");
+                retVal.AddError("Exception thrown when attempting to save the Configuration to '" + fileName + "': " + ex.Message);
             }
+
+            return retVal;
         }
 
         /// <summary>
         /// Examines the supplied Configuration for errors and returns the result.  If returning a Warning or Invalid result code,
         /// includes the validation message in the Message member of the return type.
         /// </summary>
-        /// <param name="configuration"></param>
-        /// <returns>A ValidationResult containing the validation result code and, if applicable, message.</returns>
-        public ConfigurationValidationResult ValidateConfiguration(Configuration configuration)
+        /// <param name="configuration">The Configuration to validate.</param>
+        /// <returns>An OperationResult containing the result of the validation.</returns>
+        public OperationResult ValidateConfiguration(Configuration configuration)
         {
             // TODO: validate configuration; check for duplicates, etc.
             // issue #1
-            return new ConfigurationValidationResult() { Result = ConfigurationValidationResultCode.Valid, Message = "" };
+            return new OperationResult();
         }
 
         /// <summary>
         /// Manually builds an instance of Configuration with default values.
         /// </summary>
-        /// <returns>The default instance of a Configuration.</returns>
-        public Configuration BuildNewConfiguration()
+        /// <returns>An OperationResult containing the default instance of a Configuration.</returns>
+        public OperationResult<Configuration> BuildNewConfiguration()
         {
-            Configuration retVal = new Configuration();
+            OperationResult<Configuration> retVal = new OperationResult<Configuration>();
+            retVal.Result = new Configuration();
 
-            retVal.Symbiote = "0.1.0";
+            retVal.Result.Symbiote = "0.1.0";
 
-            retVal.Web.Port = 80;
-            retVal.Web.Root = "";
+            retVal.Result.Web.Port = 80;
+            retVal.Result.Web.Root = "";
 
-            retVal.Model = new ConfigurationModelSection();
-            retVal.Model.Items = new List<ConfigurationModelItem>();
-            retVal.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Item("Symbiote", typeof(string)).ToJson(new ContractResolver(ItemSerializationProperties)) });
+            retVal.Result.Model = new ConfigurationModelSection();
+            retVal.Result.Model.Items = new List<ConfigurationModelItem>();
+            retVal.Result.Model.Items.Add(new ConfigurationModelItem() { FQN = "Symbiote", Definition = new Item("Symbiote", typeof(string)).ToJson(new ContractResolver(ItemSerializationProperties)) });
 
-            retVal.Plugins = new ConfigurationPluginSection();
-            retVal.Plugins.AuthorizeNewPlugins = true;
-            retVal.Plugins.Assemblies.Add(
+            retVal.Result.Plugins = new ConfigurationPluginSection();
+            retVal.Result.Plugins.AuthorizeNewPlugins = true;
+            retVal.Result.Plugins.Assemblies.Add(
                 new ConfigurationPluginAssembly()
                 {
                     Name = "Symbiote.Plugin.Connector.Simulation",
@@ -197,7 +266,7 @@ namespace Symbiote.Core.Configuration
                     Authorization = PluginAuthorization.Authorized
                 });
 
-            retVal.Plugins.Instances.Add(
+            retVal.Result.Plugins.Instances.Add(
                 new ConfigurationPluginInstance() {
                     InstanceName = "Simulation",
                     AssemblyName = "Symbiote.Plugin.Connector.Simulation",
@@ -242,28 +311,59 @@ namespace Symbiote.Core.Configuration
         /// Sets or updates the configuration file location setting in app.config
         /// </summary>
         /// <param name="fileName">The fully qualified path to the configuration file.</param>
-        public void SetConfigurationFileName(string fileName)
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult SetConfigurationFileName(string fileName)
         {
-            System.Configuration.ConfigurationManager.AppSettings["ConfigurationFileName"] = fileName;
-            logger.Info("Set application configuration file to '" + fileName + "'.");
+            logger.Info("Setting Configuration filename to '" + fileName + "'...");
+
+            OperationResult retVal = new OperationResult();
+
+            try
+            {
+                System.Configuration.ConfigurationManager.AppSettings["ConfigurationFileName"] = fileName;
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown attempting to set the Configuration filename: " + ex);
+            }
+
+            retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
         /// Moves the configuration file to a new location and updates the setting in app.config.
         /// </summary>
         /// <param name="newFileName">The fully qualified path to the new file.</param>
-        public void MoveConfigurationFile(string newFileName)
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult MoveConfigurationFile(string newFileName)
         {
-            string oldFileName = GetConfigurationFileName();
+            logger.Info("Moving Configuration file to '" + newFileName + "'...");
 
-            // physically move the file but not if source and destination are the same.
-            if (oldFileName != newFileName)
+            OperationResult retVal = new OperationResult();
+
+            try
             {
-                System.IO.File.Move(oldFileName, newFileName);
-                logger.Trace("Moved configuration file from '" + oldFileName + "' to '" + newFileName + "'.");
+                string oldFileName = GetConfigurationFileName();
+
+                // physically move the file but not if source and destination are the same.
+                if (oldFileName != newFileName)
+                {
+                    System.IO.File.Move(oldFileName, newFileName);
+                    logger.Trace("Moved configuration file from '" + oldFileName + "' to '" + newFileName + "'.");
+                }
+
+                SetConfigurationFileName(newFileName);
             }
-            
-            SetConfigurationFileName(newFileName);
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown attempting to move the Configuration file: " + ex);
+            }
+
+            retVal.LogResult(logger);
+            return retVal;
         }
+
+        #endregion
     }
 }

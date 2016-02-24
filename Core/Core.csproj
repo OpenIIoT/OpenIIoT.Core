@@ -150,8 +150,6 @@
     <Compile Include="Configuration\Plugin\ConfigurationPluginInstance.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginAssembly.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginSection.cs" />
-    <Compile Include="Configuration\Enumerations.cs" />
-    <Compile Include="Configuration\ConfigurationValidationResult.cs" />
     <Compile Include="Configuration\Web\ConfigurationWebSection.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\Exceptions.cs" />

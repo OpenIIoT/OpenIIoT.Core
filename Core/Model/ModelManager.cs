@@ -27,7 +27,7 @@ namespace Symbiote.Core.Model
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        /// The Singleton instance of AppManager.
+        /// The Singleton instance of ModelManager.
         /// </summary>
         private static ModelManager instance;
 
@@ -255,7 +255,8 @@ namespace Symbiote.Core.Model
 
                 if (flushToDisk)
                 {
-                    if (!manager.ConfigurationManager.SaveConfiguration())
+                    // if the save fails, add a warning about the failure and copy the messages from that operationresult to this one.
+                    if (manager.ConfigurationManager.SaveConfiguration().ResultCode == OperationResultCode.Failure)
                         retVal.AddWarning("The model was saved to the ConfigurationManager, however the flush to disk failed.");
                 }
             }
@@ -434,7 +435,16 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the removed Item.</returns>
         public OperationResult<Item> RemoveItem(string fqn)
         {
-            return RemoveItem(FindItem(fqn));
+            OperationResult<Item> retVal;
+
+            Item foundItem = FindItem(fqn);
+
+            if (foundItem != default(Item))
+                retVal = RemoveItem(foundItem);
+            else
+                retVal = new OperationResult<Item>().AddError("The Item '" + fqn + "' was not found in the model.");
+
+            return retVal;
         }
 
         /// <summary>
@@ -444,9 +454,15 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the removed Item.</returns>
         public OperationResult<Item> RemoveItem(Item item)
         {
-            logger.Info("Removing Item '" + item.FQN + "' from model...");
+            OperationResult<Item> retVal;
 
-            OperationResult<Item> retVal = RemoveItem(Dictionary, item);
+            if (item != default(Item))
+            {
+                logger.Info("Removing Item '" + item.FQN + "' from model...");
+                retVal = RemoveItem(Dictionary, item);
+            }
+            else
+                retVal = new OperationResult<Item>().AddError("The provided Item is null.");
 
             retVal.LogResult(logger);
             return retVal;

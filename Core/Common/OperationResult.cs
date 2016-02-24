@@ -217,7 +217,7 @@ namespace Symbiote.Core
             else
             {
                 logger.Trace("Failure...");
-                Log(logger, failureLogLevel, "The operation failed.");
+                Log(logger, failureLogLevel, "The operation '" + (new StackTrace()).GetFrame(1).GetMethod().Name + "' failed.");
                 LogAllMessages(logger, failureLogLevel, "The following messages were generated during the operation:");
             }
         }

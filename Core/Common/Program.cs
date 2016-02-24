@@ -122,7 +122,7 @@ namespace Symbiote.Core
                 //      reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
                 //--------------------------------------- - -  - --------            -------- -
                 logger.Info("Loading configuration...");
-                manager.ConfigurationManager.InstantiateConfiguration();
+                manager.ConfigurationManager.LoadConfiguration();
                 logger.Info("Configuration loaded.");
 
                 //--------------------------------------------- - - --------- ----  - -    -
