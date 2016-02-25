@@ -5,6 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using NLog;
 using Microsoft.Owin.Hosting;
+using Microsoft.AspNet.SignalR;
+using System.Web.Http;
+using Newtonsoft.Json;
 
 namespace Symbiote.Core.Services.Web
 {
@@ -16,9 +19,14 @@ namespace Symbiote.Core.Services.Web
 
         public string URL { get; private set; }
 
+        public Dictionary<string, Hub> Hubs { get; private set; }
+        public Dictionary<string, ApiController> ApiControllers { get; private set; }
+
         private WebManager(ProgramManager manager)
         {
             this.manager = manager;
+            Hubs = new Dictionary<string, Hub>();
+            ApiControllers = new Dictionary<string, ApiController>();
         }
 
         internal static WebManager Instance(ProgramManager manager)

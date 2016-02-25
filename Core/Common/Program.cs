@@ -206,7 +206,7 @@ namespace Symbiote.Core
                 Console.WriteLine(manager.InternalSettings.ProductName + " is running.");
                 Console.WriteLine("Press any key to stop.");
 
-                printTimer = new Timer(1000);
+                printTimer = new Timer(5000);
                 printTimer.Elapsed += new ElapsedEventHandler(Tick);
                 printTimer.Start();
 
@@ -230,6 +230,7 @@ namespace Symbiote.Core
             //logger.Info("Cosine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Cosine").ReadFromSource());
             //logger.Info("Tangent: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Tangent").ReadFromSource());
             //logger.Info("CPU usage (read): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").Read());
+            AddressResolver.Resolve("Symbiote.Simulation.DateTime.Time").Write(DateTime.Now);
         }
 
         /// <summary>

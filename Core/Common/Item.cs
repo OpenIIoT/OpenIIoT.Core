@@ -94,6 +94,9 @@ namespace Symbiote.Core
 
         #endregion
 
+        public event EventHandler<ItemEventArgs> Changed;
+        public delegate void EventHandler<ItemEventArgs>(Item sender, ItemEventArgs e);
+
         #region Constructors
 
         /// <summary>
@@ -254,6 +257,7 @@ namespace Symbiote.Core
                 throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
 
             Value = value;
+            OnChange(value);
             return true;
         }
 
@@ -322,6 +326,16 @@ namespace Symbiote.Core
         public override string ToString()
         {
             return FQN;
+        }
+
+        #endregion
+
+        #region Events
+
+        private void OnChange(object value)
+        {
+            if (Changed != null)
+                Changed(this, new ItemEventArgs(value));
         }
 
         #endregion
