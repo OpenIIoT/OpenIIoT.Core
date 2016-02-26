@@ -12,5 +12,20 @@ namespace Symbiote.Core
         {
             return listToClone.Select(item => (T)item.Clone()).ToList();
         }
+
+        /// <summary>
+        /// Returns a subset of the supplied array.
+        /// </summary>
+        /// <typeparam name="T">The type of the array.</typeparam>
+        /// <param name="data">The array.</param>
+        /// <param name="index">The index at which the subarray should start.</param>
+        /// <param name="length">The length of the desired subarray; the number of elements to select.</param>
+        /// <returns></returns>
+        public static T[] SubArray<T>(this T[] data, int index, int length)
+        {
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
+        }
     }
 }

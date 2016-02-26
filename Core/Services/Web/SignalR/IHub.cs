@@ -23,6 +23,11 @@ namespace Symbiote.Core.Services.Web.SignalR
         /// <param name="args">An object array containing the Fully Qualified Name of the Item to update in the first index and an object containing the new value in the second.</param>
         void Write(object[] args);
         /// <summary>
+        /// Invoked by clients to update the value of the SourceItem(s) for an Item.  Recursively writes the value all the way down to the origin.
+        /// </summary>
+        /// <param name="args">An object array containing the Fully Qualified Name of the Item to update in the first index and an object containing the new value in the second.</param>
+        void WriteToSource(object[] args);
+        /// <summary>
         /// Subscribes the calling client to the item matching the provided FQN.
         /// </summary>
         /// <param name="obj"></param>
