@@ -9,18 +9,27 @@ using System;
 using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNet.SignalR;
+using Symbiote.Core.Services.Web.SignalR;
+using Symbiote.Core.Services.Web.API;
 
-[assembly: OwinStartup(typeof(Symbiote.Core.Services.Web.Startup))]
+[assembly: OwinStartup(typeof(Symbiote.Core.Services.Web.OwinStartup))]
 
 namespace Symbiote.Core.Services.Web
 {
-    public class Startup
+    public class OwinStartup
     {
         private ProgramManager manager = ProgramManager.Instance();
 
         public void Configuration(IAppBuilder app)
         {
             app.UseCors(CorsOptions.AllowAll);
+
+            GlobalHost.DependencyResolver.Register(
+                typeof(ItemHub),
+                () => new ItemHub(manager)
+            );
+
             app.MapSignalR();
 
             string webRoot = manager.ConfigurationManager.Configuration.Web.Root;

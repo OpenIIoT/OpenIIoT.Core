@@ -101,9 +101,9 @@ namespace Symbiote.Core.Platform.UNIX
             }
         }
 
-        public bool Write(string item, object value)
+        public OperationResult Write(string item, object value)
         {
-            throw new NotImplementedException();
+            return new OperationResult().AddError("The connector is not writeable.");
         }
 
         private void InitializeItems()

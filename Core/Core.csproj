@@ -186,17 +186,19 @@
     </Compile>
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Common\OperationResult.cs" />
-    <Compile Include="Services\Web\API\APIOperationResult.cs" />
-    <Compile Include="Services\Web\API\AppArchiveController.cs" />
-    <Compile Include="Services\Web\API\AppController.cs" />
-    <Compile Include="Services\Web\API\BrowseController.cs" />
-    <Compile Include="Services\Web\API\ConfigurationController.cs" />
-    <Compile Include="Services\Web\API\LogController.cs" />
-    <Compile Include="Services\Web\API\ReadController.cs" />
-    <Compile Include="Services\Web\API\ValuesController.cs" />
+    <Compile Include="Services\Web\API\ApiOperationResult.cs" />
+    <Compile Include="Services\Web\API\Controllers\AppArchiveController.cs" />
+    <Compile Include="Services\Web\API\Controllers\AppController.cs" />
+    <Compile Include="Services\Web\API\Controllers\BrowseController.cs" />
+    <Compile Include="Services\Web\API\Controllers\ConfigurationController.cs" />
+    <Compile Include="Services\Web\API\Controllers\LogController.cs" />
+    <Compile Include="Services\Web\API\Controllers\ReadController.cs" />
+    <Compile Include="Services\Web\API\Controllers\ValuesController.cs" />
+    <Compile Include="Services\Web\API\IApiController.cs" />
     <Compile Include="Services\Web\SignalR\HubManager.cs" />
-    <Compile Include="Services\Web\SignalR\RealtimeHub.cs" />
-    <Compile Include="Services\Web\Startup.cs" />
+    <Compile Include="Services\Web\SignalR\Hubs\ItemHub.cs" />
+    <Compile Include="Services\Web\OwinStartup.cs" />
+    <Compile Include="Services\Web\SignalR\IHub.cs" />
     <Compile Include="Services\Web\WebManager.cs" />
   </ItemGroup>
   <ItemGroup>

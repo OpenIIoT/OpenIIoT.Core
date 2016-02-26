@@ -7,7 +7,7 @@ using System.Web.Http;
 
 namespace Symbiote.Core.Services.Web.API
 {
-    public class ReadController : ApiController
+    public class ReadController : ApiController, IApiController
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Item model = manager.ModelManager.Model;
@@ -43,7 +43,7 @@ namespace Symbiote.Core.Services.Web.API
             return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn, true));
         }
 
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 

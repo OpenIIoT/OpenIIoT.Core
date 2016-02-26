@@ -14,7 +14,7 @@ namespace Symbiote.Core.Services.Web.API
     /// <summary>
     /// Handles the API methods for AppArchives.
     /// </summary>
-    public class AppArchiveController : ApiController
+    public class AppArchiveController : ApiController, IApiController
     {
         #region Variables
 
@@ -45,7 +45,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage ListAppArchives()
         {
-            APIOperationResult<List<AppArchive>> retVal = new APIOperationResult<List<AppArchive>>(Request);
+            ApiOperationResult<List<AppArchive>> retVal = new ApiOperationResult<List<AppArchive>>(Request);
             retVal.LogRequest(logger);
 
             retVal.Result = manager.AppManager.AppArchives;
@@ -62,7 +62,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage ReloadAppArchives()
         {
-            APIOperationResult<OperationResult<List<AppArchive>>> retVal = new APIOperationResult<OperationResult<List<AppArchive>>>(Request);
+            ApiOperationResult<OperationResult<List<AppArchive>>> retVal = new ApiOperationResult<OperationResult<List<AppArchive>>>(Request);
             retVal.LogRequest(logger);
 
             retVal.Result = manager.AppManager.ReloadAppArchives();
@@ -83,7 +83,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage GetAppArchive(string fqn)
         {
-            APIOperationResult<AppArchive> retVal = new APIOperationResult<AppArchive>(Request);
+            ApiOperationResult<AppArchive> retVal = new ApiOperationResult<AppArchive>(Request);
             retVal.LogRequest(logger);
 
             retVal.Result = manager.AppManager.FindAppArchive(fqn);
@@ -104,7 +104,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public async Task<HttpResponseMessage> InstallApp(string fqn)
         {
-            APIOperationResult<OperationResult<App.App>> retVal = new APIOperationResult<OperationResult<App.App>>(Request);
+            ApiOperationResult<OperationResult<App.App>> retVal = new ApiOperationResult<OperationResult<App.App>>(Request);
             retVal.LogRequest(logger);
 
             if (manager.AppManager.InstallInProgress)
@@ -134,10 +134,6 @@ namespace Symbiote.Core.Services.Web.API
             return result;
         }
 
-        #endregion
-
-        #region Static Methods
-
         /// <summary>
         /// Returns the JsonMediaTypeFormatter to use with this controller.
         /// </summary>
@@ -145,7 +141,7 @@ namespace Symbiote.Core.Services.Web.API
         /// <param name="contractResolverType">A ContractResolverType representing the desired behavior of serializationProperties, OptIn or OptOut.</param>
         /// <param name="includeSecondaryTypes">True if secondary types, such as those loaded from Plugins, should be included in the serialization.</param>
         /// <returns>A configured instance of JsonMediaTypeFormatter</returns>
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 

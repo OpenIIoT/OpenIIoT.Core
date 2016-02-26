@@ -10,7 +10,7 @@ using System.Web.Http;
 
 namespace Symbiote.Core.Services.Web.API
 {
-    public class LogController : ApiController
+    public class LogController : ApiController, IApiController
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
@@ -21,7 +21,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage GetLog()
         {
-            APIOperationResult<string[]> retVal = new APIOperationResult<string[]>(Request);
+            ApiOperationResult<string[]> retVal = new ApiOperationResult<string[]>(Request);
             retVal.LogRequest(logger);
 
             string newestLog = manager.PlatformManager.Platform.GetLogFile(manager.InternalSettings.LogDirectory);
@@ -32,7 +32,7 @@ namespace Symbiote.Core.Services.Web.API
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
         }
 
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 

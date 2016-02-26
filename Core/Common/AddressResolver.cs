@@ -30,7 +30,11 @@ namespace Symbiote.Core
             {
                 logger.Trace("Item origin matches the Product Name; returning a Model lookup of the FQN.");
                 retVal = manager.ModelManager.FindItem(lookupFQN);
-                logger.Trace("Resolved Item: " + retVal.ToJson());
+
+                if (retVal != default(Item))
+                    logger.Trace("Resolved Item: " + retVal.ToJson());
+                else
+                    logger.Trace("Failed to resolve item.");
             }
             else
             {

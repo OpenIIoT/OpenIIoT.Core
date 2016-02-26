@@ -72,11 +72,11 @@ namespace Symbiote.Core.Plugin
             return Plugin.Read(this.FQN);
         }
 
-        public override bool Write(object value)
+        public override OperationResult Write(object value)
         {
             return WriteToSource(value);
         }
-        public override bool WriteToSource(object value)
+        public override OperationResult WriteToSource(object value)
         {
             return Plugin.Write(this.FQN, value);
         }

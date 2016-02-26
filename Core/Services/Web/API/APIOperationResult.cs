@@ -9,7 +9,7 @@ namespace Symbiote.Core.Services.Web
     /// Encapsulates the result of an API operation. 
     /// </summary>
     /// <typeparam name="T">The type of the Result object.</typeparam>
-    public class APIOperationResult<T> : OperationResult<T>
+    public class ApiOperationResult<T> : OperationResult<T>
     {
         #region Properties
         /// <summary>
@@ -50,7 +50,7 @@ namespace Symbiote.Core.Services.Web
         /// Constructs a new APIOperationResult using the supplied request, a new ShortGuid and with a StatusCode of 200/OK.
         /// </summary>
         /// <param name="request"></param>
-        public APIOperationResult(HttpRequestMessage request) : base()
+        public ApiOperationResult(HttpRequestMessage request) : base()
         {
             Request = request;
             ShortGuid = Utility.ShortGuid();

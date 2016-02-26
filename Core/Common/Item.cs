@@ -251,17 +251,24 @@ namespace Symbiote.Core
             return null;
         }
 
-        public virtual bool Write(object value)
+        public virtual OperationResult Write(object value)
         {
-            if (!IsWriteable)
-                throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
+            OperationResult retVal = new OperationResult();
 
-            Value = value;
-            OnChange(value);
-            return true;
+            if (!IsWriteable)
+            {
+                retVal.AddError("Error writing to '" + this.FQN + "'; the item is not writeable.");
+            }
+            else
+            {
+                Value = value;
+                OnChange(value);
+            }
+
+            return retVal;
         }
 
-        public virtual Task<bool> WriteAsync(object value)
+        public virtual Task<OperationResult> WriteAsync(object value)
         {
             if (!IsWriteable)
                 throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
@@ -270,21 +277,25 @@ namespace Symbiote.Core
             return null;
         }
 
-        public virtual bool WriteToSource(object value)
+        public virtual OperationResult WriteToSource(object value)
         {
+            OperationResult retVal;
+
             if (!IsWriteable)
-                throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
+                retVal = new OperationResult().AddError("Error writing to '" + this.FQN + "'; the item is not writeable.");
 
-            if ((SourceItem == null) || (SourceItem == default(Item)))
-                throw new SourceItemInvalidException("Error writing to '" + this.FQN + "' source; the source Item is invalid.");
+            else if ((SourceItem == null) || (SourceItem == default(Item)))
+                retVal = new OperationResult().AddError("Error writing to '" + this.FQN + "'; the item is not writeable.");
 
-            bool retVal = SourceItem.WriteToSource(value);
+            else
+                retVal = SourceItem.WriteToSource(value);
 
-            if (retVal) Write(value);
+
+            if (retVal.ResultCode != OperationResultCode.Failure) Write(value);
             return retVal;
         }
 
-        public virtual Task<bool> WriteToSourceAsync(object value)
+        public virtual Task<OperationResult> WriteToSourceAsync(object value)
         {
             if (!IsWriteable)
                 throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");

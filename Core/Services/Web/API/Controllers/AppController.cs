@@ -10,7 +10,7 @@ using System.Web.Http;
 
 namespace Symbiote.Core.Services.Web.API
 {
-    public class AppController : ApiController
+    public class AppController : ApiController, IApiController
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
@@ -23,7 +23,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage ListApps()
         {
-            APIOperationResult<List<App.App>> retVal = new APIOperationResult<List<App.App>>(Request);
+            ApiOperationResult<List<App.App>> retVal = new ApiOperationResult<List<App.App>>(Request);
             retVal.LogRequest(logger);
 
             retVal.Result = manager.AppManager.Apps;
@@ -36,7 +36,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public HttpResponseMessage GetApp(string fqn)
         {
-            APIOperationResult<App.App> retVal = new APIOperationResult<App.App>(Request);
+            ApiOperationResult<App.App> retVal = new ApiOperationResult<App.App>(Request);
             retVal.Result = manager.AppManager.FindApp(fqn);
 
             if (retVal.Result == default(App.App))
@@ -49,7 +49,7 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public async Task<HttpResponseMessage> ReinstallApp(string fqn)
         {
-            APIOperationResult<OperationResult<App.App>> retVal = new APIOperationResult<OperationResult<App.App>>(Request);
+            ApiOperationResult<OperationResult<App.App>> retVal = new ApiOperationResult<OperationResult<App.App>>(Request);
 
             if (manager.AppManager.InstallInProgress)
                 retVal.Result = new OperationResult<App.App>().AddError("An installation is already in progress.");
@@ -63,13 +63,13 @@ namespace Symbiote.Core.Services.Web.API
         [HttpGet]
         public async Task<HttpResponseMessage> UninstallApp(string fqn)
         {
-            APIOperationResult<OperationResult> retVal = new APIOperationResult<OperationResult>(Request);
+            ApiOperationResult<OperationResult> retVal = new ApiOperationResult<OperationResult>(Request);
 
             retVal.Result = await manager.AppManager.UninstallAppAsync(fqn);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
         }
 
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 
