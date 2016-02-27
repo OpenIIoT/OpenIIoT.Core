@@ -10,6 +10,7 @@ using Symbiote.Core.Configuration;
 using Symbiote.Core.Services.Web;
 using NLog;
 using Symbiote.Core.App;
+using Newtonsoft.Json;
 
 namespace Symbiote.Core
 {
@@ -33,6 +34,8 @@ namespace Symbiote.Core
         /// Encapsulates various internal application settings.
         /// </summary>
         public InternalSettings InternalSettings { get; private set; }
+
+        public Dictionary<string, string> Directories { get; private set; }
 
         /// <summary>
         /// The PlatformManager for the application.
@@ -72,6 +75,7 @@ namespace Symbiote.Core
             // Internal Settings
             //--------- - -
             InternalSettings = new InternalSettings();
+            Directories = LoadDirectories();
 
             //------- - ------- -         --
             // Platform Manager
@@ -140,6 +144,13 @@ namespace Symbiote.Core
 
             logger.Trace("Returning ProgramManager instance...");
             return instance;
+        }
+
+        internal Dictionary<string, string> LoadDirectories()
+        {
+            string configDirectories = System.Configuration.ConfigurationManager.AppSettings["Directories"];
+            return new Dictionary<string, string>();
+
         }
     }
 }

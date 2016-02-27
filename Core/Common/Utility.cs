@@ -53,6 +53,20 @@ namespace Symbiote.Core
             return Guid.NewGuid().ToString().Split('-')[0];
         }
 
+        internal static string GetSetting(string key)
+        {
+            return System.Configuration.ConfigurationManager.AppSettings[key];
+        }
+
+        internal static void UpdateSetting(string key, string value)
+        {
+            System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
+            configuration.AppSettings.Settings[key].Value = value;
+            configuration.Save();
+
+            System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+        }
+
         internal static void PrintLogo(Logger logger)
         {
             logger.Info("--------------------------------------------------------- - ------- ------------------- - -- --  -  -- - ----- - -  - - ---");
