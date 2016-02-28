@@ -26,7 +26,7 @@ namespace Symbiote.Core
                 logger.Trace("Item origin is null; returning default Item.");
                 retVal = default(Item);
             }
-            else if (itemOrigin == manager.InternalSettings.ProductName)
+            else if (itemOrigin == manager.ProductName)
             {
                 logger.Trace("Item origin matches the Product Name; returning a Model lookup of the FQN.");
                 retVal = manager.ModelManager.FindItem(lookupFQN);

@@ -20,21 +20,35 @@ namespace Symbiote.Core
     /// </summary>
     public class ProgramManager
     {
+        #region Variables
+
         /// <summary>
         /// The logger for this class.
         /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        
+
         /// <summary>
         /// The Singleton instance of ProgramManager.
         /// </summary>
         private static ProgramManager instance;
 
         /// <summary>
-        /// Encapsulates various internal application settings.
+        /// A list of the required directories for the application.
         /// </summary>
-        public InternalSettings InternalSettings { get; private set; }
+        private List<string> RequiredDirectories = new List<string>(new string[] { "Data", "Apps", "Plugins", "Temp", "Web", "Logs" });
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// The name of the product, retrieved from AssemblyInfo.cs.
+        /// </summary>
+        public string ProductName { get { return typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product; } }
+
+        /// <summary>
+        /// A Dictionary containing all of the application directories, loaded from the App.config.
+        /// </summary>
         public Dictionary<string, string> Directories { get; private set; }
 
         /// <summary>
@@ -67,6 +81,10 @@ namespace Symbiote.Core
         /// </summary>
         public AppManager AppManager { get; private set; }
 
+        #endregion
+
+        #region Constructors
+
         private ProgramManager()
         {
             logger.Trace("Instantiating ProgramManager member instances...");
@@ -74,8 +92,8 @@ namespace Symbiote.Core
             //--- - - 
             // Internal Settings
             //--------- - -
-            InternalSettings = new InternalSettings();
-            Directories = new Dictionary<string, string>();
+            logger.Trace("Loading application directories...");
+            Directories = LoadDirectories().Result;
 
             //------- - ------- -         --
             // Platform Manager
@@ -142,30 +160,26 @@ namespace Symbiote.Core
             return instance;
         }
 
+        #endregion
+
+        #region Instance Methods
+
         internal OperationResult<Dictionary<string, string>> LoadDirectories()
         {
             logger.Info("Loading directory list from the configuration file...");
 
             OperationResult<Dictionary<string, string>> retVal;
 
-            string configDirectories;
-
-            try
-            {
-                configDirectories = System.Configuration.ConfigurationManager.AppSettings["Directories"];
-            }
-            catch (Exception ex)
-            {
-                retVal = new OperationResult<Dictionary<string, string>>().AddError("Exception thrown while retrieving the directory list from the configuration file:" + ex.Message);
-                return retVal;
-            }
+            string configDirectories = Utility.GetSetting("Directories");
 
             if (configDirectories != "")
             {
                 retVal = LoadDirectories(configDirectories);
 
                 if (retVal.ResultCode != OperationResultCode.Failure)
+                {
                     Directories = retVal.Result;
+                }
             }
             else
             {
@@ -176,7 +190,7 @@ namespace Symbiote.Core
             return retVal;
         }
 
-        internal OperationResult<Dictionary<string, string>> LoadDirectories(string directories)
+        private OperationResult<Dictionary<string, string>> LoadDirectories(string directories)
         {
             OperationResult<Dictionary<string, string>> retVal = new OperationResult<Dictionary<string, string>>();
             retVal.Result = new Dictionary<string, string>();
@@ -184,6 +198,8 @@ namespace Symbiote.Core
             try
             {
                 retVal.Result = (Dictionary<string, string>)JsonConvert.DeserializeObject<Dictionary<string, string>>(directories);
+                // add the root directory
+                retVal.Result.Add("Root", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
             }
             catch (Exception ex)
             {
@@ -192,5 +208,7 @@ namespace Symbiote.Core
         
             return retVal;
         }
+
+        #endregion
     }
 }

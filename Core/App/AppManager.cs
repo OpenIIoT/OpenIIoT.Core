@@ -137,7 +137,7 @@ namespace Symbiote.Core.App
                 if (configApp.FQN != System.IO.Path.GetFileNameWithoutExtension(configApp.FileName)) retVal.AddWarning("The FQN field doesn't match the archive name.");
 
                 string[] sfqn = configApp.FQN.Split('.');
-                if (sfqn[0] != manager.InternalSettings.ProductName) retVal.AddWarning("The FQN field doesn't start with '" + manager.InternalSettings.ProductName + "'.");
+                if (sfqn[0] != manager.ProductName) retVal.AddWarning("The FQN field doesn't start with '" + manager.ProductName + "'.");
                 if (sfqn[1] != "App") retVal.AddWarning("The second tuple of the FQN field isn't 'App'");
 
                 if (configApp.FileName == "") retVal.AddWarning("The FileName field is blank.");
@@ -291,7 +291,7 @@ namespace Symbiote.Core.App
                     InstallInProgress = true;
 
                     logger.Trace("Installing App '" + appArchive.Name + "' from archive '" + appArchive.FileName + "'...");
-                    string destination = System.IO.Path.Combine(manager.InternalSettings.WebDirectory, (appArchive.AppType == AppType.Console ? "Console" : appArchive.Name));
+                    string destination = System.IO.Path.Combine(manager.Directories["Web"], (appArchive.AppType == AppType.Console ? "Console" : appArchive.Name));
                     logger.Trace("Destination: " + destination);
 
                     // if the destination directory doesn't exist, create it.
@@ -307,12 +307,12 @@ namespace Symbiote.Core.App
                     //----- - - ---------- -
                     // extract the archive to the destination
                     // note: the ExtractZip function in the base library needs an absolute path for the input file to work properly.
-                    await Task.Run(() => platform.ExtractZip(System.IO.Path.Combine(manager.InternalSettings.AppDirectory,appArchive.FileName), destination, true));
+                    await Task.Run(() => platform.ExtractZip(System.IO.Path.Combine(manager.Directories["Apps"],appArchive.FileName), destination, true));
 
                     logger.Trace("Successfully extracted the archive '" + System.IO.Path.GetFileName(appArchive.FileName) + "' to '" + destination + "'.");
 
                     // clean up the name and print it to the logger
-                    string relativeDestination = destination.Replace(manager.InternalSettings.RootDirectory, "");
+                    string relativeDestination = destination.Replace(manager.Directories["Root"], "");
                     logger.Trace("Successfully installed App '" + appArchive.Name + "' to '" + relativeDestination + "'.");
 
                     // create a new App
@@ -369,7 +369,7 @@ namespace Symbiote.Core.App
         private async Task<OperationResult> UninstallAppAsync(App app, IPlatform platform)
         {
             OperationResult retVal = new OperationResult();
-            string appDirectory = System.IO.Path.Combine(manager.InternalSettings.WebDirectory, (app.AppType == AppType.Console ? "Console" : app.Name));
+            string appDirectory = System.IO.Path.Combine(manager.Directories["Web"], (app.AppType == AppType.Console ? "Console" : app.Name));
 
             logger.Trace("Attempting to uninstall app from '" + appDirectory + "'...");
 
@@ -485,7 +485,7 @@ namespace Symbiote.Core.App
         public OperationResult<List<AppArchive>> LoadAppArchives(bool throwExceptionOnFailure = false)
         {
             logger.Info("Loading App Archives...");
-            OperationResult<List<AppArchive>> retVal = LoadAppArchives(manager.InternalSettings.AppDirectory, manager.InternalSettings.AppExtension, manager.PlatformManager.Platform);
+            OperationResult<List<AppArchive>> retVal = LoadAppArchives(manager.Directories["Apps"], Utility.GetSetting("AppArchiveExtension"), manager.PlatformManager.Platform);
 
             // load succeeded
             if (retVal.ResultCode != OperationResultCode.Failure)
@@ -564,7 +564,7 @@ namespace Symbiote.Core.App
         /// <returns>An OperationResult containing the parsed AppArchive.</returns>
         private OperationResult<AppArchive> ParseAppArchive(string fileName)
         {
-            OperationResult<AppArchive> retVal = ParseAppArchive(fileName, manager.InternalSettings.AppConfigurationFileName, manager.PlatformManager.Platform);
+            OperationResult<AppArchive> retVal = ParseAppArchive(fileName, Utility.GetSetting("AppConfigurationFileName"), manager.PlatformManager.Platform);
 
             retVal.LogResult(logger, "Trace", "Trace", "Trace");
             return retVal;
@@ -594,10 +594,10 @@ namespace Symbiote.Core.App
                 // config file was found
                 if (configFile != "")
                 {
-                    logger.Trace("Found configuration file.  Extracting to '" + manager.InternalSettings.TempDirectory + "'...");
+                    logger.Trace("Found configuration file.  Extracting to '" + manager.Directories["Temp"] + "'...");
 
                     // extract the config file from the zip
-                    string extractedConfigFile = platform.ExtractFileFromZip(fileName, configFile, manager.InternalSettings.TempDirectory, true);
+                    string extractedConfigFile = platform.ExtractFileFromZip(fileName, configFile, manager.Directories["Temp"], true);
 
                     logger.Trace("Extracted config file to '" + extractedConfigFile + "'.  Reading contents...");
 
@@ -626,7 +626,7 @@ namespace Symbiote.Core.App
                     if (a.FQN != System.IO.Path.GetFileNameWithoutExtension(a.FileName)) retVal.AddError("The FQN field doesn't match the archive name.");
 
                     string[] sfqn = a.FQN.Split('.');
-                    if (sfqn[0] != manager.InternalSettings.ProductName) retVal.AddError("The FQN field doesn't start with '" + manager.InternalSettings.ProductName + "'.");
+                    if (sfqn[0] != manager.ProductName) retVal.AddError("The FQN field doesn't start with '" + manager.ProductName + "'.");
                     if (sfqn[1] != "App") retVal.AddError("The second tuple of the FQN field isn't 'App'");
                     if (sfqn[2] != a.Name) retVal.AddError("The FQN field doesn't end with Name.");
 
@@ -635,8 +635,8 @@ namespace Symbiote.Core.App
                 // config file not found
                 else
                 {
-                    logger.Trace("Unable to find config file '" + manager.InternalSettings.AppConfigurationFileName + "' in the archive.  Failing validation.");
-                    retVal.AddError("Unable to find configuration file '" + manager.InternalSettings.AppConfigurationFileName + "' in the archive.  The App can't be loaded.");
+                    logger.Trace("Unable to find config file '" + Utility.GetSetting("AppConfigurationFilename") + "' in the archive.  Failing validation.");
+                    retVal.AddError("Unable to find configuration file '" + Utility.GetSetting("AppConfigurationFilename") + "' in the archive.  The App can't be loaded.");
                 }
             }
             catch(Exception ex)

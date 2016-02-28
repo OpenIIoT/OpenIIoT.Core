@@ -160,7 +160,6 @@
     <Compile Include="Common\AddressResolver.cs" />
     <Compile Include="Common\ConfigurationDefinition.cs" />
     <Compile Include="Common\ContractResolver.cs" />
-    <Compile Include="Common\InternalSettings.cs" />
     <Compile Include="Common\Item.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />

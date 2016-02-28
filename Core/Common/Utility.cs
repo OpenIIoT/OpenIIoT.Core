@@ -83,5 +83,10 @@ namespace Symbiote.Core
             logger.Info(@"     \/__/           \/__/     \/__/         \/__/         \/__/       \/__/           \/__/       \/__/    ");
             logger.Info("--------- - -------------------------------------- - -----------------------  - -   -------         -----------  - -   -  - -    - - -");
         }
+
+        public static void AppendLog(string level, string message)
+        {
+            Console.WriteLine("l: {0} m: {1}", level, message);
+        }
     }
 }

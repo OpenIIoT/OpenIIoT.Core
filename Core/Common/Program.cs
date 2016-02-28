@@ -55,16 +55,10 @@ namespace Symbiote.Core
             try
             {
                 manager = ProgramManager.Instance();
-                manager.LoadDirectories();
-
-                manager.InternalSettings.SetProductName("Symbiote");
-                manager.InternalSettings.SetAppExtension("*.zip");
-                manager.InternalSettings.SetPluginExtension("*.dll");
-                manager.InternalSettings.SetAppConfigurationFileName("symbioteApp.config");
             }
             catch (Exception ex)
             {
-                logger.Error(ex, manager.InternalSettings.ProductName + " failed to initailize.");
+                logger.Error(ex, manager.ProductName + " failed to initailize.");
                 return;
             }
             logger.Trace("The program manager was instantiated successfully.");
@@ -75,15 +69,6 @@ namespace Symbiote.Core
             try
             {
                 manager.PlatformManager.InstantiatePlatform();
-                manager.InternalSettings.SetRootDirectory(manager.PlatformManager.Platform.GetApplicationDirectory());
-                manager.InternalSettings.SetDataDirectory("Data");
-                manager.InternalSettings.SetAppDirectory("Apps");
-                manager.InternalSettings.SetPluginDirectory("Plugins");
-                manager.InternalSettings.SetTempDirectory("Temp");
-                manager.InternalSettings.SetWebDirectory("Web");
-                manager.InternalSettings.SetLogDirectory("Logs");
-
-
             }
             catch (Exception ex)
             {
@@ -168,14 +153,14 @@ namespace Symbiote.Core
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
                 // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
                 logger.Info("Detatching potentially stale Platform items...");
-                manager.ModelManager.RemoveItem(manager.ModelManager.FindItem(manager.InternalSettings.ProductName + ".System.Platform"));
+                manager.ModelManager.RemoveItem(manager.ModelManager.FindItem(manager.ProductName + ".System.Platform"));
 
                 logger.Info("Attaching new Platform items...");
 
                 // find or create the parent for the Platform items
-                Item systemItem = manager.ModelManager.FindItem(manager.InternalSettings.ProductName + ".System");
+                Item systemItem = manager.ModelManager.FindItem(manager.ProductName + ".System");
                 if (systemItem == default(Item))
-                    systemItem = manager.ModelManager.AddItem(new Item(manager.InternalSettings.ProductName + ".System")).Result;
+                    systemItem = manager.ModelManager.AddItem(new Item(manager.ProductName + ".System")).Result;
 
                 // attach the Platform items to Symbiote.System
                 manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem, true);
@@ -209,7 +194,7 @@ namespace Symbiote.Core
                 manager.WebManager.Start();
                 logger.Info("Web server started at " + manager.WebManager.URL + ".");
 
-                Console.WriteLine(manager.InternalSettings.ProductName + " is running.");
+                Console.WriteLine(manager.ProductName + " is running.");
                 Console.WriteLine("Press any key to stop.");
 
                 printTimer = new Timer(5000);
@@ -220,7 +205,7 @@ namespace Symbiote.Core
             }
             catch (TargetInvocationException ex)
             {
-                logger.Error(ex, "Unable to start the web server.  Is " + manager.InternalSettings.ProductName + " running under an account with administrative privilege?");
+                logger.Error(ex, "Unable to start the web server.  Is " + manager.ProductName + " running under an account with administrative privilege?");
             }
             catch (Exception ex)
             {
@@ -244,7 +229,7 @@ namespace Symbiote.Core
         /// </summary>
         public static void Stop()
         {
-            logger.Info(manager.InternalSettings.ProductName + " is stopping.  Saving configuration...");
+            logger.Info(manager.ProductName + " is stopping.  Saving configuration...");
 
             try
             {
@@ -258,7 +243,7 @@ namespace Symbiote.Core
 
             logger.Info("Configuration saved.");
 
-            logger.Info(manager.InternalSettings.ProductName + " stopped.");
+            logger.Info(manager.ProductName + " stopped.");
         }
     }
 }

@@ -24,7 +24,7 @@ namespace Symbiote.Core.Services.Web.API
             ApiOperationResult<string[]> retVal = new ApiOperationResult<string[]>(Request);
             retVal.LogRequest(logger);
 
-            string newestLog = manager.PlatformManager.Platform.GetLogFile(manager.InternalSettings.LogDirectory);
+            string newestLog = manager.PlatformManager.Platform.GetLogFile(manager.Directories["Logs"]);
 
             retVal.Result = manager.PlatformManager.Platform.ReadAllLinesFromFile(newestLog);
 
