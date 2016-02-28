@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,7 +10,8 @@ namespace Symbiote.Core.Configuration
     public class ObjectConfiguration
     {
         public ConfigurationDefinition Definition { get; private set; }
-        public string Configuration { get; private set; }
+        public string ConfigurationString { get; private set; }
+        public object Configuration { get; private set; }
         public bool IsDefined { get; private set; }
         public bool IsConfigured { get; private set; }
 
@@ -29,9 +31,15 @@ namespace Symbiote.Core.Configuration
             return this;
         }
 
-        public OperationResult Configure(string configuration)
+        public OperationResult Configure(string configurationString)
         {
-            Configuration = configuration;
+            ConfigurationString = configurationString;
+            object deserializedConfiguration = JsonConvert.DeserializeObject(configurationString);
+            return Configure(deserializedConfiguration);
+        }
+
+        public OperationResult Configure(object configuration)
+        {
             IsConfigured = true;
             return new OperationResult();
         }

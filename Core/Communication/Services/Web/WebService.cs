@@ -11,28 +11,28 @@ using Newtonsoft.Json;
 
 namespace Symbiote.Core.Communication.Services.Web
 {
-    public class WebServiceManager
+    public class WebService : IService
     {
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static WebServiceManager instance;
+        private static WebService instance;
 
         public string URL { get; private set; }
 
         public Dictionary<string, Hub> Hubs { get; private set; }
         public Dictionary<string, ApiController> ApiControllers { get; private set; }
 
-        private WebServiceManager(ProgramManager manager)
+        private WebService(ProgramManager manager)
         {
             this.manager = manager;
             Hubs = new Dictionary<string, Hub>();
             ApiControllers = new Dictionary<string, ApiController>();
         }
 
-        internal static WebServiceManager Instance(ProgramManager manager)
+        internal static WebService Instance(ProgramManager manager)
         {
             if (instance == null)
-                instance = new WebServiceManager(manager);
+                instance = new WebService(manager);
 
             return instance;
         }
