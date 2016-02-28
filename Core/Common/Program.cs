@@ -58,7 +58,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Error(ex, manager.ProductName + " failed to initailize.");
+                logger.Error(ex, "the application failed to initailize.");
                 return;
             }
             logger.Trace("The program manager was instantiated successfully.");
@@ -221,7 +221,7 @@ namespace Symbiote.Core
             //logger.Info("Cosine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Cosine").ReadFromSource());
             //logger.Info("Tangent: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Tangent").ReadFromSource());
             //logger.Info("CPU usage (read): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").Read());
-            AddressResolver.Resolve("Symbiote.Simulation.DateTime.Time").Write(DateTime.Now);
+            //AddressResolver.Resolve("Symbiote.Simulation.DateTime.Time").Write(DateTime.Now);
         }
 
         /// <summary>

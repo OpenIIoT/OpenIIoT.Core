@@ -142,6 +142,7 @@
     <Compile Include="App\Exceptions.cs" />
     <Compile Include="Common\ItemEventArgs.cs" />
     <Compile Include="Common\ItemType.cs" />
+    <Compile Include="Common\RealtimeLogger.cs" />
     <Compile Include="Configuration\App\ConfigurationAppSection.cs" />
     <Compile Include="Configuration\App\ConfigurationApp.cs" />
     <Compile Include="Configuration\Exceptions.cs" />
@@ -195,6 +196,7 @@
     <Compile Include="Services\Web\API\Controllers\ValuesController.cs" />
     <Compile Include="Services\Web\API\IApiController.cs" />
     <Compile Include="Services\Web\SignalR\HubManager.cs" />
+    <Compile Include="Services\Web\SignalR\Hubs\LogHub.cs" />
     <Compile Include="Services\Web\SignalR\Hubs\ItemHub.cs" />
     <Compile Include="Services\Web\OwinStartup.cs" />
     <Compile Include="Services\Web\SignalR\IHub.cs" />

@@ -18,7 +18,7 @@ namespace Symbiote.Core.Services.Web.SignalR
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private ProgramManager manager = ProgramManager.Instance();
 
         /// <summary>
         /// The Logger for this class.
@@ -37,12 +37,8 @@ namespace Symbiote.Core.Services.Web.SignalR
         /// <summary>
         /// Constructs a new instance of the hub with the supplied ProgramManager.
         /// </summary>
-        /// <remarks>The ProgramManager is injected by SignalR middleware in the Owin Startup class.</remarks>
-        /// <param name="manager">The ProgramManager for the application.</param>
-        public ItemHub(ProgramManager manager)
+        public ItemHub()
         {
-            this.manager = manager;
-
             // if hubManager is null, create a new instance.  
             // this ensures that there is only one copy for the hub regardless of the number of instances.
             if (hubManager == default(HubManager))
@@ -59,7 +55,7 @@ namespace Symbiote.Core.Services.Web.SignalR
         /// <returns>A Task used for asynchronous calls.</returns>
         public override Task OnConnected()
         {
-            logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] connected.");
+            logger.Info(GetLogPrefix() + "connected.");
             return base.OnConnected();
         }
 
@@ -70,7 +66,7 @@ namespace Symbiote.Core.Services.Web.SignalR
         /// <returns>A Task used for asynchronous calls.</returns>
         public override Task OnDisconnected(bool stopCalled)
         {
-            logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] disconnected.");
+            logger.Info(GetLogPrefix() + "disconnected.");
 
             foreach (string subscription in hubManager.GetClientSubscriptions(Context.ConnectionId))
             {
@@ -86,7 +82,7 @@ namespace Symbiote.Core.Services.Web.SignalR
         /// <returns>A Task used for asynchronous calls.</returns>
         public override Task OnReconnected()
         {
-            logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] reconnected.");
+            logger.Info(GetLogPrefix() + "reconnected.");
             return base.OnReconnected();
         }
 
@@ -127,12 +123,12 @@ namespace Symbiote.Core.Services.Web.SignalR
                 if (retVal.ResultCode != OperationResultCode.Failure)
                 {
                     Clients.Caller.writeSuccess(castFQN, args.SubArray(1, args.Length - 1));
-                    logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] updated item '" + foundItem.FQN + "' with value '" + args[1] + "'.");
+                    logger.Info(GetLogPrefix() + "updated item '" + foundItem.FQN + "' with value '" + args[1] + "'.");
                 }
                 else
                 {
                     Clients.Caller.writeError(castFQN, args.SubArray(1, args.Length - 1));
-                    logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] failed to update item '" + foundItem.FQN + "'.");
+                    logger.Info(GetLogPrefix() + "failed to update item '" + foundItem.FQN + "'.");
                     retVal.LogAllMessages(logger, "Info", "The following messages were generated during the write:");
                 }
             }
@@ -158,12 +154,12 @@ namespace Symbiote.Core.Services.Web.SignalR
                 if (retVal.ResultCode != OperationResultCode.Failure)
                 {
                     Clients.Caller.writeToSourceSuccess(castFQN, args.SubArray(1, args.Length - 1));
-                    logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] updated item source '" + foundItem.FQN + "' with value '" + args[1] + "'.");
+                    logger.Info(GetLogPrefix() + "updated item source '" + foundItem.FQN + "' with value '" + args[1] + "'.");
                 }
                 else
                 {
                     Clients.Caller.writeToSourceError(castFQN, args.SubArray(1, args.Length - 1));
-                    logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] failed to update item source '" + foundItem.FQN + "'.");
+                    logger.Info(GetLogPrefix() + "failed to update item source '" + foundItem.FQN + "'.");
                     retVal.LogAllMessages(logger, "Info", "The following messages were generated during the write:");
                 }
             }
@@ -190,7 +186,7 @@ namespace Symbiote.Core.Services.Web.SignalR
                 hubManager.Subscribe(foundItem.FQN, Context.ConnectionId);
                 Clients.Caller.subscribeSuccess(castFQN);
 
-                logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] subscribed to '" + foundItem.FQN + "'.");
+                logger.Info(GetLogPrefix() + "subscribed to '" + foundItem.FQN + "'.");
 
                 logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
             }
@@ -222,7 +218,7 @@ namespace Symbiote.Core.Services.Web.SignalR
                 hubManager.Unsubscribe(foundItem.FQN, Context.ConnectionId);
                 Clients.Caller.unsubscribeSuccess(castFQN);
 
-                logger.Info("SignalR Connection [ID: " + Context.ConnectionId + "] unsubscribed from '" + foundItem.FQN + "'.");
+                logger.Info(GetLogPrefix() + "unsubscribed from '" + foundItem.FQN + "'.");
                 logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
             }
             else
@@ -231,6 +227,11 @@ namespace Symbiote.Core.Services.Web.SignalR
                 logger.Info("Unable to unsubscribe from '" + castFQN + "'; the Item can't be found.");
             }
 
+        }
+
+        private string GetLogPrefix()
+        {
+            return "SignalR Connection [" + this.GetType().Name + "/ID: " + Context.ConnectionId + "] ";
         }
 
         #endregion

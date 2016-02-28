@@ -162,23 +162,23 @@ namespace Symbiote.Core.Model
             IEnumerable<ConfigurationModelItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth);
 
             // iterate through the list of items
-            foreach (ConfigurationModelItem i in items)
+            foreach (ConfigurationModelItem item in items)
             {
                 Item newItem;
                 try
                 {
                     logger.Trace(new String('-', 30));
-                    logger.Trace("ConfigurationModelItem: " + i.ToString());
-                    newItem = JsonConvert.DeserializeObject<Item>(i.Definition);
+                    logger.Trace("ConfigurationModelItem: " + item.ToString());
+                    newItem = JsonConvert.DeserializeObject<Item>(item.Definition);
                     logger.Trace("Deserialized: " + newItem.ToString());
 
                     // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
                     // this will be set "officially" when SetParent() is called to bind the item to its parent
-                    newItem.FQN = i.FQN;
+                    newItem.FQN = item.FQN;
 
                     // make sure the deserialization went ok
-                    if (newItem == null) throw new ItemJsonInvalidException(i.ToString());
-                    if (newItem.IsValid() != true) throw new ItemValidationException(i.ToString());
+                    if (newItem == null) throw new ItemJsonInvalidException(item.ToString());
+                    if (newItem.IsValid() != true) throw new ItemValidationException(item.ToString());
 
                     // resolve the SourceAddress of the new item to an existing item
                     if (newItem.SourceAddress != "")
@@ -196,23 +196,26 @@ namespace Symbiote.Core.Model
                     
                     AddItem(result.Model, result.Dictionary, newItem);
 
-                    result.UnresolvedList.Remove(i);
-                    result.ResolvedList.Add(i);
-                    logger.Trace("Added item '" + newItem.FQN + "' to the Model.");    
+                    result.UnresolvedList.Remove(item);
+                    result.ResolvedList.Add(item);
+
+                    // this is a departure from the overall design of the application.  Generally methods at this level do not log at info,
+                    // however this is a long running operation and we want to log to assure the user we haven't crashed.
+                    logger.Info("Added item '" + newItem.FQN + "' to the Model.");    
                 }
                 catch (ItemParentMissingException ex)
                 {
-                    result.AddWarning("The parent item for item '" + i.FQN + "' was not found in the model; ignoring.");
+                    result.AddWarning("The parent item for item '" + item.FQN + "' was not found in the model; ignoring.");
                     logger.Trace("ItemParentMissingException thrown: " + ex.Message);
                 }
                 catch (ItemJsonInvalidException ex)
                 {
-                    result.AddWarning("Invalid configuration json for item '" + i.FQN + "'; ignoring.");
+                    result.AddWarning("Invalid configuration json for item '" + item.FQN + "'; ignoring.");
                     logger.Trace("ItemJsonInvalidException thrown: " + ex.Message);
                 }
                 catch (ItemValidationException ex)
                 {
-                    result.AddWarning("Configuration json for item '" + i.FQN + "' deserialized to an invalid item; ignoring.");
+                    result.AddWarning("Configuration json for item '" + item.FQN + "' deserialized to an invalid item; ignoring.");
                     logger.Trace("ItemValidationException thrown: " + ex.Message);
                 }
                 catch (ItemSourceUnresolvedException ex)
@@ -222,7 +225,7 @@ namespace Symbiote.Core.Model
                 }
                 catch (Exception ex)
                 {
-                    result.AddWarning("Failed to add the item '" + i.FQN + "' to the model; ignoring.");
+                    result.AddWarning("Failed to add the item '" + item.FQN + "' to the model; ignoring.");
                     logger.Trace("Exception: " + ex.Message);
                     continue;
                 }

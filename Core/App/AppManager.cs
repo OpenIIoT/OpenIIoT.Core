@@ -231,17 +231,15 @@ namespace Symbiote.Core.App
         /// <returns>An OperationResult containing an App corresponding to the installed App.</returns>
         public async Task<OperationResult<App>> InstallAppAsync(string fqn)
         {
-            logger.Trace("Installing App '" + fqn + "'...");
-
             OperationResult<App> retVal;
-            AppArchive foundArchive = FindAppArchive(fqn);
 
-            logger.Info("Attempting to install App '" + foundArchive.FQN + "' from App Archive '" + foundArchive.FileName + "'...");
+            logger.Info("Trying to locate an App Archive matching the FQN '" + fqn + "'...");
+            AppArchive foundArchive = FindAppArchive(fqn);
 
             // make sure an archive matching the supplied FQN exists
             if (foundArchive != default(AppArchive))
             {
-                logger.Trace("Found AppArchive '" + foundArchive.FQN + ", installing...");
+                logger.Info("Attempting to install App '" + foundArchive.FQN + "' from App Archive '" + foundArchive.FileName + "'...");
                 retVal = await InstallAppAsync(foundArchive, manager.PlatformManager.Platform);
             }
             else
@@ -252,8 +250,9 @@ namespace Symbiote.Core.App
 
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
+                logger.Info("App '" + retVal.Result.Name + "' was successfully installed from App Archive '" + retVal.Result.FileName + "'.");
                 Apps.Add(retVal.Result);
-                SaveConfiguration();
+                SaveConfiguration(Apps);
             }
 
             retVal.LogResult(logger);
@@ -290,30 +289,33 @@ namespace Symbiote.Core.App
                     // set the InstallInProgress flag to prevent repeated calls from colliding
                     InstallInProgress = true;
 
-                    logger.Trace("Installing App '" + appArchive.Name + "' from archive '" + appArchive.FileName + "'...");
+                    logger.Debug("Determining installation directory for '" + appArchive.FileName + "'...");
                     string destination = System.IO.Path.Combine(manager.Directories["Web"], (appArchive.AppType == AppType.Console ? "Console" : appArchive.Name));
-                    logger.Trace("Destination: " + destination);
+                    logger.Debug("The App '" + appArchive.Name + "' will be installed to '" + destination);
 
                     // if the destination directory doesn't exist, create it.
                     if (!platform.DirectoryExists(destination))
                     {
-                        logger.Trace("Destination directory doesn't exist.  Creating...");
+                        logger.Debug("Creating the destination directory '" + destination + "'...");
                         platform.CreateDirectory(destination);
-                        logger.Trace("Destination directory created.");
+                        logger.Debug("Destination directory created.");
                     }
+                    else
+                        logger.Debug("The destination directory already exists.  Files will be overwritten on collission.");
 
                     //---------------------------------------------------- - ------ - -           ----- - 
                     // asynchronous code
                     //----- - - ---------- -
                     // extract the archive to the destination
                     // note: the ExtractZip function in the base library needs an absolute path for the input file to work properly.
+                    logger.Debug("Extracting the archive '" + appArchive.FileName + "' to '" + destination + "'...");
                     await Task.Run(() => platform.ExtractZip(System.IO.Path.Combine(manager.Directories["Apps"],appArchive.FileName), destination, true));
 
-                    logger.Trace("Successfully extracted the archive '" + System.IO.Path.GetFileName(appArchive.FileName) + "' to '" + destination + "'.");
+                    logger.Debug("Successfully extracted the archive '" + System.IO.Path.GetFileName(appArchive.FileName) + "' to '" + destination + "'.");
 
                     // clean up the name and print it to the logger
                     string relativeDestination = destination.Replace(manager.Directories["Root"], "");
-                    logger.Trace("Successfully installed App '" + appArchive.Name + "' to '" + relativeDestination + "'.");
+                    logger.Debug("Successfully installed App '" + appArchive.Name + "' to '" + relativeDestination + "'.");
 
                     // create a new App
                     retVal.Result = new App(appArchive);
@@ -514,12 +516,12 @@ namespace Symbiote.Core.App
             // fetch a list of matching files using the supplied IPlatform
             logger.Trace("Searching for Apps in '" + folder + "' with searchPattern = '" + searchPattern);
             List<string> files = platform.GetFileList(folder, searchPattern);
-            logger.Trace("Found " + files.Count + " matching file(s). Parsing...");
+            logger.Trace("Found " + files.Count + " matching file(s). Parsing the files to see if they are valid App Archives...");
 
             // iterate over the found files
             foreach (string file in files)
             {
-                logger.Trace("Parsing file: " + file);
+                logger.Trace("Parsing App Archive file '" + file + "'...");
 
                 // parse the file
                 OperationResult<AppArchive> parseResult = ParseAppArchive(file);
@@ -575,7 +577,7 @@ namespace Symbiote.Core.App
         /// </summary>
         /// <param name="fileName">The App archive file to parse.</param>
         /// <param name="configFileName">The name of the App config file that should be present within the archive.</param>
-        /// <param name="platform">The IPlatform instance to use to carry out the reinstallation.</param>
+        /// <param name="platform">The IPlatform instance to use to carry out the parse.</param>
         /// <returns>An OperationResult containing the parsed AppArchive.</returns>
         private OperationResult<AppArchive> ParseAppArchive(string fileName, string configFileName, IPlatform platform)
         {

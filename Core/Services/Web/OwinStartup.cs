@@ -25,11 +25,6 @@ namespace Symbiote.Core.Services.Web
         {
             app.UseCors(CorsOptions.AllowAll);
 
-            GlobalHost.DependencyResolver.Register(
-                typeof(ItemHub),
-                () => new ItemHub(manager)
-            );
-
             app.MapSignalR();
 
             string webRoot = manager.ConfigurationManager.Configuration.Web.Root;

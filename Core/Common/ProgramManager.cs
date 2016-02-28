@@ -93,6 +93,9 @@ namespace Symbiote.Core
             // Internal Settings
             //--------- - -
             logger.Trace("Loading application directories...");
+            OperationResult loadDirectoryResult = LoadDirectories();
+            if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to load application directory list.");
             Directories = LoadDirectories().Result;
 
             //------- - ------- -         --

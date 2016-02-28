@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Symbiote.Core
 {
@@ -199,15 +200,13 @@ namespace Symbiote.Core
         /// <param name="successLogLevel">The logging level to apply to successful messages.</param>
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
-        public virtual void LogResult(NLog.Logger logger, string successLogLevel = "Info", string warningLogLevel = "Warn", string failureLogLevel = "Error")
+        /// <param name="caller">The name of the method that called this method.</param>
+        public virtual void LogResult(NLog.Logger logger, string successLogLevel = "Info", string warningLogLevel = "Warn", string failureLogLevel = "Error", [CallerMemberName]string caller = "")
         {
-            logger.Trace("Starting print...");
             // the operation suceeded, with or without warnings
             if (ResultCode != OperationResultCode.Failure)
             {
-                logger.Trace("Not a failure.  Result: " + ResultCode);
-                
-                Log(logger, successLogLevel, "The operation '" + (new StackTrace()).GetFrame(1).GetMethod().Name + "' completed successfully.");
+                Log(logger, successLogLevel, "The operation '" + caller + "' completed successfully.");
 
                 // if any warnings were generated, print them to the logger
                 if (ResultCode == OperationResultCode.Warning)
@@ -216,7 +215,6 @@ namespace Symbiote.Core
             // the operation failed
             else
             {
-                logger.Trace("Failure...");
                 Log(logger, failureLogLevel, "The operation '" + (new StackTrace()).GetFrame(1).GetMethod().Name + "' failed.");
                 LogAllMessages(logger, failureLogLevel, "The following messages were generated during the operation:");
             }
