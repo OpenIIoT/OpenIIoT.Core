@@ -142,7 +142,7 @@
     <Compile Include="App\Exceptions.cs" />
     <Compile Include="Common\ItemEventArgs.cs" />
     <Compile Include="Common\ItemType.cs" />
-    <Compile Include="Common\RealtimeLogger.cs" />
+    <Compile Include="Services\Web\SignalR\RealtimeLogger.cs" />
     <Compile Include="Configuration\App\ConfigurationAppSection.cs" />
     <Compile Include="Configuration\App\ConfigurationApp.cs" />
     <Compile Include="Configuration\Exceptions.cs" />

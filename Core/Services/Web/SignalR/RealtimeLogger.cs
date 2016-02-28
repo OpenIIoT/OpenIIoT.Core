@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Services.Web.SignalR
 {
     class RealtimeLogger
     {
