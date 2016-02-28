@@ -55,6 +55,8 @@ namespace Symbiote.Core
             try
             {
                 manager = ProgramManager.Instance();
+                manager.LoadDirectories();
+
                 manager.InternalSettings.SetProductName("Symbiote");
                 manager.InternalSettings.SetAppExtension("*.zip");
                 manager.InternalSettings.SetPluginExtension("*.dll");
@@ -80,6 +82,8 @@ namespace Symbiote.Core
                 manager.InternalSettings.SetTempDirectory("Temp");
                 manager.InternalSettings.SetWebDirectory("Web");
                 manager.InternalSettings.SetLogDirectory("Logs");
+
+
             }
             catch (Exception ex)
             {
@@ -114,8 +118,10 @@ namespace Symbiote.Core
         {
             try
             {
-                logger.Info(manager.InternalSettings.DataDirectory);
-                logger.Info(manager.InternalSettings.AppDirectory);
+                logger.Info("Checking directories...");
+                manager.PlatformManager.Platform.CheckApplicationDirectories(manager.Directories);
+                
+
 
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.

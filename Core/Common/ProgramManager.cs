@@ -75,7 +75,7 @@ namespace Symbiote.Core
             // Internal Settings
             //--------- - -
             InternalSettings = new InternalSettings();
-            Directories = LoadDirectories();
+            Directories = new Dictionary<string, string>();
 
             //------- - ------- -         --
             // Platform Manager
@@ -134,23 +134,63 @@ namespace Symbiote.Core
 
         internal static ProgramManager Instance()
         {
-            logger.Trace("Returning ProgramManager instance...");
             if (instance == null)
             {
-                logger.Trace("ProgramManager instance is null; instantiating...");
                 instance = new ProgramManager();
-                logger.Trace("Instantiated ProgramManager instance.");
             }
 
-            logger.Trace("Returning ProgramManager instance...");
             return instance;
         }
 
-        internal Dictionary<string, string> LoadDirectories()
+        internal OperationResult<Dictionary<string, string>> LoadDirectories()
         {
-            string configDirectories = System.Configuration.ConfigurationManager.AppSettings["Directories"];
-            return new Dictionary<string, string>();
+            logger.Info("Loading directory list from the configuration file...");
 
+            OperationResult<Dictionary<string, string>> retVal;
+
+            string configDirectories;
+
+            try
+            {
+                configDirectories = System.Configuration.ConfigurationManager.AppSettings["Directories"];
+            }
+            catch (Exception ex)
+            {
+                retVal = new OperationResult<Dictionary<string, string>>().AddError("Exception thrown while retrieving the directory list from the configuration file:" + ex.Message);
+                return retVal;
+            }
+
+            if (configDirectories != "")
+            {
+                retVal = LoadDirectories(configDirectories);
+
+                if (retVal.ResultCode != OperationResultCode.Failure)
+                    Directories = retVal.Result;
+            }
+            else
+            {
+                retVal = new OperationResult<Dictionary<string, string>>().AddError("The list of directories is missing from the configuration file.");
+            }
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        internal OperationResult<Dictionary<string, string>> LoadDirectories(string directories)
+        {
+            OperationResult<Dictionary<string, string>> retVal = new OperationResult<Dictionary<string, string>>();
+            retVal.Result = new Dictionary<string, string>();
+
+            try
+            {
+                retVal.Result = (Dictionary<string, string>)JsonConvert.DeserializeObject<Dictionary<string, string>>(directories);
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown while deserializing the list of directories from the configuration file:" + ex.Message);
+            }
+        
+            return retVal;
         }
     }
 }

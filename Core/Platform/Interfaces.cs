@@ -25,6 +25,7 @@ namespace Symbiote.Core.Platform
         string[] ReadAllLinesFromFile(string fileName);
         void WriteFile(string fileName, string text);
         string GetApplicationDirectory();
+        OperationResult CheckApplicationDirectories(Dictionary<string, string> directories);
         string GetLogFile(string logDirectory);
         string ComputeFileChecksum(string fileName);
     }
