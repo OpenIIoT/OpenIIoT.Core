@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Runtime.CompilerServices;
 
-namespace Symbiote.Core.Services.Web
+namespace Symbiote.Core.Communication.Services.Web
 {
     /// <summary>
     /// Encapsulates the result of an API operation. 

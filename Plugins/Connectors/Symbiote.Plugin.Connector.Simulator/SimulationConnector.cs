@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
 using Symbiote.Core;
+using Symbiote.Core.Configuration;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {

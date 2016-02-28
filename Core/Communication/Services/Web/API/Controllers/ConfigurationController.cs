@@ -7,14 +7,15 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Symbiote.Core.Configuration;
 
-namespace Symbiote.Core.Services.Web.API
+namespace Symbiote.Core.Communication.Services.Web.API
 {
     public class ConfigurationController : ApiController
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static Configuration.Configuration configuration = manager.ConfigurationManager.Configuration;
+        private static ApplicationConfiguration configuration = manager.ConfigurationManager.Configuration;
 
         private static List<string> serializationProperties = new List<string>(new string[] { });
          

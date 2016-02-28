@@ -6,7 +6,7 @@ using Symbiote.Core.Configuration.App;
 namespace Symbiote.Core.Configuration
 {
     [JsonObject]
-    public class Configuration
+    public class ApplicationConfiguration
     {
         public string Symbiote;
         public ConfigurationWebSection Web;
@@ -14,7 +14,7 @@ namespace Symbiote.Core.Configuration
         public ConfigurationPluginSection Plugins;
         public ConfigurationAppSection Apps;
 
-        public Configuration()
+        public ApplicationConfiguration()
         {
             Web = new ConfigurationWebSection();
             Model = new ConfigurationModelSection();

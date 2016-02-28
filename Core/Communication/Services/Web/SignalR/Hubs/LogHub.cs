@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System;
 using System.Linq;
 
-namespace Symbiote.Core.Services.Web.SignalR
+namespace Symbiote.Core.Communication.Services.Web.SignalR
 {
     /// <summary>
     /// The LogHub provides realtime read access to logs.

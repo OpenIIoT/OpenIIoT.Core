@@ -9,30 +9,30 @@ using Microsoft.AspNet.SignalR;
 using System.Web.Http;
 using Newtonsoft.Json;
 
-namespace Symbiote.Core.Services.Web
+namespace Symbiote.Core.Communication.Services.Web
 {
-    public class WebManager
+    public class WebServiceManager
     {
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static WebManager instance;
+        private static WebServiceManager instance;
 
         public string URL { get; private set; }
 
         public Dictionary<string, Hub> Hubs { get; private set; }
         public Dictionary<string, ApiController> ApiControllers { get; private set; }
 
-        private WebManager(ProgramManager manager)
+        private WebServiceManager(ProgramManager manager)
         {
             this.manager = manager;
             Hubs = new Dictionary<string, Hub>();
             ApiControllers = new Dictionary<string, ApiController>();
         }
 
-        internal static WebManager Instance(ProgramManager manager)
+        internal static WebServiceManager Instance(ProgramManager manager)
         {
             if (instance == null)
-                instance = new WebManager(manager);
+                instance = new WebServiceManager(manager);
 
             return instance;
         }

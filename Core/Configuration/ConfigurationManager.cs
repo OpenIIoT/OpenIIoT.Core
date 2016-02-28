@@ -46,7 +46,7 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// The current configuration.
         /// </summary>
-        public Configuration Configuration { get; private set; }
+        public ApplicationConfiguration Configuration { get; private set; }
 
         #endregion
 
@@ -83,13 +83,13 @@ namespace Symbiote.Core.Configuration
         /// Failing that, builds a new (default) configuration file from scratch, saves it to the location specified in app.config and returns it.
         /// </summary>
         /// <returns>An instance of Configuration containing the loaded or newly generated configuration.</returns>
-        public OperationResult<Configuration> LoadConfiguration()
+        public OperationResult<ApplicationConfiguration> LoadConfiguration()
         {
             logger.Info("Loading Configuration...");
 
             string configurationFile = GetConfigurationFileName();
 
-            OperationResult<Configuration> retVal = LoadConfiguration(configurationFile);
+            OperationResult<ApplicationConfiguration> retVal = LoadConfiguration(configurationFile);
 
             if (retVal.ResultCode == OperationResultCode.Failure)
             {
@@ -135,9 +135,9 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         /// <param name="fileName">The file to read and deserialize.</param>
         /// <returns>An OperationResult containing the Configuration instance created from the file.</returns>
-        public OperationResult<Configuration> LoadConfiguration(string fileName)
+        public OperationResult<ApplicationConfiguration> LoadConfiguration(string fileName)
         {
-            OperationResult<Configuration> retVal = new OperationResult<Configuration>();
+            OperationResult<ApplicationConfiguration> retVal = new OperationResult<ApplicationConfiguration>();
 
             try
             {
@@ -145,7 +145,7 @@ namespace Symbiote.Core.Configuration
                 string configFile = manager.PlatformManager.Platform.ReadFile(fileName);
                 logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
-                retVal.Result = JsonConvert.DeserializeObject<Configuration>(configFile);
+                retVal.Result = JsonConvert.DeserializeObject<ApplicationConfiguration>(configFile);
                 logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
 
                 logger.Trace("Validating configuration...");
@@ -204,7 +204,7 @@ namespace Symbiote.Core.Configuration
         /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
         /// <param name="fileName">The file in which to save the configuration.</param>
         /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult SaveConfiguration(Configuration configuration, string fileName)
+        public OperationResult SaveConfiguration(ApplicationConfiguration configuration, string fileName)
         {
             OperationResult retVal = new OperationResult();
 
@@ -227,7 +227,7 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         /// <param name="configuration">The Configuration to validate.</param>
         /// <returns>An OperationResult containing the result of the validation.</returns>
-        public OperationResult ValidateConfiguration(Configuration configuration)
+        public OperationResult ValidateConfiguration(ApplicationConfiguration configuration)
         {
             // TODO: validate configuration; check for duplicates, etc.
             // issue #1
@@ -238,10 +238,10 @@ namespace Symbiote.Core.Configuration
         /// Manually builds an instance of Configuration with default values.
         /// </summary>
         /// <returns>An OperationResult containing the default instance of a Configuration.</returns>
-        public OperationResult<Configuration> BuildNewConfiguration()
+        public OperationResult<ApplicationConfiguration> BuildNewConfiguration()
         {
-            OperationResult<Configuration> retVal = new OperationResult<Configuration>();
-            retVal.Result = new Configuration();
+            OperationResult<ApplicationConfiguration> retVal = new OperationResult<ApplicationConfiguration>();
+            retVal.Result = new ApplicationConfiguration();
 
             retVal.Result.Symbiote = "0.1.0";
 

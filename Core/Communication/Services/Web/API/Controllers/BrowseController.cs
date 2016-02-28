@@ -6,7 +6,7 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using NLog;
 
-namespace Symbiote.Core.Services.Web.API
+namespace Symbiote.Core.Communication.Services.Web.API
 {
     public class BrowseController : ApiController
     {

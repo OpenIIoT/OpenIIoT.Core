@@ -140,14 +140,17 @@
     <Compile Include="App\AppManager.cs" />
     <Compile Include="App\Enumerations.cs" />
     <Compile Include="App\Exceptions.cs" />
-    <Compile Include="Common\ItemEventArgs.cs" />
-    <Compile Include="Common\ItemType.cs" />
-    <Compile Include="Services\Web\SignalR\RealtimeLogger.cs" />
+    <Compile Include="Common\Item\ItemEventArgs.cs" />
+    <Compile Include="Common\Item\ItemType.cs" />
+    <Compile Include="Communication\Endpoints\IEndpoint.cs" />
+    <Compile Include="Communication\Services\Web\SignalR\RealtimeLogger.cs" />
     <Compile Include="Configuration\App\ConfigurationAppSection.cs" />
     <Compile Include="Configuration\App\ConfigurationApp.cs" />
+    <Compile Include="Configuration\IObjectConfiguration.cs" />
     <Compile Include="Configuration\Exceptions.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
+    <Compile Include="Configuration\ObjectConfiguration.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginInstanceAutoBuild.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginInstance.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginAssembly.cs" />
@@ -159,48 +162,47 @@
     <Compile Include="Plugin\Exceptions.cs" />
     <Compile Include="Plugin\PluginItem.cs" />
     <Compile Include="Common\AddressResolver.cs" />
-    <Compile Include="Common\ConfigurationDefinition.cs" />
+    <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Common\ContractResolver.cs" />
-    <Compile Include="Common\Item.cs" />
-    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Common\Item\Item.cs" />
+    <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
-    <Compile Include="Common\Extensions.cs" />
     <Compile Include="Platform\Enumerations.cs" />
     <Compile Include="Platform\UNIX\PlatformConnector.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\Windows\PlatformConnector.cs" />
     <Compile Include="Plugin\Enumerations.cs" />
-    <Compile Include="Common\Exceptions.cs" />
-    <Compile Include="Common\ProgramManager.cs" />
+    <Compile Include="Common\Item\ItemExceptions.cs" />
+    <Compile Include="ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
-    <Compile Include="Platform\Interfaces.cs" />
+    <Compile Include="Platform\IPlatform.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\Interfaces.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
-    <Compile Include="Common\Program.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\Service.cs">
+    <Compile Include="Service.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Common\OperationResult.cs" />
-    <Compile Include="Services\Web\API\ApiOperationResult.cs" />
-    <Compile Include="Services\Web\API\Controllers\AppArchiveController.cs" />
-    <Compile Include="Services\Web\API\Controllers\AppController.cs" />
-    <Compile Include="Services\Web\API\Controllers\BrowseController.cs" />
-    <Compile Include="Services\Web\API\Controllers\ConfigurationController.cs" />
-    <Compile Include="Services\Web\API\Controllers\LogController.cs" />
-    <Compile Include="Services\Web\API\Controllers\ReadController.cs" />
-    <Compile Include="Services\Web\API\Controllers\ValuesController.cs" />
-    <Compile Include="Services\Web\API\IApiController.cs" />
-    <Compile Include="Services\Web\SignalR\HubManager.cs" />
-    <Compile Include="Services\Web\SignalR\Hubs\LogHub.cs" />
-    <Compile Include="Services\Web\SignalR\Hubs\ItemHub.cs" />
-    <Compile Include="Services\Web\OwinStartup.cs" />
-    <Compile Include="Services\Web\SignalR\IHub.cs" />
-    <Compile Include="Services\Web\WebManager.cs" />
+    <Compile Include="Communication\Services\Web\API\ApiOperationResult.cs" />
+    <Compile Include="Communication\Services\Web\API\Controllers\AppArchiveController.cs" />
+    <Compile Include="Communication\Services\Web\API\Controllers\AppController.cs" />
+    <Compile Include="Communication\Services\Web\API\Controllers\BrowseController.cs" />
+    <Compile Include="Communication\Services\Web\API\Controllers\ConfigurationController.cs" />
+    <Compile Include="Communication\Services\Web\API\Controllers\LogController.cs" />
+    <Compile Include="Communication\Services\Web\API\Controllers\ReadController.cs" />
+    <Compile Include="Communication\Services\Web\API\Controllers\ValuesController.cs" />
+    <Compile Include="Communication\Services\Web\API\IApiController.cs" />
+    <Compile Include="Communication\Services\Web\SignalR\HubManager.cs" />
+    <Compile Include="Communication\Services\Web\SignalR\Hubs\LogHub.cs" />
+    <Compile Include="Communication\Services\Web\SignalR\Hubs\ItemHub.cs" />
+    <Compile Include="Communication\Services\Web\OwinStartup.cs" />
+    <Compile Include="Communication\Services\Web\SignalR\IHub.cs" />
+    <Compile Include="Communication\Services\Web\WebServiceManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -218,7 +220,12 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Communication\Endpoints\AMQP\" />
+    <Folder Include="Communication\Endpoints\MQTT\" />
+    <Folder Include="Communication\Endpoints\WebService\" />
+    <Folder Include="Communication\Services\IoT\MQTT\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

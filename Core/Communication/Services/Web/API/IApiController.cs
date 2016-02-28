@@ -5,7 +5,7 @@ using System.Net.Http.Formatting;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Services.Web.API
+namespace Symbiote.Core.Communication.Services.Web.API
 {
     public interface IApiController
     {

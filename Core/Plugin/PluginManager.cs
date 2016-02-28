@@ -5,6 +5,7 @@ using NLog;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Configuration.Plugin;
 using System.Linq;
+using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core.Plugin
 {
@@ -325,7 +326,7 @@ namespace Symbiote.Core.Plugin
             InstantiatePlugins(manager.ConfigurationManager.Configuration);
         }
 
-        public void InstantiatePlugins(Configuration.Configuration configuration)
+        public void InstantiatePlugins(ApplicationConfiguration configuration)
         {
             foreach (ConfigurationPluginInstance instance in configuration.Plugins.Instances)
             {

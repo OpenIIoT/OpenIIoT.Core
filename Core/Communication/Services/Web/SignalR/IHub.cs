@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Services.Web.SignalR
+namespace Symbiote.Core.Communication.Services.Web.SignalR
 {
     /// <summary>
     /// The IHub interface defines characteristics of a Hub.

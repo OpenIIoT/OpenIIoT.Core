@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
 using System.Diagnostics;
+using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core.Platform.UNIX
 {

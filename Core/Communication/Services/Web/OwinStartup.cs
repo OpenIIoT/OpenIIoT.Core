@@ -10,12 +10,12 @@ using System.Net.Http.Formatting;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Microsoft.AspNet.SignalR;
-using Symbiote.Core.Services.Web.SignalR;
-using Symbiote.Core.Services.Web.API;
+using Symbiote.Core.Communication.Services.Web.SignalR;
+using Symbiote.Core.Communication.Services.Web.API;
 
-[assembly: OwinStartup(typeof(Symbiote.Core.Services.Web.OwinStartup))]
+[assembly: OwinStartup(typeof(Symbiote.Core.Communication.Services.Web.OwinStartup))]
 
-namespace Symbiote.Core.Services.Web
+namespace Symbiote.Core.Communication.Services.Web
 {
     public class OwinStartup
     {

@@ -7,7 +7,7 @@ using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
-using Symbiote.Core.Services.Web;
+using Symbiote.Core.Communication.Services.Web;
 using NLog;
 using Symbiote.Core.App;
 using Newtonsoft.Json;
@@ -74,7 +74,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The WebManager for the application.
         /// </summary>
-        public WebManager WebManager { get; private set; }
+        public WebServiceManager WebManager { get; private set; }
 
         /// <summary>
         /// The AppManager for the application.
@@ -138,7 +138,7 @@ namespace Symbiote.Core
             // Web Manager
             //------------------- - - ---- -        -
             logger.Trace("Instantiating the Web Manager...");
-            WebManager = WebManager.Instance(this);
+            WebManager = WebServiceManager.Instance(this);
             if (WebManager == null)
                 throw new Exception("WebManager.Instance() returned a null instance.");
             else logger.Trace("Successfully instantiated the Web Manager.");

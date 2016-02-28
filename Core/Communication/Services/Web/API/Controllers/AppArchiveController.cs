@@ -9,7 +9,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace Symbiote.Core.Services.Web.API
+namespace Symbiote.Core.Communication.Services.Web.API
 {
     /// <summary>
     /// Handles the API methods for AppArchives.

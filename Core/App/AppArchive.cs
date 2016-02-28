@@ -1,4 +1,5 @@
 ﻿using System;
+using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core.App
 {

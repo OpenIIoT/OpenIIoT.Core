@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Services.Web.SignalR
+namespace Symbiote.Core.Communication.Services.Web.SignalR
 {
     /// <summary>
     /// The HubManager acts as a static subscription and event manager for SignalR hubs.

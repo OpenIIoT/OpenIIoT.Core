@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Configuration
 {
     /// <summary>
     /// Establishes a common object to represent the configuration details for various application items.  
