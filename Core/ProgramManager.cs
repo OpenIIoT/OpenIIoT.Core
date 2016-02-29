@@ -11,6 +11,7 @@ using Symbiote.Core.Communication.Services.Web;
 using NLog;
 using Symbiote.Core.App;
 using Newtonsoft.Json;
+using Symbiote.Core.Communication.Services;
 
 namespace Symbiote.Core
 {
@@ -72,9 +73,9 @@ namespace Symbiote.Core
         public ModelManager ModelManager { get; private set; }
 
         /// <summary>
-        /// The WebManager for the application.
+        /// The ServiceManager for the application.
         /// </summary>
-        public WebServiceManager WebManager { get; private set; }
+        public ServiceManager ServiceManager { get; private set; }
 
         /// <summary>
         /// The AppManager for the application.
@@ -135,13 +136,13 @@ namespace Symbiote.Core
             else logger.Trace("Successfully instantiated the Model Manager.");
 
             //-------------------- - - -
-            // Web Manager
+            // Service Manager
             //------------------- - - ---- -        -
-            logger.Trace("Instantiating the Web Manager...");
-            WebManager = WebServiceManager.Instance(this);
-            if (WebManager == null)
-                throw new Exception("WebManager.Instance() returned a null instance.");
-            else logger.Trace("Successfully instantiated the Web Manager.");
+            logger.Trace("Instantiating the Service Manager...");
+            ServiceManager = ServiceManager.Instance(this);
+            if (ServiceManager == null)
+                throw new Exception("ServiceManager.Instance() returned a null instance.");
+            else logger.Trace("Successfully instantiated the Service Manager.");
 
             //--------- - ---------------------------
             // App Manager

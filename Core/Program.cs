@@ -188,14 +188,14 @@ namespace Symbiote.Core
                 logger.Info("Apps loaded.");
 
                 //---------------------------------------------- - - ------------ - -      - - - - 
-                // start the web server
+                // start the services
                 //----------- - - - ---------------   -                               -  - - - ---- - 
-                logger.Info("Starting web server...");
-                manager.WebManager.Start();
-                logger.Info("Web server started at " + manager.WebManager.URL + ".");
+                logger.Info("Starting services...");
+                manager.ServiceManager.Start();
+                logger.Info("Service(s) started.");
 
-                Console.WriteLine(manager.ProductName + " is running.");
-                Console.WriteLine("Press any key to stop.");
+
+                logger.Info(manager.ProductName + " is running.");
 
                 printTimer = new Timer(5000);
                 printTimer.Elapsed += new ElapsedEventHandler(Tick);

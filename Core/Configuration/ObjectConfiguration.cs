@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -42,6 +43,15 @@ namespace Symbiote.Core.Configuration
         {
             IsConfigured = true;
             return new OperationResult();
+        }
+
+        public OperationResult<ObjectConfiguration> LoadConfiguration([CallerMemberName]string caller = "")
+        {
+            OperationResult<ObjectConfiguration> retVal = new OperationResult<ObjectConfiguration>();
+
+            // todo: load config from ConfigurationManager
+            return retVal;
+
         }
     }
 }
