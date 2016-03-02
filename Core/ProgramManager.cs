@@ -7,11 +7,11 @@ using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
-using Symbiote.Core.Communication.Services.Web;
+using Symbiote.Core.Communication.Services;
 using NLog;
 using Symbiote.Core.App;
 using Newtonsoft.Json;
-using Symbiote.Core.Communication.Services;
+using Symbiote.Core.Communication.Endpoints;
 
 namespace Symbiote.Core
 {
@@ -76,6 +76,8 @@ namespace Symbiote.Core
         /// The ServiceManager for the application.
         /// </summary>
         public ServiceManager ServiceManager { get; private set; }
+
+        public EndpointManager EndpointManager { get; private set; }
 
         /// <summary>
         /// The AppManager for the application.
@@ -143,6 +145,16 @@ namespace Symbiote.Core
             if (ServiceManager == null)
                 throw new Exception("ServiceManager.Instance() returned a null instance.");
             else logger.Trace("Successfully instantiated the Service Manager.");
+
+            //------------ -  
+            // Endpoint Manager
+            //----------------------- - - ------------- - 
+            logger.Trace("Instantiating the Endpoint Manager...");
+            EndpointManager = EndpointManager.Instance(this);
+            if (EndpointManager == null)
+                throw new Exception("EndpointManager.Instance() returned a null instance.");
+            else logger.Trace("Successfully instantiated the Endpoint Manager.");
+            
 
             //--------- - ---------------------------
             // App Manager

@@ -9,27 +9,25 @@ using Microsoft.AspNet.SignalR;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Symbiote.Core.Configuration;
-using Symbiote.Core.Communication.Services.Web;
-using Symbiote.Core.Communication.Services.IoT.MQTT;
+using Symbiote.Core.Communication.Services;
 
 namespace Symbiote.Core.Communication.Services
 {
-    public class ServiceManager : IManager
+    public class ServiceManager : IManager, IConfigurable
     {
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ServiceManager instance;
 
-        internal List<IService> Services { get; private set; }
+        public ObjectConfiguration Configuration { get; private set; }
+
+        internal Dictionary<string, IService> Services { get; private set; }
 
         private ServiceManager(ProgramManager manager)
         {
             this.manager = manager;
 
-            Services = new List<IService>();
-
-            Services.Add(WebService.Instance(manager));
-            Services.Add(MQTTBroker.Instance(manager));
+            Services = new Dictionary<string, IService>();
         }
 
         public static ServiceManager Instance(ProgramManager manager)
@@ -40,32 +38,85 @@ namespace Symbiote.Core.Communication.Services
             return instance;
         }
 
-        public OperationResult Start()
+        private OperationResult<Dictionary<string, IService>> RegisterServices()
+        {
+            logger.Info("Registering services...");
+            OperationResult<Dictionary<string, IService>> retVal = new OperationResult<Dictionary<string, IService>>();
+            retVal.Result = new Dictionary<string, IService>();
+
+            try
+            {
+                retVal.Result.Add("Web", Web.WebService.Instance(manager));
+                retVal.Result.Add("MQTT Broker", IoT.MQTT.MQTTBroker.Instance(manager));
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown while registering Endpoint types: " + ex);
+            }
+
+            return retVal;
+        }
+
+        private OperationResult StartServices(Dictionary<string, IService> services)
         {
             OperationResult retVal = new OperationResult();
 
-            logger.Info("Starting services...");
-            foreach (IService service in Services)
+            // iterate over the list of registered services and try to start each one
+            foreach (string serviceName in services.Keys)
             {
-                logger.Debug("Starting service '" + service.GetType().Name + "'...");
+                logger.Debug("Starting service '" + serviceName + "'...");
+
                 try
                 {
-                    OperationResult result = service.Start();
-                    if (result.ResultCode == OperationResultCode.Failure)
-                        retVal.AddWarning("Failed to start service '" + service.GetType().Name + "'.");
+                    IService service = services[serviceName];
+                    OperationResult startResult = service.Start();
 
+                    if (startResult.ResultCode == OperationResultCode.Failure)
+                        retVal.AddWarning("Failed to start service '" + serviceName + "'.");
+                    else
+                    {
+                        logger.Info("Started service '" + serviceName + "'.");
+
+                        if (startResult.ResultCode == OperationResultCode.Warning)
+                            startResult.LogAllMessages(logger, "Warn", "The following warnings were generated when starting '" + serviceName + "':");
+                    }
                     if (!service.IsRunning)
-                        retVal.AddWarning("The '" + service.GetType().Name + "' service started successfully then immediately stopped.");
+                        retVal.AddWarning("The '" + serviceName + "' service started successfully and then immediately stopped.");
                 }
                 catch (Exception ex)
                 {
-                    retVal.AddError("Error starting service '" + service.GetType().Name + "': " + ex.Message);
+                    throw new Exception("Exception thrown while starting services: " + ex);
                 }
-                logger.Debug("Successfully started service '" + service.GetType().Name + "'.");
             }
-
             retVal.LogResult(logger);
             return retVal;
+        }
+
+        /// <summary>
+        /// Starts the Service Manager and all services.
+        /// </summary>
+        /// <remarks>Any failure to start the manager should throw an Exception.</remarks>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Start()
+        {
+            // register services
+            OperationResult<Dictionary<string, IService>> registerResult = RegisterServices();
+
+            if (registerResult.ResultCode != OperationResultCode.Failure)
+            {
+                Services = registerResult.Result;
+                registerResult.LogResult(logger, "Info", "Warn", "Error", "RegisterServices");
+                logger.Info(Services.Count + " Service(s) registered.");
+
+                if (registerResult.ResultCode == OperationResultCode.Warning)
+                    registerResult.LogAllMessages(logger, "Warn", "The following warnings were generated during the registration:");
+            }
+            else
+                throw new Exception("Failed to register Services: " + registerResult.GetLastError());
+
+            // start registered services
+            logger.Info("Starting services...");
+            return StartServices(Services);
         }
     }
 }

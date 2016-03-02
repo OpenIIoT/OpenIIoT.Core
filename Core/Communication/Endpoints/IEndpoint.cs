@@ -9,7 +9,6 @@ namespace Symbiote.Core.Communication.Endpoints
 {
     public interface IEndpoint
     {
-        ObjectConfiguration Configuration { get; }
         OperationResult Send(string route, object payload);
     }
 }

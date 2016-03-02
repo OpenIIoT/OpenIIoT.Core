@@ -17,7 +17,7 @@ namespace Symbiote.Core.Platform
     /// <summary>
     /// The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>
-    public class PlatformManager
+    public class PlatformManager : IManager
     {
         /// <summary>
         /// The ProgramManager for the application.
@@ -65,19 +65,22 @@ namespace Symbiote.Core.Platform
         /// Creates and returns the instance of IPlatform to be used by the application.
         /// </summary>
         /// <returns>An IPlatform corresponding to the current platform.</returns>
-        public IPlatform InstantiatePlatform()
+        public OperationResult Start()
         {
+            OperationResult retVal = new OperationResult();
+
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
                     Platform = new Platform.Windows.WindowsPlatform();
-                    return Platform;
+                    break;
                 case PlatformType.UNIX:
                     Platform = new Platform.UNIX.UNIXPlatform();
-                    return Platform;
+                    break;
                 default:
-                    throw new PlatformUndeterminedException("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
+                    throw new Exception("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
             }
+            return new OperationResult();
         }
 
         /// <summary>

@@ -5,14 +5,17 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using NLog;
 
 namespace Symbiote.Core.Configuration
 {
     public class ObjectConfiguration
     {
+        private Logger logger = LogManager.GetCurrentClassLogger();
+
         public ConfigurationDefinition Definition { get; private set; }
-        public string ConfigurationString { get; private set; }
-        public object Configuration { get; private set; }
+        public string ConfigurationJson { get; private set; }
+        public object ConfigurationObject { get; private set; }
         public bool IsDefined { get; private set; }
         public bool IsConfigured { get; private set; }
 
@@ -32,15 +35,16 @@ namespace Symbiote.Core.Configuration
             return this;
         }
 
-        public OperationResult Configure(string configurationString)
+        public OperationResult Configure(string configurationJson)
         {
-            ConfigurationString = configurationString;
-            object deserializedConfiguration = JsonConvert.DeserializeObject(configurationString);
+            ConfigurationJson = configurationJson;
+            object deserializedConfiguration = JsonConvert.DeserializeObject(configurationJson);
             return Configure(deserializedConfiguration);
         }
 
         public OperationResult Configure(object configuration)
         {
+            ConfigurationObject = configuration;
             IsConfigured = true;
             return new OperationResult();
         }
@@ -50,8 +54,20 @@ namespace Symbiote.Core.Configuration
             OperationResult<ObjectConfiguration> retVal = new OperationResult<ObjectConfiguration>();
 
             // todo: load config from ConfigurationManager
+            logger.Info("This is where we would read the json from the file");
             return retVal;
 
+        }
+
+        public OperationResult SaveConfiguration()
+        {
+            return SaveConfiguration(ConfigurationObject);
+        }
+
+        public OperationResult SaveConfiguration(object configuration)
+        {
+            logger.Info("config: " + JsonConvert.SerializeObject(configuration, Formatting.Indented));
+            return new OperationResult();
         }
     }
 }

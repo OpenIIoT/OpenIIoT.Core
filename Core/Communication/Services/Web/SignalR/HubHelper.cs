@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 namespace Symbiote.Core.Communication.Services.Web.SignalR
 {
     /// <summary>
-    /// The HubManager acts as a static subscription and event manager for SignalR hubs.
+    /// The HubHelper acts as a static subscription and event manager for SignalR hubs.
     /// </summary>
     /// <remarks>SignalR hubs are unable to persist data across instances because a new instance is created for each invocation.</remarks>
-    public class HubManager
+    public class HubHelper
     {
         #region Variables
 
@@ -50,7 +50,7 @@ namespace Symbiote.Core.Communication.Services.Web.SignalR
         /// </summary>
         /// <param name="manager">The ProgramManager for the application.</param>
         /// <param name="hub">The hub to be managed by the HubManager.</param>
-        public HubManager(ProgramManager manager, IHub hub)
+        public HubHelper(ProgramManager manager, IHub hub)
         {
             this.manager = manager;
             Hub = hub;

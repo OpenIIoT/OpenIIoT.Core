@@ -46,6 +46,14 @@ namespace Symbiote.Core
         /// <param name="args">Command line arguments.</param>
         static void Main(string[] args)
         {
+            logger.Trace("Program started with arguments: " + string.Join(", ", args));
+            
+            if (args.Length > 0)
+            {
+                logger.Trace("Reconfiguring logger to log level '" + args[0] + "'...");
+                SetLoggingLevel(args[0]);
+            }
+            
             // TODO: put everything in one try/catch, catch and print individual exceptions
             logger.Info("Initializing...");
 
@@ -68,7 +76,7 @@ namespace Symbiote.Core
             logger.Trace("Instantiating the platform...");
             try
             {
-                manager.PlatformManager.InstantiatePlatform();
+                manager.PlatformManager.Start();
             }
             catch (Exception ex)
             {
@@ -85,7 +93,7 @@ namespace Symbiote.Core
             if ((manager.PlatformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
             {
                 logger.Info("Starting application in service mode...");
-                ServiceBase.Run(new Service());
+                ServiceBase.Run(new WindowsService());
             }
             else
             {
@@ -99,7 +107,7 @@ namespace Symbiote.Core
         /// Entry point for the application logic.
         /// </summary>
         /// <param name="args">Command line arguments, passed from Main().</param>
-        public static void Start(string[] args)
+        internal static void Start(string[] args)
         {
             try
             {
@@ -187,12 +195,11 @@ namespace Symbiote.Core
                 manager.AppManager.LoadAppArchives();
                 logger.Info("Apps loaded.");
 
-                //---------------------------------------------- - - ------------ - -      - - - - 
-                // start the services
-                //----------- - - - ---------------   -                               -  - - - ---- - 
-                logger.Info("Starting services...");
-                manager.ServiceManager.Start();
-                logger.Info("Service(s) started.");
+
+
+                StartManager(manager.ServiceManager);
+                StartManager(manager.EndpointManager);
+
 
 
                 logger.Info(manager.ProductName + " is running.");
@@ -210,6 +217,55 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Error(ex, "Fatal error.");
+            }
+        }
+
+        public static void SetLoggingLevel(string level)
+        {
+            switch(level.ToLower())
+            {
+                case "fatal":
+                    DisableLoggingLevel(LogLevel.Error);
+                    goto case "error";
+                case "error":
+                    DisableLoggingLevel(LogLevel.Warn);
+                    goto case "warn";
+                case "warn":
+                    DisableLoggingLevel(LogLevel.Info);
+                    goto case "info";
+                case "info":
+                    DisableLoggingLevel(LogLevel.Debug);
+                    goto case "debug";
+                case "debug":
+                    DisableLoggingLevel(LogLevel.Trace);
+                    goto case "trace";
+                case "trace":
+                    break;
+            }
+        }
+
+        public static void DisableLoggingLevel(LogLevel level)
+        {
+            foreach (var rule in LogManager.Configuration.LoggingRules)
+                rule.DisableLoggingForLevel(level);
+
+            LogManager.ReconfigExistingLoggers();
+        }
+
+        private static void StartManager(IManager manager)
+        {
+            logger.Info("Starting " + manager.GetType().Name + "...");
+
+            OperationResult retVal = manager.Start();
+
+            if (retVal.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to start " + manager.GetType().Name + "." + retVal.GetLastError());
+            else
+            {
+                logger.Info(manager.GetType().Name + " started.");
+
+                if (retVal.ResultCode == OperationResultCode.Warning)
+                    retVal.LogAllMessages(logger, "Warn", "The following warnings were encountered during the operation:");
             }
         }
 

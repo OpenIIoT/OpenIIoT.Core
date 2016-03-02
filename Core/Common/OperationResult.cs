@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
@@ -76,8 +77,8 @@ namespace Symbiote.Core
         /// <summary>
         /// Constructs a message of the optionally supplied type with the optionally supplied message.
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="message"></param>
+        /// <param name="type">The type of message to construct.</param>
+        /// <param name="message">The content of the message.</param>
         public OperationResultMessage(OperationResultMessageType type = OperationResultMessageType.Info, string message = "")
         {
             Type = type;
@@ -235,6 +236,24 @@ namespace Symbiote.Core
                 Log(logger, logLevel, "\t" + message.Message);
 
             if (footer != "") Log(logger, logLevel, footer);
+        }
+
+        /// <summary>
+        /// Returns the newest message of type Error added to the message list.
+        /// </summary>
+        /// <returns>A string containing the message.</returns>
+        public virtual string GetLastError()
+        {
+            return Messages.Where(m => m.Type == OperationResultMessageType.Error).LastOrDefault().Message;
+        }
+
+        /// <summary>
+        /// Returns the newest message of type Warning added to the message list.
+        /// </summary>
+        /// <returns>A string containing the message.</returns>
+        public virtual string GetLastWarning()
+        {
+            return Messages.Where(m => m.Type == OperationResultMessageType.Warning).LastOrDefault().Message;
         }
 
         #endregion

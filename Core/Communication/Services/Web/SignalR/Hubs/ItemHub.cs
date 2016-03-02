@@ -28,7 +28,7 @@ namespace Symbiote.Core.Communication.Services.Web.SignalR
         /// <summary>
         /// The HubManager managing this hub.
         /// </summary>
-        private static HubManager hubManager;
+        private static HubHelper hubManager;
 
         #endregion
 
@@ -41,8 +41,8 @@ namespace Symbiote.Core.Communication.Services.Web.SignalR
         {
             // if hubManager is null, create a new instance.  
             // this ensures that there is only one copy for the hub regardless of the number of instances.
-            if (hubManager == default(HubManager))
-                hubManager = new HubManager(manager, this);
+            if (hubManager == default(HubHelper))
+                hubManager = new HubHelper(manager, this);
         }
 
         #endregion

@@ -2,9 +2,9 @@
 
 namespace Symbiote.Core
 {
-    class Service : ServiceBase
+    class WindowsService : ServiceBase
     {
-        public Service()
+        public WindowsService()
         {
             ServiceName = "Symbiote";
         }
