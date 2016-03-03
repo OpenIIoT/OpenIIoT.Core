@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Configuration
 {
-    public interface IConfigurable
+    public interface IConfigurable<T>
     {
-        ObjectConfiguration Configuration { get; }
+        ConfigurationDefinition ConfigurationDefinition { get; }
+        T Configuration { get; }
+        OperationResult Configure(T configuration);
     }
 }

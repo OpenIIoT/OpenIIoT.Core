@@ -12,6 +12,7 @@ using NLog;
 using Symbiote.Core.App;
 using Newtonsoft.Json;
 using Symbiote.Core.Communication.Endpoints;
+using System.Reflection;
 
 namespace Symbiote.Core
 {
@@ -149,12 +150,19 @@ namespace Symbiote.Core
             //------------ -  
             // Endpoint Manager
             //----------------------- - - ------------- - 
-            logger.Trace("Instantiating the Endpoint Manager...");
-            EndpointManager = EndpointManager.Instance(this);
-            if (EndpointManager == null)
-                throw new Exception("EndpointManager.Instance() returned a null instance.");
-            else logger.Trace("Successfully instantiated the Endpoint Manager.");
-            
+            logger.Info("Starting the Endpoint Manager...");
+            OperationResult<EndpointManager> endpointManagerResult = InstantiateManager<EndpointManager>();
+            if (endpointManagerResult.ResultCode != OperationResultCode.Failure)
+            {
+                EndpointManager = endpointManagerResult.Result;
+                endpointManagerResult.LogResult(logger, "Info", "Warn", "Error", "InstantiateManager");
+            }
+            else
+            {
+                endpointManagerResult.LogAllMessages(logger, "Error");
+                throw new Exception("Failed to instantiate the Endpoint Manager. Last error: " + endpointManagerResult.GetLastError());
+            }
+           
 
             //--------- - ---------------------------
             // App Manager
@@ -179,6 +187,91 @@ namespace Symbiote.Core
         #endregion
 
         #region Instance Methods
+
+        /// <summary>
+        /// Instantiates the supplied manager, registers it with the ConfigurationManager, fetches the configuration from the ConfigurationManager
+        /// and configures the manager with the fetched configuration model.
+        /// </summary>
+        /// <typeparam name="T">The type of manager to instantiate.</typeparam>
+        /// <returns>An OperationResult containing the result of the operation and the instance of the manager.</returns>
+        internal OperationResult<T> InstantiateManager<T>() where T : IManager
+        {
+            OperationResult<T> retVal = new OperationResult<T>();
+            OperationResult configureResult;
+            ConfigurationDefinition configurationDefinition;
+
+            //---------------------------- - --------- ---------------------------------------------------------  --  -         -
+            logger.Trace("Instantiating manager of type " + typeof(T).GetType().Name + "...");
+            // invoke the static method Instance() on the given type and save the resulting instance of T
+            try
+            {
+                retVal.Result = (T)typeof(T).GetMethod("Instance").Invoke(null, new object[] { this });
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown instantiating the manager: " + ex);
+                return retVal;
+            }
+
+            //------------------- - - ------------------------------------------------------------------  -
+            logger.Trace("Registering the manager with the Configuration Manager...");
+            // grab the result of GetConfigurationDefinition() from the instance of T and register the type and configuration
+            // with the configuration manager
+            try
+            {
+                configurationDefinition = (ConfigurationDefinition)typeof(T).GetMethod("GetConfigurationDefinition").Invoke(null, null);
+                ConfigurationManager.RegisterType(typeof(T), configurationDefinition);
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown while registering the manager with the ConfigurationDefinition." + ex);
+                return retVal;
+            }
+
+            //---------------------------------------------- - ---------------------- ------------------------------------------- --  -- - - - - - - 
+            logger.Trace("Fetching the configuration for the Manager...");
+            // grab the configuration for the manager from the configuration manager and configure the instance of T with it
+            try
+            {
+                // start by getting a reference to the GetConfiguration method
+                MethodInfo method = typeof(ConfigurationManager).GetMethod("GetConfiguration");
+                // turn it into a generic method of type T = the type of model
+                MethodInfo genericMethod = method.MakeGenericMethod(configurationDefinition.Model);
+                // create an instance of OperationResult<ModelType> to store the result of GetConfiguration
+                Type genericOperationResult = typeof(OperationResult<>);
+                Type specificOperationResult = genericOperationResult.MakeGenericType(configurationDefinition.Model);
+                ConstructorInfo constructor = specificOperationResult.GetConstructor(Type.EmptyTypes);
+                object getConfigurationOperationResult = constructor.Invoke(new object[] { });
+                // call the GetConfiguration method and store the result in the new variable we created (no cast needed!)
+                getConfigurationOperationResult = genericMethod.Invoke(ConfigurationManager, new object[] { typeof(T), "" });
+
+                //-------------------------------- - ----------- - - - -
+                // we have the config now.  send it to the manager.
+                logger.Trace("Fetched the configuration from ConfigurationManager.  Calling Configure() on the manager..");
+                try
+                {
+                    // invoke the Configure() method on the manager
+                    configureResult = (OperationResult)typeof(T).GetMethod("Configure").Invoke(retVal.Result, new object[] { getConfigurationOperationResult.GetType().GetProperty("Result").GetValue(getConfigurationOperationResult) });
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError("Exception thrown while configuring the manager." + ex);
+                    return retVal;
+                }
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown while fetching the configuration for the manager." + ex);
+                return retVal;
+            }
+
+            // report the success as long as we didn't fail.
+            if (configureResult.ResultCode != OperationResultCode.Failure)
+                logger.Trace("Successfully instantiated and configured the manager '" + typeof(T).GetType().Name + ".");
+            else
+                retVal.AddError("Failed to configure the manager with the supplied configuration.");
+            return retVal;
+        }
 
         internal OperationResult<Dictionary<string, string>> LoadDirectories()
         {

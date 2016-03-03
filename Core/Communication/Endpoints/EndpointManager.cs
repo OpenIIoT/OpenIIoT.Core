@@ -13,17 +13,29 @@ using Symbiote.Core.Communication.Endpoints;
 
 namespace Symbiote.Core.Communication.Endpoints
 {
-    public class EndpointManager : IManager, IConfigurable
+    public class EndpointManager : IManager, IConfigurable<EndpointManagerConfiguration>
     {
+        #region Variables
+
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static EndpointManager instance;
 
-        public ObjectConfiguration Configuration { get; private set; }
+        #endregion
 
-        internal Dictionary<string, Type> EndpointTypes { get; private set; }
+        #region Properties
 
-        internal Dictionary<string, IEndpoint> Endpoints { get; private set; }
+        public ConfigurationDefinition ConfigurationDefinition { get; private set; }
+
+        public EndpointManagerConfiguration Configuration { get; private set; }
+
+        internal Dictionary<string, Type> Endpoints { get; private set; }
+
+        internal Dictionary<string, IEndpoint> EndpointInstances { get; private set; }
+
+        #endregion
+
+        #region Constructors
 
         private EndpointManager(ProgramManager manager)
         {
@@ -38,6 +50,25 @@ namespace Symbiote.Core.Communication.Endpoints
             return instance;
         }
 
+        #endregion
+
+        #region Instance Methods
+
+        public OperationResult Configure(EndpointManagerConfiguration configuration)
+        {
+            Configuration = configuration;
+            return new OperationResult();
+        }
+
+        public static ConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
+            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
+            retVal.SetModel(typeof(EndpointManagerConfiguration));
+            return retVal;
+        }
+
         private OperationResult<Dictionary<string, Type>> RegisterEndpoints()
         {
             logger.Info("Registering Endpoint types...");
@@ -46,8 +77,9 @@ namespace Symbiote.Core.Communication.Endpoints
 
             try
             {
-                retVal.Result.Add("Json Web Service", typeof(Web.JsonEndpoint));
-                retVal.Result.Add("XML Web Service", typeof(Web.XMLEndpoint));
+                // register types.  both lines are required for each type. 
+                retVal.Result.Add("Example Endpoint", typeof(Web.ExampleEndpoint));
+                manager.ConfigurationManager.RegisterType(typeof(Web.ExampleEndpoint), Web.ExampleEndpoint.GetConfigurationDefinition());
             }
             catch (Exception ex)
             {
@@ -64,9 +96,9 @@ namespace Symbiote.Core.Communication.Endpoints
 
             if (registerResult.ResultCode != OperationResultCode.Failure)
             {
-                EndpointTypes = registerResult.Result;
+                Endpoints = registerResult.Result;
                 registerResult.LogResult(logger, "Info", "Warn", "Error", "RegisterEndpoints");
-                logger.Info(EndpointTypes.Count + " Endpoints(s) registered.");
+                logger.Info(Endpoints.Count + " Endpoints(s) registered.");
 
                 if (registerResult.ResultCode == OperationResultCode.Warning)
                     registerResult.LogAllMessages(logger, "Warn", "The following warnings were generated during the registration:");
@@ -77,27 +109,29 @@ namespace Symbiote.Core.Communication.Endpoints
             // test -- create new config
             EndpointInstance i1 = new EndpointInstance();
             i1.Name = "Test";
-            i1.EndpointType = typeof(Web.JsonEndpoint);
+            i1.EndpointType = typeof(Web.ExampleEndpoint);
             i1.Configuration = "hello world1";
 
             EndpointInstance i2 = new EndpointInstance();
             i2.Name = "Test2";
-            i2.EndpointType = typeof(Web.XMLEndpoint);
+            i2.EndpointType = typeof(Web.ExampleEndpoint);
             i2.Configuration = "hello world2";
 
 
             var emc = new EndpointManagerConfiguration();
-            emc.EndpointInstances.Add(i1);
-            emc.EndpointInstances.Add(i2);
+            emc.Instances.Add(i1);
+            emc.Instances.Add(i2);
 
-            
+            logger.Info(JsonConvert.SerializeObject(emc));
+
+            Configure(manager.ConfigurationManager.GetConfiguration<EndpointManagerConfiguration>(this.GetType()).Result);
+
+            foreach (EndpointInstance i in Configuration.Instances)
+            {
+                logger.Info("Instance: " + i.Name);
+            }
             
             // fetch configuration
-            Configuration = new ObjectConfiguration();
-            Configuration.Define(new ConfigurationDefinition());
-            Configuration.Configure(emc.EndpointInstances);
-            Configuration.LoadConfiguration();
-            Configuration.SaveConfiguration();
 
 
             // create endpoint instances
@@ -105,5 +139,24 @@ namespace Symbiote.Core.Communication.Endpoints
 
             return new OperationResult();
         }
+
+        #endregion
+    }
+
+    public class EndpointManagerConfiguration
+    {
+        public List<EndpointInstance> Instances { get; set; }
+
+        public EndpointManagerConfiguration()
+        {
+            Instances = new List<EndpointInstance>();
+        }
+    }
+
+    public class EndpointInstance
+    {
+        public string Name { get; set; }
+        public Type EndpointType { get; set; }
+        public object Configuration { get; set; }
     }
 }

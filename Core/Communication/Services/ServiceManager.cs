@@ -13,7 +13,7 @@ using Symbiote.Core.Communication.Services;
 
 namespace Symbiote.Core.Communication.Services
 {
-    public class ServiceManager : IManager, IConfigurable
+    public class ServiceManager : IManager
     {
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();

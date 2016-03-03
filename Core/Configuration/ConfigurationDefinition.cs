@@ -8,29 +8,37 @@ namespace Symbiote.Core.Configuration
 {
     /// <summary>
     /// Establishes a common object to represent the configuration details for various application items.  
-    /// The configuration is comprised of two strings; a form and a schema.  Both strings are intended to contain json data;
+    /// The configuration is comprised of two strings, a form and a schema, and a Type representing the model.  The strings are intended to contain json data;
     /// the form containing a json representation of an HTML form, and the schema containing a logical schema to be used as the basis of the form.
+    ///
+    /// When the configuration is edited (or a new instance created), the form and schema are used to generate an HTML form client side.  Angular Schemaform (schemaform.io)
+    /// is used client-side (alternatives can be used, but this is the primary vector) to generate the form.  Schemaform creates a model using the form and schema and the client
+    /// returns the model to the application.
     /// 
-    /// The mechanism that uses objects of type ConfigurationDefinition is as such:
-    ///     An actor requests the ConfigurationDefinition for an object.  Most likely this is via the Web API.
-    ///     The actor then generates a form using the contents of the Form property and presents it to some external user or service.
-    ///     The external user or service completes the form and submits it.
-    ///     The actor extracts data from the completed form and uses it to populate the schema.
-    ///     The actor sends the schema back to the application.
-    ///     The application applies the returned schema to the object or instance.
+    /// The returned model is deserialized to the Type specified in the Model property and an instance is returned to the owner object.
+    /// 
+    /// When the owner starts or loads the configuration, the ConfigurationManager retrieves the relevant json from the configuration file and deserializes it to an instance of type Model
+    /// and returns it.  The owner then manipulates the instance and when finished saves it back to the configuration manager, which in turn saves it to the configuration file as serialized
+    /// json.
     /// </summary>
     public class ConfigurationDefinition
     {
         #region Properties
 
         /// <summary>
-        /// A string containing a json representation of an HTML configuration form
+        /// A string containing a json representation of an HTML configuration form.
         /// </summary>
         public string Form { get; private set; }
+        
         /// <summary>
-        /// A string containing a json representation of the schema to populate using the form
+        /// A string containing a json representation of the schema to populate using the form.
         /// </summary>
         public string Schema { get; private set; }
+
+        /// <summary>
+        /// An object representing the model to be built from the schema.
+        /// </summary>
+        public Type Model { get; private set; }
 
         #endregion
 
@@ -39,17 +47,19 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// The default constructor.  Creates a blank ConfigurationDefinition.
         /// </summary>
-        public ConfigurationDefinition() : this("", "") { }
+        public ConfigurationDefinition() : this("", "", null) { }
 
         /// <summary>
         /// Creates a new ConfigurationDefinition with the supplied form and schema strings.
         /// </summary>
         /// <param name="form">A string containing the json representation of an HTML form.</param>
         /// <param name="schema">A string containing a json representation of the schema to populate using the form.</param>
-        public ConfigurationDefinition(string form, string schema)
+        /// <param name="model">A type representing the model to be built from the schema.</param>
+        public ConfigurationDefinition(string form, string schema, Type model)
         {
             Form = form;
             Schema = schema;
+            Model = model;
         }
 
         #endregion
@@ -75,6 +85,17 @@ namespace Symbiote.Core.Configuration
         public ConfigurationDefinition SetSchema(string schema)
         {
             Schema = schema;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the value of the Model property to the supplied Type.
+        /// </summary>
+        /// <param name="model"></param>
+        /// <returns>A type representing the model to be built from the schema.</returns>
+        public ConfigurationDefinition SetModel(Type model)
+        {
+            Model = model;
             return this;
         }
 

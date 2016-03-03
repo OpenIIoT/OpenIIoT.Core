@@ -364,6 +364,22 @@ namespace Symbiote.Core.Configuration
             return retVal;
         }
 
+        public OperationResult RegisterType(Type type, ConfigurationDefinition definition)
+        {
+            // TODO: create a data structure to contain registered types and add this to it
+            object form = JsonConvert.DeserializeObject(definition.Form);
+            logger.Info("Form : " + form.ToString());
+            return new OperationResult();
+        }
+
+        public OperationResult<T> GetConfiguration<T>(Type type, string instanceName = "")
+        {
+            OperationResult<T> retVal = new OperationResult<T>();
+            // TODO: replace this with code that fetches the model for the supplied object/instance
+            retVal.Result = JsonConvert.DeserializeObject<T>("{\"Instances\":[{\"Name\":\"Test3\",\"EndpointType\":\"Symbiote.Core.Communication.Endpoints.Web.ExampleEndpoint, Symbiote, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null\",\"Configuration\":\"hello world1\"},{\"Name\":\"Test4\",\"EndpointType\":\"Symbiote.Core.Communication.Endpoints.Web.ExampleEndpoint, Symbiote, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null\",\"Configuration\":\"hello world2\"}]}");
+            return retVal;
+        }
+
         #endregion
     }
 }

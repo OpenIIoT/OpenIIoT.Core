@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Communication.Endpoints
 {
-    public interface IEndpoint
+    public interface IEndpoint 
     {
-        OperationResult Send(string route, object payload);
+        OperationResult Send(object value);
     }
 }
