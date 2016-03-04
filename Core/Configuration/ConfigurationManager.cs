@@ -6,6 +6,8 @@ using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using Symbiote.Core.Configuration.Model;
 using Symbiote.Core.Configuration.Plugin;
+using System.Linq;
+using System.Reflection;
 
 namespace Symbiote.Core.Configuration
 {
@@ -48,6 +50,11 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         public ApplicationConfiguration Configuration { get; private set; }
 
+        /// <summary>
+        /// The list of registered Types
+        /// </summary>
+        public Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get; private set; }
+
         #endregion
 
         #region Constructors
@@ -59,6 +66,8 @@ namespace Symbiote.Core.Configuration
         private ConfigurationManager(ProgramManager manager)
         {
             this.manager = manager;
+
+            RegisteredTypes = new Dictionary<Type, ConfigurationDefinition>();
         }
 
         /// <summary>
@@ -364,21 +373,87 @@ namespace Symbiote.Core.Configuration
             return retVal;
         }
 
-        public OperationResult RegisterType(Type type, ConfigurationDefinition definition)
+        public OperationResult RegisterType(Type type)
         {
-            // TODO: create a data structure to contain registered types and add this to it
-            object form = JsonConvert.DeserializeObject(definition.Form);
-            logger.Info("Form : " + form.ToString());
+            logger.Debug("Registering type '" + type.Name + "'...");
+            OperationResult retVal = new OperationResult();
+            try
+            {
+                // fetch the type's configuration definition using reflection
+                ConfigurationDefinition typedef = (ConfigurationDefinition)type.GetMethod("GetConfigurationDefinition").Invoke(null, null);
+                retVal = RegisterType(type, typedef);
+            }
+            catch (NullReferenceException ex)
+            {
+                retVal.AddError("The retrieved configuration definition was null.");
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown while registering the type: " + ex);
+            }
+
+            retVal.LogResult(logger, "Debug");
+            return retVal;
+        }
+        private OperationResult RegisterType(Type type, ConfigurationDefinition definition)
+        {
+            logger.Trace("Registering type '" + type.Name + "' with definition: " + definition);
+            OperationResult retVal = new OperationResult();
+
+            if (!type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
+                retVal.AddError("The provided type '" + type.Name + "' does not implement IConfigurable and can not be registered.");
+            else if (type.GetMethod("GetConfigurationDefinition") == default(MethodInfo))
+                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetConfigurationDefinition' and can not be registered.");
+            else if (type.GetMethod("GetDefaultConfiguration") == default(MethodInfo))
+                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetDefaultConfiguration' and can not be registered.");
+            else if (!RegisteredTypes.ContainsKey(type))
+            {
+                try
+                {
+                    RegisteredTypes.Add(type, definition);
+                    logger.Debug("Registered type '" + type.Name + "' for configuration.");
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError("Exception thrown while registering the type: " + ex);
+                }
+
+            }
+
+            retVal.LogResult(logger, "Trace");
             return new OperationResult();
         }
 
         public OperationResult<T> GetConfiguration<T>(Type type, string instanceName = "")
         {
             OperationResult<T> retVal = new OperationResult<T>();
-            // TODO: replace this with code that fetches the model for the supplied object/instance
-            retVal.Result = JsonConvert.DeserializeObject<T>("{\"Instances\":[{\"Name\":\"Test3\",\"EndpointType\":\"Symbiote.Core.Communication.Endpoints.Web.ExampleEndpoint, Symbiote, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null\",\"Configuration\":\"hello world1\"},{\"Name\":\"Test4\",\"EndpointType\":\"Symbiote.Core.Communication.Endpoints.Web.ExampleEndpoint, Symbiote, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null\",\"Configuration\":\"hello world2\"}]}");
+
+            try
+            {
+                var rawObject = Configuration.UglyConfiguration[type][instanceName];
+                var reSerializedObject = JsonConvert.SerializeObject(rawObject);
+                var reDeSerializedObject = JsonConvert.DeserializeObject<T>(reSerializedObject);
+                retVal.Result = reDeSerializedObject;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                retVal.Result = (T)type.GetMethod("GetDefaultConfiguration").Invoke(null, null);
+
+                if (!Configuration.UglyConfiguration.ContainsKey(type))
+                {
+                    Configuration.UglyConfiguration.Add(type, new Dictionary<string, object>());
+                }
+                Configuration.UglyConfiguration[type].Add(instanceName, retVal.Result);
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error retrieving and re-serializing the data from the configuration for type '" + type.Name + "', instance '" + instanceName + "'.");
+            }
+            
             return retVal;
         }
+
+
 
         #endregion
     }

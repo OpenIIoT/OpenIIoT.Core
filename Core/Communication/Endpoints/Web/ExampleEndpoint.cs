@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Symbiote.Core.Configuration;
+using NLog;
 
 namespace Symbiote.Core.Communication.Endpoints.Web
 {
@@ -19,19 +20,45 @@ namespace Symbiote.Core.Communication.Endpoints.Web
     /// </summary>
     public class ExampleEndpoint : IEndpoint, IConfigurable<ExampleEndpointConfiguration>
     {
+        #region Variables
+
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
+        private ProgramManager manager;
+
+        /// <summary>
+        /// The Logger for this class.
+        /// </summary>
+        private Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The unique name for this instance.
+        /// </summary>
+        /// <remarks>Uniqueness is not enforced.</remarks>
+        private string instanceName;
+
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// The ConfigurationDefinition property returns the Endpoint's configuration details.
         /// 
         /// A ConfigurationDefinition instance includes two strings; a Form and a Schema, and a Type corresponding
         /// to the model/configuration class.
         /// </summary>
-        public ConfigurationDefinition ConfigurationDefinition { get; private set; }
+        public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
         /// <summary>
         /// The Configuration property is the type of the model/configuration class.
         /// This corresponds to the value of T in IConfigurable(T).
         /// </summary>
         public ExampleEndpointConfiguration Configuration { get; private set; }
+
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// The default and only constructor accepts a string corresponding to the name of the instance of the 
@@ -42,10 +69,36 @@ namespace Symbiote.Core.Communication.Endpoints.Web
         /// The EndpointManager will always supply a valid instance name.
         /// </summary>
         /// <param name="instanceName">The name of the instance being created.</param>
-        public ExampleEndpoint(string instanceName)
+        public ExampleEndpoint(ProgramManager manager, string instanceName)
         {
-            // call the static method to get the configuration details for this instance.
-            ConfigurationDefinition = GetConfigurationDefinition();
+            this.manager = manager;
+            this.instanceName = instanceName;
+        }
+
+        #endregion
+
+        #region Instance Methods
+
+        /// <summary>
+        /// The Send method sends the supplied value to the configured Endpoint.
+        /// </summary>
+        /// <param name="value">A generic object containing the value to send to the Endpoint.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Send(object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// The parameterless Configure() method calls the overloaded Configure() and passes in the instance of 
+        /// the model/type returned by the GetConfiguration() method in the Configuration Manager.
+        /// 
+        /// This is akin to saying "configure yourself using whatever is in the config file"
+        /// </summary>
+        /// <returns></returns>
+        public OperationResult Configure()
+        {
+            return Configure(manager.ConfigurationManager.GetConfiguration<ExampleEndpointConfiguration>(this.GetType(), instanceName).Result);
         }
 
         /// <summary>
@@ -62,6 +115,10 @@ namespace Symbiote.Core.Communication.Endpoints.Web
 
             return new OperationResult();
         }
+
+        #endregion
+
+        #region Static Methods
 
         /// <summary>
         /// The GetConfigurationDefinition method is static and returns the ConfigurationDefinition for the Endpoint.
@@ -89,14 +146,22 @@ namespace Symbiote.Core.Communication.Endpoints.Web
         }
 
         /// <summary>
-        /// The Send method sends the supplied value to the configured Endpoint.
+        /// The GetDefaultConfiguration method is static and returns a default or blank instance of
+        /// the confguration model/type.
+        /// 
+        /// If the ConfigurationManager fails to retrieve the configuration for an instance it will invoke this 
+        /// method and return this value in lieu of a loaded configuration.  This is a failsafe in case
+        /// the configuration file becomes corrupted.
         /// </summary>
-        /// <param name="value">A generic object containing the value to send to the Endpoint.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Send(object value)
+        /// <returns></returns>
+        public static ExampleEndpointConfiguration GetDefaultConfiguration()
         {
-            throw new NotImplementedException();
+            ExampleEndpointConfiguration retVal = new ExampleEndpointConfiguration();
+            retVal.Example = "Hello World!  This is the example configuration.";
+            return retVal;
         }
+
+        #endregion
     }
 
     /// <summary>

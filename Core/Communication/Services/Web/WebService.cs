@@ -12,14 +12,15 @@ using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core.Communication.Services.Web
 {
-    public class WebService : IService
+    public class WebService : IService, IConfigurable<WebServiceConfiguration>
     {
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static WebService instance;
         private static IDisposable server;
 
-        public ObjectConfiguration Configuration { get; private set; }
+        public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+        public WebServiceConfiguration Configuration { get; private set; }
         public bool IsRunning { get { return (server != null); } }
 
         public string URL { get; private set; }
@@ -40,6 +41,34 @@ namespace Symbiote.Core.Communication.Services.Web
                 instance = new WebService(manager);
 
             return instance;
+        }
+
+        public OperationResult Configure()
+        {
+            return Configure(manager.ConfigurationManager.GetConfiguration<WebServiceConfiguration>(this.GetType()).Result);
+        }
+
+        public OperationResult Configure(WebServiceConfiguration configuration)
+        {
+            Configuration = configuration;
+            return new OperationResult();
+        }
+
+        public static ConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
+            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
+            retVal.SetModel(typeof(WebServiceConfiguration));
+            return retVal;
+        }
+
+        public static WebServiceConfiguration GetDefaultConfiguration()
+        {
+            WebServiceConfiguration retVal = new WebServiceConfiguration();
+            retVal.Port = 80;
+            retVal.Root = "";
+            return retVal;
         }
 
         public OperationResult Start()
@@ -79,5 +108,11 @@ namespace Symbiote.Core.Communication.Services.Web
 
             return retVal;
         }
+    }
+
+    public class WebServiceConfiguration
+    {
+        public int Port { get; set; }
+        public string Root { get; set; }
     }
 }

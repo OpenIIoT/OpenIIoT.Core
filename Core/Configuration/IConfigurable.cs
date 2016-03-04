@@ -10,6 +10,7 @@ namespace Symbiote.Core.Configuration
     {
         ConfigurationDefinition ConfigurationDefinition { get; }
         T Configuration { get; }
+        OperationResult Configure();
         OperationResult Configure(T configuration);
     }
 }

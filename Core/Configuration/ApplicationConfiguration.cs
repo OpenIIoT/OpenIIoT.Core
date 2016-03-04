@@ -2,6 +2,8 @@
 using Symbiote.Core.Configuration.Model;
 using Symbiote.Core.Configuration.Plugin;
 using Symbiote.Core.Configuration.App;
+using System.Collections.Generic;
+using System;
 
 namespace Symbiote.Core.Configuration
 {
@@ -13,6 +15,7 @@ namespace Symbiote.Core.Configuration
         public ConfigurationModelSection Model;
         public ConfigurationPluginSection Plugins;
         public ConfigurationAppSection Apps;
+        public Dictionary<Type, Dictionary<string, object>> UglyConfiguration { get; private set; }
 
         public ApplicationConfiguration()
         {
@@ -20,6 +23,7 @@ namespace Symbiote.Core.Configuration
             Model = new ConfigurationModelSection();
             Plugins = new ConfigurationPluginSection();
             Apps = new ConfigurationAppSection();
+            UglyConfiguration = new Dictionary<Type, Dictionary<string, object>>();
         }
     }
 }

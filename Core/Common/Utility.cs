@@ -11,6 +11,8 @@ namespace Symbiote.Core
 {
     static class Utility
     {
+        #region Extensions
+
         internal static List<T> Clone<T>(this IList<T> listToClone) where T : ICloneable
         {
             return listToClone.Select(item => (T)item.Clone()).ToList();
@@ -39,10 +41,46 @@ namespace Symbiote.Core
             return attributes.OfType<T>().SingleOrDefault();
         }
 
-        internal static void PrintConnectorPluginItemChildren(Logger logger, IConnector connector)
+        #endregion
+
+        public static void SetLoggingLevel(string level)
         {
-            logger.Info(connector.Browse().FQN);
-            PrintConnectorPluginItemChildren(logger, connector, connector.Browse(), 1);
+            try
+            {
+                switch (level.ToLower())
+                {
+                    case "fatal":
+                        DisableLoggingLevel(LogLevel.Error);
+                        goto case "error";
+                    case "error":
+                        DisableLoggingLevel(LogLevel.Warn);
+                        goto case "warn";
+                    case "warn":
+                        DisableLoggingLevel(LogLevel.Info);
+                        goto case "info";
+                    case "info":
+                        DisableLoggingLevel(LogLevel.Debug);
+                        goto case "debug";
+                    case "debug":
+                        DisableLoggingLevel(LogLevel.Trace);
+                        goto case "trace";
+                    case "trace":
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Exception thrown while setting log level: " + ex, ex);
+            }
+
+        }
+
+        public static void DisableLoggingLevel(LogLevel level)
+        {
+            foreach (var rule in LogManager.Configuration.LoggingRules)
+                rule.DisableLoggingForLevel(level);
+
+            LogManager.ReconfigExistingLoggers();
         }
 
         internal static void PrintConnectorPluginItemChildren(Logger logger, IConnector connector, Item root, int indent)

@@ -1,15 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
-using Microsoft.Owin.Hosting;
-using Microsoft.AspNet.SignalR;
-using System.Web.Http;
-using Newtonsoft.Json;
 using Symbiote.Core.Configuration;
-using Symbiote.Core.Communication.Endpoints;
 
 namespace Symbiote.Core.Communication.Endpoints
 {
@@ -25,7 +17,7 @@ namespace Symbiote.Core.Communication.Endpoints
 
         #region Properties
 
-        public ConfigurationDefinition ConfigurationDefinition { get; private set; }
+        public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
         public EndpointManagerConfiguration Configuration { get; private set; }
 
@@ -54,6 +46,11 @@ namespace Symbiote.Core.Communication.Endpoints
 
         #region Instance Methods
 
+        public OperationResult Configure()
+        {
+            return Configure(manager.ConfigurationManager.GetConfiguration<EndpointManagerConfiguration>(this.GetType()).Result);
+        }
+
         public OperationResult Configure(EndpointManagerConfiguration configuration)
         {
             Configuration = configuration;
@@ -69,6 +66,14 @@ namespace Symbiote.Core.Communication.Endpoints
             return retVal;
         }
 
+        public static EndpointManagerConfiguration GetDefaultConfiguration()
+        {
+            EndpointManagerConfiguration retVal = new EndpointManagerConfiguration();
+            retVal.Instances = new List<EndpointInstance>();
+            retVal.Instances.Add(new EndpointInstance());
+            return retVal;
+        }
+
         private OperationResult<Dictionary<string, Type>> RegisterEndpoints()
         {
             logger.Info("Registering Endpoint types...");
@@ -79,7 +84,7 @@ namespace Symbiote.Core.Communication.Endpoints
             {
                 // register types.  both lines are required for each type. 
                 retVal.Result.Add("Example Endpoint", typeof(Web.ExampleEndpoint));
-                manager.ConfigurationManager.RegisterType(typeof(Web.ExampleEndpoint), Web.ExampleEndpoint.GetConfigurationDefinition());
+                manager.ConfigurationManager.RegisterType(typeof(Web.ExampleEndpoint));
             }
             catch (Exception ex)
             {
@@ -91,6 +96,8 @@ namespace Symbiote.Core.Communication.Endpoints
 
         public OperationResult Start()
         {
+            Configure();
+
             // register endpoints
             OperationResult<Dictionary<string, Type>> registerResult = RegisterEndpoints();
 
@@ -106,36 +113,10 @@ namespace Symbiote.Core.Communication.Endpoints
             else
                 throw new Exception("Failed to register Endpoints: " + registerResult.GetLastError());
 
-            // test -- create new config
-            EndpointInstance i1 = new EndpointInstance();
-            i1.Name = "Test";
-            i1.EndpointType = typeof(Web.ExampleEndpoint);
-            i1.Configuration = "hello world1";
-
-            EndpointInstance i2 = new EndpointInstance();
-            i2.Name = "Test2";
-            i2.EndpointType = typeof(Web.ExampleEndpoint);
-            i2.Configuration = "hello world2";
-
-
-            var emc = new EndpointManagerConfiguration();
-            emc.Instances.Add(i1);
-            emc.Instances.Add(i2);
-
-            logger.Info(JsonConvert.SerializeObject(emc));
-
-            Configure(manager.ConfigurationManager.GetConfiguration<EndpointManagerConfiguration>(this.GetType()).Result);
-
             foreach (EndpointInstance i in Configuration.Instances)
             {
                 logger.Info("Instance: " + i.Name);
             }
-            
-            // fetch configuration
-
-
-            // create endpoint instances
-            // tbd
 
             return new OperationResult();
         }
@@ -157,6 +138,5 @@ namespace Symbiote.Core.Communication.Endpoints
     {
         public string Name { get; set; }
         public Type EndpointType { get; set; }
-        public object Configuration { get; set; }
     }
 }

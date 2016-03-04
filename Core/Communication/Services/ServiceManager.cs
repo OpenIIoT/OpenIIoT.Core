@@ -13,20 +13,31 @@ using Symbiote.Core.Communication.Services;
 
 namespace Symbiote.Core.Communication.Services
 {
-    public class ServiceManager : IManager
+    public class ServiceManager : IManager, IConfigurable<ServiceManagerConfiguration>
     {
+        #region Variables
+
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ServiceManager instance;
 
-        public ObjectConfiguration Configuration { get; private set; }
+        #endregion
 
-        internal Dictionary<string, IService> Services { get; private set; }
+        #region Properties
+
+        public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+
+        public ServiceManagerConfiguration Configuration { get; private set; }
+
+        public Dictionary<string, IService> Services { get; private set; }
+
+        #endregion
+
+        #region Constructors
 
         private ServiceManager(ProgramManager manager)
         {
             this.manager = manager;
-
             Services = new Dictionary<string, IService>();
         }
 
@@ -38,37 +49,120 @@ namespace Symbiote.Core.Communication.Services
             return instance;
         }
 
-        private OperationResult<Dictionary<string, IService>> RegisterServices()
+        #endregion Constructors
+
+        #region Instance Methods
+
+        public OperationResult Configure()
         {
-            logger.Info("Registering services...");
-            OperationResult<Dictionary<string, IService>> retVal = new OperationResult<Dictionary<string, IService>>();
-            retVal.Result = new Dictionary<string, IService>();
+            return Configure(manager.ConfigurationManager.GetConfiguration<ServiceManagerConfiguration>(this.GetType()).Result);
+        }
+
+        public OperationResult Configure(ServiceManagerConfiguration configuration)
+        {
+            Configuration = configuration;
+            return new OperationResult();
+        }
+
+        public static ConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
+            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
+            retVal.SetModel(typeof(ServiceManagerConfiguration));
+            return retVal;
+        }
+
+        public static ServiceManagerConfiguration GetDefaultConfiguration()
+        {
+            ServiceManagerConfiguration retVal = new ServiceManagerConfiguration();
+            retVal.Instances = new List<ServiceInstance>();
+            return retVal;
+        }
+
+        /// <summary>
+        /// Starts the Service Manager and all services.
+        /// </summary>
+        /// <remarks>Don't forget that you tried to do this with reflection once and it ended badly.  Just copy/paste.</remarks>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Start()
+        {
+            logger.Info("Starting services...");
+            OperationResult retVal = new OperationResult();
+
+            Services.Add("Web Services", Web.WebService.Instance(manager));
+            manager.ConfigurationManager.RegisterType(typeof(Web.WebService));
+            Services["Web Services"].Start();
+
+            Services.Add("MQTT Broker", IoT.MQTT.MQTTBroker.Instance(manager));
+            manager.ConfigurationManager.RegisterType(typeof(IoT.MQTT.MQTTBroker));
+            Services["MQTT Broker"].Start();
+
+            return retVal;
+        }
+
+        private OperationResult<Dictionary<string, Type>> RegisterServices()
+        {
+            logger.Info("Registering Service types...");
+            OperationResult<Dictionary<string, Type>> retVal = new OperationResult<Dictionary<string, Type>>();
+            retVal.Result = new Dictionary<string, Type>();
 
             try
             {
-                retVal.Result.Add("Web", Web.WebService.Instance(manager));
-                retVal.Result.Add("MQTT Broker", IoT.MQTT.MQTTBroker.Instance(manager));
+                retVal.Result.Add("Web Services", typeof(Web.WebService));
+                manager.ConfigurationManager.RegisterType(typeof(Web.WebService));
+
+                retVal.Result.Add("MQTT Broker", typeof(IoT.MQTT.MQTTBroker));
+                manager.ConfigurationManager.RegisterType(typeof(Web.WebService));
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown while registering Endpoint types: " + ex);
+                retVal.AddError("Exception thrown while registering Service types: " + ex);
             }
 
             return retVal;
         }
 
-        private OperationResult StartServices(Dictionary<string, IService> services)
+        private OperationResult<Dictionary<string, IService>> InstantiateServices(Dictionary<string, Type> serviceTypes)
+        {
+            logger.Debug("Instantiating services...");
+            OperationResult<Dictionary<string, IService>> retVal = new OperationResult<Dictionary<string, IService>>();
+            retVal.Result = new Dictionary<string, IService>();
+
+            try
+            {
+                foreach (string serviceType in serviceTypes.Keys)
+                {
+                    logger.Trace("Instantiating service '" + serviceType + "'...");
+                    IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { manager });
+
+                    if (serviceInstance != default(IService))
+                        retVal.Result.Add(serviceType, serviceInstance);
+                    else
+                        retVal.AddWarning("Unable to instantiate service '" + serviceType + "'.");
+
+                }
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown while instantiating Service types: " + ex);
+            }
+
+            return retVal;
+        }
+
+        private OperationResult StartServices(Dictionary<string, IService> serviceInstances)
         {
             OperationResult retVal = new OperationResult();
 
             // iterate over the list of registered services and try to start each one
-            foreach (string serviceName in services.Keys)
+            foreach (string serviceName in serviceInstances.Keys)
             {
                 logger.Debug("Starting service '" + serviceName + "'...");
 
                 try
                 {
-                    IService service = services[serviceName];
+                    IService service = serviceInstances[serviceName];
                     OperationResult startResult = service.Start();
 
                     if (startResult.ResultCode == OperationResultCode.Failure)
@@ -92,31 +186,22 @@ namespace Symbiote.Core.Communication.Services
             return retVal;
         }
 
-        /// <summary>
-        /// Starts the Service Manager and all services.
-        /// </summary>
-        /// <remarks>Any failure to start the manager should throw an Exception.</remarks>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Start()
+        #endregion
+    }
+
+    public class ServiceManagerConfiguration
+    {
+        public List<ServiceInstance> Instances { get; set; }
+
+        public ServiceManagerConfiguration()
         {
-            // register services
-            OperationResult<Dictionary<string, IService>> registerResult = RegisterServices();
-
-            if (registerResult.ResultCode != OperationResultCode.Failure)
-            {
-                Services = registerResult.Result;
-                registerResult.LogResult(logger, "Info", "Warn", "Error", "RegisterServices");
-                logger.Info(Services.Count + " Service(s) registered.");
-
-                if (registerResult.ResultCode == OperationResultCode.Warning)
-                    registerResult.LogAllMessages(logger, "Warn", "The following warnings were generated during the registration:");
-            }
-            else
-                throw new Exception("Failed to register Services: " + registerResult.GetLastError());
-
-            // start registered services
-            logger.Info("Starting services...");
-            return StartServices(Services);
+            Instances = new List<ServiceInstance>();
         }
+    }
+
+    public class ServiceInstance
+    {
+        public string Name { get; set; }
+        public Type ServiceType { get; set; }
     }
 }

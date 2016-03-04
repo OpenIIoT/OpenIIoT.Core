@@ -9,7 +9,6 @@ namespace Symbiote.Core.Communication.Services
 {
     public interface IService
     {
-        ObjectConfiguration Configuration { get; }
         bool IsRunning { get; }
         OperationResult Start();
         OperationResult Stop();

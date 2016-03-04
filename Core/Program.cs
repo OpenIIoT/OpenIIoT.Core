@@ -1,16 +1,10 @@
-﻿
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
 using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
-using Symbiote.Core.Plugin;
 using System.Timers;
-using Microsoft.Owin.Hosting;
 
 namespace Symbiote.Core
 {
@@ -21,20 +15,25 @@ namespace Symbiote.Core
     class NamespaceDoc { }
 
     /// <summary>
-    /// Main application class.
+    /// The main application class.
     /// </summary>
-    class Program
+    public class Program
     {
+        #region Variables
+
         /// <summary>
         /// The main logger for the application.
         /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static Timer printTimer;
 
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
         private static ProgramManager manager;
+
+        #endregion
+
+        #region Static Methods
 
         /// <summary>
         /// Main entry point for the application.
@@ -44,62 +43,63 @@ namespace Symbiote.Core
         /// the application as a Windows service or console/interactive application.
         /// </remarks>
         /// <param name="args">Command line arguments.</param>
-        static void Main(string[] args)
+        internal static void Main(string[] args)
         {
-            logger.Trace("Program started with arguments: " + string.Join(", ", args));
-            
-            if (args.Length > 0)
-            {
-                logger.Trace("Reconfiguring logger to log level '" + args[0] + "'...");
-                SetLoggingLevel(args[0]);
-            }
-            
-            // TODO: put everything in one try/catch, catch and print individual exceptions
-            logger.Info("Initializing...");
-
-            // instantiate the program manager.
-            // the program manager acts as a Service Locator for the symbiote core.
-            logger.Trace("Instantiating the program manager...");
             try
             {
+                //-------------  - ------------ - -
+                // reconfigure the logger based on the command line arguments.
+                // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
+                // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
+                logger.Debug("Program started with " + (args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments."));
+
+                args = new string[] { "debug" };
+                if (args.Length > 0)
+                {
+                    logger.Debug("Reconfiguring logger to log level '" + args[0] + "'...");
+                    Utility.SetLoggingLevel(args[0]);
+                }
+                //----------------------------------------------- - - ----------------  -- - -  - - - - - - -----         -
+
+                logger.Info("Initializing...");
+
+                //------------------ - - ----------- - - 
+                // instantiate the Program Manager.
+                // the Program Manager acts as a Service Locator for the application.
+                logger.Info("Instantiating the Program Manager...");
                 manager = ProgramManager.Instance();
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex, "the application failed to initailize.");
-                return;
-            }
-            logger.Trace("The program manager was instantiated successfully.");
+                logger.Info("The Program Manager was instantiated successfully.");
+                //-------------------------------  ------------------------ - - - --------------- - -
 
-
-            // instantiate the platform.
-            logger.Trace("Instantiating the platform...");
-            try
-            {
+                //----------------------------------------------- - ------------  - - -
+                // start the Platform Manager so we can get the platform details
+                // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
+                logger.Info("Starting the Platform Manager...");
                 manager.PlatformManager.Start();
+                logger.Info("The Platform Manager was started successfully.");
+                logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
+                //------------------- - -----------                      ------------- 
+
+                //----------------------------------------- - ----------------
+                // start the application
+                // if the platform is windows and it is not being run as an interactive application, Windows 
+                // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
+                if ((manager.PlatformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
+                {
+                    logger.Info("Starting the application in service mode...");
+                    ServiceBase.Run(new WindowsService());
+                }
+                else
+                {
+                    logger.Info("Starting the application in interactive mode...");
+                    Start(args);
+                    Stop();
+                }
+                //-------------------------------------------------------------------      -------------------------------------------  - -- - - -
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Failed to instantiate the platform.");
-                return;
-            }
-
-            // display platform information.
-            logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
-
-            // start the application
-            // if the platform is windows and it is not being run as an interactive application, Windows 
-            // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
-            if ((manager.PlatformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
-            {
-                logger.Info("Starting application in service mode...");
-                ServiceBase.Run(new WindowsService());
-            }
-            else
-            {
-                logger.Info("Starting application in interactive mode...");
-                Start(args);
-                Stop();
+                logger.Error(ex, "The application failed to initialize.");
             }
         }
 
@@ -111,11 +111,13 @@ namespace Symbiote.Core
         {
             try
             {
+                // start the program manager, which in turn will start each of the managers.
+                manager.Start();
+
+
                 logger.Info("Checking directories...");
                 manager.PlatformManager.Platform.CheckApplicationDirectories(manager.Directories);
                 
-
-
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 //      reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
@@ -204,10 +206,6 @@ namespace Symbiote.Core
 
                 logger.Info(manager.ProductName + " is running.");
 
-                printTimer = new Timer(5000);
-                printTimer.Elapsed += new ElapsedEventHandler(Tick);
-                printTimer.Start();
-
                 Console.ReadLine();
             }
             catch (TargetInvocationException ex)
@@ -218,66 +216,6 @@ namespace Symbiote.Core
             {
                 logger.Error(ex, "Fatal error.");
             }
-        }
-
-        public static void SetLoggingLevel(string level)
-        {
-            switch(level.ToLower())
-            {
-                case "fatal":
-                    DisableLoggingLevel(LogLevel.Error);
-                    goto case "error";
-                case "error":
-                    DisableLoggingLevel(LogLevel.Warn);
-                    goto case "warn";
-                case "warn":
-                    DisableLoggingLevel(LogLevel.Info);
-                    goto case "info";
-                case "info":
-                    DisableLoggingLevel(LogLevel.Debug);
-                    goto case "debug";
-                case "debug":
-                    DisableLoggingLevel(LogLevel.Trace);
-                    goto case "trace";
-                case "trace":
-                    break;
-            }
-        }
-
-        public static void DisableLoggingLevel(LogLevel level)
-        {
-            foreach (var rule in LogManager.Configuration.LoggingRules)
-                rule.DisableLoggingForLevel(level);
-
-            LogManager.ReconfigExistingLoggers();
-        }
-
-        private static void StartManager(IManager manager)
-        {
-            logger.Info("Starting " + manager.GetType().Name + "...");
-
-            OperationResult retVal = manager.Start();
-
-            if (retVal.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to start " + manager.GetType().Name + "." + retVal.GetLastError());
-            else
-            {
-                logger.Info(manager.GetType().Name + " started.");
-
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessages(logger, "Warn", "The following warnings were encountered during the operation:");
-            }
-        }
-
-        private static void Tick(object source, EventArgs args)
-        {
-            //logger.Info("Array: " + manager.ModelManager.FindItem("Symbiote.Simulation.Array").ToJson());
-            //logger.Info("CPU usage (readfromsource): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").ReadFromSource());
-            //logger.Info("Sine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Sine").ReadFromSource());
-            //logger.Info("Cosine: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Cosine").ReadFromSource());
-            //logger.Info("Tangent: " + manager.ModelManager.FindItem("Symbiote.Simulation.Math.Tangent").ReadFromSource());
-            //logger.Info("CPU usage (read): " + manager.ModelManager.FindItem("Symbiote.System.Platform.CPU.% Processor Time").Read());
-            //AddressResolver.Resolve("Symbiote.Simulation.DateTime.Time").Write(DateTime.Now);
         }
 
         /// <summary>
@@ -301,5 +239,25 @@ namespace Symbiote.Core
 
             logger.Info(manager.ProductName + " stopped.");
         }
+
+        private static void StartManager(IManager manager)
+        {
+            logger.Info("Starting " + manager.GetType().Name + "...");
+
+            OperationResult retVal = manager.Start();
+
+            if (retVal.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to start " + manager.GetType().Name + "." + retVal.GetLastError());
+            else
+            {
+                logger.Info(manager.GetType().Name + " started.");
+
+                if (retVal.ResultCode == OperationResultCode.Warning)
+                    retVal.LogAllMessages(logger, "Warn", "The following warnings were encountered during the operation:");
+            }
+        }
+
+        #endregion
+
     }
 }
