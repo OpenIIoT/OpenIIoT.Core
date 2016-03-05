@@ -53,6 +53,7 @@ namespace Symbiote.Core
                 // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
                 logger.Debug("Program started with " + (args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments."));
 
+                // TODO: change this for release
                 args = new string[] { "debug" };
                 if (args.Length > 0)
                 {
@@ -61,25 +62,28 @@ namespace Symbiote.Core
                 }
                 //----------------------------------------------- - - ----------------  -- - -  - - - - - - -----         -
 
+
                 logger.Info("Initializing...");
 
+                
                 //------------------ - - ----------- - - 
                 // instantiate the Program Manager.
                 // the Program Manager acts as a Service Locator for the application.
-                logger.Info("Instantiating the Program Manager...");
+                logger.Debug("Instantiating the Program Manager...");
                 manager = ProgramManager.Instance();
-                logger.Info("The Program Manager was instantiated successfully.");
+                logger.Debug("The Program Manager was instantiated successfully.");
                 //-------------------------------  ------------------------ - - - --------------- - -
 
+                
                 //----------------------------------------------- - ------------  - - -
                 // start the Platform Manager so we can get the platform details
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
                 logger.Info("Starting the Platform Manager...");
                 manager.PlatformManager.Start();
-                logger.Info("The Platform Manager was started successfully.");
-                logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
+                logger.Info("Detected platform '" + manager.PlatformManager.Platform.PlatformType.ToString() + "' (" + manager.PlatformManager.Platform.Version + ")");
                 //------------------- - -----------                      ------------- 
 
+                
                 //----------------------------------------- - ----------------
                 // start the application
                 // if the platform is windows and it is not being run as an interactive application, Windows 
@@ -111,56 +115,61 @@ namespace Symbiote.Core
         {
             try
             {
+                //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager, which in turn will start each of the managers.
+                logger.Info("Starting the Program Manager...");
                 manager.Start();
+                logger.Info("Program Manager started.");
+                //----------- - -
 
 
-                logger.Info("Checking directories...");
-                manager.PlatformManager.Platform.CheckApplicationDirectories(manager.Directories);
-                
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
-                //      reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                //--------------------------------------- - -  - --------            -------- -
+                // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
                 logger.Info("Loading configuration...");
                 manager.ConfigurationManager.LoadConfiguration();
-                logger.Info("Configuration loaded.");
+                logger.Info("Loaded Configuration from '" + manager.ConfigurationManager.GetConfigurationFileName() + "'.");
+                //--------------------------------------- - -  - --------            -------- -
+
 
                 //--------------------------------------------- - - --------- ----  - -    -
                 // load plugins.  
-                //      populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
-                //----------------------------------------------------------------  --  ---         ------ - 
+                // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
                 logger.Info("Loading plugins...");
                 manager.PluginManager.LoadPlugins("Plugins");
                 logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
+                //----------------------------------------------------------------  --  ---         ------ - 
+
 
                 //--------------------- - --------------------- -  -
                 // create plugin instances.
-                //      instantiates each plugin instance defined within the configuration and configures it
-                //--------------------------------------------- - -   -     -------  -     - - -  ---
+                // instantiates each plugin instance defined within the configuration and configures it
                 logger.Info("Creating plugin instances...");
                 manager.PluginManager.InstantiatePlugins();
                 logger.Info(manager.PluginManager.PluginInstances.Count() + " Plugin instance(s) created.");
+                //--------------------------------------------- - -   -     -------  -     - - -  ---
+
 
                 //------------------ - --           --          --  - -
                 // create the platform connector plugin instance.
-                //      instantiates the connector plugin and adds it to the PluginManager so that it can be treated as a regular plugin
-                //------ - -      ---------------------- - -     ----------------------------- - - -
+                // instantiates the connector plugin and adds it to the PluginManager so that it can be treated as a regular plugin
                 manager.PlatformManager.Platform.InstantiateConnector("Platform");
                 manager.PluginManager.PluginInstances.Add(manager.PlatformManager.Platform.Connector);
+                //------ - -      ---------------------- - -     ----------------------------- - - -
+
 
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
-                //      builds and attaches the model stored within the configuration file to the Model Manager.
-                //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
+                // builds and attaches the model stored within the configuration file to the Model Manager.
                 logger.Info("Attaching model...");
                 Model.ModelBuildResult modelBuildResult = manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items);
                 manager.ModelManager.AttachModel(modelBuildResult);
                 logger.Info("Attached model.");
+                //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
+
 
                 //----------------------------------- - - --------  - -------- -  -   -  -           -
                 // attach the Platform connector items to the model
-                //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
                 // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
                 logger.Info("Detatching potentially stale Platform items...");
                 manager.ModelManager.RemoveItem(manager.ModelManager.FindItem(manager.ProductName + ".System.Platform"));
@@ -175,19 +184,23 @@ namespace Symbiote.Core
                 // attach the Platform items to Symbiote.System
                 manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem, true);
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
+                //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
+
 
                 //---- - ----------------------------------------- - - ------------- --   
                 // perform the auto-build of any plugin instances with auto-build enabled
-                //----------------------------------------------------- --       -   -
                 logger.Info("Executing auto build of plugins...");
                 manager.PluginManager.PerformAutoBuild();
                 logger.Info("Auto build complete");
+                //----------------------------------------------------- --       -   -
+
 
                 //----------------------------- - -       --
                 // show 'em what they've won!
-                //-------------------------------- --------- - -      -              -
                 Utility.PrintLogo(logger);
-                Utility.PrintItemChildren(logger, manager.ModelManager.Model, 0);
+                Utility.PrintModel(logger, manager.ModelManager.Model, 0);
+                //-------------------------------- --------- - -      -              -
+
 
                 //------------------- - - -------------- - --------------  -
                 // start the app manager

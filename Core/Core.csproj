@@ -143,6 +143,7 @@
     <Compile Include="Common\IManager.cs" />
     <Compile Include="Common\Item\ItemEventArgs.cs" />
     <Compile Include="Common\Item\ItemType.cs" />
+    <Compile Include="Common\ProgramDirectories.cs" />
     <Compile Include="Communication\Endpoints\IEndpoint.cs" />
     <Compile Include="Communication\Endpoints\EndpointManager.cs" />
     <Compile Include="Communication\Endpoints\Web\ExampleEndpoint.cs" />
@@ -155,7 +156,6 @@
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
-    <Compile Include="Configuration\ObjectConfiguration.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginInstanceAutoBuild.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginInstance.cs" />
     <Compile Include="Configuration\Plugin\ConfigurationPluginAssembly.cs" />
@@ -225,6 +225,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Communication\Connectors\" />
     <Folder Include="Communication\Endpoints\IoT\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

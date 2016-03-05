@@ -17,7 +17,7 @@ namespace Symbiote.Core.Configuration
     /// <remarks>
     /// This class implements the Singleton and Factory design patterns.
     /// </remarks>
-    public class ConfigurationManager
+    public class ConfigurationManager : IManager
     {
         #region Variables
 
@@ -66,7 +66,6 @@ namespace Symbiote.Core.Configuration
         private ConfigurationManager(ProgramManager manager)
         {
             this.manager = manager;
-
             RegisteredTypes = new Dictionary<Type, ConfigurationDefinition>();
         }
 
@@ -88,6 +87,15 @@ namespace Symbiote.Core.Configuration
         #region Instance Methods
 
         /// <summary>
+        /// Starts the Configuration Manager.
+        /// </summary>
+        /// <returns></returns>
+        public OperationResult Start()
+        {
+            return new OperationResult();
+        }
+
+        /// <summary>
         /// Attempts to load and return the application configuration file from the location specified in app.config.
         /// Failing that, builds a new (default) configuration file from scratch, saves it to the location specified in app.config and returns it.
         /// </summary>
@@ -95,7 +103,6 @@ namespace Symbiote.Core.Configuration
         public OperationResult<ApplicationConfiguration> LoadConfiguration()
         {
             logger.Info("Loading Configuration...");
-
             string configurationFile = GetConfigurationFileName();
 
             OperationResult<ApplicationConfiguration> retVal = LoadConfiguration(configurationFile);
@@ -135,7 +142,6 @@ namespace Symbiote.Core.Configuration
 
             retVal.LogResult(logger);
             Configuration = retVal.Result;
-            logger.Info("Loaded Configuration from '" + configurationFile + "'.");
             return retVal;
         }
 

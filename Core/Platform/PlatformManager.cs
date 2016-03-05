@@ -67,6 +67,7 @@ namespace Symbiote.Core.Platform
         /// <returns>An IPlatform corresponding to the current platform.</returns>
         public OperationResult Start()
         {
+            logger.Info("Starting Platform Manager...");
             OperationResult retVal = new OperationResult();
 
             switch (GetPlatformType())
@@ -80,6 +81,7 @@ namespace Symbiote.Core.Platform
                 default:
                     throw new Exception("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
             }
+            retVal.LogResult(logger);
             return new OperationResult();
         }
 

@@ -290,7 +290,7 @@ namespace Symbiote.Core.App
                     InstallInProgress = true;
 
                     logger.Debug("Determining installation directory for '" + appArchive.FileName + "'...");
-                    string destination = System.IO.Path.Combine(manager.Directories["Web"], (appArchive.AppType == AppType.Console ? "Console" : appArchive.Name));
+                    string destination = System.IO.Path.Combine(manager.Directories.Web, (appArchive.AppType == AppType.Console ? "Console" : appArchive.Name));
                     logger.Debug("The App '" + appArchive.Name + "' will be installed to '" + destination);
 
                     // if the destination directory doesn't exist, create it.
@@ -309,12 +309,12 @@ namespace Symbiote.Core.App
                     // extract the archive to the destination
                     // note: the ExtractZip function in the base library needs an absolute path for the input file to work properly.
                     logger.Debug("Extracting the archive '" + appArchive.FileName + "' to '" + destination + "'...");
-                    await Task.Run(() => platform.ExtractZip(System.IO.Path.Combine(manager.Directories["Apps"],appArchive.FileName), destination, true));
+                    await Task.Run(() => platform.ExtractZip(System.IO.Path.Combine(manager.Directories.Apps,appArchive.FileName), destination, true));
 
                     logger.Debug("Successfully extracted the archive '" + System.IO.Path.GetFileName(appArchive.FileName) + "' to '" + destination + "'.");
 
                     // clean up the name and print it to the logger
-                    string relativeDestination = destination.Replace(manager.Directories["Root"], "");
+                    string relativeDestination = destination.Replace(manager.Directories.Root, "");
                     logger.Debug("Successfully installed App '" + appArchive.Name + "' to '" + relativeDestination + "'.");
 
                     // create a new App
@@ -371,7 +371,7 @@ namespace Symbiote.Core.App
         private async Task<OperationResult> UninstallAppAsync(App app, IPlatform platform)
         {
             OperationResult retVal = new OperationResult();
-            string appDirectory = System.IO.Path.Combine(manager.Directories["Web"], (app.AppType == AppType.Console ? "Console" : app.Name));
+            string appDirectory = System.IO.Path.Combine(manager.Directories.Web, (app.AppType == AppType.Console ? "Console" : app.Name));
 
             logger.Trace("Attempting to uninstall app from '" + appDirectory + "'...");
 
@@ -487,7 +487,7 @@ namespace Symbiote.Core.App
         public OperationResult<List<AppArchive>> LoadAppArchives(bool throwExceptionOnFailure = false)
         {
             logger.Info("Loading App Archives...");
-            OperationResult<List<AppArchive>> retVal = LoadAppArchives(manager.Directories["Apps"], Utility.GetSetting("AppArchiveExtension"), manager.PlatformManager.Platform);
+            OperationResult<List<AppArchive>> retVal = LoadAppArchives(manager.Directories.Apps, Utility.GetSetting("AppArchiveExtension"), manager.PlatformManager.Platform);
 
             // load succeeded
             if (retVal.ResultCode != OperationResultCode.Failure)
@@ -596,10 +596,10 @@ namespace Symbiote.Core.App
                 // config file was found
                 if (configFile != "")
                 {
-                    logger.Trace("Found configuration file.  Extracting to '" + manager.Directories["Temp"] + "'...");
+                    logger.Trace("Found configuration file.  Extracting to '" + manager.Directories.Temp + "'...");
 
                     // extract the config file from the zip
-                    string extractedConfigFile = platform.ExtractFileFromZip(fileName, configFile, manager.Directories["Temp"], true);
+                    string extractedConfigFile = platform.ExtractFileFromZip(fileName, configFile, manager.Directories.Temp, true);
 
                     logger.Trace("Extracted config file to '" + extractedConfigFile + "'.  Reading contents...");
 

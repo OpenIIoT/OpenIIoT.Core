@@ -166,30 +166,6 @@ namespace Symbiote.Core.Platform.Windows
             return Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
         }
 
-        public OperationResult CheckApplicationDirectories(Dictionary<string, string> directories)
-        {
-            logger.Info("Checking application directories...");
-
-            OperationResult retVal = new OperationResult();
-            string rootDir = GetApplicationDirectory();
-
-            foreach (string key in directories.Keys)
-            {
-                string partialDir = directories[key];
-                string dir = Path.Combine(rootDir, partialDir);
-                logger.Trace("Checking " + dir);
-
-                if (!DirectoryExists(dir))
-                {
-                    CreateDirectory(dir);
-                    retVal.AddWarning("Restored directory " + partialDir);
-                }
-            }
-
-            retVal.LogResult(logger);
-            return retVal;
-        }
-
         public string GetLogFile(string logDirectory)
         {
             return Path.Combine(logDirectory, new DirectoryInfo(logDirectory).GetFiles().OrderByDescending(f => f.LastWriteTime).First().ToString());

@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
@@ -12,7 +9,6 @@ using NLog;
 using Symbiote.Core.App;
 using Newtonsoft.Json;
 using Symbiote.Core.Communication.Endpoints;
-using System.Reflection;
 
 namespace Symbiote.Core
 {
@@ -34,11 +30,6 @@ namespace Symbiote.Core
         /// </summary>
         private static ProgramManager instance;
 
-        /// <summary>
-        /// A list of the required directories for the application.
-        /// </summary>
-        private List<string> RequiredDirectories = new List<string>(new string[] { "Data", "Apps", "Plugins", "Temp", "Web", "Logs" });
-
         #endregion
 
         #region Properties
@@ -51,7 +42,7 @@ namespace Symbiote.Core
         /// <summary>
         /// A Dictionary containing all of the application directories, loaded from the App.config.
         /// </summary>
-        public Dictionary<string, string> Directories { get; private set; }
+        public ProgramDirectories Directories { get; private set; }
 
         /// <summary>
         /// The PlatformManager for the application.
@@ -78,6 +69,9 @@ namespace Symbiote.Core
         /// </summary>
         public ServiceManager ServiceManager { get; private set; }
 
+        /// <summary>
+        /// The EndpointManager for the application.
+        /// </summary>
         public EndpointManager EndpointManager { get; private set; }
 
         /// <summary>
@@ -98,16 +92,8 @@ namespace Symbiote.Core
         /// </remarks>
         private ProgramManager()
         {
-            //--- - - 
-            // Internal Settings
-            //--------- - -
-            logger.Debug("Loading application directories...");
-            OperationResult<Dictionary<string, string>> loadDirectoryResult = LoadDirectories();
-            if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to load application directory list.");
-            Directories = loadDirectoryResult.Result;
-
             logger.Debug("Instantiating Managers...");
+
 
             //------- - ------- -         --
             // Platform Manager
@@ -167,12 +153,14 @@ namespace Symbiote.Core
             logger.Debug("Successfully instantiated the App Manager.");
         }
 
+        /// <summary>
+        /// Returns the singleton instance of the ProgramManager.  Creates an instance if null.
+        /// </summary>
+        /// <returns>The singleton instance of the ProgramManager</returns>
         internal static ProgramManager Instance()
         {
             if (instance == null)
-            {
                 instance = new ProgramManager();
-            }
 
             return instance;
         }
@@ -181,48 +169,94 @@ namespace Symbiote.Core
 
         #region Instance Methods
 
+        /// <summary>
+        /// Starts the Program Manager.
+        /// </summary>
+        /// <seealso cref="IManager">Implementation of IManager</seealso>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
+            logger.Info("Starting the Program Manager...");
             OperationResult retVal = new OperationResult();
-            return retVal;
-        }
 
-        internal OperationResult<Dictionary<string, string>> LoadDirectories()
-        {
-            logger.Info("Loading directory list from the configuration file...");
 
-            OperationResult<Dictionary<string, string>> retVal;
+            //-------- - - - -- - - 
+            // Populate the ProgramDirectories list
+            logger.Debug("Loading application directories...");
+            OperationResult<ProgramDirectories> loadDirectoryResult = LoadDirectories();
+            if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to load application directory list." + retVal.GetLastError());
+            Directories = loadDirectoryResult.Result;
+            loadDirectoryResult.LogResult(logger, "Debug", "Warn", "Error", "LoadDirectories");
 
-            string configDirectories = Utility.GetSetting("Directories");
-
-            if (configDirectories != "")
+            // copy any warnings to the overall return value
+            foreach (OperationResultMessage message in loadDirectoryResult.Messages)
             {
-                retVal = LoadDirectories(configDirectories);
+                if (message.Type == OperationResultMessageType.Warning)
+                    retVal.AddWarning(message.Message);
+            }
+            //------------------------------------ - - 
 
-                if (retVal.ResultCode != OperationResultCode.Failure)
-                {
-                    Directories = retVal.Result;
-                }
-            }
-            else
+
+            //-------------------------- - - -               -  
+            // Check to ensure all directories exist.  If not, create them.
+            logger.Debug("Checking directories...");
+            OperationResult checkResult = Directories.CheckDirectories();
+            if (checkResult.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to verify and/or create one or more required program directory: " + retVal.GetLastError());
+            checkResult.LogResult(logger, "Debug", "Warn", "Error", "CheckDirectories");
+
+            // copy any warnings to the overall return value
+            foreach (OperationResultMessage message in loadDirectoryResult.Messages)
             {
-                retVal = new OperationResult<Dictionary<string, string>>().AddError("The list of directories is missing from the configuration file.");
+                if (message.Type == OperationResultMessageType.Warning)
+                    retVal.AddWarning(message.Message);
             }
+            //------------- - - -
+
 
             retVal.LogResult(logger);
             return retVal;
         }
 
-        private OperationResult<Dictionary<string, string>> LoadDirectories(string directories)
+        /// <summary>
+        /// Loads the list of directories from the configuration.exe file
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
+        internal OperationResult<ProgramDirectories> LoadDirectories()
         {
-            OperationResult<Dictionary<string, string>> retVal = new OperationResult<Dictionary<string, string>>();
-            retVal.Result = new Dictionary<string, string>();
+            logger.Trace("Loading directory list from the configuration file...");
+            OperationResult<ProgramDirectories> retVal;
+            string configDirectories = Utility.GetSetting("Directories");
+
+            if (configDirectories != "")
+            {
+                retVal = LoadDirectories(configDirectories);
+                if (retVal.ResultCode != OperationResultCode.Failure)
+                    Directories = retVal.Result;
+            }
+            else
+                retVal = new OperationResult<ProgramDirectories>().AddError("The list of directories is missing from the configuration file.");
+
+            retVal.LogResult(logger, "Trace");
+            return retVal;
+        }
+
+        /// <summary>
+        /// Deserializes the provided string to a dictionary containing the program directory names and paths, then creates
+        /// an instance of ProgramDirectories with it.
+        /// </summary>
+        /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
+        /// <returns>An OperationResult containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
+        private OperationResult<ProgramDirectories> LoadDirectories(string directories)
+        {
+            OperationResult<ProgramDirectories> retVal = new OperationResult<ProgramDirectories>();
 
             try
             {
-                retVal.Result = (Dictionary<string, string>)JsonConvert.DeserializeObject<Dictionary<string, string>>(directories);
-                // add the root directory
-                retVal.Result.Add("Root", System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location));
+                // hapazardly try to set all of the directories from the deserialized config json.  if anything goes wrong
+                // an exception will be thrown and we'll handle it.
+                retVal.Result = new ProgramDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
             }
             catch (Exception ex)
             {

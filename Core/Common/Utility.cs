@@ -83,26 +83,14 @@ namespace Symbiote.Core
             LogManager.ReconfigExistingLoggers();
         }
 
-        internal static void PrintConnectorPluginItemChildren(Logger logger, IConnector connector, Item root, int indent)
-        {
-            foreach (Item i in connector.Browse(root))
-            {
-                if (i.HasChildren() == false)
-                    logger.Info(new string('\t', indent) + i.FQN + " Value: " + connector.Read(i.FQN).ToString());
-                else
-                    logger.Info(new string('\t', indent) + i.FQN);
-                PrintConnectorPluginItemChildren(logger, connector, i, indent + 1);
-            }
-        }
-
-        internal static void PrintItemChildren(Logger logger, Item root, int indent)
+        internal static void PrintModel(Logger logger, Item root, int indent)
         {
             string source = (root.SourceItem == null ? "" : root.SourceItem.FQN);
             logger.Info(new string('\t', indent) + root.FQN + " [" + source + "] children: " + root.Children.Count());
 
             foreach (Item i in root.Children)
             {
-                PrintItemChildren(logger, i, indent + 1);
+                PrintModel(logger, i, indent + 1);
             }
         }
 

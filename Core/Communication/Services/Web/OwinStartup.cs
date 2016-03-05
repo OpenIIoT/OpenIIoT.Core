@@ -12,8 +12,7 @@ using Newtonsoft.Json.Serialization;
 using Microsoft.AspNet.SignalR;
 using Symbiote.Core.Communication.Services.Web.SignalR;
 using Symbiote.Core.Communication.Services.Web.API;
-
-[assembly: OwinStartup(typeof(Symbiote.Core.Communication.Services.Web.OwinStartup))]
+using System.Web.Routing;
 
 namespace Symbiote.Core.Communication.Services.Web
 {
@@ -21,26 +20,31 @@ namespace Symbiote.Core.Communication.Services.Web
     {
         private ProgramManager manager = ProgramManager.Instance();
 
+        private WebServiceConfiguration WebServiceConfiguration { get; set; }
+
         public void Configuration(IAppBuilder app)
         {
+            WebServiceConfiguration = WebService.GetConfiguration;
+            string webRoot = WebServiceConfiguration.Root;
+
             app.UseCors(CorsOptions.AllowAll);
 
-            app.MapSignalR();
+            app.MapSignalR((webRoot.Length > 0 ? "/" : "") + webRoot + "/signalr", new HubConfiguration());
+            //app.MapSignalR("/signalr", new HubConfiguration());
 
-            string webRoot = manager.ConfigurationManager.Configuration.Web.Root;
+            Console.WriteLine((webRoot.Length > 0 ? "/" : "") + webRoot + "/signalr");
 
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : "") + "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+            //config.Routes.MapHttpRoute(
+            //    name: "DefaultApi",
+            //    routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : "") + "api/{controller}/{id}",
+            //    defaults: new { id = RouteParameter.Optional }
+            //);
 
-            config.Formatters.Clear();
-            config.Formatters.Add(new JsonMediaTypeFormatter());
-            config.Formatters.JsonFormatter.SerializerSettings =
-            new JsonSerializerSettings { ContractResolver = new DefaultContractResolver() };
+            //config.Formatters.Clear();
+            //config.Formatters.Add(new JsonMediaTypeFormatter());
+            //config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver() };
 
             app.UseWebApi(config);
 

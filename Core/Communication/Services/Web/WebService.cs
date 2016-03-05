@@ -9,6 +9,7 @@ using Microsoft.AspNet.SignalR;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Symbiote.Core.Configuration;
+using System.Web.Http.Services;
 
 namespace Symbiote.Core.Communication.Services.Web
 {
@@ -19,11 +20,16 @@ namespace Symbiote.Core.Communication.Services.Web
         private static WebService instance;
         private static IDisposable server;
 
+        [ThreadStatic]
+        internal static WebServiceConfiguration configuration;
+
         public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
         public WebServiceConfiguration Configuration { get; private set; }
         public bool IsRunning { get { return (server != null); } }
 
         public string URL { get; private set; }
+
+        internal static WebServiceConfiguration GetConfiguration { get { return configuration; } set { configuration = value; } }
 
         public Dictionary<string, Hub> Hubs { get; private set; }
         public Dictionary<string, ApiController> ApiControllers { get; private set; }
@@ -51,6 +57,7 @@ namespace Symbiote.Core.Communication.Services.Web
         public OperationResult Configure(WebServiceConfiguration configuration)
         {
             Configuration = configuration;
+            GetConfiguration = configuration;
             return new OperationResult();
         }
 
@@ -74,14 +81,15 @@ namespace Symbiote.Core.Communication.Services.Web
         public OperationResult Start()
         {
             logger.Info("Starting Web server...");
+            Configure();
             OperationResult retVal = new OperationResult();
 
-            URL = "http://*:" + manager.ConfigurationManager.Configuration.Web.Port;
+            URL = "http://*:" + Configuration.Port;
 
             try
             {
-                server = WebApp.Start(URL);
-                logger.Info("Web server listening at '" + URL + "'.");
+                server = WebApp.Start<OwinStartup>(URL);
+                logger.Info("Web server listening at '" + URL + "/" + Configuration.Root + "'.");
                 logger.Info("The Web server was started successfully.");
             }
             catch (Exception ex)
