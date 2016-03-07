@@ -143,28 +143,28 @@
     <Compile Include="Common\IManager.cs" />
     <Compile Include="Common\Item\ItemEventArgs.cs" />
     <Compile Include="Common\Item\ItemType.cs" />
-    <Compile Include="Common\ProgramDirectories.cs" />
-    <Compile Include="Communication\Endpoints\IEndpoint.cs" />
-    <Compile Include="Communication\Endpoints\EndpointManager.cs" />
-    <Compile Include="Communication\Endpoints\Web\ExampleEndpoint.cs" />
-    <Compile Include="Communication\Services\IoT\MQTT\MQTTBroker.cs" />
-    <Compile Include="Communication\Services\IService.cs" />
-    <Compile Include="Communication\Services\ServiceManager.cs" />
+    <Compile Include="Platform\PlatformDirectories.cs" />
+    <Compile Include="Plugin\Connector\ConnectorManager.cs" />
+    <Compile Include="Plugin\Connector\IConnector.cs" />
+    <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
+    <Compile Include="Plugin\Endpoint\EndpointManager.cs" />
+    <Compile Include="Plugin\PluginManagerConfiguration.cs" />
+    <Compile Include="Service\IoT\MQTT\MQTTBroker.cs" />
+    <Compile Include="Service\IService.cs" />
+    <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Common\RealtimeLogger.cs" />
     <Compile Include="Configuration\App\ConfigurationAppSection.cs" />
     <Compile Include="Configuration\App\ConfigurationApp.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
     <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
-    <Compile Include="Configuration\Plugin\ConfigurationPluginInstanceAutoBuild.cs" />
-    <Compile Include="Configuration\Plugin\ConfigurationPluginInstance.cs" />
-    <Compile Include="Configuration\Plugin\ConfigurationPluginAssembly.cs" />
-    <Compile Include="Configuration\Plugin\ConfigurationPluginSection.cs" />
-    <Compile Include="Configuration\Web\ConfigurationWebSection.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\Exceptions.cs" />
     <Compile Include="Plugin\Exceptions.cs" />
-    <Compile Include="Plugin\PluginItem.cs" />
+    <Compile Include="Plugin\IPlugin.cs" />
+    <Compile Include="Plugin\IPluginAssembly.cs" />
+    <Compile Include="Plugin\IPluginInstance.cs" />
+    <Compile Include="Plugin\Connector\ConnectorItem.cs" />
     <Compile Include="Common\AddressResolver.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Common\ContractResolver.cs" />
@@ -183,7 +183,6 @@
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
-    <Compile Include="Plugin\Interfaces.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -192,21 +191,21 @@
     </Compile>
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Common\OperationResult.cs" />
-    <Compile Include="Communication\Services\Web\API\ApiOperationResult.cs" />
-    <Compile Include="Communication\Services\Web\API\Controllers\AppArchiveController.cs" />
-    <Compile Include="Communication\Services\Web\API\Controllers\AppController.cs" />
-    <Compile Include="Communication\Services\Web\API\Controllers\BrowseController.cs" />
-    <Compile Include="Communication\Services\Web\API\Controllers\ConfigurationController.cs" />
-    <Compile Include="Communication\Services\Web\API\Controllers\LogController.cs" />
-    <Compile Include="Communication\Services\Web\API\Controllers\ReadController.cs" />
-    <Compile Include="Communication\Services\Web\API\Controllers\ValuesController.cs" />
-    <Compile Include="Communication\Services\Web\API\IApiController.cs" />
-    <Compile Include="Communication\Services\Web\SignalR\HubHelper.cs" />
-    <Compile Include="Communication\Services\Web\SignalR\Hubs\LogHub.cs" />
-    <Compile Include="Communication\Services\Web\SignalR\Hubs\ItemHub.cs" />
-    <Compile Include="Communication\Services\Web\OwinStartup.cs" />
-    <Compile Include="Communication\Services\Web\SignalR\IHub.cs" />
-    <Compile Include="Communication\Services\Web\WebService.cs" />
+    <Compile Include="Service\Web\API\ApiOperationResult.cs" />
+    <Compile Include="Service\Web\API\Controllers\AppArchiveController.cs" />
+    <Compile Include="Service\Web\API\Controllers\AppController.cs" />
+    <Compile Include="Service\Web\API\Controllers\BrowseController.cs" />
+    <Compile Include="Service\Web\API\Controllers\ConfigurationController.cs" />
+    <Compile Include="Service\Web\API\Controllers\LogController.cs" />
+    <Compile Include="Service\Web\API\Controllers\ReadController.cs" />
+    <Compile Include="Service\Web\API\Controllers\ValuesController.cs" />
+    <Compile Include="Service\Web\API\IApiController.cs" />
+    <Compile Include="Service\Web\SignalR\HubHelper.cs" />
+    <Compile Include="Service\Web\SignalR\Hubs\LogHub.cs" />
+    <Compile Include="Service\Web\SignalR\Hubs\ItemHub.cs" />
+    <Compile Include="Service\Web\OwinStartup.cs" />
+    <Compile Include="Service\Web\SignalR\IHub.cs" />
+    <Compile Include="Service\Web\WebService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -224,10 +223,7 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Communication\Connectors\" />
-    <Folder Include="Communication\Endpoints\IoT\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

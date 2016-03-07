@@ -13,7 +13,7 @@ namespace Symbiote.Core.Plugin
     {
         Unknown,
         Connector,
-        Service
+        Endpoint
     }
 
     public enum PluginAuthorization

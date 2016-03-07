@@ -6,21 +6,23 @@ using System.Threading.Tasks;
 using Symbiote.Core.Plugin;
 using Symbiote.Core;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Plugin.Connector;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
-    public class SimulationConnector : IConnector
+    public class SimulationConnector : IConnector, IConfigurable<SimulationConnectorConfiguration>
     {
-        private PluginItem itemRoot;
-        
+        private ConnectorItem itemRoot;
+       
         public string Name { get; private set; }
         public string FQN { get; private set; }
         public Version Version { get; private set; }
         public PluginType PluginType { get; private set; }
+
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
+        public SimulationConnectorConfiguration Configuration { get; private set; }
+
         public string InstanceName { get; private set; }
-        public string Configuration { get; private set; }
-        public bool IsConfigured { get { return true; } }
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
@@ -32,13 +34,40 @@ namespace Symbiote.Plugin.Connector.Simulation
             FQN = System.Reflection.Assembly.GetEntryAssembly().GetTypes()[0].Namespace;
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
             PluginType = PluginType.Connector;
-            ConfigurationDefinition = new ConfigurationDefinition();
 
             InitializeItems();
         }
 
-        public void Configure(string configuration)
+        /// <summary>
+        /// The parameterless Configure() method calls the overloaded Configure() and passes in the instance of 
+        /// the model/type returned by the GetConfiguration() method in the Configuration Manager.
+        /// 
+        /// This is akin to saying "configure yourself using whatever is in the config file"
+        /// </summary>
+        /// <returns></returns>
+        public OperationResult Configure()
         {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// The Configure method is called by external actors to configure or re-configure the Endpoint instance.
+        /// 
+        /// If anything inside the Endpoint needs to be refreshed to reflect changes to the configuration, do it in
+        /// this method.
+        /// </summary>
+        /// <param name="configuration">The instance of the model/configuration type to apply.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Configure(SimulationConnectorConfiguration configuration)
+        {
+            Configuration = configuration;
+
+            return new OperationResult();
+        }
+
+        public OperationResult SaveConfiguration()
+        {
+            throw new NotImplementedException();
         }
 
         public Item FindItem(string fqn)
@@ -113,45 +142,83 @@ namespace Symbiote.Plugin.Connector.Simulation
         private void InitializeItems()
         {
             // instantiate an item root
-            itemRoot = new PluginItem(this, InstanceName, true);
+            itemRoot = new ConnectorItem(this, InstanceName, true);
 
             // create some simulation items
-            PluginItem mathRoot = itemRoot.AddChild(new PluginItem(this, "Math", typeof(Folder)));
-            mathRoot.AddChild(new PluginItem(this, "Sine", typeof(double)));
-            mathRoot.AddChild(new PluginItem(this, "Cosine", typeof(double)));
-            mathRoot.AddChild(new PluginItem(this, "Tangent", typeof(double)));
+            ConnectorItem mathRoot = itemRoot.AddChild(new ConnectorItem(this, "Math", typeof(Folder)));
+            mathRoot.AddChild(new ConnectorItem(this, "Sine", typeof(double)));
+            mathRoot.AddChild(new ConnectorItem(this, "Cosine", typeof(double)));
+            mathRoot.AddChild(new ConnectorItem(this, "Tangent", typeof(double)));
 
-            PluginItem processRoot = itemRoot.AddChild(new PluginItem(this, "Process", typeof(Folder)));
-            processRoot.AddChild(new PluginItem(this, "Ramp", typeof(double)));
-            processRoot.AddChild(new PluginItem(this, "Step", typeof(double)));
-            processRoot.AddChild(new PluginItem(this, "Toggle", typeof(double)));
+            ConnectorItem processRoot = itemRoot.AddChild(new ConnectorItem(this, "Process", typeof(Folder)));
+            processRoot.AddChild(new ConnectorItem(this, "Ramp", typeof(double)));
+            processRoot.AddChild(new ConnectorItem(this, "Step", typeof(double)));
+            processRoot.AddChild(new ConnectorItem(this, "Toggle", typeof(double)));
 
-            PluginItem timeRoot = itemRoot.AddChild(new PluginItem(this, "DateTime", typeof(Structure)));
-            timeRoot.AddChild(new PluginItem(this, "Time", typeof(string)));
-            timeRoot.AddChild(new PluginItem(this, "Date", typeof(string)));
-            timeRoot.AddChild(new PluginItem(this, "TimeZone", typeof(string)));
+            ConnectorItem timeRoot = itemRoot.AddChild(new ConnectorItem(this, "DateTime", typeof(Structure)));
+            timeRoot.AddChild(new ConnectorItem(this, "Time", typeof(string)));
+            timeRoot.AddChild(new ConnectorItem(this, "Date", typeof(string)));
+            timeRoot.AddChild(new ConnectorItem(this, "TimeZone", typeof(string)));
             //timeRoot.DesignateAsDataStucture();
 
-            PluginItem arrayRoot = itemRoot.AddChild(new PluginItem(this, "Array", typeof(object[])));
+            ConnectorItem arrayRoot = itemRoot.AddChild(new ConnectorItem(this, "Array", typeof(object[])));
 
-            PluginItem motorRoot = itemRoot.AddChild(new PluginItem(this, "Motor", typeof(object)));
+            ConnectorItem motorRoot = itemRoot.AddChild(new ConnectorItem(this, "Motor", typeof(object)));
 
-            PluginItem motorArrayRoot = itemRoot.AddChild(new PluginItem(this, "MotorArray", typeof(List<object>)));
+            ConnectorItem motorArrayRoot = itemRoot.AddChild(new ConnectorItem(this, "MotorArray", typeof(List<object>)));
 
         }
+
+        #region Static Methods
+
+        /// <summary>
+        /// The GetConfigurationDefinition method is static and returns the ConfigurationDefinition for the Endpoint.
+        /// 
+        /// This method is necessary so that the configuration defintion can be registered with the ConfigurationManager
+        /// prior to any instances being created.  This method MUST be implemented, however it is not possible to specify
+        /// static methods in an interface, so implementing IConfigurable will not enforce this.
+        /// </summary>
+        /// <returns>The ConfigurationDefinition for the Endpoint.</returns>
+        public static ConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+
+            // to create the form and schema strings, visit http://schemaform.io/examples/bootstrap-example.html
+            // use the example to create the desired form and schema, and ensure that the resulting model matches the model
+            // for the endpoint.  When you are happy with the json from the above url, visit http://www.freeformatter.com/json-formatter.html#ad-output
+            // and paste in the generated json and format it using the "JavaScript escaped" option.  Paste the result into the methods below.
+
+            retVal.SetForm("[\"templateURL\",{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"Save\"}]");
+            retVal.SetSchema("{\"type\":\"object\",\"title\":\"XMLEndpoint\",\"properties\":{\"templateURL\":{\"title\":\"Template URL\",\"type\":\"string\"}},\"required\":[\"templateURL\"]}");
+
+            // this will always be typeof(YourConfiguration/ModelObject)
+            retVal.SetModel(typeof(SimulationConnectorConfiguration));
+            return retVal;
+        }
+
+        /// <summary>
+        /// The GetDefaultConfiguration method is static and returns a default or blank instance of
+        /// the confguration model/type.
+        /// 
+        /// If the ConfigurationManager fails to retrieve the configuration for an instance it will invoke this 
+        /// method and return this value in lieu of a loaded configuration.  This is a failsafe in case
+        /// the configuration file becomes corrupted.
+        /// </summary>
+        /// <returns></returns>
+        public static SimulationConnectorConfiguration GetDefaultConfiguration()
+        {
+            SimulationConnectorConfiguration retVal = new SimulationConnectorConfiguration();
+            retVal.Interval = 1000;
+            return retVal;
+        }
+
+        #endregion
     }
 
-    //public class PluginConfigurationDefinition : IPluginConfigurationDefinition
-    //{
-    //    public string Form { get; private set; }
-    //    public string Schema { get; private set; }
-
-    //    public PluginConfigurationDefinition()
-    //    {
-    //        Form = "";
-    //        Schema = "";
-    //    }
-    //}
+    public class SimulationConnectorConfiguration
+    {
+        public int Interval { set; get; }
+    }
 
     public class Motor
     {

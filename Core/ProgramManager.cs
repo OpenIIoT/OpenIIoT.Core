@@ -4,11 +4,9 @@ using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
-using Symbiote.Core.Communication.Services;
 using NLog;
 using Symbiote.Core.App;
-using Newtonsoft.Json;
-using Symbiote.Core.Communication.Endpoints;
+using Symbiote.Core.Service;
 
 namespace Symbiote.Core
 {
@@ -39,20 +37,46 @@ namespace Symbiote.Core
         /// </summary>
         public string ProductName { get { return typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product; } }
 
-        /// <summary>
-        /// A Dictionary containing all of the application directories, loaded from the App.config.
-        /// </summary>
-        public ProgramDirectories Directories { get; private set; }
-
+        
+        //------------------------------------------- - - ------------ - -
+        // Properties related to the PlatformManager.
+        //
         /// <summary>
         /// The PlatformManager for the application.
         /// </summary>
         public PlatformManager PlatformManager { get; private set; }
+        /// <summary>
+        /// The Platform for the application.
+        /// </summary>
+        public IPlatform Platform { get { return PlatformManager.Platform; } }
+        /// <summary>
+        /// The directories used by the application.
+        /// </summary>
+        public PlatformDirectories Directories { get { return PlatformManager.Directories; } }
+        //---------------------------------- - -         --------- - --------------  -
 
+        
+        //-------------------- - - ---------------- - -  -             --------- - 
+        // Properties related to the ConfigurationManager
+        //
         /// <summary>
         /// The ConfigurationManager for the application.
         /// </summary>
         public ConfigurationManager ConfigurationManager { get; private set; }
+        /// <summary>
+        /// The configuration for the application.
+        /// </summary>
+        public ApplicationConfiguration Configuration { get { return ConfigurationManager.Configuration; } }
+        /// <summary>
+        /// The filename of the configuration file.
+        /// </summary>
+        public string ConfigurationFileName { get { return ConfigurationManager.ConfigurationFileName; } }
+        /// <summary>
+        /// A dictionary containing the types and ConfigurationDefinitions for the configurable types within the application.
+        /// </summary>
+        public Dictionary<Type, ConfigurationDefinition> ConfigurableTypes { get { return ConfigurationManager.ConfigurableTypes; } }
+        //---------------------------------- - ---------------------- - -------------------------------------------------  ------------ 
+
 
         /// <summary>
         /// The PluginManager for the application.
@@ -72,7 +96,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The EndpointManager for the application.
         /// </summary>
-        public EndpointManager EndpointManager { get; private set; }
+        public Plugin.Endpoint.EndpointManager EndpointManager { get; private set; }
 
         /// <summary>
         /// The AppManager for the application.
@@ -115,6 +139,7 @@ namespace Symbiote.Core
             // Plugin Manager
             logger.Debug("Instantiating the Plugin Manager...");
             PluginManager = PluginManager.Instance(this);
+            ConfigurationManager.RegisterType(typeof(PluginManager));
             logger.Debug("Successfully instantiated the Plugin Manager.");
             //----------------------------- ------ -- --
 
@@ -131,7 +156,6 @@ namespace Symbiote.Core
             // Service Manager
             logger.Debug("Instantiating the Service Manager...");
             ServiceManager = ServiceManager.Instance(this);
-            ConfigurationManager.RegisterType(typeof(ServiceManager));
             logger.Debug("Successfully instantiated the Service Manager.");
             //------------------- - - ---- -        -
 
@@ -140,8 +164,8 @@ namespace Symbiote.Core
             // Endpoint Manager
             //----------------------- - - ------------- - 
             logger.Debug("Instantiating the Endpoint Manager...");
-            EndpointManager = EndpointManager.Instance(this);
-            ConfigurationManager.RegisterType(typeof(EndpointManager));
+            EndpointManager = Plugin.Endpoint.EndpointManager.Instance(this);
+            ConfigurationManager.RegisterType(typeof(Plugin.Endpoint.EndpointManager));
             logger.Debug("Successfully instantiated the Endpoint Manager.");
            
 
@@ -172,97 +196,13 @@ namespace Symbiote.Core
         /// <summary>
         /// Starts the Program Manager.
         /// </summary>
-        /// <seealso cref="IManager">Implementation of IManager</seealso>
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
             logger.Info("Starting the Program Manager...");
             OperationResult retVal = new OperationResult();
 
-
-            //-------- - - - -- - - 
-            // Populate the ProgramDirectories list
-            logger.Debug("Loading application directories...");
-            OperationResult<ProgramDirectories> loadDirectoryResult = LoadDirectories();
-            if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to load application directory list." + retVal.GetLastError());
-            Directories = loadDirectoryResult.Result;
-            loadDirectoryResult.LogResult(logger, "Debug", "Warn", "Error", "LoadDirectories");
-
-            // copy any warnings to the overall return value
-            foreach (OperationResultMessage message in loadDirectoryResult.Messages)
-            {
-                if (message.Type == OperationResultMessageType.Warning)
-                    retVal.AddWarning(message.Message);
-            }
-            //------------------------------------ - - 
-
-
-            //-------------------------- - - -               -  
-            // Check to ensure all directories exist.  If not, create them.
-            logger.Debug("Checking directories...");
-            OperationResult checkResult = Directories.CheckDirectories();
-            if (checkResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to verify and/or create one or more required program directory: " + retVal.GetLastError());
-            checkResult.LogResult(logger, "Debug", "Warn", "Error", "CheckDirectories");
-
-            // copy any warnings to the overall return value
-            foreach (OperationResultMessage message in loadDirectoryResult.Messages)
-            {
-                if (message.Type == OperationResultMessageType.Warning)
-                    retVal.AddWarning(message.Message);
-            }
-            //------------- - - -
-
-
             retVal.LogResult(logger);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Loads the list of directories from the configuration.exe file
-        /// </summary>
-        /// <returns>An OperationResult containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
-        internal OperationResult<ProgramDirectories> LoadDirectories()
-        {
-            logger.Trace("Loading directory list from the configuration file...");
-            OperationResult<ProgramDirectories> retVal;
-            string configDirectories = Utility.GetSetting("Directories");
-
-            if (configDirectories != "")
-            {
-                retVal = LoadDirectories(configDirectories);
-                if (retVal.ResultCode != OperationResultCode.Failure)
-                    Directories = retVal.Result;
-            }
-            else
-                retVal = new OperationResult<ProgramDirectories>().AddError("The list of directories is missing from the configuration file.");
-
-            retVal.LogResult(logger, "Trace");
-            return retVal;
-        }
-
-        /// <summary>
-        /// Deserializes the provided string to a dictionary containing the program directory names and paths, then creates
-        /// an instance of ProgramDirectories with it.
-        /// </summary>
-        /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
-        /// <returns>An OperationResult containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
-        private OperationResult<ProgramDirectories> LoadDirectories(string directories)
-        {
-            OperationResult<ProgramDirectories> retVal = new OperationResult<ProgramDirectories>();
-
-            try
-            {
-                // hapazardly try to set all of the directories from the deserialized config json.  if anything goes wrong
-                // an exception will be thrown and we'll handle it.
-                retVal.Result = new ProgramDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Exception thrown while deserializing the list of directories from the configuration file:" + ex.Message);
-            }
-        
             return retVal;
         }
 

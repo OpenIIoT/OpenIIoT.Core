@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Linq;
 using NLog;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.Plugin.Connector;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.IO.Compression;
@@ -64,7 +65,7 @@ namespace Symbiote.Core.Platform.UNIX
             List<string> list = new List<string>();
             try
             {
-                list = Directory.EnumerateFiles(root, searchPattern).ToList<string>();
+                list = Directory.EnumerateFiles(root, searchPattern, SearchOption.AllDirectories).ToList<string>();
             }
             catch (IOException ex)
             {

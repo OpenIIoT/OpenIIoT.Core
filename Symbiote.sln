@@ -9,9 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Plugins", "Plugins", "{CE59
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Connectors", "Connectors", "{7524D106-74DC-4708-846A-D1BDA3A19EFA}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{544AC559-80C1-4A8F-AC81-5997166DA050}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Endpoints", "Endpoints", "{544AC559-80C1-4A8F-AC81-5997166DA050}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Simulation", "Plugins\Connectors\Symbiote.Plugin.Connector.Simulator\Symbiote.Plugin.Connector.Simulation.csproj", "{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Endpoint.Example", "Plugins\Endpoints\Symbiote.Plugin.Endpoint.Example\Symbiote.Plugin.Endpoint.Example.csproj", "{5DA85DD0-B058-459F-AE89-EFE972CB7E34}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +29,10 @@ Global
 		{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5DA85DD0-B058-459F-AE89-EFE972CB7E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5DA85DD0-B058-459F-AE89-EFE972CB7E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5DA85DD0-B058-459F-AE89-EFE972CB7E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5DA85DD0-B058-459F-AE89-EFE972CB7E34}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -35,5 +41,6 @@ Global
 		{7524D106-74DC-4708-846A-D1BDA3A19EFA} = {CE59C89D-A00D-48D7-BE8E-EF16BF1935F3}
 		{544AC559-80C1-4A8F-AC81-5997166DA050} = {CE59C89D-A00D-48D7-BE8E-EF16BF1935F3}
 		{F9F78672-5688-46E0-99F5-BC75CB3BBEE0} = {7524D106-74DC-4708-846A-D1BDA3A19EFA}
+		{5DA85DD0-B058-459F-AE89-EFE972CB7E34} = {544AC559-80C1-4A8F-AC81-5997166DA050}
 	EndGlobalSection
 EndGlobal

@@ -9,6 +9,7 @@ using Symbiote.Core.Plugin;
 using System.Text;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
+using Symbiote.Core.Plugin.Connector;
 
 namespace Symbiote.Core.Platform.Windows
 {
@@ -64,7 +65,7 @@ namespace Symbiote.Core.Platform.Windows
             List<string> list = new List<string>();
             try
             {
-                list = Directory.EnumerateFiles(root, searchPattern).ToList<string>();
+                list = Directory.EnumerateFiles(root, searchPattern, SearchOption.AllDirectories).ToList<string>();
             }
             catch (IOException ex)
             {

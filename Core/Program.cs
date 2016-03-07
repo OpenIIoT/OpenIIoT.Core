@@ -42,7 +42,10 @@ namespace Symbiote.Core
         /// Responsible for instantiating the platform, and determining whether to start
         /// the application as a Windows service or console/interactive application.
         /// </remarks>
-        /// <param name="args">Command line arguments.</param>
+        /// <param name="args">
+        /// Command line arguments; the first value corresponds to the highest active 
+        /// logging level, e.g. "trace", "debug", "info", "warn", "error" and "fatal".
+        /// </param>
         internal static void Main(string[] args)
         {
             try
@@ -54,7 +57,7 @@ namespace Symbiote.Core
                 logger.Debug("Program started with " + (args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments."));
 
                 // TODO: change this for release
-                args = new string[] { "debug" };
+                //args = new string[] { "trace" };
                 if (args.Length > 0)
                 {
                     logger.Debug("Reconfiguring logger to log level '" + args[0] + "'...");
@@ -80,7 +83,8 @@ namespace Symbiote.Core
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
                 logger.Info("Starting the Platform Manager...");
                 manager.PlatformManager.Start();
-                logger.Info("Detected platform '" + manager.PlatformManager.Platform.PlatformType.ToString() + "' (" + manager.PlatformManager.Platform.Version + ")");
+                logger.Info("Platform Manager started.");
+                logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
                 //------------------- - -----------                      ------------- 
 
                 
@@ -103,7 +107,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "The application failed to initialize.");
+                logger.Fatal(ex, "The application failed to initialize.");
             }
         }
 
@@ -113,28 +117,34 @@ namespace Symbiote.Core
         /// <param name="args">Command line arguments, passed from Main().</param>
         internal static void Start(string[] args)
         {
+            // this is the main try/catch for the application logic.  If an unhandled exception is thrown
+            // anywhere in the application it will be caught here and treated as a fatal error, stopping the application.
             try
             {
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
-                // start the program manager, which in turn will start each of the managers.
-                logger.Info("Starting the Program Manager...");
-                manager.Start();
-                logger.Info("Program Manager started.");
+                // start the program manager.
+                //logger.Info("Starting the Program Manager...");
+                //manager.Start();
+                //logger.Info("Program Manager started.");
+                StartManager(ProgramManager.Instance());
                 //----------- - -
 
 
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
+                //manager.ConfigurationManager.Start();
+                StartManager(manager.ConfigurationManager);
                 logger.Info("Loading configuration...");
                 manager.ConfigurationManager.LoadConfiguration();
-                logger.Info("Loaded Configuration from '" + manager.ConfigurationManager.GetConfigurationFileName() + "'.");
+                logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
 
 
                 //--------------------------------------------- - - --------- ----  - -    -
                 // load plugins.  
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
+                StartManager(manager.PluginManager);
                 logger.Info("Loading plugins...");
                 manager.PluginManager.LoadPlugins("Plugins");
                 logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
@@ -223,11 +233,11 @@ namespace Symbiote.Core
             }
             catch (TargetInvocationException ex)
             {
-                logger.Error(ex, "Unable to start the web server.  Is " + manager.ProductName + " running under an account with administrative privilege?");
+                logger.Fatal(ex, "Unable to start the web server.  Is " + manager.ProductName + " running under an account with administrative privilege?");
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Fatal error.");
+                logger.Fatal(ex, "Fatal error.");
             }
         }
 

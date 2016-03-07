@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Symbiote.Core.Plugin;
+using Symbiote.Core.Plugin.Connector;
 
 namespace Symbiote.Core.Platform
 {

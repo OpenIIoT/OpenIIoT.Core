@@ -12,5 +12,6 @@ namespace Symbiote.Core.Configuration
         T Configuration { get; }
         OperationResult Configure();
         OperationResult Configure(T configuration);
+        OperationResult SaveConfiguration();
     }
 }
