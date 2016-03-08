@@ -251,6 +251,20 @@ namespace Symbiote.Core
             return null;
         }
 
+        public virtual OperationResult SubscribeToSource()
+        {
+            OperationResult retVal = new OperationResult();
+            SourceItem.Changed += SourceItemChanged;
+            return retVal;
+        }
+
+        public virtual OperationResult UnsubscribeFromSource()
+        {
+            OperationResult retVal = new OperationResult();
+            SourceItem.Changed -= SourceItemChanged;
+            return retVal;
+        }
+
         public virtual OperationResult Write(object value)
         {
             OperationResult retVal = new OperationResult();
@@ -343,7 +357,13 @@ namespace Symbiote.Core
 
         #region Events
 
-        private void OnChange(object value)
+        protected virtual void SourceItemChanged(Item sender, ItemEventArgs e)
+        {
+            NLog.LogManager.GetCurrentClassLogger().Info("Item changed: " + e.Value);
+            Write(e.Value);
+        }
+
+        protected virtual void OnChange(object value)
         {
             if (Changed != null)
                 Changed(this, new ItemEventArgs(value));

@@ -7,6 +7,15 @@ using System.Threading.Tasks;
 
 namespace Symbiote.Core.Plugin.Connector
 {
+    /// <summary>
+    /// The ConnectorItem is an extension of the Item class.  This class represents Items that are provided by Connector Plugins.
+    /// The primary differences between the two types are:
+    ///     The ConnectorItem stores no values.  Furthermore it does not implement persistence.
+    ///     The ConnectorItem reads and writes directly to the parent Connector Plugin using the Fully Qualified Name of the item.
+    ///     The ConnectorItem listens for the Changed event from the parent Connector Plugin and, when fired, fires its own Changed() event.
+    ///         Because the only link between a ConnectorItem and the Connector Plugin, the FQN is passed in the EventArgs and the ConnectorItem
+    ///         is responsible ensuring that it only forwards events that pertain to itself.
+    /// </summary>
     public class ConnectorItem : Item
     {
         [JsonIgnore]
@@ -46,6 +55,7 @@ namespace Symbiote.Core.Plugin.Connector
         public ConnectorItem(IConnector plugin, string fqn, Type type = null, string sourceAddress = "", bool isRoot = false) : base(fqn, type, sourceAddress)
         {
             Plugin = plugin;
+            Plugin.Changed += SourceChanged; 
         }
 
         public ConnectorItem SetParent(ConnectorItem parent)
@@ -79,6 +89,21 @@ namespace Symbiote.Core.Plugin.Connector
         public override OperationResult WriteToSource(object value)
         {
             return Plugin.Write(this.FQN, value);
+        }
+
+        /// <summary>
+        /// Raised when any item from the source connector changes.  This is due to the fact that there is no hard link between a specific
+        /// ConnectorItem and an item within the Connector.
+        /// </summary>
+        /// <param name="sender">The connector that raised the event.</param>
+        /// <param name="e">The ConnectorEventArgs for the event.</param>
+        public void SourceChanged(object sender, ConnectorEventArgs e)
+        {
+            if (e.FQN == FQN)
+            {
+                NLog.LogManager.GetCurrentClassLogger().Info("Plugin Item changed: " + e.FQN + "; " + e.Value);
+                base.OnChange(e.Value);
+            }
         }
     }
 }

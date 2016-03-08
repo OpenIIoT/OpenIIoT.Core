@@ -144,6 +144,7 @@
     <Compile Include="Common\Item\ItemEventArgs.cs" />
     <Compile Include="Common\Item\ItemType.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
+    <Compile Include="Plugin\Connector\ConnectorEventArgs.cs" />
     <Compile Include="Plugin\Connector\ConnectorManager.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Plugin\Endpoint\IEndpoint.cs" />

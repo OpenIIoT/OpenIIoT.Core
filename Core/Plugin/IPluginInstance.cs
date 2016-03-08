@@ -10,5 +10,7 @@ namespace Symbiote.Core.Plugin
     public interface IPluginInstance : IPlugin
     {
         string InstanceName { get; }
+        OperationResult Start();
+        OperationResult Stop();
     }
 }

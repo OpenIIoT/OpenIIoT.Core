@@ -96,6 +96,16 @@ namespace Symbiote.Core.Plugin.Endpoint.Example
             throw new NotImplementedException();
         }
 
+        public OperationResult Start()
+        {
+            return new OperationResult();
+        }
+
+        public OperationResult Stop()
+        {
+            return new OperationResult();
+        }
+
         /// <summary>
         /// The Configure method is called by external actors to configure or re-configure the Endpoint instance.
         /// 

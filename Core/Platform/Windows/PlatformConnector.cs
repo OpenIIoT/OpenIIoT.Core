@@ -30,6 +30,8 @@ namespace Symbiote.Core.Platform.Windows
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
+        public event EventHandler<ConnectorEventArgs> Changed;
+
         public PlatformConnector(string instanceName)
         {
             InstanceName = instanceName;
@@ -49,6 +51,16 @@ namespace Symbiote.Core.Platform.Windows
         public void Configure(string configuration)
         {
 
+        }
+
+        public OperationResult Start()
+        {
+            return new OperationResult();
+        }
+
+        public OperationResult Stop()
+        {
+            return new OperationResult();
         }
 
         public Item FindItem(string fqn)
@@ -156,6 +168,12 @@ namespace Symbiote.Core.Platform.Windows
             ddRoot.AddChild(new ConnectorItem(this, "FreeSpace", typeof(long), ""));
             ddRoot.AddChild(new ConnectorItem(this, "PercentUsed", typeof(double), ""));
             ddRoot.AddChild(new ConnectorItem(this, "PercentFree", typeof(double), ""));
+        }
+
+        private void OnChange(string fqn, object value)
+        {
+            if (Changed != null)
+                Changed(this, new ConnectorEventArgs(fqn, value));
         }
     }
 }

@@ -225,7 +225,9 @@ namespace Symbiote.Core
                 StartManager(manager.ServiceManager);
                 StartManager(manager.EndpointManager);
 
+                AddressResolver.Resolve("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
 
+                manager.PluginManager.StartPlugins();
 
                 logger.Info(manager.ProductName + " is running.");
 

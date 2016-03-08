@@ -26,6 +26,10 @@ namespace Symbiote.Plugin.Connector.Simulation
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
+        public event EventHandler<ConnectorEventArgs> Changed;
+
+        private System.Timers.Timer timer;
+
         public SimulationConnector(string instanceName)
         {
             InstanceName = instanceName;
@@ -36,6 +40,14 @@ namespace Symbiote.Plugin.Connector.Simulation
             PluginType = PluginType.Connector;
 
             InitializeItems();
+
+            timer = new System.Timers.Timer(1000);
+            timer.Elapsed += Timer_Elapsed;
+        }
+
+        private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            OnChange(InstanceName + ".DateTime.Time", Read(InstanceName + ".DateTime.Time"));
         }
 
         /// <summary>
@@ -48,6 +60,18 @@ namespace Symbiote.Plugin.Connector.Simulation
         public OperationResult Configure()
         {
             throw new NotImplementedException();
+        }
+
+        public OperationResult Start()
+        {
+            timer.Start();
+            return new OperationResult();
+        }
+
+        public OperationResult Stop()
+        {
+            timer.Stop();
+            return new OperationResult();
         }
 
         /// <summary>
@@ -213,6 +237,12 @@ namespace Symbiote.Plugin.Connector.Simulation
         }
 
         #endregion
+
+        private void OnChange(string fqn, object value)
+        {
+            if (Changed != null)
+                Changed(this, new ConnectorEventArgs(fqn, value));
+        }
     }
 
     public class SimulationConnectorConfiguration

@@ -434,6 +434,15 @@ namespace Symbiote.Core.Plugin
             }
         }
 
+        public void StartPlugins()
+        {
+            foreach (IPluginInstance instance in PluginInstances)
+            {
+                logger.Info("Starting Plugin '" + instance.Name + "'...");
+                instance.Start();
+            }
+        }
+
         public void PerformAutoBuild()
         {
             PerformAutoBuild(PluginInstances, Configuration.Instances.Where(pi => pi.AutoBuild.Enabled = true));

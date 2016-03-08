@@ -10,7 +10,7 @@ namespace Symbiote.Core
     {
         public object Value { get; private set; }
 
-        public ItemEventArgs(object value)
+        public ItemEventArgs(object value) : base()
         {
             Value = value;
         }

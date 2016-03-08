@@ -15,5 +15,6 @@ namespace Symbiote.Core.Plugin.Connector
         object Read(string fqn);
         bool Writeable { get; }
         OperationResult Write(string fqn, object value);
+        event EventHandler<ConnectorEventArgs> Changed;
     }
 }
