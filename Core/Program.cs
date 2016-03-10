@@ -225,8 +225,7 @@ namespace Symbiote.Core
                 StartManager(manager.ServiceManager);
                 StartManager(manager.EndpointManager);
 
-                AddressResolver.Resolve("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
-                AddressResolver.Resolve("Symbiote.Simulation.MotorArray").SubscribeToSource();
+                AddressResolver.Resolve("Symbiote.Simulation.Motor").SubscribeToSource();
 
                 manager.PluginManager.StartPlugins();
 

@@ -29,6 +29,7 @@ namespace Symbiote.Plugin.Connector.Simulation
         public event EventHandler<ConnectorEventArgs> Changed;
 
         private System.Timers.Timer timer;
+        private int counter;
 
         public SimulationConnector(string instanceName)
         {
@@ -41,15 +42,15 @@ namespace Symbiote.Plugin.Connector.Simulation
 
             InitializeItems();
 
-            timer = new System.Timers.Timer(1000);
+            counter = 0;
+            timer = new System.Timers.Timer(10);
             timer.Elapsed += Timer_Elapsed;
         }
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            //OnChange(InstanceName + ".DateTime.Time", Read(InstanceName + ".DateTime.Time"));
-            // OnChange(InstanceName + ".MotorArray", Read(InstanceName + ".MotorArray"));
-            ((ConnectorItem)FindItem(InstanceName + ".MotorArray")).Write(Read(InstanceName + ".MotorArray"));
+            counter++;
+            ((ConnectorItem)FindItem(InstanceName + ".Motor")).Write(new Motor("Test Motor", "ABC123", counter, true));
         }
 
         /// <summary>

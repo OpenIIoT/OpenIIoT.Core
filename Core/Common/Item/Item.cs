@@ -359,8 +359,6 @@ namespace Symbiote.Core
 
         protected virtual void SourceItemChanged(Item sender, ItemEventArgs e)
         {
-
-            NLog.LogManager.GetCurrentClassLogger().Info("Item changed: " + e.Value);
             Write(e.Value);
         }
 
