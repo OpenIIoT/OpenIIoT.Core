@@ -85,7 +85,7 @@ namespace Symbiote.Core
          /// <summary>
         /// The value of the composite item.
         /// </summary>
-        public object Value { get; private set; }
+        public object Value { get; protected set; }
         
         /// <summary>
         /// The collection of Items contained within this Item.
@@ -359,6 +359,7 @@ namespace Symbiote.Core
 
         protected virtual void SourceItemChanged(Item sender, ItemEventArgs e)
         {
+
             NLog.LogManager.GetCurrentClassLogger().Info("Item changed: " + e.Value);
             Write(e.Value);
         }

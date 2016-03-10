@@ -47,7 +47,9 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
-            OnChange(InstanceName + ".DateTime.Time", Read(InstanceName + ".DateTime.Time"));
+            //OnChange(InstanceName + ".DateTime.Time", Read(InstanceName + ".DateTime.Time"));
+            // OnChange(InstanceName + ".MotorArray", Read(InstanceName + ".MotorArray"));
+            ((ConnectorItem)FindItem(InstanceName + ".MotorArray")).Write(Read(InstanceName + ".MotorArray"));
         }
 
         /// <summary>
@@ -187,7 +189,7 @@ namespace Symbiote.Plugin.Connector.Simulation
 
             ConnectorItem arrayRoot = itemRoot.AddChild(new ConnectorItem(this, "Array", typeof(object[])));
 
-            ConnectorItem motorRoot = itemRoot.AddChild(new ConnectorItem(this, "Motor", typeof(object)));
+            ConnectorItem motorRoot = itemRoot.AddChild(new ConnectorItem(this, "Motor", typeof(Motor)));
 
             ConnectorItem motorArrayRoot = itemRoot.AddChild(new ConnectorItem(this, "MotorArray", typeof(List<object>)));
 

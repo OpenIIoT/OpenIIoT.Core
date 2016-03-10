@@ -55,7 +55,6 @@ namespace Symbiote.Core.Plugin.Connector
         public ConnectorItem(IConnector plugin, string fqn, Type type = null, string sourceAddress = "", bool isRoot = false) : base(fqn, type, sourceAddress)
         {
             Plugin = plugin;
-            Plugin.Changed += SourceChanged; 
         }
 
         public ConnectorItem SetParent(ConnectorItem parent)
@@ -77,33 +76,38 @@ namespace Symbiote.Core.Plugin.Connector
         {
             return ReadFromSource();
         }
+
         public override object ReadFromSource()
         {
             return Plugin.Read(this.FQN);
         }
 
+        /// <summary>
+        /// Called by the parent Connector plugin to update the value of the ConnectorItem.
+        /// Updates the internal value of the ConnectorItem and fires the Change event to notify any subscribed Items of the update.
+        /// </summary>
+        /// <remarks>Should never be called by anything other than the parent Connector plugin.</remarks>
+        /// <param name="value">The value with which to update the ConnectorItem.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public override OperationResult Write(object value)
         {
-            return WriteToSource(value);
-        }
-        public override OperationResult WriteToSource(object value)
-        {
-            return Plugin.Write(this.FQN, value);
+            Value = value;
+            base.OnChange(value);
+            return new OperationResult();
         }
 
         /// <summary>
-        /// Raised when any item from the source connector changes.  This is due to the fact that there is no hard link between a specific
-        /// ConnectorItem and an item within the Connector.
+        /// Called by Items using this ConnectorItem as a source, passes updated values to the Connector plugin for writing to the source of the item.
         /// </summary>
-        /// <param name="sender">The connector that raised the event.</param>
-        /// <param name="e">The ConnectorEventArgs for the event.</param>
-        public void SourceChanged(object sender, ConnectorEventArgs e)
+        /// <remarks>Any and all writes to ConnectorItems (other than by the Connector plugin) should be performed with WriteToSource.</remarks>
+        /// <param name="value">The value with which to update the ConnectorItem.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public override OperationResult WriteToSource(object value)
         {
-            if (e.FQN == FQN)
-            {
-                NLog.LogManager.GetCurrentClassLogger().Info("Plugin Item changed: " + e.FQN + "; " + e.Value);
-                base.OnChange(e.Value);
-            }
+            // update the internal value and notify subscribed Items of the update
+            Write(value);
+            // write the value to the parent Connector plugin
+            return Plugin.Write(this.FQN, value);
         }
     }
 }

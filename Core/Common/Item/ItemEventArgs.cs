@@ -9,6 +9,7 @@ namespace Symbiote.Core
     public class ItemEventArgs : EventArgs
     {
         public object Value { get; private set; }
+        public Type Type { get; private set; }
 
         public ItemEventArgs(object value) : base()
         {
