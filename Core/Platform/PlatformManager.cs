@@ -1,7 +1,5 @@
 ﻿using System;
 using NLog;
-using Newtonsoft.Json;
-using System.Collections.Generic;
 
 namespace Symbiote.Core.Platform
 {
@@ -24,14 +22,14 @@ namespace Symbiote.Core.Platform
         #region Variables
 
         /// <summary>
-        /// The ProgramManager for the application.
-        /// </summary>
-        private ProgramManager manager;
-        
-        /// <summary>
         /// The logger for this class.
         /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
+        private ProgramManager manager;
 
         /// <summary>
         /// The Singleton instance of PlatformManager.
@@ -80,12 +78,16 @@ namespace Symbiote.Core.Platform
 
         #endregion
 
+        #region Instance Methods
+
         /// <summary>
         /// Creates and returns the instance of IPlatform to be used by the application.
         /// </summary>
         /// <returns>An IPlatform corresponding to the current platform.</returns>
         public OperationResult Start()
         {
+            //-------- --
+            // determine the platform and instantiate it
             logger.Info("Starting Platform Manager...");
             OperationResult retVal = new OperationResult();
 
@@ -100,11 +102,13 @@ namespace Symbiote.Core.Platform
                 default:
                     throw new Exception("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
             }
+            //------------------- - -     -
 
+            
             //-------- - - - -- - - 
             // Populate the ProgramDirectories list
             logger.Debug("Loading application directories...");
-            OperationResult<PlatformDirectories> loadDirectoryResult = LoadDirectories();
+            OperationResult<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(Utility.GetSetting("Directories"));
             if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
                 throw new Exception("Failed to load application directory list." + retVal.GetLastError());
             Directories = loadDirectoryResult.Result;
@@ -138,55 +142,6 @@ namespace Symbiote.Core.Platform
 
             retVal.LogResult(logger);
             return new OperationResult();
-        }
-
-        #region Instance Methods
-
-        /// <summary>
-        /// Loads the list of directories from the configuration.exe file
-        /// </summary>
-        /// <returns>An OperationResult containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
-        private OperationResult<PlatformDirectories> LoadDirectories()
-        {
-            logger.Trace("Loading directory list from the configuration file...");
-            OperationResult<PlatformDirectories> retVal;
-            string configDirectories = Utility.GetSetting("Directories");
-
-            if (configDirectories != "")
-            {
-                retVal = LoadDirectories(configDirectories);
-                if (retVal.ResultCode != OperationResultCode.Failure)
-                    Directories = retVal.Result;
-            }
-            else
-                retVal = new OperationResult<PlatformDirectories>().AddError("The list of directories is missing from the configuration file.");
-
-            retVal.LogResult(logger, "Trace");
-            return retVal;
-        }
-
-        /// <summary>
-        /// Deserializes the provided string to a dictionary containing the program directory names and paths, then creates
-        /// an instance of ProgramDirectories with it.
-        /// </summary>
-        /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
-        /// <returns>An OperationResult containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
-        private OperationResult<PlatformDirectories> LoadDirectories(string directories)
-        {
-            OperationResult<PlatformDirectories> retVal = new OperationResult<PlatformDirectories>();
-
-            try
-            {
-                // hapazardly try to set all of the directories from the deserialized config json.  if anything goes wrong
-                // an exception will be thrown and we'll handle it.
-                retVal.Result = new PlatformDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Exception thrown while deserializing the list of directories from the configuration file:" + ex.Message);
-            }
-
-            return retVal;
         }
 
         #endregion

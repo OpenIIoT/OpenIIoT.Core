@@ -26,7 +26,14 @@ namespace Symbiote.Core.Platform.UNIX
 
     internal class UNIXPlatform : IPlatform
     {
-        private static Logger logger;
+        #region Variables
+
+        /// <summary>
+        /// The Logger for this class.
+        /// </summary>
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        #endregion
 
         public Core.Platform.PlatformType PlatformType { get; private set; }
         public string Version { get; private set; }
@@ -34,8 +41,6 @@ namespace Symbiote.Core.Platform.UNIX
 
         public UNIXPlatform()
         {
-            logger = LogManager.GetCurrentClassLogger();
-
             PlatformType = Core.Platform.PlatformType.UNIX;
             Version = Environment.OSVersion.VersionString;
         }
@@ -46,32 +51,46 @@ namespace Symbiote.Core.Platform.UNIX
             return Connector;
         }
 
-        public List<string> GetDirectoryList(string root)
+        /// <summary>
+        /// Returns a list of subdirectories within the supplied path.
+        /// </summary>
+        /// <param name="root">The parent directory to search.</param>
+        /// <returns>A list containing the fully qualified path of each directory found.</returns>
+        public OperationResult<List<string>> GetDirectoryList(string root)
         {
-            List<string> list = new List<string>();
+            OperationResult<List<string>> retVal = new OperationResult<List<string>>();
+            retVal.Result = new List<string>();
             try
             {
-                list = Directory.EnumerateDirectories(root).ToList<string>();
+                retVal.Result = Directory.EnumerateDirectories(root).ToList<string>();
             }
             catch (IOException ex)
             {
-                logger.Error(ex, "Error listing directories for root path '" + root + "'");
+                retVal.AddError("Error listing directories for rooth path '" + root + "': " + ex.Message);
             }
-            return list;
+            return retVal;
         }
 
-        public List<string> GetFileList(string root, string searchPattern)
+        /// <summary>
+        /// Returns a list of files within the supplied directory matching the supplied searchPattern.
+        /// </summary>
+        /// <param name="directory">The directory to search.</param>
+        /// <param name="searchPattern">The search pattern to match files against.</param>
+        /// <returns>A list containing the fully qualified filename of each file found.</returns>
+        public OperationResult<List<string>> GetFileList(string directory, string searchPattern)
         {
-            List<string> list = new List<string>();
+            OperationResult<List<string>> retVal = new OperationResult<List<string>>();
+            retVal.Result = new List<string>();
             try
             {
-                list = Directory.EnumerateFiles(root, searchPattern, SearchOption.AllDirectories).ToList<string>();
+                retVal.Result = Directory.EnumerateFiles(directory, searchPattern, SearchOption.AllDirectories).ToList<string>();
             }
             catch (IOException ex)
             {
-                logger.Error(ex, "Error listing files for directory '" + root + "' using search pattern '" + searchPattern);
+                logger.Error(ex, "Error listing files for directory '" + directory + "' using search pattern '" + searchPattern);
+                retVal.AddError("Error listing files for directory '" + directory + "' using search pattern '" + searchPattern + " : " + ex.Message);
             }
-            return list;
+            return retVal;
         }
 
         public List<string> GetZipFileList(string zipFile, string searchPattern)

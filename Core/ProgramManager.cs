@@ -40,7 +40,6 @@ namespace Symbiote.Core
         
         //------------------------------------------- - - ------------ - -
         // Properties related to the PlatformManager.
-        //
         /// <summary>
         /// The PlatformManager for the application.
         /// </summary>
@@ -58,7 +57,6 @@ namespace Symbiote.Core
         
         //-------------------- - - ---------------- - -  -             --------- - 
         // Properties related to the ConfigurationManager
-        //
         /// <summary>
         /// The ConfigurationManager for the application.
         /// </summary>
@@ -75,7 +73,7 @@ namespace Symbiote.Core
         /// A dictionary containing the types and ConfigurationDefinitions for the configurable types within the application.
         /// </summary>
         public Dictionary<Type, ConfigurationDefinition> ConfigurableTypes { get { return ConfigurationManager.ConfigurableTypes; } }
-        //---------------------------------- - ---------------------- - -------------------------------------------------  ------------ 
+        //---------------------------------- -   ----------------- - -------------------------------------------------  ---------- 
 
 
         /// <summary>

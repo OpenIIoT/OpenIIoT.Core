@@ -1,7 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using Symbiote.Core.Platform;
+using System;
+using Newtonsoft.Json;
 
 namespace Symbiote.Core.Platform
 {
@@ -10,6 +11,8 @@ namespace Symbiote.Core.Platform
     /// </summary>
     public class PlatformDirectories
     {
+        #region Properties
+
         /// <summary>
         /// The root directory; the directory from which the main executable is running.
         /// </summary>
@@ -46,6 +49,9 @@ namespace Symbiote.Core.Platform
         /// </summary>
         public string Logs { get; private set; }
 
+        #endregion
+
+        #region Constructors
 
         /// <summary>
         /// Creates an instance of ProgramDirectories using the provided dictionary
@@ -62,12 +68,14 @@ namespace Symbiote.Core.Platform
             Logs = Path.Combine(Root, directories["Logs"]);
         }
 
+        #endregion
+
         #region Instance Methods
 
         /// <summary>
-        /// 
+        /// Check each of the directories in the internal directory list and ensures that they exist.  
         /// </summary>
-        /// <returns></returns>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult CheckDirectories()
         {
             OperationResult retVal = new OperationResult();
@@ -105,15 +113,32 @@ namespace Symbiote.Core.Platform
         #region Static Methods
 
         /// <summary>
-        /// Removes the supplied root from the supplied subdirectory to return the path to the subdirectory
-        /// relative to the root.
+        /// Deserializes the provided string to a dictionary containing the program directory names and paths, then creates
+        /// an instance of ProgramDirectories with it.
         /// </summary>
-        /// <param name="root">The root path.</param>
-        /// <param name="subDirectory">The subdirectory relative to the root.</param>
-        /// <returns>A string containing the subDirectory with the root path removed.</returns>
-        public static string GetRelativePath(string root, string subDirectory)
+        /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
+        /// <returns>An OperationResult containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
+        public static OperationResult<PlatformDirectories> LoadDirectories(string directories)
         {
-            return subDirectory.Replace(root, "");
+            OperationResult<PlatformDirectories> retVal = new OperationResult<PlatformDirectories>();
+
+            if (directories == "")
+                retVal.AddError("The supplied list of directories is empty.");
+            else
+            {
+                try
+                {
+                    // hapazardly try to set all of the directories from the deserialized config json.  if anything goes wrong
+                    // an exception will be thrown and we'll handle it.
+                    retVal.Result = new PlatformDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError("Exception thrown while deserializing the list of directories from the configuration file:" + ex.Message);
+                }
+            }
+
+            return retVal;
         }
 
         #endregion

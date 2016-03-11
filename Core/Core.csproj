@@ -144,6 +144,7 @@
     <Compile Include="Common\Item\ItemEventArgs.cs" />
     <Compile Include="Common\Item\ItemType.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
+    <Compile Include="Platform\PlatformType.cs" />
     <Compile Include="Plugin\Connector\ConnectorEventArgs.cs" />
     <Compile Include="Plugin\Connector\ConnectorManager.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
@@ -172,7 +173,6 @@
     <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
-    <Compile Include="Platform\Enumerations.cs" />
     <Compile Include="Platform\UNIX\PlatformConnector.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\Windows\PlatformConnector.cs" />

@@ -155,7 +155,7 @@ namespace Symbiote.Core.Plugin
                 throw new Exception("Error: plugins already loaded.  Restart the application to re-load.");
 
             // fetch a list of files from the specified directory using the platform-independent GetFileList method
-            List<string> files = manager.PlatformManager.Platform.GetFileList(folder, "*.dll");
+            List<string> files = manager.PlatformManager.Platform.GetFileList(folder, "*.dll").Result;
 
             // iterate through the found files
             foreach (string plugin in files)

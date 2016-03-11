@@ -4,7 +4,6 @@ using System.ServiceProcess;
 using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
-using System.Timers;
 
 namespace Symbiote.Core
 {
@@ -56,8 +55,6 @@ namespace Symbiote.Core
                 // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
                 logger.Debug("Program started with " + (args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments."));
 
-                // TODO: change this for release
-                //args = new string[] { "trace" };
                 if (args.Length > 0)
                 {
                     logger.Debug("Reconfiguring logger to log level '" + args[0] + "'...");
@@ -123,9 +120,6 @@ namespace Symbiote.Core
             {
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
-                //logger.Info("Starting the Program Manager...");
-                //manager.Start();
-                //logger.Info("Program Manager started.");
                 StartManager(ProgramManager.Instance());
                 //----------- - -
 

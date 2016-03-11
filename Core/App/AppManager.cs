@@ -515,7 +515,7 @@ namespace Symbiote.Core.App
 
             // fetch a list of matching files using the supplied IPlatform
             logger.Trace("Searching for Apps in '" + folder + "' with searchPattern = '" + searchPattern);
-            List<string> files = platform.GetFileList(folder, searchPattern);
+            List<string> files = platform.GetFileList(folder, searchPattern).Result;
             logger.Trace("Found " + files.Count + " matching file(s). Parsing the files to see if they are valid App Archives...");
 
             // iterate over the found files

@@ -150,7 +150,7 @@ namespace Symbiote.Core.Platform.UNIX
             ConnectorItem sdRoot = dRoot.AddChild(new ConnectorItem(this, "Drives.System"));
             sdRoot.AddChild(new ConnectorItem(this, "Drives.System.Name", typeof(string), ""));
             sdRoot.AddChild(new ConnectorItem(this, "Path", typeof(string), ""));
-            sdRoot.AddChild(new ConnectorItem(this, "Type", typeof(Platform.DriveType), ""));
+            sdRoot.AddChild(new ConnectorItem(this, "Type", typeof(string), ""));
             sdRoot.AddChild(new ConnectorItem(this, "Capacity", typeof(long), ""));
             sdRoot.AddChild(new ConnectorItem(this, "UsedSpace", typeof(long), ""));
             sdRoot.AddChild(new ConnectorItem(this, "FreeSpace", typeof(long), ""));
@@ -161,7 +161,7 @@ namespace Symbiote.Core.Platform.UNIX
             ConnectorItem ddRoot = dRoot.AddChild(new ConnectorItem(this, "Data"));
             ddRoot.AddChild(new ConnectorItem(this, "Name", typeof(string), ""));
             ddRoot.AddChild(new ConnectorItem(this, "Path", typeof(string), ""));
-            ddRoot.AddChild(new ConnectorItem(this, "Type", typeof(Platform.DriveType), ""));
+            ddRoot.AddChild(new ConnectorItem(this, "Type", typeof(string), ""));
             ddRoot.AddChild(new ConnectorItem(this, "Capacity", typeof(long), ""));
             ddRoot.AddChild(new ConnectorItem(this, "UsedSpace", typeof(long), ""));
             ddRoot.AddChild(new ConnectorItem(this, "FreeSpace", typeof(long), ""));

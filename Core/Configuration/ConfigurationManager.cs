@@ -42,7 +42,7 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// The list of properties to be used when serializing/deserializing configuration items.
         /// </summary>
-        public List<string> ItemSerializationProperties { get { return new List<string>(new string[] { "FQN", "SourceAddress", "Type", "IsReadable", "IsWriteable" }); } }
+        public List<string> ItemSerializationProperties { get { return new List<string>(new string[] { "FQN", "SourceAddress", "IsReadable", "IsWriteable" }); } }
 
         /// <summary>
         /// The current configuration.
