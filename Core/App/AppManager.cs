@@ -515,7 +515,7 @@ namespace Symbiote.Core.App
 
             // fetch a list of matching files using the supplied IPlatform
             logger.Trace("Searching for Apps in '" + folder + "' with searchPattern = '" + searchPattern);
-            List<string> files = platform.GetFileList(folder, searchPattern).Result;
+            List<string> files = platform.ListFiles(folder, searchPattern).Result;
             logger.Trace("Found " + files.Count + " matching file(s). Parsing the files to see if they are valid App Archives...");
 
             // iterate over the found files
@@ -591,7 +591,7 @@ namespace Symbiote.Core.App
                 logger.Trace("Fetching a list of files matching '" + configFileName + "' from the archive...");
 
                 // attempt to locate the App configuration file within the archive.
-                string configFile = platform.GetZipFileList(fileName, configFileName).FirstOrDefault();
+                string configFile = platform.ListZipFiles(fileName, configFileName).Result.FirstOrDefault();
 
                 // config file was found
                 if (configFile != "")
@@ -599,12 +599,12 @@ namespace Symbiote.Core.App
                     logger.Trace("Found configuration file.  Extracting to '" + manager.Directories.Temp + "'...");
 
                     // extract the config file from the zip
-                    string extractedConfigFile = platform.ExtractFileFromZip(fileName, configFile, manager.Directories.Temp, true);
+                    string extractedConfigFile = platform.ExtractZipFile(fileName, configFile, manager.Directories.Temp, true).Result;
 
                     logger.Trace("Extracted config file to '" + extractedConfigFile + "'.  Reading contents...");
 
                     // read the config file into the config variable
-                    string config = platform.ReadFile(extractedConfigFile);
+                    string config = platform.ReadFile(extractedConfigFile).Result;
 
                     logger.Trace("Fetched contents.  Deserializing contents...");
 

@@ -8,6 +8,8 @@ namespace Symbiote.Core.Platform
     /// </summary>
     public interface IPlatform
     {
+        #region Properties
+
         /// <summary>
         /// The Platform Type.
         /// </summary>
@@ -23,6 +25,8 @@ namespace Symbiote.Core.Platform
         /// </summary>
         IConnector Connector { get; }
 
+        #endregion
+
         /// <summary>
         /// Instantiates the accompanying Connector Plugin with the supplied root path.
         /// </summary>
@@ -30,28 +34,102 @@ namespace Symbiote.Core.Platform
         /// <returns>The instantiated Connector Plugin.</returns>
         IConnector InstantiateConnector(string instanceName);
 
+        #region Directory Methods 
+
+        /// <summary>
+        /// Returns true if the specified directory exists, false otherwise.
+        /// </summary>
+        /// <param name="directory">The directory to check.</param>
+        /// <returns>True if the specified directory exists, false otherwise.</returns>
+        bool DirectoryExists(string directory);
+
         /// <summary>
         /// Returns a list of subdirectories within the supplied path.
         /// </summary>
-        /// <param name="root">The parent directory to search.</param>
-        /// <returns>A list containing the fully qualified path of each directory found.</returns>
-        OperationResult<List<string>> GetDirectoryList(string root);
+        /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <returns>An OperationResult containing the result of the operation and list containing the fully qualified path of each directory found.</returns>
+        OperationResult<List<string>> ListDirectories(string parentDirectory);
+
+        /// <summary>
+        /// Deletes the supplied directory.
+        /// </summary>
+        /// <param name="directory">The directory to delete.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        OperationResult DeleteDirectory(string directory);
+
+        /// <summary>
+        /// Deletes all files and subdirectories within the supplied directory.
+        /// </summary>
+        /// <param name="directory">The directory to clear.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        OperationResult ClearDirectory(string directory);
+
+        /// <summary>
+        /// Creates the supplied directory.
+        /// </summary>
+        /// <param name="directory">The directory to create.</param>
+        /// <returns>An OperationResult containing the result of the operation and the fully qualified path to the directory.</returns>
+        OperationResult<string> CreateDirectory(string directory);
+
+        #endregion
+
+        #region File Methods
+
+        /// <summary>
+        /// Returns true if the specified file exists, false otherwise.
+        /// </summary>
+        /// <param name="file">The file to check.</param>
+        /// <returns>True if the specified file exists, false otherwise.</returns>
+        bool FileExists(string file);
 
         /// <summary>
         /// Returns a list of files within the supplied directory matching the supplied searchPattern.
         /// </summary>
-        /// <param name="directory">The directory to search.</param>
+        /// <param name="parentDirectory">The directory to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
-        /// <returns>A list containing the fully qualified filename of each file found.</returns>
-        OperationResult<List<string>> GetFileList(string directory, string searchPattern);
+        /// <returns>An OperationResult containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
+        OperationResult<List<string>> ListFiles(string parentDirectory, string searchPattern);
+
+        /// <summary>
+        /// Deletes the specified file.
+        /// </summary>
+        /// <param name="file">The file to delete.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        OperationResult DeleteFile(string file);
+
+        /// <summary>
+        /// Reads the contents of the specified file into a single string.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <returns>An OperationResult containing the result of the operation and a string containing the entire contents of the file.</returns>
+        OperationResult<string> ReadFile(string file);
+
+        /// <summary>
+        /// Reads the contents of the specified file into a string array.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <returns>An OperationResult containing the result of the operation and a string array containing all of the lines from the file.</returns>
+        OperationResult<string[]> ReadFileLines(string file);
+
+        /// <summary>
+        /// Writes the contents of the supplied string into the specified file.  If the destination file already exists it is overwritten.
+        /// </summary>
+        /// <param name="file">The file to write.</param>
+        /// <param name="contents">The text to write to the file.</param>
+        /// <returns>The fully qualified name of the written file.</returns>
+        OperationResult<string> WriteFile(string file, string contents);
+
+        #endregion
+
+        #region Zip File Methods
 
         /// <summary>
         /// Returns a list of files contained within the specified zip file matching the supplied searchPattern.
         /// </summary>
         /// <param name="zipFile">The zip file to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
-        /// <returns>A list containing the fully qualified filename of each file found.</returns>
-        List<string> GetZipFileList(string zipFile, string searchPattern);
+        /// <returns>An OperationResult containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
+        OperationResult<List<string>> ListZipFiles(string zipFile, string searchPattern);
 
         /// <summary>
         /// Extracts the contents of the supplied zip file to the specified destination, 
@@ -60,8 +138,8 @@ namespace Symbiote.Core.Platform
         /// <param name="zipFile">The zip file to extract.</param>
         /// <param name="destination">The destination directory.</param>
         /// <param name="clearDestination">True if the destination directory should be cleared prior to extraction, false otherwise.</param>
-        /// <returns></returns>
-        bool ExtractZip(string zipFile, string destination, bool clearDestination);
+        /// <returns>An OperationResult containing the result of the operation and the fully qualified path to the extracted files.</returns>
+        OperationResult<string> ExtractZip(string zipFile, string destination, bool clearDestination);
 
         /// <summary>
         /// Extracts the supplied file from the supplied zip file to the supplied destination, overwriting the file if overwrite is true.
@@ -70,17 +148,16 @@ namespace Symbiote.Core.Platform
         /// <param name="file">The file to extract from the zip file.</param>
         /// <param name="destination">The destination directory.</param>
         /// <param name="overwrite">True if an existing file should be overwritten, false otherwise.</param>
-        /// <returns>The fully qualified filename of the extracted file.</returns>
-        string ExtractFileFromZip(string zipFile, string file, string destination, bool overwrite);
-        bool DeleteDirectory(string directory);
-        bool ClearDirectory(string directory);
-        string CreateDirectory(string directory);
-        bool DirectoryExists(string directory);
-        string ReadFile(string fileName);
-        string[] ReadAllLinesFromFile(string fileName);
-        void WriteFile(string fileName, string text);
-        string GetApplicationDirectory();
-        string GetLogFile(string logDirectory);
-        string ComputeFileChecksum(string fileName);
+        /// <returns>An OperationResult containing the result of the operation and the fully qualified filename of the extracted file.</returns>
+        OperationResult<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true);
+
+        #endregion
+
+        /// <summary>
+        /// Computes the checksum of the specified file.
+        /// </summary>
+        /// <param name="file">The file for which the checksum is to be computed.</param>
+        /// <returns>An OperationResult containing the result of the operation and the computed checksum.</returns>
+        OperationResult<string> ComputeFileChecksum(string file);
     }
 }

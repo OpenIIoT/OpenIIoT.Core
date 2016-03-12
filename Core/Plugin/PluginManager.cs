@@ -155,7 +155,7 @@ namespace Symbiote.Core.Plugin
                 throw new Exception("Error: plugins already loaded.  Restart the application to re-load.");
 
             // fetch a list of files from the specified directory using the platform-independent GetFileList method
-            List<string> files = manager.PlatformManager.Platform.GetFileList(folder, "*.dll").Result;
+            List<string> files = manager.PlatformManager.Platform.ListFiles(folder, "*.dll").Result;
 
             // iterate through the found files
             foreach (string plugin in files)
@@ -315,7 +315,7 @@ namespace Symbiote.Core.Plugin
         public string GetPluginChecksum(string fileName)
         {
             logger.Trace("Computing checksum for plugin file '" + fileName + "'...");
-            string retVal = manager.PlatformManager.Platform.ComputeFileChecksum(fileName);
+            string retVal = manager.PlatformManager.Platform.ComputeFileChecksum(fileName).Result;
             logger.Trace("MD5 checksum for file '" + fileName + "' computed as '" + retVal + ".");
             return retVal;
         }

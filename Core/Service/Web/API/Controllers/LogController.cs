@@ -21,12 +21,10 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage GetLog()
         {
-            ApiOperationResult<string[]> retVal = new ApiOperationResult<string[]>(Request);
+            ApiOperationResult<RealtimeLoggerEventArgs[]> retVal = new ApiOperationResult<RealtimeLoggerEventArgs[]>(Request);
             retVal.LogRequest(logger);
 
-            string newestLog = manager.PlatformManager.Platform.GetLogFile(manager.Directories.Logs);
-
-            retVal.Result = manager.PlatformManager.Platform.ReadAllLinesFromFile(newestLog);
+            retVal.Result = RealtimeLogger.LogHistory.ToArray();
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));

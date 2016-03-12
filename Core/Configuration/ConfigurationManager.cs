@@ -165,7 +165,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 logger.Trace("Attempting to load configuration from '" + fileName + "'...");
-                string configFile = manager.PlatformManager.Platform.ReadFile(fileName);
+                string configFile = manager.PlatformManager.Platform.ReadFile(fileName).Result;
                 logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
                 retVal.Result = JsonConvert.DeserializeObject<ApplicationConfiguration>(configFile);

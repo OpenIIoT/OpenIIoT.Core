@@ -222,6 +222,15 @@ namespace Symbiote.Core
         }
 
         /// <summary>
+        /// Logs the result of the operation to the supplied logger with the logging level Trace for all message levels.
+        /// </summary>
+        /// <param name="logger">The logger to which to log the message.</param>
+        public virtual void TraceResult(NLog.Logger logger)
+        {
+            LogResult(logger, "Trace", "Trace", "Trace");
+        }
+
+        /// <summary>
         /// Logs all messages in the message list to the supplied logger and with the supplied logging level.  If specified, logs a header and footer message before and after the list, respectively.
         /// </summary>
         /// <param name="logger">The logger to which to log the messages.</param>

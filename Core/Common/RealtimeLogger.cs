@@ -1,5 +1,6 @@
 ﻿using NLog;
 using System;
+using System.Collections.Generic;
 
 namespace Symbiote.Core
 {
@@ -9,6 +10,11 @@ namespace Symbiote.Core
     /// </summary>
     public class RealtimeLogger
     {
+        /// <summary>
+        /// A queue containing the newest 200 log messages.
+        /// </summary>
+        public static Queue<RealtimeLoggerEventArgs> LogHistory = new Queue<RealtimeLoggerEventArgs>();
+
         /// <summary>
         /// The Changed event is fired when new log messages are created by NLog.
         /// </summary>
@@ -32,8 +38,25 @@ namespace Symbiote.Core
         /// <param name="message">The log message.</param>
         public static void AppendLog(string longdate, string level, string logger, string message)
         {
+            RealtimeLoggerEventArgs eventArgs = new RealtimeLoggerEventArgs(longdate, level, logger, message);
+
+            AppendLogHistory(eventArgs);
+
             if (Changed != null)
-                Changed(default(object), new RealtimeLoggerEventArgs(longdate, level, logger, message));
+                Changed(default(object), eventArgs);
+        }
+
+        /// <summary>
+        /// Enqueues the supplied RealtimeLoggerEventArgs instance to the LogHistory queue.  
+        /// If the queue exceeds 200 entries, the oldest log is first dequeued before the new log is enqueued.
+        /// </summary>
+        /// <param name="eventArgs">The RealtimeLoggerEventArgs instance to enqueue.</param>
+        private static void AppendLogHistory(RealtimeLoggerEventArgs eventArgs)
+        {
+            if (LogHistory.Count > 200)
+                LogHistory.Dequeue();
+
+            LogHistory.Enqueue(eventArgs);
         }
     }
 
