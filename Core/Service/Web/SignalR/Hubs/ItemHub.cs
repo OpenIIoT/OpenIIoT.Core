@@ -95,7 +95,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             Item item = (Item)sender;
 
-            string itemJson = item.ToJson(new ContractResolver(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn, true));
+            string itemJson = item.ToJson(new ContractResolver(new List<string>(new string[] { "FQN", "Value", "Children" }), ContractResolverType.OptIn, true));
             string valueJson = JsonConvert.SerializeObject(item.Value);
 
             logger.Trace("SignalR Item '" + item.FQN + "' changed.  Sending data to subscribed clients.");

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using NLog;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -9,7 +10,16 @@ namespace Symbiote.Core.Service.Web.API
 {
     public class ReadController : ApiController, IApiController
     {
+        /// <summary>
+        /// The Logger for this class.
+        /// </summary>
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
         private static ProgramManager manager = ProgramManager.Instance();
+
         private static Item model = manager.ModelManager.Model;
 
         [Route("api/read")]
@@ -31,16 +41,20 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage Read(string fqn, bool fromSource)
         {
-            List<Item> result = new List<Item>();
+            ApiOperationResult<List<Item>> retVal = new ApiOperationResult<List<Item>>(Request);
+            retVal.Result = new List<Item>();
+
+            retVal.LogRequest(logger);
+
             Item foundItem = AddressResolver.Resolve(fqn);
 
             if (fromSource)
                 foundItem.ReadFromSource();
             
-            result.Add(foundItem);
+            retVal.Result.Add(foundItem);
 
-
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn, true));
+            retVal.LogResult(logger);
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn, true));
         }
 
         public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)

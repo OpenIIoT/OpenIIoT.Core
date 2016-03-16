@@ -19,14 +19,14 @@ namespace Symbiote.Core.Service.Web.API
         #region Variables
 
         /// <summary>
-        /// The ProgramManager for the application.
-        /// </summary>
-        private ProgramManager manager = ProgramManager.Instance();
-
-        /// <summary>
         /// The Logger for this class.
         /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
+        private ProgramManager manager = ProgramManager.Instance();
 
         /// <summary>
         /// The default serialization properties for an AppArchive.

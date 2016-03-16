@@ -40,7 +40,7 @@ namespace Symbiote.Core
         /// </summary>
         Unknown,
         /// <summary>
-        /// The message is informational only.
+        /// The message contains low level trace information.
         /// </summary>
         Info,
         /// <summary>
@@ -112,6 +112,7 @@ namespace Symbiote.Core
         /// The result of the operation.
         /// </summary>
         public OperationResultCode ResultCode { get; set; }
+
         /// <summary>
         /// The list of messages generated during the operation.
         /// </summary>
@@ -225,9 +226,20 @@ namespace Symbiote.Core
         /// Logs the result of the operation to the supplied logger with the logging level Trace for all message levels.
         /// </summary>
         /// <param name="logger">The logger to which to log the message.</param>
-        public virtual void TraceResult(NLog.Logger logger)
+        /// <param name="caller">The name of the method that called this method.</param>
+        public virtual void TraceResult(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
-            LogResult(logger, "Trace", "Trace", "Trace");
+            LogResult(logger, "Trace", "Trace", "Trace", caller);
+        }
+
+        /// <summary>
+        /// Logs the result of the operation to the supplied logger with the logging level Debug for all message levels.
+        /// </summary>
+        /// <param name="logger">The logger to which to log the message.</param>
+        /// <param name="caller">The name of the method that called this method.</param>
+        public virtual void DebugResult(NLog.Logger logger, [CallerMemberName]string caller = "")
+        {
+            LogResult(logger, "Debug", "Debug", "Debug", caller);
         }
 
         /// <summary>
@@ -253,7 +265,9 @@ namespace Symbiote.Core
         /// <returns>A string containing the message.</returns>
         public virtual string GetLastError()
         {
-            return Messages.Where(m => m.Type == OperationResultMessageType.Error).LastOrDefault().Message;
+            OperationResultMessage retVal = Messages.Where(m => m.Type == OperationResultMessageType.Error).LastOrDefault();
+
+            return retVal.Message ?? "";
         }
 
         /// <summary>
@@ -262,7 +276,27 @@ namespace Symbiote.Core
         /// <returns>A string containing the message.</returns>
         public virtual string GetLastWarning()
         {
-            return Messages.Where(m => m.Type == OperationResultMessageType.Warning).LastOrDefault().Message;
+            OperationResultMessage retVal = Messages.Where(m => m.Type == OperationResultMessageType.Warning).LastOrDefault();
+
+            return retVal.Message ?? "";
+        }
+
+        /// <summary>
+        /// Adds details from the supplied OperationResult to this OperationResult.
+        /// Copies all Messages and the status if lesser than this status.
+        /// </summary>
+        /// <param name="operationResult">The OperationResult from which to copy the Messages.</param>
+        public virtual void Incorporate(OperationResult operationResult)
+        {
+            foreach (OperationResultMessage message in operationResult.Messages)
+                Messages.Add(message);
+
+            // if the value of this OperationResult's ResultCode is less than the provided OperationResult, 
+            // copy the provided ResultCode into this ResultCode.  e.g., if we have a warning and we incorporate
+            // a failure, we become a failure.
+            // unknown < success < warning < failure
+            if (ResultCode.CompareTo(operationResult.ResultCode) < 0)
+                ResultCode = operationResult.ResultCode;
         }
 
         #endregion

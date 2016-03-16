@@ -108,18 +108,24 @@ namespace Symbiote.Core.Platform
             //-------- - - - -- - - 
             // Populate the ProgramDirectories list
             logger.Debug("Loading application directories...");
-            OperationResult<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(Utility.GetSetting("Directories"));
-            if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to load application directory list." + retVal.GetLastError());
-            Directories = loadDirectoryResult.Result;
-            loadDirectoryResult.LogResult(logger, "Debug", "Warn", "Error", "LoadDirectories");
 
-            // copy any warnings to the overall return value
-            foreach (OperationResultMessage message in loadDirectoryResult.Messages)
-            {
-                if (message.Type == OperationResultMessageType.Warning)
-                    retVal.AddWarning(message.Message);
-            }
+            // fetch the directory list from .exe.config
+            string directoryList = Utility.GetSetting("Directories");
+            if (directoryList == "")
+                throw new Exception("The directory list couldn't be loaded from the .exe.config file.");
+
+            //  replace the pipe character placeholder with the platform specific directory separator
+            directoryList = directoryList.Replace('|', System.IO.Path.DirectorySeparatorChar);
+            
+            OperationResult<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(directoryList);
+
+            if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to load application directory list: " + loadDirectoryResult.GetLastError());
+
+            Directories = loadDirectoryResult.Result;
+            loadDirectoryResult.DebugResult(logger, "LoadDirectories");
+
+            retVal.Incorporate(loadDirectoryResult);
             //------------------------------------ - - 
 
 
@@ -128,15 +134,11 @@ namespace Symbiote.Core.Platform
             logger.Debug("Checking directories...");
             OperationResult checkResult = Directories.CheckDirectories();
             if (checkResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to verify and/or create one or more required program directory: " + retVal.GetLastError());
-            checkResult.LogResult(logger, "Debug", "Warn", "Error", "CheckDirectories");
+                throw new Exception("Failed to verify and/or create one or more required program directory: " + checkResult.GetLastError());
 
-            // copy any warnings to the overall return value
-            foreach (OperationResultMessage message in loadDirectoryResult.Messages)
-            {
-                if (message.Type == OperationResultMessageType.Warning)
-                    retVal.AddWarning(message.Message);
-            }
+            checkResult.DebugResult(logger, "CheckDirectories");
+
+            retVal.Incorporate(checkResult);
             //------------- - - -
 
 

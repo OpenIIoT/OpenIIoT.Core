@@ -38,7 +38,7 @@ namespace Symbiote.Core.Platform.Windows
         /// <summary>
         /// The Platform Type.
         /// </summary>
-        public Core.Platform.PlatformType PlatformType { get; private set; }
+        public PlatformType PlatformType { get; private set; }
 
         /// <summary>
         /// The Version of the Platform OS.
@@ -59,7 +59,7 @@ namespace Symbiote.Core.Platform.Windows
         /// </summary>
         public WindowsPlatform()
         {
-            PlatformType = Core.Platform.PlatformType.Windows;
+            PlatformType = PlatformType.Windows;
             Version = Environment.OSVersion.VersionString;
         }
 

@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
 using System.Linq;
 using NLog;
-using Symbiote.Core.Plugin;
 using Symbiote.Core.Plugin.Connector;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -14,7 +12,7 @@ using System.IO.Compression;
 namespace Symbiote.Core.Platform.UNIX
 {
     /// <summary>
-    /// The Windows class implements the platform interfaces necessary to run the application on the Windows platform.
+    /// The Windows class implements the platform interfaces necessary to run the application on the UNIX platform.
     /// </summary>
     /// <remarks>
     /// Some wierdness in the C# compiler won't allow implicitly defined interface properties if the property is less
@@ -40,7 +38,7 @@ namespace Symbiote.Core.Platform.UNIX
         /// <summary>
         /// The Platform Type.
         /// </summary>
-        public Core.Platform.PlatformType PlatformType { get; private set; }
+        public PlatformType PlatformType { get; private set; }
 
         /// <summary>
         /// The Version of the Platform OS.
@@ -61,7 +59,7 @@ namespace Symbiote.Core.Platform.UNIX
         /// </summary>
         public UNIXPlatform()
         {
-            PlatformType = Core.Platform.PlatformType.UNIX;
+            PlatformType = PlatformType.UNIX;
             Version = Environment.OSVersion.VersionString;
         }
 
