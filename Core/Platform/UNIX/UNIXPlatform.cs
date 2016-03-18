@@ -20,7 +20,7 @@ namespace Symbiote.Core.Platform.UNIX
     /// The effective accessibility for these classes and all of their members is internal.
     /// </remarks>
     [System.Runtime.CompilerServices.CompilerGenerated]
-    public class NamespaceDoc { }
+    class NamespaceDoc { }
 
     internal class UNIXPlatform : IPlatform
     {

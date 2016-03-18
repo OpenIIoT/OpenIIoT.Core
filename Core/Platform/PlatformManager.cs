@@ -34,6 +34,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// The Singleton instance of PlatformManager.
         /// </summary>
+        /// 
         private static PlatformManager instance;
 
         #endregion
@@ -81,9 +82,9 @@ namespace Symbiote.Core.Platform
         #region Instance Methods
 
         /// <summary>
-        /// Creates and returns the instance of IPlatform to be used by the application.
+        /// Starts the Platform manager.
         /// </summary>
-        /// <returns>An IPlatform corresponding to the current platform.</returns>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
             //-------- --

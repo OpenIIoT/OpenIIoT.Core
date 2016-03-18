@@ -20,7 +20,7 @@ namespace Symbiote.Core.Platform.Windows
     /// The effective accessibility for these classes and all of their members is internal.
     /// </remarks>
     [System.Runtime.CompilerServices.CompilerGenerated]
-    public class NamespaceDoc { }
+    class NamespaceDoc { }
 
     internal class WindowsPlatform : IPlatform
     {
