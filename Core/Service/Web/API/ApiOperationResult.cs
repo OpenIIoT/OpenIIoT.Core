@@ -3,6 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Runtime.CompilerServices;
+using NLog;
 
 namespace Symbiote.Core.Service.Web
 {
@@ -82,7 +83,7 @@ namespace Symbiote.Core.Service.Web
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public override void LogResult(NLog.Logger logger, string successLogLevel = "Info", string warningLogLevel = "Warn", string failureLogLevel = "Error", [CallerMemberName]string caller = "")
+        public override void LogResult(NLog.Logger logger, string successLogLevel, string warningLogLevel = "Warn", string failureLogLevel = "Error", [CallerMemberName]string caller = "")
         {
             if (ResultCode != OperationResultCode.Failure)
             {

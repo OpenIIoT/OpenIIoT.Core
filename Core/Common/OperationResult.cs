@@ -196,14 +196,26 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Logs the result of the operation to the supplied logger and with the supplied logging levels.
+        /// Logs the result of the operation to the supplied logger using the supplied optional caller as the source.
         /// </summary>
+        /// <param name="logger">The logger to which to log the message.</param>
+        /// <param name="caller">The name of the method that called this method.</param>
+        public virtual void LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
+        {
+            LogResult(logger, "Info", "Warn", "Error", caller);
+        }
+
+        /// <summary>
+        /// Logs the result of the operation to the supplied logger and with the supplied logging levels and optional source.
+        /// </summary>
+        /// <remarks>The caller parameter is automatically set to the calling method.  In some cases this will need to be explicitly specified
+        /// to reflect the actual source of the OperationResult.</remarks>
         /// <param name="logger">The logger to which to log the message.</param>
         /// <param name="successLogLevel">The logging level to apply to successful messages.</param>
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void LogResult(NLog.Logger logger, string successLogLevel = "Info", string warningLogLevel = "Warn", string failureLogLevel = "Error", [CallerMemberName]string caller = "")
+        public virtual void LogResult(NLog.Logger logger, string successLogLevel, string warningLogLevel = "Warn", string failureLogLevel = "Error", [CallerMemberName]string caller = "")
         {
             // the operation suceeded, with or without warnings
             if (ResultCode != OperationResultCode.Failure)
@@ -227,7 +239,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="logger">The logger to which to log the message.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void TraceResult(NLog.Logger logger, [CallerMemberName]string caller = "")
+        public virtual void LogResultTrace(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
             LogResult(logger, "Trace", "Trace", "Trace", caller);
         }
@@ -237,7 +249,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="logger">The logger to which to log the message.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void DebugResult(NLog.Logger logger, [CallerMemberName]string caller = "")
+        public virtual void LogResultDebug(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
             LogResult(logger, "Debug", "Debug", "Debug", caller);
         }

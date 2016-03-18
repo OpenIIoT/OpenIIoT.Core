@@ -150,7 +150,7 @@ namespace Symbiote.Core.Service
         {
             logger.Debug("Starting Services...");
             OperationResult retVal = StartServices(Services);
-            retVal.LogResult(logger, "Debug", "Debug");
+            retVal.LogResultDebug(logger);
             return retVal;
         }
 

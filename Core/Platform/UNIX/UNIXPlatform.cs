@@ -110,7 +110,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Error listing subdirectories for root path '" + parentDirectory + "': " + ex.Message);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -134,7 +134,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Exception thrown while deleting the directory '" + directory + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -166,7 +166,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Exception thrown while clearing directory '" + directory + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -189,7 +189,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Exception thrown while creating directory '" + directory + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -228,7 +228,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Error listing files for directory '" + parentDirectory + "' using search pattern '" + searchPattern + " : " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -251,7 +251,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Exception thrown while attempting to delete file '" + file + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -274,7 +274,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Error reading file '" + file + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -297,7 +297,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Error reading lines from file '" + file + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -322,7 +322,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Error writing to file '" + file + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -366,7 +366,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Error listing files in zip file '" + zipFile + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -401,7 +401,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Error extracting zil file '" + zipFile + "' to destination '" + destination + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -437,7 +437,7 @@ namespace Symbiote.Core.Platform.UNIX
                 retVal.AddError("Error extracting file '" + file + "' from zip file '" + zipFile + "': " + ex);
             }
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
@@ -464,7 +464,7 @@ namespace Symbiote.Core.Platform.UNIX
 
             retVal.Result = builtString.ToString();
 
-            retVal.TraceResult(logger);
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 
