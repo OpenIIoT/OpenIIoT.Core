@@ -5,12 +5,20 @@ namespace Symbiote.Core.Platform
 {
     /// <summary>
     /// The Platform namespace abstracts the platform on which the app runs.
-    /// </summary>
-    /// <remarks>
-    /// The primary purposes are to assist the application in determining the run mode (e.g. interactive or Windows service) and to
+    /// 
+    /// The primary purposes are to assist the application in determining the current platform (e.g. Windows or UNIX) and to
     /// allow for platform dependent code such as file IO to be substituted at run time. This allows for a single project that can 
     /// be compiled and run on both Windows and UNIX systems with no programatic changes.
-    /// </remarks>
+    /// 
+    /// Each Platform type gets a folder (e.g. UNIX, Windows) and within that folder an implementation of IPlatform named as "PlatformPlatform"
+    /// where the first "Platform" is the name.  Each Platform type is required to provide an implementation of IConnector for the platform which
+    /// returns statistical information about the hardware and OS hosting the application.  Of primary concern is CPU, Memory and Hard Disk usage.
+    /// 
+    /// Finally, the Platform Manager and PlatformDirectories class work together to ensure that the necessary directories are present in the 
+    /// configured locations.  If any directories are missing they are recreated at startup.  The app.exe.config file contains the definition
+    /// for these directories.  If the configuration file is missing any or all of the programatically defined directories an exception will be
+    /// thrown by the constructor of PlatformDirectories, causing the initialization of the application to fail.
+    /// </summary>
     [System.Runtime.CompilerServices.CompilerGenerated]
     class NamespaceDoc { }
 
@@ -34,12 +42,21 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// The Singleton instance of PlatformManager.
         /// </summary>
-        /// 
         private static PlatformManager instance;
+
+        /// <summary>
+        /// The state of the Manager.
+        /// </summary>
+        private bool isRunning = false;
 
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// The state of the Manager.
+        /// </summary>
+        public bool IsRunning { get { return isRunning; } }
 
         /// <summary>
         /// The current platform.
@@ -81,17 +98,21 @@ namespace Symbiote.Core.Platform
 
         #region Instance Methods
 
+        #region IManager Implementation
+
         /// <summary>
         /// Starts the Platform manager.
         /// </summary>
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
-            //-------- --
-            // determine the platform and instantiate it
-            logger.Info("Starting Platform Manager...");
+            logger.Info("Starting the Platform Manager...");
             OperationResult retVal = new OperationResult();
 
+            #region Platform Instantiation
+
+            //-------- --
+            // determine the platform and instantiate it
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
@@ -105,7 +126,10 @@ namespace Symbiote.Core.Platform
             }
             //------------------- - -     -
 
-            
+            #endregion
+
+            #region Directory Configuration Loading
+
             //-------- - - - -- - - 
             // Populate the ProgramDirectories list
             logger.Debug("Loading application directories...");
@@ -129,6 +153,9 @@ namespace Symbiote.Core.Platform
             retVal.Incorporate(loadDirectoryResult);
             //------------------------------------ - - 
 
+            #endregion
+
+            #region Directory Validation
 
             //-------------------------- - - -               -  
             // Check to ensure all directories exist.  If not, create them.
@@ -142,10 +169,42 @@ namespace Symbiote.Core.Platform
             retVal.Incorporate(checkResult);
             //------------- - - -
 
+            #endregion
 
             retVal.LogResult(logger);
             return new OperationResult();
         }
+
+        /// <summary>
+        /// Restarts the Platform manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Restart()
+        {
+            logger.Info("Restarting the Platform Manager...");
+            OperationResult retVal = new OperationResult();
+
+            retVal.Incorporate(Stop());
+            retVal.Incorporate(Start());
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Stops the Platform manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Stop()
+        {
+            logger.Info("Stopping the Platform Manager...");
+            OperationResult retVal = new OperationResult();
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        #endregion
 
         #endregion
 

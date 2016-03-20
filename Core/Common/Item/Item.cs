@@ -40,10 +40,10 @@ namespace Symbiote.Core
         /// <summary>
         /// The fully qualified name name of the source item
         /// </summary>
-        public string SourceAddress { get; set; }
+        public string SourceFQN { get; set; }
 
         /// <summary>
-        /// The Item instance resolved from the SourceAddress.
+        /// The Item instance resolved from the SourceFQN.
         /// </summary>
         public Item SourceItem { get; set; }
         
@@ -116,23 +116,23 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="type">The Type of the Item's value.</param>
-        /// <param name="sourceAddress">The Fully Qualified Name of the source item.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <remarks>This constructor is used for deserialization.</remarks>
         [JsonConstructor]
-        public Item(string fqn, Type type, string sourceAddress) : this(fqn, type, sourceAddress, false) { }
+        public Item(string fqn, Type type, string sourceFQN) : this(fqn, type, sourceFQN, false) { }
 
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="type">The Type of the Item's value.</param>
-        /// <param name="sourceAddress">The Fully Qualified Name of the source item.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, Type type = null, string sourceAddress = "", bool isRoot = false) 
+        public Item(string fqn, Type type = null, string sourceFQN = "", bool isRoot = false) 
         {
             FQN = fqn;
             Type = (type == null ? typeof(object) : type);
-            SourceAddress = sourceAddress;
+            SourceFQN = sourceFQN;
 
             Value = "";
 
@@ -340,7 +340,7 @@ namespace Symbiote.Core
         /// <remarks>We aren't using .MemberWiseClone() because of the GuID.  We need a "deep copy".</remarks>
         public virtual object Clone()
         {
-            Item retVal = new Item(FQN, Type, SourceAddress, (Parent == this));
+            Item retVal = new Item(FQN, Type, SourceFQN, (Parent == this));
             retVal.Name = Name;
             retVal.Path = Path;
             retVal.Parent = Parent;

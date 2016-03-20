@@ -46,7 +46,7 @@ namespace Symbiote.Core.Service.Web.API
 
             retVal.LogRequest(logger);
 
-            Item foundItem = AddressResolver.Resolve(fqn);
+            Item foundItem = FQNResolver.Resolve(fqn);
 
             if (fromSource)
                 foundItem.ReadFromSource();

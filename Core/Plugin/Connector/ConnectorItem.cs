@@ -40,9 +40,9 @@ namespace Symbiote.Core.Plugin.Connector
         /// <param name="plugin">The instance of IConnector hosting this PluginItem.</param>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="type">The Type of the Item's value.</param>
-        /// <param name="sourceAddress">The Fully Qualified Name of the source item.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <remarks>This constructor is used for deserialization.</remarks>
-        public ConnectorItem(IConnector plugin, string fqn, Type type, string sourceAddress) : this(plugin, fqn, type, sourceAddress, false) { }
+        public ConnectorItem(IConnector plugin, string fqn, Type type, string sourceFQN) : this(plugin, fqn, type, sourceFQN, false) { }
 
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
@@ -50,9 +50,9 @@ namespace Symbiote.Core.Plugin.Connector
         /// <param name="plugin">The instance of IConnector hosting this PluginItem.</param>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="type">The Type of the Item's value.</param>
-        /// <param name="sourceAddress">The Fully Qualified Name of the source item.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public ConnectorItem(IConnector plugin, string fqn, Type type = null, string sourceAddress = "", bool isRoot = false) : base(fqn, type, sourceAddress)
+        public ConnectorItem(IConnector plugin, string fqn, Type type = null, string sourceFQN = "", bool isRoot = false) : base(fqn, type, sourceFQN)
         {
             Plugin = plugin;
         }

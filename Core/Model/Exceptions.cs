@@ -38,11 +38,11 @@ namespace Symbiote.Core.Model
     public class ItemSourceUnresolvedException : ModelException
     {
         public Item Item { get; private set; }
-        public string SourceAddress { get; private set; }
-        public ItemSourceUnresolvedException(string message, Item item, string sourceAddress) : base(message)
+        public string SourceFQN { get; private set; }
+        public ItemSourceUnresolvedException(string message, Item item, string sourceFQN) : base(message)
         {
             Item = item;
-            SourceAddress = sourceAddress;
+            SourceFQN = sourceFQN;
         }
     }
 

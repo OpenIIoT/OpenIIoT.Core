@@ -13,10 +13,13 @@ namespace Symbiote.Core.Plugin.Connector
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ConnectorManager instance;
+        private bool isRunning = false;
 
         #endregion
 
         #region Properties
+
+        public bool IsRunning { get { return isRunning; } }
 
         public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
@@ -47,9 +50,67 @@ namespace Symbiote.Core.Plugin.Connector
 
         #region Instance Methods
 
+        #region IManager Implementation
+
+        public OperationResult Start()
+        {
+            Configure();
+
+            // register endpoints
+            OperationResult<Dictionary<string, Type>> registerResult = RegisterEndpoints();
+
+            if (registerResult.ResultCode != OperationResultCode.Failure)
+            {
+                Endpoints = registerResult.Result;
+                registerResult.LogResult(logger, "RegisterEndpoints");
+                logger.Info(Endpoints.Count + " Endpoints(s) registered.");
+
+                if (registerResult.ResultCode == OperationResultCode.Warning)
+                    registerResult.LogAllMessages(logger, "Warn", "The following warnings were generated during the registration:");
+            }
+            else
+                throw new Exception("Failed to register Endpoints: " + registerResult.GetLastError());
+
+            foreach (ConnectorInstance i in Configuration.Instances)
+            {
+                logger.Info("Instance: " + i.Name);
+            }
+
+            isRunning = true;
+            return new OperationResult();
+        }
+
+        public OperationResult Restart()
+        {
+            return new OperationResult();
+        }
+
+        public OperationResult Stop()
+        {
+            isRunning = false;
+            return new OperationResult();
+        }
+
+        #endregion
+
         public OperationResult Configure()
         {
-            return Configure(manager.ConfigurationManager.GetConfiguration<ConnectorManagerConfiguration>(this.GetType()).Result);
+            OperationResult retVal = new OperationResult();
+
+            OperationResult<ConnectorManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<ConnectorManagerConfiguration>(this.GetType());
+
+            // if the fetch succeeded, configure this instance with the result.  
+            if (fetchResult.ResultCode != OperationResultCode.Failure)
+                Configure(fetchResult.Result);
+            // if the fetch failed, add a new default instance to the configuration and try again.
+            else
+            {
+                OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != OperationResultCode.Failure)
+                    Configure();
+            }
+
+            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<ConnectorManagerConfiguration>(this.GetType()).Result);
         }
 
         public OperationResult Configure(ConnectorManagerConfiguration configuration)
@@ -60,7 +121,7 @@ namespace Symbiote.Core.Plugin.Connector
 
         public OperationResult SaveConfiguration()
         {
-            return manager.ConfigurationManager.SaveConfiguration(this.GetType(), Configuration);
+            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
 
         public static ConfigurationDefinition GetConfigurationDefinition()
@@ -98,32 +159,7 @@ namespace Symbiote.Core.Plugin.Connector
             return retVal;
         }
 
-        public OperationResult Start()
-        {
-            Configure();
 
-            // register endpoints
-            OperationResult<Dictionary<string, Type>> registerResult = RegisterEndpoints();
-
-            if (registerResult.ResultCode != OperationResultCode.Failure)
-            {
-                Endpoints = registerResult.Result;
-                registerResult.LogResult(logger, "Info", "Warn", "Error", "RegisterEndpoints");
-                logger.Info(Endpoints.Count + " Endpoints(s) registered.");
-
-                if (registerResult.ResultCode == OperationResultCode.Warning)
-                    registerResult.LogAllMessages(logger, "Warn", "The following warnings were generated during the registration:");
-            }
-            else
-                throw new Exception("Failed to register Endpoints: " + registerResult.GetLastError());
-
-            foreach (ConnectorInstance i in Configuration.Instances)
-            {
-                logger.Info("Instance: " + i.Name);
-            }
-
-            return new OperationResult();
-        }
 
         #endregion
     }

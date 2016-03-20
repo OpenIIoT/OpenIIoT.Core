@@ -114,7 +114,7 @@ namespace Symbiote.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            Item foundItem = AddressResolver.Resolve(castFQN);
+            Item foundItem = FQNResolver.Resolve(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -145,7 +145,7 @@ namespace Symbiote.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            Item foundItem = AddressResolver.Resolve(castFQN);
+            Item foundItem = FQNResolver.Resolve(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -177,7 +177,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = AddressResolver.Resolve(castFQN);
+            Item foundItem = FQNResolver.Resolve(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -209,7 +209,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = AddressResolver.Resolve(castFQN);
+            Item foundItem = FQNResolver.Resolve(castFQN);
 
             if (foundItem != default(Item))
             {

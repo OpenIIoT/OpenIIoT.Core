@@ -8,7 +8,7 @@ namespace Symbiote.Core
     /// performs a lookup of the item using the ModelManager.  If the first tuple is something other than the product name,
     /// performs a lookup of the item using the PluginManager.
     /// </summary>
-    class AddressResolver
+    class FQNResolver
     {
         #region Variables
 

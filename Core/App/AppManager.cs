@@ -568,7 +568,7 @@ namespace Symbiote.Core.App
         {
             OperationResult<AppArchive> retVal = ParseAppArchive(fileName, Utility.GetSetting("AppConfigurationFileName"), manager.PlatformManager.Platform);
 
-            retVal.LogResult(logger, "Trace", "Trace", "Trace");
+            retVal.LogResultTrace(logger);
             return retVal;
         }
 

@@ -19,11 +19,13 @@ namespace Symbiote.Core.Service
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ServiceManager instance;
+        private bool isRunning = false;
 
         #endregion
 
         #region Properties
 
+        public bool IsRunning { get { return isRunning; } }
         public Dictionary<string, IService> Services { get; private set; }
         public Dictionary<string, Type> ServiceTypes { get; private set; }
 
@@ -48,6 +50,8 @@ namespace Symbiote.Core.Service
         #endregion Constructors
 
         #region Instance Methods
+
+        #region IManager Implementation
 
         /// <summary>
         /// Starts the Service Manager and all services.
@@ -77,6 +81,30 @@ namespace Symbiote.Core.Service
 
             return retVal;
         }
+
+        public OperationResult Restart()
+        {
+            logger.Info("Restarting services...");
+            OperationResult retVal = new OperationResult();
+
+            retVal.Incorporate(Stop());
+            retVal.Incorporate(Start());
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        public OperationResult Stop()
+        {
+            logger.Info("Stopping services...");
+            OperationResult retVal = new OperationResult();
+
+            isRunning = false;
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        #endregion
 
         private OperationResult<Dictionary<string, Type>> RegisterServices()
         {

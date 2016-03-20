@@ -58,13 +58,21 @@ namespace Symbiote.Core.Platform
         /// <param name="directories">A dictionary containing the name and directory for each of the program directores.</param>
         public PlatformDirectories(Dictionary<string, string> directories)
         {
-            Root = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
-            Data = System.IO.Path.Combine(Root, directories["Data"]);
-            Apps = System.IO.Path.Combine(Root, directories["Apps"]);
-            Plugins = System.IO.Path.Combine(Root, directories["Plugins"]);
-            Temp = System.IO.Path.Combine(Root, directories["Temp"]);
-            Web = System.IO.Path.Combine(Root, directories["Web"]);
-            Logs = System.IO.Path.Combine(Root, directories["Logs"]);
+            try
+            {
+                Root = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                Data = System.IO.Path.Combine(Root, directories["Data"]);
+                Apps = System.IO.Path.Combine(Root, directories["Apps"]);
+                Plugins = System.IO.Path.Combine(Root, directories["Plugins"]);
+                Temp = System.IO.Path.Combine(Root, directories["Temp"]);
+                Web = System.IO.Path.Combine(Root, directories["Web"]);
+                Logs = System.IO.Path.Combine(Root, directories["Logs"]);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                throw new Exception("The directory configuration is missing one or more directories.", ex);
+            }
+
         }
 
         #endregion

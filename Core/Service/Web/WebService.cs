@@ -20,6 +20,10 @@ namespace Symbiote.Core.Service.Web
         private static WebService instance;
         private static IDisposable server;
 
+        /// <summary>
+        /// The configuration for this Service.
+        /// </summary>
+        /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
         [ThreadStatic]
         internal static WebServiceConfiguration configuration;
 
@@ -29,6 +33,9 @@ namespace Symbiote.Core.Service.Web
 
         public string URL { get; private set; }
 
+        /// <summary>
+        /// Provies configuration accessibility to the Owin startup class.
+        /// </summary>
         internal static WebServiceConfiguration GetConfiguration { get { return configuration; } set { configuration = value; } }
 
         public Dictionary<string, Hub> Hubs { get; private set; }
@@ -51,7 +58,22 @@ namespace Symbiote.Core.Service.Web
 
         public OperationResult Configure()
         {
-            return Configure(manager.ConfigurationManager.GetConfiguration<WebServiceConfiguration>(this.GetType()).Result);
+            OperationResult retVal = new OperationResult();
+
+            OperationResult<WebServiceConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType());
+
+            // if the fetch succeeded, configure this instance with the result.  
+            if (fetchResult.ResultCode != OperationResultCode.Failure)
+                Configure(fetchResult.Result);
+            // if the fetch failed, add a new default instance to the configuration and try again.
+            else
+            {
+                OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != OperationResultCode.Failure)
+                    Configure();
+            }
+
+            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType()).Result);
         }
 
         public OperationResult Configure(WebServiceConfiguration configuration)
@@ -63,7 +85,7 @@ namespace Symbiote.Core.Service.Web
 
         public OperationResult SaveConfiguration()
         {
-            return manager.ConfigurationManager.SaveConfiguration(this.GetType(), Configuration);
+            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
 
         public static ConfigurationDefinition GetConfigurationDefinition()

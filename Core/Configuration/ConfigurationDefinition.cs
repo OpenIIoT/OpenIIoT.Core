@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Symbiote.Core.Configuration
 {
@@ -21,6 +17,11 @@ namespace Symbiote.Core.Configuration
     /// and returns it.  The owner then manipulates the instance and when finished saves it back to the configuration manager, which in turn saves it to the configuration file as serialized
     /// json.
     /// </summary>
+    /// <remarks>
+    /// The ability to store the default configuration within this object was explored and due to the need to be able to statically call GetConfigurationDefinition,
+    /// returning a generic instance of this class (ConfigurationDefinition(T)) would be too sloppy, requiring a ton more reflection than is already being used.
+    /// Based on previous attempts to do neat tricks with reflection the goal is to minimize the usage wherever possible.
+    /// </remarks>
     public class ConfigurationDefinition
     {
         #region Properties
@@ -91,8 +92,8 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// Sets the value of the Model property to the supplied Type.
         /// </summary>
-        /// <param name="model"></param>
-        /// <returns>A type representing the model to be built from the schema.</returns>
+        /// <param name="model">The Type of the Configuration model.</param>
+        /// <returns>The modified ConfigurationDefinition object.</returns>
         public ConfigurationDefinition SetModel(Type model)
         {
             Model = model;

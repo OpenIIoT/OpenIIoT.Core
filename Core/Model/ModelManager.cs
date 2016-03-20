@@ -2,24 +2,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Symbiote.Core.Configuration.Model;
+using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core.Model
 {
     /// <summary>
     /// The ModelManager class manages the Model for the application.
     /// </summary>
-    public class ModelManager
+    public class ModelManager : IManager, IConfigurable<ModelManagerConfiguration>
     {
         #region Variables
-
-        /// <summary>
-        /// The ProgramManager for the application.
-        /// </summary>
-        private ProgramManager manager;
 
         /// <summary>
         /// The Logger for this class.
@@ -27,13 +19,31 @@ namespace Symbiote.Core.Model
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
+        private ProgramManager manager;
+
+        /// <summary>
         /// The Singleton instance of ModelManager.
         /// </summary>
         private static ModelManager instance;
 
+        /// <summary>
+        /// The state of the Manager.
+        /// </summary>
+        private bool isRunning = false;
+
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// The state of the Manager.
+        /// </summary>
+        public bool IsRunning { get { return isRunning; } }
+
+        public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+        public ModelManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
         /// The root Item for the model.
@@ -49,11 +59,20 @@ namespace Symbiote.Core.Model
 
         #region Constructors
 
+        /// <summary>
+        /// Private constructor, only called by Instance()
+        /// </summary>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
         private ModelManager(ProgramManager manager)
         {
             this.manager = manager;
         }
 
+        /// <summary>
+        /// Instantiates and/or returns the ModelManager instance.
+        /// </summary>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <returns>The Singleton instance of the ModelManager.</returns>
         internal static ModelManager Instance(ProgramManager manager)
         {
             if (instance == null)
@@ -65,6 +84,241 @@ namespace Symbiote.Core.Model
         #endregion
 
         #region Instance Methods
+
+        #region IManager Implementation
+
+        /// <summary>
+        /// Starts the Model manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Start()
+        {
+            logger.Info("Starting the Model Manager...");
+            OperationResult retVal = new OperationResult();
+
+            retVal.Incorporate(Configure());
+            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = true;
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Restarts the Configuration manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Restart()
+        {
+            logger.Info("Restarting the Model Manager...");
+            OperationResult retVal = new OperationResult();
+
+            retVal.Incorporate(Stop());
+            retVal.Incorporate(Start());
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Stops the Configuration manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Stop()
+        {
+            logger.Info("Stopping the Model Manager...");
+            OperationResult retVal = new OperationResult();
+
+            isRunning = false;
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        #endregion
+
+        #region IConfigurable Implementation
+
+        public OperationResult Configure()
+        {
+            OperationResult retVal = new OperationResult();
+
+            OperationResult<ModelManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
+
+            // if the fetch succeeded, configure this instance with the result.  
+            if (fetchResult.ResultCode != OperationResultCode.Failure)
+                Configure(fetchResult.Result);
+            // if the fetch failed, add a new default instance to the configuration and try again.
+            else
+            {
+                OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != OperationResultCode.Failure)
+                    Configure();
+                else
+                    retVal.Incorporate(createResult);
+            }
+
+            return retVal;
+        }
+
+        public OperationResult Configure(ModelManagerConfiguration configuration)
+        {
+            Configuration = configuration;
+            SaveConfiguration();
+            return new OperationResult();
+        }
+
+        public OperationResult SaveConfiguration()
+        {
+            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Builds a Model using the Model Configuration stored within the ProgramManager and returns a ModelBuildResult containing the result.
+        /// </summary>
+        /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
+        public ModelBuildResult BuildModel()
+        {
+            return BuildModel(Configuration.Items);
+        }
+
+        /// <summary>
+        /// Builds a Model using the provided list of ConfigurationItems and returns a ModelBuildResult containing the result.
+        /// </summary>
+        /// <param name="itemList">A list of ConfigurationItems containing Model Items to build.</param>
+        /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
+        public ModelBuildResult BuildModel(List<ModelManagerConfigurationItem> itemList)
+        {
+            logger.Info("Building Model...");
+
+            ModelBuildResult retVal = new ModelBuildResult() { ResultCode = OperationResultCode.Success, UnresolvedList = itemList.Clone() };
+
+            BuildModel(itemList, retVal);
+
+            retVal.LogResult(logger);
+
+            // if the model was built successfully (with or without warnings), report the success and show some statistics.
+            if (retVal.ResultCode != OperationResultCode.Failure)
+            {
+                logger.Info(retVal.ResolvedList.Count() + " items were resolved.");
+
+                // if any items were unresolved, print them.
+                if (retVal.UnresolvedList.Count() > 0)
+                {
+                    logger.Info("Unresolved items:");
+                    foreach (ModelManagerConfigurationItem mi in retVal.UnresolvedList)
+                        logger.Info("\t" + mi.FQN);
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Accepts a list of Configuration.Items and recursively instantiates items in the Model corresponding to the items in the list.
+        /// </summary>
+        /// <param name="itemList">A list of model items from which to build the model.</param>
+        /// <param name="result">An instance of ModelBuildResult, ideally new.  The method will recursively pass it to itself and return it to the calling method when complete.</param>
+        /// <param name="depth">The current depth of recursion. Defaults to 0 if omitted.</param>
+        /// <returns>A ModelBuildResult containing the result of the build operation.</returns>
+        private ModelBuildResult BuildModel(List<ModelManagerConfigurationItem> itemList, ModelBuildResult result, int depth = 0)
+        {
+            // we build the model recursively starting with root items (items with only one tuple in the FQN) and in ascending order
+            // of the number of tuples in the FQN, e.x., "Symbiote.Platform.CPU.% Idle Time" is considered to be at level 4. while
+            // "Symbiote.Platform.CPU" is level 3.
+            //
+            // the rationale behind this approach is that if the model is built in a breadth-first fashion there should not be 
+            // any instances where the code attempts to instantiate an item whos parent item has not yet been instantiated (but may later be),
+            // unless the parent item was missing from the provided list or if the code failed to instantiate the parent when it 
+            // was processed.
+            //
+            // each recursive call of the method adds any unresolved items to the provided resolvedList.  items should be added
+            // to the list if their parent did not exist at the time of the attempted instantiation, or if the item itself failed
+            // to be instantiated.
+
+            // create an IEnumerable containing a list of all the items in the provided itemList at the requested depth
+            IEnumerable<ModelManagerConfigurationItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth);
+
+            // iterate through the list of items
+            foreach (ModelManagerConfigurationItem item in items)
+            {
+                Item newItem;
+                try
+                {
+                    logger.Trace(new String('-', 30));
+                    //logger.Trace("ConfigurationModelItem: " + item.ToString());
+                    //newItem = JsonConvert.DeserializeObject<Item>(item.Definition);
+                    //logger.Trace("Deserialized: " + newItem.ToString());
+
+
+                    newItem = new Item(item.FQN, null, item.SourceFQN);
+
+                    // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
+                    // this will be set "officially" when SetParent() is called to bind the item to its parent
+                    newItem.FQN = item.FQN;
+
+                    // make sure the deserialization went ok
+                    if (newItem == null) throw new ItemJsonInvalidException(item.ToString());
+                    if (newItem.IsValid() != true) throw new ItemValidationException(item.ToString());
+
+                    // resolve the SourceFQN of the new item to an existing item
+                    if (newItem.SourceFQN != "")
+                    {
+                        logger.Trace("Attempting to resolve " + newItem.SourceFQN + "...");
+                        Item resolvedItem = FQNResolver.Resolve(newItem.SourceFQN);
+                        if (resolvedItem == default(Item))
+                            throw new ItemSourceUnresolvedException("Address resolver returned default Item.", newItem, newItem.SourceFQN);
+                        else
+                        {
+                            newItem.SourceItem = resolvedItem;
+                            logger.Trace("Successfully resolved SourceFQN of Item '" + newItem.FQN + "' to '" + newItem.SourceItem.FQN + "'.");
+                        }
+                    }
+                    
+                    AddItem(result.Model, result.Dictionary, newItem);
+
+                    result.UnresolvedList.Remove(item);
+                    result.ResolvedList.Add(item);
+
+                    // this is a departure from the overall design of the application.  Generally methods at this level do not log at info,
+                    // however this is a long running operation and we want to log to assure the user we haven't crashed.
+                    logger.Info("Added item '" + newItem.FQN + "' to the Model.");    
+                }
+                catch (ItemParentMissingException ex)
+                {
+                    result.AddWarning("The parent item for item '" + item.FQN + "' was not found in the model; ignoring.");
+                    logger.Trace("ItemParentMissingException thrown: " + ex.Message);
+                }
+                catch (ItemJsonInvalidException ex)
+                {
+                    result.AddWarning("Invalid configuration json for item '" + item.FQN + "'; ignoring.");
+                    logger.Trace("ItemJsonInvalidException thrown: " + ex.Message);
+                }
+                catch (ItemValidationException ex)
+                {
+                    result.AddWarning("Configuration json for item '" + item.FQN + "' deserialized to an invalid item; ignoring.");
+                    logger.Trace("ItemValidationException thrown: " + ex.Message);
+                }
+                catch (ItemSourceUnresolvedException ex)
+                {
+                    result.AddWarning("Source item for '" + ex.Item.FQN + "' (" + ex.SourceFQN + ") could not be resolved; ignoring.");
+                    logger.Trace("ItemSourceUnresolvedException thrown: " + ex.Message + " Item: " + ex.Item.FQN + " SourceFQN: " + ex.SourceFQN);
+                }
+                catch (Exception ex)
+                {
+                    result.AddWarning("Failed to add the item '" + item.FQN + "' to the model; ignoring.");
+                    logger.Trace("Exception: " + ex.Message);
+                    continue;
+                }
+            }
+
+            // if at least one item was processed at this depth, recursively call this method one level deeper
+            if (items.Count() > 0)
+                BuildModel(itemList, result, depth + 1);
+
+            return result;
+        }
 
         /// <summary>
         /// Assigns the Model and Dictionary contained within the supplied ModelBuildResult to the supplied model and dictionary.
@@ -96,165 +350,22 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Builds a Model using the Model Configuration stored within the ProgramManager and returns a ModelBuildResult containing the result.
-        /// </summary>
-        /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
-        public ModelBuildResult BuildModel()
-        {
-            return BuildModel(manager.ConfigurationManager.Configuration.Model.Items);
-        }
-
-        /// <summary>
-        /// Builds a Model using the provided list of ConfigurationItems and returns a ModelBuildResult containing the result.
-        /// </summary>
-        /// <param name="itemList">A list of ConfigurationItems containing Model Items to build.</param>
-        /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
-        public ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList)
-        {
-            logger.Info("Building Model...");
-
-            ModelBuildResult retVal = new ModelBuildResult() { ResultCode = OperationResultCode.Success, UnresolvedList = itemList.Clone() };
-
-            BuildModel(itemList, retVal);
-
-            retVal.LogResult(logger);
-
-            // if the model was built successfully (with or without warnings), report the success and show some statistics.
-            if (retVal.ResultCode != OperationResultCode.Failure)
-            {
-                logger.Info(retVal.ResolvedList.Count() + " items were resolved.");
-
-                // if any items were unresolved, print them.
-                if (retVal.UnresolvedList.Count() > 0)
-                {
-                    logger.Info("Unresolved items:");
-                    foreach (ConfigurationModelItem mi in retVal.UnresolvedList)
-                        logger.Info("\t" + mi.FQN);
-                }
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        /// Accepts a list of Configuration.Items and recursively instantiates items in the Model corresponding to the items in the list.
-        /// </summary>
-        /// <param name="itemList">A list of model items from which to build the model.</param>
-        /// <param name="result">An instance of ModelBuildResult, ideally new.  The method will recursively pass it to itself and return it to the calling method when complete.</param>
-        /// <param name="depth">The current depth of recursion. Defaults to 0 if omitted.</param>
-        /// <returns>A ModelBuildResult containing the result of the build operation.</returns>
-        private ModelBuildResult BuildModel(List<ConfigurationModelItem> itemList, ModelBuildResult result, int depth = 0)
-        {
-            // we build the model recursively starting with root items (items with only one tuple in the FQN) and in ascending order
-            // of the number of tuples in the FQN, e.x., "Symbiote.Platform.CPU.% Idle Time" is considered to be at level 4. while
-            // "Symbiote.Platform.CPU" is level 3.
-            //
-            // the rationale behind this approach is that if the model is built in a breadth-first fashion there should not be 
-            // any instances where the code attempts to instantiate an item whos parent item has not yet been instantiated (but may later be),
-            // unless the parent item was missing from the provided list or if the code failed to instantiate the parent when it 
-            // was processed.
-            //
-            // each recursive call of the method adds any unresolved items to the provided resolvedList.  items should be added
-            // to the list if their parent did not exist at the time of the attempted instantiation, or if the item itself failed
-            // to be instantiated.
-
-            // create an IEnumerable containing a list of all the items in the provided itemList at the requested depth
-            IEnumerable<ConfigurationModelItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth);
-
-            // iterate through the list of items
-            foreach (ConfigurationModelItem item in items)
-            {
-                Item newItem;
-                try
-                {
-                    logger.Trace(new String('-', 30));
-                    logger.Trace("ConfigurationModelItem: " + item.ToString());
-                    newItem = JsonConvert.DeserializeObject<Item>(item.Definition);
-                    logger.Trace("Deserialized: " + newItem.ToString());
-
-                    // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
-                    // this will be set "officially" when SetParent() is called to bind the item to its parent
-                    newItem.FQN = item.FQN;
-
-                    // make sure the deserialization went ok
-                    if (newItem == null) throw new ItemJsonInvalidException(item.ToString());
-                    if (newItem.IsValid() != true) throw new ItemValidationException(item.ToString());
-
-                    // resolve the SourceAddress of the new item to an existing item
-                    if (newItem.SourceAddress != "")
-                    {
-                        logger.Trace("Attempting to resolve " + newItem.SourceAddress + "...");
-                        Item resolvedItem = AddressResolver.Resolve(newItem.SourceAddress);
-                        if (resolvedItem == default(Item))
-                            throw new ItemSourceUnresolvedException("Address resolver returned default Item.", newItem, newItem.SourceAddress);
-                        else
-                        {
-                            newItem.SourceItem = resolvedItem;
-                            logger.Trace("Successfully resolved SourceAddress of Item '" + newItem.FQN + "' to '" + newItem.SourceItem.FQN + "'.");
-                        }
-                    }
-                    
-                    AddItem(result.Model, result.Dictionary, newItem);
-
-                    result.UnresolvedList.Remove(item);
-                    result.ResolvedList.Add(item);
-
-                    // this is a departure from the overall design of the application.  Generally methods at this level do not log at info,
-                    // however this is a long running operation and we want to log to assure the user we haven't crashed.
-                    logger.Info("Added item '" + newItem.FQN + "' to the Model.");    
-                }
-                catch (ItemParentMissingException ex)
-                {
-                    result.AddWarning("The parent item for item '" + item.FQN + "' was not found in the model; ignoring.");
-                    logger.Trace("ItemParentMissingException thrown: " + ex.Message);
-                }
-                catch (ItemJsonInvalidException ex)
-                {
-                    result.AddWarning("Invalid configuration json for item '" + item.FQN + "'; ignoring.");
-                    logger.Trace("ItemJsonInvalidException thrown: " + ex.Message);
-                }
-                catch (ItemValidationException ex)
-                {
-                    result.AddWarning("Configuration json for item '" + item.FQN + "' deserialized to an invalid item; ignoring.");
-                    logger.Trace("ItemValidationException thrown: " + ex.Message);
-                }
-                catch (ItemSourceUnresolvedException ex)
-                {
-                    result.AddWarning("Source item for '" + ex.Item.FQN + "' (" + ex.SourceAddress + ") could not be resolved; ignoring.");
-                    logger.Trace("ItemSourceUnresolvedException thrown: " + ex.Message + " Item: " + ex.Item.FQN + " SourceAddress: " + ex.SourceAddress);
-                }
-                catch (Exception ex)
-                {
-                    result.AddWarning("Failed to add the item '" + item.FQN + "' to the model; ignoring.");
-                    logger.Trace("Exception: " + ex.Message);
-                    continue;
-                }
-            }
-
-            // if at least one item was processed at this depth, recursively call this method one level deeper
-            if (items.Count() > 0)
-                BuildModel(itemList, result, depth + 1);
-
-            return result;
-        }
-
-        /// <summary>
         /// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
         /// </summary>
         /// <param name="flushToDisk">Save the updated Configuration to disk.</param>
         /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
-        public OperationResult<List<ConfigurationModelItem>> SaveModel(bool flushToDisk = false)
+        public OperationResult<List<ModelManagerConfigurationItem>> SaveModel(bool flushToDisk = false)
         {
             logger.Info("Saving Model" + (flushToDisk ? " and flushing the Configuration to disk" : "") + "...");
 
-            OperationResult<List<ConfigurationModelItem>> configuration = new OperationResult<List<ConfigurationModelItem>>();
-            configuration.Result = new List<ConfigurationModelItem>();
+            OperationResult<List<ModelManagerConfigurationItem>> configuration = new OperationResult<List<ModelManagerConfigurationItem>>();
+            configuration.Result = new List<ModelManagerConfigurationItem>();
 
-            OperationResult<List<ConfigurationModelItem>> retVal = SaveModel(Model, configuration, manager.ConfigurationManager.ItemSerializationProperties);
+            OperationResult<List<ModelManagerConfigurationItem>> retVal = SaveModel(Model, configuration);
 
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
-                manager.ConfigurationManager.Configuration.Model.Items = retVal.Result;
+                Configuration.Items = retVal.Result;
 
                 if (flushToDisk)
                 {
@@ -275,13 +386,13 @@ namespace Symbiote.Core.Model
         /// <param name="configuration">An OperationResult containing the list of ConfigurationModelItems to update.</param>
         /// <param name="itemSerializationProperties">A list of propery names to include in the serialization of the model items.</param>
         /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
-        private OperationResult<List<ConfigurationModelItem>> SaveModel(Item itemRoot, OperationResult<List<ConfigurationModelItem>> configuration, List<string> itemSerializationProperties)
+        private OperationResult<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, OperationResult<List<ModelManagerConfigurationItem>> configuration)
         {
-            configuration.Result.Add(new ConfigurationModelItem() { FQN = itemRoot.FQN, Definition = itemRoot.ToJson(new ContractResolver(itemSerializationProperties)) });
+            configuration.Result.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN, SourceFQN = itemRoot.SourceFQN });
 
-            foreach(Item mi in itemRoot.Children)
+            foreach (Item mi in itemRoot.Children)
             {
-                SaveModel(mi, configuration, itemSerializationProperties);
+                SaveModel(mi, configuration);
             }
 
             return configuration;
@@ -398,9 +509,9 @@ namespace Symbiote.Core.Model
                 // create a 1:1 clone of the supplied item
                 retVal.Result = (Item)item.Clone();
 
-                // set the SourceAddress of the new item to the FQN of the original item to create a link
-                retVal.Result.SourceAddress = retVal.Result.FQN;
-                retVal.Result.SourceItem = AddressResolver.Resolve(retVal.Result.SourceAddress);
+                // set the SourceFQN of the new item to the FQN of the original item to create a link
+                retVal.Result.SourceFQN = retVal.Result.FQN;
+                retVal.Result.SourceItem = FQNResolver.Resolve(retVal.Result.SourceFQN);
 
                 // modify the FQN of the cloned item to reflect it's new path
                 retVal.Result.FQN = parentItem.FQN + "." + retVal.Result.Name;
@@ -607,6 +718,27 @@ namespace Symbiote.Core.Model
 
         #region Static Methods
 
+        public static ConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
+            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
+            retVal.SetModel(typeof(ModelManagerConfiguration));
+            return retVal;
+        }
+
+        public static ModelManagerConfiguration GetDefaultConfiguration()
+        {
+            ModelManagerConfiguration retVal = new ModelManagerConfiguration();
+            retVal.Items.Add(
+                new ModelManagerConfigurationItem()
+                {
+                    FQN = "Symbiote",
+                    SourceFQN = ""
+                });
+            return retVal;
+        }
+
         /// <summary>
         /// Parses and returns an Item path from the given FQN.
         /// </summary>
@@ -634,5 +766,55 @@ namespace Symbiote.Core.Model
         }
 
         #endregion
+    }
+
+    public class ModelManagerConfiguration
+    {
+        public List<ModelManagerConfigurationItem> Items { get; set; }
+
+        public ModelManagerConfiguration()
+        {
+            Items = new List<ModelManagerConfigurationItem>();
+        }
+    }
+
+    /// <summary>
+    /// A generic container for model items within the configuration.
+    /// </summary>
+    public class ModelManagerConfigurationItem : ICloneable
+    {
+        public string FQN { get; set; }
+        public string SourceFQN { get; set; }
+
+        public object Clone()
+        {
+            return new ModelManagerConfigurationItem() { FQN = this.FQN, SourceFQN = this.SourceFQN };
+        }
+
+        public override bool Equals(object obj)
+        {
+            ModelManagerConfigurationItem rightSide;
+
+            try
+            {
+                rightSide = (ModelManagerConfigurationItem)obj;
+            }
+            catch (InvalidCastException ex)
+            {
+                return false;
+            }
+
+            return (this.FQN == rightSide.FQN);
+        }
+
+        public override int GetHashCode()
+        {
+            return FQN.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            return "FQN = " + FQN + "; SourceFQN = " + SourceFQN;
+        }
     }
 }

@@ -34,9 +34,6 @@ namespace Symbiote.Core.Service.Web.API
 
             switch (section)
             {
-                case "model":
-                    retVal = configuration.Model;
-                    break;
                 case "apps":
                     retVal = configuration.Apps;
                     break;

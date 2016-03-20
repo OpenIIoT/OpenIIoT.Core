@@ -158,8 +158,6 @@
     <Compile Include="Configuration\App\ConfigurationAppSection.cs" />
     <Compile Include="Configuration\App\ConfigurationApp.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
-    <Compile Include="Configuration\Model\ConfigurationModelItem.cs" />
-    <Compile Include="Configuration\Model\ConfigurationModelSection.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\Exceptions.cs" />
     <Compile Include="Plugin\Exceptions.cs" />
@@ -167,7 +165,7 @@
     <Compile Include="Plugin\IPluginAssembly.cs" />
     <Compile Include="Plugin\IPluginInstance.cs" />
     <Compile Include="Plugin\Connector\ConnectorItem.cs" />
-    <Compile Include="Common\AddressResolver.cs" />
+    <Compile Include="Common\FQNResolver.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Common\ContractResolver.cs" />
     <Compile Include="Common\Item\Item.cs" />

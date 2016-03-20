@@ -28,16 +28,26 @@ namespace Symbiote.Core
         /// </summary>
         private static ProgramManager instance;
 
+        /// <summary>
+        /// The state of the Manager.
+        /// </summary>
+        private bool isRunning = false;
+
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// The state of the Manager.
+        /// </summary>
+        public bool IsRunning { get { return isRunning; } }
 
         /// <summary>
         /// The name of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
         public string ProductName { get { return typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product; } }
 
-        
+
         //------------------------------------------- - - ------------ - -
         // Properties related to the PlatformManager.
         /// <summary>
@@ -54,7 +64,7 @@ namespace Symbiote.Core
         public PlatformDirectories Directories { get { return PlatformManager.Directories; } }
         //---------------------------------- - -         --------- - --------------  -
 
-        
+
         //-------------------- - - ---------------- - -  -             --------- - 
         // Properties related to the ConfigurationManager
         /// <summary>
@@ -72,7 +82,7 @@ namespace Symbiote.Core
         /// <summary>
         /// A dictionary containing the types and ConfigurationDefinitions for the configurable types within the application.
         /// </summary>
-        public Dictionary<Type, ConfigurationDefinition> ConfigurableTypes { get { return ConfigurationManager.ConfigurableTypes; } }
+        public Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get { return ConfigurationManager.RegisteredTypes; } }
         //---------------------------------- -   ----------------- - -------------------------------------------------  ---------- 
 
 
@@ -146,6 +156,7 @@ namespace Symbiote.Core
             // Model Manager
             logger.Debug("Instantiating the Model Manager...");
             ModelManager = ModelManager.Instance(this);
+            ConfigurationManager.RegisterType(typeof(ModelManager));
             logger.Debug("Successfully instantiated the Model Manager.");
             //---- - -----------  -----
 
@@ -191,6 +202,8 @@ namespace Symbiote.Core
 
         #region Instance Methods
 
+        #region IManager Implementation
+
         /// <summary>
         /// Starts the Program Manager.
         /// </summary>
@@ -200,9 +213,43 @@ namespace Symbiote.Core
             logger.Info("Starting the Program Manager...");
             OperationResult retVal = new OperationResult();
 
+            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = true;
+
             retVal.LogResult(logger);
             return retVal;
         }
+
+        /// <summary>
+        /// Restarts the Program Manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Restart()
+        {
+            logger.Info("Restarting the Program Manager...");
+            OperationResult retVal = new OperationResult();
+
+            retVal.Incorporate(Stop());
+            retVal.Incorporate(Start());
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Stops the Program Manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Stop()
+        {
+            logger.Info("Stopping the Program Manager...");
+            OperationResult retVal = new OperationResult();
+
+            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = false;
+            retVal.LogResult(logger);
+            return new OperationResult();
+        }
+
+        #endregion
 
         #endregion
     }

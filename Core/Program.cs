@@ -74,13 +74,14 @@ namespace Symbiote.Core
                 logger.Debug("The Program Manager was instantiated successfully.");
                 //-------------------------------  ------------------------ - - - --------------- - -
 
-                
+
                 //----------------------------------------------- - ------------  - - -
                 // start the Platform Manager so we can get the platform details
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
-                logger.Info("Starting the Platform Manager...");
-                manager.PlatformManager.Start();
-                logger.Info("Platform Manager started.");
+                //logger.Info("Starting the Platform Manager...");
+                //manager.PlatformManager.Start();
+                //logger.Info("Platform Manager started.");
+                StartManager(manager.PlatformManager);
                 logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
                 //------------------- - -----------                      ------------- 
 
@@ -120,7 +121,7 @@ namespace Symbiote.Core
             {
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
-                StartManager(ProgramManager.Instance());
+                StartManager(manager);
                 //----------- - -
 
 
@@ -129,8 +130,8 @@ namespace Symbiote.Core
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
                 //manager.ConfigurationManager.Start();
                 StartManager(manager.ConfigurationManager);
-                logger.Info("Loading configuration...");
-                manager.ConfigurationManager.LoadConfiguration();
+                //logger.Info("Loading configuration...");
+                //manager.ConfigurationManager.LoadConfiguration();
                 logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
 
@@ -158,15 +159,16 @@ namespace Symbiote.Core
                 // create the platform connector plugin instance.
                 // instantiates the connector plugin and adds it to the PluginManager so that it can be treated as a regular plugin
                 manager.PlatformManager.Platform.InstantiateConnector("Platform");
-                manager.PluginManager.PluginInstances.Add(manager.PlatformManager.Platform.Connector);
+                manager.PluginManager.PluginInstances.Add("Platform", manager.PlatformManager.Platform.Connector);
                 //------ - -      ---------------------- - -     ----------------------------- - - -
 
 
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
                 // builds and attaches the model stored within the configuration file to the Model Manager.
+                StartManager(manager.ModelManager);
                 logger.Info("Attaching model...");
-                Model.ModelBuildResult modelBuildResult = manager.ModelManager.BuildModel(manager.ConfigurationManager.Configuration.Model.Items);
+                Model.ModelBuildResult modelBuildResult = manager.ModelManager.BuildModel(manager.ModelManager.Configuration.Items);
                 manager.ModelManager.AttachModel(modelBuildResult);
                 logger.Info("Attached model.");
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
@@ -219,7 +221,7 @@ namespace Symbiote.Core
                 StartManager(manager.ServiceManager);
                 StartManager(manager.EndpointManager);
 
-                AddressResolver.Resolve("Symbiote.Simulation.Motor").SubscribeToSource();
+                FQNResolver.Resolve("Symbiote.Simulation.Motor").SubscribeToSource();
 
                 manager.PluginManager.StartPlugins();
 

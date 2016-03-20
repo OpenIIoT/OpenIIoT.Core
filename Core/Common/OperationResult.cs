@@ -215,7 +215,7 @@ namespace Symbiote.Core
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void LogResult(NLog.Logger logger, string successLogLevel, string warningLogLevel = "Warn", string failureLogLevel = "Error", [CallerMemberName]string caller = "")
+        public virtual void LogResult(NLog.Logger logger, string successLogLevel, string warningLogLevel, string failureLogLevel, [CallerMemberName]string caller = "")
         {
             // the operation suceeded, with or without warnings
             if (ResultCode != OperationResultCode.Failure)
@@ -229,7 +229,7 @@ namespace Symbiote.Core
             // the operation failed
             else
             {
-                Log(logger, failureLogLevel, "The operation '" + (new StackTrace()).GetFrame(1).GetMethod().Name + "' failed.");
+                Log(logger, failureLogLevel, "The operation '" + caller + "' failed.");
                 LogAllMessages(logger, failureLogLevel, "The following messages were generated during the operation:");
             }
         }

@@ -23,11 +23,14 @@ namespace Symbiote.Core.Plugin
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static PluginManager instance;
+        private bool isRunning = false;
         private bool pluginsLoaded = false;
 
         #endregion
 
         #region Properties
+
+        public bool IsRunning { get { return isRunning; } }
 
         /// <summary>
         /// A list of currently loaded plugin assemblies.
@@ -37,7 +40,8 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// A list of all plugin instances.
         /// </summary>
-        public List<IPluginInstance> PluginInstances { get; private set; }
+        //public List<IPluginInstance> PluginInstances { get; private set; }
+        public Dictionary<string, IPluginInstance> PluginInstances { get; private set; }
 
         #endregion
 
@@ -50,7 +54,8 @@ namespace Symbiote.Core.Plugin
         private PluginManager(ProgramManager manager) {
             this.manager = manager;
             PluginAssemblies = new List<IPluginAssembly>();
-            PluginInstances = new List<IPluginInstance>();
+            //PluginInstances = new List<IPluginInstance>();
+            PluginInstances = new Dictionary<string, IPluginInstance>();
         }
 
         /// <summary>
@@ -76,8 +81,21 @@ namespace Symbiote.Core.Plugin
 
             OperationResult retVal = new OperationResult();
 
+            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = true;
+
             retVal.LogResult(logger);
             return retVal;
+        }
+
+        public OperationResult Restart()
+        {
+            return new OperationResult();
+        }
+
+        public OperationResult Stop()
+        {
+            isRunning = false;
+            return new OperationResult();
         }
 
         #endregion
@@ -90,7 +108,22 @@ namespace Symbiote.Core.Plugin
 
         public OperationResult Configure()
         {
-            return Configure(manager.ConfigurationManager.GetConfiguration<PluginManagerConfiguration>(this.GetType()).Result);
+            OperationResult retVal = new OperationResult();
+
+            OperationResult<PluginManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
+
+            // if the fetch succeeded, configure this instance with the result.  
+            if (fetchResult.ResultCode != OperationResultCode.Failure)
+                Configure(fetchResult.Result);
+            // if the fetch failed, add a new default instance to the configuration and try again.
+            else
+            {
+                OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != OperationResultCode.Failure)
+                    Configure();
+            }
+
+            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType()).Result);
         }
 
         public OperationResult Configure(PluginManagerConfiguration configuration)
@@ -101,7 +134,7 @@ namespace Symbiote.Core.Plugin
 
         public OperationResult SaveConfiguration()
         {
-            return manager.ConfigurationManager.SaveConfiguration(this.GetType(), Configuration);
+            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
 
         public static ConfigurationDefinition GetConfigurationDefinition()
@@ -369,7 +402,8 @@ namespace Symbiote.Core.Plugin
             {
                 logger.Trace("Creating instance of plugin type '" + typeof(T).ToString() + "' with instance name '" + instanceName + "'");
                 T newPluginInstance = (T)Activator.CreateInstance(typeof(T), instanceName);
-                PluginInstances.Add((IPluginInstance)newPluginInstance);
+                //PluginInstances.Add((IPluginInstance)newPluginInstance);
+                PluginInstances.Add(instanceName, (IPluginInstance)newPluginInstance);
                 return newPluginInstance;
             }
             else
@@ -410,7 +444,10 @@ namespace Symbiote.Core.Plugin
         /// <returns>The instance of IPluginInstance matching the requested InstanceName.</returns>
         public IPluginInstance FindPluginInstance(string instanceName, PluginType pluginType = PluginType.Connector)
         {
-            return PluginInstances.Where(p => p.PluginType == pluginType).Where(p => p.InstanceName == instanceName).FirstOrDefault();
+            //return PluginInstances.Where(p => p.PluginType == pluginType).Where(p => p.InstanceName == instanceName).FirstOrDefault();
+            if (PluginInstances.ContainsKey(instanceName))
+                return PluginInstances[instanceName];
+            else return null;
         }
 
         public void InstantiatePlugins()
@@ -436,10 +473,16 @@ namespace Symbiote.Core.Plugin
 
         public void StartPlugins()
         {
-            foreach (IPluginInstance instance in PluginInstances)
+            //foreach (IPluginInstance instance in PluginInstances)
+            //{
+            //    logger.Info("Starting Plugin '" + instance.Name + "'...");
+            //    instance.Start();
+            //}
+
+            foreach (string key in PluginInstances.Keys)
             {
-                logger.Info("Starting Plugin '" + instance.Name + "'...");
-                instance.Start();
+                logger.Info("Starting Plugin '" + key + "'...");
+                PluginInstances[key].Start();
             }
         }
 
@@ -448,7 +491,7 @@ namespace Symbiote.Core.Plugin
             PerformAutoBuild(PluginInstances, Configuration.Instances.Where(pi => pi.AutoBuild.Enabled = true));
         }
 
-        public void PerformAutoBuild(List<IPluginInstance> plugins, IEnumerable<PluginManagerConfigurationPluginInstance> autoBuildInstances)
+        public void PerformAutoBuild(Dictionary<string, IPluginInstance> plugins, IEnumerable<PluginManagerConfigurationPluginInstance> autoBuildInstances)
         {
             foreach (PluginManagerConfigurationPluginInstance instance in autoBuildInstances)
             {
@@ -467,6 +510,25 @@ namespace Symbiote.Core.Plugin
                 }
             }
         }
+        //public void PerformAutoBuild(List<IPluginInstance> plugins, IEnumerable<PluginManagerConfigurationPluginInstance> autoBuildInstances)
+        //{
+        //    foreach (PluginManagerConfigurationPluginInstance instance in autoBuildInstances)
+        //    {
+        //        logger.Info("Attempting to auto build instance '" + instance.InstanceName + "'...");
+        //        IConnector foundPluginInstance = (IConnector)FindPluginInstance(instance.InstanceName);
+        //        if (foundPluginInstance == default(IConnector))
+        //        {
+        //            logger.Warn("Unable to find plugin instance with InstanceName '" + instance.InstanceName + "', continuing auto build");
+        //            continue;
+        //        }
+        //        else
+        //        {
+        //            logger.Trace("Attempting to attach plugin items for instance '" + instance.InstanceName + "' to '" + instance.AutoBuild.ParentFQN + "'");
+        //            manager.ModelManager.AttachItem(foundPluginInstance.Browse(), instance.AutoBuild.ParentFQN);
+        //            logger.Info("AutoBuild of Plugin instance '" + instance.InstanceName + "' complete.");
+        //        }
+        //    }
+        //}
 
         #endregion
 

@@ -37,7 +37,7 @@ namespace Symbiote.Core.Service.Web.API
         public HttpResponseMessage Browse(string fqn, string verbosity = "verbose")
         {
             List<Item> result = new List<Item>();
-            result.Add(AddressResolver.Resolve(fqn));
+            result.Add(FQNResolver.Resolve(fqn));
 
             JsonMediaTypeFormatter formatter;
 
