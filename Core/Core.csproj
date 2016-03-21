@@ -159,7 +159,6 @@
     <Compile Include="Configuration\App\ConfigurationApp.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
-    <Compile Include="Model\Exceptions.cs" />
     <Compile Include="Plugin\Exceptions.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\IPluginAssembly.cs" />

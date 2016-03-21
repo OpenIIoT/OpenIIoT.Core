@@ -44,11 +44,6 @@ namespace Symbiote.Core.Platform
         /// </summary>
         private static PlatformManager instance;
 
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        private bool isRunning = false;
-
         #endregion
 
         #region Properties
@@ -56,7 +51,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public bool IsRunning { get { return isRunning; } }
+        public bool Running { get; private set; }
 
         /// <summary>
         /// The current platform.
@@ -79,6 +74,7 @@ namespace Symbiote.Core.Platform
         private PlatformManager(ProgramManager manager)
         {
             this.manager = manager;
+            Running = false;
         }
 
         /// <summary>
@@ -171,6 +167,8 @@ namespace Symbiote.Core.Platform
 
             #endregion
 
+            Running = (retVal.ResultCode != OperationResultCode.Failure);
+
             retVal.LogResult(logger);
             return new OperationResult();
         }
@@ -199,6 +197,8 @@ namespace Symbiote.Core.Platform
         {
             logger.Info("Stopping the Platform Manager...");
             OperationResult retVal = new OperationResult();
+
+            Running = false;
 
             retVal.LogResult(logger);
             return retVal;

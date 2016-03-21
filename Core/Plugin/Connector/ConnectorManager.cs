@@ -13,13 +13,12 @@ namespace Symbiote.Core.Plugin.Connector
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ConnectorManager instance;
-        private bool isRunning = false;
 
         #endregion
 
         #region Properties
 
-        public bool IsRunning { get { return isRunning; } }
+        public bool Running { get; private set; }
 
         public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
@@ -54,6 +53,7 @@ namespace Symbiote.Core.Plugin.Connector
 
         public OperationResult Start()
         {
+            OperationResult retVal = new OperationResult();
             Configure();
 
             // register endpoints
@@ -76,8 +76,8 @@ namespace Symbiote.Core.Plugin.Connector
                 logger.Info("Instance: " + i.Name);
             }
 
-            isRunning = true;
-            return new OperationResult();
+            Running = (retVal.ResultCode != OperationResultCode.Failure);
+            return retVal;
         }
 
         public OperationResult Restart()
@@ -87,7 +87,7 @@ namespace Symbiote.Core.Plugin.Connector
 
         public OperationResult Stop()
         {
-            isRunning = false;
+            Running = false;
             return new OperationResult();
         }
 

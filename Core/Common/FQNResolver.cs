@@ -10,6 +10,15 @@ namespace Symbiote.Core
     /// </summary>
     class FQNResolver
     {
+        #region Enumerations
+
+        public enum ItemSource
+        {
+            Unknown, Plugin, Model
+        }
+
+        #endregion
+
         #region Variables
 
         /// <summary>
@@ -35,14 +44,14 @@ namespace Symbiote.Core
         {
             Item retVal = default(Item);
 
-            string itemOrigin = lookupFQN.Split('.')[0];
-
+            ItemSource source = GetSource(lookupFQN);
+            logger.Trace("Source: " + source);
             // if the origin is null, a malformed FQN was provided.  return null.
-            if (itemOrigin == "")
+            if (source == ItemSource.Unknown)
                 retVal = default(Item);
             // if the origin is the product, the FQN belongs to a Model item. 
             // use the ModelManager to look it up.
-            else if (itemOrigin == manager.ProductName)
+            else if (source == ItemSource.Model)
                 retVal = manager.ModelManager.FindItem(lookupFQN);
             // if the origin is something other than the product, the FQN belongs to a plugin item.
             // use the PluginManager to look it up.
@@ -53,7 +62,28 @@ namespace Symbiote.Core
             if (retVal != default(Item))
                 logger.Trace("Resolved Item '" + lookupFQN + "' to Item: " + retVal.ToJson());
             else
-                logger.Trace("Failed to Item '" + lookupFQN + "'");
+                logger.Trace("Failed to resolve Item '" + lookupFQN + "'");
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Determines the source of the Item by examining the first tuple of the FQN.
+        /// </summary>
+        /// <param name="lookupFQN">The Fully Qualified Name of the Item for which the source is to be determined.</param>
+        /// <returns>The enumeration representing the source of the Item.</returns>
+        public static ItemSource GetSource(string lookupFQN)
+        {
+            ItemSource retVal = default(ItemSource);
+
+            string itemOrigin = lookupFQN.Split('.')[0];
+
+            if (itemOrigin == "")
+                retVal = ItemSource.Unknown;
+            else if (itemOrigin == manager.InstanceName)
+                retVal = ItemSource.Model;
+            else
+                retVal = ItemSource.Plugin;
 
             return retVal;
         }

@@ -69,11 +69,6 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         private static ConfigurationManager instance;
 
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        private bool isRunning = false;
-
         #endregion
 
         #region Properties
@@ -81,7 +76,7 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public bool IsRunning { get { return isRunning; } }
+        public bool Running { get; private set; }
 
         /// <summary>
         /// The current configuration.
@@ -111,6 +106,7 @@ namespace Symbiote.Core.Configuration
             this.manager = manager;
             RegisteredTypes = new Dictionary<Type, ConfigurationDefinition>();
             ConfigurationFileName = GetConfigurationFileName();
+            Running = false;
         }
 
         /// <summary>
@@ -205,7 +201,7 @@ namespace Symbiote.Core.Configuration
 
             #endregion
 
-            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = true;
+            Running = (retVal.ResultCode != OperationResultCode.Failure);
 
             retVal.LogResult(logger);
             return retVal;
@@ -236,7 +232,7 @@ namespace Symbiote.Core.Configuration
             logger.Info("Stopping the Configuration Manager...");
             OperationResult retVal = new OperationResult();
 
-            isRunning = false;
+            Running = false;
 
             retVal.LogResult(logger);
             return retVal;

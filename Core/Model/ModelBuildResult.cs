@@ -36,6 +36,13 @@ namespace Symbiote.Core.Model
         public List<ModelManagerConfigurationItem> UnresolvedList { get; set; }
 
         /// <summary>
+        /// The list of model items that were defferred during the build.  This
+        /// occurs if the item's SourceFQN is a model item (instead of a plugin item)
+        /// and it is at a greater depth in the model than the item itself.
+        /// </summary>
+        public List<Item> DeferredList { get; set; }
+
+        /// <summary>
         /// The default constructor.
         /// </summary>
         public ModelBuildResult() : base()
@@ -44,6 +51,7 @@ namespace Symbiote.Core.Model
             Dictionary = new Dictionary<string, Item>();
             ResolvedList = new List<ModelManagerConfigurationItem>();
             UnresolvedList = new List<ModelManagerConfigurationItem>();
+            DeferredList = new List<Item>();
         }
     }
 }

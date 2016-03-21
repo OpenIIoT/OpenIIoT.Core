@@ -28,11 +28,6 @@ namespace Symbiote.Core
         /// </summary>
         private static ProgramManager instance;
 
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        private bool isRunning = false;
-
         #endregion
 
         #region Properties
@@ -40,12 +35,22 @@ namespace Symbiote.Core
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public bool IsRunning { get { return isRunning; } }
+        public bool Running { get; private set; }
+
+        /// <summary>
+        /// True while the application is starting, false afterwards.
+        /// </summary>
+        public bool Starting { get; set; }
 
         /// <summary>
         /// The name of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
         public string ProductName { get { return typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product; } }
+
+        /// <summary>
+        /// The name of the application instance.
+        /// </summary>
+        public string InstanceName { get { return Utility.GetSetting("InstanceName");  } }
 
 
         //------------------------------------------- - - ------------ - -
@@ -125,7 +130,7 @@ namespace Symbiote.Core
         private ProgramManager()
         {
             logger.Debug("Instantiating Managers...");
-
+            Running = false;
 
             //------- - ------- -         --
             // Platform Manager
@@ -213,7 +218,8 @@ namespace Symbiote.Core
             logger.Info("Starting the Program Manager...");
             OperationResult retVal = new OperationResult();
 
-            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = true;
+            Running = (retVal.ResultCode != OperationResultCode.Failure);
+            Starting = true;
 
             retVal.LogResult(logger);
             return retVal;
@@ -244,7 +250,8 @@ namespace Symbiote.Core
             logger.Info("Stopping the Program Manager...");
             OperationResult retVal = new OperationResult();
 
-            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = false;
+            Running = false;
+
             retVal.LogResult(logger);
             return new OperationResult();
         }

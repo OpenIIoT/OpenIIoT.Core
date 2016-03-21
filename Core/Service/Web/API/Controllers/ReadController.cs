@@ -46,6 +46,8 @@ namespace Symbiote.Core.Service.Web.API
 
             retVal.LogRequest(logger);
 
+            fqn = fqn.Replace("%25", "%");
+
             Item foundItem = FQNResolver.Resolve(fqn);
 
             if (fromSource)

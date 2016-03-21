@@ -28,11 +28,6 @@ namespace Symbiote.Core.Model
         /// </summary>
         private static ModelManager instance;
 
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        private bool isRunning = false;
-
         #endregion
 
         #region Properties
@@ -40,9 +35,16 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public bool IsRunning { get { return isRunning; } }
+        public bool Running { get; private set; }
 
+        /// <summary>
+        /// The ConfigurationDefinition for the Manager.
+        /// </summary>
         public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+
+        /// <summary>
+        /// The Configuration for the Manager.
+        /// </summary>
         public ModelManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
@@ -66,6 +68,7 @@ namespace Symbiote.Core.Model
         private ModelManager(ProgramManager manager)
         {
             this.manager = manager;
+            Running = false;
         }
 
         /// <summary>
@@ -96,8 +99,49 @@ namespace Symbiote.Core.Model
             logger.Info("Starting the Model Manager...");
             OperationResult retVal = new OperationResult();
 
-            retVal.Incorporate(Configure());
-            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = true;
+            #region Configuration
+
+            //--------------- - - -
+            // Configure the Manager
+            OperationResult configureResult = Configure();
+
+            if (configureResult.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to configure the Model Manager: " + configureResult.GetLastError());
+
+            retVal.Incorporate(configureResult);
+            //--------------------------------  -
+
+            #endregion
+
+            #region Model Building
+
+            //--  -  -- ---------------  -
+            // Build the model
+            ModelBuildResult modelBuildResult = BuildModel(Configuration.Items);
+
+            if (modelBuildResult.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to build the model: " + modelBuildResult.GetLastError()); 
+
+            retVal.Incorporate(modelBuildResult);
+            //--- - ------------
+
+            #endregion
+
+            #region Model Attaching
+
+            //------------------------------   -
+            // Attach the newly built model to the Model Manager
+            OperationResult attachResult = AttachModel(modelBuildResult);
+
+            if (attachResult.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to attach the model to the Model Manager: " + attachResult.GetLastError());
+
+            retVal.Incorporate(attachResult);
+            //---- - ------------  - 
+
+            #endregion
+
+            Running = (retVal.ResultCode != OperationResultCode.Failure);
 
             retVal.LogResult(logger);
             return retVal;
@@ -128,7 +172,9 @@ namespace Symbiote.Core.Model
             logger.Info("Stopping the Model Manager...");
             OperationResult retVal = new OperationResult();
 
-            isRunning = false;
+            retVal.Incorporate(SaveModel());
+
+            Running = false;
 
             retVal.LogResult(logger);
             return retVal;
@@ -138,41 +184,80 @@ namespace Symbiote.Core.Model
 
         #region IConfigurable Implementation
 
+        /// <summary>
+        /// Configures the Model Manager using the configuration stored in the Configuration Manager, or, failing that, using the default configuration.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Configure()
         {
+            logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             OperationResult retVal = new OperationResult();
 
             OperationResult<ModelManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != OperationResultCode.Failure)
+            {
+                logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
                 Configure(fetchResult.Result);
+            }
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
+                logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
                 OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != OperationResultCode.Failure)
+                {
+                    logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure();
+                }
                 else
                     retVal.Incorporate(createResult);
             }
 
+            retVal.LogResultDebug(logger);
             return retVal;
         }
 
+        /// <summary>
+        /// Configures the Model Manager using the supplied configuration, then saves the configuration to the Model Manager.
+        /// </summary>
+        /// <param name="configuration">The configuration with which the Model Manager should be configured.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Configure(ModelManagerConfiguration configuration)
         {
+            logger.Debug("Configuring...");
+            OperationResult retVal = new OperationResult();
+
+            // update the configuration
             Configuration = configuration;
-            SaveConfiguration();
-            return new OperationResult();
+
+            // save it
+            logger.Debug("Saving the new configuration...");
+            retVal.Incorporate(SaveConfiguration());
+
+            retVal.LogResultDebug(logger);
+            return retVal;
         }
 
+        /// <summary>
+        /// Saves the configuration to the Configuration Manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult SaveConfiguration()
         {
-            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
+            logger.Debug("Saving the configuration...");
+            OperationResult retVal = new OperationResult();
+
+            retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
+
+            retVal.LogResultDebug(logger);
+            return retVal;
         }
 
         #endregion
+
+        #region Model Management (Build, Attach and Save)
 
         /// <summary>
         /// Builds a Model using the Model Configuration stored within the ProgramManager and returns a ModelBuildResult containing the result.
@@ -188,10 +273,9 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="itemList">A list of ConfigurationItems containing Model Items to build.</param>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
-        public ModelBuildResult BuildModel(List<ModelManagerConfigurationItem> itemList)
+        private ModelBuildResult BuildModel(List<ModelManagerConfigurationItem> itemList)
         {
             logger.Info("Building Model...");
-
             ModelBuildResult retVal = new ModelBuildResult() { ResultCode = OperationResultCode.Success, UnresolvedList = itemList.Clone() };
 
             BuildModel(itemList, retVal);
@@ -201,12 +285,12 @@ namespace Symbiote.Core.Model
             // if the model was built successfully (with or without warnings), report the success and show some statistics.
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
-                logger.Info(retVal.ResolvedList.Count() + " items were resolved.");
+                logger.Info(retVal.ResolvedList.Count() + " Item(s) were resolved.");
 
                 // if any items were unresolved, print them.
                 if (retVal.UnresolvedList.Count() > 0)
                 {
-                    logger.Info("Unresolved items:");
+                    logger.Info("Unresolved Item(s):");
                     foreach (ModelManagerConfigurationItem mi in retVal.UnresolvedList)
                         logger.Info("\t" + mi.FQN);
                 }
@@ -236,6 +320,10 @@ namespace Symbiote.Core.Model
             // each recursive call of the method adds any unresolved items to the provided resolvedList.  items should be added
             // to the list if their parent did not exist at the time of the attempted instantiation, or if the item itself failed
             // to be instantiated.
+            // 
+            // if the SourceFQN for an item is a model item (rather than a plugin item) and if it is at a further depth than
+            // the current item, we want to create the item without resolving the source item and add it to a list of deffered
+            // items so that the source can be resolved after the model is built.
 
             // create an IEnumerable containing a list of all the items in the provided itemList at the requested depth
             IEnumerable<ModelManagerConfigurationItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth);
@@ -243,72 +331,65 @@ namespace Symbiote.Core.Model
             // iterate through the list of items
             foreach (ModelManagerConfigurationItem item in items)
             {
-                Item newItem;
                 try
                 {
                     logger.Trace(new String('-', 30));
-                    //logger.Trace("ConfigurationModelItem: " + item.ToString());
-                    //newItem = JsonConvert.DeserializeObject<Item>(item.Definition);
-                    //logger.Trace("Deserialized: " + newItem.ToString());
 
-
+                    Item newItem;
                     newItem = new Item(item.FQN, null, item.SourceFQN);
 
                     // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
                     // this will be set "officially" when SetParent() is called to bind the item to its parent
-                    newItem.FQN = item.FQN;
-
-                    // make sure the deserialization went ok
-                    if (newItem == null) throw new ItemJsonInvalidException(item.ToString());
-                    if (newItem.IsValid() != true) throw new ItemValidationException(item.ToString());
+                    //newItem.FQN = item.FQN;
 
                     // resolve the SourceFQN of the new item to an existing item
+                    // ignore items with a blank SourceFQN; add those directly to the model.
                     if (newItem.SourceFQN != "")
                     {
                         logger.Trace("Attempting to resolve " + newItem.SourceFQN + "...");
-                        Item resolvedItem = FQNResolver.Resolve(newItem.SourceFQN);
-                        if (resolvedItem == default(Item))
-                            throw new ItemSourceUnresolvedException("Address resolver returned default Item.", newItem, newItem.SourceFQN);
+
+                        // determine whether we should defer the resolution of the source item
+                        // if the source of the item is a model item, and that item's depth is greater than this item, defer the resolution
+                        // of the source item until after the model has been fully built.
+                        if ((FQNResolver.GetSource(newItem.SourceFQN) == FQNResolver.ItemSource.Model) && (newItem.SourceFQN.Split('.').Length - 1 >= depth))
+                        {
+                            logger.Info("Deferring the resolution of the SourceFQN for '" + newItem.FQN + "'.");
+                            result.DeferredList.Add(newItem);
+                        }
+                        // the sourceitem is either not a model item or is at a shallower depth than the current item, so it is safe to 
+                        // resolve.
                         else
                         {
-                            newItem.SourceItem = resolvedItem;
-                            logger.Trace("Successfully resolved SourceFQN of Item '" + newItem.FQN + "' to '" + newItem.SourceItem.FQN + "'.");
+                            Item resolvedItem = FQNResolver.Resolve(newItem.SourceFQN);
+
+                            if (resolvedItem == default(Item))
+                                result.AddWarning("The Source FQN '" + newItem.SourceFQN + "' for item '" + newItem.FQN + "' could not be found.");
+                            else
+                            {
+                                newItem.SourceItem = resolvedItem;
+                                logger.Trace("Successfully resolved SourceFQN of Item '" + newItem.FQN + "' to '" + newItem.SourceItem.FQN + "'.");
+                            }
                         }
                     }
                     
-                    AddItem(result.Model, result.Dictionary, newItem);
+                    OperationResult addResult = AddItem(result.Model, result.Dictionary, newItem);
 
-                    result.UnresolvedList.Remove(item);
-                    result.ResolvedList.Add(item);
+                    if (addResult.ResultCode != OperationResultCode.Failure)
+                    {
+                        result.UnresolvedList.Remove(item);
+                        result.ResolvedList.Add(item);
+                        logger.Info("Added item '" + newItem.FQN + "' to the Model.");
+                    }
+                    else
+                    {
+                        result.AddWarning("Failed to add item '" + newItem.FQN + "' to the Model: " + addResult.GetLastError());
+                    } 
 
-                    // this is a departure from the overall design of the application.  Generally methods at this level do not log at info,
-                    // however this is a long running operation and we want to log to assure the user we haven't crashed.
-                    logger.Info("Added item '" + newItem.FQN + "' to the Model.");    
-                }
-                catch (ItemParentMissingException ex)
-                {
-                    result.AddWarning("The parent item for item '" + item.FQN + "' was not found in the model; ignoring.");
-                    logger.Trace("ItemParentMissingException thrown: " + ex.Message);
-                }
-                catch (ItemJsonInvalidException ex)
-                {
-                    result.AddWarning("Invalid configuration json for item '" + item.FQN + "'; ignoring.");
-                    logger.Trace("ItemJsonInvalidException thrown: " + ex.Message);
-                }
-                catch (ItemValidationException ex)
-                {
-                    result.AddWarning("Configuration json for item '" + item.FQN + "' deserialized to an invalid item; ignoring.");
-                    logger.Trace("ItemValidationException thrown: " + ex.Message);
-                }
-                catch (ItemSourceUnresolvedException ex)
-                {
-                    result.AddWarning("Source item for '" + ex.Item.FQN + "' (" + ex.SourceFQN + ") could not be resolved; ignoring.");
-                    logger.Trace("ItemSourceUnresolvedException thrown: " + ex.Message + " Item: " + ex.Item.FQN + " SourceFQN: " + ex.SourceFQN);
                 }
                 catch (Exception ex)
                 {
-                    result.AddWarning("Failed to add the item '" + item.FQN + "' to the model; ignoring.");
-                    logger.Trace("Exception: " + ex.Message);
+                    result.AddWarning("Failed to add the item '" + item.FQN + "' to the Model: " + ex.Message);
+                    logger.Trace("Exception: " + ex);
                     continue;
                 }
             }
@@ -316,6 +397,35 @@ namespace Symbiote.Core.Model
             // if at least one item was processed at this depth, recursively call this method one level deeper
             if (items.Count() > 0)
                 BuildModel(itemList, result, depth + 1);
+            // if nothing was processed at this depth the model is fully built.  
+            // resolve the source FQNs of any deferred items
+            else
+            {
+                if (result.DeferredList.Count > 0)
+                {
+                    logger.Info("Resolving the SourceFQN of " + result.DeferredList.Count + " deferred Item(s)...");
+
+                    foreach (Item item in result.DeferredList)
+                    {
+                        logger.Trace("Attempting to resolve the SourceItem '" + item.SourceFQN + "' for item " + item.FQN + "'...");
+
+                        // make sure the item exists in the dictionary
+                        if (result.Dictionary.ContainsKey(item.FQN))
+                        {
+                            // make sure the model contains the source FQN
+                            if (result.Dictionary.ContainsKey(item.SourceFQN))
+                            {
+                                result.Dictionary[item.FQN].SourceItem = result.Dictionary[item.SourceFQN];
+                                logger.Info("Resolved the SourceFQN of '" + item.FQN + "' to '" + result.Dictionary[item.FQN].SourceItem.FQN + "'.");
+                            }
+                            else
+                                result.AddWarning("The Source FQN '" + item.SourceFQN + "' for item '" + item.FQN + "' could not be found.");
+                        }
+                        else
+                            result.AddWarning("Item '" + item.FQN + "' was deferred for source resolution but can't be found in the model.");
+                    }
+                }
+            }
 
             return result;
         }
@@ -340,10 +450,7 @@ namespace Symbiote.Core.Model
                 Dictionary = modelBuildResult.Dictionary;
             }
             else
-            {
                 retVal.AddError("Unable to attach a model that failed to build.");
-                throw new ModelAttachException("Unable to attach a model that failed to build.");
-            }
 
             retVal.LogResult(logger);
             return retVal;
@@ -384,7 +491,6 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="itemRoot">The ModelItem from which to start recursively updating the list.</param>
         /// <param name="configuration">An OperationResult containing the list of ConfigurationModelItems to update.</param>
-        /// <param name="itemSerializationProperties">A list of propery names to include in the serialization of the model items.</param>
         /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
         private OperationResult<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, OperationResult<List<ModelManagerConfigurationItem>> configuration)
         {
@@ -398,21 +504,18 @@ namespace Symbiote.Core.Model
             return configuration;
         }
 
+        #endregion
+
+        #region Model Item Management (CRUD)
+
         /// <summary>
         /// Adds an Item to the ModelManager's instance of Model and Dictionary.
         /// </summary>
         /// <param name="item">The Item to add.</param>
-        /// <param name="suppressLogging">True if log messages should be suppressed during the operation, false otherwise.</param>
         /// <returns>An OperationResult containing the added Item.</returns>
-        public OperationResult<Item> AddItem(Item item, bool suppressLogging = true)
+        public OperationResult<Item> AddItem(Item item)
         {
-            if (!suppressLogging) logger.Info("Adding Item '" + item.FQN + "' to the Model...");
-
-            OperationResult<Item> retVal = AddItem(Model, Dictionary, item);
-
-            if (!suppressLogging) retVal.LogResult(logger);
-
-            return retVal;
+            return AddItem(Model, Dictionary, item);
         }
 
         /// <summary>
@@ -424,6 +527,8 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the added Item.</returns>
         private OperationResult<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
+            if (!manager.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
+
             OperationResult<Item> retVal = new OperationResult<Item>();
 
             string parentFQN = GetParentFQNFromItemFQN(item.FQN);
@@ -455,109 +560,82 @@ namespace Symbiote.Core.Model
                     retVal.AddError("The item already exists in the dictionary.");
                 else
                 {
-                    try
+                    // ensure the parent exists
+                    if (dictionary.ContainsKey(parentFQN))
                     {
-                        logger.Trace("Adding item to model as child of " + parentFQN + ": " + item.ToString());
-                        FindItem(dictionary, parentFQN).AddChild(item);
-                        logger.Trace("Adding item to dictionary with key: " + item.FQN);
-                        dictionary.Add(item.FQN, item);
+                        try
+                        {
+                            logger.Trace("Adding item to model as child of " + parentFQN + ": " + item.ToString());
+                            FindItem(dictionary, parentFQN).AddChild(item);
+                            logger.Trace("Adding item to dictionary with key: " + item.FQN);
+                            dictionary.Add(item.FQN, item);
 
-                        retVal.Result = item;
+                            retVal.Result = item;
+
+
+                        }
+                        catch (Exception ex)
+                        {
+                            retVal.AddError("Exception thrown while attempting to add Item '" + item.FQN + "' to the model: " + ex.Message);
+                            logger.Trace("Exception: " + ex);
+                        }
                     }
-                    catch (KeyNotFoundException ex)
-                    {
-                        retVal.AddError("The parent for item '" + model.FQN + " [" + parentFQN + "] could not be found.");
-                    }
+                    else
+                        retVal.AddError("The parent for item '" + item.FQN + " ('" + parentFQN + "') could not be found.");
                 }
             }
 
+            if (!manager.Starting) retVal.LogResult(logger);
             return retVal;
         }
 
         /// <summary>
-        /// Attaches the provided Item to the Item with the supplied FQN.
+        /// Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
         /// </summary>
-        /// <param name="item">The Item to attach to the Model.</param>
-        /// <param name="parentItemFQN">The Fully Qualified Name of the Item to which the new Item should be attached.</param>
-        /// <param name="suppressLogging">True if log messages should be suppressed during the operation, false otherwise.</param>
-        /// <returns>The attached Item.</returns>
-        public OperationResult<Item> AttachItem(Item item, string parentItemFQN, bool suppressLogging = true)
+        /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
+        /// <returns>The ModelItem from the Model corresponding to the supplied key.</returns>
+        /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
+        public Item FindItem(string fqn)
         {
-            Item foundItem = FindItem(parentItemFQN);
-
-            if (foundItem == default(Item))
-                return new OperationResult<Item>().AddError("The parent item '" + parentItemFQN + "' could not be found.");
-
-            return AttachItem(item, foundItem);
+            return FindItem(Dictionary, fqn);
         }
 
         /// <summary>
-        /// Attaches the provided Item to the supplied Item.
+        /// Returns the ModelItem from the supplied Dictionary matching the supplied key.
         /// </summary>
-        /// <param name="item">The Item to attach to the Model.</param>
-        /// <param name="parentItem">The Item to which the new Item should be attached.</param>
-        /// <param name="suppressLogging">True if log messages should be suppressed during the operation, false otherwise.</param>
-        /// <returns>The attached Item.</returns>
-        public OperationResult<Item> AttachItem(Item item, Item parentItem, bool suppressLogging = true)
+        /// <param name="dictionary">The Dictionary from which to retrieve the item.</param>
+        /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
+        /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
+        private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
         {
-            if (!suppressLogging) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
+            if (dictionary.ContainsKey(fqn))
+                return dictionary[fqn];
 
+            else return default(Item);
+        }
+
+        /// <summary>
+        /// Updates the supplied Item with the supplied Source Item.
+        /// </summary>
+        /// <param name="item">The Item to update.</param>
+        /// <param name="sourceItem">The SourceItem with which to update the Item.</param>
+        /// <returns>An OperationResult containing the result of the operation and the updated Item.</returns>
+        public OperationResult<Item> UpdateItem(Item item, Item sourceItem)
+        {
+            logger.Info("Updating Item '" + item.FQN + "'s SourceItem to '" + sourceItem.FQN + "'...");
             OperationResult<Item> retVal = new OperationResult<Item>();
 
-            try
+            if (sourceItem != default(Item))
             {
-                // create a 1:1 clone of the supplied item
-                retVal.Result = (Item)item.Clone();
+                item.SourceItem = sourceItem;
+                item.SourceFQN = sourceItem.FQN;
 
-                // set the SourceFQN of the new item to the FQN of the original item to create a link
-                retVal.Result.SourceFQN = retVal.Result.FQN;
-                retVal.Result.SourceItem = FQNResolver.Resolve(retVal.Result.SourceFQN);
-
-                // modify the FQN of the cloned item to reflect it's new path
-                retVal.Result.FQN = parentItem.FQN + "." + retVal.Result.Name;
-
-                // create a temporary list of the items children
-                List<Item> children = retVal.Result.Children.Clone<Item>();
-
-                // remove the children from the item (you leave my babies!)
-                retVal.Result.Children.Clear();
-                // they're my babies now, you commie son of a bitch!
-
-                // add the cloned and cleaned item to the model
-                AddItem(retVal.Result);
-
-                // for each child of the original item, attach that item to the model under the cloned and cleaned parent
-                foreach (Item child in children)
-                {
-                    AttachItem(child, retVal.Result, suppressLogging);
-                }
+                retVal.Result = item;
             }
-            catch (Exception ex)
-            {
-                retVal.AddError("Exception thrown when attempting to Attach Item '" + item.FQN + "':" + ex);
-                retVal.Result = default(Item);
-            }
-
-            if (!suppressLogging) retVal.LogResult(logger);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Removes an Item matching the supplied FQN from the ModelManager's Dictionary and its parent Item.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to remove.</param>
-        /// <returns>An OperationResult containing the removed Item.</returns>
-        public OperationResult<Item> RemoveItem(string fqn)
-        {
-            OperationResult<Item> retVal;
-
-            Item foundItem = FindItem(fqn);
-
-            if (foundItem != default(Item))
-                retVal = RemoveItem(foundItem);
             else
-                retVal = new OperationResult<Item>().AddError("The Item '" + fqn + "' was not found in the model.");
+                retVal.AddError("The supplied SourceItem is invalid.");
 
+            retVal.LogResult(logger);
             return retVal;
         }
 
@@ -568,18 +646,7 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the removed Item.</returns>
         public OperationResult<Item> RemoveItem(Item item)
         {
-            OperationResult<Item> retVal;
-
-            if (item != default(Item))
-            {
-                logger.Info("Removing Item '" + item.FQN + "' from model...");
-                retVal = RemoveItem(Dictionary, item);
-            }
-            else
-                retVal = new OperationResult<Item>().AddError("The provided Item is null.");
-
-            retVal.LogResult(logger);
-            return retVal;
+            return RemoveItem(Dictionary, item);
         }
 
         /// <summary>
@@ -590,6 +657,7 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the removed Item.</returns>
         private OperationResult<Item> RemoveItem(Dictionary<string, Item> dictionary, Item item)
         {
+            logger.Info("Removing Item '" + item.FQN + "' from the model...");
             OperationResult<Item> retVal = new OperationResult<Item>();
             retVal.Result = item;
 
@@ -633,6 +701,8 @@ namespace Symbiote.Core.Model
                 logger.Trace("Exception thrown removing item '" + item.FQN + "' from the model: " + ex.Message);
                 retVal.AddError("Exception thrown removing item '" + item.FQN + "'.");
             }
+
+            retVal.LogResult(logger);
             return retVal;
         }
 
@@ -644,26 +714,19 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the moved Item.</returns>
         public OperationResult<Item> MoveItem(Item item, string fqn)
         {
-            logger.Info("Moving Item '" + item.FQN + "' to new FQN '" + fqn + "'...");
-            OperationResult<Item> retVal = MoveItem(Model, Dictionary, item, fqn);
-
-            if (retVal.ResultCode != OperationResultCode.Failure)
-                SaveModel();
-
-            retVal.LogResult(logger);
-            return retVal;
+            return MoveItem(Dictionary, item, fqn);
         }
 
         /// <summary>
         /// Moves the supplied Item from one place in the supplied Model and Dictionary to another based on the supplied FQN.
         /// </summary>
-        /// <param name="model">The Model containing the supplied Item.</param>
         /// <param name="dictionary">The Dictionary containing the supplied Item.</param>
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the Item.</param>
         /// <returns>An OperationResult containing the moved Item.</returns>
-        private OperationResult<Item> MoveItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
+        private OperationResult<Item> MoveItem(Dictionary<string, Item> dictionary, Item item, string fqn)
         {
+            logger.Info("Moving Item '" + item.FQN + "' to new FQN '" + fqn + "'...");
             OperationResult<Item> retVal = new OperationResult<Item>();
 
             // find the parent item first to ensure the provided FQN is valid
@@ -673,51 +736,168 @@ namespace Symbiote.Core.Model
                 retVal.AddError("The parent item '" + GetParentFQNFromItemFQN(fqn) + "' was not found in the model.");
             else
             {
-                // delete the existing item
-                RemoveItem(dictionary, item);
+                // copy the item to the new location
+                OperationResult copyResult = CopyItem(item, fqn);
+                retVal.Incorporate(copyResult);
 
-                // add it to the new location
-                item.FQN = fqn;
-                AddItem(model, dictionary, item);
-                retVal.Result = item;
+                if (copyResult.ResultCode != OperationResultCode.Failure)
+                {
+                    OperationResult deleteResult = RemoveItem(dictionary, item);
+                    retVal.Incorporate(deleteResult);
+                }
             }
+
+            retVal.LogResult(logger);
             return retVal;
         }
 
         /// <summary>
-        /// Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
+        /// Creates a copy of the specified Item and stores it at the specified FQN within the default Model and Dictionary.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
-        /// <returns>The ModelItem from the Model corresponding to the supplied key.</returns>
-        /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
-        public Item FindItem(string fqn)
+        /// <param name="item">The Item to copy.</param>
+        /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
+        /// <returns>An OperationResult containing the result of the operation and the newly created Item.</returns>
+        public OperationResult<Item> CopyItem(Item item, string fqn)
         {
-            return FindItem(Dictionary, fqn);
+            return CopyItem(Model, Dictionary, item, fqn);
         }
 
         /// <summary>
-        /// Returns the ModelItem from the supplied Dictionary matching the supplied key.
+        /// Creates a copy of the specified Item and stores it at the specified FQN within the specified Model and Dictionary.
         /// </summary>
-        /// <param name="dictionary">The Dictionary from which to retrieve the item.</param>
-        /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
-        /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
-        private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
+        /// <param name="model">The Model in which to copy the Item.</param>
+        /// <param name="dictionary">The Dictionary in which to copy the Item.</param>
+        /// <param name="item">The Item to copy.</param>
+        /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
+        /// <returns>An OperationResult containing the result of the operation and the newly created Item.</returns>
+        private OperationResult<Item> CopyItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
+            logger.Info("Copying Item '" + item.FQN + "' to FQN '" + fqn + "'...");
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
+            Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
+
+            if (parent == default(Item))
+                retVal.AddError("The parent item '" + GetParentFQNFromItemFQN(fqn) + "' was not found in the model.");
+            else
+            {
+                // create a clone of the item we are copying
+                Item copiedItem = (Item)item.Clone();
+
+                // set the FQN to the new FQN
+                OperationResult<Item> renameResult = RenameItemInstance(copiedItem, fqn);
+                retVal.Incorporate(renameResult);
+
+                if (renameResult.ResultCode != OperationResultCode.Failure)
+                {
+                    // add the new item to the model
+                    OperationResult<Item> addResult = AddItem(model, dictionary, renameResult.Result);
+                    retVal.Result = addResult.Result;
+
+                    retVal.Incorporate(addResult);
+                }
+            }
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Attaches the provided Item to the supplied Item.
+        /// </summary>
+        /// <param name="item">The Item to attach to the Model.</param>
+        /// <param name="parentItem">The Item to which the new Item should be attached.</param>
+        /// <returns>The attached Item.</returns>
+        public OperationResult<Item> AttachItem(Item item, Item parentItem)
+        {
+            logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
+
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
             try
             {
-                return dictionary[fqn];
+                // create a 1:1 clone of the supplied item
+                retVal.Result = (Item)item.Clone();
+
+                // set the SourceFQN of the new item to the FQN of the original item to create a link
+                retVal.Result.SourceFQN = retVal.Result.FQN;
+                retVal.Result.SourceItem = FQNResolver.Resolve(retVal.Result.SourceFQN);
+
+                // modify the FQN of the cloned item to reflect it's new path
+                retVal.Result.FQN = parentItem.FQN + "." + retVal.Result.Name;
+
+                // create a temporary list of the items children
+                List<Item> children = retVal.Result.Children.Clone<Item>();
+
+                // remove the children from the item (you leave my babies!)
+                retVal.Result.Children.Clear();
+                // they're my babies now, you commie son of a bitch!
+
+                // add the cloned and cleaned item to the model
+                AddItem(retVal.Result);
+
+                // for each child of the original item, attach that item to the model under the cloned and cleaned parent
+                foreach (Item child in children)
+                {
+                    AttachItem(child, retVal.Result);
+                }
             }
             catch (Exception ex)
             {
-                return default(Item);
+                retVal.AddError("Exception thrown when attempting to Attach Item '" + item.FQN + "':" + ex);
+                retVal.Result = default(Item);
             }
 
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Renames the provided Item and all child Items "in place" without affecting the model.  
+        /// This method supports the CopyItem and MoveItem methods; if you want to move something in the model
+        /// as well as rename it, use MoveItem.  To be crystal clear, this is not a CRUD operation!
+        /// </summary>
+        /// <param name="item">The Item to rename.</param>
+        /// <param name="fqn">The new Fully Qualified Name for the Item.</param>
+        /// <returns>A renamed clone of the provided Item.</returns>
+        private OperationResult<Item> RenameItemInstance(Item item, string fqn)
+        {
+            logger.Debug("Renaming Item '" + item.FQN + "' to '" + fqn + "'");
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
+            retVal.Result = (Item)item.Clone();
+
+            retVal.Result.Name = GetItemNameFromItemFQN(fqn);
+            retVal.Result.FQN = fqn;
+
+            List<Item> childrenToRename = retVal.Result.Children.Clone();
+
+            foreach (Item child in childrenToRename)
+            {
+                OperationResult<Item> renameResult = RenameItemInstance(child, retVal.Result.FQN + '.' + child.Name);
+                if (renameResult.ResultCode != OperationResultCode.Failure)
+                {
+                    retVal.Result.RemoveChild(child);
+                    retVal.Result.AddChild(renameResult.Result);
+                }
+
+                retVal.Incorporate(renameResult);
+            }
+
+            retVal.LogResultDebug(logger);
+            return retVal;
         }
 
         #endregion
 
         #region Static Methods
 
+        /// <summary>
+        /// Returns the ConfigurationDefinition for the Model Manager.
+        /// </summary>
+        /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
         public static ConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
@@ -727,6 +907,10 @@ namespace Symbiote.Core.Model
             return retVal;
         }
 
+        /// <summary>
+        /// Returns the default Configuration for the Model Manager.
+        /// </summary>
+        /// <returns>The default Configuration for the Model Manager.</returns>
         public static ModelManagerConfiguration GetDefaultConfiguration()
         {
             ModelManagerConfiguration retVal = new ModelManagerConfiguration();
@@ -768,14 +952,31 @@ namespace Symbiote.Core.Model
         #endregion
     }
 
+    /// <summary>
+    /// A class representing the configuration items for the Model Manager.
+    /// </summary>
     public class ModelManagerConfiguration
     {
+        #region Properties
+
+        /// <summary>
+        /// The list of Items contained within the model.
+        /// </summary>
         public List<ModelManagerConfigurationItem> Items { get; set; }
 
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
         public ModelManagerConfiguration()
         {
             Items = new List<ModelManagerConfigurationItem>();
         }
+
+        #endregion
     }
 
     /// <summary>
@@ -783,14 +984,40 @@ namespace Symbiote.Core.Model
     /// </summary>
     public class ModelManagerConfigurationItem : ICloneable
     {
+        #region Properties
+
+        /// <summary>
+        /// The FQN of the item.
+        /// </summary>
         public string FQN { get; set; }
+
+        /// <summary>
+        /// The FQN of the source item.
+        /// </summary>
         public string SourceFQN { get; set; }
 
+        #endregion
+
+        #region Instance Methods
+
+        #region ICloneable Implementation 
+
+        /// <summary>
+        /// Creates a new copy of this item.
+        /// </summary>
+        /// <returns>A new copy of this item.</returns>
         public object Clone()
         {
             return new ModelManagerConfigurationItem() { FQN = this.FQN, SourceFQN = this.SourceFQN };
         }
 
+        #endregion
+
+        /// <summary>
+        /// Returns true if the provided object is equal to this object, false otherwise.
+        /// </summary>
+        /// <param name="obj">The object to which this object should be compared.</param>
+        /// <returns>True of the objects are equal, false otherwise.</returns>
         public override bool Equals(object obj)
         {
             ModelManagerConfigurationItem rightSide;
@@ -807,14 +1034,24 @@ namespace Symbiote.Core.Model
             return (this.FQN == rightSide.FQN);
         }
 
+        /// <summary>
+        /// Returns the hashcode of this object.
+        /// </summary>
+        /// <returns>An integer equal to the hash of the FQN of this object.</returns>
         public override int GetHashCode()
         {
             return FQN.GetHashCode();
         }
 
+        /// <summary>
+        /// Returns the string representation of the object.
+        /// </summary>
+        /// <returns>The string representation of the object.</returns>
         public override string ToString()
         {
             return "FQN = " + FQN + "; SourceFQN = " + SourceFQN;
         }
+
+        #endregion
     }
 }

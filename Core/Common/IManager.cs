@@ -2,7 +2,7 @@
 {
     public interface IManager
     {
-        bool IsRunning { get; }
+        bool Running { get; }
         OperationResult Start();
         OperationResult Restart();
         OperationResult Stop();

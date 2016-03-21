@@ -23,14 +23,13 @@ namespace Symbiote.Core.Plugin
         private ProgramManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static PluginManager instance;
-        private bool isRunning = false;
         private bool pluginsLoaded = false;
 
         #endregion
 
         #region Properties
 
-        public bool IsRunning { get { return isRunning; } }
+        public bool Running { get; private set; }
 
         /// <summary>
         /// A list of currently loaded plugin assemblies.
@@ -81,7 +80,7 @@ namespace Symbiote.Core.Plugin
 
             OperationResult retVal = new OperationResult();
 
-            if (retVal.ResultCode != OperationResultCode.Failure) isRunning = true;
+            Running = (retVal.ResultCode != OperationResultCode.Failure);
 
             retVal.LogResult(logger);
             return retVal;
@@ -94,7 +93,7 @@ namespace Symbiote.Core.Plugin
 
         public OperationResult Stop()
         {
-            isRunning = false;
+            Running = false;
             return new OperationResult();
         }
 
@@ -422,14 +421,20 @@ namespace Symbiote.Core.Plugin
         {
             logger.Trace("Attempting to find Connector Item '" + fqn + "'...");
             IConnector originPlugin = (IConnector)FindPluginInstance(fqn.Split('.')[0]);
-
-            if (originPlugin != default(IConnector))
+            try
             {
-                logger.Trace("Origin Plugin is '" + originPlugin.ToString() + "'.  Passing FQN to plugin FindItem() method...");
+                if (originPlugin != default(IConnector))
+                {
+                    logger.Trace("Origin Plugin is '" + originPlugin.ToString() + "'.  Passing FQN to plugin FindItem() method...");
 
-                Item retVal = originPlugin.FindItem(fqn);
-                logger.Trace("Resolved Item: " + retVal.ToJson());
-                return retVal;
+                    Item retVal = originPlugin.FindItem(fqn);
+                    logger.Trace("Resolved Item: " + retVal.ToJson());
+                    return retVal;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Trace("Exception thrown from FindPluginItem(): " + ex);
             }
 
             logger.Trace("Origin plugin '" + fqn.Split('.')[0] + "' not found.");
@@ -505,7 +510,7 @@ namespace Symbiote.Core.Plugin
                 else
                 {
                     logger.Trace("Attempting to attach plugin items for instance '" + instance.InstanceName + "' to '" + instance.AutoBuild.ParentFQN + "'");
-                    manager.ModelManager.AttachItem(foundPluginInstance.Browse(), instance.AutoBuild.ParentFQN);
+                    manager.ModelManager.AttachItem(foundPluginInstance.Browse(), manager.ModelManager.FindItem(instance.AutoBuild.ParentFQN));
                     logger.Info("AutoBuild of Plugin instance '" + instance.InstanceName + "' complete.");
                 }
             }

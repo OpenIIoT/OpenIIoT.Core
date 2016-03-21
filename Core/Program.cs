@@ -167,10 +167,8 @@ namespace Symbiote.Core
                 // instantiate the item model.
                 // builds and attaches the model stored within the configuration file to the Model Manager.
                 StartManager(manager.ModelManager);
-                logger.Info("Attaching model...");
-                Model.ModelBuildResult modelBuildResult = manager.ModelManager.BuildModel(manager.ModelManager.Configuration.Items);
-                manager.ModelManager.AttachModel(modelBuildResult);
-                logger.Info("Attached model.");
+                //logger.Info(manager.ModelManager.Dictionary.Count + " Item(s) resolved.");
+
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
 
 
@@ -188,7 +186,7 @@ namespace Symbiote.Core
                     systemItem = manager.ModelManager.AddItem(new Item(manager.ProductName + ".System")).Result;
 
                 // attach the Platform items to Symbiote.System
-                manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem, true);
+                manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
 
@@ -226,6 +224,19 @@ namespace Symbiote.Core
                 manager.PluginManager.StartPlugins();
 
                 logger.Info(manager.ProductName + " is running.");
+                manager.Starting = false;
+
+                Item foundItem = FQNResolver.Resolve("Symbiote.CopyTest");
+                manager.ModelManager.MoveItem(foundItem, "Symbiote.Simulation.MoveTest");
+
+                //Item test = new Item("Symbiote.AddTest", null, "");
+                //test.AddChild(new Item("Symbiote.AddTest.Child", null, ""));
+
+                //Item copyTest = FQNResolver.Resolve("Symbiote.AddTest");
+
+                //manager.ModelManager.CopyItem(copyTest, "Symbiote.CopyTest");
+
+                Utility.PrintModel(logger, manager.ModelManager.Model, 0);
 
                 Console.ReadLine();
             }
