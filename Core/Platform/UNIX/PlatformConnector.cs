@@ -94,12 +94,16 @@ namespace Symbiote.Core.Platform.UNIX
         {
             string[] itemName = item.Split('.');
 
+            if (itemName.Length < 3) return null;
+
             switch (itemName[itemName.Length - 2] + "." + itemName[itemName.Length - 1])
             {
                 case "CPU.% Processor Time":
                     lastCPUUsed = cpuUsed.NextValue();
+                    lastCPUIdle = cpuIdle.NextValue();
                     return lastCPUUsed;
                 case "CPU.% Idle Time":
+                    lastCPUUsed = cpuUsed.NextValue();
                     lastCPUIdle = cpuIdle.NextValue();
                     return lastCPUIdle;
                 case "Memory.Total":
@@ -126,9 +130,9 @@ namespace Symbiote.Core.Platform.UNIX
             itemRoot = new ConnectorItem(this, InstanceName);
 
             // create CPU items
-            Item cpuRoot = itemRoot.AddChild(new ConnectorItem(this, "CPU"));
-            cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Processor Time", typeof(double), ""));
-            cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Idle Time", typeof(double), ""));
+            Item cpuRoot = itemRoot.AddChild(new ConnectorItem(this, "CPU")).Result;
+            cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Processor Time"));
+            cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Idle Time"));
 
             // prepare variables to use for processor time.  you need two successive values to 
             // report accurately so rather than sleeping the thread we will just keep track from 
@@ -137,36 +141,36 @@ namespace Symbiote.Core.Platform.UNIX
             lastCPUIdle = 0;
 
             // create memory items
-            Item memRoot = itemRoot.AddChild(new ConnectorItem(this, "Memory"));
-            memRoot.AddChild(new ConnectorItem(this, "Memory.Total", typeof(double), ""));
-            memRoot.AddChild(new ConnectorItem(this, "Memory.Available", typeof(double), ""));
-            memRoot.AddChild(new ConnectorItem(this, "Memory.Cached", typeof(double), ""));
-            memRoot.AddChild(new ConnectorItem(this, "Memory.% Used", typeof(double), ""));
+            Item memRoot = itemRoot.AddChild(new ConnectorItem(this, "Memory")).Result;
+            memRoot.AddChild(new ConnectorItem(this, "Memory.Total"));
+            memRoot.AddChild(new ConnectorItem(this, "Memory.Available"));
+            memRoot.AddChild(new ConnectorItem(this, "Memory.Cached"));
+            memRoot.AddChild(new ConnectorItem(this, "Memory.% Used"));
 
             // create drive items
-            ConnectorItem dRoot = itemRoot.AddChild(new ConnectorItem(this, "Drives"));
+            ConnectorItem dRoot = itemRoot.AddChild(new ConnectorItem(this, "Drives")).Result;
 
             // system drive
-            ConnectorItem sdRoot = dRoot.AddChild(new ConnectorItem(this, "Drives.System"));
-            sdRoot.AddChild(new ConnectorItem(this, "Drives.System.Name", typeof(string), ""));
-            sdRoot.AddChild(new ConnectorItem(this, "Path", typeof(string), ""));
-            sdRoot.AddChild(new ConnectorItem(this, "Type", typeof(string), ""));
-            sdRoot.AddChild(new ConnectorItem(this, "Capacity", typeof(long), ""));
-            sdRoot.AddChild(new ConnectorItem(this, "UsedSpace", typeof(long), ""));
-            sdRoot.AddChild(new ConnectorItem(this, "FreeSpace", typeof(long), ""));
-            sdRoot.AddChild(new ConnectorItem(this, "PercentUsed", typeof(double), ""));
-            sdRoot.AddChild(new ConnectorItem(this, "PercentFree", typeof(double), ""));
+            ConnectorItem sdRoot = dRoot.AddChild(new ConnectorItem(this, "Drives.System")).Result;
+            sdRoot.AddChild(new ConnectorItem(this, "Drives.System.Name"));
+            sdRoot.AddChild(new ConnectorItem(this, "Path"));
+            sdRoot.AddChild(new ConnectorItem(this, "Type"));
+            sdRoot.AddChild(new ConnectorItem(this, "Capacity"));
+            sdRoot.AddChild(new ConnectorItem(this, "UsedSpace"));
+            sdRoot.AddChild(new ConnectorItem(this, "FreeSpace"));
+            sdRoot.AddChild(new ConnectorItem(this, "PercentUsed"));
+            sdRoot.AddChild(new ConnectorItem(this, "PercentFree"));
 
             // data drive
-            ConnectorItem ddRoot = dRoot.AddChild(new ConnectorItem(this, "Data"));
-            ddRoot.AddChild(new ConnectorItem(this, "Name", typeof(string), ""));
-            ddRoot.AddChild(new ConnectorItem(this, "Path", typeof(string), ""));
-            ddRoot.AddChild(new ConnectorItem(this, "Type", typeof(string), ""));
-            ddRoot.AddChild(new ConnectorItem(this, "Capacity", typeof(long), ""));
-            ddRoot.AddChild(new ConnectorItem(this, "UsedSpace", typeof(long), ""));
-            ddRoot.AddChild(new ConnectorItem(this, "FreeSpace", typeof(long), ""));
-            ddRoot.AddChild(new ConnectorItem(this, "PercentUsed", typeof(double), ""));
-            ddRoot.AddChild(new ConnectorItem(this, "PercentFree", typeof(double), ""));
+            ConnectorItem ddRoot = dRoot.AddChild(new ConnectorItem(this, "Data")).Result;
+            ddRoot.AddChild(new ConnectorItem(this, "Name"));
+            ddRoot.AddChild(new ConnectorItem(this, "Path"));
+            ddRoot.AddChild(new ConnectorItem(this, "Type"));
+            ddRoot.AddChild(new ConnectorItem(this, "Capacity"));
+            ddRoot.AddChild(new ConnectorItem(this, "UsedSpace"));
+            ddRoot.AddChild(new ConnectorItem(this, "FreeSpace"));
+            ddRoot.AddChild(new ConnectorItem(this, "PercentUsed"));
+            ddRoot.AddChild(new ConnectorItem(this, "PercentFree"));
         }
 
         private void OnChange(string fqn, object value)

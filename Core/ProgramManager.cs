@@ -219,7 +219,6 @@ namespace Symbiote.Core
             OperationResult retVal = new OperationResult();
 
             Running = (retVal.ResultCode != OperationResultCode.Failure);
-            Starting = true;
 
             retVal.LogResult(logger);
             return retVal;

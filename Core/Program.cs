@@ -4,6 +4,7 @@ using System.ServiceProcess;
 using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
+using System.Threading.Tasks;
 
 namespace Symbiote.Core
 {
@@ -122,16 +123,15 @@ namespace Symbiote.Core
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
                 StartManager(manager);
+                // set the Starting property to true so that other components can suppress logging messages during startup
+                manager.Starting = true;
                 //----------- - -
 
 
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                //manager.ConfigurationManager.Start();
                 StartManager(manager.ConfigurationManager);
-                //logger.Info("Loading configuration...");
-                //manager.ConfigurationManager.LoadConfiguration();
                 logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
 
@@ -167,7 +167,7 @@ namespace Symbiote.Core
                 // instantiate the item model.
                 // builds and attaches the model stored within the configuration file to the Model Manager.
                 StartManager(manager.ModelManager);
-                //logger.Info(manager.ModelManager.Dictionary.Count + " Item(s) resolved.");
+                logger.Info(manager.ModelManager.Dictionary.Count + " Item(s) resolved.");
 
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
 
@@ -219,24 +219,18 @@ namespace Symbiote.Core
                 StartManager(manager.ServiceManager);
                 StartManager(manager.EndpointManager);
 
-                FQNResolver.Resolve("Symbiote.Simulation.Motor").SubscribeToSource();
-
                 manager.PluginManager.StartPlugins();
 
                 logger.Info(manager.ProductName + " is running.");
                 manager.Starting = false;
 
-                Item foundItem = FQNResolver.Resolve("Symbiote.CopyTest");
-                manager.ModelManager.MoveItem(foundItem, "Symbiote.Simulation.MoveTest");
 
-                //Item test = new Item("Symbiote.AddTest", null, "");
-                //test.AddChild(new Item("Symbiote.AddTest.Child", null, ""));
+                //Item test = FQNResolver.Resolve("Symbiote.AddTest");
 
-                //Item copyTest = FQNResolver.Resolve("Symbiote.AddTest");
+                //Task<OperationResult> writeTask = test.WriteAsync("Hello World!");
+                //OperationResult writeResult = writeTask.Result;
 
-                //manager.ModelManager.CopyItem(copyTest, "Symbiote.CopyTest");
-
-                Utility.PrintModel(logger, manager.ModelManager.Model, 0);
+                //writeResult.LogResult(logger);
 
                 Console.ReadLine();
             }

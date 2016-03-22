@@ -51,7 +51,7 @@ namespace Symbiote.Core.Service.Web.API
             retVal.Result = manager.AppManager.AppArchives;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(appArchiveSerializationProperties, ContractResolverType.OptIn, true));
+            return retVal.CreateResponse(JsonFormatter(appArchiveSerializationProperties, ContractResolver.ContractResolverType.OptIn, true));
         }
 
         /// <summary>
@@ -71,7 +71,7 @@ namespace Symbiote.Core.Service.Web.API
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(appArchiveSerializationProperties, ContractResolverType.OptIn, true));
+            return retVal.CreateResponse(JsonFormatter(appArchiveSerializationProperties, ContractResolver.ContractResolverType.OptIn, true));
         }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace Symbiote.Core.Service.Web.API
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Symbiote.Core.Service.Web.API
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 
         [Route("api/apparchive/{fqn}/download")]
@@ -141,7 +141,7 @@ namespace Symbiote.Core.Service.Web.API
         /// <param name="contractResolverType">A ContractResolverType representing the desired behavior of serializationProperties, OptIn or OptOut.</param>
         /// <param name="includeSecondaryTypes">True if secondary types, such as those loaded from Plugins, should be included in the serialization.</param>
         /// <returns>A configured instance of JsonMediaTypeFormatter</returns>
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolver.ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 

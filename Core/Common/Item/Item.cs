@@ -4,14 +4,12 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
-using Symbiote.Core;
 
 namespace Symbiote.Core
 {
     /// <summary>
     /// A semi-generic container impementing the Composite design pattern
     /// </summary>
-    [JsonObject]
     public class Item : ICloneable
     {
         #region Properties
@@ -34,7 +32,6 @@ namespace Symbiote.Core
         /// <summary>
         /// The path to the Item; corresponds to the FQN less the final tuple (the name).
         /// </summary>
-        /// <remarks>Non-serializing.</remarks>
         public string Path { get; set; }
 
         /// <summary>
@@ -48,41 +45,16 @@ namespace Symbiote.Core
         public Item SourceItem { get; set; }
         
         /// <summary>
-        /// The Type of the item.
-        /// </summary>
-        public Type Type { get; set; }
-
-        /// <summary>
         /// A Guid for the Item, generated when it is instantiated.
         /// </summary>
         public Guid Guid { get; private set; }
 
         /// <summary>
-        /// True if this item is a data structure containing members, false otherwise.
-        /// </summary>
-        public bool IsDataStructure { get { return (Type == typeof(Structure)); } }
-
-        /// <summary>
-        /// True if this item is an array or a collection, false otherwise.
-        /// </summary>
-        public bool IsArray { get { return ((Type.IsArray) || (Type.Namespace.Contains("System.Collections"))); } }
-
-        /// <summary>
-        /// True if this item is part of a data structure, false otherwise.
-        /// </summary>
-        public bool IsDataMember { get { return (((Parent == null) || (Parent == this)) ? false : ((Parent.IsDataStructure) || (Parent.IsDataMember))); } }
-
-        /// <summary>
-        /// True if this item is readable, false otherwise.  If false, read methods will throw an error when called.
-        /// </summary>
-        public bool IsReadable { get { return true; } }
-
-        /// <summary>
         /// True if this item is writeable, false otherwise.  If false, write methods will throw an error when called.
         /// </summary>
-        public bool IsWriteable { get { return true; } }
+        public bool Writeable { get; set; }
 
-         /// <summary>
+        /// <summary>
         /// The value of the composite item.
         /// </summary>
         public object Value { get; protected set; }
@@ -94,44 +66,54 @@ namespace Symbiote.Core
 
         #endregion
 
+        #region Events
+
+        /// <summary>
+        /// The Changed event; fires when the value of the item changes.
+        /// </summary>
         public event EventHandler<ItemEventArgs> Changed;
+
+        /// <summary>
+        /// The EventHandler for the Changed event.
+        /// </summary>
+        /// <typeparam name="ItemEventArgs">The Type of EventArgs for the EventHandler.</typeparam>
+        /// <param name="sender">The Item that raised the event.</param>
+        /// <param name="e">The instance of ItemEventArgs belonging to the event.</param>
         public delegate void EventHandler<ItemEventArgs>(Item sender, ItemEventArgs e);
+
+        #endregion
 
         #region Constructors
 
         /// <summary>
         /// An empty constructor used for instantiating the root node of a model.
         /// </summary>
-        public Item() : this("", typeof(object), "", true) { }
+        public Item() : this("", "", true) { }
 
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name to be used as the root of a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, bool isRoot) : this(fqn, typeof(object), "", isRoot) { }
+        public Item(string fqn, bool isRoot) : this(fqn, "", isRoot) { }
 
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="type">The Type of the Item's value.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <remarks>This constructor is used for deserialization.</remarks>
-        [JsonConstructor]
-        public Item(string fqn, Type type, string sourceFQN) : this(fqn, type, sourceFQN, false) { }
+        public Item(string fqn, string sourceFQN) : this(fqn, sourceFQN, false) { }
 
         /// <summary>
         /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="type">The Type of the Item's value.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, Type type = null, string sourceFQN = "", bool isRoot = false) 
+        public Item(string fqn, string sourceFQN = "", bool isRoot = false) 
         {
             FQN = fqn;
-            Type = (type == null ? typeof(object) : type);
             SourceFQN = sourceFQN;
 
             Value = "";
@@ -159,120 +141,225 @@ namespace Symbiote.Core
                 Parent = this;
             }
 
+            Writeable = true;
         }
 
         #endregion
 
         #region Instance Methods
 
+        #region ICloneable Implementation
+
+        /// <summary>
+        /// Creates and returns a clone of the Item.
+        /// </summary>
+        /// <remarks>We aren't using .MemberWiseClone() because of the GuID.  We need a "deep copy".</remarks>
+        /// <returns>A clone of the Item.</returns>
+        public virtual object Clone()
+        {
+            Item retVal = new Item(FQN, SourceFQN, (Parent == this));
+            retVal.Name = Name;
+            retVal.Path = Path;
+            retVal.Parent = Parent;
+            retVal.Children = Children.Clone<Item>();
+            return retVal;
+        }
+
+        #endregion
+
+        #region Overridden Methods
+
+        /// <summary>
+        /// Returns the string representation of the object.
+        /// </summary>
+        /// <returns>The string representation of the object.</returns>
+        public override string ToString()
+        {
+            return FQN;
+        }
+
+        #endregion
+
         /// <summary>
         /// Sets the Item's parent Item to the supplied Item.
         /// </summary>
         /// <param name="parent">The Item to set as the Item's parent.</param>
-        /// <returns>The current Item.</returns>
-        public virtual Item SetParent(Item parent)
+        /// <returns>An OperationResult containing the result of the operation and the current Item.</returns>
+        public virtual OperationResult<Item> SetParent(Item parent)
         {
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
             // update the Path and FQN to match the parent values
             // this is set in the constructor however this code will prevent issues if items are moved.
             Path = parent.FQN;
             FQN = Path + '.' + Name;
             Parent = parent;
 
-            return this;
-        }
-
-        public virtual Item AddChild(Item item)
-        {
-            Children.Add(item.SetParent(this));
-            return item;
-        }
-
-        public virtual Item RemoveChild(Item item)
-        {
-            Item retVal = Children.Find(i => i.FQN == item.FQN);
-            Children.Remove(retVal);
+            retVal.Result = this;
             return retVal;
         }
 
-        public bool HasChildren()
+        /// <summary>
+        /// Adds the supplied item to this Item's Children collection.
+        /// </summary>
+        /// <param name="item">The Item to add.</param>
+        /// <returns>An OperationResult containing the result of the operation and the added Item.</returns>
+        public virtual OperationResult<Item> AddChild(Item item)
+        {
+            OperationResult<Item> retVal = new OperationResult<Item>();
+           
+            if (item != default(Item))
+            {
+                // set the new child's parent to this before adding it
+                OperationResult<Item> setResult = item.SetParent(this);
+
+                // ensure that went ok
+                if (setResult.ResultCode != OperationResultCode.Failure)
+                {
+                    // add the new item
+                    Children.Add(setResult.Result);
+                    retVal.Result = setResult.Result;
+                }
+
+                retVal.Incorporate(setResult);
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Removes the specified child Item from this Item's Children collection.
+        /// </summary>
+        /// <param name="item">The Item to remove.</param>
+        /// <returns>An OperationResult containing the result of the operation and the removed Item.</returns>
+        public virtual OperationResult<Item> RemoveChild(Item item)
+        {
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
+            retVal.Result = Children.Find(i => i.FQN == item.FQN);
+
+            if (retVal.Result == default(Item))
+                retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
+            else
+            {
+                if (!Children.Remove(retVal.Result))
+                    retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + FQN + "'.");
+            }
+            
+            return retVal;
+        }
+
+        /// <summary>
+        /// Returns true if the Item has children, false otherwise.
+        /// </summary>
+        /// <returns>True if the Item has children, false otherwise.</returns>
+        public virtual bool HasChildren()
         {
             return (Children.Count > 0);
         }
 
+        /// <summary>
+        /// Returns the value of this Item's Value property.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
         public virtual object Read()
         {
-            if (!IsReadable)
-                throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
-
             return Value;
         }
 
-        public virtual Task<object> ReadAsync()
+        /// <summary>
+        /// Asynchronously returns the value of this Item's Value property.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
+        public virtual async Task<object> ReadAsync()
         {
-            if (!IsReadable)
-                throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
-
-            // TODO: implement this
-            return null;
+            return await Task.Run(() => Read());
         }
 
+        /// <summary>
+        /// Reads this Item's Value from its SourceItem.  If this Item has children,
+        /// ReadFromSource() is also executed on each child.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
         public virtual object ReadFromSource()
         {
-            if (!IsReadable)
-                throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
+            object retVal;
 
-            if ((SourceItem == null) || (SourceItem == default(Item)))
-                throw new SourceItemInvalidException("Error reading '" + this.FQN + "' from source; the source Item is invalid.");
-
-            // experimental!
-            // if this item is a data structure or is a member of a data structure, call ReadFromSource() for all children.
-            // eventually this code needs to be updated to find the parent data structure and call ReadFromSource() on it if this is a data member
-            // this OR is really not correct but it works for now.
-            if ((IsDataStructure) || (IsDataMember))
-            {
+            // recursively call ReadFromSource() on each child below this Item
+            if (HasChildren())
                 foreach (Item child in Children)
                     child.ReadFromSource();
+
+            // ensure the SourceItem exists before trying to read it
+            if ((SourceItem != null) && (SourceItem != default(Item)))
+            {
+                retVal = SourceItem.ReadFromSource();
+                Write(retVal);
             }
 
-            object retVal = SourceItem.ReadFromSource();
-
-            if ((retVal != null) && (retVal != default(object)))
-                Write(retVal);
-
-            return Value;
+            return Read();
         }
 
-        public virtual Task<object> ReadFromSourceAsync()
+        /// <summary>
+        /// Asynchronously reads this Item's Value from its SourceItem.  If this item has children,
+        /// ReadFromSource() is also executed on each child.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
+        public virtual async Task<object> ReadFromSourceAsync()
         {
-            if (!IsReadable)
-                throw new ItemNotReadableException("Error reading from '" + this.FQN + "'; the item is not readable.");
-
-            // TODO: implement this
-            return null;
+            return await Task.Run(() => ReadFromSource());
         }
 
+        /// <summary>
+        /// Adds the SourceItemChanged event handler for this Item to the SourceItem's Changed event.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public virtual OperationResult SubscribeToSource()
         {
             OperationResult retVal = new OperationResult();
-            SourceItem.Changed += SourceItemChanged;
+
+            try
+            {
+                SourceItem.Changed += SourceItemChanged;
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception caught while subscribing '" + FQN + "' to source item '" + SourceItem.FQN + "': " + ex.Message);
+            }
             return retVal;
         }
 
+        /// <summary>
+        /// Removes the SourceItemChanged event handler for this Item from the SourceItem's Changed event.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public virtual OperationResult UnsubscribeFromSource()
         {
             OperationResult retVal = new OperationResult();
-            SourceItem.Changed -= SourceItemChanged;
+
+            try
+            {
+                SourceItem.Changed -= SourceItemChanged;
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception caught while unsubscribing '" + FQN + "' from source item '" + SourceItem.FQN + "': " + ex.Message);
+            }
+
             return retVal;
         }
 
+        /// <summary>
+        /// Writes the provided value to this Item's Value property.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public virtual OperationResult Write(object value)
         {
             OperationResult retVal = new OperationResult();
 
-            if (!IsWriteable)
-            {
-                retVal.AddError("Error writing to '" + this.FQN + "'; the item is not writeable.");
-            }
+            if (!Writeable)
+                retVal.AddError("Unable to write to '" + FQN + "'; the item is not writeable.");
             else
             {
                 Value = value;
@@ -282,91 +369,93 @@ namespace Symbiote.Core
             return retVal;
         }
 
-        public virtual Task<OperationResult> WriteAsync(object value)
+        /// <summary>
+        /// Asynchronously writes the provided value to this Item's Value property.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public virtual async Task<OperationResult> WriteAsync(object value)
         {
-            if (!IsWriteable)
-                throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
-
-            // TODO: implement this
-            return null;
+            return await Task.Run(() => Write(value));
         }
 
+        /// <summary>
+        /// Writes the provided value to this Item's SourceItem.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public virtual OperationResult WriteToSource(object value)
         {
-            OperationResult retVal;
+            OperationResult retVal = new OperationResult();
 
-            if (!IsWriteable)
-                retVal = new OperationResult().AddError("Error writing to '" + this.FQN + "'; the item is not writeable.");
-
+            if (!SourceItem.Writeable)
+                retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is not writeable.");
             else if ((SourceItem == null) || (SourceItem == default(Item)))
-                retVal = new OperationResult().AddError("Error writing to '" + this.FQN + "'; the item is not writeable.");
-
+                retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is null.");
             else
-                retVal = SourceItem.WriteToSource(value);
+            {
+                OperationResult writeResult = SourceItem.WriteToSource(value);
+                if (writeResult.ResultCode != OperationResultCode.Failure)
+                    Write(value);
 
+                retVal.Incorporate(writeResult);
+            }
 
-            if (retVal.ResultCode != OperationResultCode.Failure) Write(value);
             return retVal;
         }
 
-        public virtual Task<OperationResult> WriteToSourceAsync(object value)
+        /// <summary>
+        /// Asynchronously writes the provided value to this Item's SourceItem.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public virtual async Task<OperationResult> WriteToSourceAsync(object value)
         {
-            if (!IsWriteable)
-                throw new ItemNotWriteableException("Error writing to '" + this.FQN + "'; the item is not writeable.");
-
-            // TODO: implement this
-            return null;
+            return await Task.Run(() => SourceItem.WriteToSource(value));
         }
 
+        /// <summary>
+        /// Returns the serialization of the Item using the default ContractResolver.
+        /// </summary>
+        /// <returns>The serialization of the Item.</returns>
         public virtual string ToJson()
         {
-            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
+            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolver.ContractResolverType.OptOut, true));
         }
 
+        /// <summary>
+        /// Returns the serialization of the Item using the supplied ContractResolver.
+        /// </summary>
+        /// <param name="contractResolver">The ContractResolver with which the Item is to be serialized.</param>
+        /// <returns>The serialization of the Item.</returns>
         public virtual string ToJson(DefaultContractResolver contractResolver)
         {
             return JsonConvert.SerializeObject(this, new JsonSerializerSettings() { ContractResolver = contractResolver });
         }
 
-        public virtual bool IsValid()
-        {
-            return ((FQN != null) && (FQN.Length > 1) && (Type != null));
-        }
-
         /// <summary>
-        /// Creates and returns a clone of the Item.
+        /// Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
         /// </summary>
-        /// <returns>A clone of the Item.</returns>
-        /// <remarks>We aren't using .MemberWiseClone() because of the GuID.  We need a "deep copy".</remarks>
-        public virtual object Clone()
-        {
-            Item retVal = new Item(FQN, Type, SourceFQN, (Parent == this));
-            retVal.Name = Name;
-            retVal.Path = Path;
-            retVal.Parent = Parent;
-            retVal.Children = Children.Clone<Item>();
-            return retVal;
-        }
-
-        public override string ToString()
-        {
-            return FQN;
-        }
-
-        #endregion
-
-        #region Events
-
-        protected virtual void SourceItemChanged(Item sender, ItemEventArgs e)
-        {
-            Write(e.Value);
-        }
-
+        /// <param name="value">The value for the raised event.</param>
         protected virtual void OnChange(object value)
         {
             if (Changed != null)
                 Changed(this, new ItemEventArgs(value));
         }
+
+        #region Event Handlers
+
+        /// <summary>
+        /// Event Handler for the Changed event belonging to the SourceItem.
+        /// </summary>
+        /// <param name="sender">The Item that raised the event.</param>
+        /// <param name="e">The EventArgs for the event.</param>
+        protected virtual void SourceItemChanged(Item sender, ItemEventArgs e)
+        {
+            Write(e.Value);
+        }
+
+        #endregion
 
         #endregion
     }

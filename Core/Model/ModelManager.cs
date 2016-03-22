@@ -7,6 +7,18 @@ using Symbiote.Core.Configuration;
 namespace Symbiote.Core.Model
 {
     /// <summary>
+    /// The Model namespace encapsulates the model for the application.  The model consists of two collections of Items;
+    /// a parent/child tree of Items that implements the composite design pattern, and a dictionary keyed on the FQN of
+    /// Items and containing a reference to the keyed Item.
+    /// 
+    /// The Item composite allows for logical management and retrieval of data from the model, while the dictionary provides
+    /// fast lookups of model items.
+    /// 
+    /// 
+    /// </summary>
+    [System.Runtime.CompilerServices.CompilerGenerated]
+    class NamespaceDoc { }
+    /// <summary>
     /// The ModelManager class manages the Model for the application.
     /// </summary>
     public class ModelManager : IManager, IConfigurable<ModelManagerConfiguration>
@@ -336,7 +348,7 @@ namespace Symbiote.Core.Model
                     logger.Trace(new String('-', 30));
 
                     Item newItem;
-                    newItem = new Item(item.FQN, null, item.SourceFQN);
+                    newItem = new Item(item.FQN, item.SourceFQN);
 
                     // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
                     // this will be set "officially" when SetParent() is called to bind the item to its parent
@@ -367,6 +379,7 @@ namespace Symbiote.Core.Model
                             else
                             {
                                 newItem.SourceItem = resolvedItem;
+
                                 logger.Trace("Successfully resolved SourceFQN of Item '" + newItem.FQN + "' to '" + newItem.SourceItem.FQN + "'.");
                             }
                         }
@@ -528,6 +541,7 @@ namespace Symbiote.Core.Model
         private OperationResult<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
             if (!manager.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
+            else logger.Debug("Adding item '" + item.FQN + "' to the model...");
 
             OperationResult<Item> retVal = new OperationResult<Item>();
 
@@ -545,7 +559,6 @@ namespace Symbiote.Core.Model
                     model.Name = item.Name;
                     model.FQN = item.FQN;
                     model.Path = item.Path;
-                    model.Type = item.Type;
                     logger.Trace("Adding item to dictionary with key: " + item.FQN);
                     dictionary.Add(model.FQN, model);
 
@@ -586,6 +599,8 @@ namespace Symbiote.Core.Model
             }
 
             if (!manager.Starting) retVal.LogResult(logger);
+            else retVal.LogResultDebug(logger);
+
             return retVal;
         }
 
@@ -657,17 +672,17 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the removed Item.</returns>
         private OperationResult<Item> RemoveItem(Dictionary<string, Item> dictionary, Item item)
         {
-            logger.Info("Removing Item '" + item.FQN + "' from the model...");
+            if (item != default(Item))
+                logger.Info("Removing Item '" + item.FQN + "' from the model...");
+            else
+                return new OperationResult<Item>().AddError("The specified Item is null.");
+
             OperationResult<Item> retVal = new OperationResult<Item>();
             retVal.Result = item;
 
             try
             {
-                if (item == default(Item))
-                {
-                    retVal.AddError("The supplied Item is invalid.");
-                }
-                else if (item.Parent == item)
+                if (item.Parent == item)
                 {
                     retVal.AddError("Removing the root Item in the model is not permitted.");
                 }
@@ -803,14 +818,16 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Attaches the provided Item to the supplied Item.
+        /// Attaches the provided Item to the supplied Item.  This method should be used only to attach plugin Items
+        /// to the application model.  When adding Items directly, use AddItem.
         /// </summary>
         /// <param name="item">The Item to attach to the Model.</param>
         /// <param name="parentItem">The Item to which the new Item should be attached.</param>
         /// <returns>The attached Item.</returns>
         public OperationResult<Item> AttachItem(Item item, Item parentItem)
         {
-            logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
+            if (!manager.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
+            else logger.Debug("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
 
             OperationResult<Item> retVal = new OperationResult<Item>();
 
@@ -848,7 +865,9 @@ namespace Symbiote.Core.Model
                 retVal.Result = default(Item);
             }
 
-            retVal.LogResult(logger);
+            if (!manager.Starting) retVal.LogResult(logger);
+            else retVal.LogResultDebug(logger);
+
             return retVal;
         }
 
@@ -947,109 +966,6 @@ namespace Symbiote.Core.Model
         private static string GetItemNameFromItemFQN(string itemFQN)
         {
             return itemFQN.Split('.')[itemFQN.Split('.').Length - 1];
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// A class representing the configuration items for the Model Manager.
-    /// </summary>
-    public class ModelManagerConfiguration
-    {
-        #region Properties
-
-        /// <summary>
-        /// The list of Items contained within the model.
-        /// </summary>
-        public List<ModelManagerConfigurationItem> Items { get; set; }
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Default constructor.
-        /// </summary>
-        public ModelManagerConfiguration()
-        {
-            Items = new List<ModelManagerConfigurationItem>();
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// A generic container for model items within the configuration.
-    /// </summary>
-    public class ModelManagerConfigurationItem : ICloneable
-    {
-        #region Properties
-
-        /// <summary>
-        /// The FQN of the item.
-        /// </summary>
-        public string FQN { get; set; }
-
-        /// <summary>
-        /// The FQN of the source item.
-        /// </summary>
-        public string SourceFQN { get; set; }
-
-        #endregion
-
-        #region Instance Methods
-
-        #region ICloneable Implementation 
-
-        /// <summary>
-        /// Creates a new copy of this item.
-        /// </summary>
-        /// <returns>A new copy of this item.</returns>
-        public object Clone()
-        {
-            return new ModelManagerConfigurationItem() { FQN = this.FQN, SourceFQN = this.SourceFQN };
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Returns true if the provided object is equal to this object, false otherwise.
-        /// </summary>
-        /// <param name="obj">The object to which this object should be compared.</param>
-        /// <returns>True of the objects are equal, false otherwise.</returns>
-        public override bool Equals(object obj)
-        {
-            ModelManagerConfigurationItem rightSide;
-
-            try
-            {
-                rightSide = (ModelManagerConfigurationItem)obj;
-            }
-            catch (InvalidCastException ex)
-            {
-                return false;
-            }
-
-            return (this.FQN == rightSide.FQN);
-        }
-
-        /// <summary>
-        /// Returns the hashcode of this object.
-        /// </summary>
-        /// <returns>An integer equal to the hash of the FQN of this object.</returns>
-        public override int GetHashCode()
-        {
-            return FQN.GetHashCode();
-        }
-
-        /// <summary>
-        /// Returns the string representation of the object.
-        /// </summary>
-        /// <returns>The string representation of the object.</returns>
-        public override string ToString()
-        {
-            return "FQN = " + FQN + "; SourceFQN = " + SourceFQN;
         }
 
         #endregion

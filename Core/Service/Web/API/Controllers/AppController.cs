@@ -29,7 +29,7 @@ namespace Symbiote.Core.Service.Web.API
             retVal.Result = manager.AppManager.Apps;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(appSerializationProperties, ContractResolverType.OptIn, true));
+            return retVal.CreateResponse(JsonFormatter(appSerializationProperties, ContractResolver.ContractResolverType.OptIn, true));
         }
 
         [Route("api/app/{fqn}")]
@@ -42,7 +42,7 @@ namespace Symbiote.Core.Service.Web.API
             if (retVal.Result == default(App.App))
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 
         [Route("api/app/{fqn}/reinstall")]
@@ -56,7 +56,7 @@ namespace Symbiote.Core.Service.Web.API
             else
                 retVal.Result = await manager.AppManager.ReinstallAppAsync(fqn);
 
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 
         [Route("api/app/{fqn}/uninstall")]
@@ -66,10 +66,10 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<OperationResult> retVal = new ApiOperationResult<OperationResult>(Request);
 
             retVal.Result = await manager.AppManager.UninstallAppAsync(fqn);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolver.ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 

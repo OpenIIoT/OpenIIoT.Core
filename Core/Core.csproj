@@ -142,7 +142,7 @@
     <Compile Include="App\Exceptions.cs" />
     <Compile Include="Common\IManager.cs" />
     <Compile Include="Common\Item\ItemEventArgs.cs" />
-    <Compile Include="Common\Item\ItemType.cs" />
+    <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
     <Compile Include="Plugin\Connector\ConnectorEventArgs.cs" />
@@ -174,7 +174,6 @@
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\Windows\PlatformConnector.cs" />
     <Compile Include="Plugin\Enumerations.cs" />
-    <Compile Include="Common\Item\ItemExceptions.cs" />
     <Compile Include="ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Platform\IPlatform.cs" />

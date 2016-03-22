@@ -172,27 +172,26 @@ namespace Symbiote.Plugin.Connector.Simulation
             itemRoot = new ConnectorItem(this, InstanceName, true);
 
             // create some simulation items
-            ConnectorItem mathRoot = itemRoot.AddChild(new ConnectorItem(this, "Math", typeof(Folder)));
-            mathRoot.AddChild(new ConnectorItem(this, "Sine", typeof(double)));
-            mathRoot.AddChild(new ConnectorItem(this, "Cosine", typeof(double)));
-            mathRoot.AddChild(new ConnectorItem(this, "Tangent", typeof(double)));
+            ConnectorItem mathRoot = itemRoot.AddChild(new ConnectorItem(this, "Math")).Result;
+            mathRoot.AddChild(new ConnectorItem(this, "Sine"));
+            mathRoot.AddChild(new ConnectorItem(this, "Cosine"));
+            mathRoot.AddChild(new ConnectorItem(this, "Tangent"));
 
-            ConnectorItem processRoot = itemRoot.AddChild(new ConnectorItem(this, "Process", typeof(Folder)));
-            processRoot.AddChild(new ConnectorItem(this, "Ramp", typeof(double)));
-            processRoot.AddChild(new ConnectorItem(this, "Step", typeof(double)));
-            processRoot.AddChild(new ConnectorItem(this, "Toggle", typeof(double)));
+            ConnectorItem processRoot = itemRoot.AddChild(new ConnectorItem(this, "Process")).Result;
+            processRoot.AddChild(new ConnectorItem(this, "Ramp"));
+            processRoot.AddChild(new ConnectorItem(this, "Step"));
+            processRoot.AddChild(new ConnectorItem(this, "Toggle"));
 
-            ConnectorItem timeRoot = itemRoot.AddChild(new ConnectorItem(this, "DateTime", typeof(Structure)));
-            timeRoot.AddChild(new ConnectorItem(this, "Time", typeof(string)));
-            timeRoot.AddChild(new ConnectorItem(this, "Date", typeof(string)));
-            timeRoot.AddChild(new ConnectorItem(this, "TimeZone", typeof(string)));
-            //timeRoot.DesignateAsDataStucture();
+            ConnectorItem timeRoot = itemRoot.AddChild(new ConnectorItem(this, "DateTime")).Result;
+            timeRoot.AddChild(new ConnectorItem(this, "Time"));
+            timeRoot.AddChild(new ConnectorItem(this, "Date"));
+            timeRoot.AddChild(new ConnectorItem(this, "TimeZone"));
 
-            ConnectorItem arrayRoot = itemRoot.AddChild(new ConnectorItem(this, "Array", typeof(object[])));
+            ConnectorItem arrayRoot = itemRoot.AddChild(new ConnectorItem(this, "Array")).Result;
 
-            ConnectorItem motorRoot = itemRoot.AddChild(new ConnectorItem(this, "Motor", typeof(Motor)));
+            ConnectorItem motorRoot = itemRoot.AddChild(new ConnectorItem(this, "Motor")).Result;
 
-            ConnectorItem motorArrayRoot = itemRoot.AddChild(new ConnectorItem(this, "MotorArray", typeof(List<object>)));
+            ConnectorItem motorArrayRoot = itemRoot.AddChild(new ConnectorItem(this, "MotorArray")).Result;
 
         }
 

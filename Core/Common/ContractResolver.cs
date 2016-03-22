@@ -8,29 +8,33 @@ using NLog;
 namespace Symbiote.Core
 {
     /// <summary>
-    /// Specifies how the array of properties passed to the constructor of the ContractResolver is to be used.
-    /// </summary>
-    public enum ContractResolverType
-    {
-        /// <summary>
-        /// The default type
-        /// </summary>
-        Undefined,
-        /// <summary>
-        /// Resolves the data contract using only the properties in accompanying list of properties
-        /// </summary>
-        OptIn,
-        /// <summary>
-        /// Resolves the data contract using all properties not included in the accompanying list of properties
-        /// </summary>
-        OptOut
-    }
-
-    /// <summary>
     /// The ContractResolver acts as a generic Data Contract Resolver, allowing for a list of ignored properties to be passed in on construction.
     /// </summary>
-    class ContractResolver : DefaultContractResolver
+    public class ContractResolver : DefaultContractResolver
     {
+        #region Enumerations
+
+        /// <summary>
+        /// Specifies how the array of properties passed to the constructor of the ContractResolver is to be used.
+        /// </summary>
+        public enum ContractResolverType
+        {
+            /// <summary>
+            /// The default type
+            /// </summary>
+            Undefined,
+            /// <summary>
+            /// Resolves the data contract using only the properties in accompanying list of properties
+            /// </summary>
+            OptIn,
+            /// <summary>
+            /// Resolves the data contract using all properties not included in the accompanying list of properties
+            /// </summary>
+            OptOut
+        }
+
+        #endregion
+
         #region Variables
 
         /// <summary>

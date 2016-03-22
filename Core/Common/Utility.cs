@@ -1,11 +1,8 @@
 ﻿using NLog;
-using Symbiote.Core.Plugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Symbiote.Core
 {
@@ -13,6 +10,12 @@ namespace Symbiote.Core
     {
         #region Extensions
 
+        /// <summary>
+        /// Returns a clone of the supplied list.
+        /// </summary>
+        /// <typeparam name="T">The list type to clone.</typeparam>
+        /// <param name="listToClone">The list from which the clone should be created.</param>
+        /// <returns>A clone of the supplied list.</returns>
         internal static List<T> Clone<T>(this IList<T> listToClone) where T : ICloneable
         {
             return listToClone.Select(item => (T)item.Clone()).ToList();
@@ -33,6 +36,12 @@ namespace Symbiote.Core
             return result;
         }
 
+        /// <summary>
+        /// Returns the specified assembly attribute of the specified assembly.
+        /// </summary>
+        /// <typeparam name="T">The assembly attribute to return.</typeparam>
+        /// <param name="ass">The assembly from which to retrieve the attribute.</param>
+        /// <returns>The retrieved attribute.</returns>
         internal static T GetAssemblyAttribute<T>(this System.Reflection.Assembly ass) where T : Attribute
         {
             object[] attributes = ass.GetCustomAttributes(typeof(T), false);
@@ -43,6 +52,10 @@ namespace Symbiote.Core
 
         #endregion
 
+        /// <summary>
+        /// Sets the logging level of the LogManager to the specified level; disabling all lower logging levels.
+        /// </summary>
+        /// <param name="level">The desired logging level.</param>
         public static void SetLoggingLevel(string level)
         {
             try
@@ -75,6 +88,10 @@ namespace Symbiote.Core
 
         }
 
+        /// <summary>
+        /// Disables the specified logging level witin the LogManager.
+        /// </summary>
+        /// <param name="level">The level to disable.</param>
         public static void DisableLoggingLevel(LogLevel level)
         {
             foreach (var rule in LogManager.Configuration.LoggingRules)
@@ -83,6 +100,12 @@ namespace Symbiote.Core
             LogManager.ReconfigExistingLoggers();
         }
 
+        /// <summary>
+        /// Recursively prints the application Model to the specified logger.
+        /// </summary>
+        /// <param name="logger">The logger to which the Model should be printed.</param>
+        /// <param name="root">The root Item from which the print should begin.</param>
+        /// <param name="indent">The current level of indent to apply.</param>
         internal static void PrintModel(Logger logger, Item root, int indent)
         {
             string source = (root.SourceItem == null ? "" : root.SourceItem.FQN);
@@ -94,6 +117,11 @@ namespace Symbiote.Core
             }
         }
 
+        /// <summary>
+        /// Converts the specified wildcard pattern to a regular expression.
+        /// </summary>
+        /// <param name="pattern">The wildcard pattern to convert.</param>
+        /// <returns>The regular expression resulting from the conversion.</returns>
         internal static string WildcardToRegex(string pattern = "")
         {
             return "^" + Regex.Escape(pattern)
@@ -102,16 +130,30 @@ namespace Symbiote.Core
                        + "$";
         }
 
+        /// <summary>
+        /// Returns a truncated GUID.
+        /// </summary>
+        /// <returns>A truncated GUID.</returns>
         internal static string ShortGuid()
         {
             return Guid.NewGuid().ToString().Split('-')[0];
         }
 
+        /// <summary>
+        /// Retrieves the setting corresponding to the specified setting from the app.exe.config file.
+        /// </summary>
+        /// <param name="key">The setting to retrieve.</param>
+        /// <returns>The string value of the retrieved setting.</returns>
         internal static string GetSetting(string key)
         {
             return System.Configuration.ConfigurationManager.AppSettings[key];
         }
 
+        /// <summary>
+        /// Updates the setting corresponding to the specified setting within the app.exe.config file with the specified value.
+        /// </summary>
+        /// <param name="key">The setting to update.</param>
+        /// <param name="value">The value to which the setting should be set.</param>
         internal static void UpdateSetting(string key, string value)
         {
             System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
@@ -121,6 +163,10 @@ namespace Symbiote.Core
             System.Configuration.ConfigurationManager.RefreshSection("appSettings");
         }
 
+        /// <summary>
+        /// Prints the logo for the application.
+        /// </summary>
+        /// <param name="logger">The logger to which the logo should be logged.</param>
         internal static void PrintLogo(Logger logger)
         {
             logger.Info(@"");

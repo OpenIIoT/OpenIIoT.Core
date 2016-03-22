@@ -1,6 +1,4 @@
-﻿using NLog;
-
-namespace Symbiote.Core
+﻿namespace Symbiote.Core
 {
     /// <summary>
     /// Given an FQN, the AddressResolver locates and returns the corresponding Item.
@@ -12,9 +10,23 @@ namespace Symbiote.Core
     {
         #region Enumerations
 
+        /// <summary>
+        /// Indicates the source of the Item.
+        /// </summary>
         public enum ItemSource
         {
-            Unknown, Plugin, Model
+            /// <summary>
+            /// The default source.
+            /// </summary>
+            Unknown,
+            /// <summary>
+            /// The Item originated from a Connector Plugin.
+            /// </summary>
+            Plugin,
+            /// <summary>
+            /// The Item originated from the application Model.
+            /// </summary>
+            Model
         }
 
         #endregion
@@ -25,11 +37,6 @@ namespace Symbiote.Core
         /// The ProgramManager for the application.
         /// </summary>
         private static ProgramManager manager = ProgramManager.Instance();
-
-        /// <summary>
-        /// The logger for this class.
-        /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
 
         #endregion
 
@@ -45,7 +52,7 @@ namespace Symbiote.Core
             Item retVal = default(Item);
 
             ItemSource source = GetSource(lookupFQN);
-            logger.Trace("Source: " + source);
+
             // if the origin is null, a malformed FQN was provided.  return null.
             if (source == ItemSource.Unknown)
                 retVal = default(Item);
@@ -57,12 +64,6 @@ namespace Symbiote.Core
             // use the PluginManager to look it up.
             else
                 retVal = manager.PluginManager.FindPluginItem(lookupFQN);
-
-            // log the result.  Use trace; this will be called a lot.
-            if (retVal != default(Item))
-                logger.Trace("Resolved Item '" + lookupFQN + "' to Item: " + retVal.ToJson());
-            else
-                logger.Trace("Failed to resolve Item '" + lookupFQN + "'");
 
             return retVal;
         }
