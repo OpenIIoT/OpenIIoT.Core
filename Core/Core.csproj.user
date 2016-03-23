@@ -17,6 +17,6 @@
     </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>trace</StartArguments>
+    <StartArguments>info</StartArguments>
   </PropertyGroup>
 </Project>

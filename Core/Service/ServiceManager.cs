@@ -111,7 +111,7 @@ namespace Symbiote.Core.Service
         {
             logger.Debug("Registering Service types...");
             OperationResult<Dictionary<string, Type>> retVal = RegisterServices(manager.ConfigurationManager);
-            retVal.LogResult(logger, "Debug");
+            retVal.LogResultDebug(logger);
             return retVal;
         }
 

@@ -200,7 +200,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="logger">The logger to which to log the message.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
+        public virtual void LogResult(NLog.Logger logger, string caller = "")
         {
             LogResult(logger, "Info", "Warn", "Error", caller);
         }

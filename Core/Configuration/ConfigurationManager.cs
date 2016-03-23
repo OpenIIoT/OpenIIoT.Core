@@ -47,9 +47,6 @@ namespace Symbiote.Core.Configuration
     /// <summary>
     /// The Configuration Manager class manages the configuration file for the application.
     /// </summary>
-    /// <remarks>
-    /// This class implements the Singleton and Factory design patterns.
-    /// </remarks>
     public class ConfigurationManager : IManager
     {
         #region Variables

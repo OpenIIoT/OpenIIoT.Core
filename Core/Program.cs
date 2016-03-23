@@ -224,6 +224,9 @@ namespace Symbiote.Core
                 logger.Info(manager.ProductName + " is running.");
                 manager.Starting = false;
 
+                FQNResolver.Resolve("Symbiote.Simulation.Process.Ramp").SubscribeToSource();
+                FQNResolver.Resolve("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                FQNResolver.Resolve("Symbiote.Simulation.Motor").SubscribeToSource();
 
                 //Item test = FQNResolver.Resolve("Symbiote.AddTest");
 

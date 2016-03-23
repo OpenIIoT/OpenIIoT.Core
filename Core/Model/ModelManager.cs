@@ -13,11 +13,10 @@ namespace Symbiote.Core.Model
     /// 
     /// The Item composite allows for logical management and retrieval of data from the model, while the dictionary provides
     /// fast lookups of model items.
-    /// 
-    /// 
     /// </summary>
     [System.Runtime.CompilerServices.CompilerGenerated]
     class NamespaceDoc { }
+
     /// <summary>
     /// The ModelManager class manages the Model for the application.
     /// </summary>

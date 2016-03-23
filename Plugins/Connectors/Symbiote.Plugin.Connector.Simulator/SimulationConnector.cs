@@ -43,14 +43,16 @@ namespace Symbiote.Plugin.Connector.Simulation
             InitializeItems();
 
             counter = 0;
-            timer = new System.Timers.Timer(10);
+            timer = new System.Timers.Timer(50);
             timer.Elapsed += Timer_Elapsed;
         }
 
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             counter++;
-            ((ConnectorItem)FindItem(InstanceName + ".Motor")).Write(new Motor("Test Motor", "ABC123", counter, true));
+            ((ConnectorItem)FindItem(InstanceName + ".Process.Ramp")).Write(counter);
+            ((ConnectorItem)FindItem(InstanceName + ".DateTime.Time")).Write(DateTime.Now);
+            ((ConnectorItem)FindItem(InstanceName + ".Motor")).Write(new Motor("Test Motor", "ABCXYZ", counter, true));
         }
 
         /// <summary>
