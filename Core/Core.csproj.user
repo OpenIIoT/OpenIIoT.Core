@@ -17,6 +17,6 @@
     </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <StartArguments>info</StartArguments>
+    <StartArguments>-loglevel=info -install-service</StartArguments>
   </PropertyGroup>
 </Project>

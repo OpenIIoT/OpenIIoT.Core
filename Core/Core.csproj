@@ -105,9 +105,11 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Net.Http.Formatting, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
@@ -151,6 +153,12 @@
     <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
     <Compile Include="Plugin\Endpoint\EndpointManager.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
+    <Compile Include="ProjectInstaller.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProjectInstaller.Designer.cs">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </Compile>
     <Compile Include="Service\IoT\MQTT\MQTTBroker.cs" />
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
@@ -183,9 +191,6 @@
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="WindowsService.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Service\Web\API\ApiOperationResult.cs" />
@@ -203,6 +208,12 @@
     <Compile Include="Service\Web\OwinStartup.cs" />
     <Compile Include="Service\Web\SignalR\IHub.cs" />
     <Compile Include="Service\Web\WebService.cs" />
+    <Compile Include="WindowsService.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="WindowsService.Designer.cs">
+      <DependentUpon>WindowsService.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -220,7 +231,11 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectInstaller.resx">
+      <DependentUpon>ProjectInstaller.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

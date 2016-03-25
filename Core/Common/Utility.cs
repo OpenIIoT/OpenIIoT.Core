@@ -2,7 +2,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 
 namespace Symbiote.Core
 {
@@ -53,13 +52,14 @@ namespace Symbiote.Core
         #endregion
 
         /// <summary>
-        /// Sets the logging level of the LogManager to the specified level; disabling all lower logging levels.
+        /// Sets the logging level of the LogManager to the specified level, disabling all lower logging levels.
         /// </summary>
         /// <param name="level">The desired logging level.</param>
         public static void SetLoggingLevel(string level)
         {
             try
             {
+                // i'm pretty sure this is the first legitimate use case i've seen for a select case with fallthrough.
                 switch (level.ToLower())
                 {
                     case "fatal":
@@ -124,7 +124,7 @@ namespace Symbiote.Core
         /// <returns>The regular expression resulting from the conversion.</returns>
         internal static string WildcardToRegex(string pattern = "")
         {
-            return "^" + Regex.Escape(pattern)
+            return "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
                               .Replace(@"\*", ".*")
                               .Replace(@"\?", ".")
                        + "$";
@@ -183,6 +183,42 @@ namespace Symbiote.Core
             logger.Info(@"|                                                                                           . .  ...|");
             logger.Info(@"+-------------- - --------- - -           -  -- - - --------------------- - - ----------------  - --+");
             logger.Info(@"");
+        }
+
+        /// <summary>
+        /// Installs the application as a Windows Service.
+        /// </summary>
+        /// <returns>True if the installation succeeded, false otherwise.</returns>
+        internal static bool InstallService()
+        {
+            try
+            {
+                System.Configuration.Install.ManagedInstallerClass.InstallHelper(
+                    new string[] { System.Reflection.Assembly.GetExecutingAssembly().Location });
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Uninstalls the application as a Windows Service.
+        /// </summary>
+        /// <returns>True if the installation succeeded, false otherwise.</returns>
+        public static bool UninstallService()
+        {
+            try
+            {
+                System.Configuration.Install.ManagedInstallerClass.InstallHelper(
+                    new string[] { "/u", System.Reflection.Assembly.GetExecutingAssembly().Location });
+            }
+            catch
+            {
+                return false;
+            }
+            return true;
         }
     }
 }

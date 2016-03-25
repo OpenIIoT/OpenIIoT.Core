@@ -103,3 +103,5 @@ C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\System.Web.Cors.dll
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\System.Web.Http.dll
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\System.Web.Http.Owin.dll
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
+C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Core.ProjectInstaller.resources
+C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Core.csproj.GenerateResource.Cache

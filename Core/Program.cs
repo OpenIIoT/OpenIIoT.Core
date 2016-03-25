@@ -5,6 +5,7 @@ using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace Symbiote.Core
 {
@@ -50,19 +51,56 @@ namespace Symbiote.Core
         {
             try
             {
+                #region Command Line Arguments
+
                 //-------------  - ------------ - -
-                // reconfigure the logger based on the command line arguments.
-                // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
-                // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
+                // process the command line arguments used to start the application
                 logger.Debug("Program started with " + (args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments."));
 
                 if (args.Length > 0)
                 {
-                    logger.Debug("Reconfiguring logger to log level '" + args[0] + "'...");
-                    Utility.SetLoggingLevel(args[0]);
+                    // check to see if logger arguments were supplied
+                    string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel=)(trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
+                    if (logarg != default(string))
+                    {
+                        // reconfigure the logger based on the command line arguments.
+                        // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
+                        // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
+                        logger.Debug("Reconfiguring logger to log level '" + logarg.Split('=')[1] + "'...");
+                        Utility.SetLoggingLevel(logarg.Split('=')[1]);
+                    }
+
+                    // check to see if service install/uninstall arguments were supplied
+                    string servicearg = args.Where(a => Regex.IsMatch(a, "^((?i)-(install|uninstall)-Service)$")).FirstOrDefault();
+                    if (servicearg != default(string))
+                    {
+                        if (servicearg.Split('-')[1] == "uninstall")
+                        {
+                            logger.Info("Uninstalling Windows Service '" + typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product + "'...");
+                            if (Utility.UninstallService())
+                                logger.Info("Successfully uninstalled Windows Service.");
+                            else
+                                logger.Error("Failed to uninstall Windows Service.");
+                        }
+
+                        else
+                        {
+                            logger.Info("Installing Windows Service '" + typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product + "'...");
+                            if (Utility.InstallService())
+                                logger.Info("Successfully installed Windows Service.");
+                            else
+                                logger.Error("Failed to install Windows Service.");
+                        }
+
+                        // if we do anything with the service, do it then quit.  don't start the application if either argument was used.
+                        Console.WriteLine("Press any key to continue...");
+                        Console.ReadLine();
+                        return;
+                    }
                 }
                 //----------------------------------------------- - - ----------------  -- - -  - - - - - - -----         -
 
+                #endregion
 
                 logger.Info("Initializing...");
 
@@ -244,6 +282,7 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Fatal(ex, "Fatal error.");
+                if (!Environment.UserInteractive) throw;
             }
         }
 

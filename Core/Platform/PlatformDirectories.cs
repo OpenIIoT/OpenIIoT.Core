@@ -60,7 +60,7 @@ namespace Symbiote.Core.Platform
         {
             try
             {
-                Root = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location);
+                Root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
                 Data = System.IO.Path.Combine(Root, directories["Data"]);
                 Apps = System.IO.Path.Combine(Root, directories["Apps"]);
                 Plugins = System.IO.Path.Combine(Root, directories["Plugins"]);
