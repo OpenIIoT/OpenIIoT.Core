@@ -53,44 +53,47 @@ namespace Symbiote.Core
             {
                 #region Command Line Arguments
 
+                // prepare a flag to pass to the ProgramManager initializer to indicate whether the application is starting in safe mode.
+                // if the command line argument -safemode was used to start this application, this will be set to true.
+                bool safeMode = false;
+
                 //-------------  - ------------ - -
                 // process the command line arguments used to start the application
                 logger.Debug("Program started with " + (args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments."));
 
                 if (args.Length > 0)
                 {
+                    // check to see if the application is being run in "safe mode"
+                    string safemodearg = args.Where(a => Regex.IsMatch(a, "^(?i)(-safemode)$")).FirstOrDefault();
+                    if (safemodearg != default(string))
+                    {
+                        // if the program was started with the -safemode option, disable certain functionality
+                        logger.Info("Program started in safe mode.");
+                        safeMode = true;
+                    }
+
                     // check to see if logger arguments were supplied
-                    string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel=)(trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
+                    string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel:)((?i)trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
                     if (logarg != default(string))
                     {
                         // reconfigure the logger based on the command line arguments.
                         // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
                         // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
-                        logger.Debug("Reconfiguring logger to log level '" + logarg.Split('=')[1] + "'...");
-                        Utility.SetLoggingLevel(logarg.Split('=')[1]);
+                        logger.Debug("Reconfiguring logger to log level '" + logarg.Split(':')[1] + "'...");
+                        Utility.SetLoggingLevel(logarg.Split(':')[1]);
                     }
 
                     // check to see if service install/uninstall arguments were supplied
-                    string servicearg = args.Where(a => Regex.IsMatch(a, "^((?i)-(install|uninstall)-Service)$")).FirstOrDefault();
+                    string servicearg = args.Where(a => Regex.IsMatch(a, "^(?i)(-(un)?install-service)$")).FirstOrDefault();
                     if (servicearg != default(string))
                     {
-                        if (servicearg.Split('-')[1] == "uninstall")
-                        {
-                            logger.Info("Uninstalling Windows Service '" + typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product + "'...");
-                            if (Utility.UninstallService())
-                                logger.Info("Successfully uninstalled Windows Service.");
-                            else
-                                logger.Error("Failed to uninstall Windows Service.");
-                        }
+                        string action = servicearg.Split('-')[1];
+                        logger.Info("Attempting to " + action + " Windows Service...");
 
+                        if (Utility.ModifyService(action))
+                            logger.Info("Successfully " + action + "ed Windows Service.");
                         else
-                        {
-                            logger.Info("Installing Windows Service '" + typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product + "'...");
-                            if (Utility.InstallService())
-                                logger.Info("Successfully installed Windows Service.");
-                            else
-                                logger.Error("Failed to install Windows Service.");
-                        }
+                            logger.Error("Failed to " + action + " Windows Service.");
 
                         // if we do anything with the service, do it then quit.  don't start the application if either argument was used.
                         Console.WriteLine("Press any key to continue...");
@@ -109,7 +112,7 @@ namespace Symbiote.Core
                 // instantiate the Program Manager.
                 // the Program Manager acts as a Service Locator for the application.
                 logger.Debug("Instantiating the Program Manager...");
-                manager = ProgramManager.Instance();
+                manager = ProgramManager.Instance(safeMode);
                 logger.Debug("The Program Manager was instantiated successfully.");
                 //-------------------------------  ------------------------ - - - --------------- - -
 
@@ -120,7 +123,7 @@ namespace Symbiote.Core
                 //logger.Info("Starting the Platform Manager...");
                 //manager.PlatformManager.Start();
                 //logger.Info("Platform Manager started.");
-                StartManager(manager.PlatformManager);
+                manager.StartManager(manager.PlatformManager);
                 logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
                 //------------------- - -----------                      ------------- 
 
@@ -160,7 +163,7 @@ namespace Symbiote.Core
             {
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
-                StartManager(manager);
+                manager.StartManager(manager);
                 // set the Starting property to true so that other components can suppress logging messages during startup
                 manager.Starting = true;
                 //----------- - -
@@ -169,7 +172,7 @@ namespace Symbiote.Core
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                StartManager(manager.ConfigurationManager);
+                manager.StartManager(manager.ConfigurationManager);
                 logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
 
@@ -177,7 +180,7 @@ namespace Symbiote.Core
                 //--------------------------------------------- - - --------- ----  - -    -
                 // load plugins.  
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
-                StartManager(manager.PluginManager);
+                manager.StartManager(manager.PluginManager);
                 logger.Info("Loading plugins...");
                 manager.PluginManager.LoadPlugins("Plugins");
                 logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
@@ -204,7 +207,7 @@ namespace Symbiote.Core
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
                 // builds and attaches the model stored within the configuration file to the Model Manager.
-                StartManager(manager.ModelManager);
+                manager.StartManager(manager.ModelManager);
                 logger.Info(manager.ModelManager.Dictionary.Count + " Item(s) resolved.");
 
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
@@ -254,8 +257,8 @@ namespace Symbiote.Core
 
 
 
-                StartManager(manager.ServiceManager);
-                StartManager(manager.EndpointManager);
+                manager.StartManager(manager.ServiceManager);
+                manager.StartManager(manager.EndpointManager);
 
                 manager.PluginManager.StartPlugins();
 
@@ -306,23 +309,6 @@ namespace Symbiote.Core
             logger.Info("Configuration saved.");
 
             logger.Info(manager.ProductName + " stopped.");
-        }
-
-        private static void StartManager(IManager manager)
-        {
-            logger.Info("Starting " + manager.GetType().Name + "...");
-
-            OperationResult retVal = manager.Start();
-
-            if (retVal.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to start " + manager.GetType().Name + "." + retVal.GetLastError());
-            else
-            {
-                logger.Info(manager.GetType().Name + " started.");
-
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessages(logger, "Warn", "The following warnings were encountered during the operation:");
-            }
         }
 
         #endregion

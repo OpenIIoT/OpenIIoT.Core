@@ -758,11 +758,21 @@ namespace Symbiote.Core.Configuration
         {
             string retVal = Utility.GetSetting("ConfigurationFileName");
 
+            // replace the directory separator placeholder with the platform-specific separator
+            retVal = retVal.Replace('|', System.IO.Path.DirectorySeparatorChar);
+
             if ((retVal == "") || (retVal == null))
             {
-                logger.Warn("Error retrieving the configuration filename from Sybmiote.exe.config... assuming Symbiote.config");
-                retVal = "Sybmiote.config";
+                if (ProgramManager.Instance().SafeMode)
+                {
+                    string defaultConfig = ProgramManager.Instance().ProductName + ".config";
+                    logger.Warn("Error retrieving the configuration filename from app.exe.config; assuming '" + defaultConfig + "'...");
+                    retVal = defaultConfig;
+                }
+                else
+                    throw new Exception("Error retrieving the configuration filename from app.exe.config.");
             }
+
             logger.Trace("Retrieved '" + retVal + "' from the app configuration file.");
 
             return retVal;

@@ -182,7 +182,7 @@
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\Windows\PlatformConnector.cs" />
     <Compile Include="Plugin\Enumerations.cs" />
-    <Compile Include="ProgramManager.cs" />
+    <Compile Include="Common\ProgramManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Platform\IPlatform.cs" />
     <Compile Include="Platform\PlatformManager.cs" />

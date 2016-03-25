@@ -33,6 +33,12 @@ namespace Symbiote.Core
         #region Properties
 
         /// <summary>
+        /// Indicates whether the program is in Safe Mode.  Safe Mode is a sort of fault tolerant mode designed
+        /// to allow the application to run under conditions that would otherwise raise fatal errors.
+        /// </summary>
+        public bool SafeMode { get; private set; }
+
+        /// <summary>
         /// The state of the Manager.
         /// </summary>
         public bool Running { get; private set; }
@@ -127,8 +133,13 @@ namespace Symbiote.Core
         /// If you've forgotten, you made this code dynamic so that you coud iterate over IManagers and it was 
         /// a mess.  Even more verbose than the way it is now, plus debugging it was a nightmare.  Don't try it again.
         /// </remarks>
-        private ProgramManager()
+        private ProgramManager(bool safeMode = false)
         {
+            SafeMode = safeMode;
+
+            if (safeMode)
+                logger.Info("Safe Mode enabled.  The program is now running in a limited fault tolerant mode.");
+
             logger.Debug("Instantiating Managers...");
             Running = false;
 
@@ -195,10 +206,10 @@ namespace Symbiote.Core
         /// Returns the singleton instance of the ProgramManager.  Creates an instance if null.
         /// </summary>
         /// <returns>The singleton instance of the ProgramManager</returns>
-        internal static ProgramManager Instance()
+        internal static ProgramManager Instance(bool safeMode = false)
         {
             if (instance == null)
-                instance = new ProgramManager();
+                instance = new ProgramManager(safeMode);
 
             return instance;
         }
@@ -256,6 +267,24 @@ namespace Symbiote.Core
         }
 
         #endregion
+
+
+        internal void StartManager(IManager manager)
+        {
+            logger.Info("Starting " + manager.GetType().Name + "...");
+
+            OperationResult retVal = manager.Start();
+
+            if (retVal.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to start " + manager.GetType().Name + "." + retVal.GetLastError());
+            else
+            {
+                logger.Info(manager.GetType().Name + " started.");
+
+                if (retVal.ResultCode == OperationResultCode.Warning)
+                    retVal.LogAllMessages(logger, "Warn", "The following warnings were encountered during the operation:");
+            }
+        }
 
         #endregion
     }

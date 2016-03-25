@@ -23,19 +23,24 @@ namespace Symbiote.Core.Platform
         public string Data { get; private set; }
 
         /// <summary>
-        /// The app directory
+        /// The archive directory
         /// </summary>
-        public string Apps { get; private set; }
+        public string Archive { get; private set; }
 
         /// <summary>
         /// The plugin directory
         /// </summary>
-        public string Plugins { get; private set; }
+        public string Plugin { get; private set; }
 
         /// <summary>
         /// The temporary directory
         /// </summary>
         public string Temp { get; private set; }
+
+        /// <summary>
+        /// The persistence directory
+        /// </summary>
+        public string Persistence { get; private set; }
 
         /// <summary>
         /// The web directory
@@ -62,14 +67,16 @@ namespace Symbiote.Core.Platform
             {
                 Root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
                 Data = System.IO.Path.Combine(Root, directories["Data"]);
-                Apps = System.IO.Path.Combine(Root, directories["Apps"]);
-                Plugins = System.IO.Path.Combine(Root, directories["Plugins"]);
+                Archive = System.IO.Path.Combine(Root, directories["Archive"]);
+                Plugin = System.IO.Path.Combine(Root, directories["Plugin"]);
                 Temp = System.IO.Path.Combine(Root, directories["Temp"]);
+                Persistence = System.IO.Path.Combine(Root, directories["Persistence"]);
                 Web = System.IO.Path.Combine(Root, directories["Web"]);
                 Logs = System.IO.Path.Combine(Root, directories["Logs"]);
             }
             catch (KeyNotFoundException ex)
             {
+                // TODO: implement safe mode fallback
                 throw new Exception("The directory configuration is missing one or more directories.", ex);
             }
 

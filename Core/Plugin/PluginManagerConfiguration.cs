@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Symbiote.Core.Plugin
 {
@@ -36,6 +32,11 @@ namespace Symbiote.Core.Plugin
         public string AssemblyName { get; set; }
         public string Configuration { get; set; }
         public PluginManagerConfigurationPluginInstanceAutoBuild AutoBuild { get; set; }
+    }
+
+    public class PluginManagerConfigurationArchive
+    {
+
     }
 
     public class PluginManagerConfigurationPluginInstanceAutoBuild

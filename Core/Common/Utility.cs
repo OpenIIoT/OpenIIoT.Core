@@ -186,33 +186,17 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Installs the application as a Windows Service.
+        /// Installs or uninstalls the application as a Windows Service, depending on the provided action.
         /// </summary>
-        /// <returns>True if the installation succeeded, false otherwise.</returns>
-        internal static bool InstallService()
+        /// <returns>True if the installation/uninstallation succeeded, false otherwise.</returns>
+        public static bool ModifyService(string action)
         {
             try
             {
-                System.Configuration.Install.ManagedInstallerClass.InstallHelper(
-                    new string[] { System.Reflection.Assembly.GetExecutingAssembly().Location });
-            }
-            catch
-            {
-                return false;
-            }
-            return true;
-        }
-
-        /// <summary>
-        /// Uninstalls the application as a Windows Service.
-        /// </summary>
-        /// <returns>True if the installation succeeded, false otherwise.</returns>
-        public static bool UninstallService()
-        {
-            try
-            {
-                System.Configuration.Install.ManagedInstallerClass.InstallHelper(
-                    new string[] { "/u", System.Reflection.Assembly.GetExecutingAssembly().Location });
+                if (action == "uninstall")
+                    System.Configuration.Install.ManagedInstallerClass.InstallHelper(new string[] { "/u", System.Reflection.Assembly.GetExecutingAssembly().Location });
+                else
+                    System.Configuration.Install.ManagedInstallerClass.InstallHelper(new string[] { System.Reflection.Assembly.GetExecutingAssembly().Location });
             }
             catch
             {

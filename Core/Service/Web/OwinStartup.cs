@@ -47,7 +47,7 @@ namespace Symbiote.Core.Service.Web
             // windows uses web\content, linux uses web/content. 
             app.UseFileServer(new FileServerOptions()
             {
-                FileSystem = new PhysicalFileSystem(Path.Combine("Web")),
+                FileSystem = new PhysicalFileSystem(manager.Directories.Web),
                 RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : "") + webRoot)
             });
         }

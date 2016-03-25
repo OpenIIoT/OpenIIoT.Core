@@ -12,9 +12,6 @@ namespace Symbiote.Core.Plugin
 {
     /// <summary>
     /// The PluginManager class controls the plugin subsystem.
-    /// <remarks>
-    /// This class is implemented using the Singleton and (a variant of) Factory design patterns.
-    /// </remarks>
     /// </summary>
     public class PluginManager : IManager, IConfigurable<PluginManagerConfiguration>
     {
@@ -53,7 +50,6 @@ namespace Symbiote.Core.Plugin
         private PluginManager(ProgramManager manager) {
             this.manager = manager;
             PluginAssemblies = new List<IPluginAssembly>();
-            //PluginInstances = new List<IPluginInstance>();
             PluginInstances = new Dictionary<string, IPluginInstance>();
         }
 
@@ -71,6 +67,8 @@ namespace Symbiote.Core.Plugin
         }
 
         #endregion
+
+        #region Instance Methods
 
         #region IManager Implementation
         public OperationResult Start()
@@ -136,35 +134,7 @@ namespace Symbiote.Core.Plugin
             return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
 
-        public static ConfigurationDefinition GetConfigurationDefinition()
-        {
-            ConfigurationDefinition retVal = new ConfigurationDefinition();
-            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
-            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
-            retVal.SetModel(typeof(PluginManagerConfiguration));
-            return retVal;
-        }
-
-        public static PluginManagerConfiguration GetDefaultConfiguration()
-        {
-            PluginManagerConfiguration retVal = new PluginManagerConfiguration();
-            retVal.AuthorizeNewPlugins = true;
-            retVal.Assemblies = new List<PluginManagerConfigurationPluginAssembly>();
-            retVal.Instances = new List<PluginManagerConfigurationPluginInstance>();
-
-            PluginManagerConfigurationPluginInstance sim = new PluginManagerConfigurationPluginInstance();
-            sim.InstanceName = "Simulation";
-            sim.AssemblyName = "Symbiote.Plugin.Connector.Simulation";
-            sim.Configuration = "";
-            sim.AutoBuild = new PluginManagerConfigurationPluginInstanceAutoBuild() { Enabled = true, ParentFQN = "Symbiote" };
-
-            retVal.Instances.Add(sim);
-            return retVal;
-        }
-
         #endregion
-
-        #region Instance Methods
         
         /// <summary>
         /// Given a list of files, validate and load each assembly found in the list.
@@ -515,29 +485,36 @@ namespace Symbiote.Core.Plugin
                 }
             }
         }
-        //public void PerformAutoBuild(List<IPluginInstance> plugins, IEnumerable<PluginManagerConfigurationPluginInstance> autoBuildInstances)
-        //{
-        //    foreach (PluginManagerConfigurationPluginInstance instance in autoBuildInstances)
-        //    {
-        //        logger.Info("Attempting to auto build instance '" + instance.InstanceName + "'...");
-        //        IConnector foundPluginInstance = (IConnector)FindPluginInstance(instance.InstanceName);
-        //        if (foundPluginInstance == default(IConnector))
-        //        {
-        //            logger.Warn("Unable to find plugin instance with InstanceName '" + instance.InstanceName + "', continuing auto build");
-        //            continue;
-        //        }
-        //        else
-        //        {
-        //            logger.Trace("Attempting to attach plugin items for instance '" + instance.InstanceName + "' to '" + instance.AutoBuild.ParentFQN + "'");
-        //            manager.ModelManager.AttachItem(foundPluginInstance.Browse(), instance.AutoBuild.ParentFQN);
-        //            logger.Info("AutoBuild of Plugin instance '" + instance.InstanceName + "' complete.");
-        //        }
-        //    }
-        //}
 
         #endregion
 
         #region Static Methods
+
+        public static ConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
+            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
+            retVal.SetModel(typeof(PluginManagerConfiguration));
+            return retVal;
+        }
+
+        public static PluginManagerConfiguration GetDefaultConfiguration()
+        {
+            PluginManagerConfiguration retVal = new PluginManagerConfiguration();
+            retVal.AuthorizeNewPlugins = true;
+            retVal.Assemblies = new List<PluginManagerConfigurationPluginAssembly>();
+            retVal.Instances = new List<PluginManagerConfigurationPluginInstance>();
+
+            PluginManagerConfigurationPluginInstance sim = new PluginManagerConfigurationPluginInstance();
+            sim.InstanceName = "Simulation";
+            sim.AssemblyName = "Symbiote.Plugin.Connector.Simulation";
+            sim.Configuration = "";
+            sim.AutoBuild = new PluginManagerConfigurationPluginInstanceAutoBuild() { Enabled = true, ParentFQN = "Symbiote" };
+
+            retVal.Instances.Add(sim);
+            return retVal;
+        }
 
         /// <summary>
         /// Evaluates the supplied assembly name for correctness and returns an error message if it is incorrect.
