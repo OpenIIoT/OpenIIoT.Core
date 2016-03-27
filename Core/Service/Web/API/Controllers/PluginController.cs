@@ -31,7 +31,6 @@ namespace Symbiote.Core.Service.Web.API
         /// <summary>
         /// The default serialization properties for an AppArchive.
         /// </summary>
-        ///private static List<string> appArchiveSerializationProperties = new List<string>(new string[] { "FQN", "FileName", "Version", "AppType", "ConfigurationDefinition" });
         private static List<string> pluginArchiveSerializationProperties = new List<string>(new string[] { });
 
         #endregion
@@ -87,7 +86,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<PluginArchive> retVal = new ApiOperationResult<PluginArchive>(Request);
             retVal.LogRequest(logger);
 
-            retVal.Result = manager.PluginManager.FindPluginArchive(fileName);
+            retVal.Result = manager.PluginManager.FindPluginArchiveByFileName(fileName);
 
             if (retVal.Result == default(PluginArchive))
                 retVal.StatusCode = HttpStatusCode.NotFound;
@@ -108,7 +107,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<OperationResult<Plugin.Plugin>> retVal = new ApiOperationResult<OperationResult<Plugin.Plugin>>(Request);
             retVal.LogRequest(logger);
 
-            retVal.Result = await manager.PluginManager.InstallPluginAsync(manager.PluginManager.FindPluginArchive(fileName));
+            retVal.Result = await manager.PluginManager.InstallPluginAsync(manager.PluginManager.FindPluginArchiveByFileName(fileName));
 
             if ((retVal.Result == default(OperationResult<Plugin.Plugin>)) || (retVal.Result.ResultCode == OperationResultCode.Failure))
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
@@ -143,9 +142,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<OperationResult> retVal = new ApiOperationResult<OperationResult>(Request);
             retVal.LogRequest(logger);
 
-            Plugin.Plugin foundPlugin = manager.PluginManager.FindPlugin(fqn);
-            if (foundPlugin != default(Plugin.Plugin))
-                retVal.Result = await manager.PluginManager.UninstallPluginAsync(manager.PluginManager.FindPlugin(fqn));
+            retVal.Result = await manager.PluginManager.UninstallPluginAsync(manager.PluginManager.FindPlugin(fqn));
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
@@ -159,7 +156,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<bool> retVal = new ApiOperationResult<bool>(Request);
             retVal.LogRequest(logger);
 
-            string pluginArchive = System.IO.Path.Combine(manager.Directories.Archives, manager.PluginManager.FindPluginArchive(fileName).FileName);
+            string pluginArchive = System.IO.Path.Combine(manager.Directories.Archives, manager.PluginManager.FindPluginArchiveByFileName(fileName).FileName);
 
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
 

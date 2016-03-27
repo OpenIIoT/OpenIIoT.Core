@@ -303,6 +303,11 @@ namespace Symbiote.Core
             return Utility.GetSetting("InstanceName", "Symbiote");
         }
 
+        public static string GetHashSalt()
+        {
+            return "needs more salt";
+        }
+
         #endregion
     }
 }
