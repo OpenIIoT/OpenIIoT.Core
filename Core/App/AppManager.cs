@@ -309,7 +309,7 @@ namespace Symbiote.Core.App
                     // extract the archive to the destination
                     // note: the ExtractZip function in the base library needs an absolute path for the input file to work properly.
                     logger.Debug("Extracting the archive '" + appArchive.FileName + "' to '" + destination + "'...");
-                    await Task.Run(() => platform.ExtractZip(System.IO.Path.Combine(manager.Directories.Archive,appArchive.FileName), destination, true));
+                    await Task.Run(() => platform.ExtractZip(System.IO.Path.Combine(manager.Directories.Archives,appArchive.FileName), destination, true));
 
                     logger.Debug("Successfully extracted the archive '" + System.IO.Path.GetFileName(appArchive.FileName) + "' to '" + destination + "'.");
 
@@ -487,7 +487,7 @@ namespace Symbiote.Core.App
         public OperationResult<List<AppArchive>> LoadAppArchives(bool throwExceptionOnFailure = false)
         {
             logger.Info("Loading App Archives...");
-            OperationResult<List<AppArchive>> retVal = LoadAppArchives(manager.Directories.Archive, Utility.GetSetting("AppArchiveExtension"), manager.PlatformManager.Platform);
+            OperationResult<List<AppArchive>> retVal = LoadAppArchives(manager.Directories.Archives, Utility.GetSetting("AppArchiveExtension"), manager.PlatformManager.Platform);
 
             // load succeeded
             if (retVal.ResultCode != OperationResultCode.Failure)

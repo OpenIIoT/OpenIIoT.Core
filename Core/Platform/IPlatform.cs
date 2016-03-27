@@ -139,7 +139,7 @@ namespace Symbiote.Core.Platform
         /// <param name="destination">The destination directory.</param>
         /// <param name="clearDestination">True if the destination directory should be cleared prior to extraction, false otherwise.</param>
         /// <returns>An OperationResult containing the result of the operation and the fully qualified path to the extracted files.</returns>
-        OperationResult<string> ExtractZip(string zipFile, string destination, bool clearDestination);
+        OperationResult<string> ExtractZip(string zipFile, string destination, bool clearDestination = true);
 
         /// <summary>
         /// Extracts the supplied file from the supplied zip file to the supplied destination, overwriting the file if overwrite is true.

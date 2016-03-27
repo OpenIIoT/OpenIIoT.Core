@@ -123,7 +123,7 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage DownloadAppArchive(string fqn)
         {
-            string appArchive = System.IO.Path.Combine(manager.Directories.Archive, manager.AppManager.FindAppArchive(fqn).FileName);
+            string appArchive = System.IO.Path.Combine(manager.Directories.Archives, manager.AppManager.FindAppArchive(fqn).FileName);
 
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
 

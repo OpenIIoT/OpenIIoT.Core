@@ -398,7 +398,7 @@ namespace Symbiote.Core.Platform.UNIX
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error extracting zil file '" + zipFile + "' to destination '" + destination + "': " + ex);
+                retVal.AddError("Error extracting zip file '" + zipFile + "' to destination '" + destination + "': " + ex);
             }
 
             retVal.LogResultTrace(logger);

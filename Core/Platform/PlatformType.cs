@@ -9,10 +9,12 @@
         /// The default value
         /// </summary>
         Unknown,
+
         /// <summary>
         /// The Windows platform
         /// </summary>
         Windows,
+
         /// <summary>
         /// The UNIX platform
         /// </summary>

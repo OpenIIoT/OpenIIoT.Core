@@ -150,6 +150,24 @@ namespace Symbiote.Core
         }
 
         /// <summary>
+        /// Retrieves the setting corresponding to the specified setting from the app.exe.config file.
+        /// If the setting isn't found, returns the provided defaultSetting and logs a warning.
+        /// </summary>
+        /// <param name="key">The setting to retrieve.</param>
+        /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
+        /// <returns>The string value of the retrieved setting.</returns>
+        internal static string GetSetting(string key, string defaultSetting)
+        {
+            string retVal = GetSetting(key);
+            if (retVal == default(string))
+            {
+                NLog.LogManager.GetCurrentClassLogger().Warn("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
+                retVal = defaultSetting;
+            }
+            return retVal;
+        }
+
+        /// <summary>
         /// Updates the setting corresponding to the specified setting within the app.exe.config file with the specified value.
         /// </summary>
         /// <param name="key">The setting to update.</param>
@@ -203,6 +221,40 @@ namespace Symbiote.Core
                 return false;
             }
             return true;
+        }
+
+        /// <summary>
+        /// Computes a cryptographic hash of the provided text using the provided salt.
+        /// </summary>
+        /// <param name="text">The text to hash.</param>
+        /// <param name="salt">The salt with which to seed the hash function.</param>
+        /// <returns>The computed hash.</returns>
+        public static string ComputeHash(string text, string salt = "")
+        {
+            byte[] binText = System.Text.Encoding.ASCII.GetBytes(text);
+            byte[] binSalt = System.Text.Encoding.ASCII.GetBytes(salt);
+            byte[] binSaltedText;
+
+            if (binSalt.Length > 0)
+            {
+                binSaltedText = new byte[binText.Length + binSalt.Length];
+
+                for (int i = 0; i < binText.Length; i++)
+                    binSaltedText[i] = binText[i];
+
+                for (int i = 0; i < binSalt.Length; i++)
+                    binSaltedText[binText.Length + i] = binSalt[i];
+            }
+            else binSaltedText = binText;
+
+            byte[] checksum = System.Security.Cryptography.SHA256.Create().ComputeHash(binSaltedText);
+
+            System.Text.StringBuilder builtString = new System.Text.StringBuilder();
+            foreach (byte b in checksum)
+            {
+                builtString.Append(b.ToString("x2"));
+            }
+            return builtString.ToString();
         }
     }
 }

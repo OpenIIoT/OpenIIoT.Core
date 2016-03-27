@@ -268,22 +268,39 @@ namespace Symbiote.Core
 
         #endregion
 
+        internal OperationResult RenameInstance(string instanceName)
+        {
+            Utility.UpdateSetting("InstanceName", instanceName);
+            Restart();
 
-        internal void StartManager(IManager manager)
+            return new OperationResult();
+        }
+
+
+        internal OperationResult<IManager> StartManager(IManager manager)
         {
             logger.Info("Starting " + manager.GetType().Name + "...");
+            OperationResult<IManager> retVal = new OperationResult<IManager>();
 
-            OperationResult retVal = manager.Start();
+            OperationResult startResult = manager.Start();
 
-            if (retVal.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to start " + manager.GetType().Name + "." + retVal.GetLastError());
-            else
-            {
-                logger.Info(manager.GetType().Name + " started.");
+            if (startResult.ResultCode == OperationResultCode.Failure)
+                throw new Exception("Failed to start " + manager.GetType().Name + "." + startResult.GetLastError());
 
-                if (retVal.ResultCode == OperationResultCode.Warning)
-                    retVal.LogAllMessages(logger, "Warn", "The following warnings were encountered during the operation:");
-            }
+            retVal.Result = manager;
+            retVal.Incorporate(startResult);
+
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        #endregion
+
+        #region Static Methods
+
+        public static string GetInstanceName()
+        {
+            return Utility.GetSetting("InstanceName", "Symbiote");
         }
 
         #endregion

@@ -107,9 +107,9 @@ namespace Symbiote.Core.Plugin.Endpoint
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
+                OperationResult<EndpointManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<EndpointManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != OperationResultCode.Failure)
-                    Configure();
+                    Configure(createResult.Result);
             }
 
             return Configure(manager.ConfigurationManager.GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType()).Result);

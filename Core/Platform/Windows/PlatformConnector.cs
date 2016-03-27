@@ -18,8 +18,9 @@ namespace Symbiote.Core.Platform.Windows
 
         public string Name { get; private set; }
         public string FQN { get; private set; }
-        public Version Version { get; private set; }
+        public string Version { get; private set; }
         public PluginType PluginType { get; private set; }
+        public string Fingerprint { get { return "c5db87ec30e211919cd62ecc07ccdc8fd17b83798bfda0029a36b58ad0f5a827";  } }
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
         public string Configuration { get; private set; }
@@ -34,7 +35,7 @@ namespace Symbiote.Core.Platform.Windows
             InstanceName = instanceName;
             Name = "WindowsConnector";
             FQN = "Symbiote.Core.Platform.Windows.PlatformConnector";
-            Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
             PluginType = PluginType.Connector;
 
             ConfigurationDefinition = new ConfigurationDefinition();

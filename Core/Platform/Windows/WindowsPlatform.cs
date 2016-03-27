@@ -385,6 +385,9 @@ namespace Symbiote.Core.Platform.Windows
 
             try
             {
+                if (!DirectoryExists(destination))
+                    CreateDirectory(destination);
+
                 if (clearDestination)
                 {
                     logger.Trace("Attempting to clear destination directory '" + destination + "'...");
@@ -398,7 +401,7 @@ namespace Symbiote.Core.Platform.Windows
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error extracting zil file '" + zipFile + "' to destination '" + destination + "': " + ex);
+                retVal.AddError("Error extracting zip file '" + zipFile + "' to destination '" + destination + "': " + ex);
             }
 
             retVal.LogResultTrace(logger);
@@ -452,17 +455,26 @@ namespace Symbiote.Core.Platform.Windows
         {
             logger.Trace("Computing checksum for file '" + file + "'...");
             OperationResult<string> retVal = new OperationResult<string>();
-            
-            byte[] binFile = File.ReadAllBytes(file);
-            byte[] checksum = MD5.Create().ComputeHash(binFile);
 
-            StringBuilder builtString = new StringBuilder();
-            foreach (byte b in checksum)
+            try
             {
-                builtString.Append(b.ToString("x2"));
+                byte[] binFile = File.ReadAllBytes(file);
+                byte[] checksum = SHA256.Create().ComputeHash(binFile);
+
+                StringBuilder builtString = new StringBuilder();
+                foreach (byte b in checksum)
+                {
+                    builtString.Append(b.ToString("x2"));
+                }
+
+                retVal.Result = builtString.ToString();
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown calculating checksum: " + ex.Message);
+                logger.Trace(ex);
             }
 
-            retVal.Result = builtString.ToString();
 
             retVal.LogResultTrace(logger);
             return retVal;

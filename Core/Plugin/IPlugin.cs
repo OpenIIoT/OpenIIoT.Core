@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Symbiote.Core.Plugin
 {
@@ -10,7 +6,8 @@ namespace Symbiote.Core.Plugin
     {
         string Name { get; }
         string FQN { get; }
-        Version Version { get; }
+        string Version { get; }
         PluginType PluginType { get; }
+        string Fingerprint { get; }
     }
 }

@@ -131,9 +131,7 @@ namespace Symbiote.Core.Platform
             logger.Debug("Loading application directories...");
 
             // fetch the directory list from .exe.config
-            string directoryList = Utility.GetSetting("Directories");
-            if (directoryList == "")
-                throw new Exception("The directory list couldn't be loaded from the .exe.config file.");
+            string directoryList = GetDirectories();
 
             //  replace the pipe character placeholder with the platform specific directory separator
             directoryList = directoryList.Replace('|', System.IO.Path.DirectorySeparatorChar);
@@ -218,6 +216,22 @@ namespace Symbiote.Core.Platform
         {
             int p = (int)Environment.OSVersion.Platform;
             return ((p == 4) || (p == 6) || (p == 128) ? PlatformType.UNIX : PlatformType.Windows);
+        }
+
+        private static string GetDirectories()
+        {
+            return Utility.GetSetting(
+                "Directories",
+                @"{
+                      &quot;Data&quot;:&quot;Data&quot;,
+                      &quot;Archives&quot;:&quot;Data\|Archives&quot;,
+                      &quot;Plugins&quot;:&quot;Plugins&quot;,
+                      &quot;Temp&quot;:&quot;Data\|Temp&quot;,
+		              &quot;Persistence&quot;:&quot;Data\|Persistence&quot;,
+                      &quot;Web&quot;:&quot;Web&quot;,
+                      &quot;Logs&quot;:&quot;Logs&quot;
+                 }"
+            );
         }
 
         #endregion

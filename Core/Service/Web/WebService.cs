@@ -68,9 +68,9 @@ namespace Symbiote.Core.Service.Web
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
+                OperationResult<WebServiceConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<WebServiceConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != OperationResultCode.Failure)
-                    Configure();
+                    Configure(createResult.Result);
             }
 
             return Configure(manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType()).Result);

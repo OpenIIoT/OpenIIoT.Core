@@ -25,12 +25,12 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// The archive directory
         /// </summary>
-        public string Archive { get; private set; }
+        public string Archives { get; private set; }
 
         /// <summary>
         /// The plugin directory
         /// </summary>
-        public string Plugin { get; private set; }
+        public string Plugins { get; private set; }
 
         /// <summary>
         /// The temporary directory
@@ -67,8 +67,8 @@ namespace Symbiote.Core.Platform
             {
                 Root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
                 Data = System.IO.Path.Combine(Root, directories["Data"]);
-                Archive = System.IO.Path.Combine(Root, directories["Archive"]);
-                Plugin = System.IO.Path.Combine(Root, directories["Plugin"]);
+                Archives = System.IO.Path.Combine(Root, directories["Archives"]);
+                Plugins = System.IO.Path.Combine(Root, directories["Plugins"]);
                 Temp = System.IO.Path.Combine(Root, directories["Temp"]);
                 Persistence = System.IO.Path.Combine(Root, directories["Persistence"]);
                 Web = System.IO.Path.Combine(Root, directories["Web"]);

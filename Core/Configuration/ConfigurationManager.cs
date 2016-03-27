@@ -172,7 +172,7 @@ namespace Symbiote.Core.Configuration
 
             //----------------------- - --
             // load the configuration.
-            OperationResult<ApplicationConfiguration> loadResult = LoadConfiguration(ConfigurationFileName);
+            OperationResult<ApplicationConfiguration> loadResult = LoadConfiguration();
 
             if (loadResult.ResultCode == OperationResultCode.Failure)
                 throw new Exception("Failed to load the configuration: " + loadResult.GetLastError());
@@ -280,11 +280,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>An instance of Configuration containing the loaded.</returns>
         private OperationResult<ApplicationConfiguration> LoadConfiguration()
         {
-            logger.Info("Loading Configuration...");
-            OperationResult<ApplicationConfiguration> retVal = LoadConfiguration(ConfigurationFileName);
-
-            retVal.LogResult(logger);
-            return retVal;
+            return LoadConfiguration(ConfigurationFileName);
         }
 
         /// <summary>
@@ -294,7 +290,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the Configuration instance created from the file.</returns>
         private OperationResult<ApplicationConfiguration> LoadConfiguration(string fileName)
         {
-            logger.Trace("Loading configuration from '" + fileName + "'...");
+            logger.Info("Loading configuration from '" + fileName + "'...");
             OperationResult<ApplicationConfiguration> retVal = new OperationResult<ApplicationConfiguration>();
 
             try
@@ -312,6 +308,7 @@ namespace Symbiote.Core.Configuration
                 retVal.AddError("Exception thrown while loading Configuration from '" + fileName + "': " + ex);
             }
 
+            retVal.LogResult(logger);
             return retVal;
         }
 
@@ -321,7 +318,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult SaveConfiguration()
         {
-            logger.Info("Saving configuration to '" + ConfigurationFileName + "'...");
+            logger.Info("Saving configuration...");
             OperationResult retVal = SaveConfiguration(Configuration, ConfigurationFileName);
             retVal.LogResult(logger);
             return retVal;
@@ -334,7 +331,10 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         private OperationResult SaveConfiguration(ApplicationConfiguration configuration)
         {
-            return SaveConfiguration(configuration, ConfigurationFileName);
+            logger.Info("Saving specified configuration to '" + ConfigurationFileName + "'...");
+            OperationResult retVal = SaveConfiguration(configuration, ConfigurationFileName);
+            retVal.LogResult(logger);
+            return retVal;
         }
 
         /// <summary>
@@ -583,9 +583,9 @@ namespace Symbiote.Core.Configuration
         /// <param name="instanceConfiguration">The Configuration instance of the configuration model of the calling class.</param>
         /// <param name="instanceName">The name of the instance to configure.</param>
         /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult AddInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "")
+        public OperationResult<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, string instanceName = "")
         {
-            return AddInstanceConfiguration(type, instanceConfiguration, Configuration, instanceName);
+            return AddInstanceConfiguration<T>(type, instanceConfiguration, Configuration, instanceName);
         }
 
         /// <summary>
@@ -596,10 +596,10 @@ namespace Symbiote.Core.Configuration
         /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
         /// <param name="instanceName">The name of the instance to configure.</param>
         /// <returns>An OperationResult containing the result of the operation.</returns>
-        private OperationResult AddInstanceConfiguration(Type type, object instanceConfiguration, ApplicationConfiguration configuration, string instanceName = "")
+        private OperationResult<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, ApplicationConfiguration configuration, string instanceName = "")
         {
             logger.Debug("Adding configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
-            OperationResult retVal = new OperationResult();
+            OperationResult<T> retVal = new OperationResult<T>();
 
             if (!IsConfigurable(type).Result)
                 retVal.AddError("The type '" + type.Name + "' is not configurable.");
@@ -615,6 +615,8 @@ namespace Symbiote.Core.Configuration
 
                 // add the default configuration for the requested type/instance to the configuration.
                 configuration.UglyConfiguration[type].Add(instanceName, instanceConfiguration);
+
+                retVal.Result = (T)instanceConfiguration;
 
                 logger.Trace("The configuration was inserted successfully.");
             }
@@ -756,26 +758,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>The fully qualified path, filename and extension of the configuration file.</returns>
         public static string GetConfigurationFileName()
         {
-            string retVal = Utility.GetSetting("ConfigurationFileName");
-
-            // replace the directory separator placeholder with the platform-specific separator
-            retVal = retVal.Replace('|', System.IO.Path.DirectorySeparatorChar);
-
-            if ((retVal == "") || (retVal == null))
-            {
-                if (ProgramManager.Instance().SafeMode)
-                {
-                    string defaultConfig = ProgramManager.Instance().ProductName + ".config";
-                    logger.Warn("Error retrieving the configuration filename from app.exe.config; assuming '" + defaultConfig + "'...");
-                    retVal = defaultConfig;
-                }
-                else
-                    throw new Exception("Error retrieving the configuration filename from app.exe.config.");
-            }
-
-            logger.Trace("Retrieved '" + retVal + "' from the app configuration file.");
-
-            return retVal;
+            return Utility.GetSetting("ConfigurationFileName", "Symbiote.json").Replace('|', System.IO.Path.DirectorySeparatorChar);
         }
 
         /// <summary>

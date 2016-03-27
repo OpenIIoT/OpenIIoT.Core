@@ -7,11 +7,13 @@ namespace Symbiote.Core.Plugin
         public bool AuthorizeNewPlugins { get; set; }
         public List<PluginManagerConfigurationPluginAssembly> Assemblies { get; set; }
         public List<PluginManagerConfigurationPluginInstance> Instances { get; set; }
+        public List<Plugin> InstalledPlugins { get; set; }
 
         public PluginManagerConfiguration()
         {
             Assemblies = new List<PluginManagerConfigurationPluginAssembly>();
             Instances = new List<PluginManagerConfigurationPluginInstance>();
+            InstalledPlugins = new List<Plugin>();
         }
     }
 

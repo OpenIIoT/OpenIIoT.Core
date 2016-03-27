@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
 using Symbiote.Core.Configuration;
@@ -21,8 +18,9 @@ namespace Symbiote.Core.Platform.UNIX
 
         public string Name { get; private set; }
         public string FQN { get; private set; }
-        public Version Version { get; private set; }
+        public string Version { get; private set; }
         public PluginType PluginType { get; private set; }
+        public string Fingerprint { get { return "0e2fc599cf9cb475684b4c539cc0c5ee98fa003d65be53c4664926495828fbe0";  } }
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
         public string Configuration { get; private set; }
@@ -37,7 +35,7 @@ namespace Symbiote.Core.Platform.UNIX
             InstanceName = instanceName;
             Name = "UNIXConnector";
             FQN = "Symbiote.Core.Platform.UNIX.PlatformConnector";
-            Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+            Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
             PluginType = PluginType.Connector;
 
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");

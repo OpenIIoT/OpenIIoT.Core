@@ -45,9 +45,9 @@ namespace Symbiote.Core.Service.IoT.MQTT
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
+                OperationResult<MQTTBrokerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != OperationResultCode.Failure)
-                    Configure();
+                    Configure(createResult.Result);
             }
 
             return Configure(manager.ConfigurationManager.GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType()).Result);

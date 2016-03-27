@@ -120,9 +120,6 @@ namespace Symbiote.Core
                 //----------------------------------------------- - ------------  - - -
                 // start the Platform Manager so we can get the platform details
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
-                //logger.Info("Starting the Platform Manager...");
-                //manager.PlatformManager.Start();
-                //logger.Info("Platform Manager started.");
                 manager.StartManager(manager.PlatformManager);
                 logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
                 //------------------- - -----------                      ------------- 
@@ -217,14 +214,14 @@ namespace Symbiote.Core
                 // attach the Platform connector items to the model
                 // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
                 logger.Info("Detatching potentially stale Platform items...");
-                manager.ModelManager.RemoveItem(manager.ModelManager.FindItem(manager.ProductName + ".System.Platform"));
+                manager.ModelManager.RemoveItem(manager.ModelManager.FindItem(manager.InstanceName + ".System.Platform"));
 
                 logger.Info("Attaching new Platform items...");
 
                 // find or create the parent for the Platform items
-                Item systemItem = manager.ModelManager.FindItem(manager.ProductName + ".System");
+                Item systemItem = manager.ModelManager.FindItem(manager.InstanceName + ".System");
                 if (systemItem == default(Item))
-                    systemItem = manager.ModelManager.AddItem(new Item(manager.ProductName + ".System")).Result;
+                    systemItem = manager.ModelManager.AddItem(new Item(manager.InstanceName + ".System")).Result;
 
                 // attach the Platform items to Symbiote.System
                 manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
@@ -265,9 +262,13 @@ namespace Symbiote.Core
                 logger.Info(manager.ProductName + " is running.");
                 manager.Starting = false;
 
-                FQNResolver.Resolve("Symbiote.Simulation.Process.Ramp").SubscribeToSource();
-                FQNResolver.Resolve("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
-                FQNResolver.Resolve("Symbiote.Simulation.Motor").SubscribeToSource();
+                FQNResolver.Resolve(manager.InstanceName + ".Simulation.Process.Ramp").SubscribeToSource();
+                FQNResolver.Resolve(manager.InstanceName + ".Simulation.DateTime.Time").SubscribeToSource();
+                FQNResolver.Resolve(manager.InstanceName + ".Simulation.Motor").SubscribeToSource();
+
+                //manager.RenameInstance("Symbiote2");
+
+                Utility.PrintModel(logger, manager.ModelManager.Model, 0);
 
                 //Item test = FQNResolver.Resolve("Symbiote.AddTest");
 

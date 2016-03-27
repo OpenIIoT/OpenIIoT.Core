@@ -128,7 +128,7 @@ namespace Symbiote.Core.Model
 
             //--  -  -- ---------------  -
             // Build the model
-            ModelBuildResult modelBuildResult = BuildModel(Configuration.Items);
+            ModelBuildResult modelBuildResult = BuildModel(manager.InstanceName, Configuration.Items);
 
             if (modelBuildResult.ResultCode == OperationResultCode.Failure)
                 throw new Exception("Failed to build the model: " + modelBuildResult.GetLastError()); 
@@ -216,11 +216,11 @@ namespace Symbiote.Core.Model
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                OperationResult createResult = manager.ConfigurationManager.AddInstanceConfiguration(this.GetType(), GetDefaultConfiguration());
+                OperationResult<ModelManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != OperationResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
-                    Configure();
+                    Configure(createResult.Result);
                 }
                 else
                     retVal.Incorporate(createResult);
@@ -276,20 +276,21 @@ namespace Symbiote.Core.Model
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         public ModelBuildResult BuildModel()
         {
-            return BuildModel(Configuration.Items);
+            return BuildModel(manager.InstanceName, Configuration.Items);
         }
 
         /// <summary>
         /// Builds a Model using the provided list of ConfigurationItems and returns a ModelBuildResult containing the result.
         /// </summary>
+        /// <param name="instanceName">The name of the application instance, to be used as the root node.</param>
         /// <param name="itemList">A list of ConfigurationItems containing Model Items to build.</param>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
-        private ModelBuildResult BuildModel(List<ModelManagerConfigurationItem> itemList)
+        private ModelBuildResult BuildModel(string instanceName, List<ModelManagerConfigurationItem> itemList)
         {
             logger.Info("Building Model...");
             ModelBuildResult retVal = new ModelBuildResult() { ResultCode = OperationResultCode.Success, UnresolvedList = itemList.Clone() };
 
-            BuildModel(itemList, retVal);
+            BuildModel(instanceName, itemList, retVal);
 
             retVal.LogResult(logger);
 
@@ -313,11 +314,12 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Accepts a list of Configuration.Items and recursively instantiates items in the Model corresponding to the items in the list.
         /// </summary>
+        /// <param name="instanceName">The name of the application instance, to be used as the root node.</param>
         /// <param name="itemList">A list of model items from which to build the model.</param>
         /// <param name="result">An instance of ModelBuildResult, ideally new.  The method will recursively pass it to itself and return it to the calling method when complete.</param>
         /// <param name="depth">The current depth of recursion. Defaults to 0 if omitted.</param>
         /// <returns>A ModelBuildResult containing the result of the build operation.</returns>
-        private ModelBuildResult BuildModel(List<ModelManagerConfigurationItem> itemList, ModelBuildResult result, int depth = 0)
+        private ModelBuildResult BuildModel(string instanceName, List<ModelManagerConfigurationItem> itemList, ModelBuildResult result, int depth = 0)
         {
             // we build the model recursively starting with root items (items with only one tuple in the FQN) and in ascending order
             // of the number of tuples in the FQN, e.x., "Symbiote.Platform.CPU.% Idle Time" is considered to be at level 4. while
@@ -347,7 +349,7 @@ namespace Symbiote.Core.Model
                     logger.Trace(new String('-', 30));
 
                     Item newItem;
-                    newItem = new Item(item.FQN, item.SourceFQN);
+                    newItem = new Item(instanceName + item.FQN, item.SourceFQN);
 
                     // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
                     // this will be set "officially" when SetParent() is called to bind the item to its parent
@@ -408,7 +410,7 @@ namespace Symbiote.Core.Model
 
             // if at least one item was processed at this depth, recursively call this method one level deeper
             if (items.Count() > 0)
-                BuildModel(itemList, result, depth + 1);
+                BuildModel(instanceName, itemList, result, depth + 1);
             // if nothing was processed at this depth the model is fully built.  
             // resolve the source FQNs of any deferred items
             else
@@ -473,9 +475,9 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="flushToDisk">Save the updated Configuration to disk.</param>
         /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
-        public OperationResult<List<ModelManagerConfigurationItem>> SaveModel(bool flushToDisk = false)
+        public OperationResult<List<ModelManagerConfigurationItem>> SaveModel()
         {
-            logger.Info("Saving Model" + (flushToDisk ? " and flushing the Configuration to disk" : "") + "...");
+            logger.Info("Saving Model...");
 
             OperationResult<List<ModelManagerConfigurationItem>> configuration = new OperationResult<List<ModelManagerConfigurationItem>>();
             configuration.Result = new List<ModelManagerConfigurationItem>();
@@ -485,13 +487,7 @@ namespace Symbiote.Core.Model
             if (retVal.ResultCode != OperationResultCode.Failure)
             {
                 Configuration.Items = retVal.Result;
-
-                if (flushToDisk)
-                {
-                    // if the save fails, add a warning about the failure and copy the messages from that operationresult to this one.
-                    if (manager.ConfigurationManager.SaveConfiguration().ResultCode == OperationResultCode.Failure)
-                        retVal.AddWarning("The model was saved to the ConfigurationManager, however the flush to disk failed.");
-                }
+                SaveConfiguration();
             }
 
             retVal.LogResult(logger);
@@ -506,7 +502,7 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
         private OperationResult<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, OperationResult<List<ModelManagerConfigurationItem>> configuration)
         {
-            configuration.Result.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN, SourceFQN = itemRoot.SourceFQN });
+            configuration.Result.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(manager.InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
 
             foreach (Item mi in itemRoot.Children)
             {
@@ -935,7 +931,7 @@ namespace Symbiote.Core.Model
             retVal.Items.Add(
                 new ModelManagerConfigurationItem()
                 {
-                    FQN = "Symbiote",
+                    FQN = "",
                     SourceFQN = ""
                 });
             return retVal;
