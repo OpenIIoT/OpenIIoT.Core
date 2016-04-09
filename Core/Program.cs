@@ -243,17 +243,6 @@ namespace Symbiote.Core
                 Utility.PrintModel(logger, manager.ModelManager.Model, 0);
                 //-------------------------------- --------- - -      -              -
 
-
-                //------------------- - - -------------- - --------------  -
-                // start the app manager
-                //-- - - - - ------------- - - - ---------------------- -          -
-                logger.Info("Searching for Apps...");
-                manager.AppManager.LoadConfiguration();
-                manager.AppManager.LoadAppArchives();
-                logger.Info("Apps loaded.");
-
-
-
                 manager.StartManager(manager.ServiceManager);
                 manager.StartManager(manager.EndpointManager);
 

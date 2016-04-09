@@ -5,7 +5,6 @@ using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
 using NLog;
-using Symbiote.Core.App;
 using Symbiote.Core.Service;
 
 namespace Symbiote.Core
@@ -117,11 +116,6 @@ namespace Symbiote.Core
         /// </summary>
         public Plugin.Endpoint.EndpointManager EndpointManager { get; private set; }
 
-        /// <summary>
-        /// The AppManager for the application.
-        /// </summary>
-        public AppManager AppManager { get; private set; }
-
         #endregion
 
         #region Constructors
@@ -192,14 +186,6 @@ namespace Symbiote.Core
             EndpointManager = Plugin.Endpoint.EndpointManager.Instance(this);
             ConfigurationManager.RegisterType(typeof(Plugin.Endpoint.EndpointManager));
             logger.Debug("Successfully instantiated the Endpoint Manager.");
-           
-
-            //--------- - ---------------------------
-            // App Manager
-            //- -- -   ------------- - - --  - -  --------------   -  
-            logger.Debug("Instantiating the App Manager...");
-            AppManager = AppManager.Instance(this);
-            logger.Debug("Successfully instantiated the App Manager.");
         }
 
         /// <summary>

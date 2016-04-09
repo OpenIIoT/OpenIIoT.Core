@@ -25,23 +25,6 @@ namespace Symbiote.Core.Service.Web.API
             return Request.CreateResponse(HttpStatusCode.OK, manager.ConfigurationManager.Configuration , JsonFormatter(serializationProperties, ContractResolver.ContractResolverType.OptOut, true));
         }
 
-        [Route("api/configuration/{section}")]
-        [HttpGet]
-        public HttpResponseMessage GetConfiguration(string section)
-        {
-            section = section.ToLower();
-            object retVal = default(object);
-
-            switch (section)
-            {
-                case "apps":
-                    retVal = configuration.Apps;
-                    break;
-            }
-
-            return Request.CreateResponse(HttpStatusCode.OK, retVal, JsonFormatter(serializationProperties, ContractResolver.ContractResolverType.OptOut, true));
-        }
-
         private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolver.ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();

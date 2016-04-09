@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using NLog;
-using Symbiote.Core.App;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;

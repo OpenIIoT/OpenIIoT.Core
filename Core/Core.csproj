@@ -137,11 +137,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App\AppArchive.cs" />
-    <Compile Include="App\App.cs" />
-    <Compile Include="App\AppManager.cs" />
-    <Compile Include="App\Enumerations.cs" />
-    <Compile Include="App\Exceptions.cs" />
     <Compile Include="Common\IManager.cs" />
     <Compile Include="Common\Item\ItemEventArgs.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
@@ -168,8 +163,6 @@
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Common\RealtimeLogger.cs" />
-    <Compile Include="Configuration\App\ConfigurationAppSection.cs" />
-    <Compile Include="Configuration\App\ConfigurationApp.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Plugin\Exceptions.cs" />
@@ -200,8 +193,6 @@
     <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Service\Web\API\ApiOperationResult.cs" />
     <Compile Include="Service\Web\API\Controllers\PluginController.cs" />
-    <Compile Include="Service\Web\API\Controllers\AppArchiveController.cs" />
-    <Compile Include="Service\Web\API\Controllers\AppController.cs" />
     <Compile Include="Service\Web\API\Controllers\BrowseController.cs" />
     <Compile Include="Service\Web\API\Controllers\ConfigurationController.cs" />
     <Compile Include="Service\Web\API\Controllers\LogController.cs" />
