@@ -311,6 +311,30 @@ namespace Symbiote.Core
                 ResultCode = operationResult.ResultCode;
         }
 
+        /// <summary>
+        /// Iterates over the list of passed parameters and adds an error message to the OperationResult
+        /// for any parameter that is null.
+        /// </summary>
+        /// <param name="parameters">A variable length object array containing parameters to check for null.</param>
+        /// <returns>True if all parameters are valid, false otherwise.</returns>
+        public virtual bool ValidateParameters(params object[] parameters)
+        {
+            try
+            {
+                foreach (object parameter in parameters)
+                {
+                    if (parameter == null)
+                        AddError("One or more parameters is null.");
+                }
+            }
+            catch (Exception ex)
+            {
+                AddError("Exception caught while validating one or more parameters: " + ex.Message);
+            }
+
+            return (ResultCode != OperationResultCode.Failure);
+        }
+
         #endregion
     }
 

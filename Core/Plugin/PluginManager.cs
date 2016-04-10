@@ -1122,7 +1122,9 @@ namespace Symbiote.Core.Plugin
                         continue;
                     }
 
-                    manager.ModelManager.AttachItem(foundPluginInstance.Browse(), anchor);
+                    OperationResult attachResult = manager.ModelManager.AttachItem(foundPluginInstance.Browse(), null);
+                    attachResult.LogResult(logger);
+                    
                     logger.Info("AutoBuild of Plugin instance '" + instance.InstanceName + "' complete.");
                 }
             }

@@ -782,8 +782,10 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the result of the operation and the newly created Item.</returns>
         private OperationResult<Item> CopyItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
-            logger.Info("Copying Item '" + item.FQN + "' to FQN '" + fqn + "'...");
             OperationResult<Item> retVal = new OperationResult<Item>();
+            if (!retVal.ValidateParameters(model, dictionary, item, fqn)) return retVal;
+
+            logger.Info("Copying Item '" + item.FQN + "' to FQN '" + fqn + "'...");
 
             Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
 
@@ -818,26 +820,15 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to attach to the Model.</param>
         /// <param name="parentItem">The Item to which the new Item should be attached.</param>
-        /// <returns>The attached Item.</returns>
+        /// <returns>An OperationResult containing the result of the operation and the attached Item.</returns>
         public OperationResult<Item> AttachItem(Item item, Item parentItem)
         {
             OperationResult<Item> retVal = new OperationResult<Item>();
-
-            // validate arguments
-            if (item == default(Item))
-                retVal.AddError("The argument 'item' is null.");
-            if (parentItem == default(Item))
-                retVal.AddError("The argument 'parentItem' is null.");
-
-            // if any arguments were invalid, bail out
-            if (retVal.ResultCode == OperationResultCode.Failure)
-                return retVal;
-            
-                
+            if (!retVal.ValidateParameters(item, parentItem)) return retVal;
+               
             if (!manager.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
             else logger.Debug("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
-
-       
+      
             try
             {
                 // create a 1:1 clone of the supplied item
