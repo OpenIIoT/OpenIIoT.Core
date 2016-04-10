@@ -39,6 +39,7 @@
         /// <summary>
         /// The cryptographic fingerprint of the Plugin.
         /// </summary>
+        /// <remarks>The SHA256 checksum of the Plugin assembly hashed again using the SHA256 algorithm and salted with the FQN + Version.</remarks>
         public string Fingerprint { get; private set; }
 
         /// <summary>

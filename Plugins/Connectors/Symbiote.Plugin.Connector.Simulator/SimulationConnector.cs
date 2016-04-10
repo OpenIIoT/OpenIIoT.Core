@@ -15,7 +15,7 @@ namespace Symbiote.Plugin.Connector.Simulation
         public string FQN { get; private set; }
         public string Version { get; private set; }
         public PluginType PluginType { get; private set; }
-        public string Fingerprint { get { return "3118151346273047544222b3818c868f3fa3209378ef72ae7c432ce9c8206f0b"; } }
+        //public string Fingerprint { get { return "3118151346273047544222b3818c868f3fa3209378ef72ae7c432ce9c8206f0b"; } }
 
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public SimulationConnectorConfiguration Configuration { get; private set; }

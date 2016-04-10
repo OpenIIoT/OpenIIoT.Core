@@ -1,16 +1,34 @@
-﻿using Symbiote.Core.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Symbiote.Core.Plugin
+﻿namespace Symbiote.Core.Plugin
 {
+    /// <summary>
+    /// Defines the interface for PluginInstance objects.
+    /// </summary>
     public interface IPluginInstance : IPlugin
     {
+        #region Properties
+
+        /// <summary>
+        /// The name of the PluginInstance.  This is the unique name by which the PluginManager
+        /// persists the PluginInstance.
+        /// </summary>
         string InstanceName { get; }
+
+        #endregion
+
+        #region Instance Methods
+
+        /// <summary>
+        /// Starts the PluginInstance.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         OperationResult Start();
+
+        /// <summary>
+        /// Stops the PluginInstance.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         OperationResult Stop();
+
+        #endregion
     }
 }

@@ -37,7 +37,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// A list of currently loaded plugin assemblies.
         /// </summary>
-        public List<IPluginAssembly> PluginAssemblies { get; private set; }
+        public List<PluginAssembly> PluginAssemblies { get; private set; }
 
         /// <summary>
         /// A list of all plugin instances.
@@ -59,7 +59,7 @@ namespace Symbiote.Core.Plugin
         /// <param name="manager">The ProgramManager instance for the application.</param>
         private PluginManager(ProgramManager manager) {
             this.manager = manager;
-            PluginAssemblies = new List<IPluginAssembly>();
+            PluginAssemblies = new List<PluginAssembly>();
             PluginInstances = new Dictionary<string, IPluginInstance>();
         }
 
@@ -571,8 +571,9 @@ namespace Symbiote.Core.Plugin
                                             {
                                                 logger.Trace("Checksum: " + checksumResult.Result);
 
-                                                string hash = Utility.ComputeHash(checksumResult.Result, archive.Plugin.FQN + archive.Plugin.Version + ProgramManager.GetHashSalt());
+                                                string hash = Utility.ComputeHash(checksumResult.Result, archive.Plugin.FQN + archive.Plugin.Version);
                                                 logger.Trace("Hash: " + hash);
+
                                                 archive.Plugin.SetFingerprint(hash);
                                             }
                                         }
@@ -986,7 +987,7 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="fqn"></param>
         /// <returns>The instance of IPluginAssembly matching the requested FQN</returns>
-        public IPluginAssembly FindPluginAssembly(string fqn)
+        public PluginAssembly FindPluginAssembly(string fqn)
         {
             return PluginAssemblies.Where(p => p.Name == fqn).FirstOrDefault();
         }
@@ -1073,8 +1074,8 @@ namespace Symbiote.Core.Plugin
             // iterate over the configured plugin instances from the configuration
             foreach (PluginManagerConfigurationPluginInstance instance in configuration.Instances)
             {
-                IPluginAssembly assembly = FindPluginAssembly(instance.AssemblyName);
-                if (assembly == default(IPluginAssembly))
+                PluginAssembly assembly = FindPluginAssembly(instance.AssemblyName);
+                if (assembly == default(PluginAssembly))
                     throw new Exception("Plugin assembly '" + instance.AssemblyName + "' not found in the collection.");
 
                 MethodInfo method = this.GetType().GetMethod("CreatePluginInstance").MakeGenericMethod(assembly.Type);

@@ -27,6 +27,8 @@ namespace Symbiote.Core.Platform
 
         #endregion
 
+        #region Instance Methods
+
         /// <summary>
         /// Instantiates the accompanying Connector Plugin with the supplied root path.
         /// </summary>
@@ -154,10 +156,13 @@ namespace Symbiote.Core.Platform
         #endregion
 
         /// <summary>
-        /// Computes the checksum of the specified file.
+        /// Computes the checksum of the specified file using the SHA256 hashing algorithm.
         /// </summary>
+        /// <remarks>To ensure cross-platform, cross-installation compatibility, only an unsalted SHA256 algorithm is to be used.</remarks>
         /// <param name="file">The file for which the checksum is to be computed.</param>
         /// <returns>An OperationResult containing the result of the operation and the computed checksum.</returns>
         OperationResult<string> ComputeFileChecksum(string file);
+
+        #endregion
     }
 }

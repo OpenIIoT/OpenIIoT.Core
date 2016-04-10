@@ -169,7 +169,6 @@
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
-    <Compile Include="Plugin\IPluginAssembly.cs" />
     <Compile Include="Plugin\IPluginInstance.cs" />
     <Compile Include="Plugin\Connector\ConnectorItem.cs" />
     <Compile Include="Common\FQNResolver.cs" />

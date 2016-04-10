@@ -7,7 +7,7 @@ using System.Reflection;
 
 namespace Symbiote.Core.Plugin
 {
-    public class PluginAssembly : IPluginAssembly
+    public class PluginAssembly : IPlugin
     {
         public string Name { get; private set; }
         public string FQN { get; private set; }
