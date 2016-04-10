@@ -21,7 +21,7 @@
         /// <param name="fileName">The fully qualified filename of the file.</param>
         /// <param name="checksum">The checksum of the file.</param>
         /// <param name="plugin">The Plugin contained within the archive.</param>
-        public PluginArchive(string fileName = "", Plugin plugin = null)
+        public PluginArchive(string fileName = "", string checksum = "", Plugin plugin = null)
         {
             FileName = fileName;
             Plugin = plugin;
@@ -43,6 +43,27 @@
         public void SetPlugin(Plugin plugin)
         {
             Plugin = plugin;
+        }
+    }
+
+    /// <summary>
+    /// Represents an invalid Plugin Archive file.
+    /// </summary>
+    public class InvalidPluginArchive : PluginArchive
+    {
+        /// <summary>
+        /// A string containing the reason the Plugin Archive is invalid.
+        /// </summary>
+        public string Message { get; private set; }
+
+        /// <summary>
+        /// Constructs a new InvalidPluginArchive and sets the Message property to the provided string.
+        /// </summary>
+        /// <param name="fileName">The fully qualified filename of the file.</param>
+        /// <param name="message">A string containing the reason the file is invalid.</param>
+        public InvalidPluginArchive(string fileName, string message) : base(fileName)
+        {
+            Message = message;
         }
     }
 }

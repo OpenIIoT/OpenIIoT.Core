@@ -59,15 +59,6 @@
         }
 
         /// <summary>
-        /// Sets the Directory property to the supplied value.
-        /// </summary>
-        /// <param name="directory">The value to which the property should be set.</param>
-        //public void SetDirectory(string directory)
-        //{
-        //    Directory = directory;
-        //}
-
-        /// <summary>
         /// Sets the Fingerprint property to the supplied value.
         /// </summary>
         /// <param name="fingerprint">The value to which the property should be set.</param>

@@ -821,11 +821,23 @@ namespace Symbiote.Core.Model
         /// <returns>The attached Item.</returns>
         public OperationResult<Item> AttachItem(Item item, Item parentItem)
         {
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
+            // validate arguments
+            if (item == default(Item))
+                retVal.AddError("The argument 'item' is null.");
+            if (parentItem == default(Item))
+                retVal.AddError("The argument 'parentItem' is null.");
+
+            // if any arguments were invalid, bail out
+            if (retVal.ResultCode == OperationResultCode.Failure)
+                return retVal;
+            
+                
             if (!manager.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
             else logger.Debug("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
 
-            OperationResult<Item> retVal = new OperationResult<Item>();
-
+       
             try
             {
                 // create a 1:1 clone of the supplied item

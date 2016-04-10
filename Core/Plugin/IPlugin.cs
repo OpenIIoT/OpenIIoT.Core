@@ -8,6 +8,5 @@ namespace Symbiote.Core.Plugin
         string FQN { get; }
         string Version { get; }
         PluginType PluginType { get; }
-        string Fingerprint { get; }
     }
 }

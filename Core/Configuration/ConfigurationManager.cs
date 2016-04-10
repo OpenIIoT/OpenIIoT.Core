@@ -560,10 +560,10 @@ namespace Symbiote.Core.Configuration
             OperationResult<bool> retVal = new OperationResult<bool>();
 
             // check to see if the type is in the comfiguration
-            if (configuration.UglyConfiguration.ContainsKey(type))
+            if (configuration.Configuration.ContainsKey(type))
             {
                 // check to see if the specified instance is in the type configuration
-                if (!configuration.UglyConfiguration[type].ContainsKey(instanceName))
+                if (!configuration.Configuration[type].ContainsKey(instanceName))
                     retVal.AddError("The specified instance name '" + instanceName + "' wasn't found in the configuration for type '" + type.Name + "'.");
             }
             else
@@ -610,11 +610,11 @@ namespace Symbiote.Core.Configuration
             {
                 logger.Trace("Inserting configuration into the Configuration dictionary...");
                 // if the configuration doesn't contain a section for the type, add it
-                if (!configuration.UglyConfiguration.ContainsKey(type))
-                    configuration.UglyConfiguration.Add(type, new Dictionary<string, object>());
+                if (!configuration.Configuration.ContainsKey(type))
+                    configuration.Configuration.Add(type, new Dictionary<string, object>());
 
                 // add the default configuration for the requested type/instance to the configuration.
-                configuration.UglyConfiguration[type].Add(instanceName, instanceConfiguration);
+                configuration.Configuration[type].Add(instanceName, instanceConfiguration);
 
                 retVal.Result = (T)instanceConfiguration;
 
@@ -663,7 +663,7 @@ namespace Symbiote.Core.Configuration
                 {
                     // json.net needs to know the type when it deserializes; we can't cast or convert after the fact.
                     // the solution is to grab our object, serialize it again, then deserialize it into the required type.
-                    var rawObject = configuration.UglyConfiguration[type][instanceName];
+                    var rawObject = configuration.Configuration[type][instanceName];
                     var reSerializedObject = JsonConvert.SerializeObject(rawObject);
                     var reDeSerializedObject = JsonConvert.DeserializeObject<T>(reSerializedObject);
                     retVal.Result = reDeSerializedObject;
@@ -706,7 +706,7 @@ namespace Symbiote.Core.Configuration
             OperationResult retVal = new OperationResult();
 
             if (IsConfigured(type, instanceName).Result)
-                Configuration.UglyConfiguration[type][instanceName] = instanceConfiguration;
+                Configuration.Configuration[type][instanceName] = instanceConfiguration;
             else
                 retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
 
@@ -738,7 +738,7 @@ namespace Symbiote.Core.Configuration
             OperationResult retVal = new OperationResult();
 
             if (IsConfigured(type, instanceName).Result)
-                configuration.UglyConfiguration[type].Remove(instanceName);
+                configuration.Configuration[type].Remove(instanceName);
             else
                 retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
 

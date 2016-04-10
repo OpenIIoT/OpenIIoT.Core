@@ -105,3 +105,5 @@ C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\System.Web.Http.Owi
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Core.ProjectInstaller.resources
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Core.csproj.GenerateResource.Cache
+C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\Symbiote.Cryptography.dll
+C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\App.config

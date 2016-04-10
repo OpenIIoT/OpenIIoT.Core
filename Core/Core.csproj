@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Core</RootNamespace>
     <AssemblyName>Symbiote</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
@@ -26,6 +26,7 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -103,6 +104,9 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Symbiote.Cryptography">
+      <HintPath>lib\Symbiote.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
@@ -147,7 +151,6 @@
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
     <Compile Include="Plugin\Endpoint\EndpointManager.cs" />
-    <Compile Include="Plugin\InvalidPluginArchive.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginArchive.cs" />
     <Compile Include="Plugin\PluginArchiveLoadResult.cs" />
@@ -165,7 +168,6 @@
     <Compile Include="Common\RealtimeLogger.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
-    <Compile Include="Plugin\Exceptions.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\IPluginAssembly.cs" />
     <Compile Include="Plugin\IPluginInstance.cs" />
@@ -213,7 +215,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

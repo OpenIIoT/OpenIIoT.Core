@@ -413,10 +413,9 @@ namespace Symbiote.Core.Plugin
 
             //------------------------------ - -  --------- - 
             // validate the fingerprint.
-            // short and sweet.. find a way to obfuscate later.  external library?
             logger.Trace("Validating Plugin fingerprint...");
 
-            if (p.Fingerprint != Utility.ComputeHash(payloadChecksum, p.FQN + p.Version + "needs more salt"))
+            if (!Cryptography.FingerprintValidator.Validate(p.Fingerprint, p.FQN, p.Version, payloadChecksum))
                 retVal.AddError("The fingerprint is invalid.");
             //---------- - ------------------            -------------- - 
 
@@ -1076,7 +1075,7 @@ namespace Symbiote.Core.Plugin
             {
                 IPluginAssembly assembly = FindPluginAssembly(instance.AssemblyName);
                 if (assembly == default(IPluginAssembly))
-                    throw new PluginAssemblyNotFoundException("Plugin assembly '" + instance.AssemblyName + "' not found in the collection.");
+                    throw new Exception("Plugin assembly '" + instance.AssemblyName + "' not found in the collection.");
 
                 MethodInfo method = this.GetType().GetMethod("CreatePluginInstance").MakeGenericMethod(assembly.Type);
                 method.Invoke(this, new object[] { instance.InstanceName });
@@ -1087,12 +1086,6 @@ namespace Symbiote.Core.Plugin
 
         public void StartPlugins()
         {
-            //foreach (IPluginInstance instance in PluginInstances)
-            //{
-            //    logger.Info("Starting Plugin '" + instance.Name + "'...");
-            //    instance.Start();
-            //}
-
             foreach (string key in PluginInstances.Keys)
             {
                 logger.Info("Starting Plugin '" + key + "'...");
@@ -1100,29 +1093,40 @@ namespace Symbiote.Core.Plugin
             }
         }
 
-        public void PerformAutoBuild()
+        public OperationResult PerformAutoBuild()
         {
-            PerformAutoBuild(PluginInstances, Configuration.Instances.Where(pi => pi.AutoBuild.Enabled = true));
+            return PerformAutoBuild(PluginInstances, Configuration.Instances.Where(pi => pi.AutoBuild.Enabled = true));
         }
 
-        public void PerformAutoBuild(Dictionary<string, IPluginInstance> plugins, IEnumerable<PluginManagerConfigurationPluginInstance> autoBuildInstances)
+        public OperationResult PerformAutoBuild(Dictionary<string, IPluginInstance> plugins, IEnumerable<PluginManagerConfigurationPluginInstance> autoBuildInstances)
         {
+            OperationResult retVal = new OperationResult();
+
             foreach (PluginManagerConfigurationPluginInstance instance in autoBuildInstances)
             {
                 logger.Info("Attempting to auto build instance '" + instance.InstanceName + "'...");
                 IConnector foundPluginInstance = (IConnector)FindPluginInstance(instance.InstanceName);
                 if (foundPluginInstance == default(IConnector))
                 {
-                    logger.Warn("Unable to find plugin instance with InstanceName '" + instance.InstanceName + "', continuing auto build");
+                    retVal.AddWarning("Unable to find plugin instance with InstanceName '" + instance.InstanceName + "', continuing auto build");
                     continue;
                 }
                 else
                 {
                     logger.Trace("Attempting to attach plugin items for instance '" + instance.InstanceName + "' to '" + instance.AutoBuild.ParentFQN + "'");
-                    manager.ModelManager.AttachItem(foundPluginInstance.Browse(), manager.ModelManager.FindItem(manager.InstanceName + instance.AutoBuild.ParentFQN));
+
+                    Item anchor = manager.ModelManager.FindItem(instance.AutoBuild.ParentFQN);
+                    if (anchor == default(Item))
+                    {
+                        retVal.AddWarning("Unable to find the parent FQN '" + instance.AutoBuild.ParentFQN + "' for instance '" + instance.InstanceName + "'; skipping auto build for this instance.");
+                        continue;
+                    }
+
+                    manager.ModelManager.AttachItem(foundPluginInstance.Browse(), anchor);
                     logger.Info("AutoBuild of Plugin instance '" + instance.InstanceName + "' complete.");
                 }
             }
+            return retVal;
         }
 
         #endregion

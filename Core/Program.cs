@@ -232,8 +232,8 @@ namespace Symbiote.Core
                 //---- - ----------------------------------------- - - ------------- --   
                 // perform the auto-build of any plugin instances with auto-build enabled
                 logger.Info("Executing auto build of plugins...");
-                manager.PluginManager.PerformAutoBuild();
-                logger.Info("Auto build complete");
+                OperationResult autoBuildResult = manager.PluginManager.PerformAutoBuild();
+                autoBuildResult.LogResult(logger);
                 //----------------------------------------------------- --       -   -
 
 

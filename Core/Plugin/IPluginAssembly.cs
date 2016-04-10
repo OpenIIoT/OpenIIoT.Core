@@ -7,6 +7,7 @@ namespace Symbiote.Core.Plugin
     {
         Type Type { get; }
         Assembly Assembly { get; }
+        string Fingerprint { get; }
         void Unload();
     }
 }
