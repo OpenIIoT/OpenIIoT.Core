@@ -84,8 +84,10 @@ namespace Symbiote.Core.Plugin
 
         public OperationResult Start()
         {
-            logger.Info("Starting the Plugin Manager...");
             OperationResult retVal = new OperationResult();
+            retVal.LogEntry(logger);
+
+            logger.Info("Starting the Plugin Manager...");
 
             OperationResult configureResult = Configure();
             if (configureResult.ResultCode == OperationResultCode.Failure)
@@ -127,6 +129,7 @@ namespace Symbiote.Core.Plugin
                 SaveConfiguration();
 
             retVal.LogResult(logger);
+            retVal.LogExit(logger);
             return retVal;
         }
 

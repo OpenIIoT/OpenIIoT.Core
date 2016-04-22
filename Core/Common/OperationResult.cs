@@ -108,6 +108,21 @@ namespace Symbiote.Core
         #region Properties
 
         /// <summary>
+        /// The DateTime at which the LogEntry method was called.
+        /// </summary>
+        public DateTime EntryDateTime { get; private set; }
+
+        /// <summary>
+        /// The DateTime at which the LogExit method was called.
+        /// </summary>
+        public DateTime ExitDateTime { get; private set; }
+
+        /// <summary>
+        /// The TimeSpan between the ExitDateTime and EntryDateTime properties.
+        /// </summary>
+        public TimeSpan Duration { get { return (((EntryDateTime != null) && (ExitDateTime != null)) ? ExitDateTime - EntryDateTime : default(TimeSpan)); } }
+
+        /// <summary>
         /// The result of the operation.
         /// </summary>
         public OperationResultCode ResultCode { get; set; }
@@ -193,6 +208,32 @@ namespace Symbiote.Core
                 logger.Trace(ex);
             }
 
+        }
+
+        /// <summary>
+        /// Logs the entry of the calling method at the current DateTime.
+        /// </summary>
+        /// <param name="logger">The logger to which to log the message.</param>
+        /// <param name="caller">The name of the method that called this method.</param>
+        /// <param name="filePath">The path and filename of the file containing the calling method.</param>
+        /// <param name="lineNumber">The line number of the calling method within the source file.</param>
+        public void LogEntry(NLog.Logger logger, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            EntryDateTime = DateTime.UtcNow;
+            Log(logger, "Trace", "----> Entering method '" + caller + "' (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")");
+        }
+
+        /// <summary>
+        /// Logs the exit of the calling method at the current DateTime.
+        /// </summary>
+        /// <param name="logger">The logger to which to log the message.</param>
+        /// <param name="caller">The name of the method that called this method.</param>
+        /// <param name="filePath">The path and filename of the file containing the calling method.</param>
+        /// <param name="lineNumber">The line number of the calling method within the source file.</param>
+        public void LogExit(NLog.Logger logger, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            ExitDateTime = DateTime.UtcNow;
+            Log(logger, "Trace", "<---- Exiting method '" + caller + "' (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ").  Operation duration: " + Duration.TotalMilliseconds + "ms.");
         }
 
         /// <summary>
