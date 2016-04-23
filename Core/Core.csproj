@@ -143,6 +143,7 @@
   <ItemGroup>
     <Compile Include="Common\IManager.cs" />
     <Compile Include="Common\Item\ItemEventArgs.cs" />
+    <Compile Include="Common\MethodLogger.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />

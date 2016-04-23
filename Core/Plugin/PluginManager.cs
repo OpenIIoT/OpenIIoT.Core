@@ -84,8 +84,8 @@ namespace Symbiote.Core.Plugin
 
         public OperationResult Start()
         {
+            MethodLogger.Enter(logger);
             OperationResult retVal = new OperationResult();
-            retVal.LogEntry(logger);
 
             logger.Info("Starting the Plugin Manager...");
 
@@ -129,7 +129,7 @@ namespace Symbiote.Core.Plugin
                 SaveConfiguration();
 
             retVal.LogResult(logger);
-            retVal.LogExit(logger);
+            MethodLogger.Exit(logger);
             return retVal;
         }
 
@@ -202,19 +202,24 @@ namespace Symbiote.Core.Plugin
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         private PluginArchiveLoadResult LoadPluginArchives(string directory, string searchPattern, IPlatform platform)
         {
+            Guid guid = MethodLogger.Enter(logger, MethodLogger.Params(directory, searchPattern, platform), true);
+
             logger.Info("Loading Plugin Archives...");
             PluginArchiveLoadResult retVal = new PluginArchiveLoadResult();
 
+            // retrieve a list of probable plugin archive files from the configured plugin archive directory
             logger.Trace("Listing matching files...");
             OperationResult<List<string>> searchResult = platform.ListFiles(directory, searchPattern);
             logger.Debug("Found " + searchResult.Result.Count + " Archives.");
 
             retVal.Incorporate(searchResult);
 
+            // iterate over the list of found files
             foreach (string fileName in searchResult.Result)
             {
                 logger.Debug("Parsing Archive file '" + fileName + "'...");
 
+                // parse the current plugin archive file
                 OperationResult<PluginArchive> parseResult = ParsePluginArchive(fileName);
 
                 if (parseResult.ResultCode != OperationResultCode.Failure)
@@ -229,6 +234,8 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.LogResult(logger);
+
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
@@ -238,6 +245,8 @@ namespace Symbiote.Core.Plugin
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         public PluginArchiveLoadResult ReloadPluginArchives()
         {
+            Guid guid = MethodLogger.Enter(logger, true);
+
             logger.Info("Reloading Plugin Archives...");
             PluginArchiveLoadResult retVal = LoadPluginArchives();
 
@@ -248,6 +257,7 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.LogResult(logger);
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
@@ -271,6 +281,8 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation and the parsed PluginArchive.</returns>
         private OperationResult<PluginArchive> ParsePluginArchive(string fileName, string configFileName, string payloadFileName, IPlatform platform)
         {
+            Guid guid = MethodLogger.Enter(logger, MethodLogger.Params(fileName, configFileName, payloadFileName, platform), true);
+
             logger.Trace("Parsing Plugin Archive '" + fileName + "'...");
             OperationResult<PluginArchive> retVal = new OperationResult<PluginArchive>();
             retVal.Result = new PluginArchive(fileName);
@@ -325,9 +337,13 @@ namespace Symbiote.Core.Plugin
             platform.DeleteFile(System.IO.Path.Combine(manager.Directories.Temp, configFileName));
             //----------- - -
 
-            
+
             // if we've encountered any errors, bail out.
-            if (retVal.ResultCode == OperationResultCode.Failure) return retVal;
+            if (retVal.ResultCode == OperationResultCode.Failure)
+            {
+                MethodLogger.Exit(logger, guid);
+                return retVal;
+            }
 
       
             // create a place to stash the payload checksum
@@ -390,7 +406,11 @@ namespace Symbiote.Core.Plugin
 
 
             // if we've encountered any errors up to this point, bail out.
-            if (retVal.ResultCode == OperationResultCode.Failure) return retVal;
+            if (retVal.ResultCode == OperationResultCode.Failure)
+            {
+                MethodLogger.Exit(logger, guid);
+                return retVal;
+            }
 
 
             //--------------------- - -          -
@@ -424,6 +444,7 @@ namespace Symbiote.Core.Plugin
 
 
             retVal.LogResultTrace(logger);
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
