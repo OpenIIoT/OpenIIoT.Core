@@ -352,7 +352,7 @@ namespace Symbiote.Core.Plugin
 
             //------------- -------------- - 
             // ensure the plugin contains the Plugin.zip file and calculate its checksum
-            logger.Trace("Looing for the Plugin payload file...");
+            logger.Trace("Looking for the Plugin payload file...");
             OperationResult<List<string>> zipPayloadCheckResult = platform.ListZipFiles(fileName, payloadFileName);
             if (zipPayloadCheckResult.ResultCode != OperationResultCode.Failure)
             {

@@ -358,7 +358,7 @@ namespace Symbiote.Core.Platform.Windows
                             retVal.Result.Add(entry.FullName);
                     }
 
-                    logger.Trace("No matches for '" + regex + "' found.");
+                    logger.Trace(retVal.Result.Count + " matches for '" + regex + "' found.");
                 }
             }
             catch (Exception ex)
