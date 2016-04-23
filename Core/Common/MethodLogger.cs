@@ -18,7 +18,7 @@ namespace Symbiote.Core
         /// <summary>
         /// String to log prior to any text block.  If no header is desired, specify a blank string.
         /// </summary>
-        private static readonly string Header = "+----------- - -------------------------------------------------------------- -    -     -";
+        private static readonly string Header = "+----------- - ------------------------- ------------------------------------------------------------------- ------- -    -     -";
 
         /// <summary>
         /// String to append to the beginning of the method entry message.
@@ -38,7 +38,7 @@ namespace Symbiote.Core
         /// <summary>
         /// String to log following any text block.  If no footer is desired, specify a blank string.
         /// </summary>
-        private static readonly string Footer = "+-----------------------------------------  -  -          - - -    -   -";
+        private static readonly string Footer = "+-------------------- -------------------------------  -  -          - - -    -   -";
 
         #endregion
 
@@ -158,18 +158,26 @@ namespace Symbiote.Core
             // print the header
             if (Header.Length > 0) logger.Trace(Header);
 
-            // print the entry log
-            logger.Trace(EnterPrefix + "Entering method '" + caller + "' (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
-
             // compose the parameter list.
 
-            // make sure parameters were passed
-            if (parameters != null)
+            // if no parameters were passed, don't waste processor time retrieving the call stack and method parameters.  they aren't relevant anyway.
+            if (parameters == null)
+                logger.Trace(EnterPrefix + "Entering method '" + caller + "' (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
+            else
             {
                 // retrieve the trace of the current call stack
                 StackTrace stackTrace = new StackTrace();
                 // retrieve the parameters of the calling method signature
                 ParameterInfo[] parameterInfo = stackTrace.GetFrame(1).GetMethod().GetParameters();
+
+                // build a signature string to display by iterating over the method parameters and retrieving names and types
+                string methodSignature = caller + "(";
+                foreach (ParameterInfo pi in parameterInfo)
+                    methodSignature += pi.ParameterType.Name + " " + pi.Name + ", ";
+                methodSignature = methodSignature.Substring(0, methodSignature.Length - 2) + ")";
+
+                // print the entry log
+                logger.Trace(EnterPrefix + "Entering method '" + methodSignature + "' (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
 
                 // check to see if the number of supplied parameters matches the method signature parameter list
                 // if it doesn't match we really don't want to try to make assumptions about the positioning of what was supplied
@@ -187,9 +195,9 @@ namespace Symbiote.Core
                         {
                             // check to ensure the type of the supplied parameter in position p is the same
                             // as the type in the method signature parameter list
-                            //if (parameterInfo[p].GetType() != parameters[p].GetType())
-                            //    logger.Trace(LinePrefix + "[Parameter type mismatch; expected: " + parameterInfo[p].GetType().Name + ", actual: " + p.GetType().Name + "]");
-                            //else
+                            if (!parameterInfo[p].ParameterType.IsAssignableFrom(parameters[p].GetType()))
+                                logger.Trace(LinePrefix + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
+                            else
                                 logger.Trace(LinePrefix + parameterInfo[p].Name + ": " + parameters[p].ToString());
                         }
                         catch (Exception ex)
@@ -199,7 +207,7 @@ namespace Symbiote.Core
                     }
                 }
             }
-  
+
             // print the footer.
             if (Footer.Length > 0) logger.Trace(Footer);
 
