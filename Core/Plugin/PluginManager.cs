@@ -8,7 +8,6 @@ using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin.Connector;
 using Symbiote.Core.Plugin.Endpoint;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace Symbiote.Core.Plugin
 {
@@ -19,19 +18,43 @@ namespace Symbiote.Core.Plugin
     {
         #region Variables
 
-        private ProgramManager manager;
+        /// <summary>
+        /// The Logger for this class.
+        /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
+        /// <summary>
+        /// The ProgramManager for the application.
+        /// </summary>
+        private ProgramManager manager;
+
+        /// <summary>
+        /// The Singleton instance of PluginManager.
+        /// </summary>
         private static PluginManager instance;
+
+        /// <summary>
+        /// True if plugins have been loaded, false otherwise.
+        /// </summary>
         private bool pluginsLoaded = false;
 
         #endregion
 
         #region Properties
 
+        /// <summary>
+        /// The state of the Manager.
+        /// </summary>
         public bool Running { get; private set; }
 
+        /// <summary>
+        /// The ConfigurationDefinition for the Manager.
+        /// </summary>
         public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
+        /// <summary>
+        /// The Configuration for the Manager.
+        /// </summary>
         public PluginManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
@@ -40,13 +63,18 @@ namespace Symbiote.Core.Plugin
         public List<PluginAssembly> PluginAssemblies { get; private set; }
 
         /// <summary>
-        /// A list of all plugin instances.
+        /// A list of all Plugin Instances.
         /// </summary>
-        //public List<IPluginInstance> PluginInstances { get; private set; }
         public Dictionary<string, IPluginInstance> PluginInstances { get; private set; }
 
+        /// <summary>
+        /// A list of all Plugin Archives.
+        /// </summary>
         public List<PluginArchive> PluginArchives { get; private set; }
 
+        /// <summary>
+        /// A list of all invalid Plugin Archives.
+        /// </summary>
         public List<InvalidPluginArchive> InvalidPluginArchives { get; private set; }
 
         #endregion
@@ -82,9 +110,13 @@ namespace Symbiote.Core.Plugin
 
         #region IManager Implementation
 
+        /// <summary>
+        /// Starts the Plugin manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
-            MethodLogger.Enter(logger);
+            Guid guid = MethodLogger.Enter(logger, true);
             OperationResult retVal = new OperationResult();
 
             logger.Info("Starting the Plugin Manager...");
@@ -123,60 +155,132 @@ namespace Symbiote.Core.Plugin
 
             #endregion
 
+            // if no errors were encountered during startup, set the Manager state to Running.
             Running = (retVal.ResultCode != OperationResultCode.Failure);
 
+            // if startup was successful, save the configuration.
             if (Running)
                 SaveConfiguration();
+
+            retVal.LogResult(logger);
+            MethodLogger.Exit(logger, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Restarts the Plugin manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Restart()
+        {
+            Guid guid = MethodLogger.Enter(logger, true);
+
+            logger.Info("Restarting the Plugin Manager...");
+            OperationResult retVal = new OperationResult();
+
+            retVal.Incorporate(Stop());
+            retVal.Incorporate(Start());
+
+            retVal.LogResult(logger);
+            MethodLogger.Exit(logger, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Stops the Plugin manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        public OperationResult Stop()
+        {
+            MethodLogger.Enter(logger);
+
+            logger.Info("Stopping the Plugin Manager...");
+            OperationResult retVal = new OperationResult();
+
+            Running = false;
 
             retVal.LogResult(logger);
             MethodLogger.Exit(logger);
             return retVal;
         }
 
-        public OperationResult Restart()
-        {
-            return new OperationResult();
-        }
-
-        public OperationResult Stop()
-        {
-            Running = false;
-            return new OperationResult();
-        }
-
         #endregion
 
         #region IConfigurable<> Implementation
 
+        /// <summary>
+        /// Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the default configuration.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Configure()
         {
+            MethodLogger.Enter(logger);
             OperationResult retVal = new OperationResult();
 
             OperationResult<PluginManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != OperationResultCode.Failure)
+            {
+                logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
                 Configure(fetchResult.Result);
+            }
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
+                logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
                 OperationResult<PluginManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != OperationResultCode.Failure)
+                {
+                    logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.Result);
+                }
+                else
+                    retVal.Incorporate(createResult);
             }
 
-            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType()).Result);
+            retVal.LogResultDebug(logger);
+            MethodLogger.Exit(logger);
+            return retVal;
         }
 
+        /// <summary>
+        /// Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
+        /// </summary>
+        /// <param name="configuration">The configuration with which the Model Manager should be configured.</param>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Configure(PluginManagerConfiguration configuration)
         {
+            MethodLogger.Enter(logger, MethodLogger.Params(configuration));
+            OperationResult retVal = new OperationResult();
+
+            // update the configuration
             Configuration = configuration;
-            return new OperationResult();
+            logger.Debug("Successfully configured the Manager.");
+
+            // save it
+            logger.Debug("Saving the new configuration...");
+            retVal.Incorporate(SaveConfiguration());
+
+            retVal.LogResultDebug(logger);
+            MethodLogger.Exit(logger);
+            return retVal;
         }
 
+        /// <summary>
+        /// Saves the configuration to the Configuration Manager.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult SaveConfiguration()
         {
-            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
+            MethodLogger.Enter(logger);
+            OperationResult retVal = new OperationResult();
+
+            retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
+
+            retVal.LogResultDebug(logger);
+            MethodLogger.Exit(logger);
+            return retVal;
         }
 
         #endregion

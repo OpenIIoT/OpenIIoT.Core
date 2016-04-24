@@ -102,8 +102,10 @@ namespace Symbiote.Core.Platform
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
-            logger.Info("Starting the Platform Manager...");
+            Guid guid = MethodLogger.Enter(logger, true);
             OperationResult retVal = new OperationResult();
+
+            logger.Info("Starting the Platform Manager...");
 
             #region Platform Instantiation
 
@@ -168,7 +170,8 @@ namespace Symbiote.Core.Platform
             Running = (retVal.ResultCode != OperationResultCode.Failure);
 
             retVal.LogResult(logger);
-            return new OperationResult();
+            MethodLogger.Exit(logger, guid);
+            return retVal;
         }
 
         /// <summary>
@@ -177,6 +180,8 @@ namespace Symbiote.Core.Platform
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Restart()
         {
+            Guid guid = MethodLogger.Enter(logger, true);
+
             logger.Info("Restarting the Platform Manager...");
             OperationResult retVal = new OperationResult();
 
@@ -184,6 +189,7 @@ namespace Symbiote.Core.Platform
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
@@ -193,12 +199,15 @@ namespace Symbiote.Core.Platform
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Stop()
         {
+            MethodLogger.Enter(logger);
+
             logger.Info("Stopping the Platform Manager...");
             OperationResult retVal = new OperationResult();
 
             Running = false;
 
             retVal.LogResult(logger);
+            MethodLogger.Exit(logger);
             return retVal;
         }
 

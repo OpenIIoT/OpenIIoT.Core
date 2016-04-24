@@ -44,6 +44,10 @@ namespace Symbiote.Core
 
         #region Properties
 
+        /// <summary>
+        /// A list of Tuples containing a Guid and DateTime corresponding to methods logged with the 
+        /// persistence option.
+        /// </summary>
         public static List<Tuple<Guid, DateTime>> PersistedMethods { get; private set; }
 
         #endregion
@@ -62,6 +66,65 @@ namespace Symbiote.Core
 
         #region Static Methods
 
+        /// <summary>
+        /// Searches the execution stack and returns the topmost frame not originating from this class, indicating the calling frame.
+        /// </summary>
+        /// <returns>The StackFrame containing the calling code.</returns>
+        private static StackFrame GetStackFrame()
+        {
+            // retrieve the trace of the current call stack
+            StackTrace stackTrace = new StackTrace();
+
+            // determine the proper stack frame.  
+            // do this by iterating over the frames, starting from the one prior to the current frame, attempting to find
+            // the first frame that doesn't originate from the current class (GetFrame(0)).
+            // this is necessary so that we can be sure to grab the intended method if the Enter() overloads were used to get to this point.
+            int relevantFrame = 1;
+            for (int f = relevantFrame; f < stackTrace.FrameCount; f++)
+            {
+                if (stackTrace.GetFrame(f).GetMethod().ReflectedType.Name != stackTrace.GetFrame(0).GetMethod().ReflectedType.Name)
+                {
+                    relevantFrame = f;
+                    break;
+                }
+            }
+
+            return stackTrace.GetFrame(relevantFrame);
+        }
+
+        /// <summary>
+        /// Returns the calling method from the calling StackFrame.
+        /// </summary>
+        /// <returns>The MethodBase of the calling method.</returns>
+        private static MethodBase GetMethod()
+        {
+            return GetStackFrame().GetMethod();
+        }
+
+        /// <summary>
+        /// Returns the ParameterInfo of the calling method.
+        /// </summary>
+        /// <returns>The ParameterInfo array of the calling method.</returns>
+        private static ParameterInfo[] GetParameterInfo()
+        {
+            return GetMethod().GetParameters();
+        }
+
+        /// <summary>
+        /// Builds and returns the calling method signature, including method name, parameter types and names.
+        /// </summary>
+        /// <returns>The method signature, including method name, parameter types and names, of the calling method.</returns>
+        private static string GetMethodSignature()
+        {
+            // build a signature string to display by iterating over the method parameters and retrieving names and types
+            string methodSignature = GetMethod().Name + "(";
+            foreach (ParameterInfo pi in GetParameterInfo())
+                methodSignature += pi.ParameterType.Name + " " + pi.Name + ", ";
+
+            methodSignature = (methodSignature.Contains(", ") ? methodSignature.Substring(0, methodSignature.Length - 2) : methodSignature) + ")";
+            return methodSignature;
+        }
+        
         /// <summary>
         /// Overload for Enter() allowing parameterless, non-persistent usage.
         /// </summary>
@@ -141,57 +204,43 @@ namespace Symbiote.Core
         /// </example>
         public static Guid Enter(NLog.Logger logger, object[] parameters, bool persist = false, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
+             // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
             if (!logger.IsTraceEnabled)
                 return default(Guid);
 
-            Guid methodGuid = default(Guid);
+            Guid methodGuid;
 
-            // if the persist option is true, generate a new Guid for the method call and 
-            // add it to the list of persisted methods along with the current datetime.
+            // if the persist option is used, generate a new Guid for the method call and add it to the list of persisted methods along with the current datetime.
             if (persist)
             {
                 methodGuid = Guid.NewGuid();
                 PersistedMethods.Add(new Tuple<Guid, DateTime>(methodGuid, DateTime.UtcNow));
             }
+            else
+                methodGuid = default(Guid);
 
             // print the header
             if (Header.Length > 0) logger.Trace(Header);
-
-            // compose the parameter list.
-
-            // if no parameters were passed, don't waste processor time retrieving the call stack and method parameters.  they aren't relevant anyway.
-            if (parameters == null)
-                logger.Trace(EnterPrefix + "Entering method '" + caller + "' (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
-            else
+            logger.Trace(EnterPrefix + "Entering method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
+            
+            // compose and print the parameter list, but not if the list is null
+            if (parameters != null)
             {
-                // retrieve the trace of the current call stack
-                StackTrace stackTrace = new StackTrace();
-                // retrieve the parameters of the calling method signature
-                ParameterInfo[] parameterInfo = stackTrace.GetFrame(1).GetMethod().GetParameters();
-
-                // build a signature string to display by iterating over the method parameters and retrieving names and types
-                string methodSignature = caller + "(";
-                foreach (ParameterInfo pi in parameterInfo)
-                    methodSignature += pi.ParameterType.Name + " " + pi.Name + ", ";
-                methodSignature = methodSignature.Substring(0, methodSignature.Length - 2) + ")";
-
-                // print the entry log
-                logger.Trace(EnterPrefix + "Entering method '" + methodSignature + "' (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
-
                 // check to see if the number of supplied parameters matches the method signature parameter list
                 // if it doesn't match we really don't want to try to make assumptions about the positioning of what was supplied
                 // vs the method signature ordering, so just bail out.
-                if (parameterInfo.Length != parameters.Length)
-                    logger.Trace(LinePrefix + "[Parameter count mismatch]");
-                else
+                // swallow any errors we might encounter; this isn't important enough to stop the application.
+                try
                 {
-                    // the counts match, meaning we can infer that a complete parameter list has been supplied.
-                    // iterate over the supplied parameter array
-                    for (int p = 0; p < parameters.Length; p++)
+                    ParameterInfo[] parameterInfo = GetParameterInfo();
+
+                    if (parameterInfo.Length != parameters.Length)
+                        logger.Trace(LinePrefix + "[Parameter count mismatch]");
+                    else
                     {
-                        // swallow any errors we might encounter; this isn't important enough to stop the application.
-                        try
+                        // the counts match, meaning we can infer that a complete parameter list has been supplied.
+                        // iterate over the supplied parameter array
+                        for (int p = 0; p < parameters.Length; p++)
                         {
                             // check to ensure the type of the supplied parameter in position p is the same
                             // as the type in the method signature parameter list
@@ -200,11 +249,11 @@ namespace Symbiote.Core
                             else
                                 logger.Trace(LinePrefix + parameterInfo[p].Name + ": " + parameters[p].ToString());
                         }
-                        catch (Exception ex)
-                        {
-                            logger.Trace(LinePrefix + "[Error: " + ex.Message + "]");
-                        }
                     }
+                }
+                catch (Exception ex)
+                {
+                    logger.Trace(LinePrefix + "[Error: " + ex.Message + "]");
                 }
             }
 
@@ -251,7 +300,7 @@ namespace Symbiote.Core
         public static void Exit(NLog.Logger logger, Guid guid = new Guid(), [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             if (Header.Length > 0) logger.Trace(Header);
-            logger.Trace(ExitPrefix + "Exiting method '" + caller + "' (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
+            logger.Trace(ExitPrefix + "Exiting method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
 
             // if a Guid was provided, locate it in the PersistedMethods list, log the duration
             // and remove it from the list
@@ -294,6 +343,11 @@ namespace Symbiote.Core
         /// <summary>
         /// Prunes the PersistedMethods list of any tuples older than the specified age in seconds.
         /// </summary>
+        /// <remarks>
+        /// Should be called on a regular interval (minutes or perhaps hours) to keep things tidy.
+        /// 
+        /// If doing so, be mindful of long running methods (Main(), for instance) and be aware that persistence will be deleted if used.
+        /// </remarks>
         /// <param name="age">The age in seconds after which persisted methods will be pruned.</param>
         public static void PrunePersistedMethods(int age)
         {
@@ -302,6 +356,7 @@ namespace Symbiote.Core
             foreach(Tuple<Guid, DateTime> tuple in pruneList)
                 PersistedMethods.Remove(tuple);
         }
+
         #endregion
     }
 }

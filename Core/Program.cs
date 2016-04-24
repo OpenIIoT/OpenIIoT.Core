@@ -49,6 +49,8 @@ namespace Symbiote.Core
         /// </param>
         internal static void Main(string[] args)
         {
+            MethodLogger.Enter(logger);
+
             try
             {
                 #region Command Line Arguments
@@ -146,6 +148,10 @@ namespace Symbiote.Core
             {
                 logger.Fatal(ex, "The application failed to initialize.");
             }
+            finally
+            {
+                MethodLogger.Exit(logger);
+            }
         }
 
         /// <summary>
@@ -154,6 +160,8 @@ namespace Symbiote.Core
         /// <param name="args">Command line arguments, passed from Main().</param>
         internal static void Start(string[] args)
         {
+            MethodLogger.Enter(logger);
+
             // this is the main try/catch for the application logic.  If an unhandled exception is thrown
             // anywhere in the application it will be caught here and treated as a fatal error, stopping the application.
             try
@@ -277,6 +285,10 @@ namespace Symbiote.Core
                 logger.Fatal(ex, "Fatal error.");
                 if (!Environment.UserInteractive) throw;
             }
+            finally
+            {
+                MethodLogger.Exit(logger);
+            }
         }
 
         /// <summary>
@@ -284,21 +296,26 @@ namespace Symbiote.Core
         /// </summary>
         public static void Stop()
         {
+            MethodLogger.Enter(logger);
+
             logger.Info(manager.ProductName + " is stopping.  Saving configuration...");
 
             try
             {
                 if (manager.ModelManager.SaveModel().ResultCode != OperationResultCode.Failure)
                     manager.ConfigurationManager.SaveConfiguration();
+
+                logger.Info("Configuration saved.");
+                logger.Info(manager.ProductName + " stopped.");
             }
             catch (Exception ex)
             {
                 logger.Error(ex, "Error saving configuration.");
             }
-
-            logger.Info("Configuration saved.");
-
-            logger.Info(manager.ProductName + " stopped.");
+            finally
+            {
+                MethodLogger.Exit(logger);
+            }
         }
 
         #endregion

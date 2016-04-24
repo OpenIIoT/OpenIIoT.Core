@@ -131,6 +131,8 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
+            Guid guid = MethodLogger.Enter(logger, true);
+
             logger.Info("Starting the Configuration Manager...");
             OperationResult retVal = new OperationResult();
 
@@ -201,6 +203,7 @@ namespace Symbiote.Core.Configuration
             Running = (retVal.ResultCode != OperationResultCode.Failure);
 
             retVal.LogResult(logger);
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
@@ -210,6 +213,8 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Restart()
         {
+            Guid guid = MethodLogger.Enter(logger, true);
+
             logger.Info("Restarting the Configuration Manager...");
             OperationResult retVal = new OperationResult();
 
@@ -217,6 +222,7 @@ namespace Symbiote.Core.Configuration
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
@@ -226,12 +232,15 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Stop()
         {
+            MethodLogger.Enter(logger);
+
             logger.Info("Stopping the Configuration Manager...");
             OperationResult retVal = new OperationResult();
 
             Running = false;
 
             retVal.LogResult(logger);
+            MethodLogger.Exit(logger);
             return retVal;
         }
 
@@ -245,6 +254,8 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult ReloadConfiguration()
         {
+            Guid guid = MethodLogger.Enter(logger, true);
+
             logger.Info("ReLoading Configuration...");
             OperationResult retVal = new OperationResult();
 
@@ -271,6 +282,7 @@ namespace Symbiote.Core.Configuration
             }
 
             retVal.LogResult(logger);
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
@@ -290,6 +302,8 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the Configuration instance created from the file.</returns>
         private OperationResult<ApplicationConfiguration> LoadConfiguration(string fileName)
         {
+            Guid guid = MethodLogger.Enter(logger, MethodLogger.Params(fileName), true);
+
             logger.Info("Loading configuration from '" + fileName + "'...");
             OperationResult<ApplicationConfiguration> retVal = new OperationResult<ApplicationConfiguration>();
 
@@ -309,6 +323,7 @@ namespace Symbiote.Core.Configuration
             }
 
             retVal.LogResult(logger);
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
@@ -345,6 +360,8 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         private OperationResult SaveConfiguration(ApplicationConfiguration configuration, string fileName)
         {
+            Guid guid = MethodLogger.Enter(logger, MethodLogger.Params(configuration, fileName), true);
+
             logger.Debug("Saving configuration to '" + fileName + "'...");
             OperationResult retVal = new OperationResult();
 
@@ -359,6 +376,7 @@ namespace Symbiote.Core.Configuration
             }
 
             retVal.LogResultDebug(logger);
+            MethodLogger.Exit(logger, guid);
             return retVal;
         }
 
@@ -368,11 +386,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult ValidateConfiguration()
         {
-            logger.Info("Validating configuration...");
-            OperationResult retVal = ValidateConfiguration(Configuration);
-
-            retVal.LogResult(logger);
-            return retVal;
+            return ValidateConfiguration(Configuration);
         }
 
         /// <summary>
@@ -383,9 +397,15 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the validation.</returns>
         private OperationResult ValidateConfiguration(ApplicationConfiguration configuration)
         {
-            // TODO: validate configuration; check for duplicates, etc.
-            // issue #1
+            MethodLogger.Enter(logger, MethodLogger.Params(configuration));
+
+            logger.Info("Validating configuration...");
             OperationResult retVal = new OperationResult();
+
+            //TODO: implement this
+
+            retVal.LogResult(logger);
+            MethodLogger.Exit(logger);
             return retVal;
         }
 
@@ -395,9 +415,12 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the default instance of a Configuration.</returns>
         private OperationResult<ApplicationConfiguration> BuildNewConfiguration()
         {
+            MethodLogger.Enter(logger);
+
             OperationResult<ApplicationConfiguration> retVal = new OperationResult<ApplicationConfiguration>();
             retVal.Result = new ApplicationConfiguration();
 
+            MethodLogger.Exit(logger);
             return retVal;
         }
 
@@ -494,6 +517,7 @@ namespace Symbiote.Core.Configuration
             if (throwExceptionOnFailure)
                 throw new Exception("Failed to register the type '" + type.Name + "' for configuration.");
 
+            MethodLogger.Exit(logger);
             return retVal;
         }
 
@@ -505,6 +529,8 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         private OperationResult RegisterType(Type type, ConfigurationDefinition definition)
         {
+            MethodLogger.Enter(logger, MethodLogger.Params(type, definition));
+
             logger.Trace("Registering type '" + type.Name + "' with ConfigurationDefinition: ");
             logger.Trace("\tForm: " + definition.Form);
             logger.Trace("\tSchema: " + definition.Schema);
@@ -529,6 +555,7 @@ namespace Symbiote.Core.Configuration
                 retVal.AddWarning("The Type '" + type.Name + "' has already been registered.  Ignoring.");
 
             retVal.LogResultTrace(logger);
+            MethodLogger.Exit(logger);
             return retVal;
         }
 
