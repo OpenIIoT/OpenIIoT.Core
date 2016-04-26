@@ -257,7 +257,6 @@ namespace Symbiote.Core
         /// </example>
         public static Guid Enter(Logger logger, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            LogManager.GetCurrentClassLogger().Trace("logger only called");
             return Enter(logger, null, false, caller, filePath, lineNumber);
         }
 
@@ -314,7 +313,6 @@ namespace Symbiote.Core
         /// </example>
         public static Guid Enter(Logger logger, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            LogManager.GetCurrentClassLogger().Trace("persist only called");
             return Enter(logger, null, persist, caller, filePath, lineNumber);
         }
 
@@ -358,7 +356,6 @@ namespace Symbiote.Core
         /// </example>
         public static Guid Enter(Logger logger, object[] parameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            LogManager.GetCurrentClassLogger().Trace("full overload called");
             // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
             if (!logger.IsTraceEnabled) return default(Guid);
 
@@ -419,7 +416,6 @@ namespace Symbiote.Core
                     logger.Trace(LinePrefix + "[Error: " + ex.Message + "]");
                 }
             }
-            else LogManager.GetCurrentClassLogger().Trace("Parameters were null");
 
             // print the footer.
             if (Footer.Length > 0) logger.Trace(Footer);
@@ -629,11 +625,14 @@ namespace Symbiote.Core
             // retrieve a list of aged tuples
             List<Tuple<Guid, DateTime>> pruneList = PersistedMethods.Where(m => (DateTime.UtcNow - m.Item2).Seconds > age).ToList();
 
-            // remove everything in the list
-            foreach (Tuple<Guid, DateTime> tuple in pruneList)
-                PersistedMethods.Remove(tuple);
+            if (pruneList.Count > 0)
+            {
+                // remove everything in the list
+                foreach (Tuple<Guid, DateTime> tuple in pruneList)
+                    PersistedMethods.Remove(tuple);
 
-            LogManager.GetCurrentClassLogger().Trace("Pruned {0} methods with age in excess of {1} seconds from the PersistedMethods list.", pruneList.Count, age);
+                LogManager.GetCurrentClassLogger().Trace("Pruned {0} methods with age in excess of {1} seconds from the PersistedMethods list.", pruneList.Count, age);
+            }
         }
 
         #endregion
