@@ -14,6 +14,13 @@ namespace Symbiote.Core
     /// The MethodLogger is a generic static class used to provide methods throughout the application with a means
     /// to log the entry and exit of the method body along with the name and value of all method parameters.
     /// </summary>
+    /// <remarks>
+    /// Modify the readonly string variables below to customize the appearance of the log messages.
+    /// 
+    /// Modify the values of the AutoPrune constants to enable or disable automatic pruning of persisted methods, and to change the age.
+    /// Alternatively, configure the settings programmatically using the Configure() method.  Refer to the documentation for examples.
+    /// to the desired settings.
+    /// </remarks>
     class MethodLogger
     {
         #region Variables
@@ -51,7 +58,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The initial value for the AutoPruneAge property.
         /// </summary>
-        private const int InitialAutoPruneAge = 1;
+        private const int InitialAutoPruneAge = 300;
 
         /// <summary>
         /// Initialization status of the MethodLogger.
@@ -76,12 +83,12 @@ namespace Symbiote.Core
         /// <summary>
         /// If true, automatically prunes the PersistedMethods list each time the Exit() method is invoked.
         /// </summary>
-        public static bool AutoPruneEnabled { get; set; }
+        public static bool AutoPruneEnabled { get; private set; }
 
         /// <summary>
         /// Specifies the age, in seconds, of tuples in the PersistedMethods list at which they are eligible for automatic pruning.
         /// </summary>
-        public static int AutoPruneAge { get; set; }
+        public static int AutoPruneAge { get; private set; }
 
         #endregion
 
@@ -223,10 +230,30 @@ namespace Symbiote.Core
         }
 
         /// <summary>
+        /// Returns an implicitly created logger for the calling class and namespace.
+        /// </summary>
+        /// <returns>An implicitly created logger for the calling class and namespace.</returns>
+        private static Logger GetLogger()
+        {
+            Type methodClass = GetMethod().ReflectedType;
+            return LogManager.GetLogger(methodClass.Namespace + "." + methodClass.Name);
+        }
+
+        /// <summary>
         /// Reconfigures the MethodLogger with the specified values for the AutoPruneEnabled and AutoPruneAge properties.
         /// </summary>
         /// <param name="autoPruneEnabled">True if automatic pruning of aged persisted methods should occur following invocation of Exit(), false otherwise.</param>
         /// <param name="autoPruneAge">The age, in seconds, of tuples in the PersistedMethods list at which they are eligible for automatic pruning.</param>
+        /// <example>
+        /// // disable automatic pruning
+        /// MethodLogger.Configure(false);
+        /// 
+        /// // set automatic pruning age to 10 minutes
+        /// MethodLogger.Configure(600);
+        /// 
+        /// // enable automatic pruning and set pruning age to 30 secons
+        /// MethodLogger.Configure(true, 30);
+        /// </example>
         public static void Configure(bool autoPruneEnabled = InitialAutoPruneEnabled, int autoPruneAge = InitialAutoPruneAge)
         {
             AutoPruneEnabled = autoPruneEnabled;
@@ -238,14 +265,24 @@ namespace Symbiote.Core
         /// <summary>
         /// Overload for Enter() allowing parameterless, non-persistent usage.
         /// </summary>
-        /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.  If not supplied, a logger for the calling class is created implicitly.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <returns>A string containing a Guid for the method.</returns>
+        /// <returns>The Guid for the persisted method.</returns>
         /// <seealso cref="Enter(Logger, object[], bool, string, string, int)"/>
         /// <example>
-        /// // simplest example; non-persistent and with no parameters
+        /// // simplest example with implicit logger, no persistence and no parameters
+        /// public void MyMethod()
+        /// {
+        ///     MethodLogger.Enter();
+        ///     
+        ///     // method body
+        ///     
+        ///     MethodLogger.Exit();
+        /// }
+        /// 
+        /// // simple example with no persistence, no parameters and an explicit logger
         /// public void MyMethod()
         /// {
         ///     MethodLogger.Enter(logger);
@@ -255,24 +292,52 @@ namespace Symbiote.Core
         ///     MethodLogger.Exit(logger);
         /// }
         /// </example>
-        public static Guid Enter(Logger logger, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public static Guid Enter(Logger logger = null, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
+            if (logger == null)
+                logger = GetLogger();
+
             return Enter(logger, null, false, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Overload for Enter() allowing non-persistent usage with a list of parameters.
+        /// Overload for Enter() using an implicit logger, a list of parameters and without using persistence.
         /// </summary>
-        /// <param name="logger"></param>
-        /// <param name="parameters"></param>
-        /// <param name="caller"></param>
-        /// <param name="filePath"></param>
-        /// <param name="lineNumber"></param>
-        /// <returns></returns>
+        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
         /// <seealso cref="Enter(Logger, object[], bool, string, string, int)"/>
         /// <example>
-        /// // non-persistent example with parameters
-        /// public bool MyMethod(int one, int two)
+        /// // implicitly defined logger and a list of parameters
+        /// public void MyMethod(int one, int two)
+        /// {
+        ///     MethodLogger.Enter(MethodLogger.Params(one, two));
+        ///     
+        ///     // method body
+        ///     
+        ///     MethodLogger.Exit();
+        /// }
+        /// </example>
+        public static Guid Enter(object[] parameters, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            return Enter(GetLogger(), parameters, false, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Overload for Enter() using an explicit logger and allowing non-persistent usage with a list of parameters.
+        /// </summary>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
+        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="Enter(Logger, object[], bool, string, string, int)"/>
+        /// <example>
+        /// // non-persistent example with parameters and explicitly defined logger
+        /// public void MyMethod(int one, int two)
         /// {
         ///     MethodLogger.Enter(logger, MethodLogger.Params(one, two));
         ///     
@@ -283,12 +348,39 @@ namespace Symbiote.Core
         /// </example>
         public static Guid Enter(Logger logger, object[] parameters, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            LogManager.GetCurrentClassLogger().Trace("parameter only called");
             return Enter(logger, parameters, false, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Overload for Enter() allowing parameterless usage.
+        /// Overload for Enter() using an implicit logger with persistent usage and no parameter list.
+        /// </summary>
+        /// <param name="persist">
+        /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
+        /// when invoking the Exit() method or a memory leak will occur.
+        /// </param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="Enter(Logger, object[], bool, string, string, int)"/>
+        /// <example>
+        /// // persistent example with no parameters and an implicit logger
+        /// public void MyMethod()
+        /// {
+        ///     Guid persistedGuid = MethodLogger.Enter(true);
+        ///     
+        ///     // method body
+        ///     
+        ///     MethodLogger.Exit(persistedGuid);
+        /// }
+        /// </example>
+        public static Guid Enter(bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            return Enter(GetLogger(), null, persist, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Overload for Enter() using an explicit logger, no parameters and with persistence.
         /// </summary>
         /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
         /// <param name="persist">
@@ -298,10 +390,10 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <returns>A string containing a Guid for the method.</returns>
+        /// <returns>The Guid for the persisted method.</returns>
         /// <seealso cref="Enter(Logger, object[], bool, string, string, int)"/>
         /// <example>
-        /// // persistent example with no parameters
+        /// // persistent example with no parameters and explicitly defined logger
         /// public void MyMethod()
         /// {
         ///     Guid persistedGuid = MethodLogger.Enter(logger, true);
@@ -314,6 +406,35 @@ namespace Symbiote.Core
         public static Guid Enter(Logger logger, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             return Enter(logger, null, persist, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Overload for Enter() using an implicit logger, a parameter list and with persistence.
+        /// </summary>
+        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
+        /// <param name="persist">
+        /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
+        /// when invoking the Exit() method or a memory leak will occur.
+        /// </param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="Enter(Logger, object[], bool, string, string, int)"/>
+        /// <example>
+        /// // persistent example with parameters and an implicitly defined logger
+        /// public void MyMethod(int one, int two)
+        /// {
+        ///     Guid persistedGuid = MethodLogger.Enter(MethodLogger.Params(one, two), true);
+        ///     
+        ///     // method body
+        ///     
+        ///     MethodLogger.Exit(persistedGuid);
+        /// }
+        /// </example>
+        public static Guid Enter(object[] parameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            return Enter(GetLogger(), parameters, persist, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -337,21 +458,17 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <returns>A string containing a Guid for the method.</returns>
+        /// <returns>The Guid for the persisted method.</returns>
         /// <seealso cref="Params(object[])"/>
         /// <example>
-        /// // example usage with persistence and a parameter list
-        /// // use sparingly when logging the execution duration of the method is useful
-        /// // if using the persistence option with the Enter() method, ensure the resulting Guid
-        /// // is passed to the Exit() method or a memory leak will likely occur.
-        /// public bool ExamplePersistedMethod(int one, int two)
+        /// // example usage with persistence, parameter list and explicit logger
+        /// public void MyMethod(int one, int two)
         /// {
         ///     Guid persistedGuid = MethodLogger.Enter(logger, MethodLogger.Params(one, two), true);
         ///     
         ///     // method body
         ///     
         ///     MethodLogger.Exit(logger, persistedGuid);
-        ///     return true;
         /// }
         /// </example>
         public static Guid Enter(Logger logger, object[] parameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
@@ -426,13 +543,23 @@ namespace Symbiote.Core
         /// <summary>
         /// Overload for Exit() allowing an unspecified return value and non-persistent usage.
         /// </summary>
-        /// <param name="logger">The NLog Logger instance to which to log the message.</param>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.  If not supplied, a logger for the calling class is created implicitly.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <seealso cref="Exit(Logger, object, Guid, string, string, int)"/>
         /// <example>
-        /// // simplest example; non-persistent and with no return value
+        /// // simplest example with implicit logger, no persistence and no parameters
+        /// public void MyMethod()
+        /// {
+        ///     MethodLogger.Enter();
+        ///     
+        ///     // method body
+        ///     
+        ///     MethodLogger.Exit();
+        /// }
+        /// 
+        /// // simple example with no persistence, no parameters and an explicit logger
         /// public void MyMethod()
         /// {
         ///     MethodLogger.Enter(logger);
@@ -442,13 +569,42 @@ namespace Symbiote.Core
         ///     MethodLogger.Exit(logger);
         /// }
         /// </example>
-        public static void Exit(Logger logger, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public static void Exit(Logger logger = null, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
+            if (logger == null)
+                logger = GetLogger();
+
             Exit(logger, new UnspecifiedReturnValue(), default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Overload for Exit() allowing a return value and non-persistent usage.
+        /// Overload for Exit() using an implicit logger, a return value and no persistence.
+        /// </summary>
+        /// <param name="returnValue">The return value of the method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exit(Logger, object, Guid, string, string, int)"/>
+        /// <example>
+        /// // example with no persistence, a return value and an implicit logger
+        /// public void MyMethod()
+        /// {
+        ///     MethodLogger.Enter();
+        ///     
+        ///     // method body
+        ///     
+        ///     bool returnValue = false;
+        ///     MethodLogger.Exit(returnValue);
+        ///     return returnValue;
+        /// }
+        /// </example>
+        public static void Exit(object returnValue, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exit(GetLogger(), returnValue, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Overload for Exit() using an explicit logger and allowing a return value and non-persistent usage.
         /// </summary>
         /// <param name="logger">The NLog Logger instance to which to log the message.</param>
         /// <param name="returnValue">The return value of the method.</param>
@@ -464,7 +620,7 @@ namespace Symbiote.Core
         ///     
         ///     // method body
         ///     
-        ///     returnValue = false;
+        ///     bool returnValue = false;
         ///     MethodLogger.Exit(logger, returnValue);
         ///     return returnValue;
         /// }
@@ -472,6 +628,30 @@ namespace Symbiote.Core
         public static void Exit(Logger logger, object returnValue, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             Exit(logger, returnValue, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Overload for Exit() using an implicit logger, persistence and no return value.
+        /// </summary>
+        /// <param name="guid">The Guid assigned by the corresponding Enter() method invocation.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exit(Logger, object, Guid, string, string, int)"/>
+        /// <example>
+        /// // non-persistent example with a return value
+        /// public void MyMethod()
+        /// {
+        ///     Guid persistedGuid = MethodLogger.Enter();
+        ///     
+        ///     // method body
+        ///     
+        ///     MethodLogger.Exit(persistedGuid);
+        /// }
+        /// </example>
+        public static void Exit(Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exit(GetLogger(), new UnspecifiedReturnValue(), guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -487,16 +667,43 @@ namespace Symbiote.Core
         /// // persistent example with no return value
         /// public void MyMethod()
         /// {
-        ///     Guid guid = MethodLogger.Enter(logger, true);
+        ///     Guid persistedGuid = MethodLogger.Enter(logger, true);
         ///     
         ///     // method body
         ///     
-        ///     MethodLogger.Exit(logger, guid);
+        ///     MethodLogger.Exit(logger, persistedGuid);
         /// }
         /// </example>
         public static void Exit(Logger logger, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             Exit(logger, new UnspecifiedReturnValue(), guid, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Overload for Exit() using an implicit logger, return value and persistence.
+        /// </summary>
+        /// <param name="returnValue">The return value of the method.</param>
+        /// <param name="guid">The Guid assigned by the corresponding Enter() method invocation.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exit(Logger, object, Guid, string, string, int)"/>
+        /// <example>
+        /// // persistent example with no return value
+        /// public bool MyMethod()
+        /// {
+        ///     Guid persistedGuid = MethodLogger.Enter(true);
+        ///     
+        ///     // method body
+        ///     
+        ///     bool returnValue = false;
+        ///     MethodLogger.Exit(returnValue, persistedGuid);
+        ///     return returnValue;
+        /// }
+        /// </example>
+        public static void Exit(object returnValue, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exit(GetLogger(), returnValue, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
