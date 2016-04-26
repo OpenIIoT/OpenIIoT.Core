@@ -484,6 +484,8 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult RegisterType(Type type, bool throwExceptionOnFailure = false)
         {
+            MethodLogger.Enter(logger, MethodLogger.Params(type, throwExceptionOnFailure));
+
             logger.Debug("Registering type '" + type.Name + "'...");
             OperationResult retVal = new OperationResult();
 

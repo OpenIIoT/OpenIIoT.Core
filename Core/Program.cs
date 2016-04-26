@@ -49,7 +49,7 @@ namespace Symbiote.Core
         /// </param>
         internal static void Main(string[] args)
         {
-            MethodLogger.Enter(logger);
+            MethodLogger.Enter(logger, MethodLogger.Params((object)args));
 
             try
             {

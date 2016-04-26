@@ -163,7 +163,7 @@ namespace Symbiote.Core.Plugin
                 SaveConfiguration();
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, guid);
+            MethodLogger.Exit(logger, retVal, guid);
             return retVal;
         }
 
@@ -182,7 +182,7 @@ namespace Symbiote.Core.Plugin
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, guid);
+            MethodLogger.Exit(logger, retVal, guid);
             return retVal;
         }
 
@@ -200,7 +200,7 @@ namespace Symbiote.Core.Plugin
             Running = false;
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger);
+            MethodLogger.Exit(logger, retVal);
             return retVal;
         }
 
@@ -240,7 +240,7 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger);
+            MethodLogger.Exit(logger, retVal);
             return retVal;
         }
 
@@ -263,7 +263,7 @@ namespace Symbiote.Core.Plugin
             retVal.Incorporate(SaveConfiguration());
 
             retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger);
+            MethodLogger.Exit(logger, retVal);
             return retVal;
         }
 
@@ -279,7 +279,7 @@ namespace Symbiote.Core.Plugin
             retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger);
+            MethodLogger.Exit(logger, retVal);
             return retVal;
         }
 
@@ -339,7 +339,7 @@ namespace Symbiote.Core.Plugin
 
             retVal.LogResult(logger);
 
-            MethodLogger.Exit(logger, guid);
+            MethodLogger.Exit(logger, retVal, guid);
             return retVal;
         }
 
@@ -361,7 +361,7 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, guid);
+            MethodLogger.Exit(logger, retVal, guid);
             return retVal;
         }
 
@@ -445,7 +445,7 @@ namespace Symbiote.Core.Plugin
             // if we've encountered any errors, bail out.
             if (retVal.ResultCode == OperationResultCode.Failure)
             {
-                MethodLogger.Exit(logger, guid);
+                MethodLogger.Exit(logger, retVal, guid);
                 return retVal;
             }
 
@@ -512,7 +512,7 @@ namespace Symbiote.Core.Plugin
             // if we've encountered any errors up to this point, bail out.
             if (retVal.ResultCode == OperationResultCode.Failure)
             {
-                MethodLogger.Exit(logger, guid);
+                MethodLogger.Exit(logger, retVal, guid);
                 return retVal;
             }
 
@@ -548,7 +548,7 @@ namespace Symbiote.Core.Plugin
 
 
             retVal.LogResultTrace(logger);
-            MethodLogger.Exit(logger, guid);
+            MethodLogger.Exit(logger, retVal, guid);
             return retVal;
         }
 
