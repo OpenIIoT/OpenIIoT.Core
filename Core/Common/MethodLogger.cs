@@ -61,11 +61,6 @@ namespace Symbiote.Core
         private const int InitialAutoPruneAge = 300;
 
         /// <summary>
-        /// Initialization status of the MethodLogger.
-        /// </summary>
-        private static bool initialized = false;
-
-        /// <summary>
         /// Lock to use to ensure thread safety with respect to the PersistedMethods list.
         /// </summary>
         private static object PersistedMethodListLock = new object();
@@ -159,29 +154,6 @@ namespace Symbiote.Core
             return GetMethod().GetParameters();
         }
 
-        private static string GetMethodReturnType(MethodBase method)
-        {
-            // cast MethodBase to MethodInfo to gain access to the ReturnType property
-            MethodInfo methodInfo = (MethodInfo)method;
-
-            string methodReturnType = methodInfo.ReturnType.Name;
-
-            // if the return type is generic, build the generic type list
-            if (methodInfo.ReturnType.IsGenericType)
-            {
-                // if the type is generic the type name is represented like MyType`1
-                // split the string by the ` character and take the first tuple to get rid of the extra.
-                methodReturnType = methodReturnType.Split('`')[0] + "<";
-
-                foreach (Type type in methodInfo.ReturnType.GetGenericArguments())
-                    methodReturnType += type.Name + ", ";
-
-                methodReturnType = methodReturnType.Substring(0, methodReturnType.Length - 2) + ">";
-            }
-
-            return methodReturnType;
-        }
-
         /// <summary>
         /// Builds and returns the calling method signature, including method name, parameter types and names.
         /// </summary>
@@ -189,13 +161,16 @@ namespace Symbiote.Core
         private static string GetMethodSignature()
         {
             // build a signature string to display by iterating over the method parameters and retrieving names and types
-            string methodSignature = GetMethodReturnType(GetMethod()) + " " + GetMethod().Name + "(";
+            string methodSignature = GetColloquialTypeName(((MethodInfo)GetMethod()).ReturnType) + " " + GetMethod().Name + "(";
+            List<string> parameters = new List<string>();
 
             foreach (ParameterInfo pi in GetParameterInfo())
-                methodSignature += pi.ParameterType.Name + " " + pi.Name + ", ";
+                parameters.Add(GetColloquialTypeName(pi.ParameterType) + " " + pi.Name);
 
-            methodSignature = (methodSignature.Contains(", ") ? methodSignature.Substring(0, methodSignature.Length - 2) : methodSignature) + ")";
-            return methodSignature;
+            // create a string from the type array while converting the type to the readable type
+            methodSignature += String.Join(", ", parameters);
+
+            return methodSignature + ")";
         }
 
         /// <summary>
@@ -237,6 +212,17 @@ namespace Symbiote.Core
         {
             Type methodClass = GetMethod().ReflectedType;
             return LogManager.GetLogger(methodClass.Namespace + "." + methodClass.Name);
+        }
+
+        /// <summary>
+        /// Returns a "pretty" string representation of the provided Type.  Specifically corrects the naming of generic Types
+        /// and appends the type parameters for the type to the name as it appears in the code editor.
+        /// </summary>
+        /// <param name="type">The type for which the string should be created.</param>
+        /// <returns>A "pretty" string representation of the provided Type.</returns>
+        private static string GetColloquialTypeName(Type type)
+        {
+            return (!type.IsGenericType ? type.Name : type.Name.Split('`')[0] + "<" + String.Join(", ", type.GetGenericArguments().Select(a => GetColloquialTypeName(a))) + ">");
         }
 
         /// <summary>
