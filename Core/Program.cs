@@ -25,7 +25,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The main logger for the application.
         /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The ProgramManager for the application.
@@ -49,7 +49,7 @@ namespace Symbiote.Core
         /// </param>
         internal static void Main(string[] args)
         {
-            MethodLogger.Enter(logger, MethodLogger.Params((object)args));
+            logger.EnterMethod(xLogger.Params((object)args));
 
             try
             {
@@ -109,7 +109,7 @@ namespace Symbiote.Core
 
                 logger.Info("Initializing...");
 
-                
+
                 //------------------ - - ----------- - - 
                 // instantiate the Program Manager.
                 // the Program Manager acts as a Service Locator for the application.
@@ -126,7 +126,7 @@ namespace Symbiote.Core
                 logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
                 //------------------- - -----------                      ------------- 
 
-                
+
                 //----------------------------------------- - ----------------
                 // start the application
                 // if the platform is windows and it is not being run as an interactive application, Windows 
@@ -160,7 +160,9 @@ namespace Symbiote.Core
         /// <param name="args">Command line arguments, passed from Main().</param>
         internal static void Start(string[] args)
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod(xLogger.Params((object)args));
+
+            Test("test");
 
             // this is the main try/catch for the application logic.  If an unhandled exception is thrown
             // anywhere in the application it will be caught here and treated as a fatal error, stopping the application.
@@ -318,7 +320,52 @@ namespace Symbiote.Core
             }
         }
 
-        #endregion
+        public static void Test(string arg)
+        {
+            //Logger logger = new Logger();
 
+            //Guid guid = MethodLogger.Enter(MethodLogger.Params(arg), true);
+
+            //logger.Trace("some messages");
+
+            //MethodLogger.Checkpoint();
+            //MethodLogger.Checkpoint(logger);
+
+            //MethodLogger.Checkpoint(guid);
+            //MethodLogger.Checkpoint(logger, guid);
+
+            //MethodLogger.Checkpoint(MethodLogger.Vars(arg, arg));
+            //MethodLogger.Checkpoint(logger, MethodLogger.Vars(arg, arg));
+            //MethodLogger.Checkpoint(logger, MethodLogger.Vars(arg, arg), guid);
+
+            //MethodLogger.Checkpoint(MethodLogger.Vars(arg, arg), MethodLogger.Names("one", "two"));
+            //MethodLogger.Checkpoint(logger, MethodLogger.Params(arg, arg), MethodLogger.Names("one", "two"));
+            //MethodLogger.Checkpoint(logger, MethodLogger.Params(arg, arg), MethodLogger.Names("one", "two"), guid);
+
+            //MethodLogger.Checkpoint(MethodLogger.Params(arg, arg), MethodLogger.Names("one", "two"), guid);
+
+
+
+            //logger.Trace("-------------------------------------------------------------------");
+
+            //MethodLogger.Exception(logger, new Exception(), guid);
+
+            Guid guid = logger.EnterMethod(true);
+            logger.Checkpoint(xLogger.Vars(arg, arg), xLogger.Names("one", "two"), guid);
+
+            try
+            {
+                throw new Exception("Some exception");
+            }
+            catch(Exception ex)
+            {
+                logger.Exception(ex, xLogger.Vars(guid), xLogger.Names("guid"), guid);
+            }
+
+
+
+            logger.ExitMethod(guid);
+        }
+        #endregion
     }
 }

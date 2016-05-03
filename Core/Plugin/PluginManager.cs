@@ -893,10 +893,16 @@ namespace Symbiote.Core.Plugin
             return PluginArchives.Where(p => p.Plugin.FQN == fqn).FirstOrDefault();
         }
 
+        /// <summary>
+        /// Searches the InstalledPlugins list for a Plugin with an FQN matching the supplied FQN and returns it if found.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Plugin to find.</param>
+        /// <returns>The Plugin matching the supplied FQN.</returns>
         public Plugin FindPlugin(string fqn)
         {
             return Configuration.InstalledPlugins.Where(p => p.FQN == fqn).FirstOrDefault();
         }
+
         #endregion
 
 
@@ -1392,20 +1398,36 @@ namespace Symbiote.Core.Plugin
                 return System.IO.Path.Combine(ProgramManager.Instance().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
         }
 
+        #region Settings
+
+        /// <summary>
+        /// Retrieves the PluginArchiveConfigurationFileName setting or substitutes "SymbiotePlugin.json" if retrieval fails.
+        /// </summary>
+        /// <returns>The name of the Plugin Archive configuration file.</returns>
         private static string GetPluginArchiveConfigurationFileName()
         {
             return Utility.GetSetting("PluginArchiveConfigurationFileName", "SymbiotePlugin.json");
         }
 
+        /// <summary>
+        /// Retrieves the PluginArchivePayloadFileName setting or substitutes "Plugin.zip" if retrieval fails.
+        /// </summary>
+        /// <returns>The name of the Plugin payload file contained within a Plugin Archive.</returns>
         private static string GetPluginArchivePayloadFileName()
         {
             return Utility.GetSetting("PluginArchivePayloadFileName", "Plugin.zip");
         }
 
+        /// <summary>
+        /// Retrieves the PluginArchiveExtension setting or substitutes "*.zip" if retrieval fails.
+        /// </summary>
+        /// <returns>The wildcard mask of the file extension for Plugin Archives.</returns>
         private static string GetPluginArchiveExtension()
         {
             return Utility.GetSetting("PluginArchiveExtension", "*.zip");
         }
+
+        #endregion
 
         #endregion
     }

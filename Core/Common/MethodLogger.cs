@@ -40,6 +40,10 @@ namespace Symbiote.Core
         /// </summary>
         private static readonly string ExitPrefix = "| <-- ";
 
+        private static readonly string CheckpointPrefix = "| # ";
+
+        private static readonly string ExceptionPrefix = "| X ";
+
         /// <summary>
         /// String to append to the beginning of each method parameter message.
         /// </summary>
@@ -51,14 +55,14 @@ namespace Symbiote.Core
         private static readonly string Footer = "+-------------------- -------------------------------  -  -          - - -    -   -";
 
         /// <summary>
-        /// The initial value for the AutoPruneEnabled property.
+        /// Determines whether persisted methods are automatically pruned after the interval defined by AutoPruneAge.
         /// </summary>
-        private const bool InitialAutoPruneEnabled = true;
+        private static readonly bool AutoPruneEnabled = true;
 
         /// <summary>
-        /// The initial value for the AutoPruneAge property.
+        /// Interval after which persisted methods are automatically pruned from the PersistedMethods list, if AutoPruneEnabled is true.
         /// </summary>
-        private const int InitialAutoPruneAge = 300;
+        private static readonly int AutoPruneAge = 300;
 
         /// <summary>
         /// Lock to use to ensure thread safety with respect to the PersistedMethods list.
@@ -75,16 +79,6 @@ namespace Symbiote.Core
         /// </summary>
         public static List<Tuple<Guid, DateTime>> PersistedMethods { get; private set; }
 
-        /// <summary>
-        /// If true, automatically prunes the PersistedMethods list each time the Exit() method is invoked.
-        /// </summary>
-        public static bool AutoPruneEnabled { get; private set; }
-
-        /// <summary>
-        /// Specifies the age, in seconds, of tuples in the PersistedMethods list at which they are eligible for automatic pruning.
-        /// </summary>
-        public static int AutoPruneAge { get; private set; }
-
         #endregion
 
         #region Constructors
@@ -100,156 +94,17 @@ namespace Symbiote.Core
         static MethodLogger()
         {
             PersistedMethods = new List<Tuple<Guid, DateTime>>();
-            AutoPruneEnabled = InitialAutoPruneEnabled;
-            AutoPruneAge = InitialAutoPruneAge;
-
-            LogManager.GetCurrentClassLogger().Trace("MethodLogger initialized with AutoPruneEnabled = {0}, AutoPruneAge = {1}", AutoPruneEnabled, AutoPruneAge);
         }
 
         #endregion
 
         #region Static Methods
 
-        /// <summary>
-        /// Searches the execution stack and returns the topmost frame not originating from this class, indicating the calling frame.
-        /// </summary>
-        /// <returns>The StackFrame containing the calling code.</returns>
-        private static StackFrame GetStackFrame()
-        {
-            // retrieve the trace of the current call stack
-            StackTrace stackTrace = new StackTrace();
-
-            // determine the proper stack frame.  
-            // do this by iterating over the frames, starting from the one prior to the current frame, attempting to find
-            // the first frame that doesn't originate from the current class (GetFrame(0)).
-            // this is necessary so that we can be sure to grab the intended method if the Enter() overloads were used to get to this point.
-            int relevantFrame = 1;
-            for (int f = relevantFrame; f < stackTrace.FrameCount; f++)
-            {
-                if (stackTrace.GetFrame(f).GetMethod().ReflectedType.Name != stackTrace.GetFrame(0).GetMethod().ReflectedType.Name)
-                {
-                    relevantFrame = f;
-                    break;
-                }
-            }
-
-            return stackTrace.GetFrame(relevantFrame);
-        }
+        #region Enter
 
         /// <summary>
-        /// Returns the calling method from the calling StackFrame.
-        /// </summary>
-        /// <returns>The MethodBase of the calling method.</returns>
-        private static MethodBase GetMethod()
-        {
-            return GetStackFrame().GetMethod();
-        }
-
-        /// <summary>
-        /// Returns the ParameterInfo of the calling method.
-        /// </summary>
-        /// <returns>The ParameterInfo array of the calling method.</returns>
-        private static ParameterInfo[] GetParameterInfo()
-        {
-            return GetMethod().GetParameters();
-        }
-
-        /// <summary>
-        /// Builds and returns the calling method signature, including method name, parameter types and names.
-        /// </summary>
-        /// <returns>The method signature, including method name, parameter types and names, of the calling method.</returns>
-        private static string GetMethodSignature()
-        {
-            // build a signature string to display by iterating over the method parameters and retrieving names and types
-            string methodSignature = GetColloquialTypeName(((MethodInfo)GetMethod()).ReturnType) + " " + GetMethod().Name + "(";
-            List<string> parameters = new List<string>();
-
-            foreach (ParameterInfo pi in GetParameterInfo())
-                parameters.Add(GetColloquialTypeName(pi.ParameterType) + " " + pi.Name);
-
-            // create a string from the type array while converting the type to the readable type
-            methodSignature += String.Join(", ", parameters);
-
-            return methodSignature + ")";
-        }
-
-        /// <summary>
-        /// Returns a List of type string containing each line of the indented serialization of the supplied object.
-        /// </summary>
-        /// <param name="obj">The object to serialize.</param>
-        /// <returns>A List of type string containing each line of the indented serialization of the supplied object.</returns>
-        private static List<string> GetObjectSerialization(object obj)
-        {
-            List<string> retVal = new List<string>();
-
-            // try to serialize the provided object.  swallow any errors.
-            try
-            {
-                // serialize the object using the indented format and
-                // convert enumerated values to their respective strings
-                string json = JsonConvert.SerializeObject(
-                    obj,
-                    Formatting.Indented,
-                    new JsonSerializerSettings() { Converters = new List<JsonConverter> { new StringEnumConverter() } }
-                );
-
-                // split by \n after replacing \r\n with just \n.  if we don't do this extra lines are added to logs in some editors.
-                retVal = json.Replace("\r\n", "\n").Split('\n').ToList();
-            }
-            catch (Exception ex)
-            {
-                retVal.Add("[Error serializing object: " + ex.Message + "]");
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        /// Returns an implicitly created logger for the calling class and namespace.
-        /// </summary>
-        /// <returns>An implicitly created logger for the calling class and namespace.</returns>
-        private static Logger GetLogger()
-        {
-            Type methodClass = GetMethod().ReflectedType;
-            return LogManager.GetLogger(methodClass.Namespace + "." + methodClass.Name);
-        }
-
-        /// <summary>
-        /// Returns a "pretty" string representation of the provided Type.  Specifically corrects the naming of generic Types
-        /// and appends the type parameters for the type to the name as it appears in the code editor.
-        /// </summary>
-        /// <param name="type">The type for which the string should be created.</param>
-        /// <returns>A "pretty" string representation of the provided Type.</returns>
-        private static string GetColloquialTypeName(Type type)
-        {
-            return (!type.IsGenericType ? type.Name : type.Name.Split('`')[0] + "<" + String.Join(", ", type.GetGenericArguments().Select(a => GetColloquialTypeName(a))) + ">");
-        }
-
-        /// <summary>
-        /// Reconfigures the MethodLogger with the specified values for the AutoPruneEnabled and AutoPruneAge properties.
-        /// </summary>
-        /// <param name="autoPruneEnabled">True if automatic pruning of aged persisted methods should occur following invocation of Exit(), false otherwise.</param>
-        /// <param name="autoPruneAge">The age, in seconds, of tuples in the PersistedMethods list at which they are eligible for automatic pruning.</param>
-        /// <example>
-        /// // disable automatic pruning
-        /// MethodLogger.Configure(false);
-        /// 
-        /// // set automatic pruning age to 10 minutes
-        /// MethodLogger.Configure(600);
-        /// 
-        /// // enable automatic pruning and set pruning age to 30 secons
-        /// MethodLogger.Configure(true, 30);
-        /// </example>
-        public static void Configure(bool autoPruneEnabled = InitialAutoPruneEnabled, int autoPruneAge = InitialAutoPruneAge)
-        {
-            AutoPruneEnabled = autoPruneEnabled;
-            AutoPruneAge = autoPruneAge;
-
-            LogManager.GetCurrentClassLogger().Trace("MethodLogger reconfigured with AutoPruneEnabled = {0}, AutoPruneAge = {1}", AutoPruneEnabled, AutoPruneAge);
-        }
-
-        /// <summary>
-        /// Overload for Enter() allowing parameterless, non-persistent usage.
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <param name="logger">The NLog Logger instance to which to log the messages.  If not supplied, a logger for the calling class is created implicitly.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -287,7 +142,8 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Overload for Enter() using an implicit logger, a list of parameters and without using persistence.
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -310,9 +166,10 @@ namespace Symbiote.Core
         {
             return Enter(GetLogger(), parameters, false, caller, filePath, lineNumber);
         }
-
+        
         /// <summary>
-        /// Overload for Enter() using an explicit logger and allowing non-persistent usage with a list of parameters.
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
         /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
@@ -338,7 +195,8 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Overload for Enter() using an implicit logger with persistent usage and no parameter list.
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <param name="persist">
         /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
@@ -395,7 +253,8 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Overload for Enter() using an implicit logger, a parameter list and with persistence.
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
         /// <param name="persist">
@@ -480,7 +339,7 @@ namespace Symbiote.Core
 
             // print the header
             if (Header.Length > 0) logger.Trace(Header);
-            logger.Trace(EnterPrefix + "Entering method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
+            logger.Trace(EnterPrefix + "Entering method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
 
             // compose and print the parameter list, but not if the list is null
             if (parameters != null)
@@ -505,7 +364,6 @@ namespace Symbiote.Core
                             if (!parameterInfo[p].ParameterType.IsAssignableFrom(parameters[p].GetType()))
                                 logger.Trace(LinePrefix + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
                             else
-                            //logger.Trace(LinePrefix + parameterInfo[p].Name + ": " + parameters[p].ToString());
                             {
                                 foreach (string line in GetObjectSerialization(parameters[p]))
                                     logger.Trace(LinePrefix + parameterInfo[p].Name + ": " + line);
@@ -526,8 +384,12 @@ namespace Symbiote.Core
             return methodGuid;
         }
 
+        #endregion
+
+        #region Exit
+
         /// <summary>
-        /// Overload for Exit() allowing an unspecified return value and non-persistent usage.
+        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
         /// </summary>
         /// <param name="logger">The NLog Logger instance to which to log the messages.  If not supplied, a logger for the calling class is created implicitly.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -564,7 +426,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Overload for Exit() using an implicit logger, a return value and no persistence.
+        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
         /// </summary>
         /// <param name="returnValue">The return value of the method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -590,7 +452,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Overload for Exit() using an explicit logger and allowing a return value and non-persistent usage.
+        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
         /// </summary>
         /// <param name="logger">The NLog Logger instance to which to log the message.</param>
         /// <param name="returnValue">The return value of the method.</param>
@@ -617,7 +479,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Overload for Exit() using an implicit logger, persistence and no return value.
+        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
         /// </summary>
         /// <param name="guid">The Guid assigned by the corresponding Enter() method invocation.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -641,7 +503,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Overload for Exit() allowing an unspecified return value and persistent usage.
+        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
         /// </summary>
         /// <param name="logger">The NLog Logger instance to which to log the message.</param>
         /// <param name="guid">The Guid assigned by the corresponding Enter() method invocation.</param>
@@ -666,7 +528,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Overload for Exit() using an implicit logger, return value and persistence.
+        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
         /// </summary>
         /// <param name="returnValue">The return value of the method.</param>
         /// <param name="guid">The Guid assigned by the corresponding Enter() method invocation.</param>
@@ -723,7 +585,7 @@ namespace Symbiote.Core
             if (!logger.IsTraceEnabled) return;
 
             if (Header.Length > 0) logger.Trace(Header);
-            logger.Trace(ExitPrefix + "Exiting method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ": " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
+            logger.Trace(ExitPrefix + "Exiting method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
 
             // if returnValue is null, log a simple message and move on.  we do this to differentiate a null returnValue 
             // from a method invocation that didn't supply anything for returnValue
@@ -766,6 +628,307 @@ namespace Symbiote.Core
             if (AutoPruneEnabled) PrunePersistedMethods(AutoPruneAge);
         }
 
+        #endregion
+
+        #region Checkpoint
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // implicitly defined logger
+        /// MethodLogger.Checkpoint();
+        /// 
+        /// // explicitly defined logger
+        /// MethodLogger.Checkpoint(logger);
+        /// </example>
+        public static void Checkpoint(Logger logger = null, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            if (logger == null)
+                logger = GetLogger();
+
+            Checkpoint(logger, null, null, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // explicitly defined logger and persistence
+        /// Guid guid = MethodLogger.Enter(logger, true);
+        /// 
+        /// MethodLogger.Checkpoint(logger, guid);
+        /// </example>
+        public static void Checkpoint(Logger logger, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(logger, null, null, guid, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // implicitly defined logger and persistence
+        /// Guid guid = MethodLogger.Enter(true);
+        /// 
+        /// MethodLogger.Checkpoint(guid);
+        /// </example>
+        public static void Checkpoint(Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(GetLogger(), null, null, guid, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // explicitly defined logger with nameless variables
+        /// int one = 1;
+        /// int two = 2;
+        /// 
+        /// MethodLogger.Checkpoint(logger, MethodLogger.Vars(one, two));
+        /// </example>
+        public static void Checkpoint(Logger logger, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(logger, variables, null, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // implicitly defined logger with nameless variables
+        /// int one = 1;
+        /// int two = 2;
+        /// 
+        /// MethodLogger.Checkpoint(MethodLogger.Vars(one, two));
+        /// </example>
+        public static void Checkpoint(object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(GetLogger(), variables, null, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // explicitly defined logger with nameless variables and persistence
+        /// Guid guid = MethodLogger.Enter(logger, true);
+        /// 
+        /// int one = 1;
+        /// int two = 2;
+        /// 
+        /// MethodLogger.Checkpoint(logger, MethodLogger.Vars(one, two), guid);
+        /// </example>
+        public static void Checkpoint(Logger logger, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(logger, variables, null, guid, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // implicitly defined logger with nameless variables and persistence
+        /// Guid guid = MethodLogger.Enter(true);
+        /// 
+        /// int one = 1;
+        /// int two = 2;
+        /// 
+        /// MethodLogger.Checkpoint(MethodLogger.Vars(one, two), guid);
+        /// </example>
+        public static void Checkpoint(object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(GetLogger(), variables, null, guid, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // explicitly defined logger with named variables
+        /// int one = 1;
+        /// int two = 2;
+        /// 
+        /// MethodLogger.Checkpoint(logger, MethodLogger.Vars(one, two), MethodLogger.Names("one", "two"));
+        /// </example>
+        public static void Checkpoint(Logger logger, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(logger, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // implicitly defined logger with named variables
+        /// int one = 1;
+        /// int two = 2;
+        /// 
+        /// MethodLogger.Checkpoint(MethodLogger.Vars(one, two), MethodLogger.Names("one", "two"));
+        /// </example>
+        public static void Checkpoint(object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(GetLogger(), variables, variableNames, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// // implicitly defined logger with named variables and persistence
+        /// Guid guid = MethodLogger.Enter(true);
+        /// 
+        /// int one = 1;
+        /// int two = 2;
+        /// 
+        /// MethodLogger.Checkpoint(MethodLogger.Vars(one, two), MethodLogger.Names("one", "two"), guid);
+        /// </example>
+        public static void Checkpoint(object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Checkpoint(GetLogger(), variables, variableNames, guid, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <param name="logger">The NLog Logger instance to which to log the messages.</param>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <example>
+        /// // example usage with an explicitly defined logger, a list of variables, a list of matching variable names, and using persistence.
+        /// Guid guid = MethodLogger.Enter(logger, true);
+        /// 
+        /// int one = 1;
+        /// int two = 2;
+        /// 
+        /// MethodLogger.Checkpoint(logger, MethodLogger.Vars(one, two), MethodLogger.Names("one", "two"), guid);
+        /// </example>
+        public static void Checkpoint(Logger logger, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller ="", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            if (!logger.IsTraceEnabled) return;
+
+            if (Header.Length > 0) logger.Trace(Header);
+            logger.Trace(CheckpointPrefix + "Checkpoint reached in method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
+
+            if (variables != null)
+            {
+                bool useVariableNames = false;
+
+                if (variableNames != null)
+                {
+                    if (variableNames.Length != variables.Length)
+                        logger.Trace(LinePrefix + "[Variable name/variable count mismatch; variables: " + variables.Length + ", names: " + variableNames.Length + "]");
+                    else
+                        useVariableNames = true;
+                }
+
+                for (int v = 0; v < variables.Length; v++)
+                    foreach (string line in GetObjectSerialization(variables[v]))
+                        logger.Trace(LinePrefix + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + line);
+
+            }
+
+            if (guid != default(Guid))
+            {
+                Tuple<Guid, DateTime> tuple = PersistedMethods.Where(m => m.Item1 == guid).FirstOrDefault();
+                logger.Trace(LinePrefix + "Current execution duration: " + (DateTime.UtcNow - tuple.Item2).TotalMilliseconds.ToString() + "ms");
+            }
+
+            if (Footer.Length > 0) logger.Trace(Footer);
+        }
+
+        #endregion
+
+        #region Exception
+
+        public static void Exception(Logger logger, Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            if (!logger.IsTraceEnabled) return;
+
+            if (Header.Length > 0) logger.Trace(Header);
+            logger.Trace(ExceptionPrefix + "Exception caught in method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
+
+            StackTrace stackTrace = new StackTrace();
+
+            int indent = 0;
+            foreach(StackFrame frame in stackTrace.GetFrames())
+            {
+                MethodInfo methodInfo = (MethodInfo)frame.GetMethod();
+                logger.Trace(new String(' ', indent * 3) + LinePrefix + GetMethodSignature(methodInfo));
+                indent++;
+            }
+
+
+            if (Footer.Length > 0) logger.Trace(Footer);
+        }
+
+        #endregion
+
         /// <summary>
         /// Returns the object array specified in the input parameter(s) for the method.  Accepts a dynamic number of parameters
         /// of any type which are implictly added to an object array.
@@ -800,6 +963,51 @@ namespace Symbiote.Core
         }
 
         /// <summary>
+        /// Returns the object array specified in the variable list for a Checkpoint() method call.  Effectively an overload for Params(),
+        /// provided for naming consistency with usage.
+        /// </summary>
+        /// <param name="variables">A dynamic object array of variables.</param>
+        /// <returns>The provided object array.</returns>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Params(object[])"/>
+        /// <example>
+        /// // Checkpoint() invocation with three variables
+        /// int one = 1;
+        /// int two = 2;
+        /// string varThree = "three";
+        /// 
+        /// MethodLogger.Checkpoint(MethodLogger.Vars(one, two, three), MethodLogger.Names("one", "two", "varThree"));
+        /// </example>
+        public static object[] Vars(params object[] variables)
+        {
+            return Params(variables);
+        }
+
+        /// <summary>
+        /// Returns the string array specified in the variable name list for a Checkpoint() or Exception() method call.
+        /// </summary>
+        /// <remarks>
+        /// When used in conjunction with Checkpoint() or Exception(), ensure the order and number of the supplied names matches that of the 
+        /// related object array.
+        /// </remarks>
+        /// <param name="names">A dynamic string array of variable names.</param>
+        /// <returns>The provided string array.</returns>
+        /// <seealso cref="Checkpoint(Logger, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Params(object[])"/>
+        /// <example>
+        /// // Checkpoint() invocation with three variables
+        /// int one = 1;
+        /// int two = 2;
+        /// string varThree = "three";
+        /// 
+        /// MethodLogger.Checkpoint(MethodLogger.Vars(one, two, three), MethodLogger.Names("one", "two", "varThree"));
+        /// </example>
+        public static string[] Names(params string[] names)
+        {
+            return (string[])Params(names);
+        }
+
+        /// <summary>
         /// Prunes the PersistedMethods list of any tuples older than the specified age in seconds.
         /// </summary>
         /// <remarks>
@@ -808,7 +1016,6 @@ namespace Symbiote.Core
         /// If doing so, be mindful of long running methods (Main(), for instance) and be aware that persistence will be deleted if used.
         /// </remarks>
         /// <param name="age">The age in seconds after which persisted methods will be pruned.</param>
-        /// <seealso cref="Configure(bool, int)"/>
         /// <example>
         /// // prune persisted methods older than 5 minutes (300 seconds)
         /// MethodLogger.PrunePersistedMethods(300);
@@ -828,6 +1035,136 @@ namespace Symbiote.Core
             }
         }
 
+        #region Common Methods
+
+        /// <summary>
+        /// Searches the execution stack and returns the topmost frame not originating from this class, indicating the calling frame.
+        /// </summary>
+        /// <returns>The StackFrame containing the calling code.</returns>
+        private static StackFrame GetStackFrame()
+        {
+            // retrieve the trace of the current call stack
+            StackTrace stackTrace = new StackTrace();
+
+            // determine the proper stack frame.  
+            // do this by iterating over the frames, starting from the one prior to the current frame, attempting to find
+            // the first frame that doesn't originate from the current class (GetFrame(0)).
+            // this is necessary so that we can be sure to grab the intended method if the Enter() overloads were used to get to this point.
+            int relevantFrame = 1;
+            for (int f = relevantFrame; f < stackTrace.FrameCount; f++)
+            {
+                if (stackTrace.GetFrame(f).GetMethod().ReflectedType.Name != stackTrace.GetFrame(0).GetMethod().ReflectedType.Name)
+                {
+                    relevantFrame = f;
+                    break;
+                }
+            }
+
+            return stackTrace.GetFrame(relevantFrame);
+        }
+
+        /// <summary>
+        /// Returns the calling method from the calling StackFrame.
+        /// </summary>
+        /// <param name="stackFrame">The StackFrame for which to return the method.</param>
+        /// <returns>The MethodBase of the calling method.</returns>
+        private static MethodBase GetMethod(StackFrame stackFrame = null)
+        {
+            // if no StackFrame is specified, assume the StackFrame containing the calling method.
+            if (stackFrame == null) stackFrame = GetStackFrame();
+            return stackFrame.GetMethod();
+        }
+
+        /// <summary>
+        /// Returns the ParameterInfo of the calling method.
+        /// </summary>
+        /// <param name="methodBase">The MethodBase for which to return the ParameterInfo.</param>
+        /// <returns>The ParameterInfo array of the calling method.</returns>
+        private static ParameterInfo[] GetParameterInfo(MethodBase methodBase = null)
+        {
+            // if no MethodBase is specified, assume the calling MethodBase.
+            if (methodBase == null) methodBase = GetMethod();
+            return methodBase.GetParameters();
+        }
+
+        /// <summary>
+        /// Builds and returns the calling method signature, including method name, parameter types and names.
+        /// </summary>
+        /// <param name="methodInfo">The MethodInfo for which to return the signature.</param>
+        /// <returns>The method signature, including method name, parameter types and names, of the calling method.</returns>
+        private static string GetMethodSignature(MethodInfo methodInfo = null)
+        {
+            // if no MethodInfo is provided, return the signature of the calling method.
+            if (methodInfo == null)
+                methodInfo = (MethodInfo)GetMethod();
+
+            // build a signature string to display by iterating over the method parameters and retrieving names and types
+            string methodSignature = GetColloquialTypeName(methodInfo.ReturnType) + " " + methodInfo.Name + "(";
+            List<string> parameters = new List<string>();
+
+            foreach (ParameterInfo pi in methodInfo.GetParameters())
+                parameters.Add(GetColloquialTypeName(pi.ParameterType) + " " + pi.Name);
+
+            // create a string from the type array while converting the type to the readable type
+            methodSignature += String.Join(", ", parameters);
+
+            return methodSignature + ")";
+        }
+
+        /// <summary>
+        /// Returns a List of type string containing each line of the indented serialization of the supplied object.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
+        /// <returns>A List of type string containing each line of the indented serialization of the supplied object.</returns>
+        private static List<string> GetObjectSerialization(object obj)
+        {
+            List<string> retVal = new List<string>();
+
+            // try to serialize the provided object.  swallow any errors.
+            try
+            {
+                // serialize the object using the indented format and
+                // convert enumerated values to their respective strings
+                string json = JsonConvert.SerializeObject(
+                    obj,
+                    Formatting.Indented,
+                    new JsonSerializerSettings() { Converters = new List<JsonConverter> { new StringEnumConverter() } }
+                );
+
+                // split by \n after replacing \r\n with just \n.  if we don't do this extra lines are added to logs in some editors.
+                retVal = json.Replace("\r\n", "\n").Split('\n').ToList();
+            }
+            catch (Exception ex)
+            {
+                retVal.Add("[Error serializing object: " + ex.Message + "]");
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        /// Returns an implicitly created logger for the calling class and namespace.
+        /// </summary>
+        /// <returns>An implicitly created logger for the calling class and namespace.</returns>
+        private static Logger GetLogger()
+        {
+            Type methodClass = GetMethod().ReflectedType;
+            return LogManager.GetLogger(methodClass.Namespace + "." + methodClass.Name);
+        }
+
+        /// <summary>
+        /// Returns a "pretty" string representation of the provided Type.  Specifically corrects the naming of generic Types
+        /// and appends the type parameters for the type to the name as it appears in the code editor.
+        /// </summary>
+        /// <param name="type">The type for which the string should be created.</param>
+        /// <returns>A "pretty" string representation of the provided Type.</returns>
+        private static string GetColloquialTypeName(Type type)
+        {
+            return (!type.IsGenericType ? type.Name : type.Name.Split('`')[0] + "<" + String.Join(", ", type.GetGenericArguments().Select(a => GetColloquialTypeName(a))) + ">");
+        }
+
+        #endregion
+
         #endregion
 
         #region Nested Classes
@@ -838,5 +1175,6 @@ namespace Symbiote.Core
         private class UnspecifiedReturnValue { }
 
         #endregion
+
     }
 }
