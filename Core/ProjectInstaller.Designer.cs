@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace Symbiote.Core
 {
     partial class ProjectInstaller
     {

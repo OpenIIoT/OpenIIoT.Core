@@ -147,10 +147,11 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Fatal(ex, "The application failed to initialize.");
+                logger.Exception(ex);
             }
             finally
             {
-                MethodLogger.Exit(logger);
+                logger.ExitMethod();
             }
         }
 
@@ -353,15 +354,15 @@ namespace Symbiote.Core
             Guid guid = logger.EnterMethod(true);
             logger.Checkpoint(xLogger.Vars(arg, arg), xLogger.Names("one", "two"), guid);
 
-            try
-            {
-                throw new Exception("Some exception");
-            }
-            catch(Exception ex)
-            {
-                logger.Exception(ex, xLogger.Vars(guid), xLogger.Names("guid"), guid);
-            }
-
+            //try
+            //{
+            //    throw new Exception("Some exception");
+            //}
+            //catch(Exception ex)
+            //{
+            //    logger.Exception(ex, xLogger.Vars(guid), xLogger.Names("guid"), guid);
+            //}
+            logger.StackTrace();
 
 
             logger.ExitMethod(guid);
