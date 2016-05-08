@@ -27,13 +27,26 @@ namespace Symbiote.Core
         /// <param name="data">The array.</param>
         /// <param name="index">The index at which the subarray should start.</param>
         /// <param name="length">The length of the desired subarray; the number of elements to select.</param>
-        /// <returns></returns>
+        /// <returns>A subset of the supplied array.</returns>
         internal static T[] SubArray<T>(this T[] data, int index, int length)
         {
             T[] result = new T[length];
             Array.Copy(data, index, result, 0, length);
             return result;
         }
+        
+        /// <summary>
+        /// Returns the last N elements of the supplied IEnumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of the IEnumerable.</typeparam>
+        /// <param name="source">The IEnumerable.</param>
+        /// <param name="N">The number of elements to take from the end of the collection.</param>
+        /// <returns>An IEnumerable containing the last N elements of the supplied IEnumerable.</returns>
+        public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int N)
+        {
+            return source.Skip(Math.Max(0, source.Count() - N));
+        }
+        
 
         /// <summary>
         /// Returns the specified assembly attribute of the specified assembly.

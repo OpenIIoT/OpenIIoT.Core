@@ -1,11 +1,10 @@
 ﻿using Newtonsoft.Json;
 using NLog;
-using Symbiote.Core.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using System.Threading.Tasks;
 using System.Web.Http;
 
 namespace Symbiote.Core.Service.Web.API
@@ -14,7 +13,7 @@ namespace Symbiote.Core.Service.Web.API
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static ApplicationConfiguration configuration = manager.ConfigurationManager.Configuration;
+        private static Dictionary<Type, Dictionary<string, object>> configuration = manager.ConfigurationManager.Configuration;
 
         private static List<string> serializationProperties = new List<string>(new string[] { });
          

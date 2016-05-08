@@ -27,7 +27,7 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// The Logger for this class.
         /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The ProgramManager for the application.
@@ -107,7 +107,7 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
-            Guid guid = MethodLogger.Enter(logger, true);
+            Guid guid = logger.EnterMethod(true);
 
             logger.Info("Starting the Model Manager...");
             OperationResult retVal = new OperationResult();
@@ -157,7 +157,7 @@ namespace Symbiote.Core.Model
             Running = (retVal.ResultCode != OperationResultCode.Failure);
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -167,7 +167,7 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Restart()
         {
-            Guid guid = MethodLogger.Enter(logger, true);
+            Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Model Manager...");
             OperationResult retVal = new OperationResult();
@@ -176,7 +176,7 @@ namespace Symbiote.Core.Model
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -186,7 +186,7 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Stop()
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod();
 
             logger.Info("Stopping the Model Manager...");
             OperationResult retVal = new OperationResult();
@@ -196,7 +196,7 @@ namespace Symbiote.Core.Model
             Running = false;
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -210,7 +210,8 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Configure()
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod();
+
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             OperationResult retVal = new OperationResult();
 
@@ -237,7 +238,7 @@ namespace Symbiote.Core.Model
             }
 
             retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -248,7 +249,8 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Configure(ModelManagerConfiguration configuration)
         {
-            MethodLogger.Enter(logger, MethodLogger.Params(configuration));
+            logger.EnterMethod(xLogger.Params(configuration));
+
             OperationResult retVal = new OperationResult();
 
             // update the configuration
@@ -260,7 +262,7 @@ namespace Symbiote.Core.Model
             retVal.Incorporate(SaveConfiguration());
 
             retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -270,13 +272,13 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult SaveConfiguration()
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod();
             OperationResult retVal = new OperationResult();
 
             retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 

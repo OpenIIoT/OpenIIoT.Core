@@ -21,7 +21,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// The Logger for this class.
         /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The ProgramManager for the application.
@@ -37,6 +37,11 @@ namespace Symbiote.Core.Plugin
         /// True if plugins have been loaded, false otherwise.
         /// </summary>
         private bool pluginsLoaded = false;
+
+        /// <summary>
+        /// Lock object for installation/uninstallation of Plugins.
+        /// </summary>
+        private object installationLock = new object();
 
         #endregion
 
@@ -116,21 +121,31 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
-            Guid guid = MethodLogger.Enter(logger, true);
+            Guid guid = logger.EnterMethod(true);
             OperationResult retVal = new OperationResult();
 
             logger.Info("Starting the Plugin Manager...");
 
+            #region Configuration
+
+            //----------- - -           -----------  - 
+            // Configure the manager
             OperationResult configureResult = Configure();
             if (configureResult.ResultCode == OperationResultCode.Failure)
                 throw new Exception("Failed to start the Plugin Manager: " + configureResult.GetLastError());
 
             retVal.Incorporate(configureResult);
+            logger.Checkpoint("Configured the Plugin Manager", guid);
+            //-------------------  --         ------  - - -  -
+
+            #endregion
 
             #region Plugin Archive Loading
 
             //---------------- - ------- - - -
             // generate a list of valid archive files in the archive directory 
+            logger.Separator(logger.Debug);
+
             PluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
             if (pluginArchiveLoadResult.ResultCode != OperationResultCode.Failure)
             {
@@ -139,7 +154,9 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.Incorporate(pluginArchiveLoadResult);
+            logger.Separator(logger.Debug);
 
+            // print the lists of valid and invalid archives
             logger.Info("Valid Plugin Archives:");
 
             foreach (PluginArchive archive in PluginArchives)
@@ -151,6 +168,8 @@ namespace Symbiote.Core.Plugin
                 logger.Info("\t" + System.IO.Path.GetFileName(invalidArchive.FileName) + " (" + invalidArchive.Message + ")");
 
             logger.Info(PluginArchives.Count + " Plugin Archives loaded.");
+
+            logger.Checkpoint("Plugin Archives loaded", xLogger.Vars(PluginArchives, InvalidPluginArchives), xLogger.Names("PluginArchives", "InvalidPluginArchives"), guid);
             //-------------------------------------------  - 
 
             #endregion
@@ -163,7 +182,7 @@ namespace Symbiote.Core.Plugin
                 SaveConfiguration();
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, retVal, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -173,7 +192,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Restart()
         {
-            Guid guid = MethodLogger.Enter(logger, true);
+            Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Plugin Manager...");
             OperationResult retVal = new OperationResult();
@@ -182,7 +201,7 @@ namespace Symbiote.Core.Plugin
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, retVal, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -192,7 +211,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Stop()
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod();
 
             logger.Info("Stopping the Plugin Manager...");
             OperationResult retVal = new OperationResult();
@@ -200,7 +219,7 @@ namespace Symbiote.Core.Plugin
             Running = false;
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, retVal);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -214,7 +233,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Configure()
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod();
             OperationResult retVal = new OperationResult();
 
             OperationResult<PluginManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
@@ -240,7 +259,7 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger, retVal);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -251,7 +270,9 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Configure(PluginManagerConfiguration configuration)
         {
-            MethodLogger.Enter(logger, MethodLogger.Params(configuration));
+            logger.EnterMethod(xLogger.Params(configuration));
+            logger.Info("Retrieving and applying the configuration from the Configuration Manager...");
+
             OperationResult retVal = new OperationResult();
 
             // update the configuration
@@ -262,8 +283,8 @@ namespace Symbiote.Core.Plugin
             logger.Debug("Saving the new configuration...");
             retVal.Incorporate(SaveConfiguration());
 
-            retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger, retVal);
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -273,13 +294,15 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult SaveConfiguration()
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod();
+            logger.Info("Saving the configuration to the Configuration Manager...");
+
             OperationResult retVal = new OperationResult();
 
             retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
-            retVal.LogResultDebug(logger);
-            MethodLogger.Exit(logger, retVal);
+            retVal.LogResult(logger);
+            logger.ExitMethod();
             return retVal;
         }
 
@@ -306,7 +329,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         private PluginArchiveLoadResult LoadPluginArchives(string directory, string searchPattern, IPlatform platform)
         {
-            Guid guid = MethodLogger.Enter(logger, MethodLogger.Params(directory, searchPattern, platform), true);
+            Guid guid = logger.EnterMethod(xLogger.Params(directory, searchPattern, platform), true);
 
             logger.Info("Loading Plugin Archives...");
             PluginArchiveLoadResult retVal = new PluginArchiveLoadResult();
@@ -321,6 +344,7 @@ namespace Symbiote.Core.Plugin
             // iterate over the list of found files
             foreach (string fileName in searchResult.Result)
             {
+                logger.Marquee(logger.Trace, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
                 logger.Debug("Parsing Archive file '" + fileName + "'...");
 
                 // parse the current plugin archive file
@@ -338,8 +362,7 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.LogResult(logger);
-
-            MethodLogger.Exit(logger, retVal, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -349,7 +372,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         public PluginArchiveLoadResult ReloadPluginArchives()
         {
-            Guid guid = MethodLogger.Enter(logger, true);
+            Guid guid = logger.EnterMethod(true);
 
             logger.Info("Reloading Plugin Archives...");
             PluginArchiveLoadResult retVal = LoadPluginArchives();
@@ -361,7 +384,7 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, retVal, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -385,9 +408,10 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation and the parsed PluginArchive.</returns>
         private OperationResult<PluginArchive> ParsePluginArchive(string fileName, string configFileName, string payloadFileName, IPlatform platform)
         {
-            Guid guid = MethodLogger.Enter(logger, MethodLogger.Params(fileName, configFileName, payloadFileName, platform), true);
+            Guid guid = logger.EnterMethod(xLogger.Params(fileName, configFileName, payloadFileName, platform), true);
 
             logger.Trace("Parsing Plugin Archive '" + fileName + "'...");
+
             OperationResult<PluginArchive> retVal = new OperationResult<PluginArchive>();
             retVal.Result = new PluginArchive(fileName);
 
@@ -422,7 +446,7 @@ namespace Symbiote.Core.Plugin
                             catch (Exception ex)
                             {
                                 retVal.AddError("Failed to deserialize the contents of the configuration file.");
-                                logger.Trace(ex, "Exception thrown during deserialization: ");
+                                logger.Exception(ex, guid);
                             }
                         }
                         else retVal.AddError("Failed to read the contents of the extracted file.");
@@ -445,11 +469,12 @@ namespace Symbiote.Core.Plugin
             // if we've encountered any errors, bail out.
             if (retVal.ResultCode == OperationResultCode.Failure)
             {
-                MethodLogger.Exit(logger, retVal, guid);
+                logger.ExitMethod(retVal, guid);
                 return retVal;
             }
 
-      
+            logger.Checkpoint("Retrieved configuration file", guid);
+
             // create a place to stash the payload checksum
             string payloadChecksum = "";
 
@@ -512,9 +537,11 @@ namespace Symbiote.Core.Plugin
             // if we've encountered any errors up to this point, bail out.
             if (retVal.ResultCode == OperationResultCode.Failure)
             {
-                MethodLogger.Exit(logger, retVal, guid);
+                logger.ExitMethod(retVal, guid);
                 return retVal;
             }
+
+            logger.Checkpoint("Validated payload file", guid);
 
 
             //--------------------- - -          -
@@ -537,6 +564,7 @@ namespace Symbiote.Core.Plugin
             if (sfqn[3] != p.Name) retVal.AddError("The final tuple of the FQN doesn't agree with the Name field (Name: '" + p.Name + "'; FQN: '" + sfqn[3] + "').");
             //----------------- - ---------------------------  --
 
+            logger.Checkpoint("Validated Plugin json", guid);
 
             //------------------------------ - -  --------- - 
             // validate the fingerprint.
@@ -546,9 +574,10 @@ namespace Symbiote.Core.Plugin
                 retVal.AddError("The fingerprint is invalid.");
             //---------- - ------------------            -------------- - 
 
+            logger.Checkpoint("Validated Plugin fingerprint", guid);
 
             retVal.LogResultTrace(logger);
-            MethodLogger.Exit(logger, retVal, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -584,17 +613,21 @@ namespace Symbiote.Core.Plugin
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <param name="configuration">The PluginManagerConfiguration to which the installed Plugin should be added.</param>
         /// <param name="platform">The IPlatform instance with which the archive should be extracted.</param>
-        /// <param name="updatePlugin">When true, bypasses checks that prevent</param>
+        /// <param name="updatePlugin">When true, bypasses checks that prevent duplicate installations.</param>
         /// <returns>An OperationResult containing the result of the operation and the created Plugin instance.</returns>
         private OperationResult<Plugin> InstallPlugin(PluginArchive archive, PluginManagerConfiguration configuration, IPlatform platform, bool updatePlugin = false)
         {
+            logger.Marquee(logger.Debug, "Installing: " + String.Join(".", System.IO.Path.GetFileName(archive.FileName).Split('.').TakeLast(2).ToArray()));
+
+            Guid guid = logger.EnterMethod(true);
+            logger.Checkpoint(xLogger.Vars(archive), xLogger.Names("archive"), guid);
+
             logger.Info("Installing Plugin '" + archive.Plugin.FQN + "' from archive '" + System.IO.Path.GetFileName(archive.FileName) + "'...");
             OperationResult<Plugin> retVal = new OperationResult<Plugin>();
 
             string fullFileName = System.IO.Path.Combine(manager.Directories.Archives, archive.FileName);
 
-            object methodLock = new object();
-
+            //-------------------------- -   -  
             // check to see if the app is installed already
             Plugin foundPlugin = FindPlugin(archive.Plugin.FQN);
             if (foundPlugin != default(Plugin))
@@ -612,131 +645,157 @@ namespace Symbiote.Core.Plugin
                         retVal.AddError("The archive '" + System.IO.Path.GetFileName(archive.FileName) + "' can't be used to update the Plugin '" + foundPlugin.FQN + "'; one or more of the Name, FQN or PluginType fields are different.");
                 }
             }
-            else
+
+            // if we've encountered an error, either the plugin is installed and the updatePlugin flag wasn't true, or it was true
+            // and the old and new plugins are mismatched.
+            if (retVal.ResultCode == OperationResultCode.Failure)
             {
-                //--------------------- - -------------------- - 
-                // re-validate the file; it may have changed between the time it was loaded and when installation was requested.
-                logger.Debug("Re-parsing the archive to ensure that it hasn't changed since it was loaded.");
-                OperationResult<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(manager.Directories.Archives, archive.FileName));
-                if (parseResult.ResultCode != OperationResultCode.Failure)
-                {
-                    if (!parseResult.Result.Plugin.Equals(archive.Plugin))
-                        retVal.AddError("The archive '" + System.IO.Path.GetFileName(archive.FileName) + "' has changed since it was loaded.  Refresh Plugin Archives and try again.");
-                }
-
-                retVal.Incorporate(parseResult);
-
-                // exit if we encountered an error
-                if (retVal.ResultCode == OperationResultCode.Failure)
-                {
-                    retVal.LogResult(logger);
-                    return retVal;
-                }
-                //---------------------- - - ---- - ---------------------
+                retVal.LogResult(logger);
+                logger.ExitMethod(retVal, guid);
+                return retVal;
+            }
+            //-------------------------------------  -  -- 
 
 
-                //------- - -
-                // determine the destination folders
-                logger.Debug("Determining output directories...");
-                string tempDestination;
-                string destination;
-
-                tempDestination = System.IO.Path.Combine(manager.Directories.Temp, archive.Plugin.FQN);
-
-                // ..\Web\AppName
-                if (archive.Plugin.PluginType == PluginType.App)
-                    destination = System.IO.Path.Combine(manager.Directories.Web, archive.Plugin.Name);
-                // ..\Plugins\(Connector|Endpoint)\AppName
-                else
-                    destination = System.IO.Path.Combine(manager.Directories.Plugins, archive.Plugin.PluginType.ToString(), archive.Plugin.Name);
-
-                logger.Debug("Temp: '" + tempDestination + "'; Plugin: '" + destination + "'");
-                //---------------- - --------------------------------- -   - - -   -  
-
-
-                //--------------------- - ----------------  -- 
-                // extract the archive; first to the temp directory, then extract the payload to the plugin destination and copy the configuration file
-                logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(manager.Directories.Root, "") + "'...");
-
-                OperationResult extractResult;
-                OperationResult payloadExtractResult;
-
-                // lock the file system and InstalledPlugins manipulation to ensure thread safety
-                lock (methodLock)
-                {
-                    // extract the archive to the temp directory
-                    logger.Debug("Extracting the archive to the temp directory...");
-                    extractResult = platform.ExtractZip(fullFileName, tempDestination, true);
-                    if (extractResult.ResultCode != OperationResultCode.Failure)
-                    {
-                        // ensure the payload archive was extracted properly
-                        logger.Debug("Checking to ensure the payload file was extracted...");
-                        string payloadFileName = System.IO.Path.Combine(tempDestination, GetPluginArchiveConfigurationFileName());
-                        if (platform.FileExists(payloadFileName))
-                        {
-                            // extract the payload archive to the plugin destination
-                            logger.Debug("Extracting the payload file to the Plugin destination...");
-                            payloadExtractResult = platform.ExtractZip(System.IO.Path.Combine(tempDestination, GetPluginArchivePayloadFileName()), destination, true);
-                            if (payloadExtractResult.ResultCode != OperationResultCode.Failure)
-                            {
-                                logger.Debug("Payload extracted successfully.");
-
-                                // the payload extracted without any issues.  if the plugin is a binary, calculate the checksum of the dll
-                                // and store it in the Fingerprint field.
-                                if ((archive.Plugin.PluginType == PluginType.Connector) || (archive.Plugin.PluginType == PluginType.Endpoint))
-                                {
-                                    logger.Debug("Attempting to locate the extracted assembly...");
-                                    OperationResult<List<string>> findDllResult = platform.ListFiles(destination, "*.dll");
-                                    if (findDllResult.ResultCode != OperationResultCode.Failure)
-                                    {
-                                        logger.Debug("Trying to fetch '" + archive.Plugin.FQN + ".dll' from the list of files...");
-                                        string dllFile = findDllResult.Result.Where(f => System.IO.Path.GetFileName(f) == archive.Plugin.FQN + ".dll").FirstOrDefault();
-                                        if (dllFile != default(string))
-                                        {
-                                            logger.Debug("Assembly found.  Calculating checksum for the Plugin fingerprint...");
-                                            OperationResult<string> checksumResult = platform.ComputeFileChecksum(dllFile);
-                                            if (checksumResult.ResultCode != OperationResultCode.Failure)
-                                            {
-                                                logger.Trace("Checksum: " + checksumResult.Result);
-
-                                                string hash = Utility.ComputeHash(checksumResult.Result, archive.Plugin.FQN + archive.Plugin.Version);
-                                                logger.Trace("Hash: " + hash);
-
-                                                archive.Plugin.SetFingerprint(hash);
-                                            }
-                                        }
-                                        else
-                                            retVal.AddError("Error calculating checksum for Plugin fingerprint; unable to find the plugin assembly in the destination directory.");
-                                    }
-                                    else
-                                        retVal.AddError("Failed to calculate checksum for the plugin assembly; unable to list the files in the destination directory.");
-
-                                    retVal.Incorporate(findDllResult);
-                                }
-
-                                logger.Debug("Adding the installed Plugin to the InstalledPlugin list...");
-                                retVal.Result = archive.Plugin;
-                                configuration.InstalledPlugins.Add(retVal.Result);
-                            }
-
-                            retVal.Incorporate(payloadExtractResult);
-                        }
-                        else
-                            retVal.AddError("The payload archive is missing from the extraction directory.");
-                    }
-                    retVal.Incorporate(extractResult);
-                }
-                //----------- - -----------  - ---   
-
-
-                //------------ - -
-                // cleanup the temp directory
-                logger.Debug("Cleaning up the temporary directory...");
-                platform.DeleteDirectory(tempDestination);
-                //------- - -
+            //--------------------- - -------------------- - 
+            // re-validate the file; it may have changed between the time it was loaded and when installation was requested.
+            logger.Debug("Re-parsing the archive to ensure that it hasn't changed since it was loaded.");
+            OperationResult<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(manager.Directories.Archives, archive.FileName));
+            if (parseResult.ResultCode != OperationResultCode.Failure)
+            {
+                if (!parseResult.Result.Plugin.Equals(archive.Plugin))
+                    retVal.AddError("The archive '" + System.IO.Path.GetFileName(archive.FileName) + "' has changed since it was loaded.  Refresh Plugin Archives and try again.");
             }
 
+            retVal.Incorporate(parseResult);
+
+            // exit if we encountered an error
+            if (retVal.ResultCode == OperationResultCode.Failure)
+            {
+                retVal.LogResult(logger);
+                logger.ExitMethod(retVal, guid);
+                return retVal;
+            }
+
+            logger.Checkpoint("Re-parse succeeded", guid);
+            //---------------------- - - ---- - ---------------------
+
+
+            //------- - -
+            // determine the destination folders
+            logger.Debug("Determining output directories...");
+            string tempDestination;
+            string destination;
+
+            tempDestination = System.IO.Path.Combine(manager.Directories.Temp, archive.Plugin.FQN);
+
+            // ..\Web\AppName
+            if (archive.Plugin.PluginType == PluginType.App)
+                destination = System.IO.Path.Combine(manager.Directories.Web, archive.Plugin.Name);
+            // ..\Plugins\(Connector|Endpoint)\AppName
+            else
+                destination = System.IO.Path.Combine(manager.Directories.Plugins, archive.Plugin.PluginType.ToString(), archive.Plugin.Name);
+
+            logger.Debug("Output folders: Temp: '" + tempDestination + "'; Plugin: '" + destination + "'");
+
+            logger.Checkpoint("Destination folders", xLogger.Vars(tempDestination, destination), xLogger.Names("tempDestination", "destination"), guid);
+            //---------------- - --------------------------------- -   - - -   -  
+
+
+            //--------------------- - ----------------  -- 
+            // extract the archive; first to the temp directory, then extract the payload to the plugin destination and copy the configuration file
+            logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(manager.Directories.Root, "") + "'...");
+
+            OperationResult extractResult;
+            OperationResult payloadExtractResult;
+
+            // lock the file system and InstalledPlugins manipulation to ensure thread safety
+            lock (installationLock)
+            {
+                // extract the archive to the temp directory
+                logger.Debug("Extracting the archive to the temp directory...");
+                extractResult = platform.ExtractZip(fullFileName, tempDestination, true);
+                if (extractResult.ResultCode != OperationResultCode.Failure)
+                {
+                    // ensure the payload archive was extracted properly
+                    logger.Debug("Checking to ensure the payload file was extracted...");
+                    string payloadFileName = System.IO.Path.Combine(tempDestination, GetPluginArchiveConfigurationFileName());
+                    if (platform.FileExists(payloadFileName))
+                    {
+                        // extract the payload archive to the plugin destination
+                        logger.Debug("Extracting the payload file to the Plugin destination...");
+                        payloadExtractResult = platform.ExtractZip(System.IO.Path.Combine(tempDestination, GetPluginArchivePayloadFileName()), destination, true);
+                        if (payloadExtractResult.ResultCode != OperationResultCode.Failure)
+                        {
+                            logger.Debug("Payload extracted successfully.");
+
+                            // the payload extracted without any issues.  if the plugin is a binary, calculate the checksum of the dll
+                            // and store it in the Fingerprint field.
+                            if ((archive.Plugin.PluginType == PluginType.Connector) || (archive.Plugin.PluginType == PluginType.Endpoint))
+                            {
+                                // locate the plugin assembly among the extracted files.
+                                // a valid assembly is named 'FQN.dll' where FQN is the FQN of the plugin 
+                                logger.Debug("Attempting to locate the extracted assembly...");
+                                OperationResult<List<string>> findDllResult = platform.ListFiles(destination, "*.dll");
+                                if (findDllResult.ResultCode != OperationResultCode.Failure)
+                                {
+                                    logger.Debug("Trying to fetch '" + archive.Plugin.FQN + ".dll' from the list of files...");
+                                    string dllFile = findDllResult.Result.Where(f => System.IO.Path.GetFileName(f) == archive.Plugin.FQN + ".dll").FirstOrDefault();
+
+                                    if (dllFile != default(string))
+                                    {
+                                        // the plugin assembly was found.  calculate the fingerprint.
+                                        logger.Debug("Assembly found.  Calculating checksum for the Plugin fingerprint...");
+                                        OperationResult<string> checksumResult = platform.ComputeFileChecksum(dllFile);
+                                        if (checksumResult.ResultCode != OperationResultCode.Failure)
+                                        {
+                                            logger.Trace("Checksum: " + checksumResult.Result);
+
+                                            // create the fingerprint.
+                                            // hash the SHA256 of the dll with the FQN and version of the plugin
+                                            string hash = Utility.ComputeHash(checksumResult.Result, archive.Plugin.FQN + archive.Plugin.Version);
+                                            logger.Trace("Hash: " + hash);
+
+                                            // set the fingerprint
+                                            archive.Plugin.SetFingerprint(hash);
+
+                                            // add the plugin to the list of installed plugins
+                                            logger.Debug("Adding the installed Plugin to the InstalledPlugin list...");
+                                            retVal.Result = archive.Plugin;
+                                            configuration.InstalledPlugins.Add(retVal.Result);
+                                        }
+                                    }
+                                    else
+                                        retVal.AddError("Error calculating checksum for Plugin fingerprint; unable to find the plugin assembly in the destination directory.");
+                                }
+                                else
+                                    retVal.AddError("Failed to calculate checksum for the plugin assembly; unable to list the files in the destination directory.");
+
+                                retVal.Incorporate(findDllResult);
+                            }
+                        }
+
+                        retVal.Incorporate(payloadExtractResult);
+                    }
+                    else
+                        retVal.AddError("The payload archive is missing from the extraction directory.");
+                }
+                retVal.Incorporate(extractResult);
+            }
+
+            logger.Checkpoint("Installation complete", guid);
+            //----------- - -----------  - ---   
+
+
+            //------------ - -
+            // cleanup the temp directory
+            logger.Debug("Cleaning up the temporary directory...");
+            platform.DeleteDirectory(tempDestination);
+            //------- - -
+
+
             retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -772,14 +831,15 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         private OperationResult UninstallPlugin(Plugin plugin, PluginManagerConfiguration configuration, IPlatform platform)
         {
+            Guid guid = logger.EnterMethod(true);
+            logger.Checkpoint(xLogger.Vars(plugin), xLogger.Names("plugin"), guid);
+
             if (plugin == default(Plugin))
                 return new OperationResult().AddError("The specified Plugin is invalid.");
 
             logger.Info("Uninstalling Plugin '" + plugin.FQN + "'...");
             OperationResult retVal = new OperationResult();
-
-            object methodLock = new object();
-
+            
             Plugin foundPlugin = FindPlugin(plugin.FQN);
             // ensure the plugin is installed
             if (foundPlugin != default(Plugin))
@@ -790,8 +850,9 @@ namespace Symbiote.Core.Plugin
                     logger.Debug("Deleting Plugin from directory '" + pluginDirectory + "'...");
 
                     // lock the file system and InstalledPlugins manipulations to ensure thread safety
-                    lock (methodLock)
+                    lock (installationLock)
                     {
+                        // delete the plugin directory
                         OperationResult deleteResult = platform.DeleteDirectory(pluginDirectory);
                         if (deleteResult.ResultCode != OperationResultCode.Failure)
                         {
@@ -806,12 +867,14 @@ namespace Symbiote.Core.Plugin
                 {
                     retVal.AddError("Exception caught while attempting to delete directory '" + pluginDirectory + "': " + ex.Message);
                     logger.Debug(ex);
+                    logger.Exception(ex);
                 }
             }
             else
                 retVal.AddError("The specified Plugin '" + plugin.FQN + "' is not installed.");
 
             retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
         
@@ -832,6 +895,8 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult ReinstallPlugin(Plugin plugin)
         {
+            Guid guid = logger.EnterMethod(xLogger.Params(plugin), true);
+
             logger.Info("Reinstalling Plugin '" + plugin.FQN + "'...");
             OperationResult retVal = new OperationResult();
 
@@ -850,6 +915,7 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -905,6 +971,41 @@ namespace Symbiote.Core.Plugin
 
         #endregion
 
+        #region Plugin Assembly Management
+
+        public OperationResult<List<PluginAssembly>> LoadPlugins()
+        {
+            return LoadPlugins(Configuration.InstalledPlugins, manager.Platform);
+        }
+
+        public OperationResult<List<PluginAssembly>> LoadPlugins(List<Plugin> plugins, IPlatform platform)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(plugins, platform), true);
+            logger.Info("Loading Plugin Assemblies...");
+
+            OperationResult<List<PluginAssembly>> retVal = new OperationResult<List<PluginAssembly>>();
+            retVal.Result = new List<PluginAssembly>();
+
+            // discard any plugins that aren't loadable (e.g. apps)
+            plugins = plugins.Where(p => IsPluginLoadable(p)).ToList();
+
+            // prepare a list for assembly filenames
+            List<string> assemblyFiles = new List<string>();
+
+            //--------------------- - -  -  -            -
+            // create a list of plugin assembly files to be loaded
+            foreach (Plugin p in plugins)
+                assemblyFiles.Add(System.IO.Path.Combine(GetPluginDirectory(p), p.FQN + ".dll"));
+
+            logger.Checkpoint("Assembly list", xLogger.Vars(assemblyFiles), xLogger.Names("assemblyFiles"), guid);
+            //------------------------ - - -------------- - -
+            
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        #endregion
 
         #region OLD CODE
 
@@ -1235,6 +1336,7 @@ namespace Symbiote.Core.Plugin
 
         public OperationResult PerformAutoBuild(Dictionary<string, IPluginInstance> plugins, IEnumerable<PluginManagerConfigurationPluginInstance> autoBuildInstances)
         {
+            logger.EnterMethod(xLogger.Vars(plugins, autoBuildInstances));
             OperationResult retVal = new OperationResult();
 
             foreach (PluginManagerConfigurationPluginInstance instance in autoBuildInstances)
@@ -1257,12 +1359,16 @@ namespace Symbiote.Core.Plugin
                         continue;
                     }
 
-                    OperationResult attachResult = manager.ModelManager.AttachItem(foundPluginInstance.Browse(), null);
+                    OperationResult attachResult = manager.ModelManager.AttachItem(foundPluginInstance.Browse(), FQNResolver.Resolve(instance.AutoBuild.ParentFQN));
                     attachResult.LogResult(logger);
+                    retVal.Incorporate(attachResult);
                     
                     logger.Info("AutoBuild of Plugin instance '" + instance.InstanceName + "' complete.");
                 }
             }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -1396,6 +1502,11 @@ namespace Symbiote.Core.Plugin
                 return System.IO.Path.Combine(ProgramManager.Instance().Directories.Web, plugin.Name);
             else
                 return System.IO.Path.Combine(ProgramManager.Instance().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
+        }
+
+        private static bool IsPluginLoadable(Plugin plugin)
+        {
+            return ((plugin.PluginType == PluginType.Connector) || (plugin.PluginType == PluginType.Endpoint));
         }
 
         #region Settings

@@ -10,9 +10,31 @@ using System.Diagnostics;
 
 namespace Symbiote.Core
 {
+    /// <summary>
+    /// xLogger is an extension of NLog.Logger that provides additional functionality for tracing the entry and exit, arbitrary
+    /// checkpoints, exceptions and stack traces within methods.
+    /// </summary>
+    /// <remarks>
+    /// Depends on BigFont.cs to support the Marquee() method.
+    /// https://github.com/jpdillingham/BigFont
+    /// </remarks>
+    /// <example>
+    /// <code>
+    /// // create an instance of xLogger for the current class using the NLog LogManager
+    /// private xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+    /// 
+    /// // create a generic instance
+    /// private xLogger logger = (xLogger)LogManager.GetLogger("generic logger name", typeof(xLogger));
+    /// </code>
+    /// </example>
     class xLogger : Logger
     {
         #region Variables
+
+        /// <summary>
+        /// Generic prefix to append to the beginning of the other prefixes
+        /// </summary>
+        private static readonly string Prefix = "| ";
 
         /// <summary>
         /// String to log prior to any text block.  If no header is desired, specify a blank string.
@@ -20,50 +42,55 @@ namespace Symbiote.Core
         private static readonly string Header = "+----------- - ------------------------- ------------------------------------------------------------------- ------- -    -     -";
 
         /// <summary>
-        /// String to log when LogSeparator() is invoked.
-        /// </summary>
-        private static readonly string Separator = "| ------------------------ -       --  ";
-
-        /// <summary>
         /// String to append to the beginning of the method entry message.
         /// </summary>
-        private static readonly string EnterPrefix = "| --> ";
+        private static readonly string EnterPrefix = Prefix + "--> ";
 
         /// <summary>
         /// String to append to the beginning of the method exit message.
         /// </summary>
-        private static readonly string ExitPrefix = "| <-- ";
+        private static readonly string ExitPrefix = Prefix + "<-- ";
 
         /// <summary>
         /// String to append to the beginning of checkpoint messages.
         /// </summary>
-        private static readonly string CheckpointPrefix = "| # ";
+        private static readonly string CheckpointPrefix = Prefix + "# ";
 
         /// <summary>
         /// String to append to the beginning of exception messages.
         /// </summary>
-        private static readonly string ExceptionPrefix = "| X ";
+        private static readonly string ExceptionPrefix = Prefix + "X ";
 
         /// <summary>
         /// String to append to the beginning of stack trace messages.
         /// </summary>
-        private static readonly string StackTracePrefix = "| @ ";
+        private static readonly string StackTracePrefix = Prefix + "@ ";
 
         /// <summary>
         /// String to append to the beginning of each line within a message.
         /// </summary>
-        private static readonly string LinePrefix = "|   +-- ";
+        private static readonly string LinePrefix = Prefix + "  +-- ";
 
         /// <summary>
         /// String to append to the beginning of each line requiring variable indentation.  The dollar sign '$' will be substituted for 
         /// a string of spaces of the appropriate length.
         /// </summary>
-        private static readonly string LinePrefixVariable = "|   $+-- ";
+        private static readonly string LinePrefixVariable = Prefix + "  $+-- ";
 
         /// <summary>
         /// String to log following any text block.  If no footer is desired, specify a blank string.
         /// </summary>
         private static readonly string Footer = "+-------------------- -------------------------------  -  -          - - -    -   -";
+
+        /// <summary>
+        /// String to log when LogSeparator() is invoked.
+        /// </summary>
+        private static readonly string InnerSeparator = Prefix + "------------------------ -       --  ";
+
+        /// <summary>
+        /// String to log when the Separator() method is invoked.
+        /// </summary>
+        private static readonly string OuterSeparator = Prefix + "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄";
 
         /// <summary>
         /// Determines whether persisted methods are automatically pruned after the interval defined by AutoPruneAge.
@@ -105,12 +132,14 @@ namespace Symbiote.Core
 
         #region Instance Methods
 
+        #region Private
+
         /// <summary>
         /// Logs the separator string
         /// </summary>
-        private void LogSeparator()
+        private void LogInnerSeparator()
         {
-            Trace(Separator);
+            Trace(InnerSeparator);
         }
 
         /// <summary>
@@ -177,11 +206,9 @@ namespace Symbiote.Core
             // iterate over the frames within the inverted stack excerpt
             foreach (StackFrame frame in InvertedStackExcerpt())
             {
-                MethodInfo methodInfo = (MethodInfo)frame.GetMethod();
-
                 // indent the current frame appropriately
                 string spaces = new string(' ', indent * 3);
-                Trace(LinePrefixVariable.Replace("$", spaces) + MethodSignature(methodInfo));
+                Trace(LinePrefixVariable.Replace("$", spaces) + MethodSignature(frame.GetMethod()));
                 indent++;
             }
         }
@@ -249,26 +276,36 @@ namespace Symbiote.Core
         /// <summary>
         /// Builds and returns the calling method signature, including method name, parameter types and names.
         /// </summary>
-        /// <param name="methodInfo">The MethodInfo for which to return the signature.</param>
+        /// <param name="methodBase">The MethodInfo for which to return the signature.</param>
         /// <returns>The method signature, including method name, parameter types and names, of the calling method.</returns>
-        private static string MethodSignature(MethodInfo methodInfo = null)
+        private static string MethodSignature(MethodBase methodBase = null)
         {
             // if no MethodInfo is provided, return the signature of the calling method.
-            if (methodInfo == null)
-                methodInfo = (MethodInfo)CallingStackFrame().GetMethod();
+            if (methodBase == null)
+                methodBase = CallingStackFrame().GetMethod();
+
+            // determine the return type of the method.  if this is a constructor, force the type to void.
+            Type returnType = typeof(void);
+
+            if (!methodBase.IsConstructor)
+                returnType = ((MethodInfo)methodBase).ReturnType;
 
             // build a signature string to display by iterating over the method parameters and retrieving names and types
-            string methodSignature = GetColloquialTypeName(methodInfo.ReturnType) + " " + methodInfo.Name + "(";
+            string methodSignature = GetColloquialTypeName(returnType) + " " + (methodBase.IsConstructor ? methodBase.ReflectedType.Name : methodBase.Name) + "(";
             List<string> parameters = new List<string>();
 
-            foreach (ParameterInfo pi in methodInfo.GetParameters())
+            foreach (ParameterInfo pi in methodBase.GetParameters())
                 parameters.Add(GetColloquialTypeName(pi.ParameterType) + " " + pi.Name);
 
             // create a string from the type array while converting the type to the readable type
             methodSignature += String.Join(", ", parameters);
-
+    
             return methodSignature + ")";
         }
+
+        #endregion
+
+        #region Public
 
         /// <summary>
         /// Prunes the PersistedMethods list of any tuples older than the specified age in seconds.
@@ -298,6 +335,85 @@ namespace Symbiote.Core
 
                 LogManager.GetCurrentClassLogger().Trace("Pruned {0} methods with age in excess of {1} seconds from the PersistedMethods list.", pruneList.Count, age);
             }
+        }
+
+        /// <summary>
+        /// Splits the supplied string into a string array by newline characters, then prints each element of the string array as a new 
+        /// log message with the logging function specified in action.
+        /// </summary>
+        /// <param name="action">The logging function to use when logging the message.</param>
+        /// <param name="message">The message to split and log.</param>
+        /// <seealso cref="Multiline(Action{string}, string)"/>
+        /// <example>
+        /// <code>
+        /// // create a string with newline characters
+        /// string s = "Hello \r\n World!"
+        /// 
+        /// // invoke the method
+        /// logger.Multiline(logger.Info, s);
+        /// </code>
+        /// </example>
+        public void Multiline(Action<string> action, string message)
+        {
+            Multiline(action, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
+        }
+
+        /// <summary>
+        /// Logs each element of the supplied string array as a new log message with the logging function specified in action.
+        /// </summary>
+        /// <param name="action">The logging function to use when logging the message.</param>
+        /// <param name="message">The message to log.</param>
+        /// <example>
+        /// <code>
+        /// // create a string array
+        /// string[] s = new string[] { "line 1", "line 2", "line 3" };
+        /// 
+        /// // invoke the method
+        /// logger.Multiline(logger.Info, s);
+        /// </code>
+        /// </example>
+        public void Multiline(Action<string> action, string[] message)
+        {
+            foreach (string line in message)
+                action(line);
+        }
+
+        /// <summary>
+        /// Logs a separator with the logging function specified in action.
+        /// </summary>
+        /// <param name="action">The logging function to use when logging the separator.</param>
+        /// <example>
+        /// <code>
+        /// // log the separator using the Info logging level
+        /// logger.Separator(logger.Info);
+        /// </code>
+        /// </example>
+        public void Separator(Action<string> action)
+        {
+            Multiline(action, Header);
+            Multiline(action, OuterSeparator);
+            Multiline(action, Footer);
+        }
+
+        /// <summary>
+        /// Logs the supplied message converted with to large text with the logging function specified in action.
+        /// </summary>
+        /// <remarks>
+        /// Dependent upon the BigFont class (BigFont.cs)
+        /// https://github.com/jpdillingham/BigFont
+        /// </remarks>
+        /// <param name="action">The logging function to use when logging the separator.</param>
+        /// <param name="message">The message to convert with to large text and log.</param>
+        /// <example>
+        /// <code>
+        /// // log a marquee using the Debug logging level
+        /// logger.Marquee(logger.Debug, "Hello World");
+        /// </code>
+        /// </example>
+        public void Marquee(Action<string> action, string message)
+        {
+            Multiline(action, BigFont.GenerateStyled(message));
+            Separator(action);
         }
 
         #region EnterMethod
@@ -470,7 +586,10 @@ namespace Symbiote.Core
 
             // print the header
             if (Header.Length > 0) Trace(Header);
-            Trace(EnterPrefix + "Entering method: " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + (persist ? ", persisting with Guid: " + methodGuid : ""));
+            Trace(EnterPrefix + "Entering " + (CallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+                ": " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
+                (persist ? ", persisting with Guid: " + methodGuid : "")
+            );
 
             // compose and print the parameter list, but not if the list is null
             if (parameters != null)
@@ -569,7 +688,7 @@ namespace Symbiote.Core
         /// </example>
         public void ExitMethod(object returnValue, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            ExitMethod(returnValue, caller, filePath, lineNumber);
+            ExitMethod(returnValue, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -627,7 +746,10 @@ namespace Symbiote.Core
             if (!IsTraceEnabled) return;
 
             if (Header.Length > 0) Trace(Header);
-            Trace(ExitPrefix + "Exiting method: " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
+            Trace(ExitPrefix + "Exiting " + (CallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+                ": " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
+                (guid != default(Guid) ? ", Guid: " + guid : "")
+            );
 
             // if returnValue is null, log a simple message and move on.  we do this to differentiate a null returnValue 
             // from a method invocation that didn't supply anything for returnValue
@@ -672,6 +794,26 @@ namespace Symbiote.Core
         public void Checkpoint([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             Checkpoint(null, null, null, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating that the execution folow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// </summary>
+        /// <remarks>
+        /// This overload is provided as a workaround to disambiguate Checkpoint(string, string, int) and Checkpoint(string, string, string, int)
+        /// </remarks>
+        /// <param name="name">The checkpoint name.</param>
+        /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// <code>
+        /// // log a named checkpoint
+        /// logger.Checkpoint("My named checkpoint");
+        /// </code>
+        /// </example>
+        public void Checkpoint(string name)
+        {
+            StackFrame sf = CallingStackFrame();
+            Checkpoint(name, null, null, default(Guid), sf.GetMethod().Name, sf.GetFileName(), sf.GetFileLineNumber());
         }
 
         /// <summary>
@@ -959,7 +1101,11 @@ namespace Symbiote.Core
 
             // print the checkpoint header
             if (Header.Length > 0) Trace(Header);
-            Trace(CheckpointPrefix + "Checkpoint " + (name != null ? "'" + name + "' " : "") + "reached in method: " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
+            Trace(CheckpointPrefix + "Checkpoint " + (name != null ? "'" + name + "' " : "") + 
+                "reached in " + (CallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+                ": " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
+                (guid != default(Guid) ? ", Guid: " + guid : "")
+            );
 
             // ensure variables have been supplied before continuing
             if (variables != null) LogVariables(variables, variableNames);
@@ -1178,20 +1324,28 @@ namespace Symbiote.Core
 
             // log the header
             if (Header.Length > 0) Trace(Header);
-            Trace(ExceptionPrefix + "Exception '" + exception.GetType().Name + "' caught in method: " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + (guid != default(Guid) ? ", Guid: " + guid : ""));
-            LogSeparator();
+            Trace(ExceptionPrefix + "Exception '" + exception.GetType().Name + 
+                "' caught in " + (CallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+                ": " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
+                (guid != default(Guid) ? ", Guid: " + guid : "")
+            );
+
+            LogInnerSeparator();
 
 
             // log the stack trace followed by a separator
             LogStackTrace();
-            LogSeparator();
+            LogInnerSeparator();
 
-            // log the exception followed by a separator
+            // log the exception 
             LogVariables(Params(exception), Names("ex"));
-            LogSeparator();
 
             // if a variable list was supplied, log it 
-            if (variables != null) LogVariables(variables, variableNames);
+            if (variables != null)
+            {
+                LogInnerSeparator();
+                LogVariables(variables, variableNames);
+            }
 
             // if persistence is used, log the current execution duration
             if (guid != default(Guid)) LogExecutionDuration("Current execution duration: ", guid);
@@ -1227,7 +1381,11 @@ namespace Symbiote.Core
 
         #endregion
 
+        #endregion
+
         #region Static Methods
+
+        #region Private
 
         /// <summary>
         /// Returns a "pretty" string representation of the provided Type;  specifically, corrects the naming of generic Types
@@ -1270,6 +1428,10 @@ namespace Symbiote.Core
 
             return retVal;
         }
+
+        #endregion
+
+        #region Public
 
         /// <summary>
         /// Returns the object array specified in the input parameter(s) for the method.  Accepts a dynamic number of parameters
@@ -1355,6 +1517,8 @@ namespace Symbiote.Core
         {
             return (string[])Params(names);
         }
+
+        #endregion
 
         #endregion
 

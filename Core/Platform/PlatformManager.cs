@@ -32,7 +32,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// The logger for this class.
         /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The ProgramManager for the application.
@@ -102,7 +102,7 @@ namespace Symbiote.Core.Platform
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
-            Guid guid = MethodLogger.Enter(logger, true);
+            Guid guid = logger.EnterMethod(true);
             OperationResult retVal = new OperationResult();
 
             logger.Info("Starting the Platform Manager...");
@@ -147,6 +147,8 @@ namespace Symbiote.Core.Platform
             loadDirectoryResult.LogResultDebug(logger, "LoadDirectories");
 
             retVal.Incorporate(loadDirectoryResult);
+
+            logger.Checkpoint("Directory configuration loaded", guid);
             //------------------------------------ - - 
 
             #endregion
@@ -163,6 +165,8 @@ namespace Symbiote.Core.Platform
             checkResult.LogResultDebug(logger, "CheckDirectories");
 
             retVal.Incorporate(checkResult);
+
+            logger.Checkpoint("Directories validated", guid);
             //------------- - - -
 
             #endregion
@@ -170,7 +174,7 @@ namespace Symbiote.Core.Platform
             Running = (retVal.ResultCode != OperationResultCode.Failure);
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -180,7 +184,7 @@ namespace Symbiote.Core.Platform
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Restart()
         {
-            Guid guid = MethodLogger.Enter(logger, true);
+            Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Platform Manager...");
             OperationResult retVal = new OperationResult();
@@ -189,7 +193,7 @@ namespace Symbiote.Core.Platform
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger, guid);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -199,7 +203,7 @@ namespace Symbiote.Core.Platform
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Stop()
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod();
 
             logger.Info("Stopping the Platform Manager...");
             OperationResult retVal = new OperationResult();
@@ -207,7 +211,7 @@ namespace Symbiote.Core.Platform
             Running = false;
 
             retVal.LogResult(logger);
-            MethodLogger.Exit(logger);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -227,6 +231,10 @@ namespace Symbiote.Core.Platform
             return ((p == 4) || (p == 6) || (p == 128) ? PlatformType.UNIX : PlatformType.Windows);
         }
 
+        /// <summary>
+        /// Retrieves the "Directories" setting from the app.config file, or the default value if the retrieval fails.
+        /// </summary>
+        /// <returns>The list of program directories.</returns>
         private static string GetDirectories()
         {
             return Utility.GetSetting(

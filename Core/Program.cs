@@ -4,7 +4,6 @@ using System.ServiceProcess;
 using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
-using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
 namespace Symbiote.Core
@@ -49,6 +48,8 @@ namespace Symbiote.Core
         /// </param>
         internal static void Main(string[] args)
         {
+            logger.Marquee(logger.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
             logger.EnterMethod(xLogger.Params((object)args));
 
             try
@@ -107,12 +108,11 @@ namespace Symbiote.Core
 
                 #endregion
 
-                logger.Info("Initializing...");
-
 
                 //------------------ - - ----------- - - 
                 // instantiate the Program Manager.
                 // the Program Manager acts as a Service Locator for the application.
+                // all of the various IManager instances are instantiated (but not started) within the constructor of ProgramManager.
                 logger.Debug("Instantiating the Program Manager...");
                 manager = ProgramManager.Instance(safeMode);
                 logger.Debug("The Program Manager was instantiated successfully.");
@@ -122,6 +122,8 @@ namespace Symbiote.Core
                 //----------------------------------------------- - ------------  - - -
                 // start the Platform Manager so we can get the platform details
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
+                logger.Separator(logger.Debug);
+                logger.Debug("Starting the Platform Manager...");
                 manager.StartManager(manager.PlatformManager);
                 logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
                 //------------------- - -----------                      ------------- 
@@ -129,6 +131,9 @@ namespace Symbiote.Core
 
                 //----------------------------------------- - ----------------
                 // start the application
+                logger.Separator(logger.Debug);
+                logger.Checkpoint("Application start");
+
                 // if the platform is windows and it is not being run as an interactive application, Windows 
                 // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
                 if ((manager.PlatformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
@@ -142,7 +147,7 @@ namespace Symbiote.Core
                     Start(args);
                     Stop();
                 }
-                //-------------------------------------------------------------------      -------------------------------------------  - -- - - -
+                //-------------------------------------------------------------------------------------------------------------- ---- - -
             }
             catch (Exception ex)
             {
@@ -163,14 +168,15 @@ namespace Symbiote.Core
         {
             logger.EnterMethod(xLogger.Params((object)args));
 
-            Test("test");
-
             // this is the main try/catch for the application logic.  If an unhandled exception is thrown
             // anywhere in the application it will be caught here and treated as a fatal error, stopping the application.
             try
             {
+
+
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
+                logger.Marquee(logger.Debug, "Startup");
                 manager.StartManager(manager);
                 // set the Starting property to true so that other components can suppress logging messages during startup
                 manager.Starting = true;
@@ -180,6 +186,7 @@ namespace Symbiote.Core
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
+                logger.Marquee(logger.Debug, "Configuration");
                 manager.StartManager(manager.ConfigurationManager);
                 logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
@@ -188,13 +195,14 @@ namespace Symbiote.Core
                 //--------------------------------------------- - - --------- ----  - -    -
                 // load plugins.  
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
+                logger.Marquee(logger.Debug, "Plugins");
                 manager.StartManager(manager.PluginManager);
                 logger.Info("Loading plugins...");
-                manager.PluginManager.LoadPlugins("Plugins");
+                manager.PluginManager.LoadPlugins();
                 logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
                 //----------------------------------------------------------------  --  ---         ------ - 
 
-
+                return;
                 //--------------------- - --------------------- -  -
                 // create plugin instances.
                 // instantiates each plugin instance defined within the configuration and configures it
@@ -211,6 +219,7 @@ namespace Symbiote.Core
                 manager.PluginManager.PluginInstances.Add("Platform", manager.PlatformManager.Platform.Connector);
                 //------ - -      ---------------------- - -     ----------------------------- - - -
 
+                logger.Multiline(logger.Debug, "MODEL");
 
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
@@ -220,6 +229,7 @@ namespace Symbiote.Core
 
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
 
+                logger.Multiline(logger.Debug, "PLATFORM ITEMS");
 
                 //----------------------------------- - - --------  - -------- -  -   -  -           -
                 // attach the Platform connector items to the model
@@ -239,6 +249,7 @@ namespace Symbiote.Core
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
 
+                logger.Multiline(logger.Debug, "AUTOBUILDS");
 
                 //---- - ----------------------------------------- - - ------------- --   
                 // perform the auto-build of any plugin instances with auto-build enabled
@@ -255,16 +266,15 @@ namespace Symbiote.Core
                 //-------------------------------- --------- - -      -              -
 
                 manager.StartManager(manager.ServiceManager);
-                manager.StartManager(manager.EndpointManager);
 
                 manager.PluginManager.StartPlugins();
 
                 logger.Info(manager.ProductName + " is running.");
                 manager.Starting = false;
 
-                FQNResolver.Resolve(manager.InstanceName + ".Simulation.Process.Ramp").SubscribeToSource();
-                FQNResolver.Resolve(manager.InstanceName + ".Simulation.DateTime.Time").SubscribeToSource();
-                FQNResolver.Resolve(manager.InstanceName + ".Simulation.Motor").SubscribeToSource();
+                //FQNResolver.Resolve(manager.InstanceName + ".Simulation.Process.Ramp").SubscribeToSource();
+                //FQNResolver.Resolve(manager.InstanceName + ".Simulation.DateTime.Time").SubscribeToSource();
+                //FQNResolver.Resolve(manager.InstanceName + ".Simulation.Motor").SubscribeToSource();
 
                 //manager.RenameInstance("Symbiote2");
 
@@ -286,11 +296,12 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Fatal(ex, "Fatal error.");
+                logger.Exception(ex);
                 if (!Environment.UserInteractive) throw;
             }
             finally
             {
-                MethodLogger.Exit(logger);
+                logger.ExitMethod();
             }
         }
 
@@ -299,7 +310,7 @@ namespace Symbiote.Core
         /// </summary>
         public static void Stop()
         {
-            MethodLogger.Enter(logger);
+            logger.EnterMethod();
 
             logger.Info(manager.ProductName + " is stopping.  Saving configuration...");
 
@@ -317,7 +328,7 @@ namespace Symbiote.Core
             }
             finally
             {
-                MethodLogger.Exit(logger);
+                logger.ExitMethod();
             }
         }
 

@@ -20,7 +20,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The logger for this class.
         /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The Singleton instance of ProgramManager.
@@ -50,7 +50,12 @@ namespace Symbiote.Core
         /// <summary>
         /// The name of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
-        public string ProductName { get { return typeof(Program).Assembly.GetAssemblyAttribute<System.Reflection.AssemblyProductAttribute>().Product; } }
+        public string ProductName { get { return System.Reflection.Assembly.GetExecutingAssembly().GetName().Name; } }
+
+        /// <summary>
+        /// The version of the product, retrieved from AssemblyInfo.cs.
+        /// </summary>
+        public Version ProductVersion { get { return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version; } }
 
         /// <summary>
         /// The name of the application instance.
@@ -84,7 +89,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The configuration for the application.
         /// </summary>
-        public ApplicationConfiguration Configuration { get { return ConfigurationManager.Configuration; } }
+        public Dictionary<Type, Dictionary<string, object>> Configuration { get { return ConfigurationManager.Configuration; } }
         /// <summary>
         /// The filename of the configuration file.
         /// </summary>
@@ -111,11 +116,6 @@ namespace Symbiote.Core
         /// </summary>
         public ServiceManager ServiceManager { get; private set; }
 
-        /// <summary>
-        /// The EndpointManager for the application.
-        /// </summary>
-        public Plugin.Endpoint.EndpointManager EndpointManager { get; private set; }
-
         #endregion
 
         #region Constructors
@@ -129,6 +129,8 @@ namespace Symbiote.Core
         /// </remarks>
         private ProgramManager(bool safeMode = false)
         {
+            Guid guid = logger.EnterMethod(xLogger.Params(safeMode), true);
+
             SafeMode = safeMode;
 
             if (safeMode)
@@ -139,6 +141,7 @@ namespace Symbiote.Core
 
             //------- - ------- -         --
             // Platform Manager
+            logger.Separator(logger.Debug);
             logger.Debug("Instantiating the PlatformManager...");
             PlatformManager = PlatformManager.Instance(this);
             logger.Debug("Successfully instantiated the Platform Manager.");
@@ -147,6 +150,7 @@ namespace Symbiote.Core
 
             //------------ -        -- -   -
             // Configuration Manager
+            logger.Separator(logger.Debug);
             logger.Debug("Instantiating the Configuration Manager...");
             ConfigurationManager = ConfigurationManager.Instance(this);
             logger.Debug("Successfully instantiated the Configuration Manager.");
@@ -155,6 +159,7 @@ namespace Symbiote.Core
 
             //------- - - ------------------ - - ------------
             // Plugin Manager
+            logger.Separator(logger.Debug);
             logger.Debug("Instantiating the Plugin Manager...");
             PluginManager = PluginManager.Instance(this);
             ConfigurationManager.RegisterType(typeof(PluginManager));
@@ -164,6 +169,7 @@ namespace Symbiote.Core
 
             //-------- -------------- -    -
             // Model Manager
+            logger.Separator(logger.Debug);
             logger.Debug("Instantiating the Model Manager...");
             ModelManager = ModelManager.Instance(this);
             ConfigurationManager.RegisterType(typeof(ModelManager));
@@ -171,21 +177,16 @@ namespace Symbiote.Core
             //---- - -----------  -----
 
 
-            //-------------------- - - -
+            //--------------------  - -
             // Service Manager
+            logger.Separator(logger.Debug);
             logger.Debug("Instantiating the Service Manager...");
             ServiceManager = ServiceManager.Instance(this);
+            ConfigurationManager.RegisterType(typeof(ServiceManager));
             logger.Debug("Successfully instantiated the Service Manager.");
-            //------------------- - - ---- -        -
+            //---------------  --    -  -     -  
 
-
-            //------------ -  
-            // Endpoint Manager
-            //----------------------- - - ------------- - 
-            logger.Debug("Instantiating the Endpoint Manager...");
-            EndpointManager = Plugin.Endpoint.EndpointManager.Instance(this);
-            ConfigurationManager.RegisterType(typeof(Plugin.Endpoint.EndpointManager));
-            logger.Debug("Successfully instantiated the Endpoint Manager.");
+            logger.ExitMethod(guid);
         }
 
         /// <summary>
@@ -212,12 +213,15 @@ namespace Symbiote.Core
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Start()
         {
+            Guid guid = logger.EnterMethod(true);
+
             logger.Info("Starting the Program Manager...");
             OperationResult retVal = new OperationResult();
 
             Running = (retVal.ResultCode != OperationResultCode.Failure);
 
             retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -227,6 +231,8 @@ namespace Symbiote.Core
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Restart()
         {
+            Guid guid = logger.EnterMethod(true);
+
             logger.Info("Restarting the Program Manager...");
             OperationResult retVal = new OperationResult();
 
@@ -234,6 +240,7 @@ namespace Symbiote.Core
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -243,33 +250,36 @@ namespace Symbiote.Core
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult Stop()
         {
+            logger.EnterMethod();
+
             logger.Info("Stopping the Program Manager...");
             OperationResult retVal = new OperationResult();
 
             Running = false;
 
             retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
             return new OperationResult();
         }
 
         #endregion
 
-        internal OperationResult RenameInstance(string instanceName)
-        {
-            Utility.UpdateSetting("InstanceName", instanceName);
-            Restart();
-
-            return new OperationResult();
-        }
-
-
+        /// <summary>
+        /// Starts the specified IManager instance
+        /// </summary>
+        /// <param name="manager">The IManager instance to start.</param>
+        /// <returns>An OperationResult containing the result of the operation and the specified IManager instance.</returns>
         internal OperationResult<IManager> StartManager(IManager manager)
         {
+            Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
+
             logger.Info("Starting " + manager.GetType().Name + "...");
             OperationResult<IManager> retVal = new OperationResult<IManager>();
 
+            // invoke the Start() method on the specified manager
             OperationResult startResult = manager.Start();
 
+            // if the manager fails to start, throw an exception and halt the program
             if (startResult.ResultCode == OperationResultCode.Failure)
                 throw new Exception("Failed to start " + manager.GetType().Name + "." + startResult.GetLastError());
 
@@ -277,6 +287,7 @@ namespace Symbiote.Core
             retVal.Incorporate(startResult);
 
             retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -284,6 +295,10 @@ namespace Symbiote.Core
 
         #region Static Methods
 
+        /// <summary>
+        /// Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retreived.
+        /// </summary>
+        /// <returns>The name of the program instance.</returns>
         public static string GetInstanceName()
         {
             return Utility.GetSetting("InstanceName", "Symbiote");

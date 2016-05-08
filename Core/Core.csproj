@@ -141,10 +141,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\BigFont.cs" />
     <Compile Include="Common\IManager.cs" />
     <Compile Include="Common\Item\ItemEventArgs.cs" />
     <Compile Include="Common\xLogger.cs" />
-    <Compile Include="Common\MethodLogger.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
@@ -153,6 +153,7 @@
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
     <Compile Include="Plugin\Endpoint\EndpointManager.cs" />
+    <Compile Include="Plugin\IPluginInstance.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginArchive.cs" />
     <Compile Include="Plugin\PluginArchiveLoadResult.cs" />
@@ -171,13 +172,11 @@
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
-    <Compile Include="Plugin\IPluginInstance.cs" />
     <Compile Include="Plugin\Connector\ConnectorItem.cs" />
     <Compile Include="Common\FQNResolver.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Common\ContractResolver.cs" />
     <Compile Include="Common\Item\Item.cs" />
-    <Compile Include="Configuration\ApplicationConfiguration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Platform\UNIX\PlatformConnector.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />

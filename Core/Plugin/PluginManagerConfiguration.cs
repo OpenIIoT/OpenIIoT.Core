@@ -2,6 +2,9 @@
 
 namespace Symbiote.Core.Plugin
 {
+    /// <summary>
+    /// PluginManagerConfiguration contains the configuration model for the PluginManager.
+    /// </summary>
     public class PluginManagerConfiguration
     {
         public bool AuthorizeNewPlugins { get; set; }
