@@ -396,7 +396,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Logs the supplied message converted with to large text with the logging function specified in action.
+        /// Logs the supplied message converted to large sized text using BigFont and with the logging function specified in action.
         /// </summary>
         /// <remarks>
         /// Dependent upon the BigFont class (BigFont.cs)
@@ -406,13 +406,34 @@ namespace Symbiote.Core
         /// <param name="message">The message to convert with to large text and log.</param>
         /// <example>
         /// <code>
-        /// // log a marquee using the Debug logging level
-        /// logger.Marquee(logger.Debug, "Hello World");
+        /// // log a heading using the Debug logging level
+        /// logger.Heading(logger.Debug, "Hello World");
         /// </code>
         /// </example>
-        public void Marquee(Action<string> action, string message)
+        public void Heading(Action<string> action, string message)
         {
-            Multiline(action, BigFont.GenerateStyled(message));
+            Multiline(action, BigFont.GenerateStyled(message, BigFont.FontSize.Large));
+            Separator(action);
+        }
+
+        /// <summary>
+        /// Logs the supplied message converted to medium sized text using BigFont and with the logging function specified in action.
+        /// </summary>
+        /// <remarks>
+        /// Dependent upon the BigFont class (BigFont.cs)
+        /// https://github.com/jpdillingham/BigFont
+        /// </remarks>
+        /// <param name="action"></param>
+        /// <param name="message"></param>
+        /// <example>
+        /// <code>
+        /// // log a subheading using the Info logging level
+        /// logger.SubHeading(logger.Info, "This is a subheading!");
+        /// </code>
+        /// </example>
+        public void SubHeading(Action<string> action, string message)
+        {
+            Multiline(action, BigFont.GenerateStyled(message, BigFont.FontSize.Medium));
             Separator(action);
         }
 

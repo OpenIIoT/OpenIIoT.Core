@@ -1,4 +1,25 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █
+      █       ▄███████▄  ▄█       ███    █▄     ▄██████▄   ▄█  ███▄▄▄▄             ▄▄▄▄███▄▄▄▄     ▄████████  ███▄▄▄▄     ▄████████     ▄██████▄     ▄████████    ▄████████  
+      █      ███    ███ ███       ███    ███   ███    ███ ███  ███▀▀▀██▄         ▄██▀▀▀███▀▀▀██▄   ███    ███ ███▀▀▀██▄   ███    ███   ███    ███   ███    ███   ███    ███  
+      █      ███    ███ ███       ███    ███   ███    █▀  ███▌ ███   ███         ███   ███   ███   ███    ███ ███   ███   ███    ███   ███    █▀    ███    █▀    ███    ███  
+      █      ███    ███ ███       ███    ███  ▄███        ███▌ ███   ███         ███   ███   ███   ███    ███ ███   ███   ███    ███  ▄███         ▄███▄▄▄      ▄███▄▄▄▄██▀  
+      █    ▀█████████▀  ███       ███    ███ ▀▀███ ████▄  ███▌ ███   ███         ███   ███   ███ ▀███████████ ███   ███ ▀███████████ ▀▀███ ████▄  ▀▀███▀▀▀     ▀▀███▀▀▀▀▀    
+      █      ███        ███       ███    ███   ███    ███ ███  ███   ███         ███   ███   ███   ███    ███ ███   ███   ███    ███   ███    ███   ███    █▄  ▀███████████  
+      █      ███        ███▌    ▄ ███    ███   ███    ███ ███  ███   ███         ███   ███   ███   ███    ███ ███   ███   ███    ███   ███    ███   ███    ███   ███    ███  
+      █     ▄████▀      █████▄▄██ ████████▀    ████████▀  █▀    ▀█   █▀           ▀█   ███   █▀    ███    █▀   ▀█   █▀    ███    █▀    ████████▀    ██████████   ███    ███ 
+      █
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+      █ 
+      █  The PluginManager class controls the plugin subsystem.
+      █ 
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██   
+                                                                                               ▀█▄ ██ ▄█▀                       
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NLog;
@@ -344,7 +365,7 @@ namespace Symbiote.Core.Plugin
             // iterate over the list of found files
             foreach (string fileName in searchResult.Result)
             {
-                logger.Marquee(logger.Trace, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
+                logger.SubHeading(logger.Trace, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
                 logger.Debug("Parsing Archive file '" + fileName + "'...");
 
                 // parse the current plugin archive file
@@ -617,7 +638,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation and the created Plugin instance.</returns>
         private OperationResult<Plugin> InstallPlugin(PluginArchive archive, PluginManagerConfiguration configuration, IPlatform platform, bool updatePlugin = false)
         {
-            logger.Marquee(logger.Debug, "Installing: " + String.Join(".", System.IO.Path.GetFileName(archive.FileName).Split('.').TakeLast(2).ToArray()));
+            logger.Heading(logger.Debug, "Installing: " + String.Join(".", System.IO.Path.GetFileName(archive.FileName).Split('.').TakeLast(2).ToArray()));
 
             Guid guid = logger.EnterMethod(true);
             logger.Checkpoint(xLogger.Vars(archive), xLogger.Names("archive"), guid);

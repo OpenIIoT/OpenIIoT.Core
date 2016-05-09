@@ -48,7 +48,14 @@ namespace Symbiote.Core
         /// </param>
         internal static void Main(string[] args)
         {
-            logger.Marquee(logger.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            logger.Heading(logger.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            logger.Heading(logger.Info,"Utility");
+            logger.Heading(logger.Info, "Plugin Manager");
+
+            foreach (string s in BigFont.Generate("Hello World!", BigFont.FontSize.Small))
+                Console.WriteLine(s);
+
+            Console.ReadLine();
 
             logger.EnterMethod(xLogger.Params((object)args));
 
@@ -176,7 +183,7 @@ namespace Symbiote.Core
 
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
-                logger.Marquee(logger.Debug, "Startup");
+                logger.Heading(logger.Debug, "Startup");
                 manager.StartManager(manager);
                 // set the Starting property to true so that other components can suppress logging messages during startup
                 manager.Starting = true;
@@ -186,7 +193,7 @@ namespace Symbiote.Core
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                logger.Marquee(logger.Debug, "Configuration");
+                logger.Heading(logger.Debug, "Configuration");
                 manager.StartManager(manager.ConfigurationManager);
                 logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
@@ -195,7 +202,7 @@ namespace Symbiote.Core
                 //--------------------------------------------- - - --------- ----  - -    -
                 // load plugins.  
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
-                logger.Marquee(logger.Debug, "Plugins");
+                logger.Heading(logger.Debug, "Plugins");
                 manager.StartManager(manager.PluginManager);
                 logger.Info("Loading plugins...");
                 manager.PluginManager.LoadPlugins();
