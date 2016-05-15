@@ -119,7 +119,7 @@ namespace Symbiote.Core.Model
             OperationResult configureResult = Configure();
 
             if (configureResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to configure the Model Manager: " + configureResult.GetLastError());
+                throw new Exception("Failed to configure the Model Manager: " + configureResult.LastErrorMessage);
 
             retVal.Incorporate(configureResult);
             //--------------------------------  -
@@ -133,7 +133,7 @@ namespace Symbiote.Core.Model
             ModelBuildResult modelBuildResult = BuildModel(manager.InstanceName, Configuration.Items);
 
             if (modelBuildResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to build the model: " + modelBuildResult.GetLastError()); 
+                throw new Exception("Failed to build the model: " + modelBuildResult.LastErrorMessage); 
 
             retVal.Incorporate(modelBuildResult);
             //--- - ------------
@@ -147,7 +147,7 @@ namespace Symbiote.Core.Model
             OperationResult attachResult = AttachModel(modelBuildResult);
 
             if (attachResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to attach the model to the Model Manager: " + attachResult.GetLastError());
+                throw new Exception("Failed to attach the model to the Model Manager: " + attachResult.LastErrorMessage);
 
             retVal.Incorporate(attachResult);
             //---- - ------------  - 
@@ -412,7 +412,7 @@ namespace Symbiote.Core.Model
                     }
                     else
                     {
-                        result.AddWarning("Failed to add item '" + newItem.FQN + "' to the Model: " + addResult.GetLastError());
+                        result.AddWarning("Failed to add item '" + newItem.FQN + "' to the Model: " + addResult.LastErrorMessage);
                     } 
 
                 }
@@ -799,7 +799,7 @@ namespace Symbiote.Core.Model
         private OperationResult<Item> CopyItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
             OperationResult<Item> retVal = new OperationResult<Item>();
-            if (!retVal.ValidateParameters(model, dictionary, item, fqn)) return retVal;
+            if ((item == null) || (fqn == "")) return retVal;
 
             logger.Info("Copying Item '" + item.FQN + "' to FQN '" + fqn + "'...");
 
@@ -840,7 +840,7 @@ namespace Symbiote.Core.Model
         public OperationResult<Item> AttachItem(Item item, Item parentItem)
         {
             OperationResult<Item> retVal = new OperationResult<Item>();
-            if (!retVal.ValidateParameters(item, parentItem)) return retVal;
+            if ((item == null) || (parentItem == null)) return retVal;
                
             if (!manager.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
             else logger.Debug("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");

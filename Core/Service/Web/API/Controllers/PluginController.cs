@@ -50,7 +50,7 @@ namespace Symbiote.Core.Service.Web.API
 
             retVal.Result = manager.PluginManager.PluginArchives;
 
-            retVal.LogResult(logger.Info);
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolver.ContractResolverType.OptOut, true));
         }
 
@@ -70,7 +70,7 @@ namespace Symbiote.Core.Service.Web.API
             if (retVal.Result.ResultCode == OperationResultCode.Failure)
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
-            retVal.LogResult(logger.Info);
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolver.ContractResolverType.OptOut, true));
         }
 
@@ -91,7 +91,7 @@ namespace Symbiote.Core.Service.Web.API
             if (retVal.Result == default(PluginArchive))
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
-            retVal.LogResult(logger.Info);
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 
@@ -112,7 +112,7 @@ namespace Symbiote.Core.Service.Web.API
             if ((retVal.Result == default(OperationResult<Plugin.Plugin>)) || (retVal.Result.ResultCode == OperationResultCode.Failure))
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
-            retVal.LogResult(logger.Info);
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 
@@ -126,7 +126,7 @@ namespace Symbiote.Core.Service.Web.API
 
             retVal.Result = manager.PluginManager.Configuration.InstalledPlugins;
 
-            retVal.LogResult(logger.Info);
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolver.ContractResolverType.OptOut, true));
         }
 
@@ -144,7 +144,7 @@ namespace Symbiote.Core.Service.Web.API
 
             retVal.Result = await manager.PluginManager.UninstallPluginAsync(manager.PluginManager.FindPlugin(fqn));
 
-            retVal.LogResult(logger.Info);
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 

@@ -18,6 +18,12 @@
       █
       █  Additional methods allow for greater readability within log files, such as the ability to style entry/exit/exception logs,
       █  three tiers of large-font headings, separators and styled and unstyled multiline log messages.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀     ▀▀▀   
+      █  Dependencies:
+      █     ├─ NLog (https://www.nuget.org/packages/NLog/)
+      █     ├─ Json.NET (https://www.nuget.org/packages/Newtonsoft.Json/)
+      █     └─ the BigFont class (https://github.com/jpdillingham/BigFont)
       █ 
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██   
@@ -43,10 +49,6 @@ namespace Symbiote.Core
     /// Additional methods allow for greater readability within log files, such as the ability to style entry/exit/exception logs,
     /// three tiers of large-font headings, separators and styled and unstyled multiline log messages.
     /// </summary>
-    /// <remarks>
-    /// Depends on BigFont.cs to support the heading/subheading methods.
-    /// https://github.com/jpdillingham/BigFont
-    /// </remarks>
     /// <example>
     /// <code>
     /// // create an instance of xLogger for the current class using the NLog LogManager

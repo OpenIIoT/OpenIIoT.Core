@@ -19,7 +19,7 @@
                                                                                                    ██   
                                                                                                ▀█▄ ██ ▄█▀                       
                                                                                                  ▀████▀   
-                                                                                                   ▀▀                            */
+                                                                                                   ▀▀                               */
 using System;
 using System.Collections.Generic;
 
@@ -41,25 +41,6 @@ namespace Symbiote.Core
             Medium = 6,
             Small = 4
         }
-
-        #endregion
-
-        #region Variables
-
-        /// <summary>
-        /// The header string used for styled output.
-        /// </summary>
-        private static string header = "┌─────────── ─ ───────────────────────── ─────────────────────────────────────────────────────────────────── ─────── ─    ─     ─";
-
-        /// <summary>
-        /// The line prefix used for styled output.
-        /// </summary>
-        private static string linePrefix = "│ ";
-
-        /// <summary>
-        /// The footer string used for styled output.
-        /// </summary>
-        private static string footer = "└──────────────────── ───────────────────────────────  ─  ─          ─ ─ ─    ─   ─";
 
         #endregion
 
@@ -1292,10 +1273,10 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, FontSize>('B', FontSize.Small), new string[]
             {
-                "▀█████▄  ",
+                "▀█████▄ ",
                 " ██▄▄▄▀ ",
                 " ██   █ ",
-                "▄█████▀  "
+                "▄█████▀ "
             });
 
             Alphabet.Add(new Tuple<char, FontSize>('C', FontSize.Small), new string[]
@@ -1717,12 +1698,11 @@ namespace Symbiote.Core
         /// Generates a large string of characters corresponding to the input phrase.
         /// </summary>
         /// <remarks>
-        /// Supports uppercase characters A-Z, spaces, open and close parenthesis and question marks.
         /// Any character that doesn't exist in the alphabet will be replaced with a question mark.
         /// </remarks>
         /// <param name="phrase">The phrase to generate.</param>
         /// <param name="size">The size of the font to use.</param>
-        /// <returns>A string array containing the stylized output.</returns>
+        /// <returns>A string array containing the generated output.</returns>
         public static string[] Generate(string phrase, FontSize size = FontSize.Large)
         {
             string[] r = new string[(int)size];
@@ -1730,27 +1710,6 @@ namespace Symbiote.Core
             foreach (char c in phrase.ToUpper())
                 for (int i = 0; i < (int)size; i++)
                     r[i] += Alphabet[new Tuple<char, FontSize>((Alphabet.ContainsKey(new Tuple<char, FontSize>(c, size)) ? c : '?'), size)][i];
-
-            return r;
-        }
-
-        /// <summary>
-        /// Generates a larged, stylized string of characters corresponding to the input phrase.
-        /// </summary>
-        /// <param name="phrase">The phrase to generate.</param>
-        /// <param name="size">The size of the font to use.</param>
-        /// <returns>A string array containing the stylized output.</returns>
-        public static string[] GenerateStyled(string phrase, FontSize size = FontSize.Large)
-        {
-            string[] r = new string[(int)size + 2];
-            string[] g = Generate(phrase, size);
-
-            r[0] = header;
-
-            for (int i = 1; i <= (int)size; i++)
-                r[i] = linePrefix + g[i - 1];
-
-            r[(int)size + 1] = footer;
 
             return r;
         }

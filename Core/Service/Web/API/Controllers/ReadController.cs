@@ -55,7 +55,7 @@ namespace Symbiote.Core.Service.Web.API
             
             retVal.Result.Add(foundItem);
 
-            retVal.LogResult(logger.Info);
+            retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolver.ContractResolverType.OptIn, true));
         }
 

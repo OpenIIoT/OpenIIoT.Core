@@ -74,10 +74,10 @@ namespace Symbiote.Core.Service
                     retVal = StartServices();
                 }
                 else
-                    retVal.AddError("Failed to instantiate Services. " + retVal.GetLastError());
+                    retVal.AddError("Failed to instantiate Services. " + retVal.LastErrorMessage);
             }
             else
-                retVal.AddError("Failed to register Service types. " + retVal.GetLastError());
+                retVal.AddError("Failed to register Service types. " + retVal.LastErrorMessage);
 
             Running = (retVal.ResultCode != OperationResultCode.Failure);
             return retVal;
@@ -143,7 +143,7 @@ namespace Symbiote.Core.Service
         {
             logger.Debug("Instantiating Services...");
             OperationResult<Dictionary<string, IService>> retVal = InstantiateServices(ServiceTypes);
-            retVal.LogResult(logger, "Debug");
+            retVal.LogResult(logger.Debug);
             return retVal;
         }
 

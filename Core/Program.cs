@@ -52,9 +52,8 @@ namespace Symbiote.Core
 
             logger.EnterMethod(xLogger.Params((object)args));
 
-            logger.Heading(logger.Trace, "xLogger");
-            logger.SubHeading(logger.Trace, "xLogger");
-            logger.SubSubHeading(logger.Trace, "xLogger");
+            logger.Heading(logger.Trace, "OperationResult");
+            logger.SubHeading(logger.Trace, "OperationResult");
 
 
             try

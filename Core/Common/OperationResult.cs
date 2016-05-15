@@ -1,7 +1,35 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █
+      █    ▄██████▄                                                                              ▄████████
+      █   ███    ███                                                                            ███    ███
+      █   ███    ███    ██████▄    ▄██████    ██████   ▄█████      ██     █   ██████  ██▄▄▄▄    ███    ███    ▄██████   ▄██████ ██    █   █           ██     
+      █   ███    ███   ██    ██   ██    █    ██   ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄  ▄███▄▄▄▄██▀   ██    █    ██   ▀  ██    ██ ██       ▀███████▄  
+      █   ███    ███   ██    ██  ▄██▄▄▄     ▄██▄▄▄█▀   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀▀███▀▀▀▀▀    ▄██▄▄▄      ██      ██    ██ ██           ██  ▀  
+      █   ███    ███ ▀███████▀  ▀▀██▀▀▀    ▀████████ ▀████████     ██    ██  ██    ██ ██   ██ ▀███████████ ▀▀██▀▀▀    ▀████████ ██    ██ ██           ██     
+      █   ███    ███   ██         ██    █    ██   ██   ██   ██     ██    ██  ██    ██ ██   ██   ███    ███   ██    █     ▄   ██ ██    ██ ██▌    ▄     ██     
+      █    ▀██████▀   ▄███▀       ████████   ██   ██   ██   █▀    ▄██▀   █    ██████   █   █    ███    ███   ████████  ▄█████▀  ███████  ████▄▄██    ▄██▀     
+      █
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █ 
+      █  Encapsulates the result of any operation, including a result code and a list of messages generated during the operation.
+      █
+      █  Additional methods provide logging functionality for convenience, and a generic extension class is provided to allow for 
+      █  OperationResult instances which contain an object as a return value.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀     ▀▀▀   
+      █  Dependencies:
+      █     └─ NLog (https://www.nuget.org/packages/NLog/)
+      █ 
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██   
+                                                                                               ▀█▄ ██ ▄█▀                       
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                               */
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Symbiote.Core
@@ -20,7 +48,7 @@ namespace Symbiote.Core
         /// </summary>
         Success,
         /// <summary>
-        /// The operation encountered recoverable issues but ultimately succeeded.
+        /// The operation encountered recoverable issues and ultimately succeeded.
         /// </summary>
         Warning,
         /// <summary>
@@ -101,7 +129,7 @@ namespace Symbiote.Core
     }
 
     /// <summary>
-    /// Encapsulates the result of any operation, including a result code and list of messages generated during the operation.
+    /// Encapsulates the result of an operation, including a result code and list of messages generated during the operation.
     /// </summary>
     public class OperationResult
     {
@@ -116,6 +144,21 @@ namespace Symbiote.Core
         /// The list of messages generated during the operation.
         /// </summary>
         public List<OperationResultMessage> Messages { get; set; }
+
+        /// <summary>
+        /// Returns the most recently generated message of type Info from the list of messages.
+        /// </summary>
+        public string LastInfoMessage { get { return Messages.Where(m => m.Type == OperationResultMessageType.Info).LastOrDefault().Message ?? ""; } }
+
+        /// <summary>
+        /// Returns the most recently generated message of type Warning from the list of messages.
+        /// </summary>
+        public string LastWarningMessage { get { return Messages.Where(m => m.Type == OperationResultMessageType.Warning).LastOrDefault().Message ?? ""; } }
+
+        /// <summary>
+        /// Returns the most recently generated message of type Error from the list of messages.
+        /// </summary>
+        public string LastErrorMessage { get { return Messages.Where(m => m.Type == OperationResultMessageType.Error).LastOrDefault().Message ?? ""; } }
 
         #endregion
 
@@ -139,6 +182,15 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddInfo("This is an informational message");
+        /// </code>
+        /// </example>
         public virtual OperationResult AddInfo(string message)
         {
             Messages.Add(new OperationResultMessage(OperationResultMessageType.Info, message));
@@ -150,6 +202,15 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddWarning("This is a warning message");
+        /// </code>
+        /// </example>
         public virtual OperationResult AddWarning(string message)
         {
             Messages.Add(new OperationResultMessage(OperationResultMessageType.Warning, message));
@@ -162,6 +223,15 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddError("This is an error message");
+        /// </code>
+        /// </example>
         public virtual OperationResult AddError(string message)
         {
             Messages.Add(new OperationResultMessage(OperationResultMessageType.Error, message));
@@ -170,138 +240,155 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Logs the supplied message to the supplied logger with the supplied logging level.
+        /// Logs the supplied message using the supplied logging method
         /// </summary>
-        /// <param name="logger">The logger to which to log the message.</param>
-        /// <param name="logLevel">The logging level to apply to the message.</param>
+        /// <param name="action">The logging method with which to log the message.</param>
         /// <param name="message">The message.</param>
         /// <remarks>The accessibility for this method is set to protected as there is no use case for this beyond the support of the other logging methods in this class or derived classes.</remarks>
-        //protected void Log(NLog.Logger logger, string logLevel = "Info", string message = "")
-        //{
-        //    try
-        //    {
-        //        MethodInfo foundMethod = typeof(NLog.ILogger).GetMethod(logLevel, new[] { typeof(string) });
-
-        //        if (foundMethod != null)
-        //            foundMethod.Invoke(logger, new object[] { message });
-        //        else
-        //            logger.Error("OperationResult.Log() was unable to find the logging level method '" + logLevel + "' in the supplied logger.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        logger.Error("Exception thrown trying to invoke logger method '" + logLevel + "' in OperationResult.Log().");
-        //        logger.Trace(ex);
-        //    }
-
-        //}
-
-        protected void Log(Action<string> logLevel, string message ="")
+        protected void Log(Action<string> action, string message ="")
         {
-            logLevel(message);
+            action(message);
         }
 
-
         /// <summary>
-        /// Logs the result of the operation to the supplied logger using the supplied optional caller as the source.
+        /// Logs the result of the operation using the supplied logger method and the optional caller as the source.
+        /// The default logging methods are applied to corresponding message types; Info for Info, Warn for Warning and Error for Errors.
         /// </summary>
-        /// <param name="logger">The logger to which to log the message.</param>
-        /// <param name="caller">The name of the method that called this method.</param>
+        /// <remarks>
+        /// The caller parameter is automatically set to the calling method.  In some cases, such as when a result for a method
+        /// is logged within a method different from the executing method, this will need to be explicitly specified
+        /// to reflect the actual source of the OperationResult.
+        /// </remarks>
+        /// <param name="logger">The logger with which to log the result.</param>
+        /// <param name="caller">The name of calling method.</param>
+        /// <seealso cref="LogResult(Action{string}, Action{string}, Action{string}, string)"/>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddInfo("This is an informational message");
+        /// 
+        /// // log the result
+        /// // use logger.Info for basic and informational messages, logger.Warn for warnings
+        /// // and logger.Error for errors.
+        /// retVal.LogResult(logger);
+        /// </code>
+        /// </example>
         public virtual void LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
             LogResult(logger.Info, logger.Warn, logger.Error, caller);
         }
 
-        public virtual void LogResult(Action<string> logLevel, [CallerMemberName]string caller = "")
+        /// <summary>
+        /// Logs the result of the operation using the supplied logger method and the optional caller as the source.
+        /// The supplied logging method is applied to all message types.
+        /// </summary>
+        /// <remarks>
+        /// The caller parameter is automatically set to the calling method.  In some cases, such as when a result for a method
+        /// is logged within a method different from the executing method, this will need to be explicitly specified
+        /// to reflect the actual source of the OperationResult.
+        /// </remarks>
+        /// <param name="action">The logging method with which to log the result.</param>
+        /// <param name="caller">The name of the calling method.</param>
+        /// <seealso cref="LogResult(Action{string}, Action{string}, Action{string}, string)"/>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddInfo("This is an informational message");
+        /// 
+        /// // log the result using the Debug logging level for all message types.
+        /// retVal.LogResult(logger.Debug);
+        /// </code>
+        /// </example>
+        public virtual void LogResult(Action<string> action, [CallerMemberName]string caller ="")
         {
-            LogResult(logLevel, logLevel, logLevel, caller);
+            LogResult(action, action, action, caller);
         }
 
         /// <summary>
-        /// Logs the result of the operation to the supplied logger and with the supplied logging levels and optional source.
+        /// Logs the result of the operation using the supplied logging methods and the optional caller as the source.
         /// </summary>
-        /// <remarks>The caller parameter is automatically set to the calling method.  In some cases this will need to be explicitly specified
-        /// to reflect the actual source of the OperationResult.</remarks>
-        /// <param name="logger">The logger to which to log the message.</param>
-        /// <param name="successLogLevel">The logging level to apply to successful messages.</param>
-        /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
-        /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
-        /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void LogResult(Action<string> successLogLevel, Action<string> warningLogLevel, Action<string> failureLogLevel, [CallerMemberName]string caller = "")
+        /// <remarks>
+        /// The caller parameter is automatically set to the calling method.  In some cases, such as when a result for a method
+        /// is logged within a method different from the executing method, this will need to be explicitly specified
+        /// to reflect the actual source of the OperationResult.
+        /// </remarks>
+        /// <param name="successAction">The logging method with which to log successful messages.</param>
+        /// <param name="warningAction">The logging method with which to log warning messages.</param>
+        /// <param name="failureAction">The logging method with which to log messages.</param>
+        /// <param name="caller">The name of the calling method.</param>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddInfo("This is an informational message");
+        /// 
+        /// // log the result
+        /// // use logger.Trace for basic and informational messages, logger.Debug for warnings
+        /// // and logger.Warn for errors.
+        /// retVal.LogResult(logger.Trace, logger.Debug, logger.Warn);
+        /// </code>
+        /// </example>
+        public virtual void LogResult(Action<string> successAction, Action<string> warningAction, Action<string> failureAction, [CallerMemberName]string caller = "")
         {
             // the operation suceeded, with or without warnings
             if (ResultCode != OperationResultCode.Failure)
             {
-                Log(successLogLevel, "The operation '" + caller + "' completed successfully.");
+                Log(successAction, "The operation '" + caller + "' completed successfully.");
+
+                // if any informational messages were generated, print them to the logger
+                if (Messages.Where(m => m.Type == OperationResultMessageType.Info).Count() > 0)
+                    LogAllMessages(successAction, "The following informational messages were generated during the operation:");
 
                 // if any warnings were generated, print them to the logger
                 if (ResultCode == OperationResultCode.Warning)
-                    LogAllMessages(warningLogLevel, "The following warnings were generated during the operation:");
+                    LogAllMessages(warningAction, "The following warnings were generated during the operation:");
             }
             // the operation failed
             else
             {
-                Log(failureLogLevel, "The operation '" + caller + "' failed.");
-                LogAllMessages(failureLogLevel, "The following messages were generated during the operation:");
+                Log(failureAction, "The operation '" + caller + "' failed.");
+                LogAllMessages(failureAction, "The following messages were generated during the operation:");
             }
         }
 
-        ///// <summary>
-        ///// Logs the result of the operation to the supplied logger with the logging level Trace for all message levels.
-        ///// </summary>
-        ///// <param name="logger">The logger to which to log the message.</param>
-        ///// <param name="caller">The name of the method that called this method.</param>
-        //public virtual void LogResultTrace(NLog.Logger logger, [CallerMemberName]string caller = "")
-        //{
-        //    LogResult(logger, "Trace", "Trace", "Trace", caller);
-        //}
-
-        ///// <summary>
-        ///// Logs the result of the operation to the supplied logger with the logging level Debug for all message levels.
-        ///// </summary>
-        ///// <param name="logger">The logger to which to log the message.</param>
-        ///// <param name="caller">The name of the method that called this method.</param>
-        //public virtual void LogResultDebug(NLog.Logger logger, [CallerMemberName]string caller = "")
-        //{
-        //    LogResult(logger, "Debug", "Debug", "Debug", caller);
-        //}
-
         /// <summary>
-        /// Logs all messages in the message list to the supplied logger and with the supplied logging level.  If specified, logs a header and footer message before and after the list, respectively.
+        /// Logs all messages in the message list to the supplied logging method.  If specified, logs a header and footer message before and after the list, respectively.
         /// </summary>
-        /// <param name="logger">The logger to which to log the messages.</param>
-        /// <param name="logLevel">The logging level to apply to messages.</param>
+        /// <param name="action">The logging method with which to log the messages.</param>
         /// <param name="header">A header message to log prior to the list of messages.</param>
         /// <param name="footer">A footer message to display after the list of messages.</param>
-        public virtual void LogAllMessages(Action<string> logLevel, string header = "", string footer = "")
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddInfo("This is an informational message");
+        /// 
+        /// // add a warning
+        /// retVal.AddWarning("This is a warning");
+        /// 
+        /// // log the list of messages with the Info logging level
+        /// // include a header and footer
+        /// retVal.LogAllMessages(logger.Info, "Message list:", "End of list.");
+        /// </code>
+        /// </example>
+        public virtual void LogAllMessages(Action<string> action, string header = "", string footer = "")
         {
-            if (header != "") Log(logLevel, header);
+            if (header != "") Log(action, header);
 
             foreach (OperationResultMessage message in Messages)
-                Log(logLevel, "\t" + message.Message);
+                Log(action, "\t" + message.Message);
 
-            if (footer != "") Log(logLevel, footer);
-        }
-
-        /// <summary>
-        /// Returns the newest message of type Error added to the message list.
-        /// </summary>
-        /// <returns>A string containing the message.</returns>
-        public virtual string GetLastError()
-        {
-            OperationResultMessage retVal = Messages.Where(m => m.Type == OperationResultMessageType.Error).LastOrDefault();
-
-            return retVal.Message ?? "";
-        }
-
-        /// <summary>
-        /// Returns the newest message of type Warning added to the message list.
-        /// </summary>
-        /// <returns>A string containing the message.</returns>
-        public virtual string GetLastWarning()
-        {
-            OperationResultMessage retVal = Messages.Where(m => m.Type == OperationResultMessageType.Warning).LastOrDefault();
-
-            return retVal.Message ?? "";
+            if (footer != "") Log(action, footer);
         }
 
         /// <summary>
@@ -309,6 +396,28 @@ namespace Symbiote.Core
         /// Copies all Messages and the status if lesser than this status.
         /// </summary>
         /// <param name="operationResult">The OperationResult from which to copy the Messages.</param>
+        /// <example>
+        /// <code>
+        /// // create an "outer" OperationResult
+        /// // the ResultCode of this instance is Success by default.
+        /// OperationResult outer = new OperationResult();
+        /// 
+        /// // ... some logic ...
+        /// 
+        /// // create an "inner" OperationResult
+        /// // set this to the result of a different method
+        /// OperationResult inner = MyMethod();
+        /// 
+        /// // incorporate the inner OperationResult into the outer
+        /// // this copies all messages and, if the inner instance's ResultCode
+        /// // is lesser (Success > Warning > Failure) than the outer, copies the ResultCode as well.
+        /// outer.Incorporate(inner);
+        /// 
+        /// // log the result.  the combined list of messages from both inner and outer
+        /// // are logged, and the ResultCode is equal to the lesser of the two ResultCodes.
+        /// outer.LogResult(logger); 
+        /// </code>
+        /// </example>
         public virtual void Incorporate(OperationResult operationResult)
         {
             foreach (OperationResultMessage message in operationResult.Messages)
@@ -320,30 +429,6 @@ namespace Symbiote.Core
             // unknown < success < warning < failure
             if (ResultCode.CompareTo(operationResult.ResultCode) < 0)
                 ResultCode = operationResult.ResultCode;
-        }
-
-        /// <summary>
-        /// Iterates over the list of passed parameters and adds an error message to the OperationResult
-        /// for any parameter that is null.
-        /// </summary>
-        /// <param name="parameters">A variable length object array containing parameters to check for null.</param>
-        /// <returns>True if all parameters are valid, false otherwise.</returns>
-        public virtual bool ValidateParameters(params object[] parameters)
-        {
-            try
-            {
-                foreach (object parameter in parameters)
-                {
-                    if (parameter == null)
-                        AddError("One or more parameters is null.");
-                }
-            }
-            catch (Exception ex)
-            {
-                AddError("Exception caught while validating one or more parameters: " + ex.Message);
-            }
-
-            return (ResultCode != OperationResultCode.Failure);
         }
 
         #endregion
@@ -392,10 +477,19 @@ namespace Symbiote.Core
         #region Instance Methods
 
         /// <summary>
-        /// Adds a message of type Info to the message list.
+        /// Adds a message of type Warning to the message list and sets the ResultCode to Warning.
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddWarning("This is a warning message");
+        /// </code>
+        /// </example>
         new public virtual OperationResult<T> AddInfo(string message)
         {
             base.AddInfo(message);
@@ -403,10 +497,19 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Adds a message of type Warning to the message list.
+        /// Adds a message of type Warning to the message list and sets the ResultCode to Warning.
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddWarning("This is a warning message");
+        /// </code>
+        /// </example>
         new public virtual OperationResult<T> AddWarning(string message)
         {
             base.AddWarning(message);
@@ -414,10 +517,19 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Adds a message of type Error to the message list.
+        /// Adds a message of type Error to the message list and sets the ResultCode to Error.
         /// </summary>
         /// <param name="message">The message to add.</param>
         /// <returns>The OperationResult.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddError("This is an error message");
+        /// </code>
+        /// </example>
         new public virtual OperationResult<T> AddError(string message)
         {
             base.AddError(message);
