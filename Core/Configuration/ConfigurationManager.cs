@@ -292,7 +292,7 @@ namespace Symbiote.Core.Configuration
             catch (Exception ex)
             {
                 retVal.AddError("Exception thrown while loading Configuration from '" + fileName + "': " + ex);
-                logger.Exception(ex, xLogger.Vars(configFile), xLogger.Names("configFile"), guid);
+                logger.Exception(logger.Error, ex, xLogger.Vars(configFile), xLogger.Names("configFile"), guid);
             }
 
             retVal.LogResult(logger);
@@ -490,7 +490,7 @@ namespace Symbiote.Core.Configuration
             if (retVal.ResultCode == OperationResultCode.Failure)
                 retVal.LogResult(logger);
             else
-                retVal.LogResultDebug(logger);
+                retVal.LogResult(logger.Debug);
 
             if (throwExceptionOnFailure)
                 throw new Exception("Failed to register the type '" + type.Name + "' for configuration.");
@@ -557,8 +557,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
         private OperationResult<bool> IsConfigured(Type type, Dictionary<Type, Dictionary<string, object>> configuration, string instanceName = "")
         {
-            logger.EnterMethod();
-            logger.Checkpoint(xLogger.Vars(type,instanceName), xLogger.Names("type", "instanceName"));
+            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
 
             OperationResult<bool> retVal = new OperationResult<bool>();
 
@@ -601,8 +600,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         private OperationResult<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, Dictionary<Type, Dictionary<string, object>> configuration, string instanceName = "")
         {
-            logger.EnterMethod();
-            logger.Checkpoint(xLogger.Vars(type, instanceConfiguration, instanceName), xLogger.Names("type", "instanceConfiguration", "instanceName"));
+            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
 
             OperationResult<T> retVal = new OperationResult<T>();
 
@@ -628,7 +626,7 @@ namespace Symbiote.Core.Configuration
             else
                 retVal.AddError("The configuration for instance '" + instanceName + "' of type '" + type.Name + "' already exists.");
 
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -659,8 +657,7 @@ namespace Symbiote.Core.Configuration
         /// for the calling class containing the retrieved configuration.</returns>
         private OperationResult<T> GetInstanceConfiguration<T>(Type type, Dictionary<Type, Dictionary<string, object>> configuration, string instanceName = "")
         {
-            logger.EnterMethod();
-            logger.Checkpoint(xLogger.Vars(type, instanceName), xLogger.Names("type", "instanceName"));
+            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
 
             OperationResult<T> retVal = new OperationResult<T>();
 
@@ -710,8 +707,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>An OperationResult containing the result of the operation.</returns>
         private OperationResult UpdateInstanceConfiguration(Type type, object instanceConfiguration, Dictionary<Type, Dictionary<string, object>> configuration, string instanceName = "")
         {
-            logger.EnterMethod();
-            logger.Checkpoint(xLogger.Vars(type, instanceConfiguration, instanceName), xLogger.Names("types", "instanceConfiguration", "instanceName"));
+            logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
 
             logger.Debug("Updating configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
             OperationResult retVal = new OperationResult();
@@ -721,7 +717,7 @@ namespace Symbiote.Core.Configuration
             else
                 retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
 
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -756,7 +752,7 @@ namespace Symbiote.Core.Configuration
             else
                 retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
 
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }

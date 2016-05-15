@@ -3,7 +3,7 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Runtime.CompilerServices;
-using NLog;
+using System;
 
 namespace Symbiote.Core.Service.Web
 {
@@ -66,38 +66,36 @@ namespace Symbiote.Core.Service.Web
         /// <summary>
         /// Logs information about the API request to the supplied logger using the supplied log level.
         /// </summary>
-        /// <param name="logger">The logger to which to log the message.</param>
         /// <param name="logLevel">The logging level to apply to the message.</param>
-        public void LogRequest(NLog.Logger logger, string logLevel = "Info")
+        public void LogRequest(Action<string> logLevel)
         {
-            base.Log(logger, logLevel, "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP);
+            base.Log(logLevel, "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP);
             foreach (var header in Request.Headers)
-                logger.Info("\t" + header.Key.ToString() + ": " + Request.Headers.GetValues(header.Key).FirstOrDefault());
+                base.Log(logLevel, "\t" + header.Key.ToString() + ": " + Request.Headers.GetValues(header.Key).FirstOrDefault());
         }
 
         /// <summary>
         /// Logs information about the result of the API request to the supplied logger using the supplied log levels for success, warning and failure messages.
         /// </summary>
-        /// <param name="logger">The logger to which to log the message.</param>
         /// <param name="successLogLevel">The logging level to apply to success messages.</param>
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public override void LogResult(NLog.Logger logger, string successLogLevel, string warningLogLevel = "Warn", string failureLogLevel = "Error", [CallerMemberName]string caller = "")
+        public override void LogResult(Action<string> successLogLevel, Action<string> warningLogLevel, Action<string> failureLogLevel, [CallerMemberName]string caller = "")
         {
             if (ResultCode != OperationResultCode.Failure)
             {
-                Log(logger, successLogLevel, "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP + "; Response: " + StatusCode);
+                Log(successLogLevel, "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP + "; Response: " + StatusCode);
 
                 // if any warnings were generated, print them to the logger
                 if (ResultCode == OperationResultCode.Warning)
-                    LogAllMessages(logger, warningLogLevel, "The following warnings were generated during the operation:");
+                    LogAllMessages(warningLogLevel, "The following warnings were generated during the operation:");
             }
             // the operation failed
             else
             {
-                Log(logger, failureLogLevel, "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP + "; Response: " + StatusCode);
-                LogAllMessages(logger, failureLogLevel, "The following messages were generated during the operation:");
+                Log(failureLogLevel, "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP + "; Response: " + StatusCode);
+                LogAllMessages(failureLogLevel, "The following messages were generated during the operation:");
             }
         }
 

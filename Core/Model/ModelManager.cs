@@ -237,7 +237,7 @@ namespace Symbiote.Core.Model
                     retVal.Incorporate(createResult);
             }
 
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -261,7 +261,7 @@ namespace Symbiote.Core.Model
             logger.Debug("Saving the new configuration...");
             retVal.Incorporate(SaveConfiguration());
 
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -277,7 +277,7 @@ namespace Symbiote.Core.Model
 
             retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -610,7 +610,7 @@ namespace Symbiote.Core.Model
             }
 
             if (!manager.Starting) retVal.LogResult(logger);
-            else retVal.LogResultDebug(logger);
+            else retVal.LogResult(logger.Debug);
 
             return retVal;
         }
@@ -880,7 +880,7 @@ namespace Symbiote.Core.Model
             }
 
             if (!manager.Starting) retVal.LogResult(logger);
-            else retVal.LogResultDebug(logger);
+            else retVal.LogResult(logger.Debug);
 
             return retVal;
         }
@@ -919,7 +919,7 @@ namespace Symbiote.Core.Model
                 retVal.Incorporate(renameResult);
             }
 
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             return retVal;
         }
 

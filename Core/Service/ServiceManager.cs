@@ -111,7 +111,7 @@ namespace Symbiote.Core.Service
         {
             logger.Debug("Registering Service types...");
             OperationResult<Dictionary<string, Type>> retVal = RegisterServices(manager.ConfigurationManager);
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             return retVal;
         }
 
@@ -179,7 +179,7 @@ namespace Symbiote.Core.Service
         {
             logger.Debug("Starting Services...");
             OperationResult retVal = StartServices(Services);
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             return retVal;
         }
 
@@ -205,7 +205,7 @@ namespace Symbiote.Core.Service
                         logger.Info("Started service '" + serviceName + "'.");
 
                         if (startResult.ResultCode == OperationResultCode.Warning)
-                            startResult.LogAllMessages(logger, "Debug", "The following warnings were generated when starting '" + serviceName + "':");
+                            startResult.LogAllMessages(logger.Debug, "The following warnings were generated when starting '" + serviceName + "':");
                     }
                     if (!service.IsRunning)
                         retVal.AddWarning("The '" + serviceName + "' service started successfully and then immediately stopped.");

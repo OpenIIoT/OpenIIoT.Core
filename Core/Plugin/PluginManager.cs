@@ -11,7 +11,8 @@
       █     ▄████▀      █████▄▄██ ████████▀    ████████▀  █▀    ▀█   █▀           ▀█   ███   █▀    ███    █▀   ▀█   █▀    ███    █▀    ████████▀    ██████████   ███    ███ 
       █
  ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
-      █ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █
       █  The PluginManager class controls the plugin subsystem.
       █ 
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
@@ -279,7 +280,7 @@ namespace Symbiote.Core.Plugin
                     retVal.Incorporate(createResult);
             }
 
-            retVal.LogResultDebug(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -379,7 +380,7 @@ namespace Symbiote.Core.Plugin
                 else
                     retVal.InvalidArchives.Add(new InvalidPluginArchive(System.IO.Path.GetFileName(fileName), parseResult.GetLastError()));
 
-                parseResult.LogResultDebug(logger, "ParsePluginArchive");
+                parseResult.LogResult(logger.Debug, "ParsePluginArchive");
             }
 
             retVal.LogResult(logger);
@@ -467,7 +468,7 @@ namespace Symbiote.Core.Plugin
                             catch (Exception ex)
                             {
                                 retVal.AddError("Failed to deserialize the contents of the configuration file.");
-                                logger.Exception(ex, guid);
+                                logger.Exception(logger.Debug, ex, guid);
                             }
                         }
                         else retVal.AddError("Failed to read the contents of the extracted file.");
@@ -597,7 +598,7 @@ namespace Symbiote.Core.Plugin
 
             logger.Checkpoint("Validated Plugin fingerprint", guid);
 
-            retVal.LogResultTrace(logger);
+            retVal.LogResult(logger.Trace);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
@@ -887,8 +888,7 @@ namespace Symbiote.Core.Plugin
                 catch (Exception ex)
                 {
                     retVal.AddError("Exception caught while attempting to delete directory '" + pluginDirectory + "': " + ex.Message);
-                    logger.Debug(ex);
-                    logger.Exception(ex);
+                    logger.Exception(logger.Debug, ex);
                 }
             }
             else

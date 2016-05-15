@@ -21,11 +21,11 @@ namespace Symbiote.Core.Service.Web.API
         public HttpResponseMessage GetLog()
         {
             ApiOperationResult<RealtimeLoggerEventArgs[]> retVal = new ApiOperationResult<RealtimeLoggerEventArgs[]>(Request);
-            retVal.LogRequest(logger);
+            retVal.LogRequest(logger.Info);
 
             retVal.Result = RealtimeLogger.LogHistory.ToArray();
 
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Info);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
         }
 

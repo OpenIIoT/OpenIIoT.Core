@@ -44,7 +44,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<List<Item>> retVal = new ApiOperationResult<List<Item>>(Request);
             retVal.Result = new List<Item>();
 
-            retVal.LogRequest(logger);
+            retVal.LogRequest(logger.Info);
 
             fqn = fqn.Replace("%25", "%");
 
@@ -55,7 +55,7 @@ namespace Symbiote.Core.Service.Web.API
             
             retVal.Result.Add(foundItem);
 
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Info);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolver.ContractResolverType.OptIn, true));
         }
 

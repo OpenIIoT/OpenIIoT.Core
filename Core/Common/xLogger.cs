@@ -1,4 +1,30 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █
+      █             ▄█        ▄██████▄     ▄██████▄     ▄██████▄     ▄████████    ▄████████  
+      █            ███       ███    ███   ███    ███   ███    ███   ███    ███   ███    ███ 
+      █            ███       ███    ███   ███    █▀    ███    █▀    ███    █▀    ███    ███ 
+      █            ███       ███    ███  ▄███         ▄███         ▄███▄▄▄      ▄███▄▄▄▄██▀  
+      █    ██   ██ ███       ███    ███ ▀▀███ ████▄  ▀▀███ ████▄  ▀▀███▀▀▀     ▀▀███▀▀▀▀▀    
+      █     ██▄██▀ ███       ███    ███   ███    ███   ███    ███   ███    █▄  ▀███████████  
+      █     ▄█▀█▄  ███▌    ▄ ███    ███   ███    ███   ███    ███   ███    ███   ███    ███  
+      █   ▄██  ▀██ █████▄▄██  ▀██████▀    ████████▀    ████████▀    ██████████   ███    ███  
+      █
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █ 
+      █  xLogger is an extension of NLog.Logger that provides additional functionality for tracing the entry and exit, arbitrary
+      █  checkpoints, exceptions and stack traces within methods.
+      █
+      █  Additional methods allow for greater readability within log files, such as the ability to style entry/exit/exception logs,
+      █  three tiers of large-font headings, separators and styled and unstyled multiline log messages.
+      █ 
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██   
+                                                                                               ▀█▄ ██ ▄█▀                       
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
@@ -13,9 +39,12 @@ namespace Symbiote.Core
     /// <summary>
     /// xLogger is an extension of NLog.Logger that provides additional functionality for tracing the entry and exit, arbitrary
     /// checkpoints, exceptions and stack traces within methods.
+    /// 
+    /// Additional methods allow for greater readability within log files, such as the ability to style entry/exit/exception logs,
+    /// three tiers of large-font headings, separators and styled and unstyled multiline log messages.
     /// </summary>
     /// <remarks>
-    /// Depends on BigFont.cs to support the Marquee() method.
+    /// Depends on BigFont.cs to support the heading/subheading methods.
     /// https://github.com/jpdillingham/BigFont
     /// </remarks>
     /// <example>
@@ -34,32 +63,32 @@ namespace Symbiote.Core
         /// <summary>
         /// Generic prefix to append to the beginning of the other prefixes
         /// </summary>
-        private static readonly string Prefix = "| ";
+        private static readonly string Prefix = "│ ";
 
         /// <summary>
         /// String to log prior to any text block.  If no header is desired, specify a blank string.
         /// </summary>
-        private static readonly string Header = "+----------- - ------------------------- ------------------------------------------------------------------- ------- -    -     -";
+        private static readonly string Header = "┌─────────── ─ ───────────────────────── ─────────────────────────────────────────────────────────────────── ─────── ─    ─     ─";
 
         /// <summary>
         /// String to append to the beginning of the method entry message.
         /// </summary>
-        private static readonly string EnterPrefix = Prefix + "--> ";
+        private static readonly string EnterPrefix = Prefix + "──► ";
 
         /// <summary>
         /// String to append to the beginning of the method exit message.
         /// </summary>
-        private static readonly string ExitPrefix = Prefix + "<-- ";
+        private static readonly string ExitPrefix = Prefix + "◄── ";
 
         /// <summary>
         /// String to append to the beginning of checkpoint messages.
         /// </summary>
-        private static readonly string CheckpointPrefix = Prefix + "# ";
+        private static readonly string CheckpointPrefix = Prefix + "√ ";
 
         /// <summary>
         /// String to append to the beginning of exception messages.
         /// </summary>
-        private static readonly string ExceptionPrefix = Prefix + "X ";
+        private static readonly string ExceptionPrefix = Prefix + "╳ ";
 
         /// <summary>
         /// String to append to the beginning of stack trace messages.
@@ -67,30 +96,50 @@ namespace Symbiote.Core
         private static readonly string StackTracePrefix = Prefix + "@ ";
 
         /// <summary>
+        /// String to append to the beginning of execution duration messages.
+        /// </summary>
+        private static readonly string ExecutionDurationPrefix = Prefix + "◊ ";
+
+        /// <summary>
         /// String to append to the beginning of each line within a message.
         /// </summary>
-        private static readonly string LinePrefix = Prefix + "  +-- ";
+        private static readonly string LinePrefix = Prefix + "  ├┄┈ ";
 
         /// <summary>
         /// String to append to the beginning of each line requiring variable indentation.  The dollar sign '$' will be substituted for 
         /// a string of spaces of the appropriate length.
         /// </summary>
-        private static readonly string LinePrefixVariable = Prefix + "  $+-- ";
+        private static readonly string LinePrefixVariable = Prefix + "  $└┄┈ ";
 
         /// <summary>
         /// String to log following any text block.  If no footer is desired, specify a blank string.
         /// </summary>
-        private static readonly string Footer = "+-------------------- -------------------------------  -  -          - - -    -   -";
+        private static readonly string Footer = "└──────────────────── ───────────────────────────────  ─  ─          ─ ─ ─    ─   ─";
 
         /// <summary>
         /// String to log when LogSeparator() is invoked.
         /// </summary>
-        private static readonly string InnerSeparator = Prefix + "------------------------ -       --  ";
+        private static readonly string InnerSeparator = "├──────────────────────── ─       ──  ─";
 
         /// <summary>
         /// String to log when the Separator() method is invoked.
         /// </summary>
-        private static readonly string OuterSeparator = Prefix + "▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄";
+        private static readonly string OuterSeparator = "■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ■ ■■■■■■■■■■■■■■■ ■■  ■■ ■■   ■■■■ ■■     ■■     ■ ■";
+
+        /// <summary>
+        /// String to append to exception headers.
+        /// </summary>
+        private static readonly string ExceptionHeaderPrefix = "┌──┐";
+
+        /// <summary>
+        /// String to append to exception lines.
+        /// </summary>
+        private static readonly string ExceptionLinePrefix = "│██│";
+
+        /// <summary>
+        /// String to append to exception footers.
+        /// </summary>
+        private static readonly string ExceptionFooterPrefix = "└──┘";
 
         /// <summary>
         /// Determines whether persisted methods are automatically pruned after the interval defined by AutoPruneAge.
@@ -135,19 +184,55 @@ namespace Symbiote.Core
         #region Private
 
         /// <summary>
-        /// Logs the separator string
+        /// Logs the header string using the supplied logging method
         /// </summary>
-        private void LogInnerSeparator()
+        /// <param name="action">The logging method with which to log the header.</param>
+        /// <param name="prefix">The optional prefix string.</param>
+        private void LogHeader(Action<string> action, string prefix = "")
         {
-            Trace(InnerSeparator);
+            if (Header.Length > 0) Multiline(action, prefix + Header);
+        }
+
+        /// <summary>
+        /// Logs the footer string using the supplied logging method
+        /// </summary>
+        /// <param name="action">The logging method with which to log the footer.</param>
+        /// <param name="prefix">The optional prefix string.</param>
+        private void LogFooter(Action<string> action, string prefix = "")
+        {
+            if (Footer.Length > 0) Multiline(action, prefix + Footer);
+        }
+
+        /// <summary>
+        /// Logs the separator string using the supplied logging method
+        /// </summary>
+        /// <param name="action">The logging method with which to log the separator.</param>
+        /// <param name="prefix">The optional prefix string.</param>
+        private void LogInnerSeparator(Action<string> action, string prefix = "")
+        {
+            if (InnerSeparator.Length > 0) Multiline(action, prefix + InnerSeparator);
+        }
+
+        /// <summary>
+        /// Logs the outer separator string with header and footer using the supplied logging method
+        /// </summary>
+        /// <param name="action">The logging method with which to log the separator.</param>
+        /// <param name="prefix">The optional prefix string.</param>
+        private void LogOuterSeparator(Action<string> action, string prefix = "")
+        {
+            LogHeader(action, prefix);
+            if (OuterSeparator.Length > 0) Multiline(action, prefix + Prefix + OuterSeparator);
+            LogFooter(action, prefix);
         }
 
         /// <summary>
         /// Logs the supplied variable list with the optionally supplied names.
         /// </summary>
+        /// <param name="action">The logging method with which to log the variable list.</param>
         /// <param name="variables">The list of variables to log.</param>
         /// <param name="variableNames">The list of names to log along with the list of variables.</param>
-        private void LogVariables(object[] variables, string[] variableNames = null)
+        /// <param name="prefix">The optional string prefix.</param>
+        private void LogVariables(Action<string> action, object[] variables, string[] variableNames = null, string prefix = "")
         {
             bool useVariableNames = false;
 
@@ -155,7 +240,7 @@ namespace Symbiote.Core
             if (variableNames != null)
             {
                 if (variableNames.Length != variables.Length)
-                    Trace(LinePrefix + "[Variable name/variable count mismatch; variables: " + variables.Length + ", names: " + variableNames.Length + "]");
+                    action(prefix + LinePrefix + "[Variable name/variable count mismatch; variables: " + variables.Length + ", names: " + variableNames.Length + "]");
                 else
                     useVariableNames = true;
             }
@@ -163,16 +248,18 @@ namespace Symbiote.Core
             // print the variable list
             for (int v = 0; v < variables.Length; v++)
                 foreach (string line in GetObjectSerialization(variables[v]))
-                    Trace(LinePrefix + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + line);
+                    action(prefix + LinePrefix + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + line);
         }
 
         /// <summary>
         /// Logs the execution duration for the persisted method matching the supplied Guid using the supplied message.
         /// </summary>
+        /// <param name="action">The logging method with which to log the execution duration.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="guid">The Guid of the persisted method for which the execution duration should be calculated.</param>
         /// <param name="remove">If true, removes the supplied Guid from the list of persisted methods after logging.</param>
-        private void LogExecutionDuration(string message, Guid guid, bool remove = false)
+        /// <param name="prefix">The optional prefix string.</param>
+        private void LogExecutionDuration(Action<string> action, string message, Guid guid, bool remove = false, string prefix = "")
         {
             // try to fetch the matching tuple
             Tuple<Guid, DateTime> tuple = PersistedMethods.Where(m => m.Item1 == guid).FirstOrDefault();
@@ -180,7 +267,8 @@ namespace Symbiote.Core
             // make sure we found a match
             if (tuple != default(Tuple<Guid, DateTime>))
             {
-                Trace(LinePrefix + message + (DateTime.UtcNow - tuple.Item2).TotalMilliseconds.ToString() + "ms");
+                action(prefix + InnerSeparator);
+                action(prefix + ExecutionDurationPrefix + message + (DateTime.UtcNow - tuple.Item2).TotalMilliseconds.ToString() + "ms");
 
                 // if the remove option is used, remove the tuple from the list of persisted methods after logging.
                 if (remove)
@@ -193,114 +281,26 @@ namespace Symbiote.Core
                 }
             }
             else
-                Trace(LinePrefix + "[Persisted Guid not found]");
+                Trace(prefix + LinePrefix + "[Persisted Guid not found]");
         }
 
         /// <summary>
-        /// Logs the current stack trace, excluding everything before Main() and after the calling method.
+        /// Logs the current stack trace, excluding everything before Main() and after the calling method using the supplied logging method.
         /// </summary>
-        private void LogStackTrace()
+        /// <param name="action">The logging method with which to log the stack trace.</param>
+        /// <param name="prefix">The optional prefix string.</param>
+        private void LogStackTrace(Action<string> action, string prefix = "")
         {
             int indent = 0;
 
             // iterate over the frames within the inverted stack excerpt
-            foreach (StackFrame frame in InvertedStackExcerpt())
+            foreach (StackFrame frame in GetInvertedStackExcerpt())
             {
                 // indent the current frame appropriately
                 string spaces = new string(' ', indent * 3);
-                Trace(LinePrefixVariable.Replace("$", spaces) + MethodSignature(frame.GetMethod()));
+                action(prefix + LinePrefixVariable.Replace("$", spaces) + GetMethodSignature(frame.GetMethod()));
                 indent++;
             }
-        }
-
-        /// <summary>
-        /// Returns an inverted excerpt of the current stack trace, omitting methods above Main() and those originating within this class.
-        /// </summary>
-        /// <returns>A list of type StackFrame containing an inverted excerpt of the current stack trace.</returns>
-        private List<StackFrame> InvertedStackExcerpt()
-        {
-            StackTrace stackTrace = new StackTrace();
-            List<StackFrame> retVal = new List<StackFrame>();
-
-            //// get the relevant parts of the current stack trace, beginning with Main() and ending with the method
-            //// that invoked this method.
-
-            // iterate over the stack in reverse order beginning with the calling frame and adding the frames to the list as we go,
-            // but only if the namespace of the class containing the frame's method is the same as the current namespace.
-            // we don't want to add system/framework methods to the stack; this effectively will start the stack with Main().
-            for (int f = stackTrace.FrameCount - 1; f >= 1; f--)
-            {
-                StackFrame frame = stackTrace.GetFrame(f);
-
-                // if the namespace of the reflected type matches the namespace of this class, the frame contains relevant data.
-                // if not, the frame contains something above Main() which we don't care about.
-                if (frame.GetMethod().ReflectedType.Namespace == MethodBase.GetCurrentMethod().DeclaringType.Namespace)
-                {
-                    // if the full name of the reflected type isn't the same as this class, add it to the list.
-                    // if it is the same, the frame contains a method that originated within this class and we don't care.
-                    if (frame.GetMethod().ReflectedType.FullName != MethodBase.GetCurrentMethod().DeclaringType.FullName)
-                        retVal.Add(frame);
-                }
-
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        /// Searches the execution stack and returns the topmost frame not originating from this class, indicating the calling frame.
-        /// </summary>
-        /// <returns>The StackFrame containing the calling code.</returns>
-        private static StackFrame CallingStackFrame()
-        {
-            // retrieve the trace of the current call stack
-            StackTrace stackTrace = new StackTrace();
-
-            // determine the proper stack frame.  
-            // do this by iterating over the frames, starting from the one prior to the current frame, attempting to find
-            // the first frame that doesn't originate from the current class (GetFrame(0)).
-            // this is necessary so that we can be sure to grab the intended method if the Enter() overloads were used to get to this point.
-            int relevantFrame = 1;
-            for (int f = relevantFrame; f < stackTrace.FrameCount; f++)
-            {
-                if (stackTrace.GetFrame(f).GetMethod().ReflectedType.Name != stackTrace.GetFrame(0).GetMethod().ReflectedType.Name)
-                {
-                    relevantFrame = f;
-                    break;
-                }
-            }
-
-            return stackTrace.GetFrame(relevantFrame);
-        }
-
-        /// <summary>
-        /// Builds and returns the calling method signature, including method name, parameter types and names.
-        /// </summary>
-        /// <param name="methodBase">The MethodInfo for which to return the signature.</param>
-        /// <returns>The method signature, including method name, parameter types and names, of the calling method.</returns>
-        private static string MethodSignature(MethodBase methodBase = null)
-        {
-            // if no MethodInfo is provided, return the signature of the calling method.
-            if (methodBase == null)
-                methodBase = CallingStackFrame().GetMethod();
-
-            // determine the return type of the method.  if this is a constructor, force the type to void.
-            Type returnType = typeof(void);
-
-            if (!methodBase.IsConstructor)
-                returnType = ((MethodInfo)methodBase).ReturnType;
-
-            // build a signature string to display by iterating over the method parameters and retrieving names and types
-            string methodSignature = GetColloquialTypeName(returnType) + " " + (methodBase.IsConstructor ? methodBase.ReflectedType.Name : methodBase.Name) + "(";
-            List<string> parameters = new List<string>();
-
-            foreach (ParameterInfo pi in methodBase.GetParameters())
-                parameters.Add(GetColloquialTypeName(pi.ParameterType) + " " + pi.Name);
-
-            // create a string from the type array while converting the type to the readable type
-            methodSignature += String.Join(", ", parameters);
-    
-            return methodSignature + ")";
         }
 
         #endregion
@@ -341,7 +341,7 @@ namespace Symbiote.Core
         /// Splits the supplied string into a string array by newline characters, then prints each element of the string array as a new 
         /// log message with the logging function specified in action.
         /// </summary>
-        /// <param name="action">The logging function to use when logging the message.</param>
+        /// <param name="action">The logging method with which to log the message.</param>
         /// <param name="message">The message to split and log.</param>
         /// <seealso cref="Multiline(Action{string}, string)"/>
         /// <example>
@@ -361,7 +361,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Logs each element of the supplied string array as a new log message with the logging function specified in action.
         /// </summary>
-        /// <param name="action">The logging function to use when logging the message.</param>
+        /// <param name="action">The logging method with which to log the message.</param>
         /// <param name="message">The message to log.</param>
         /// <example>
         /// <code>
@@ -379,9 +379,60 @@ namespace Symbiote.Core
         }
 
         /// <summary>
+        /// Appends the line prefix to each line of the supplied message and wraps the text in the header and footer.
+        /// </summary>
+        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="message">The message to wrap and log.</param>
+        /// <example>
+        /// <code>
+        /// // create a string array
+        /// string[] s = new string[] { "hello", "world", "!!!!" };
+        /// 
+        /// // invoke the method
+        /// logger.MultilineWrapped(logger.Info, s);
+        /// </code>
+        /// </example>
+        public void MultilineWrapped(Action<string> action, string message)
+        {
+            MultilineWrapped(action, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
+        }
+
+        /// <summary>
+        /// Appends the line prefix to each line of the supplied message and wraps the text in the header and footer.
+        /// </summary>
+        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="message">The message to wrap and log.</param>
+        /// <example>
+        /// <code>
+        /// // create a string array
+        /// string[] s = new string[] { "hello", "world", "!!!!" };
+        /// 
+        /// // invoke the method
+        /// logger.MultilineWrapped(logger.Info, s);
+        /// </code>
+        /// </example>
+        public void MultilineWrapped(Action<string> action, string[] message)
+        {
+            List<string> wrappedMessage = new List<string>();
+
+            // add the header
+            wrappedMessage.Add(Header);
+
+            // append each line of the supplied message
+            foreach (string line in message)
+                wrappedMessage.Add(Prefix + line);
+
+            // append the footer
+            wrappedMessage.Add(Footer);
+
+            // log
+            Multiline(action, wrappedMessage.ToArray());
+        }
+
+        /// <summary>
         /// Logs a separator with the logging function specified in action.
         /// </summary>
-        /// <param name="action">The logging function to use when logging the separator.</param>
+        /// <param name="action">The logging method with which to log the message.</param>
         /// <example>
         /// <code>
         /// // log the separator using the Info logging level
@@ -390,9 +441,7 @@ namespace Symbiote.Core
         /// </example>
         public void Separator(Action<string> action)
         {
-            Multiline(action, Header);
-            Multiline(action, OuterSeparator);
-            Multiline(action, Footer);
+            LogOuterSeparator(action);
         }
 
         /// <summary>
@@ -402,8 +451,8 @@ namespace Symbiote.Core
         /// Dependent upon the BigFont class (BigFont.cs)
         /// https://github.com/jpdillingham/BigFont
         /// </remarks>
-        /// <param name="action">The logging function to use when logging the separator.</param>
-        /// <param name="message">The message to convert with to large text and log.</param>
+        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="message">The message to convert and log.</param>
         /// <example>
         /// <code>
         /// // log a heading using the Debug logging level
@@ -412,8 +461,17 @@ namespace Symbiote.Core
         /// </example>
         public void Heading(Action<string> action, string message)
         {
-            Multiline(action, BigFont.GenerateStyled(message, BigFont.FontSize.Large));
-            Separator(action);
+            // get the BigFont for the message
+            string[] heading = BigFont.Generate(message, BigFont.FontSize.Large);
+
+            // convert the array to a list so we can easily append a line
+            List<string> styledHeading = new List<string>(heading);
+
+            // append the separator
+            styledHeading.Add(OuterSeparator);
+
+            // wrap and log 
+            MultilineWrapped(action, styledHeading.ToArray());
         }
 
         /// <summary>
@@ -423,8 +481,8 @@ namespace Symbiote.Core
         /// Dependent upon the BigFont class (BigFont.cs)
         /// https://github.com/jpdillingham/BigFont
         /// </remarks>
-        /// <param name="action"></param>
-        /// <param name="message"></param>
+        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="message">The message to convert and log.</param>
         /// <example>
         /// <code>
         /// // log a subheading using the Info logging level
@@ -433,8 +491,27 @@ namespace Symbiote.Core
         /// </example>
         public void SubHeading(Action<string> action, string message)
         {
-            Multiline(action, BigFont.GenerateStyled(message, BigFont.FontSize.Medium));
-            Separator(action);
+            MultilineWrapped(action, BigFont.Generate(message, BigFont.FontSize.Medium));
+        }
+
+        /// <summary>
+        /// Logs the supplied message converted to small text using BigFont and with the logging function specified in action.
+        /// </summary>
+        /// <remarks>
+        /// Dependent upon the BigFont class (BigFont.cs)
+        /// https://github.com/jpdillingham/BigFont
+        /// </remarks>
+        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="message">The message to convert and log.</param>
+        /// <example>
+        /// <code>
+        /// // log a sub-subheading using the Trace logging level
+        /// logger.SubSubHeading(logger.Trace, "This is a sub-subheading!");
+        /// </code>
+        /// </example>
+        public void SubSubHeading(Action<string> action, string message)
+        {
+            MultilineWrapped(action, BigFont.Generate(message, BigFont.FontSize.Small));
         }
 
         #region EnterMethod
@@ -605,10 +682,14 @@ namespace Symbiote.Core
             else
                 methodGuid = default(Guid);
 
-            // print the header
-            if (Header.Length > 0) Trace(Header);
-            Trace(EnterPrefix + "Entering " + (CallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
-                ": " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
+            List<string> lines = new List<string>();
+
+            // log the header
+            LogHeader(Trace);
+
+            // log the method signature
+            Trace(EnterPrefix + "Entering " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
                 (persist ? ", persisting with Guid: " + methodGuid : "")
             );
 
@@ -620,7 +701,7 @@ namespace Symbiote.Core
                 // vs the method signature ordering, so just bail out.
                 try
                 {
-                    ParameterInfo[] parameterInfo = CallingStackFrame().GetMethod().GetParameters();
+                    ParameterInfo[] parameterInfo = GetCallingStackFrame().GetMethod().GetParameters();
 
                     if (parameterInfo.Length != parameters.Length)
                         Trace(LinePrefix + "[Parameter count mismatch]");
@@ -630,10 +711,17 @@ namespace Symbiote.Core
                         // iterate over the supplied parameter array
                         for (int p = 0; p < parameters.Length; p++)
                         {
+                            // gracefully handle nulls
+                            if (parameters[p] == null)
+                                Trace(LinePrefix + parameterInfo[p].Name + ": null");
+                            // check to see if the param was excluded intentionally
+                            else if (parameters[p].GetType() == typeof(ExcludedParam))
+                                Trace(LinePrefix + parameterInfo[p].Name + ": <parameter intentionally excluded>");
                             // check to ensure the type of the supplied parameter in position p is the same
                             // as the type in the method signature parameter list
-                            if (!parameterInfo[p].ParameterType.IsAssignableFrom(parameters[p].GetType()))
+                            else if (!parameterInfo[p].ParameterType.IsAssignableFrom(parameters[p].GetType()))
                                 Trace(LinePrefix + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
+                            // everything checks out; print the object serialization
                             else
                             {
                                 foreach (string line in GetObjectSerialization(parameters[p]))
@@ -649,8 +737,8 @@ namespace Symbiote.Core
                 }
             }
 
-            // print the footer.
-            if (Footer.Length > 0) Trace(Footer);
+            // log the footer.
+            LogFooter(Trace);
 
             return methodGuid;
         }
@@ -766,9 +854,12 @@ namespace Symbiote.Core
             // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
             if (!IsTraceEnabled) return;
 
-            if (Header.Length > 0) Trace(Header);
-            Trace(ExitPrefix + "Exiting " + (CallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
-                ": " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
+            // log the header
+            LogHeader(Trace);
+
+            // log the method signature
+            Trace(ExitPrefix + "Exiting " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
                 (guid != default(Guid) ? ", Guid: " + guid : "")
             );
 
@@ -786,10 +877,10 @@ namespace Symbiote.Core
 
             // if a Guid was provided, locate it in the PersistedMethods list, log the duration
             // and remove it from the list
-            if (guid != default(Guid)) LogExecutionDuration("Method execution duration: ", guid, true);
+            if (guid != default(Guid)) LogExecutionDuration(Trace, "Method execution duration: ", guid, true);
 
             // log the footer.
-            if (Footer.Length > 0) Trace(Footer);
+            LogFooter(Trace);
 
             // prune the PersistedMethods list if automatic pruning is enabled.
             if (AutoPruneEnabled) PrunePersistedMethods(AutoPruneAge);
@@ -833,7 +924,7 @@ namespace Symbiote.Core
         /// </example>
         public void Checkpoint(string name)
         {
-            StackFrame sf = CallingStackFrame();
+            StackFrame sf = GetCallingStackFrame();
             Checkpoint(name, null, null, default(Guid), sf.GetMethod().Name, sf.GetFileName(), sf.GetFileLineNumber());
         }
 
@@ -1120,21 +1211,24 @@ namespace Symbiote.Core
             // if tracing isn't enabled, bail immediately
             if (!IsTraceEnabled) return;
 
-            // print the checkpoint header
-            if (Header.Length > 0) Trace(Header);
+            // log the checkpoint header
+            LogHeader(Trace);
+
+            // log the method signature
             Trace(CheckpointPrefix + "Checkpoint " + (name != null ? "'" + name + "' " : "") + 
-                "reached in " + (CallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
-                ": " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
+                "reached in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
                 (guid != default(Guid) ? ", Guid: " + guid : "")
             );
 
             // ensure variables have been supplied before continuing
-            if (variables != null) LogVariables(variables, variableNames);
+            if (variables != null) LogVariables(Trace, variables, variableNames);
             
             // if persistence is enabled, print the execution duration 
-            if (guid != default(Guid)) LogExecutionDuration("Current execution duration: ", guid);
+            if (guid != default(Guid)) LogExecutionDuration(Trace, "Current execution duration: ", guid);
 
-            if (Footer.Length > 0) Trace(Footer);
+            // log the footer
+            LogFooter(Trace);
         }
 
         #endregion
@@ -1144,11 +1238,12 @@ namespace Symbiote.Core
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
         /// // catch an exception
@@ -1158,25 +1253,26 @@ namespace Symbiote.Core
         /// }
         /// catch (Exception ex)
         /// {
-        ///     // log the exception
-        ///     logger.Exception(ex);
+        ///     // log the exception using the Debug logging level
+        ///     logger.Exception(logger.Debug, ex);
         /// }
         /// </code>
         /// </example>
-        public void Exception(Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(Action<string> action, Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(exception, null, null, default(Guid), caller, filePath, lineNumber);
+            Exception(action, exception, null, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
         /// // invoke EnterMethod using persistence
@@ -1189,25 +1285,26 @@ namespace Symbiote.Core
         /// }
         /// catch (Exception ex)
         /// {
-        ///     // log the exception with persistence
-        ///     logger.Exception(ex, guid);
+        ///     // log the exception with persistence using the Trace logging level
+        ///     logger.Exception(logger.Trace, ex, guid);
         /// }
         /// </code>
         /// </example>
-        public void Exception(Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(Action<string> action, Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(exception, null, null, guid, caller, filePath, lineNumber);
+            Exception(action, exception, null, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
@@ -1222,26 +1319,27 @@ namespace Symbiote.Core
         /// }
         /// catch (Exception ex)
         /// {
-        ///     // log the exception with unnamed variables
-        ///     logger.Exception(ex, xLogger.Vars(one, two));
+        ///     // log the exception with unnamed variables using the Info logging level
+        ///     logger.Exception(logger.Info, ex, xLogger.Vars(one, two));
         /// }
         /// </code>
         /// </example>
-        public void Exception(Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(Action<string> action, Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(exception, variables, null, default(Guid), caller, filePath, lineNumber);
+            Exception(action, exception, variables, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
         /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
@@ -1259,26 +1357,27 @@ namespace Symbiote.Core
         /// }
         /// catch (Exception ex)
         /// {
-        ///     // log the exception with unnamed variables and using persistence
-        ///     logger.Exception(ex, xLogger.Vars(one, two), guid);
+        ///     // log the exception with unnamed variables and using persistence using the Debug logging level
+        ///     logger.Exception(logger.Debug, ex, xLogger.Vars(one, two), guid);
         /// }
         /// </code>
         /// </example>
-        public void Exception(Exception exception, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(Action<string> action, Exception exception, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(exception, variables, null, guid, caller, filePath, lineNumber);
+            Exception(action, exception, variables, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <seealso cref="Names(string[])"/>
         /// <example>
@@ -1294,19 +1393,20 @@ namespace Symbiote.Core
         /// }
         /// catch (Exception ex)
         /// {
-        ///     // log the exception with named variables
-        ///     logger.Exception(ex, xLogger.Vars(one, two), xLogger.Names("one", "two"));
+        ///     // log the exception with named variables using the Trace logging level
+        ///     logger.Exception(logger.Trace, ex, xLogger.Vars(one, two), xLogger.Names("one", "two"));
         /// }
         /// </code>
         /// </example>
-        public void Exception(Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(Action<string> action, Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+            Exception(action, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
@@ -1314,7 +1414,6 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <seealso cref="Names(string[])"/>
         /// <example>
@@ -1333,46 +1432,47 @@ namespace Symbiote.Core
         /// }
         /// catch (Exception ex)
         /// {
-        ///     // log the exception with named variables and using persistence
-        ///     logger.Exception(ex, xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
+        ///     // log the exception with named variables and using persistence using the Debug logging level
+        ///     logger.Exception(logger.Debug, ex, xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
         /// }
         /// </code>
         /// </example>
-        public void Exception(Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(Action<string> action, Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             // if tracing is not enabled on the current logger, bail out immediately to save processor time
             if (!IsTraceEnabled) return;
 
             // log the header
-            if (Header.Length > 0) Trace(Header);
-            Trace(ExceptionPrefix + "Exception '" + exception.GetType().Name + 
-                "' caught in " + (CallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
-                ": " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
+            LogHeader(action, ExceptionHeaderPrefix);
+
+            // log the method signature
+            action(ExceptionLinePrefix + ExceptionPrefix + "Exception '" + exception.GetType().Name + 
+                "' caught in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
                 (guid != default(Guid) ? ", Guid: " + guid : "")
             );
 
-            LogInnerSeparator();
-
+            LogInnerSeparator(action, ExceptionLinePrefix);
 
             // log the stack trace followed by a separator
-            LogStackTrace();
-            LogInnerSeparator();
+            LogStackTrace(action, ExceptionLinePrefix);
+            LogInnerSeparator(action, ExceptionLinePrefix);
 
             // log the exception 
-            LogVariables(Params(exception), Names("ex"));
+            LogVariables(action, Params(exception), Names("ex"), ExceptionLinePrefix);
 
             // if a variable list was supplied, log it 
             if (variables != null)
             {
-                LogInnerSeparator();
-                LogVariables(variables, variableNames);
+                LogInnerSeparator(action, ExceptionLinePrefix);
+                LogVariables(action, variables, variableNames);
             }
 
             // if persistence is used, log the current execution duration
-            if (guid != default(Guid)) LogExecutionDuration("Current execution duration: ", guid);
+            if (guid != default(Guid)) LogExecutionDuration(action, "Current execution duration: ", guid);
 
             // log the footer
-            if (Footer.Length > 0) Trace(Footer);
+            LogFooter(action, ExceptionFooterPrefix);
         }
 
         #endregion
@@ -1388,14 +1488,48 @@ namespace Symbiote.Core
         public void StackTrace([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             // log the header
-            if (Header.Length > 0) Trace(Header);
-            Trace(StackTracePrefix + "Stack Trace from method: " + MethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
+            LogHeader(Trace);
+            Trace(StackTracePrefix + "Stack Trace from method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
 
             // log the stack trace followed by a separator
-            LogStackTrace();
-            
+            LogStackTrace(Trace);
+
             // log the footer
-            if (Footer.Length > 0) Trace(Footer);
+            LogFooter(Trace);
+        }
+
+        /// <summary>
+        /// Returns an inverted excerpt of the current stack trace, omitting methods above Main() and those originating within this class.
+        /// </summary>
+        /// <returns>A list of type StackFrame containing an inverted excerpt of the current stack trace.</returns>
+        private static List<StackFrame> GetInvertedStackExcerpt()
+        {
+            StackTrace stackTrace = new StackTrace();
+            List<StackFrame> retVal = new List<StackFrame>();
+
+            //// get the relevant parts of the current stack trace, beginning with Main() and ending with the method
+            //// that invoked this method.
+
+            // iterate over the stack in reverse order beginning with the calling frame and adding the frames to the list as we go,
+            // but only if the namespace of the class containing the frame's method is the same as the current namespace.
+            // we don't want to add system/framework methods to the stack; this effectively will start the stack with Main().
+            for (int f = stackTrace.FrameCount - 1; f >= 1; f--)
+            {
+                StackFrame frame = stackTrace.GetFrame(f);
+
+                // if the namespace of the reflected type matches the namespace of this class, the frame contains relevant data.
+                // if not, the frame contains something above Main() which we don't care about.
+                if (frame.GetMethod().ReflectedType.Namespace == MethodBase.GetCurrentMethod().DeclaringType.Namespace)
+                {
+                    // if the full name of the reflected type isn't the same as this class, add it to the list.
+                    // if it is the same, the frame contains a method that originated within this class and we don't care.
+                    if (frame.GetMethod().ReflectedType.FullName != MethodBase.GetCurrentMethod().DeclaringType.FullName)
+                        retVal.Add(frame);
+                }
+
+            }
+
+            return retVal;
         }
 
         #endregion
@@ -1450,6 +1584,62 @@ namespace Symbiote.Core
             return retVal;
         }
 
+        /// <summary>
+        /// Searches the execution stack and returns the topmost frame not originating from this class, indicating the calling frame.
+        /// </summary>
+        /// <returns>The StackFrame containing the calling code.</returns>
+        private static StackFrame GetCallingStackFrame()
+        {
+            // retrieve the trace of the current call stack
+            StackTrace stackTrace = new StackTrace();
+
+            // determine the proper stack frame.  
+            // do this by iterating over the frames, starting from the one prior to the current frame, attempting to find
+            // the first frame that doesn't originate from the current class (GetFrame(0)).
+            // this is necessary so that we can be sure to grab the intended method if the Enter() overloads were used to get to this point.
+            int relevantFrame = 1;
+            for (int f = relevantFrame; f < stackTrace.FrameCount; f++)
+            {
+                if (stackTrace.GetFrame(f).GetMethod().ReflectedType.Name != stackTrace.GetFrame(0).GetMethod().ReflectedType.Name)
+                {
+                    relevantFrame = f;
+                    break;
+                }
+            }
+
+            return stackTrace.GetFrame(relevantFrame);
+        }
+
+        /// <summary>
+        /// Builds and returns the calling method signature, including method name, parameter types and names.
+        /// </summary>
+        /// <param name="methodBase">The MethodInfo for which to return the signature.</param>
+        /// <returns>The method signature, including method name, parameter types and names, of the calling method.</returns>
+        private static string GetMethodSignature(MethodBase methodBase = null)
+        {
+            // if no MethodInfo is provided, return the signature of the calling method.
+            if (methodBase == null)
+                methodBase = GetCallingStackFrame().GetMethod();
+
+            // determine the return type of the method.  if this is a constructor, force the type to void.
+            Type returnType = typeof(void);
+
+            if (!methodBase.IsConstructor)
+                returnType = ((MethodInfo)methodBase).ReturnType;
+
+            // build a signature string to display by iterating over the method parameters and retrieving names and types
+            string methodSignature = GetColloquialTypeName(returnType) + " " + (methodBase.IsConstructor ? methodBase.ReflectedType.Name : methodBase.Name) + "(";
+            List<string> parameters = new List<string>();
+
+            foreach (ParameterInfo pi in methodBase.GetParameters())
+                parameters.Add(GetColloquialTypeName(pi.ParameterType) + " " + pi.Name);
+
+            // create a string from the type array while converting the type to the readable type
+            methodSignature += String.Join(", ", parameters);
+
+            return methodSignature + ")";
+        }
+
         #endregion
 
         #region Public
@@ -1496,7 +1686,7 @@ namespace Symbiote.Core
         /// <param name="variables">A dynamic object array of variables.</param>
         /// <returns>The provided object array.</returns>
         /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
-        /// <seealso cref="Exception(System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Params(object[])"/>
         /// <example>
         /// <code>
@@ -1546,9 +1736,15 @@ namespace Symbiote.Core
         #region Nested Classes
 
         /// <summary>
-        /// Internal class used to differentiate a null return value from an unspecified return value.
+        /// Internal type used to differentiate a null return value from an unspecified return value.
         /// </summary>
         private class UnspecifiedReturnValue { }
+
+        /// <summary>
+        /// Type used to differentiate a null parameter value and one which is intentionally excluded from a 
+        /// method entry log.
+        /// </summary>
+        public class ExcludedParam { }
 
         #endregion
     }

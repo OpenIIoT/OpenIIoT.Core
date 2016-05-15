@@ -176,24 +176,30 @@ namespace Symbiote.Core
         /// <param name="logLevel">The logging level to apply to the message.</param>
         /// <param name="message">The message.</param>
         /// <remarks>The accessibility for this method is set to protected as there is no use case for this beyond the support of the other logging methods in this class or derived classes.</remarks>
-        protected void Log(NLog.Logger logger, string logLevel = "Info", string message = "")
+        //protected void Log(NLog.Logger logger, string logLevel = "Info", string message = "")
+        //{
+        //    try
+        //    {
+        //        MethodInfo foundMethod = typeof(NLog.ILogger).GetMethod(logLevel, new[] { typeof(string) });
+
+        //        if (foundMethod != null)
+        //            foundMethod.Invoke(logger, new object[] { message });
+        //        else
+        //            logger.Error("OperationResult.Log() was unable to find the logging level method '" + logLevel + "' in the supplied logger.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        logger.Error("Exception thrown trying to invoke logger method '" + logLevel + "' in OperationResult.Log().");
+        //        logger.Trace(ex);
+        //    }
+
+        //}
+
+        protected void Log(Action<string> logLevel, string message ="")
         {
-            try
-            {
-                MethodInfo foundMethod = typeof(NLog.ILogger).GetMethod(logLevel, new[] { typeof(string) });
-
-                if (foundMethod != null)
-                    foundMethod.Invoke(logger, new object[] { message });
-                else
-                    logger.Error("OperationResult.Log() was unable to find the logging level method '" + logLevel + "' in the supplied logger.");
-            }
-            catch (Exception ex)
-            {
-                logger.Error("Exception thrown trying to invoke logger method '" + logLevel + "' in OperationResult.Log().");
-                logger.Trace(ex);
-            }
-
+            logLevel(message);
         }
+
 
         /// <summary>
         /// Logs the result of the operation to the supplied logger using the supplied optional caller as the source.
@@ -202,7 +208,12 @@ namespace Symbiote.Core
         /// <param name="caller">The name of the method that called this method.</param>
         public virtual void LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
-            LogResult(logger, "Info", "Warn", "Error", caller);
+            LogResult(logger.Info, logger.Warn, logger.Error, caller);
+        }
+
+        public virtual void LogResult(Action<string> logLevel, [CallerMemberName]string caller = "")
+        {
+            LogResult(logLevel, logLevel, logLevel, caller);
         }
 
         /// <summary>
@@ -215,44 +226,44 @@ namespace Symbiote.Core
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void LogResult(NLog.Logger logger, string successLogLevel, string warningLogLevel, string failureLogLevel, [CallerMemberName]string caller = "")
+        public virtual void LogResult(Action<string> successLogLevel, Action<string> warningLogLevel, Action<string> failureLogLevel, [CallerMemberName]string caller = "")
         {
             // the operation suceeded, with or without warnings
             if (ResultCode != OperationResultCode.Failure)
             {
-                Log(logger, successLogLevel, "The operation '" + caller + "' completed successfully.");
+                Log(successLogLevel, "The operation '" + caller + "' completed successfully.");
 
                 // if any warnings were generated, print them to the logger
                 if (ResultCode == OperationResultCode.Warning)
-                    LogAllMessages(logger, warningLogLevel, "The following warnings were generated during the operation:");
+                    LogAllMessages(warningLogLevel, "The following warnings were generated during the operation:");
             }
             // the operation failed
             else
             {
-                Log(logger, failureLogLevel, "The operation '" + caller + "' failed.");
-                LogAllMessages(logger, failureLogLevel, "The following messages were generated during the operation:");
+                Log(failureLogLevel, "The operation '" + caller + "' failed.");
+                LogAllMessages(failureLogLevel, "The following messages were generated during the operation:");
             }
         }
 
-        /// <summary>
-        /// Logs the result of the operation to the supplied logger with the logging level Trace for all message levels.
-        /// </summary>
-        /// <param name="logger">The logger to which to log the message.</param>
-        /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void LogResultTrace(NLog.Logger logger, [CallerMemberName]string caller = "")
-        {
-            LogResult(logger, "Trace", "Trace", "Trace", caller);
-        }
+        ///// <summary>
+        ///// Logs the result of the operation to the supplied logger with the logging level Trace for all message levels.
+        ///// </summary>
+        ///// <param name="logger">The logger to which to log the message.</param>
+        ///// <param name="caller">The name of the method that called this method.</param>
+        //public virtual void LogResultTrace(NLog.Logger logger, [CallerMemberName]string caller = "")
+        //{
+        //    LogResult(logger, "Trace", "Trace", "Trace", caller);
+        //}
 
-        /// <summary>
-        /// Logs the result of the operation to the supplied logger with the logging level Debug for all message levels.
-        /// </summary>
-        /// <param name="logger">The logger to which to log the message.</param>
-        /// <param name="caller">The name of the method that called this method.</param>
-        public virtual void LogResultDebug(NLog.Logger logger, [CallerMemberName]string caller = "")
-        {
-            LogResult(logger, "Debug", "Debug", "Debug", caller);
-        }
+        ///// <summary>
+        ///// Logs the result of the operation to the supplied logger with the logging level Debug for all message levels.
+        ///// </summary>
+        ///// <param name="logger">The logger to which to log the message.</param>
+        ///// <param name="caller">The name of the method that called this method.</param>
+        //public virtual void LogResultDebug(NLog.Logger logger, [CallerMemberName]string caller = "")
+        //{
+        //    LogResult(logger, "Debug", "Debug", "Debug", caller);
+        //}
 
         /// <summary>
         /// Logs all messages in the message list to the supplied logger and with the supplied logging level.  If specified, logs a header and footer message before and after the list, respectively.
@@ -261,14 +272,14 @@ namespace Symbiote.Core
         /// <param name="logLevel">The logging level to apply to messages.</param>
         /// <param name="header">A header message to log prior to the list of messages.</param>
         /// <param name="footer">A footer message to display after the list of messages.</param>
-        public virtual void LogAllMessages(NLog.Logger logger, string logLevel = "Info", string header = "", string footer = "")
+        public virtual void LogAllMessages(Action<string> logLevel, string header = "", string footer = "")
         {
-            if (header != "") Log(logger, logLevel, header);
+            if (header != "") Log(logLevel, header);
 
             foreach (OperationResultMessage message in Messages)
-                Log(logger, logLevel, "\t" + message.Message);
+                Log(logLevel, "\t" + message.Message);
 
-            if (footer != "") Log(logger, logLevel, footer);
+            if (footer != "") Log(logLevel, footer);
         }
 
         /// <summary>

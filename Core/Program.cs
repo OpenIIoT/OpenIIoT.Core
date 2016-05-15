@@ -49,15 +49,13 @@ namespace Symbiote.Core
         internal static void Main(string[] args)
         {
             logger.Heading(logger.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-            logger.Heading(logger.Info,"Utility");
-            logger.Heading(logger.Info, "Plugin Manager");
-
-            foreach (string s in BigFont.Generate("Hello World!", BigFont.FontSize.Small))
-                Console.WriteLine(s);
-
-            Console.ReadLine();
 
             logger.EnterMethod(xLogger.Params((object)args));
+
+            logger.Heading(logger.Trace, "xLogger");
+            logger.SubHeading(logger.Trace, "xLogger");
+            logger.SubSubHeading(logger.Trace, "xLogger");
+
 
             try
             {
@@ -159,7 +157,7 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Fatal(ex, "The application failed to initialize.");
-                logger.Exception(ex);
+                logger.Exception(logger.Fatal, ex);
             }
             finally
             {
@@ -209,7 +207,6 @@ namespace Symbiote.Core
                 logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
                 //----------------------------------------------------------------  --  ---         ------ - 
 
-                return;
                 //--------------------- - --------------------- -  -
                 // create plugin instances.
                 // instantiates each plugin instance defined within the configuration and configures it
@@ -302,8 +299,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Fatal(ex, "Fatal error.");
-                logger.Exception(ex);
+                logger.Exception(logger.Fatal, ex);
                 if (!Environment.UserInteractive) throw;
             }
             finally
@@ -331,7 +327,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Error(ex, "Error saving configuration.");
+                logger.Exception(logger.Error, ex);
             }
             finally
             {

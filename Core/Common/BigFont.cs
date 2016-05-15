@@ -11,6 +11,7 @@
       █   ▄█████████▀  █▀     ████████▀    ███         ▀██████▀   ▀█   █▀     ▄████▀   ███ ████████▀   ▄████████▀   
       █
  ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       █ 
       █  Transforms strings into large, stylized characters.
       █ 
@@ -48,17 +49,17 @@ namespace Symbiote.Core
         /// <summary>
         /// The header string used for styled output.
         /// </summary>
-        private static string header = "+----------------------------------- -   -----------------  - -   -             -------  -";
+        private static string header = "┌─────────── ─ ───────────────────────── ─────────────────────────────────────────────────────────────────── ─────── ─    ─     ─";
 
         /// <summary>
         /// The line prefix used for styled output.
         /// </summary>
-        private static string linePrefix = "| ";
+        private static string linePrefix = "│ ";
 
         /// <summary>
         /// The footer string used for styled output.
         /// </summary>
-        private static string footer = "+-------- - -      ------------------ -  -- - -   ------------ - - - ---------  - -----------------    -";
+        private static string footer = "└──────────────────── ───────────────────────────────  ─  ─          ─ ─ ─    ─   ─";
 
         #endregion
 

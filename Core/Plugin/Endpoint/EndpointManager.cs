@@ -62,11 +62,11 @@ namespace Symbiote.Core.Plugin.Endpoint
             if (registerResult.ResultCode != OperationResultCode.Failure)
             {
                 Endpoints = registerResult.Result;
-                registerResult.LogResult(logger, "RegisterEndpoints");
+                registerResult.LogResult(logger.Info, "RegisterEndpoints");
                 logger.Info(Endpoints.Count + " Endpoints(s) registered.");
 
                 if (registerResult.ResultCode == OperationResultCode.Warning)
-                    registerResult.LogAllMessages(logger, "Warn", "The following warnings were generated during the registration:");
+                    registerResult.LogAllMessages(logger.Warn, "Warn", "The following warnings were generated during the registration:");
             }
             else
                 throw new Exception("Failed to register Endpoints: " + registerResult.GetLastError());

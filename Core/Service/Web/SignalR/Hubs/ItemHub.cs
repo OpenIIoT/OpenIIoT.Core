@@ -129,7 +129,7 @@ namespace Symbiote.Core.Service.Web.SignalR
                 {
                     Clients.Caller.writeError(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "failed to update item '" + foundItem.FQN + "'.");
-                    retVal.LogAllMessages(logger, "Info", "The following messages were generated during the write:");
+                    retVal.LogAllMessages(logger.Info, "Info", "The following messages were generated during the write:");
                 }
             }
         }
@@ -160,7 +160,7 @@ namespace Symbiote.Core.Service.Web.SignalR
                 {
                     Clients.Caller.writeToSourceError(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "failed to update item source '" + foundItem.FQN + "'.");
-                    retVal.LogAllMessages(logger, "Info", "The following messages were generated during the write:");
+                    retVal.LogAllMessages(logger.Info, "Info", "The following messages were generated during the write:");
                 }
             }
         }
