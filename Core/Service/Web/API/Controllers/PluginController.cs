@@ -2,6 +2,7 @@
 using NLog;
 using Symbiote.Core.Plugin;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
@@ -86,7 +87,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<PluginArchive> retVal = new ApiOperationResult<PluginArchive>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.Result = manager.PluginManager.FindPluginArchiveByFileName(fileName);
+            retVal.Result = manager.PluginManager.PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault();
 
             if (retVal.Result == default(PluginArchive))
                 retVal.StatusCode = HttpStatusCode.NotFound;
@@ -107,7 +108,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<OperationResult<Plugin.Plugin>> retVal = new ApiOperationResult<OperationResult<Plugin.Plugin>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.Result = await manager.PluginManager.InstallPluginAsync(manager.PluginManager.FindPluginArchiveByFileName(fileName));
+            retVal.Result = await manager.PluginManager.InstallPluginAsync(manager.PluginManager.PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault());
 
             if ((retVal.Result == default(OperationResult<Plugin.Plugin>)) || (retVal.Result.ResultCode == OperationResultCode.Failure))
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
@@ -156,7 +157,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiOperationResult<bool> retVal = new ApiOperationResult<bool>(Request);
             retVal.LogRequest(logger.Info);
 
-            string pluginArchive = System.IO.Path.Combine(manager.Directories.Archives, manager.PluginManager.FindPluginArchiveByFileName(fileName).FileName);
+            string pluginArchive = System.IO.Path.Combine(manager.Directories.Archives, manager.PluginManager.PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
 
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
 

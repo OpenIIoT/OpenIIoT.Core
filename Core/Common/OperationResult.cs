@@ -371,7 +371,7 @@ namespace Symbiote.Core
             if (header != "") Log(action, header);
 
             foreach (OperationResultMessage message in Messages)
-                Log(action, "\t" + message.Message);
+                Log(action, new string(' ', 5) + message.Message);
 
             if (footer != "") Log(action, footer);
         }

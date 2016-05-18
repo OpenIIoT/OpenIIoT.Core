@@ -52,10 +52,6 @@ namespace Symbiote.Core
 
             logger.EnterMethod(xLogger.Params((object)args));
 
-            logger.Heading(logger.Trace, "OperationResult");
-            logger.SubHeading(logger.Trace, "OperationResult");
-
-
             try
             {
                 #region Command Line Arguments
@@ -201,9 +197,9 @@ namespace Symbiote.Core
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
                 logger.Heading(logger.Debug, "Plugins");
                 manager.StartManager(manager.PluginManager);
-                logger.Info("Loading plugins...");
-                manager.PluginManager.LoadPlugins();
-                logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
+                //logger.Info("Loading plugins...");
+                //manager.PluginManager.LoadPlugins();
+                //logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
                 //----------------------------------------------------------------  --  ---         ------ - 
 
                 //--------------------- - --------------------- -  -
