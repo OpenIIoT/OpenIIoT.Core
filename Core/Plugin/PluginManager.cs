@@ -154,7 +154,7 @@ namespace Symbiote.Core.Plugin
             // Configure the manager
             OperationResult configureResult = Configure();
             if (configureResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to start the Plugin Manager: " + configureResult.LastErrorMessage);
+                throw new Exception("Failed to start the Plugin Manager: " + configureResult.LastErrorMessage());
 
             retVal.Incorporate(configureResult);
             logger.Checkpoint("Configured the Plugin Manager", guid);
@@ -378,7 +378,7 @@ namespace Symbiote.Core.Plugin
                     retVal.ValidArchives.Add(parseResult.Result);
                 }
                 else
-                    retVal.InvalidArchives.Add(new InvalidPluginArchive(System.IO.Path.GetFileName(fileName), parseResult.LastErrorMessage));
+                    retVal.InvalidArchives.Add(new InvalidPluginArchive(System.IO.Path.GetFileName(fileName), parseResult.LastErrorMessage()));
 
                 parseResult.LogResult(logger.Debug, "ParsePluginArchive");
             }
@@ -526,7 +526,7 @@ namespace Symbiote.Core.Plugin
                             logger.Trace("Payload checksum: " + payloadChecksumResult.Result);
                             payloadChecksum = payloadChecksumResult.Result;
                         }
-                        else retVal.AddError("Failed to compute the checksum of the payload: " + payloadChecksumResult.LastErrorMessage);
+                        else retVal.AddError("Failed to compute the checksum of the payload: " + payloadChecksumResult.LastErrorMessage());
 
                         // if the plugin archive contains a Connector or Endpoint, make sure the zip file contains a .dll with the proper name.
                         if ((retVal.Result.Plugin.PluginType == PluginType.Connector) || (retVal.Result.Plugin.PluginType == PluginType.Connector))
@@ -541,11 +541,11 @@ namespace Symbiote.Core.Plugin
                             retVal.Incorporate(zipFileDllResult);
                         }
                     }
-                    else retVal.AddError("Failed to extract the payload from the archive: " + extractPayloadResult.LastErrorMessage);
+                    else retVal.AddError("Failed to extract the payload from the archive: " + extractPayloadResult.LastErrorMessage());
                 }
                 else retVal.AddError("The file does not contain a valid payload.");
             }
-            else retVal.AddError("Failed to retrieve a list of files from zip file: " + zipPayloadCheckResult.LastErrorMessage);
+            else retVal.AddError("Failed to retrieve a list of files from zip file: " + zipPayloadCheckResult.LastErrorMessage());
             //-------------------- - ------------- - ----- - ---------  ---------------------               ---------- - 
 
 
@@ -1096,7 +1096,7 @@ namespace Symbiote.Core.Plugin
                     // check that the name meets the application requirements
                     OperationResult validationResult = ValidatePluginAssemblyName(assemblyName);
                     if (validationResult.ResultCode == OperationResultCode.Failure)
-                        throw new Exception("Error validating plugin assembly name: " + validationResult.LastErrorMessage);
+                        throw new Exception("Error validating plugin assembly name: " + validationResult.LastErrorMessage());
                 }
                 catch (Exception ex)
                 {
@@ -1116,7 +1116,7 @@ namespace Symbiote.Core.Plugin
                     Type pluginType;
                     
                     if (validationResult.ResultCode == OperationResultCode.Failure)
-                        throw new Exception("Error validating plugin assembly: " + validationResult.LastErrorMessage);
+                        throw new Exception("Error validating plugin assembly: " + validationResult.LastErrorMessage());
                     else
                     {
                         pluginType = validationResult.Result;
@@ -1467,7 +1467,7 @@ namespace Symbiote.Core.Plugin
             {
                 retVal.Messages = nameValidationResult.Messages;
                 retVal.ResultCode = nameValidationResult.ResultCode;
-                logger.Trace("Name validationg failed.  " + retVal.LastErrorMessage);
+                logger.Trace("Name validationg failed.  " + retVal.LastErrorMessage());
                 return retVal;
             }
 

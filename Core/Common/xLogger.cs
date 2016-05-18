@@ -108,6 +108,11 @@ namespace Symbiote.Core
         private static readonly string LinePrefix = Prefix + "  ├┄┈ ";
 
         /// <summary>
+        /// String to append to the beginning of the final line within a message.
+        /// </summary>
+        private static readonly string FinalLinePrefix = Prefix + "  └┄┈ ";
+
+        /// <summary>
         /// String to append to the beginning of each line requiring variable indentation.  The dollar sign '$' will be substituted for 
         /// a string of spaces of the appropriate length.
         /// </summary>
@@ -249,8 +254,13 @@ namespace Symbiote.Core
 
             // print the variable list
             for (int v = 0; v < variables.Length; v++)
-                foreach (string line in GetObjectSerialization(variables[v]))
-                    action(prefix + LinePrefix + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + line);
+            {
+                List<string> lines = GetObjectSerialization(variables[v]);
+
+                for (int l = 0; l < lines.Count(); l++)
+                    action(prefix + ((v == variables.Length - 1) && (l == lines.Count() - 1) ? FinalLinePrefix : LinePrefix) + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + lines[l]);
+            }
+
         }
 
         /// <summary>
@@ -684,8 +694,6 @@ namespace Symbiote.Core
             else
                 methodGuid = default(Guid);
 
-            List<string> lines = new List<string>();
-
             // log the header
             LogHeader(Trace);
 
@@ -706,7 +714,7 @@ namespace Symbiote.Core
                     ParameterInfo[] parameterInfo = GetCallingStackFrame().GetMethod().GetParameters();
 
                     if (parameterInfo.Length != parameters.Length)
-                        Trace(LinePrefix + "[Parameter count mismatch]");
+                        Trace(FinalLinePrefix + "[Parameter count mismatch]");
                     else
                     {
                         // the counts match, meaning we can infer that a complete parameter list has been supplied.
@@ -715,19 +723,21 @@ namespace Symbiote.Core
                         {
                             // gracefully handle nulls
                             if (parameters[p] == null)
-                                Trace(LinePrefix + parameterInfo[p].Name + ": null");
+                                Trace((p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": null");
                             // check to see if the param was excluded intentionally
                             else if (parameters[p].GetType() == typeof(ExcludedParam))
-                                Trace(LinePrefix + parameterInfo[p].Name + ": <parameter intentionally excluded>");
+                                Trace((p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": <parameter intentionally excluded>");
                             // check to ensure the type of the supplied parameter in position p is the same
                             // as the type in the method signature parameter list
                             else if (!parameterInfo[p].ParameterType.IsAssignableFrom(parameters[p].GetType()))
-                                Trace(LinePrefix + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
+                                Trace((p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
                             // everything checks out; print the object serialization
                             else
                             {
-                                foreach (string line in GetObjectSerialization(parameters[p]))
-                                    Trace(LinePrefix + parameterInfo[p].Name + ": " + line);
+                                List<string> lines = GetObjectSerialization(parameters[p]);
+
+                                for (int pl = 0; pl < lines.Count; pl++)
+                                    Trace(((p == parameters.Length - 1) && (pl == lines.Count - 1) ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": " + lines[pl]);
                             }
                         }
                     }
@@ -872,10 +882,7 @@ namespace Symbiote.Core
             // if returnValue isn't null compare the provided returnValue Type to our internal type UnspecifiedReturnValue.
             // this should only evaluate to true if an instance of UnspecifiedReturnValue is passed in from an overload.
             else if (returnValue.GetType() != typeof(UnspecifiedReturnValue))
-            {
-                foreach (string line in GetObjectSerialization(returnValue))
-                    Trace(LinePrefix + "return: " + line);
-            }
+                LogVariables(Trace, Vars(returnValue), Names("return"));
 
             // if a Guid was provided, locate it in the PersistedMethods list, log the duration
             // and remove it from the list

@@ -69,7 +69,7 @@ namespace Symbiote.Core.Plugin.Connector
                     registerResult.LogAllMessages(logger.Warn, "Warn", "The following warnings were generated during the registration:");
             }
             else
-                throw new Exception("Failed to register Endpoints: " + registerResult.LastErrorMessage);
+                throw new Exception("Failed to register Endpoints: " + registerResult.LastErrorMessage());
 
             foreach (ConnectorInstance i in Configuration.Instances)
             {

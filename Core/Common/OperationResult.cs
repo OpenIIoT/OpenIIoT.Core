@@ -145,21 +145,6 @@ namespace Symbiote.Core
         /// </summary>
         public List<OperationResultMessage> Messages { get; set; }
 
-        /// <summary>
-        /// Returns the most recently generated message of type Info from the list of messages.
-        /// </summary>
-        public string LastInfoMessage { get { return Messages.Where(m => m.Type == OperationResultMessageType.Info).LastOrDefault().Message ?? ""; } }
-
-        /// <summary>
-        /// Returns the most recently generated message of type Warning from the list of messages.
-        /// </summary>
-        public string LastWarningMessage { get { return Messages.Where(m => m.Type == OperationResultMessageType.Warning).LastOrDefault().Message ?? ""; } }
-
-        /// <summary>
-        /// Returns the most recently generated message of type Error from the list of messages.
-        /// </summary>
-        public string LastErrorMessage { get { return Messages.Where(m => m.Type == OperationResultMessageType.Error).LastOrDefault().Message ?? ""; } }
-
         #endregion
 
         #region Constructors
@@ -389,6 +374,69 @@ namespace Symbiote.Core
                 Log(action, "\t" + message.Message);
 
             if (footer != "") Log(action, footer);
+        }
+
+        /// <summary>
+        /// Returns the most recently added informational message contained within the message list.
+        /// </summary>
+        /// <returns>The message.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationREsult retVal = new OperationResult();
+        /// 
+        /// // add an informational message
+        /// retVal.AddInfo("This is an informational message");
+        /// 
+        /// // print the last info message
+        /// Console.WriteLine(retVal.LastInfoMessage());
+        /// </code>
+        /// </example>
+        public virtual string LastInfoMessage()
+        {
+            return Messages.Where(m => m.Type == OperationResultMessageType.Info).LastOrDefault().Message ?? "";
+        }
+
+        /// <summary>
+        /// Returns the most recently added warning message contained within the message list.
+        /// </summary>
+        /// <returns>The message.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationREsult retVal = new OperationResult();
+        /// 
+        /// // add a warning message
+        /// retVal.AddWarning("This is a warning");
+        /// 
+        /// // print the last warning
+        /// Console.WriteLine(retVal.LastWarningMessage());
+        /// </code>
+        /// </example>
+        public virtual string LastWarningMessage()
+        {
+            return Messages.Where(m => m.Type == OperationResultMessageType.Warning).LastOrDefault().Message ?? "";
+        }
+
+        /// <summary>
+        /// Returns the most recently added error message contained within the message list.
+        /// </summary>
+        /// <returns>The message.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationREsult retVal = new OperationResult();
+        /// 
+        /// // add an error message
+        /// retVal.AddError("This is an error");
+        /// 
+        /// // print the last error
+        /// Console.WriteLine(retVal.LastErrorMessage());
+        /// </code>
+        /// </example>
+        public virtual string LastErrorMessage()
+        {
+            return Messages.Where(m => m.Type == OperationResultMessageType.Error).LastOrDefault().Message ?? "";
         }
 
         /// <summary>

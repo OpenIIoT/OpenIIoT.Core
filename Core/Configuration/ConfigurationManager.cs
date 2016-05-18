@@ -161,10 +161,10 @@ namespace Symbiote.Core.Configuration
                         logger.Info("Saved the new configuration to '" + ConfigurationFileName + "'.");
                     }
                     else
-                        throw new Exception("Failed to save the new configuration: " + saveResult.LastErrorMessage);
+                        throw new Exception("Failed to save the new configuration: " + saveResult.LastErrorMessage());
                 }
                 else
-                    throw new Exception("The configuration file was missing and the application failed to build a replacement: " + buildResult.LastErrorMessage);
+                    throw new Exception("The configuration file was missing and the application failed to build a replacement: " + buildResult.LastErrorMessage());
             }
 
             logger.Checkpoint("Configuration file validated/generated", guid);
@@ -179,7 +179,7 @@ namespace Symbiote.Core.Configuration
             OperationResult<Dictionary<Type, Dictionary<string, object>>> loadResult = LoadConfiguration();
 
             if (loadResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to load the configuration: " + loadResult.LastErrorMessage);
+                throw new Exception("Failed to load the configuration: " + loadResult.LastErrorMessage());
 
             retVal.Incorporate(loadResult);
 
@@ -195,7 +195,7 @@ namespace Symbiote.Core.Configuration
             OperationResult validationResult = ValidateConfiguration(Configuration);
 
             if (validationResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("The loaded configuration is invalid: " + validationResult.LastErrorMessage);
+                throw new Exception("The loaded configuration is invalid: " + validationResult.LastErrorMessage());
 
             retVal.Incorporate(validationResult);
 

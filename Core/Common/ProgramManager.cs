@@ -281,7 +281,7 @@ namespace Symbiote.Core
 
             // if the manager fails to start, throw an exception and halt the program
             if (startResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to start " + manager.GetType().Name + "." + startResult.LastErrorMessage);
+                throw new Exception("Failed to start " + manager.GetType().Name + "." + startResult.LastErrorMessage());
 
             retVal.Result = manager;
             retVal.Incorporate(startResult);

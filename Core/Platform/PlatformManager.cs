@@ -141,7 +141,7 @@ namespace Symbiote.Core.Platform
             OperationResult<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(directoryList);
 
             if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to load application directory list: " + loadDirectoryResult.LastErrorMessage);
+                throw new Exception("Failed to load application directory list: " + loadDirectoryResult.LastErrorMessage());
 
             Directories = loadDirectoryResult.Result;
             loadDirectoryResult.LogResult(logger.Debug, "LoadDirectories");
@@ -160,7 +160,7 @@ namespace Symbiote.Core.Platform
             logger.Debug("Checking directories...");
             OperationResult checkResult = Directories.CheckDirectories();
             if (checkResult.ResultCode == OperationResultCode.Failure)
-                throw new Exception("Failed to verify and/or create one or more required program directory: " + checkResult.LastErrorMessage);
+                throw new Exception("Failed to verify and/or create one or more required program directory: " + checkResult.LastErrorMessage());
 
             checkResult.LogResult(logger.Debug, "CheckDirectories");
 
