@@ -393,7 +393,7 @@ namespace Symbiote.Core.Plugin
             // iterate over the list of found files
             foreach (string fileName in searchResult.Result)
             {
-                logger.SubHeading(logger.Trace, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
+                logger.SubSubHeading(logger.Trace, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
                 logger.Debug("Parsing Archive file '" + fileName + "'...");
 
                 // parse the current plugin archive file
@@ -1017,7 +1017,6 @@ namespace Symbiote.Core.Plugin
             // discard any plugins that aren't loadable (e.g. apps)
             plugins = plugins.Where(p => IsPluginLoadable(p)).ToList();
 
- 
 
             //--------------------- - -  -  -            -
             // create a list of plugin assembly files to be loaded
@@ -1032,32 +1031,32 @@ namespace Symbiote.Core.Plugin
 
             //--------- -   -
             // load the assemblies
-            foreach (string assemblyFile in assemblyFiles)
+            foreach (string assemblyFileName in assemblyFiles)
             {
-                logger.Debug("Loading Plugin Assembly '" + assemblyFile + "'...");
+                logger.SubSubHeading(logger.Trace, "Assembly: .." + String.Join(".", System.IO.Path.GetFileName(assemblyFileName).Split('.').TakeLast(2).ToArray()));
+                logger.Debug("Loading Plugin Assembly '" + assemblyFileName + "'...");
 
-                OperationResult<PluginAssembly> loadResult = LoadPluginAssembly(assemblyFile);
+                // load the assembly
+                OperationResult<PluginAssembly> loadResult = LoadPluginAssembly(assemblyFileName);
 
                 if (loadResult.ResultCode != OperationResultCode.Failure)
                 {
-                    logger.Debug("Successfully loaded Plugin Assembly '" + assemblyFile + "'.");
+                    logger.Debug("Successfully loaded Plugin Assembly '" + assemblyFileName + "'.");
                     retVal.Result.Add(loadResult.Result);
                 }
                 else
                 {
-                    logger.Debug("Failed to load Plugin Assembly '" + assemblyFile + "'...");
-                    retVal.AddWarning("Failed to load Plugin Assembly '" + System.IO.Path.GetFileName(assemblyFile) + ": " + loadResult.LastErrorMessage());
+                    logger.Debug("Failed to load Plugin Assembly '" + assemblyFileName + "'...");
+                    retVal.AddWarning("Failed to load Plugin Assembly '" + System.IO.Path.GetFileName(assemblyFileName) + ": " + loadResult.LastErrorMessage());
                 }
             }
-
-            logger.Checkpoint("Loaded Assemblies", xLogger.Vars(retVal.Result), xLogger.Names("retVal.Result"));
             //---------------------------- - -       - - - - 
+
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
-
 
         public OperationResult<PluginAssembly> LoadPluginAssembly(string assemblyFileName)
         {
@@ -1091,7 +1090,7 @@ namespace Symbiote.Core.Plugin
                 return retVal;
             }
 
-            logger.Checkpoint(xLogger.Vars(assemblyFileName, assemblyName), xLogger.Names("assemblyFileName", "assemblyName"));
+            logger.Checkpoint("Assembly Name", xLogger.Vars(assemblyFileName, assemblyName), xLogger.Names("assemblyFileName", "assemblyName"));
             //-------------------- - -               -- - - 
 
 

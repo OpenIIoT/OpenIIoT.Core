@@ -320,6 +320,39 @@ namespace Symbiote.Core
         #region Public
 
         /// <summary>
+        /// Returns true if the log level corresponding to the specified logging method is enabled, false otherwise.
+        /// </summary>
+        /// <param name="action">The logging method to check.</param>
+        /// <returns>True if the log level is enabled, false otherwise.</returns>
+        /// <example>
+        /// <code>
+        /// // log a trace message if trace is enabled
+        /// if (logger.IsLogLevelEnabled(logger.Trace))
+        ///     logger.Trace("My trace message");
+        /// </code>
+        /// </example>
+        public bool IsLogLevelEnabled(Action<string> action)
+        {
+            switch (action.GetMethodInfo().Name)
+            {
+                case "Trace":
+                    return IsTraceEnabled;
+                case "Debug":
+                    return IsDebugEnabled;
+                case "Info":
+                    return IsInfoEnabled;
+                case "Warn":
+                    return IsWarnEnabled;
+                case "Error":
+                    return IsErrorEnabled;
+                case "Fatal":
+                    return IsFatalEnabled;
+                default:
+                    return false;
+            }
+        }
+
+        /// <summary>
         /// Prunes the PersistedMethods list of any tuples older than the specified age in seconds.
         /// </summary>
         /// <remarks>
@@ -386,8 +419,11 @@ namespace Symbiote.Core
         /// </example>
         public void Multiline(Action<string> action, string[] message)
         {
+            // if the logging level isn't enabled, bail immediately to save processing time
+            if (!IsLogLevelEnabled(action)) return;
+
             foreach (string line in message)
-                action(line);
+                    action(line);
         }
 
         /// <summary>
@@ -425,6 +461,9 @@ namespace Symbiote.Core
         /// </example>
         public void MultilineWrapped(Action<string> action, string[] message)
         {
+            // if the logging level isn't enabled, bail immediately to save processing time
+            if (!IsLogLevelEnabled(action)) return;
+
             List<string> wrappedMessage = new List<string>();
 
             // add the header
@@ -453,6 +492,9 @@ namespace Symbiote.Core
         /// </example>
         public void Separator(Action<string> action)
         {
+            // if the logging level isn't enabled, bail immediately to save processing time
+            if (!IsLogLevelEnabled(action)) return;
+
             LogOuterSeparator(action);
         }
 
@@ -473,6 +515,9 @@ namespace Symbiote.Core
         /// </example>
         public void Heading(Action<string> action, string message)
         {
+            // if the logging level isn't enabled, bail immediately to save processing time
+            if (!IsLogLevelEnabled(action)) return;
+
             // get the BigFont for the message
             string[] heading = BigFont.Generate(message, BigFont.FontSize.Large);
 
@@ -1448,8 +1493,8 @@ namespace Symbiote.Core
         /// </example>
         public void Exception(Action<string> action, Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            // if tracing is not enabled on the current logger, bail out immediately to save processor time
-            if (!IsTraceEnabled) return;
+            // if the logging level isn't enabled, bail immediately to save processing time
+            if (!IsLogLevelEnabled(action)) return;
 
             // log the header
             LogHeader(action, ExceptionHeaderPrefix);
@@ -1496,6 +1541,9 @@ namespace Symbiote.Core
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         public void StackTrace([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
+            // if the logging level isn't enabled, bail immediately to save processing time
+            if (!IsTraceEnabled) return;
+
             // log the header
             LogHeader(Trace);
             Trace(StackTracePrefix + "Stack Trace from method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
@@ -1507,6 +1555,16 @@ namespace Symbiote.Core
             LogFooter(Trace);
         }
 
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region Static Methods
+
+        #region Private
+
         /// <summary>
         /// Returns an inverted excerpt of the current stack trace, omitting methods above Main() and those originating within this class.
         /// </summary>
@@ -1516,8 +1574,8 @@ namespace Symbiote.Core
             StackTrace stackTrace = new StackTrace();
             List<StackFrame> retVal = new List<StackFrame>();
 
-            //// get the relevant parts of the current stack trace, beginning with Main() and ending with the method
-            //// that invoked this method.
+            // get the relevant parts of the current stack trace, beginning with Main() and ending with the method
+            // that invoked this method.
 
             // iterate over the stack in reverse order beginning with the calling frame and adding the frames to the list as we go,
             // but only if the namespace of the class containing the frame's method is the same as the current namespace.
@@ -1525,10 +1583,10 @@ namespace Symbiote.Core
             for (int f = stackTrace.FrameCount - 1; f >= 1; f--)
             {
                 StackFrame frame = stackTrace.GetFrame(f);
-
+                
                 // if the namespace of the reflected type matches the namespace of this class, the frame contains relevant data.
                 // if not, the frame contains something above Main() which we don't care about.
-                if (frame.GetMethod().ReflectedType.Namespace == MethodBase.GetCurrentMethod().DeclaringType.Namespace)
+                if (frame.GetMethod().ReflectedType.Namespace.Contains(MethodBase.GetCurrentMethod().DeclaringType.Namespace))
                 {
                     // if the full name of the reflected type isn't the same as this class, add it to the list.
                     // if it is the same, the frame contains a method that originated within this class and we don't care.
@@ -1540,16 +1598,6 @@ namespace Symbiote.Core
 
             return retVal;
         }
-
-        #endregion
-
-        #endregion
-
-        #endregion
-
-        #region Static Methods
-
-        #region Private
 
         /// <summary>
         /// Returns a "pretty" string representation of the provided Type;  specifically, corrects the naming of generic Types
