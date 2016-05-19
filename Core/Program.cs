@@ -131,7 +131,6 @@ namespace Symbiote.Core
 
                 //----------------------------------------- - ----------------
                 // start the application
-                logger.Separator(logger.Debug);
                 logger.Checkpoint("Application start");
 
                 // if the platform is windows and it is not being run as an interactive application, Windows 
@@ -186,7 +185,7 @@ namespace Symbiote.Core
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                logger.Heading(logger.Debug, "Configuration");
+                logger.SubHeading(logger.Debug, "Configuration");
                 manager.StartManager(manager.ConfigurationManager);
                 logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
@@ -195,7 +194,7 @@ namespace Symbiote.Core
                 //--------------------------------------------- - - --------- ----  - -    -
                 // load plugins.  
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
-                logger.Heading(logger.Debug, "Plugins");
+                logger.SubHeading(logger.Debug, "Plugins");
                 manager.StartManager(manager.PluginManager);
                 //logger.Info("Loading plugins...");
                 //manager.PluginManager.LoadPlugins();

@@ -141,7 +141,7 @@ namespace Symbiote.Core
 
             //------- - ------- -         --
             // Platform Manager
-            logger.Separator(logger.Debug);
+            logger.Separator(logger.Trace);
             logger.Debug("Instantiating the PlatformManager...");
             PlatformManager = PlatformManager.Instance(this);
             logger.Debug("Successfully instantiated the Platform Manager.");
@@ -150,7 +150,7 @@ namespace Symbiote.Core
 
             //------------ -        -- -   -
             // Configuration Manager
-            logger.Separator(logger.Debug);
+            logger.Separator(logger.Trace);
             logger.Debug("Instantiating the Configuration Manager...");
             ConfigurationManager = ConfigurationManager.Instance(this);
             logger.Debug("Successfully instantiated the Configuration Manager.");
@@ -159,7 +159,7 @@ namespace Symbiote.Core
 
             //------- - - ------------------ - - ------------
             // Plugin Manager
-            logger.Separator(logger.Debug);
+            logger.Separator(logger.Trace);
             logger.Debug("Instantiating the Plugin Manager...");
             PluginManager = PluginManager.Instance(this);
             ConfigurationManager.RegisterType(typeof(PluginManager));
@@ -169,7 +169,7 @@ namespace Symbiote.Core
 
             //-------- -------------- -    -
             // Model Manager
-            logger.Separator(logger.Debug);
+            logger.Separator(logger.Trace);
             logger.Debug("Instantiating the Model Manager...");
             ModelManager = ModelManager.Instance(this);
             ConfigurationManager.RegisterType(typeof(ModelManager));
@@ -179,7 +179,7 @@ namespace Symbiote.Core
 
             //--------------------  - -
             // Service Manager
-            logger.Separator(logger.Debug);
+            logger.Separator(logger.Trace);
             logger.Debug("Instantiating the Service Manager...");
             ServiceManager = ServiceManager.Instance(this);
             ConfigurationManager.RegisterType(typeof(ServiceManager));

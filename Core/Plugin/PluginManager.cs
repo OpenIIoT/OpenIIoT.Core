@@ -61,6 +61,12 @@ namespace Symbiote.Core.Plugin
         private bool pluginsLoaded = false;
 
         /// <summary>
+        /// An array of loadable plugin types.
+        /// </summary>
+        /// <seealso cref="IsPluginLoadable(Plugin)"/>
+        private static PluginType[] loadablePluginTypes = new PluginType[] { PluginType.Connector, PluginType.Endpoint };
+
+        /// <summary>
         /// Lock object for installation/uninstallation of Plugins.
         /// </summary>
         private object installationLock = new object();
@@ -166,9 +172,10 @@ namespace Symbiote.Core.Plugin
 
             //---------------- - ------- - - -
             // generate a list of valid archive files in the archive directory 
-            logger.Separator(logger.Debug);
+            logger.SubSubHeading(logger.Debug, "Archives...");
 
             PluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
+
             if (pluginArchiveLoadResult.ResultCode != OperationResultCode.Failure)
             {
                 PluginArchives = pluginArchiveLoadResult.ValidArchives;
@@ -176,7 +183,6 @@ namespace Symbiote.Core.Plugin
             }
 
             retVal.Incorporate(pluginArchiveLoadResult);
-            logger.Separator(logger.Debug);
 
             // print the lists of valid and invalid archives
             if (PluginArchives.Count > 0) logger.Info("Valid Plugin Archives:");
@@ -200,15 +206,14 @@ namespace Symbiote.Core.Plugin
 
             // ---------- -   -    ------------  
             // load installed plugin assemblies into memory
-            logger.Separator(logger.Debug);
-            logger.Info("Loading Plugin Assemblies...");
+            logger.SubSubHeading(logger.Debug, "Assemblies...");
 
             OperationResult<List<PluginAssembly>> pluginAssemblyLoadResult = LoadPluginAssemblies();
+
             if (pluginAssemblyLoadResult.ResultCode != OperationResultCode.Failure)
                 PluginAssemblies = pluginAssemblyLoadResult.Result;
 
             retVal.Incorporate(pluginAssemblyLoadResult);
-            logger.Separator(logger.Debug);
 
             // print the list of loaded assemblies
             if (PluginAssemblies.Count > 0) logger.Info("Loaded Assemblies:");
@@ -363,7 +368,7 @@ namespace Symbiote.Core.Plugin
         /// Loads all valid Plugin Archives in the archive directory into a list of type PluginArchive and returns it.
         /// </summary>
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
-        public PluginArchiveLoadResult LoadPluginArchives()
+        private PluginArchiveLoadResult LoadPluginArchives()
         {
             return LoadPluginArchives(manager.Directories.Archives, GetPluginArchiveExtension() , manager.Platform);
         }
@@ -1001,11 +1006,21 @@ namespace Symbiote.Core.Plugin
 
         #region Plugin Assembly Management
 
-        public OperationResult<List<PluginAssembly>> LoadPluginAssemblies()
+        /// <summary>
+        /// Loads the Plugin Assemblies specified in the InstalledPlugins list of the Plugin Manager configuration.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
+        private OperationResult<List<PluginAssembly>> LoadPluginAssemblies()
         {
             return LoadPluginAssemblies(Configuration.InstalledPlugins, manager.Platform);
         }
 
+        /// <summary>
+        /// Loads the Plugin Assemblies specified in the supplied list of Plugins using the supplied IPlatform instance.
+        /// </summary>
+        /// <param name="plugins">The list of Plugins from which the Plugin Assemblies should be loaded.</param>
+        /// <param name="platform">The IPlatform instance with which to load the Plugin Assemblies.</param>
+        /// <returns>An OperationResult containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
         private OperationResult<List<PluginAssembly>> LoadPluginAssemblies(List<Plugin> plugins, IPlatform platform)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(plugins, platform), true);
@@ -1058,64 +1073,36 @@ namespace Symbiote.Core.Plugin
             return retVal;
         }
 
-        public OperationResult<PluginAssembly> LoadPluginAssembly(string assemblyFileName)
+        /// <summary>
+        /// Loads the Plugin Assembly contained within the specified file name.
+        /// </summary>
+        /// <param name="assemblyFileName">The filename of the file containing the Plugin Assembly to load.</param>
+        /// <returns>An OperationResult containing the result of the operation and the loaded PluginAssembly.</returns>
+        private OperationResult<PluginAssembly> LoadPluginAssembly(string assemblyFileName)
         {
             logger.EnterMethod(xLogger.Params(assemblyFileName));
-
-            OperationResult<PluginAssembly> retVal = new OperationResult<PluginAssembly>();
-
-            AssemblyName assemblyName;
-            Assembly assembly;
-
             logger.Debug("Loading Assembly from '" + assemblyFileName + "...");
 
-
-            //------------  - 
-            // ensure the file is a valid assembly and that the name meets the application requirements
-            logger.Trace("Attempting to determine assembly name...");
-            try
-            {
-                // ensure the file is a valid assembly
-                assemblyName = AssemblyName.GetAssemblyName(assemblyFileName);
-
-                // check that the name meets the application requirements
-                OperationResult validationResult = ValidatePluginAssemblyName(assemblyName);
-                if (validationResult.ResultCode == OperationResultCode.Failure)
-                    throw new Exception("Error validating plugin assembly name: " + validationResult.LastErrorMessage());
-            }
-            catch (Exception ex)
-            {
-                logger.Exception(logger.Trace, ex);
-                retVal.AddError("Plugin file '" + assemblyFileName + "' is not a valid plugin assembly.");
-                return retVal;
-            }
-
-            logger.Checkpoint("Assembly Name", xLogger.Vars(assemblyFileName, assemblyName), xLogger.Names("assemblyFileName", "assemblyName"));
-            //-------------------- - -               -- - - 
-
+            OperationResult<PluginAssembly> retVal = new OperationResult<PluginAssembly>();
+            Assembly assembly;
+            
 
             //------------------- - 
             // attempt to load the assembly and add it to the internal list of plugins
-            logger.Trace("Validated assembly name '" + assemblyName.ToString() + "'; attempting to load...");
-
             try
             {
                 // load the assembly
-                assembly = Assembly.Load(assemblyName);
+                assembly = Assembly.Load(AssemblyName.GetAssemblyName(assemblyFileName));
 
                 logger.Trace("Loaded assembly.  Validating...");
 
                 // validate the assembly
                 OperationResult<Type> validationResult = ValidatePluginAssembly(assembly);
-                Type pluginType;
 
                 if (validationResult.ResultCode == OperationResultCode.Failure)
                     throw new Exception("Error validating plugin assembly: " + validationResult.LastErrorMessage());
                 else
-                {
-                    pluginType = validationResult.Result;
-                    logger.Trace("Plugin type '" + pluginType.Name + "' was found in assembly '" + assembly.GetName().Name);
-                }
+                    logger.Trace("Plugin type '" + validationResult.Result.Name + "' was found in assembly '" + assembly.GetName().Name);
 
                 // create a new PluginAssembly instance
                 retVal.Result = new PluginAssembly(
@@ -1124,13 +1111,13 @@ namespace Symbiote.Core.Plugin
                                                     assembly.GetName().Version.ToString(),
                                                     GetPluginType(assembly.GetName().Name),
                                                     "",
-                                                    pluginType,
+                                                    validationResult.Result,
                                                     assembly
                                                 );
                 
                 // register the plugin type
                 // as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
-                OperationResult registerResult = manager.ConfigurationManager.RegisterType(pluginType);
+                OperationResult registerResult = manager.ConfigurationManager.RegisterType(validationResult.Result);
                 if (registerResult.ResultCode == OperationResultCode.Failure)
                     throw new Exception("Failed to register the assembly type with the Configuration Manager.");
             }
@@ -1140,13 +1127,15 @@ namespace Symbiote.Core.Plugin
 
                 // a multitude of exceptions can be thrown under the ReflectionTypeLoaderException type
                 // iterate over them
+                retVal.AddError("Failed to load assembly from plugin file '" + assemblyFileName + "': " + ex.Message);
+
                 foreach (Exception le in ex.LoaderExceptions)
                     retVal.AddError("Loader Exception: " + le.Message);
             }
             catch (Exception ex)
             {
                 logger.Exception(logger.Debug, ex);
-                logger.Error(ex, "Failed to load assembly from plugin file '" + assemblyFileName + "'.  Ignoring.");
+                retVal.AddError("Failed to load assembly from plugin file '" + assemblyFileName + "': " + ex.Message);
             }
 
             retVal.LogResult(logger.Debug);
@@ -1560,23 +1549,30 @@ namespace Symbiote.Core.Plugin
         /// Evaluates the supplied assembly name for correctness and returns an error message if it is incorrect.
         /// </summary>
         /// <remarks>
-        /// The expected format of an assembly name is:  "Symbiote.Plugin.[Connector|Service].&gt;PluginName&lt;"
-        /// If/when the plugin system expands this code will need to be made to be more dynamic.
+        /// The expected format of an assembly name is:  "Symbiote.Plugin.[Connector|Service].{PluginName}"
+        /// The third tuple may match any enumerated value in PluginType.
         /// </remarks>
         /// <param name="assemblyName">The AssemblyName to be validated.</param>
         private static OperationResult ValidatePluginAssemblyName(AssemblyName assemblyName)
         {
+            logger.EnterMethod(xLogger.Params(assemblyName));
+            logger.Debug("Validating assembly name for '" + assemblyName.FullName + "'...");
+
             OperationResult retVal = new OperationResult();
 
             string[] name = assemblyName.Name.Split('.');
+
             if (name.Length != 4)
                 retVal.AddError("Invalid assembly name (required: 4 tuples, supplied: " + name.Length + ")");
             if (name[0] != "Symbiote")
                 retVal.AddError("Invalid application identifier (required: Symbiote, supplied: " + name[0] + ")");
-            if ((name[1] != "Plugin") && (name[1] != "Endpoint"))
-                retVal.AddError("Invalid namespace identifier (required: Plugin or Endpoint, supplied: " + name[1] + ")");
+            if (name[1] != "Plugin")
+                retVal.AddError("Invalid namespace identifier (required: Plugin, supplied: " + name[1] + ")");
             if (GetPluginType(assemblyName.Name) == default(PluginType))
                 retVal.AddError("Invalid plugin type identifier (supplied: " + name[2] + ")");
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -1587,42 +1583,43 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation and, if successful, the plugin type.</returns>
         private static OperationResult<Type> ValidatePluginAssembly(Assembly assembly)
         {
-            logger.Trace("Validating plugin assembly '" + assembly.FullName + "'...");
+            logger.EnterMethod(xLogger.Params(assembly));
+            logger.Debug("Validating plugin assembly '" + assembly.FullName + "'...");
+
             OperationResult<Type> retVal = new OperationResult<Type>();
 
-            logger.Trace("Validating plugin assembly name...");
+            // validate the assembly name
             OperationResult nameValidationResult = ValidatePluginAssemblyName(assembly.GetName());
-            if (nameValidationResult.ResultCode == OperationResultCode.Failure)
-            {
-                retVal.Messages = nameValidationResult.Messages;
-                retVal.ResultCode = nameValidationResult.ResultCode;
-                logger.Trace("Name validationg failed.  " + retVal.LastErrorMessage());
-                return retVal;
-            }
+            retVal.Incorporate(nameValidationResult);
 
-            logger.Trace("Name validated; searching for the type that implements IConfigurable<> and either IConnector or IEndpoint...");
-            // passed name validation, find an implementation of IConfigurable and either IConnector or IEndpoint
-            foreach (Type t in assembly.GetTypes())
+            if (nameValidationResult.ResultCode != OperationResultCode.Failure)
             {
-                logger.Trace("Checking type '" + t.Name + "'...");
-                // ensure the type implements IConfigurable<>
-                if (t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
+                logger.Trace("Name validated; searching for the type that implements IConfigurable<> and either IConnector or IEndpoint...");
+                // passed name validation, find an implementation of IConfigurable and either IConnector or IEndpoint
+                foreach (Type t in assembly.GetTypes())
                 {
-                    logger.Trace("IConfigurable is implemented.  Looking for either IConnector or IEndpoint...");
-                    // ensure it implements either IConnector or IEndpoint
-                    if ((t.GetInterfaces().Contains(typeof(IConnector))) || (t.GetInterfaces().Contains(typeof(IEndpoint))))
+                    logger.Trace("Checking type '" + t.Name + "'...");
+                    // ensure the type implements IConfigurable<>
+                    if (t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
                     {
-                        retVal.Result = t;
-                        break;
+                        logger.Trace("IConfigurable is implemented.  Looking for either IConnector or IEndpoint...");
+                        // ensure it implements either IConnector or IEndpoint
+                        if ((t.GetInterfaces().Contains(typeof(IConnector))) || (t.GetInterfaces().Contains(typeof(IEndpoint))))
+                        {
+                            retVal.Result = t;
+                            break;
+                        }
+                        else
+                            retVal.AddError("Neither IConnector nor IEndpoint interfaces are implemented; plugin assembly is invalid.");
                     }
+                    else
+                        retVal.AddError("Interface IConfigurable is not implemented; plugin assembly is invalid.");
                 }
             }
 
-            if (retVal.Result == default(Type)) logger.Trace("Didn't find a suitable type.");
-
-            if (retVal.Result == default(Type)) retVal.AddError("The supplied assembly '" + assembly.GetName() + "' does not contain any implementations of IConfigureable.");
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
             return retVal;
-
         }
 
         /// <summary>
@@ -1632,20 +1629,26 @@ namespace Symbiote.Core.Plugin
         /// <returns>An instance of PluginType corresponding to the parsed type.</returns>
         private static PluginType GetPluginType(string name)
         {
+            logger.EnterMethod(xLogger.Params(name));
             logger.Trace("Attempting to determine Plugin type for '" + name + "'...");
+
             PluginType retVal;
+
             if (Enum.TryParse<PluginType>(name.Split('.')[2], out retVal))
-            {
                 logger.Trace("Plugin type: " + retVal);
-                return retVal;
-            }
             else
-            {
-                logger.Warn("Invalid PluginType for plugin '" + name + "'");
-                return default(PluginType);
-            }
+                logger.Trace("Invalid PluginType for plugin '" + name + "'");
+
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
+        /// <summary>
+        /// Returns the base directory in which the specified Plugin should be installed, based on the type and name of the 
+        /// specified Plugin.
+        /// </summary>
+        /// <param name="plugin">The Plugin for which the directory is to be returned.</param>
+        /// <returns>The directory in which the specified Plugin should be installed.</returns>
         private static string GetPluginDirectory(Plugin plugin)
         {
             if (plugin.PluginType == PluginType.App)
@@ -1654,9 +1657,15 @@ namespace Symbiote.Core.Plugin
                 return System.IO.Path.Combine(ProgramManager.Instance().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
         }
 
+        /// <summary>
+        /// Returns true if the supplied Plugin is capable of being loaded, false otherwise.
+        /// </summary>
+        /// <param name="plugin">The Plugin to check.</param>
+        /// <returns>True if the Plugin is capable of being loaded, false otherwise.</returns>
+        /// <seealso cref="loadablePluginTypes"/>
         private static bool IsPluginLoadable(Plugin plugin)
         {
-            return ((plugin.PluginType == PluginType.Connector) || (plugin.PluginType == PluginType.Endpoint));
+            return loadablePluginTypes.Contains(plugin.PluginType);
         }
 
         #region Settings
