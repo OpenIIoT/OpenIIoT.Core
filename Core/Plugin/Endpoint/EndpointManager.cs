@@ -18,7 +18,7 @@ namespace Symbiote.Core.Plugin.Endpoint
 
         #region Properties
 
-        public bool Running { get; private set; }
+        public ManagerState State { get; private set; }
 
         public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
@@ -56,6 +56,8 @@ namespace Symbiote.Core.Plugin.Endpoint
             OperationResult retVal = new OperationResult();
             Configure();
 
+            State = ManagerState.Starting;
+
             // register endpoints
             OperationResult<Dictionary<string, Type>> registerResult = RegisterEndpoints();
 
@@ -76,7 +78,10 @@ namespace Symbiote.Core.Plugin.Endpoint
                 logger.Info("Instance: " + i.Name);
             }
 
-            Running = (retVal.ResultCode != OperationResultCode.Failure);
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Running;
+            else
+                State = ManagerState.Faulted;
 
             return retVal;
         }
@@ -88,7 +93,7 @@ namespace Symbiote.Core.Plugin.Endpoint
 
         public OperationResult Stop()
         {
-            Running = false;
+            State = ManagerState.Stopped;
 
             return new OperationResult();
         }

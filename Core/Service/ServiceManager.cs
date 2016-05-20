@@ -24,7 +24,7 @@ namespace Symbiote.Core.Service
 
         #region Properties
 
-        public bool Running { get; private set; }
+        public ManagerState State { get; private set; }
         public Dictionary<string, IService> Services { get; private set; }
         public Dictionary<string, Type> ServiceTypes { get; private set; }
 
@@ -36,7 +36,6 @@ namespace Symbiote.Core.Service
         {
             this.manager = manager;
             Services = new Dictionary<string, IService>();
-            Running = false;
         }
 
         public static ServiceManager Instance(ProgramManager manager)
@@ -63,6 +62,8 @@ namespace Symbiote.Core.Service
             logger.Debug("Starting services...");
             OperationResult retVal = new OperationResult();
 
+            State = ManagerState.Starting;
+
             OperationResult<Dictionary<string, Type>> registerResult = RegisterServices();
             if (registerResult.ResultCode != OperationResultCode.Failure)
             {
@@ -79,7 +80,11 @@ namespace Symbiote.Core.Service
             else
                 retVal.AddError("Failed to register Service types. " + retVal.LastErrorMessage());
 
-            Running = (retVal.ResultCode != OperationResultCode.Failure);
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Running;
+            else
+                State = ManagerState.Faulted;
+
             return retVal;
         }
 
@@ -100,7 +105,13 @@ namespace Symbiote.Core.Service
             logger.Info("Stopping services...");
             OperationResult retVal = new OperationResult();
 
-            Running = false;
+            State = ManagerState.Stopping;
+
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Stopped;
+            else
+                State = ManagerState.Faulted;
+
             retVal.LogResult(logger);
             return retVal;
         }

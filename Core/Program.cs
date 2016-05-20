@@ -177,8 +177,7 @@ namespace Symbiote.Core
                 // start the program manager.
                 logger.Heading(logger.Debug, "Startup");
                 manager.StartManager(manager);
-                // set the Starting property to true so that other components can suppress logging messages during startup
-                manager.Starting = true;
+                logger.Info("Program Manager Started.");
                 //----------- - -
 
 
@@ -268,7 +267,6 @@ namespace Symbiote.Core
                 manager.PluginManager.StartPlugins();
 
                 logger.Info(manager.ProductName + " is running.");
-                manager.Starting = false;
 
                 //FQNResolver.Resolve(manager.InstanceName + ".Simulation.Process.Ramp").SubscribeToSource();
                 //FQNResolver.Resolve(manager.InstanceName + ".Simulation.DateTime.Time").SubscribeToSource();

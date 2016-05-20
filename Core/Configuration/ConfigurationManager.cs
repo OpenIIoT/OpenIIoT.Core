@@ -70,10 +70,14 @@ namespace Symbiote.Core.Configuration
 
         #region Properties
 
+        #region IManager Implementation
+
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public bool Running { get; private set; }
+        public ManagerState State { get; private set; }
+
+        #endregion
 
         /// <summary>
         /// The current configuration.
@@ -103,7 +107,6 @@ namespace Symbiote.Core.Configuration
             this.manager = manager;
             RegisteredTypes = new Dictionary<Type, ConfigurationDefinition>();
             ConfigurationFileName = GetConfigurationFileName();
-            Running = false;
         }
 
         /// <summary>
@@ -135,6 +138,8 @@ namespace Symbiote.Core.Configuration
 
             logger.Info("Starting the Configuration Manager...");
             OperationResult retVal = new OperationResult();
+
+            State = ManagerState.Starting;
 
             #region Configuration File Validation/Generation
 
@@ -206,9 +211,12 @@ namespace Symbiote.Core.Configuration
 
             // attach the configuration
             if (retVal.ResultCode != OperationResultCode.Failure)
+            {
                 Configuration = loadResult.Result;
-
-            Running = (retVal.ResultCode != OperationResultCode.Failure);
+                State = ManagerState.Running;
+            }
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -245,7 +253,12 @@ namespace Symbiote.Core.Configuration
             logger.Info("Stopping the Configuration Manager...");
             OperationResult retVal = new OperationResult();
 
-            Running = false;
+            State = ManagerState.Stopping;
+
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Stopped;
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);

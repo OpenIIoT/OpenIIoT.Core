@@ -48,10 +48,14 @@ namespace Symbiote.Core.Platform
 
         #region Properties
 
+        #region IManager Implementation
+
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public bool Running { get; private set; }
+        public ManagerState State { get; private set; }
+
+        #endregion
 
         /// <summary>
         /// The current platform.
@@ -74,7 +78,6 @@ namespace Symbiote.Core.Platform
         private PlatformManager(ProgramManager manager)
         {
             this.manager = manager;
-            Running = false;
         }
 
         /// <summary>
@@ -106,6 +109,8 @@ namespace Symbiote.Core.Platform
             OperationResult retVal = new OperationResult();
 
             logger.Info("Starting the Platform Manager...");
+
+            State = ManagerState.Starting;
 
             #region Platform Instantiation
 
@@ -171,7 +176,10 @@ namespace Symbiote.Core.Platform
 
             #endregion
 
-            Running = (retVal.ResultCode != OperationResultCode.Failure);
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Running;
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -208,7 +216,12 @@ namespace Symbiote.Core.Platform
             logger.Info("Stopping the Platform Manager...");
             OperationResult retVal = new OperationResult();
 
-            Running = false;
+            State = ManagerState.Stopping;
+
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Stopped;
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);

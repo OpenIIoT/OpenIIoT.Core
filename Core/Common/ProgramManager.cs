@@ -31,21 +31,20 @@ namespace Symbiote.Core
 
         #region Properties
 
+        #region IManager Implementation
+
+        /// <summary>
+        /// The state of the Manager.
+        /// </summary>
+        public ManagerState State { get; private set; }
+
+        #endregion
+
         /// <summary>
         /// Indicates whether the program is in Safe Mode.  Safe Mode is a sort of fault tolerant mode designed
         /// to allow the application to run under conditions that would otherwise raise fatal errors.
         /// </summary>
         public bool SafeMode { get; private set; }
-
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        public bool Running { get; private set; }
-
-        /// <summary>
-        /// True while the application is starting, false afterwards.
-        /// </summary>
-        public bool Starting { get; set; }
 
         /// <summary>
         /// The name of the product, retrieved from AssemblyInfo.cs.
@@ -137,7 +136,6 @@ namespace Symbiote.Core
                 logger.Info("Safe Mode enabled.  The program is now running in a limited fault tolerant mode.");
 
             logger.Debug("Instantiating Managers...");
-            Running = false;
 
             //------- - ------- -         --
             // Platform Manager
@@ -218,7 +216,12 @@ namespace Symbiote.Core
             logger.Info("Starting the Program Manager...");
             OperationResult retVal = new OperationResult();
 
-            Running = (retVal.ResultCode != OperationResultCode.Failure);
+            State = ManagerState.Starting;
+
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Running;
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -235,7 +238,7 @@ namespace Symbiote.Core
 
             logger.Info("Restarting the Program Manager...");
             OperationResult retVal = new OperationResult();
-
+            
             retVal.Incorporate(Stop());
             retVal.Incorporate(Start());
 
@@ -255,7 +258,12 @@ namespace Symbiote.Core
             logger.Info("Stopping the Program Manager...");
             OperationResult retVal = new OperationResult();
 
-            Running = false;
+            State = ManagerState.Stopping;
+
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Stopped;
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);

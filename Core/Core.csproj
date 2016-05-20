@@ -142,7 +142,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BigFont.cs" />
-    <Compile Include="Common\IManager.cs" />
+    <Compile Include="Common\Manager\ManagerState.cs" />
+    <Compile Include="Common\Manager\IManager.cs" />
     <Compile Include="Common\Item\ItemEventArgs.cs" />
     <Compile Include="Common\xLogger.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />

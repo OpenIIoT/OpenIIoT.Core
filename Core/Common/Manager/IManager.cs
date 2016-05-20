@@ -1,4 +1,6 @@
-﻿namespace Symbiote.Core
+﻿using System.Collections.Generic;
+
+namespace Symbiote.Core
 {
     /// <summary>
     /// Defines the interface used for the various Managers within the application.
@@ -6,9 +8,9 @@
     public interface IManager
     {
         /// <summary>
-        /// Indicates the status of the Manager; true if the Manager is running, false otherwise.
+        /// Indicates the state of the Manager.
         /// </summary>
-        bool Running { get; }
+        ManagerState State { get; }
 
         /// <summary>
         /// Starts the Manager.

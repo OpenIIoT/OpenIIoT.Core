@@ -78,7 +78,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public bool Running { get; private set; }
+        public ManagerState State { get; private set; }
 
         /// <summary>
         /// The ConfigurationDefinition for the Manager.
@@ -229,12 +229,14 @@ namespace Symbiote.Core.Plugin
             #endregion
 
             // if no errors were encountered during startup, set the Manager state to Running.
-            Running = (retVal.ResultCode != OperationResultCode.Failure);
-
-            // if startup was successful, save the configuration.
-            if (Running)
+            if (retVal.ResultCode != OperationResultCode.Failure)
+            {
+                State = ManagerState.Running;
                 SaveConfiguration();
-
+            }
+            else
+                State = ManagerState.Faulted;
+            
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
             return retVal;
@@ -270,7 +272,12 @@ namespace Symbiote.Core.Plugin
             logger.Info("Stopping the Plugin Manager...");
             OperationResult retVal = new OperationResult();
 
-            Running = false;
+            State = ManagerState.Stopping;
+
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Stopped;
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);

@@ -43,10 +43,14 @@ namespace Symbiote.Core.Model
 
         #region Properties
 
+        #region IManager Implementation
+
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public bool Running { get; private set; }
+        public ManagerState State { get; private set; }
+
+        #endregion
 
         /// <summary>
         /// The ConfigurationDefinition for the Manager.
@@ -79,7 +83,6 @@ namespace Symbiote.Core.Model
         private ModelManager(ProgramManager manager)
         {
             this.manager = manager;
-            Running = false;
         }
 
         /// <summary>
@@ -111,6 +114,8 @@ namespace Symbiote.Core.Model
 
             logger.Info("Starting the Model Manager...");
             OperationResult retVal = new OperationResult();
+
+            State = ManagerState.Starting;
 
             #region Configuration
 
@@ -154,7 +159,10 @@ namespace Symbiote.Core.Model
 
             #endregion
 
-            Running = (retVal.ResultCode != OperationResultCode.Failure);
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Running;
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -191,9 +199,14 @@ namespace Symbiote.Core.Model
             logger.Info("Stopping the Model Manager...");
             OperationResult retVal = new OperationResult();
 
+            State = ManagerState.Stopping;
+
             retVal.Incorporate(SaveModel());
 
-            Running = false;
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                State = ManagerState.Stopped;
+            else
+                State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -551,7 +564,7 @@ namespace Symbiote.Core.Model
         /// <returns>An OperationResult containing the added Item.</returns>
         private OperationResult<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
-            if (!manager.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
+            if (manager.State != ManagerState.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
             else logger.Debug("Adding item '" + item.FQN + "' to the model...");
 
             OperationResult<Item> retVal = new OperationResult<Item>();
@@ -609,7 +622,7 @@ namespace Symbiote.Core.Model
                 }
             }
 
-            if (!manager.Starting) retVal.LogResult(logger);
+            if (manager.State != ManagerState.Starting) retVal.LogResult(logger);
             else retVal.LogResult(logger.Debug);
 
             return retVal;
@@ -842,7 +855,7 @@ namespace Symbiote.Core.Model
             OperationResult<Item> retVal = new OperationResult<Item>();
             if ((item == null) || (parentItem == null)) return retVal;
                
-            if (!manager.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
+            if (manager.State != ManagerState.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
             else logger.Debug("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
       
             try
@@ -879,7 +892,7 @@ namespace Symbiote.Core.Model
                 retVal.Result = default(Item);
             }
 
-            if (!manager.Starting) retVal.LogResult(logger);
+            if (manager.State != ManagerState.Starting) retVal.LogResult(logger);
             else retVal.LogResult(logger.Debug);
 
             return retVal;
