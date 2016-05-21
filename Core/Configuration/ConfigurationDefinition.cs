@@ -29,17 +29,17 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// A string containing a json representation of an HTML configuration form.
         /// </summary>
-        public string Form { get; private set; }
+        public string Form { get; set; }
         
         /// <summary>
         /// A string containing a json representation of the schema to populate using the form.
         /// </summary>
-        public string Schema { get; private set; }
+        public string Schema { get; set; }
 
         /// <summary>
         /// An object representing the model to be built from the schema.
         /// </summary>
-        public Type Model { get; private set; }
+        public Type Model { get; set; }
 
         #endregion
 
@@ -61,43 +61,6 @@ namespace Symbiote.Core.Configuration
             Form = form;
             Schema = schema;
             Model = model;
-        }
-
-        #endregion
-
-        #region Instance Methods
-
-        /// <summary>
-        /// Sets the value of the Form property to the supplied string.
-        /// </summary>
-        /// <param name="form">A string containing the json representation of an HTML form.</param>
-        /// <returns>The modified ConfigurationDefinition object.</returns>
-        public ConfigurationDefinition SetForm(string form)
-        {
-            Form = form;
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the value of the Schema property to the supplied string.
-        /// </summary>
-        /// <param name="schema">A string containing a json representation of the schema to populate using the form.</param>
-        /// <returns>The modified ConfigurationDefinition object.</returns>
-        public ConfigurationDefinition SetSchema(string schema)
-        {
-            Schema = schema;
-            return this;
-        }
-
-        /// <summary>
-        /// Sets the value of the Model property to the supplied Type.
-        /// </summary>
-        /// <param name="model">The Type of the Configuration model.</param>
-        /// <returns>The modified ConfigurationDefinition object.</returns>
-        public ConfigurationDefinition SetModel(Type model)
-        {
-            Model = model;
-            return this;
         }
 
         #endregion

@@ -11,6 +11,7 @@ namespace Symbiote.Core.Plugin.Endpoint
         #region Variables
 
         private ProgramManager manager;
+        private PluginManager pluginManager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static EndpointManager instance;
 
@@ -32,15 +33,17 @@ namespace Symbiote.Core.Plugin.Endpoint
 
         #region Constructors
 
-        private EndpointManager(ProgramManager manager)
+
+        private EndpointManager(PluginManager pluginManager, ProgramManager programManager)
         {
-            this.manager = manager;
+            manager = programManager;
+            this.pluginManager = pluginManager;
         }
 
-        public static EndpointManager Instance(ProgramManager manager)
+        public static EndpointManager Instance(PluginManager pluginManager, ProgramManager programManager)
         {
             if (instance == null)
-                instance = new EndpointManager(manager);
+                instance = new EndpointManager(pluginManager, programManager);
 
             return instance;
         }
@@ -134,9 +137,9 @@ namespace Symbiote.Core.Plugin.Endpoint
         public static ConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
-            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
-            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
-            retVal.SetModel(typeof(EndpointManagerConfiguration));
+            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
+            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
+            retVal.Model = typeof(EndpointManagerConfiguration);
             return retVal;
         }
 

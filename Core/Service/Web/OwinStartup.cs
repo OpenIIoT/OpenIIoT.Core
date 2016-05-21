@@ -3,12 +3,7 @@ using Owin;
 using Microsoft.Owin.Cors;
 using Microsoft.Owin.StaticFiles;
 using Microsoft.Owin.FileSystems;
-using System.IO;
 using System.Web.Http;
-using System;
-using System.Net.Http.Formatting;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Microsoft.AspNet.SignalR;
 
 

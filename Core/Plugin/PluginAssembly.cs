@@ -65,13 +65,5 @@ namespace Symbiote.Core.Plugin
             Type = type;
             Assembly = assembly;
         }
-
-        /// <summary>
-        /// Unloads the assembly.
-        /// </summary>
-        public void Unload()
-        {
-            this.Unload();
-        }
     }
 }

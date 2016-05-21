@@ -214,11 +214,11 @@ namespace Symbiote.Plugin.Connector.Simulation
             // for the endpoint.  When you are happy with the json from the above url, visit http://www.freeformatter.com/json-formatter.html#ad-output
             // and paste in the generated json and format it using the "JavaScript escaped" option.  Paste the result into the methods below.
 
-            retVal.SetForm("[\"templateURL\",{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"Save\"}]");
-            retVal.SetSchema("{\"type\":\"object\",\"title\":\"XMLEndpoint\",\"properties\":{\"templateURL\":{\"title\":\"Template URL\",\"type\":\"string\"}},\"required\":[\"templateURL\"]}");
+            retVal.Form = "[\"templateURL\",{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"Save\"}]";
+            retVal.Schema = "{\"type\":\"object\",\"title\":\"XMLEndpoint\",\"properties\":{\"templateURL\":{\"title\":\"Template URL\",\"type\":\"string\"}},\"required\":[\"templateURL\"]}";
 
             // this will always be typeof(YourConfiguration/ModelObject)
-            retVal.SetModel(typeof(SimulationConnectorConfiguration));
+            retVal.Model = typeof(SimulationConnectorConfiguration);
             return retVal;
         }
 

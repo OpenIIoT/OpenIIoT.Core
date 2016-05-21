@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using NLog;
 using Symbiote.Core.Configuration;
-using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core.Plugin.Connector
 {
@@ -11,6 +10,7 @@ namespace Symbiote.Core.Plugin.Connector
         #region Variables
 
         private ProgramManager manager;
+        private PluginManager pluginManager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ConnectorManager instance;
 
@@ -32,15 +32,16 @@ namespace Symbiote.Core.Plugin.Connector
 
         #region Constructors
 
-        private ConnectorManager(ProgramManager manager)
+        private ConnectorManager(PluginManager pluginManager, ProgramManager programManager)
         {
-            this.manager = manager;
+            manager = programManager;
+            this.pluginManager = pluginManager;
         }
 
-        public static ConnectorManager Instance(ProgramManager manager)
+        public static ConnectorManager Instance(PluginManager pluginManager, ProgramManager programManager)
         {
             if (instance == null)
-                instance = new ConnectorManager(manager);
+                instance = new ConnectorManager(pluginManager, programManager);
 
             return instance;
         }
@@ -133,9 +134,9 @@ namespace Symbiote.Core.Plugin.Connector
         public static ConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
-            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
-            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
-            retVal.SetModel(typeof(ConnectorManagerConfiguration));
+            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
+            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
+            retVal.Model = typeof(ConnectorManagerConfiguration);
             return retVal;
         }
 

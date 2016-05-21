@@ -75,10 +75,16 @@ namespace Symbiote.Core.Plugin
 
         #region Properties
 
+        #region IManager Implementation
+
         /// <summary>
         /// The state of the Manager.
         /// </summary>
         public ManagerState State { get; private set; }
+
+        #endregion
+
+        #region IConfigurable Implementation
 
         /// <summary>
         /// The ConfigurationDefinition for the Manager.
@@ -89,6 +95,8 @@ namespace Symbiote.Core.Plugin
         /// The Configuration for the Manager.
         /// </summary>
         public PluginManagerConfiguration Configuration { get; private set; }
+
+        #endregion
 
         /// <summary>
         /// A list of currently loaded plugin assemblies.
@@ -110,6 +118,16 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         public List<InvalidPluginArchive> InvalidPluginArchives { get; private set; }
 
+        /// <summary>
+        /// The manager for Plugins of type Connector.
+        /// </summary>
+        public ConnectorManager ConnectorManager { get; private set; }
+
+        /// <summary>
+        /// The manager for Plugins of type Endpoint.
+        /// </summary>
+        public EndpointManager EndpointManager { get; private set; }
+
         #endregion
 
         #region Constructors
@@ -120,8 +138,13 @@ namespace Symbiote.Core.Plugin
         /// <param name="manager">The ProgramManager instance for the application.</param>
         private PluginManager(ProgramManager manager) {
             this.manager = manager;
+
             PluginAssemblies = new List<PluginAssembly>();
             PluginInstances = new Dictionary<string, IPluginInstance>();
+
+            // initialize the Connector and Endpoint managers
+            ConnectorManager = ConnectorManager.Instance(this, manager);
+            EndpointManager = EndpointManager.Instance(this, manager);
         }
 
         /// <summary>
@@ -1019,18 +1042,17 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
         private OperationResult<List<PluginAssembly>> LoadPluginAssemblies()
         {
-            return LoadPluginAssemblies(Configuration.InstalledPlugins, manager.Platform);
+            return LoadPluginAssemblies(Configuration.InstalledPlugins);
         }
 
         /// <summary>
         /// Loads the Plugin Assemblies specified in the supplied list of Plugins using the supplied IPlatform instance.
         /// </summary>
         /// <param name="plugins">The list of Plugins from which the Plugin Assemblies should be loaded.</param>
-        /// <param name="platform">The IPlatform instance with which to load the Plugin Assemblies.</param>
         /// <returns>An OperationResult containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
-        private OperationResult<List<PluginAssembly>> LoadPluginAssemblies(List<Plugin> plugins, IPlatform platform)
+        private OperationResult<List<PluginAssembly>> LoadPluginAssemblies(List<Plugin> plugins)
         {
-            Guid guid = logger.EnterMethod(xLogger.Params(plugins, platform), true);
+            Guid guid = logger.EnterMethod(xLogger.Params(plugins), true);
             logger.Info("Loading Plugin Assemblies...");
 
             OperationResult<List<PluginAssembly>> retVal = new OperationResult<List<PluginAssembly>>();
@@ -1040,30 +1062,20 @@ namespace Symbiote.Core.Plugin
             plugins = plugins.Where(p => IsPluginLoadable(p)).ToList();
 
 
-            //--------------------- - -  -  -            -
-            // create a list of plugin assembly files to be loaded
-            List<string> assemblyFiles = new List<string>();
-
-            foreach (Plugin p in plugins)
-                assemblyFiles.Add(System.IO.Path.Combine(GetPluginDirectory(p), p.FQN + ".dll"));
-
-            logger.Checkpoint("Assembly list", xLogger.Vars(assemblyFiles), xLogger.Names("assemblyFiles"), guid);
-            //------------------------ - - -------------- - -
-
-
             //--------- -   -
             // load the assemblies
-            foreach (string assemblyFileName in assemblyFiles)
+            foreach (Plugin plugin in plugins)
             {
-                logger.SubSubHeading(logger.Trace, "Assembly: .." + String.Join(".", System.IO.Path.GetFileName(assemblyFileName).Split('.').TakeLast(2).ToArray()));
-                logger.Debug("Loading Plugin Assembly '" + assemblyFileName + "'...");
+                string assemblyFileName = System.IO.Path.Combine(GetPluginDirectory(plugin), plugin.FQN + ".dll");
+
+                logger.SubSubHeading(logger.Trace, "Assembly: .." + String.Join(".", System.IO.Path.GetFileName(assemblyFileName).Split('.').TakeLast(3).ToArray()));
 
                 // load the assembly
-                OperationResult<PluginAssembly> loadResult = LoadPluginAssembly(assemblyFileName);
+                OperationResult<PluginAssembly> loadResult = LoadPluginAssembly(plugin);
 
                 if (loadResult.ResultCode != OperationResultCode.Failure)
                 {
-                    logger.Debug("Successfully loaded Plugin Assembly '" + assemblyFileName + "'.");
+                    logger.Debug("Successfully loaded Plugin Assembly '" + loadResult.Result.Assembly.FullName + "'.");
                     retVal.Result.Add(loadResult.Result);
                 }
                 else
@@ -1081,25 +1093,40 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Loads the Plugin Assembly contained within the specified file name.
+        /// Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the PluginAssemblies list.
         /// </summary>
-        /// <param name="assemblyFileName">The filename of the file containing the Plugin Assembly to load.</param>
-        /// <returns>An OperationResult containing the result of the operation and the loaded PluginAssembly.</returns>
-        private OperationResult<PluginAssembly> LoadPluginAssembly(string assemblyFileName)
+        /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
+        /// <returns>An OperationResult containing the result of the operation and the newly created PluginAssembly instance.</returns>
+        private OperationResult<PluginAssembly> LoadPluginAssembly(Plugin plugin)
         {
-            logger.EnterMethod(xLogger.Params(assemblyFileName));
-            logger.Debug("Loading Assembly from '" + assemblyFileName + "...");
+            return LoadPluginAssembly(plugin, PluginAssemblies);
+        }
+
+        /// <summary>
+        /// Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the specified list.
+        /// </summary>
+        /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
+        /// <param name="pluginAssemblies">The list of type PluginAssembly to which the new instance should be added.</param>
+        /// <returns>An OperationResult containing the result of the operation and the newly created PluginAssembly instance.</returns>
+        private OperationResult<PluginAssembly> LoadPluginAssembly(Plugin plugin, List<PluginAssembly> pluginAssemblies)
+        {
+            logger.EnterMethod(xLogger.Params(plugin));
+            logger.Info("Loading Plugin Assembly for Plugin '" + plugin.FQN + "'...");
 
             OperationResult<PluginAssembly> retVal = new OperationResult<PluginAssembly>();
             Assembly assembly;
-            
+
+            if (pluginAssemblies.Exists(p => p.FQN == plugin.FQN))
+                return retVal.AddError("The Plugin Assembly for Plugin '" + plugin.FQN + "' has already been loaded.");
+
+            string assemblyFileName = System.IO.Path.Combine(GetPluginDirectory(plugin), plugin.FQN + ".dll");
 
             //------------------- - 
             // attempt to load the assembly and add it to the internal list of plugins
             try
             {
-                // load the assembly
-                assembly = Assembly.Load(AssemblyName.GetAssemblyName(assemblyFileName));
+                // load the assembly into the reflection context so we can validate it
+                assembly = Assembly.LoadFrom(assemblyFileName);
 
                 logger.Trace("Loaded assembly.  Validating...");
 
@@ -1121,14 +1148,14 @@ namespace Symbiote.Core.Plugin
                                                     validationResult.Result,
                                                     assembly
                                                 );
-                
+
                 // register the plugin type
                 // as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
                 OperationResult registerResult = manager.ConfigurationManager.RegisterType(validationResult.Result);
                 if (registerResult.ResultCode == OperationResultCode.Failure)
                     throw new Exception("Failed to register the assembly type with the Configuration Manager.");
             }
-            catch (System.Reflection.ReflectionTypeLoadException ex)
+            catch (ReflectionTypeLoadException ex)
             {
                 logger.Exception(logger.Debug, ex);
 
@@ -1144,12 +1171,17 @@ namespace Symbiote.Core.Plugin
                 logger.Exception(logger.Debug, ex);
                 retVal.AddError("Failed to load assembly from plugin file '" + assemblyFileName + "': " + ex.Message);
             }
+            //--------------------------  - 
 
-            retVal.LogResult(logger.Debug);
+
+            // if the assembly loaded without errors, add it to the list of loaded assemblies.
+            if (retVal.ResultCode != OperationResultCode.Failure)
+                pluginAssemblies.Add(retVal.Result);
+
+            retVal.LogResult(logger);
             logger.ExitMethod(retVal);
             return retVal;
         }
-
 
         #endregion
 
@@ -1527,9 +1559,9 @@ namespace Symbiote.Core.Plugin
         public static ConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
-            retVal.SetForm("[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]");
-            retVal.SetSchema("{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}");
-            retVal.SetModel(typeof(PluginManagerConfiguration));
+            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
+            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
+            retVal.Model = typeof(PluginManagerConfiguration);
             return retVal;
         }
 
