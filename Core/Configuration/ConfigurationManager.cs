@@ -354,7 +354,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-                manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented));
+                manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
             }
             catch (Exception ex)
             {

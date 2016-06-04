@@ -56,6 +56,11 @@ namespace Symbiote.Core.Platform.Windows
             return new OperationResult();
         }
 
+        public OperationResult Restart()
+        {
+            return new OperationResult();
+        }
+
         public OperationResult Stop()
         {
             return new OperationResult();

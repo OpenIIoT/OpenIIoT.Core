@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Plugin.Endpoint
+namespace Symbiote.Core.Plugin
 {
     public interface IEndpoint : IPluginInstance
     {

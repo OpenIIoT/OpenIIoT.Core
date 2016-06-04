@@ -54,6 +54,11 @@ namespace Symbiote.Core.Platform.UNIX
             return new OperationResult();
         }
 
+        public OperationResult Restart()
+        {
+            return new OperationResult();
+        }
+
         public OperationResult Stop()
         {
             return new OperationResult();

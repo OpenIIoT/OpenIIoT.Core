@@ -160,6 +160,7 @@
     <Compile Include="Plugin\PluginArchiveLoadResult.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
     <Compile Include="Plugin\PluginType.cs" />
+    <Compile Include="Plugin\PluginTypeManager.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -24,6 +24,12 @@
         OperationResult Start();
 
         /// <summary>
+        /// Restarts the PluginInstance.
+        /// </summary>
+        /// <returns>An OperationResult containing the result of the operation.</returns>
+        OperationResult Restart();
+
+        /// <summary>
         /// Stops the PluginInstance.
         /// </summary>
         /// <returns>An OperationResult containing the result of the operation.</returns>

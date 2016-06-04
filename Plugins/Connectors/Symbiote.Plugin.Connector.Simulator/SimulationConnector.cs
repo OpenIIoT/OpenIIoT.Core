@@ -71,6 +71,13 @@ namespace Symbiote.Plugin.Connector.Simulation
             return new OperationResult();
         }
 
+        public OperationResult Restart()
+        {
+            Stop();
+            Start();
+            return new OperationResult();
+        }
+
         public OperationResult Stop()
         {
             timer.Stop();

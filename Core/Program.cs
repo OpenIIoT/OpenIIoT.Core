@@ -5,6 +5,7 @@ using NLog;
 using System.Reflection;
 using Symbiote.Core.Platform;
 using System.Text.RegularExpressions;
+using Symbiote.Core.Plugin.Connector;
 
 namespace Symbiote.Core
 {
@@ -203,9 +204,9 @@ namespace Symbiote.Core
                 //--------------------- - --------------------- -  -
                 // create plugin instances.
                 // instantiates each plugin instance defined within the configuration and configures it
-                logger.Info("Creating plugin instances...");
-                manager.PluginManager.InstantiatePlugins();
-                logger.Info(manager.PluginManager.PluginInstances.Count() + " Plugin instance(s) created.");
+                //logger.Info("Creating plugin instances...");
+                //manager.PluginManager.InstantiatePlugins();
+                //logger.Info(manager.PluginManager.PluginInstances.Count() + " Plugin instance(s) created.");
                 //--------------------------------------------- - -   -     -------  -     - - -  ---
 
 
@@ -246,15 +247,24 @@ namespace Symbiote.Core
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
 
-                logger.Multiline(logger.Debug, "AUTOBUILDS");
 
-                //---- - ----------------------------------------- - - ------------- --   
-                // perform the auto-build of any plugin instances with auto-build enabled
-                logger.Info("Executing auto build of plugins...");
-                OperationResult autoBuildResult = manager.PluginManager.PerformAutoBuild();
-                autoBuildResult.LogResult(logger);
-                //----------------------------------------------------- --       -   -
 
+
+
+
+                Item symItem = manager.ModelManager.FindItem(manager.InstanceName + ".Simulation");
+                if (symItem == default(Item))
+                    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName + ".Simulation")).Result;
+
+
+
+
+
+
+
+
+
+                manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
 
                 //----------------------------- - -       --
                 // show 'em what they've won!
@@ -264,7 +274,7 @@ namespace Symbiote.Core
 
                 manager.StartManager(manager.ServiceManager);
 
-                manager.PluginManager.StartPlugins();
+                //manager.PluginManager.StartPlugins();
 
                 logger.Info(manager.ProductName + " is running.");
 
