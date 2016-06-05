@@ -119,10 +119,10 @@ namespace Symbiote.Core.Platform
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
-                    Platform = new Platform.Windows.WindowsPlatform();
+                    Platform = new Windows.WindowsPlatform();
                     break;
                 case PlatformType.UNIX:
-                    Platform = new Platform.UNIX.UNIXPlatform();
+                    Platform = new UNIX.UNIXPlatform();
                     break;
                 default:
                     throw new Exception("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());

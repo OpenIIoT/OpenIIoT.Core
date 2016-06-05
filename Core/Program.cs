@@ -85,6 +85,7 @@ namespace Symbiote.Core
                         // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
                         logger.Debug("Reconfiguring logger to log level '" + logarg.Split(':')[1] + "'...");
                         Utility.SetLoggingLevel(logarg.Split(':')[1]);
+                        logger.Debug("Successfully reconfigured logger.");
                     }
 
                     // check to see if service install/uninstall arguments were supplied
@@ -114,6 +115,7 @@ namespace Symbiote.Core
                 // instantiate the Program Manager.
                 // the Program Manager acts as a Service Locator for the application.
                 // all of the various IManager instances are instantiated (but not started) within the constructor of ProgramManager.
+                logger.Heading(logger.Debug, "Initialization");
                 logger.Debug("Instantiating the Program Manager...");
                 manager = ProgramManager.Instance(safeMode);
                 logger.Debug("The Program Manager was instantiated successfully.");
@@ -123,19 +125,20 @@ namespace Symbiote.Core
                 //----------------------------------------------- - ------------  - - -
                 // start the Platform Manager so we can get the platform details
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
-                logger.Separator(logger.Debug);
-                logger.Debug("Starting the Platform Manager...");
+                logger.SubHeading(logger.Debug, "Platform Manager");
+                logger.Info("Starting the Platform Manager...");
                 manager.StartManager(manager.PlatformManager);
                 logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
+                logger.Info("Program is running " + (Environment.UserInteractive ? "" : "non-") + "interactively.");
                 //------------------- - -----------                      ------------- 
 
 
                 //----------------------------------------- - ----------------
-                // start the application
-                logger.Checkpoint("Application start");
-
+                // start the application.
                 // if the platform is windows and it is not being run as an interactive application, Windows 
                 // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
+                logger.Heading(logger.Debug, "Startup");
+
                 if ((manager.PlatformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
                 {
                     logger.Info("Starting the application in service mode...");
@@ -176,7 +179,8 @@ namespace Symbiote.Core
 
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
-                logger.Heading(logger.Debug, "Startup");
+                logger.SubHeading(logger.Debug, "Program Manager");
+                logger.Info("Invoking the Program Manager Start routine...");
                 manager.StartManager(manager);
                 logger.Info("Program Manager Started.");
                 //----------- - -
@@ -185,7 +189,8 @@ namespace Symbiote.Core
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                logger.SubHeading(logger.Debug, "Configuration");
+                logger.SubHeading(logger.Debug, "Configuration Manager");
+                logger.Info("Invoking the Configuration Manager Start routine...");
                 manager.StartManager(manager.ConfigurationManager);
                 logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
@@ -194,12 +199,12 @@ namespace Symbiote.Core
                 //--------------------------------------------- - - --------- ----  - -    -
                 // load plugins.  
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
-                logger.SubHeading(logger.Debug, "Plugins");
+                logger.SubHeading(logger.Debug, "Plugin Manager");
+                logger.Info("Invoking the Plugin Manager Start routine...");
                 manager.StartManager(manager.PluginManager);
-                //logger.Info("Loading plugins...");
-                //manager.PluginManager.LoadPlugins();
-                //logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
+                logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
                 //----------------------------------------------------------------  --  ---         ------ - 
+
 
                 //--------------------- - --------------------- -  -
                 // create plugin instances.
@@ -252,19 +257,11 @@ namespace Symbiote.Core
 
 
 
-                Item symItem = manager.ModelManager.FindItem(manager.InstanceName + ".Simulation");
-                if (symItem == default(Item))
-                    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName + ".Simulation")).Result;
+                //Item symItem = manager.ModelManager.FindItem(manager.InstanceName + ".Simulation");
+                //if (symItem == default(Item))
+                //    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName + ".Simulation")).Result;
 
-
-
-
-
-
-
-
-
-                manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
+                //manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
 
                 //----------------------------- - -       --
                 // show 'em what they've won!

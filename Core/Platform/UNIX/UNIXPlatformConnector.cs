@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Symbiote.Core.Plugin;
 using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Plugin;
 
-namespace Symbiote.Core.Platform.Windows
+namespace Symbiote.Core.Platform.UNIX
 {
-    internal class PlatformConnector : IConnector
+    internal class UNIXPlatformConnector : IConnector
     {
         private ConnectorItem itemRoot;
         private PerformanceCounter cpuUsed;
@@ -20,7 +20,6 @@ namespace Symbiote.Core.Platform.Windows
         public string FQN { get; private set; }
         public string Version { get; private set; }
         public PluginType PluginType { get; private set; }
-        public string Fingerprint { get { return "c5db87ec30e211919cd62ecc07ccdc8fd17b83798bfda0029a36b58ad0f5a827";  } }
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
         public string Configuration { get; private set; }
@@ -30,15 +29,13 @@ namespace Symbiote.Core.Platform.Windows
 
         public event EventHandler<ConnectorEventArgs> Changed;
 
-        public PlatformConnector(string instanceName)
+        public UNIXPlatformConnector(string instanceName)
         {
             InstanceName = instanceName;
-            Name = "WindowsConnector";
-            FQN = "Symbiote.Core.Platform.Windows.PlatformConnector";
+            Name = "UNIXConnector";
+            FQN = "Symbiote.Core.Platform.UNIX.PlatformConnector";
             Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
             PluginType = PluginType.Connector;
-
-            ConfigurationDefinition = new ConfigurationDefinition();
 
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");
@@ -89,22 +86,27 @@ namespace Symbiote.Core.Platform.Windows
             return itemRoot;
         }
 
+
         public List<Item> Browse(Item root)
         {
             return root.Children;
         }
 
-        public object Read(string fqn)
+        public object Read(string item)
         {
-            string[] itemName = fqn.Split('.');
+            string[] itemName = item.Split('.');
 
             if (itemName.Length < 3) return null;
 
             switch (itemName[itemName.Length - 2] + "." + itemName[itemName.Length - 1])
             {
                 case "CPU.% Processor Time":
+                    lastCPUUsed = cpuUsed.NextValue();
+                    lastCPUIdle = cpuIdle.NextValue();
                     return lastCPUUsed;
                 case "CPU.% Idle Time":
+                    lastCPUUsed = cpuUsed.NextValue();
+                    lastCPUIdle = cpuIdle.NextValue();
                     return lastCPUIdle;
                 case "Memory.Total":
                     return 0;
@@ -119,7 +121,7 @@ namespace Symbiote.Core.Platform.Windows
             }
         }
 
-        public OperationResult Write(string fqn, object value)
+        public OperationResult Write(string item, object value)
         {
             return new OperationResult().AddError("The connector is not writeable.");
         }

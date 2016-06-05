@@ -99,9 +99,14 @@ namespace Symbiote.Core.Plugin
         public List<PluginAssembly> PluginAssemblies { get; private set; }
 
         /// <summary>
-        /// A list of all Plugin Instances.
+        /// A Dictionary of all Plugin Instances, keyed by instance name.
         /// </summary>
         public Dictionary<string, IPluginInstance> PluginInstances { get; private set; }
+
+        /// <summary>
+        /// A list of installed plugins.
+        /// </summary>
+        public List<Plugin> Plugins { get; private set; }
 
         /// <summary>
         /// A list of all Plugin Archives.
@@ -237,7 +242,7 @@ namespace Symbiote.Core.Plugin
             if (PluginAssemblies.Count > 0) logger.Info("Loaded Assemblies:");
 
             foreach (PluginAssembly assembly in PluginAssemblies)
-                logger.Info(new string(' ', 5) + assembly.Name);
+                logger.Info(new string(' ', 5) + assembly.FQN);
 
             logger.Info(PluginAssemblies.Count + " Plugin " + (PluginAssemblies.Count == 1 ? "Assembly" : "Assemblies") + " loaded.");
 
@@ -261,11 +266,11 @@ namespace Symbiote.Core.Plugin
             if (PluginInstances.Count > 0) logger.Info("Plugin Instances:");
 
             foreach (string key in PluginInstances.Keys)
-                logger.Info(new string(' ', 5) + key + " (" + PluginInstances[key].GetType().Name + ")");
+                logger.Info(new string(' ', 5) + key + " (" + PluginInstances[key].FQN + ")");
 
-            logger.Info(Configuration.Instances.Count + " Plugin" + (Configuration.Instances.Count > 1 ? "s" : "") + " instantiated.");
+            logger.Info(PluginInstances.Count + " Plugin" + (PluginInstances.Count > 1 ? "s" : "") + " instantiated.");
 
-            logger.Checkpoint("Plugins instantiated", xLogger.Vars(Configuration.Instances), xLogger.Names("Configuration.Instances"), guid);
+            logger.Checkpoint("Plugins instantiated", xLogger.Vars(PluginInstances), xLogger.Names("PluginInstances"), guid);
             //---------------   -    -
 
             #endregion
@@ -380,6 +385,10 @@ namespace Symbiote.Core.Plugin
 
             // update the configuration
             Configuration = configuration;
+
+            // populate the plugin list
+            Plugins = Configuration.Plugins;
+
             logger.Debug("Successfully configured the Manager.");
 
             // save it
@@ -401,6 +410,9 @@ namespace Symbiote.Core.Plugin
             logger.Info("Saving the configuration to the Configuration Manager...");
 
             OperationResult retVal = new OperationResult();
+
+            // update the list of plugins
+            Configuration.Plugins = Plugins;
 
             retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
@@ -702,7 +714,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation and the installed Plugin.</returns>
         public OperationResult<Plugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false)
         {
-            return InstallPlugin(archive, Configuration, manager.Platform, updatePlugin);
+            return InstallPlugin(archive, Plugins, manager.Platform, updatePlugin);
         }
 
         /// <summary>
@@ -714,11 +726,11 @@ namespace Symbiote.Core.Plugin
         /// the operation fails and requests that the user refreshes the list.
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
-        /// <param name="configuration">The PluginManagerConfiguration to which the installed Plugin should be added.</param>
+        /// <param name="plugins">The List of type Plugin to which the installed Plugin should be added.</param>
         /// <param name="platform">The IPlatform instance with which the archive should be extracted.</param>
         /// <param name="updatePlugin">When true, bypasses checks that prevent duplicate installations.</param>
         /// <returns>An OperationResult containing the result of the operation and the created Plugin instance.</returns>
-        private OperationResult<Plugin> InstallPlugin(PluginArchive archive, PluginManagerConfiguration configuration, IPlatform platform, bool updatePlugin = false)
+        private OperationResult<Plugin> InstallPlugin(PluginArchive archive, List<Plugin> plugins, IPlatform platform, bool updatePlugin = false)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(archive, new xLogger.ExcludedParam(), new xLogger.ExcludedParam(), updatePlugin), true);
 
@@ -864,7 +876,7 @@ namespace Symbiote.Core.Plugin
                                             // add the plugin to the list of installed plugins
                                             logger.Debug("Adding the installed Plugin to the InstalledPlugin list...");
                                             retVal.Result = archive.Plugin;
-                                            configuration.Plugins.Add(retVal.Result);
+                                            plugins.Add(retVal.Result);
                                         }
                                     }
                                     else
@@ -920,7 +932,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation.</returns>
         public OperationResult UninstallPlugin(Plugin plugin)
         {
-            return UninstallPlugin(plugin, Configuration, manager.Platform);
+            return UninstallPlugin(plugin, Plugins, manager.Platform);
         }
 
         /// <summary>
@@ -928,10 +940,10 @@ namespace Symbiote.Core.Plugin
         /// PluginManagerConfiguration.
         /// </summary>
         /// <param name="plugin">The Plugin to uninstall.</param>
-        /// <param name="configuration">The PluginManagerConfiguration from which the Plugin is to be removed.</param>
+        /// <param name="plugins">The List of type Plugin from which the Plugin is to be removed.</param>
         /// <param name="platform">The IPlatform instance with which the directory should be deleted.</param>
         /// <returns>An OperationResult containing the result of the operation.</returns>
-        private OperationResult UninstallPlugin(Plugin plugin, PluginManagerConfiguration configuration, IPlatform platform)
+        private OperationResult UninstallPlugin(Plugin plugin, List<Plugin> plugins, IPlatform platform)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Checkpoint(xLogger.Vars(plugin), xLogger.Names("plugin"), guid);
@@ -959,7 +971,7 @@ namespace Symbiote.Core.Plugin
                         if (deleteResult.ResultCode != OperationResultCode.Failure)
                         {
                             logger.Debug("Removing Plugin from PluginManager configuration...");
-                            configuration.Plugins.Remove(plugin);
+                            plugins.Remove(plugin);
                         }
 
                         retVal.Incorporate(deleteResult);
@@ -1047,7 +1059,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>The Plugin matching the supplied FQN, or the default Plugin if not found.</returns>
         public Plugin FindPlugin(string fqn)
         {
-            return FindPlugin(fqn, Configuration.Plugins);
+            return FindPlugin(fqn, Plugins);
         }
 
         /// <summary>
@@ -1076,7 +1088,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An OperationResult containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
         private OperationResult<List<PluginAssembly>> LoadPluginAssemblies()
         {
-            return LoadPluginAssemblies(Configuration.Plugins);
+            return LoadPluginAssemblies(Plugins);
         }
 
         /// <summary>
@@ -1131,7 +1143,7 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
         /// <returns>An OperationResult containing the result of the operation and the newly created PluginAssembly instance.</returns>
-        private OperationResult<PluginAssembly> LoadPluginAssembly(Plugin plugin)
+        public OperationResult<PluginAssembly> LoadPluginAssembly(Plugin plugin)
         {
             return LoadPluginAssembly(plugin, PluginAssemblies);
         }
@@ -1164,8 +1176,9 @@ namespace Symbiote.Core.Plugin
                 OperationResult<string> checksumResult = manager.Platform.ComputeFileChecksum(assemblyFileName);
                 if (checksumResult.ResultCode != OperationResultCode.Failure)
                 {
-                    if (Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.Result) != plugin.Fingerprint)
-                        throw new Exception("Error validating plugin fingerprint.");
+                    string computedFingerprint = Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.Result);
+                    if (computedFingerprint != plugin.Fingerprint)
+                        throw new Exception("Error validating plugin fingerprint.  Computed: " + computedFingerprint + "; Expected: " + plugin.Fingerprint);
                     else
                         logger.Info("Plugin Assembly fingerprint validated successfully.  Loading...");
                 }
@@ -1177,7 +1190,7 @@ namespace Symbiote.Core.Plugin
 
 
                 //----------- - -
-                // load the assembly into the reflection context so we can validate it
+                // load the assembly 
                 assembly = Assembly.LoadFrom(assemblyFileName);
 
                 logger.Checkpoint("Assembly loaded");

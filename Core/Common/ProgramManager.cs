@@ -180,7 +180,7 @@ namespace Symbiote.Core
             logger.Separator(logger.Trace);
             logger.Debug("Instantiating the Service Manager...");
             ServiceManager = ServiceManager.Instance(this);
-            ConfigurationManager.RegisterType(typeof(ServiceManager));
+            //ConfigurationManager.RegisterType(typeof(ServiceManager));
             logger.Debug("Successfully instantiated the Service Manager.");
             //---------------  --    -  -     -  
 
@@ -281,7 +281,7 @@ namespace Symbiote.Core
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
 
-            logger.Info("Starting " + manager.GetType().Name + "...");
+            logger.Debug("Starting " + manager.GetType().Name + "...");
             OperationResult<IManager> retVal = new OperationResult<IManager>();
 
             // invoke the Start() method on the specified manager

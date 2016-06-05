@@ -466,7 +466,7 @@ namespace Symbiote.Core
         /// outer.LogResult(logger); 
         /// </code>
         /// </example>
-        public virtual void Incorporate(OperationResult operationResult)
+        public virtual OperationResult Incorporate(OperationResult operationResult)
         {
             foreach (OperationResultMessage message in operationResult.Messages)
                 Messages.Add(message);
@@ -477,6 +477,8 @@ namespace Symbiote.Core
             // unknown < success < warning < failure
             if (ResultCode.CompareTo(operationResult.ResultCode) < 0)
                 ResultCode = operationResult.ResultCode;
+
+            return this;
         }
 
         #endregion
@@ -581,6 +583,39 @@ namespace Symbiote.Core
         new public virtual OperationResult<T> AddError(string message)
         {
             base.AddError(message);
+            return this;
+        }
+
+        /// <summary>
+        /// Adds details from the supplied OperationResult to this OperationResult.
+        /// Copies all Messages and the status if lesser than this status.
+        /// </summary>
+        /// <param name="operationResult">The OperationResult from which to copy the Messages.</param>
+        /// <example>
+        /// <code>
+        /// // create an "outer" OperationResult
+        /// // the ResultCode of this instance is Success by default.
+        /// OperationResult outer = new OperationResult();
+        /// 
+        /// // ... some logic ...
+        /// 
+        /// // create an "inner" OperationResult
+        /// // set this to the result of a different method
+        /// OperationResult inner = MyMethod();
+        /// 
+        /// // incorporate the inner OperationResult into the outer
+        /// // this copies all messages and, if the inner instance's ResultCode
+        /// // is lesser (Success > Warning > Failure) than the outer, copies the ResultCode as well.
+        /// outer.Incorporate(inner);
+        /// 
+        /// // log the result.  the combined list of messages from both inner and outer
+        /// // are logged, and the ResultCode is equal to the lesser of the two ResultCodes.
+        /// outer.LogResult(logger); 
+        /// </code>
+        /// </example>
+        new public virtual OperationResult<T> Incorporate(OperationResult operationResult)
+        {
+            base.Incorporate(operationResult);
             return this;
         }
 
