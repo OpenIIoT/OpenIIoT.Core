@@ -19,6 +19,29 @@
       █  Additional methods allow for greater readability within log files, such as the ability to style entry/exit/exception logs,
       █  three tiers of large-font headings, separators and styled and unstyled multiline log messages.
       █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The MIT License (MIT)
+      █  
+      █  Copyright (c) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  Permission is hereby granted, free of charge, to any person obtaining a copy
+      █  of this software and associated documentation files (the "Software"), to deal
+      █  in the Software without restriction, including without limitation the rights
+      █  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+      █  copies of the Software, and to permit persons to whom the Software is
+      █  furnished to do so, subject to the following conditions:
+      █  
+      █  The above copyright notice and this permission notice shall be included in all
+      █  copies or substantial portions of the Software.
+      █  
+      █  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+      █  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+      █  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+      █  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+      █  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+      █  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+      █  SOFTWARE. 
+      █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀     ▀▀▀   
       █  Dependencies:
       █     ├─ NLog (https://www.nuget.org/packages/NLog/)
@@ -116,7 +139,7 @@ namespace Symbiote.Core
         /// String to append to the beginning of each line requiring variable indentation.  The dollar sign '$' will be substituted for 
         /// a string of spaces of the appropriate length.
         /// </summary>
-        private static readonly string LinePrefixVariable = Prefix + "  $└┄┈ ";
+        private static readonly string LinePrefixVariable = Prefix + "  $└┄► ";
 
         /// <summary>
         /// String to log following any text block.  If no footer is desired, specify a blank string.
@@ -147,6 +170,11 @@ namespace Symbiote.Core
         /// String to append to exception footers.
         /// </summary>
         private static readonly string ExceptionFooterPrefix = "└──┘";
+
+        /// <summary>
+        /// Number of spaces to indent lines where indentation is applied.
+        /// </summary>
+        private static readonly int Indent = 3;
 
         /// <summary>
         /// Determines whether persisted methods are automatically pruned after the interval defined by AutoPruneAge.
@@ -255,10 +283,15 @@ namespace Symbiote.Core
             // print the variable list
             for (int v = 0; v < variables.Length; v++)
             {
-                List<string> lines = GetObjectSerialization(variables[v]);
+                // serialize the variable.  if the variable is an Exception of any type, use GetExceptionSerialization() to serialize it.
+                // this method splits the linebreaks in the stack trace string of Exceptions into multiple lines.
+                Type variableType = variables[v].GetType();
+                List<string> lines = ((variableType.IsSubclassOf(typeof(Exception))) || (variableType.IsAssignableFrom(typeof(Exception))) ? GetExceptionSerialization((Exception)variables[v]) : GetObjectSerialization(variables[v]));
 
                 for (int l = 0; l < lines.Count(); l++)
+                {
                     action(prefix + ((v == variables.Length - 1) && (l == lines.Count() - 1) ? FinalLinePrefix : LinePrefix) + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + lines[l]);
+                }
             }
 
         }
@@ -303,15 +336,15 @@ namespace Symbiote.Core
         /// <param name="prefix">The optional prefix string.</param>
         private void LogStackTrace(Action<string> action, string prefix = "")
         {
-            int indent = 0;
+            int lineIndent = 0;
 
             // iterate over the frames within the inverted stack excerpt
             foreach (StackFrame frame in GetInvertedStackExcerpt())
             {
                 // indent the current frame appropriately
-                string spaces = new string(' ', indent * 3);
+                string spaces = new string(' ', lineIndent * Indent);
                 action(prefix + LinePrefixVariable.Replace("$", spaces) + GetMethodSignature(frame.GetMethod()));
-                indent++;
+                lineIndent++;
             }
         }
 
@@ -1292,6 +1325,33 @@ namespace Symbiote.Core
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="exception">The Exception to log.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// <code>
+        /// // catch an exception
+        /// try
+        /// {
+        ///     throw new Exception();
+        /// }
+        /// catch (Exception ex)
+        /// {
+        ///     // log the exception using the default (Error) logging level
+        ///     logger.Exception(ex);
+        /// }
+        /// </code>
+        /// </example>
+        public void Exception(Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exception(Error, exception, null, null, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs Exception details.
+        /// </summary>
         /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -1315,6 +1375,37 @@ namespace Symbiote.Core
         public void Exception(Action<string> action, Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             Exception(action, exception, null, null, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs Exception details.
+        /// </summary>
+        /// <param name="exception">The Exception to log.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <example>
+        /// <code>
+        /// // invoke EnterMethod using persistence
+        /// Guid guid = logger.EnterMethod(true);
+        /// 
+        /// // catch an exception
+        /// try
+        /// {
+        ///     throw new Exception();
+        /// }
+        /// catch (Exception ex)
+        /// {
+        ///     // log the exception with persistence using the default (Error) logging level
+        ///     logger.Exception(ex, guid);
+        /// }
+        /// </code>
+        /// </example>
+        public void Exception(Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exception(Error, exception, null, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -1352,6 +1443,39 @@ namespace Symbiote.Core
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="exception">The Exception to log.</param>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Vars(object[])"/>
+        /// <example>
+        /// <code>
+        /// // declare some variables
+        /// string one = "one";
+        /// string two = "two";
+        /// 
+        /// // catch an exception
+        /// try
+        /// {
+        ///     throw new Exception();
+        /// }
+        /// catch (Exception ex)
+        /// {
+        ///     // log the exception with unnamed variables using the default (Error) logging level
+        ///     logger.Exception(ex, xLogger.Vars(one, two));
+        /// }
+        /// </code>
+        /// </example>
+        public void Exception(Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exception(Error, exception, variables, null, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs Exception details.
+        /// </summary>
         /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
@@ -1381,6 +1505,43 @@ namespace Symbiote.Core
         public void Exception(Action<string> action, Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             Exception(action, exception, variables, null, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs Exception details.
+        /// </summary>
+        /// <param name="exception">The Exception to log.</param>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Vars(object[])"/>
+        /// <example>
+        /// <code>
+        /// // invoke EnterMethod using persistence
+        /// Guid guid = logger.EnterMethod(true);
+        /// 
+        /// // declare some variables
+        /// string one = "one";
+        /// string two = "two";
+        /// 
+        /// // catch an exception
+        /// try
+        /// {
+        ///     throw new Exception();
+        /// }
+        /// catch (Exception ex)
+        /// {
+        ///     // log the exception with unnamed variables and using persistence using the default (Error) logging level
+        ///     logger.Exception(ex, xLogger.Vars(one, two), guid);
+        /// }
+        /// </code>
+        /// </example>
+        public void Exception(Exception exception, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exception(Error, exception, variables, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -1424,6 +1585,41 @@ namespace Symbiote.Core
         /// <summary>
         /// Logs Exception details.
         /// </summary>
+        /// <param name="exception">The Exception to log.</param>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Vars(object[])"/>
+        /// <seealso cref="Names(string[])"/>
+        /// <example>
+        /// <code>
+        /// // declare some variables
+        /// string one = "one";
+        /// string two = "two";
+        /// 
+        /// // catch an exception
+        /// try
+        /// {
+        ///     throw new Exception();
+        /// }
+        /// catch (Exception ex)
+        /// {
+        ///     // log the exception with named variables using the default (Error) logging level
+        ///     logger.Exception(ex, xLogger.Vars(one, two), xLogger.Names("one", "two"));
+        /// }
+        /// </code>
+        /// </example>
+        public void Exception(Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exception(Error, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs Exception details.
+        /// </summary>
         /// <param name="action">The logging method with which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
@@ -1455,6 +1651,44 @@ namespace Symbiote.Core
         public void Exception(Action<string> action, Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             Exception(action, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs Exception details.
+        /// </summary>
+        /// <param name="exception">The Exception to log.</param>
+        /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
+        /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Vars(object[])"/>
+        /// <seealso cref="Names(string[])"/>
+        /// <example>
+        /// <code>
+        /// // invoke EnterMethod using persistence
+        /// Guid guid = logger.EnterMethod(true);
+        /// 
+        /// // declare some variables
+        /// string one = "one";
+        /// string two = "two";
+        /// 
+        /// // catch an exception
+        /// try
+        /// {
+        ///     throw new Exception();
+        /// }
+        /// catch (Exception ex)
+        /// {
+        ///     // log the exception with named variables and using persistence using the default (Error) logging level
+        ///     logger.Exception(ex, xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
+        /// }
+        /// </code>
+        /// </example>
+        public void Exception(Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            Exception(Error, exception, variables, variableNames, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -1500,15 +1734,18 @@ namespace Symbiote.Core
             LogHeader(action, ExceptionHeaderPrefix);
 
             // log the method signature
-            action(ExceptionLinePrefix + ExceptionPrefix + "Exception '" + exception.GetType().Name + 
-                "' caught in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
-                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
-                (guid != default(Guid) ? ", Guid: " + guid : "")
+            action(ExceptionLinePrefix + ExceptionPrefix + "Exception '" + exception.GetType().Name +
+                "' caught in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") +
+                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" +
+                (guid != default(Guid) ? ", Guid: " + guid : "") + ":" 
             );
+
+            // log the message
+            action(ExceptionLinePrefix + FinalLinePrefix + "\"" + exception.Message + "\"");
 
             LogInnerSeparator(action, ExceptionLinePrefix);
 
-            // log the stack trace followed by a separator
+            // log the stack trace from the invocation point followed by a separator
             LogStackTrace(action, ExceptionLinePrefix);
             LogInnerSeparator(action, ExceptionLinePrefix);
 
@@ -1534,25 +1771,50 @@ namespace Symbiote.Core
         #region Stack Trace
 
         /// <summary>
-        /// Logs the current stack trace.
+        /// Logs the current execution stack.
         /// </summary>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="StackTrace(Action{string}, string, string, int)"/>
+        /// <example>
+        /// <code>
+        /// // log the stack trace using the default (Trace) logging level
+        /// logger.StackTrace();
+        /// </code>
+        /// </example>
         public void StackTrace([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            StackTrace(Trace, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs the current execution stack.
+        /// </summary>
+        /// <param name="action">The logging method with which to log the exception.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <example>
+        /// <code>
+        /// // log the stack trace using the Debug logging level
+        /// logger.StackTrace(logger.Debug);
+        /// </code>
+        /// </example>
+        public void StackTrace(Action<string> action, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
             if (!IsTraceEnabled) return;
 
             // log the header
-            LogHeader(Trace);
-            Trace(StackTracePrefix + "Stack Trace from method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
+            LogHeader(action);
+            action(StackTracePrefix + "Stack Trace from method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
 
             // log the stack trace followed by a separator
-            LogStackTrace(Trace);
+            LogStackTrace(action);
 
             // log the footer
-            LogFooter(Trace);
+            LogFooter(action);
         }
 
         #endregion
@@ -1639,6 +1901,40 @@ namespace Symbiote.Core
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        /// Returns a list of type string containing each line of the indented serialization of the supplied Exception.
+        /// Prints each method contained within the StackTraceString property to it's own line.
+        /// </summary>
+        /// <param name="exception">The Exception to serialize.</param>
+        /// <returns>A List of type string containing each line of the indented serialization of the supplied Exception.</returns>
+        /// <seealso cref="GetObjectSerialization(object)"/>
+        private static List<string> GetExceptionSerialization(Exception exception)
+        {
+            List<string> retVal = new List<string>();
+            
+            // iterate over the list returend by GetObjectSerialization to find the stack trace property and modify it
+            foreach (string line in GetObjectSerialization(exception))
+            {
+                // find the line
+                if ((line.Contains("\"StackTraceString\"")) && (exception.StackTrace != default(string)))
+                {
+                    // preserve indent just in case
+                    retVal.Add(line.Split(':').Take(1).FirstOrDefault() + ": \"");
+
+                    // iterate over the lines contained within the StackTrace property of the provided Exception
+                    foreach (string innerLine in exception.StackTrace.Replace("\r\n", "\n").Split('\n'))
+                        retVal.Add(new string(' ', Indent * 2) + innerLine.TrimStart());
+
+                    // add the close parenthesis
+                    retVal.Add("  \"");
+                }
+                else
+                    retVal.Add(line);
+            }
+
+            return retVal;            
         }
 
         /// <summary>

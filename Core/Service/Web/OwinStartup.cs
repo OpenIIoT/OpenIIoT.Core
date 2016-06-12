@@ -5,7 +5,7 @@ using Microsoft.Owin.StaticFiles;
 using Microsoft.Owin.FileSystems;
 using System.Web.Http;
 using Microsoft.AspNet.SignalR;
-
+using Swashbuckle.Application;
 
 namespace Symbiote.Core.Service.Web
 {
@@ -26,6 +26,10 @@ namespace Symbiote.Core.Service.Web
 
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
+            config
+                .EnableSwagger(c => c.SingleApiVersion("v1", "Symbiote"))
+                .EnableSwaggerUi();
+
             //config.Routes.MapHttpRoute(
             //    name: "DefaultApi",
             //    routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : "") + "api/{controller}/{id}",

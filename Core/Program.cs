@@ -175,8 +175,6 @@ namespace Symbiote.Core
             // anywhere in the application it will be caught here and treated as a fatal error, stopping the application.
             try
             {
-
-
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
                 logger.SubHeading(logger.Debug, "Program Manager");
@@ -334,7 +332,7 @@ namespace Symbiote.Core
             }
         }
 
-        public static void Test(string arg)
+        public static void Test()
         {
             //Logger logger = new Logger();
 
@@ -362,10 +360,10 @@ namespace Symbiote.Core
 
             //logger.Trace("-------------------------------------------------------------------");
 
-            //MethodLogger.Exception(logger, new Exception(), guid);
+            logger.Exception(new Exception());
 
             Guid guid = logger.EnterMethod(true);
-            logger.Checkpoint(xLogger.Vars(arg, arg), xLogger.Names("one", "two"), guid);
+            //logger.Checkpoint(xLogger.Vars(arg, arg), xLogger.Names("one", "two"), guid);
 
             //try
             //{

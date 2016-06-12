@@ -106,3 +106,7 @@ C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Core.csprojResolveA
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Core.csproj.GenerateResource.Cache
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\Symbiote.Cryptography.dll
 C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\obj\Debug\Symbiote.Core.ProjectInstaller.resources
+C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\Microsoft.Web.Infrastructure.dll
+C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\Swashbuckle.Core.dll
+C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\System.Web.Http.WebHost.dll
+C:\Users\JP.WHATNET\Desktop\Projects\Symbiote\Core\bin\Debug\WebActivatorEx.dll
