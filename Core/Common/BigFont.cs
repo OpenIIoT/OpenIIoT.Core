@@ -15,6 +15,29 @@
       █ 
       █  Transforms strings into large, stylized characters.
       █ 
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The MIT License (MIT)
+      █  
+      █  Copyright (c) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  Permission is hereby granted, free of charge, to any person obtaining a copy
+      █  of this software and associated documentation files (the "Software"), to deal
+      █  in the Software without restriction, including without limitation the rights
+      █  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+      █  copies of the Software, and to permit persons to whom the Software is
+      █  furnished to do so, subject to the following conditions:
+      █  
+      █  The above copyright notice and this permission notice shall be included in all
+      █  copies or substantial portions of the Software.
+      █  
+      █  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+      █  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+      █  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+      █  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+      █  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+      █  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+      █  SOFTWARE. 
+      █
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██   
                                                                                                ▀█▄ ██ ▄█▀                       
@@ -76,20 +99,20 @@ namespace Symbiote.Core
             /*
             █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
             █
-            █   ▀█████████▄   ▄█     ▄██████▄     ▄████████  ▄██████▄  ███▄▄▄▄       ███         ▄████████     ▄████████     
-            █     ███    ███ ███    ███    ███   ███    ███ ███    ███ ███▀▀▀██▄ ▀█████████▄     ███    ███   ███    ███             
-            █     ███    ███ ███▌   ███    █▀    ███    █▀  ███    ███ ███   ███    ▀███▀▀██     ███    █▀    ███    █▀   
-            █    ▄███▄▄▄██▀  ███▌  ▄███         ▄███▄▄▄     ███    ███ ███   ███     ███   ▀     ███          ███         
-            █   ▀▀███▀▀▀██▄  ███▌ ▀▀███ ████▄  ▀▀███▀▀▀     ███    ███ ███   ███     ███         ███        ▀███████████  
-            █     ███    ██▄ ███    ███    ███   ███        ███    ███ ███   ███     ███         ███    █▄           ███  
-            █     ███    ███ ███    ███    ███   ███        ███    ███ ███   ███     ███     ▄▄▄ ███    ███    ▄█    ███  
-            █   ▄█████████▀  █▀     ████████▀    ███         ▀██████▀   ▀█   █▀     ▄████▀   ███ ████████▀   ▄████████▀   
+            █  ████████▄  ███        ▄██████▄   ▄██████▄  ███    ▄██▀
+            █  ███    ███ ███       ███    ███ ███    ███ ███  ▄██▀
+            █  ███    ███ ███       ███    ███ ███    ███ ███▄██▀
+            █  ███▄▄▄▄██▀ ███       ███    ███ ███        ████▀
+            █  ███▀▀▀▀██▄ ███       ███    ███ ███        ████▄
+            █  ███    ███ ███       ███    ███ ███    ███ ███▀██▄
+            █  ███    ███ ███       ███    ███ ███    ███ ███  ▀██▄
+            █  ████████▀  █████████  ▀██████▀   ▀██████▀  ███    ▀██▄
             █
             ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀ ▀                                 */
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('A', Font.Block, FontSize.Large), new string[]
             {
-                " ▄██████▄ ",
+                " ▄██████▄  ",
                 "███    ███ ",
                 "███    ███ ",
                 "███    ███ ",
@@ -104,8 +127,8 @@ namespace Symbiote.Core
                 "████████▄  ",
                 "███    ███ ",
                 "███    ███ ",
-                "███▄▄▄▄██▀  ",
-                "███▀▀▀▀██▄  ",
+                "███▄▄▄▄██▀ ",
+                "███▀▀▀▀██▄ ",
                 "███    ███ ",
                 "███    ███ ",
                 "████████▀  "
@@ -173,14 +196,14 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('H', Font.Block, FontSize.Large), new string[]
             {
-                "███    ███  ",
+                "███    ███ ",
                 "███    ███ ",
                 "███    ███ ",
                 "███▄▄▄▄███ ",
                 "███▀▀▀▀███ ",
                 "███    ███ ",
                 "███    ███ ",
-                "███    ███  "
+                "███    ███ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('I', Font.Block, FontSize.Large), new string[]
@@ -217,7 +240,7 @@ namespace Symbiote.Core
                 "████▄       ",
                 "███▀██▄     ",
                 "███  ▀██▄   ",
-                "███    ▀██▄ ",
+                "███    ▀██▄ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('L', Font.Block, FontSize.Large), new string[]
@@ -306,7 +329,7 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('S', Font.Block, FontSize.Large), new string[]
             {
-                " ▄██████▄ ",
+                " ▄██████▄  ",
                 "███    ███ ",
                 "███        ",
                 "▀██▄▄▄▄▄   ",
@@ -349,7 +372,7 @@ namespace Symbiote.Core
                 "███    ███ ",
                 " ██▄  ▄██  ",
                 "  ██▄▄██   ",
-                "   ▀██▀   "
+                "   ▀██▀    "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('W', Font.Block, FontSize.Large), new string[]
@@ -505,7 +528,7 @@ namespace Symbiote.Core
                 " ▀████████ ",
                 "       ███ ",
                 "       ███ ",
-                " ███████▀ "
+                " ███████▀  "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('0', Font.Block, FontSize.Large), new string[]
@@ -760,7 +783,7 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('B', Font.Block, FontSize.Medium), new string[]
             {
-                "██████▄  ",
+                "██████▄ ",
                 "██   ██ ",
                 "██▄▄▄█▀ ",
                 "██▀▀▀█▄ ",
@@ -775,7 +798,7 @@ namespace Symbiote.Core
                 "██      ",
                 "██      ",
                 "██   ██ ",
-                "▀█████▀  "
+                "▀█████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('D', Font.Block, FontSize.Medium), new string[]
@@ -810,12 +833,12 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('G', Font.Block, FontSize.Medium), new string[]
             {
-                "▄█████▄  ",
-                "██   ██  ",
-                "██       ",
-                "██  ███  ",
+                "▄█████▄ ",
                 "██   ██ ",
-                "▀█████▀  "
+                "██      ",
+                "██  ███ ",
+                "██   ██ ",
+                "▀█████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('H', Font.Block, FontSize.Medium), new string[]
@@ -890,12 +913,12 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('O', Font.Block, FontSize.Medium), new string[]
             {
-                " ██████  ",
+                "▄██████▄ ",
                 "██    ██ ",
                 "██    ██ ",
                 "██    ██ ",
                 "██    ██ ",
-                " ██████  "
+                "▀██████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('P', Font.Block, FontSize.Medium), new string[]
@@ -903,19 +926,19 @@ namespace Symbiote.Core
                 "██████▄ ",
                 "██   ██ ",
                 "██   ██ ",
-                "██████▀  ",
+                "██████▀ ",
                 "██      ",
                 "██      "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('Q', Font.Block, FontSize.Medium), new string[]
             {
-                "▄█████▄ ",
-                "██   ██ ",
-                "██   ██ ",
-                "██   ██ ",
-                "██ ▀▄██ ",
-                "▀████▀▄ "
+                "▄█████▄  ",
+                "██   ██  ",
+                "██   ██  ",
+                "██   ██  ",
+                "██ ▀▄██  ",
+                "▀█████▀▄ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('R', Font.Block, FontSize.Medium), new string[]
@@ -935,7 +958,7 @@ namespace Symbiote.Core
                 "██▄▄▄▄  ",
                 " ▀▀▀▀██ ",
                 "▄▄   ██ ",
-                "▀█████▀  "
+                "▀█████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('T', Font.Block, FontSize.Medium), new string[]
@@ -950,12 +973,12 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('U', Font.Block, FontSize.Medium), new string[]
             {
-                "██   ██  ",
                 "██   ██ ",
                 "██   ██ ",
                 "██   ██ ",
                 "██   ██ ",
-                "▀█████▀  "
+                "██   ██ ",
+                "▀█████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('V', Font.Block, FontSize.Medium), new string[]
@@ -1060,12 +1083,12 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('6', Font.Block, FontSize.Medium), new string[]
             {
-                "▄██▀    ",
-                "██      ",
-                "██████▄ ",
-                "██   ██ ",
-                "██   ██ ",
-                "▀█████▀ "
+                "▄██▀     ",
+                "██       ",
+                "███████▄ ",
+                "██    ██ ",
+                "██    ██ ",
+                "▀██████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('7', Font.Block, FontSize.Medium), new string[]
@@ -1080,12 +1103,12 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('8', Font.Block, FontSize.Medium), new string[]
             {
-                "▄██▀▀▀██▄  ",
-                "▀█▄   ▄█▀ ",
-                "  ▀█▄█▀  ",
-                "  ▄█▀█▄  ",
-                "▄█▀   ▀█▄ ",
-                "▀██▄▄▄██▀  "
+                "▄██▀▀██▄ ",
+                "▀█▄  ▄█▀ ",
+                "  ▀██▀   ",
+                "  ▄██▄   ",
+                "▄█▀  ▀█▄ ",
+                "▀██▄▄██▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('9', Font.Block, FontSize.Medium), new string[]
@@ -1319,7 +1342,7 @@ namespace Symbiote.Core
                 "▄█████▄ ",
                 "██   ▀▀ ",
                 "██   ▄▄ ",
-                "▀█████▀ ",
+                "▀█████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('D', Font.Block, FontSize.Small), new string[]
@@ -1335,7 +1358,7 @@ namespace Symbiote.Core
                 "█████ ",
                 "██▄▄  ",
                 "██▀▀  ",
-                "█████ ",
+                "█████ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('F', Font.Block, FontSize.Small), new string[]
@@ -1345,13 +1368,15 @@ namespace Symbiote.Core
                 "██▀▀  ",
                 "██    "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('G', Font.Block, FontSize.Small), new string[]
             {
                 "▄█████▄ ",
                 "██   ▀▀ ",
                 "██  ▀██ ",
-                "▀█████▀ ",
+                "▀█████▀ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('H', Font.Block, FontSize.Small), new string[]
             {
                 "██  ██ ",
@@ -1365,7 +1390,7 @@ namespace Symbiote.Core
                 "██ ",
                 "██ ",
                 "██ ",
-                "██ ",
+                "██ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('J', Font.Block, FontSize.Small), new string[]
@@ -1373,7 +1398,7 @@ namespace Symbiote.Core
                 "    ██ ",
                 "    ██ ",
                 "▄▄  ██ ",
-                "█████▀ "
+                "▀████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('K', Font.Block, FontSize.Small), new string[]
@@ -1394,110 +1419,122 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('M', Font.Block, FontSize.Small), new string[]
             {
-                "  ▄▄███▄▄  ",
-                "▄█▀▀██▀▀█▄ ",
-                "██  ██  ██ ",
-                " █  ██  █  "
+                "███▄ ▄███ ",
+                "██ ▀█▀ ██ ",
+                "██     ██ ",
+                "██     ██ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('N', Font.Block, FontSize.Small), new string[]
             {
-                "██▄▄▄  ",
-                "██▀▀█▄ ",
-                "██  ██ ",
-                " █  █  "
+                "██   ██ ",
+                "███▄ ██ ",
+                "██▀█▄██ ",
+                "██  ▀██ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('O', Font.Block, FontSize.Small), new string[]
             {
-                " █████  ",
+                "▄█████▄ ",
                 "██   ██ ",
                 "██   ██ ",
-                " █████  "
+                "▀█████▀ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('P', Font.Block, FontSize.Small), new string[]
             {
-                "  █████▄ ",
-                " ██   ██ ",
-                "▀██▀▀▀▀  ",
-                "▄███▀    "
+                "██████▄ ",
+                "██   ██ ",
+                "██▀▀▀▀  ",
+                "██      "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Q', Font.Block, FontSize.Small), new string[]
             {
-                "██████   ",
+                "▄█████▄  ",
                 "██   ██  ",
-                "██ ▀ ██  ",
-                " ████▀▄█ "
+                "██ ▀▄██  ",
+                "▀█████▀▄ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('R', Font.Block, FontSize.Small), new string[]
             {
-                "  █████ ",
-                " ██  ██ ",
-                "▄██▄▄█▀ ",
-                " ██  ██ "
+                "█████▄ ",
+                "██  ██ ",
+                "████▀  ",
+                "██ ▀█▄ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('S', Font.Block, FontSize.Small), new string[]
             {
-                " ▄█████ ",
-                " ██  ▀  ",
-                "▀▀▀▀▀██ ",
-                "▄█████▀ "
+                "▄█████ ",
+                "██     ",
+                "▀▀▀▀██ ",
+                "█████▀ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('T', Font.Block, FontSize.Small), new string[]
             {
-                "   ██    ",
-                "▀██████▄ ",
-                "   ██    ",
-                "  ▄██▀   "
+                "██████ ",
+                "  ██   ",
+                "  ██   ",
+                "  ██   "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('U', Font.Block, FontSize.Small), new string[]
             {
-                "█   █  ",
-                "█   ██ ",
-                "█   ██ ",
-                "█████  "
+                "██  ██ ",
+                "██  ██ ",
+                "██  ██ ",
+                "▀████▀ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('V', Font.Block, FontSize.Small), new string[]
             {
-                " █   █  ",
-                "██   ██ ",
-                " █▄ ▄█  ",
-                "  ▀█▀   "
+                "██  ██ ",
+                "██  ██ ",
+                "▐█  █▌ ",
+                " ▀██▀  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('W', Font.Block, FontSize.Small), new string[]
             {
-                " █   █  ",
-                "██   ██ ",
-                "██▄█▄██ ",
-                " ██▀██  "
+                "██     ██ ",
+                "██     ██ ",
+                "██ ▄█▄ ██ ",
+                "███▀ ▀███ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('X', Font.Block, FontSize.Small), new string[]
             {
-                " ██   ██ ",
-                "  ██▄██▀ ",
-                "  ▄█▀█▄  ",
-                "▄██  ▀██ "
+                "▀█▄   ▄█▀ ",
+                "  ▀█▄█▀   ",
+                "  ▄█▀█▄   ",
+                "▄█▀   ▀█▄ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Y', Font.Block, FontSize.Small), new string[]
             {
-                "▄█  ▄  ",
-                "▀▀▀▀██ ",
-                "██  ██ ",
-                " ████  "
+                "▀█▄   ▄█▀ ",
+                "  ▀█▄█▀   ",
+                "   ▐█▌    ",
+                "   ▐█▌    "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Z', Font.Block, FontSize.Small), new string[]
             {
-                "▄████▄ ",
-                "▀  ▄█▀ ",
-                " ▄█▀ ▀ ",
-                "█████▀ "
+                "██████ ",
+                "   ▄█▀ ",
+                " ▄█▀   ",
+                "██████ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('1', Font.Block, FontSize.Small), new string[]
             {
-                "▄██   ",
-                "  █▌  ",
-                "  █▌  ",
-                "▄▄█▄▄ "
+                "▄███   ",
+                "  ██   ",
+                "  ██   ",
+                "▄▄██▄▄ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('2', Font.Block, FontSize.Small), new string[]
@@ -1510,66 +1547,66 @@ namespace Symbiote.Core
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('3', Font.Block, FontSize.Small), new string[]
             {
-                "████▄  ",
-                "▀   ██ ",
-                "▄  ▀██ ",
-                "▄███▀  "
+                "█████▄ ",
+                "    ██ ",
+                "   ▀█▄ ",
+                "█████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('4', Font.Block, FontSize.Small), new string[]
             {
-                " ▄█  █  ",
-                " ██  ██ ",
-                "▀██████ ",
-                "     █▀ "
+                "██  ██ ",
+                "██  ██ ",
+                "██████ ",
+                "    ██ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('5', Font.Block, FontSize.Small), new string[]
             {
-                " ██▀▀▀▀▀ ",
-                "▀███████ ",
-                "  ▄   ██ ",
-                "▄█████▀  "
+                "██▀▀▀▀ ",
+                "██▄▄▄  ",
+                "    ██ ",
+                "█████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('6', Font.Block, FontSize.Small), new string[]
             {
-                " ██▀     ",
-                "▀█████▄  ",
-                " █    ██ ",
-                " ▀████▀  "
+                "▄█▀    ",
+                "██▄▄▄  ",
+                "██  ██ ",
+                "▀████▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('7', Font.Block, FontSize.Small), new string[]
             {
-                "▄█████▄ ",
-                "   ▄██▀ ",
-                "▀▄██▀ ▀ ",
-                "██▀     ",
+                "██████ ",
+                "  ▄██▀ ",
+                "▄██▀   ",
+                "██     ",
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('8', Font.Block, FontSize.Small), new string[]
             {
-                " ▄█▀▀█  ",
-                " ▀▄▄▄▀  ",
-                "██   ██ ",
-                " ▀▄▄▄▀  "
+                "▄██▀██▄ ",
+                "▀█▄▄▄█▀ ",
+                "▄█▀ ▀█▄ ",
+                "▀██▄██▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('9', Font.Block, FontSize.Small), new string[]
             {
-                "▄████   ",
-                "█▀   █  ",
-                "▀▀▀▀▀█▀ ",
-                " █▄▄██▄ "
+                "▄█████▄ ",
+                "██   ██ ",
+                " ▀▀▀▀██ ",
+                " ▄▄▄▄█▀ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('0', Font.Block, FontSize.Small), new string[]
             {
-                " ▄███▄  ",
+                "▄█████▄ ",
                 "██ ▄ ██ ",
                 "██ ▀ ██ ",
-                " ▀███▀  "
+                "▀█████▀ " 
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>(' ', Font.Block, FontSize.Small), new string[]
@@ -1730,15 +1767,15 @@ namespace Symbiote.Core
 
             /*
             █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-            █
-            █   ▀█████████▄   ▄█     ▄██████▄     ▄████████  ▄██████▄  ███▄▄▄▄       ███         ▄████████     ▄████████     
-            █     ███    ███ ███    ███    ███   ███    ███ ███    ███ ███▀▀▀██▄ ▀█████████▄     ███    ███   ███    ███             
-            █     ███    ███ ███▌   ███    █▀    ███    █▀  ███    ███ ███   ███    ▀███▀▀██     ███    █▀    ███    █▀   
-            █    ▄███▄▄▄██▀  ███▌  ▄███         ▄███▄▄▄     ███    ███ ███   ███     ███   ▀     ███          ███         
-            █   ▀▀███▀▀▀██▄  ███▌ ▀▀███ ████▄  ▀▀███▀▀▀     ███    ███ ███   ███     ███         ███        ▀███████████  
-            █     ███    ██▄ ███    ███    ███   ███        ███    ███ ███   ███     ███         ███    █▄           ███  
-            █     ███    ███ ███    ███    ███   ███        ███    ███ ███   ███     ███     ▄▄▄ ███    ███    ▄█    ███  
-            █   ▄█████████▀  █▀     ████████▀    ███         ▀██████▀   ▀█   █▀     ▄████▀   ███ ████████▀   ▄████████▀   
+            █  
+            █      ▄██████▄     ▄████████   ▄████████     ▄████████    ▄████████  ▄█      ███      ▄█
+            █     ███    ███   ███    ███   ███    ███   ███    ███   ███    ███ ███  ▀█████████▄ ███
+            █     ███    █▀   ▄███▄▄▄▄██▀   ███    ███   ███    █▀    ███    █▀  ███▌    ▀███▀▀██ ███▌
+            █    ▄███        ▀▀███▀▀▀▀▀     ███    ███  ▄███▄▄▄      ▄███▄▄▄     ███▌     ███   ▀ ███▌
+            █   ▀▀███ ████▄  ▀███████████ ▀███████████ ▀▀███▀▀▀     ▀▀███▀▀▀     ███▌     ███     ███▌
+            █     ███    ███   ███    ███   ███    ███   ███          ███        ███      ███     ███
+            █     ███    ███   ███    ███   ███    ███   ███          ███        ███      ███     ███
+            █     ████████▀    ███    ███   ███    █▀    ███          ███        █▀      ▄████▀   █▀
             █
             ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀ ▀                                 */
 
@@ -1883,9 +1920,9 @@ namespace Symbiote.Core
                 "███       ",
                 "███       ",
                 "███       ",
+                "███       ",
                 "███▌    ▄ ",
-                "█████▄▄██ ",
-                "▀         "
+                "█████▄▄██ "
             });
 
             Alphabet.Add(new Tuple<char, Font, FontSize>('M', Font.Graffiti, FontSize.Large), new string[]
@@ -2464,6 +2501,7 @@ namespace Symbiote.Core
                 "  ██      ",
                 "  ██      "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('G', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "   ▄████▄  ",
@@ -2473,6 +2511,7 @@ namespace Symbiote.Core
                 "  ██    ██ ",
                 "  ██████▀  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('H', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "  ██   █    ",
@@ -2542,6 +2581,7 @@ namespace Symbiote.Core
                 "██   ██ ",
                 " █   █  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('O', Font.Graffiti, FontSize.Medium), new string[]
             {
                 " ██████  ",
@@ -2551,6 +2591,7 @@ namespace Symbiote.Core
                 "██    ██ ",
                 " ██████  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('P', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "   █████▄ ",
@@ -2560,6 +2601,7 @@ namespace Symbiote.Core
                 "  ██      ",
                 " ▄███▀    "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Q', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "██████   ",
@@ -2569,6 +2611,7 @@ namespace Symbiote.Core
                 "██ ▀ ██  ",
                 " ████▀▄█ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('R', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "   █████ ",
@@ -2578,6 +2621,7 @@ namespace Symbiote.Core
                 "  ██  ██ ",
                 "  ██  ██ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('S', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "  ▄█████ ",
@@ -2587,6 +2631,7 @@ namespace Symbiote.Core
                 "   ▄  ██ ",
                 " ▄████▀  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('T', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "    ██    ",
@@ -2596,6 +2641,7 @@ namespace Symbiote.Core
                 "    ██    ",
                 "   ▄██▀   "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('U', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "██   █  ",
@@ -2605,6 +2651,7 @@ namespace Symbiote.Core
                 "██   ██ ",
                 "██████  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('V', Font.Graffiti, FontSize.Medium), new string[]
             {
                 " █    █  ",
@@ -2614,6 +2661,7 @@ namespace Symbiote.Core
                 " █▄  ▄█  ",
                 "  ▀██▀   "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('W', Font.Graffiti, FontSize.Medium), new string[]
             {
                 " █     █  ",
@@ -2623,6 +2671,7 @@ namespace Symbiote.Core
                 "██ ▄█▄ ██ ",
                 " ███▀███  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('X', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "▀███  ▐██▀ ",
@@ -2632,6 +2681,7 @@ namespace Symbiote.Core
                 " ▄██ ▀██   ",
                 "███    ██▄ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Y', Font.Graffiti, FontSize.Medium), new string[]
             {
                 "▄█   ▄  ",
@@ -2641,6 +2691,7 @@ namespace Symbiote.Core
                 "██   ██ ",
                 " █████  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Z', Font.Graffiti, FontSize.Medium), new string[]
             {
                 " ▄██████▄ ",
@@ -2988,6 +3039,7 @@ namespace Symbiote.Core
                 "  ██     ",
                 "  ██     "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('G', Font.Graffiti, FontSize.Small), new string[]
             {
                 "  ▄████▄ ",
@@ -2995,6 +3047,7 @@ namespace Symbiote.Core
                 "▀██ ▀▀█▄ ",
                 " ██████▀ ",
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('H', Font.Graffiti, FontSize.Small), new string[]
             {
                 " ██  █   ",
@@ -3050,6 +3103,7 @@ namespace Symbiote.Core
                 "██  ██ ",
                 " █  █  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('O', Font.Graffiti, FontSize.Small), new string[]
             {
                 " █████  ",
@@ -3057,6 +3111,7 @@ namespace Symbiote.Core
                 "██   ██ ",
                 " █████  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('P', Font.Graffiti, FontSize.Small), new string[]
             {
                 "  █████▄ ",
@@ -3064,6 +3119,7 @@ namespace Symbiote.Core
                 "▀██▀▀▀▀  ",
                 "▄███▀    "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Q', Font.Graffiti, FontSize.Small), new string[]
             {
                 "██████   ",
@@ -3071,6 +3127,7 @@ namespace Symbiote.Core
                 "██ ▀ ██  ",
                 " ████▀▄█ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('R', Font.Graffiti, FontSize.Small), new string[]
             {
                 "  █████ ",
@@ -3078,6 +3135,7 @@ namespace Symbiote.Core
                 "▄██▄▄█▀ ",
                 " ██  ██ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('S', Font.Graffiti, FontSize.Small), new string[]
             {
                 " ▄█████ ",
@@ -3085,6 +3143,7 @@ namespace Symbiote.Core
                 "▀▀▀▀▀██ ",
                 "▄█████▀ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('T', Font.Graffiti, FontSize.Small), new string[]
             {
                 "   ██    ",
@@ -3092,6 +3151,7 @@ namespace Symbiote.Core
                 "   ██    ",
                 "  ▄██▀   "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('U', Font.Graffiti, FontSize.Small), new string[]
             {
                 "█   █  ",
@@ -3099,6 +3159,7 @@ namespace Symbiote.Core
                 "█   ██ ",
                 "█████  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('V', Font.Graffiti, FontSize.Small), new string[]
             {
                 " █   █  ",
@@ -3106,6 +3167,7 @@ namespace Symbiote.Core
                 " █▄ ▄█  ",
                 "  ▀█▀   "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('W', Font.Graffiti, FontSize.Small), new string[]
             {
                 " █   █  ",
@@ -3113,6 +3175,7 @@ namespace Symbiote.Core
                 "██▄█▄██ ",
                 " ██▀██  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('X', Font.Graffiti, FontSize.Small), new string[]
             {
                 " ██   ██ ",
@@ -3120,6 +3183,7 @@ namespace Symbiote.Core
                 "  ▄█▀█▄  ",
                 "▄██  ▀██ "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Y', Font.Graffiti, FontSize.Small), new string[]
             {
                 "▄█  ▄  ",
@@ -3127,6 +3191,7 @@ namespace Symbiote.Core
                 "██  ██ ",
                 " ████  "
             });
+
             Alphabet.Add(new Tuple<char, Font, FontSize>('Z', Font.Graffiti, FontSize.Small), new string[]
             {
                 "▄████▄ ",
@@ -3386,7 +3451,7 @@ namespace Symbiote.Core
         /// <seealso cref="Generate(string, Font, FontSize)"/>
         public static string[] Generate(string phrase, FontSize size = FontSize.Large)
         {
-            return Generate(phrase, Font.Block, size);
+            return Generate(phrase, Font.Graffiti, size);
         }
 
         /// <summary>

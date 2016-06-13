@@ -48,7 +48,7 @@ namespace Symbiote.Core
         /// logging level, e.g. "trace", "debug", "info", "warn", "error" and "fatal".
         /// </param>
         internal static void Main(string[] args)
-        {
+        {             
             logger.Heading(logger.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
             logger.EnterMethod(xLogger.Params((object)args));
