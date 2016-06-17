@@ -305,7 +305,7 @@ namespace Symbiote.Core.Configuration
             catch (Exception ex)
             {
                 retVal.AddError("Exception thrown while loading Configuration from '" + fileName + "': " + ex);
-                logger.Exception(logger.Error, ex, xLogger.Vars(configFile), xLogger.Names("configFile"), guid);
+                logger.Exception(LogLevel.Error, ex, xLogger.Vars(configFile), xLogger.Names("configFile"), guid);
             }
 
             retVal.LogResult(logger);

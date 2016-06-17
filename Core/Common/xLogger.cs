@@ -221,53 +221,53 @@ namespace Symbiote.Core
         /// <summary>
         /// Logs the header string using the supplied logging method
         /// </summary>
-        /// <param name="action">The logging method with which to log the header.</param>
+        /// <param name="level">The logging level to which to log the header.</param>
         /// <param name="prefix">The optional prefix string.</param>
-        private void LogHeader(Action<string> action, string prefix = "")
+        private void LogHeader(LogLevel level, string prefix = "")
         {
-            if (Header.Length > 0) Multiline(action, prefix + Header);
+            if (Header.Length > 0) Multiline(level, prefix + Header);
         }
 
         /// <summary>
         /// Logs the footer string using the supplied logging method
         /// </summary>
-        /// <param name="action">The logging method with which to log the footer.</param>
+        /// <param name="level">The logging level to which to log the footer.</param>
         /// <param name="prefix">The optional prefix string.</param>
-        private void LogFooter(Action<string> action, string prefix = "")
+        private void LogFooter(LogLevel level, string prefix = "")
         {
-            if (Footer.Length > 0) Multiline(action, prefix + Footer);
+            if (Footer.Length > 0) Multiline(level, prefix + Footer);
         }
 
         /// <summary>
         /// Logs the separator string using the supplied logging method
         /// </summary>
-        /// <param name="action">The logging method with which to log the separator.</param>
+        /// <param name="level">The logging level to which to log the separator.</param>
         /// <param name="prefix">The optional prefix string.</param>
-        private void LogInnerSeparator(Action<string> action, string prefix = "")
+        private void LogInnerSeparator(LogLevel level, string prefix = "")
         {
-            if (InnerSeparator.Length > 0) Multiline(action, prefix + InnerSeparator);
+            if (InnerSeparator.Length > 0) Multiline(level, prefix + InnerSeparator);
         }
 
         /// <summary>
         /// Logs the outer separator string with header and footer using the supplied logging method
         /// </summary>
-        /// <param name="action">The logging method with which to log the separator.</param>
+        /// <param name="level">The logging level to which to log the separator.</param>
         /// <param name="prefix">The optional prefix string.</param>
-        private void LogOuterSeparator(Action<string> action, string prefix = "")
+        private void LogOuterSeparator(LogLevel level, string prefix = "")
         {
-            LogHeader(action, prefix);
-            if (OuterSeparator.Length > 0) Multiline(action, prefix + Prefix + OuterSeparator);
-            LogFooter(action, prefix);
+            LogHeader(level, prefix);
+            if (OuterSeparator.Length > 0) Multiline(level, prefix + Prefix + OuterSeparator);
+            LogFooter(level, prefix);
         }
 
         /// <summary>
         /// Logs the supplied variable list with the optionally supplied names.
         /// </summary>
-        /// <param name="action">The logging method with which to log the variable list.</param>
+        /// <param name="level">The logging level to which to log the variable list.</param>
         /// <param name="variables">The list of variables to log.</param>
         /// <param name="variableNames">The list of names to log along with the list of variables.</param>
         /// <param name="prefix">The optional string prefix.</param>
-        private void LogVariables(Action<string> action, object[] variables, string[] variableNames = null, string prefix = "")
+        private void LogVariables(LogLevel level, object[] variables, string[] variableNames = null, string prefix = "")
         {
             bool useVariableNames = false;
 
@@ -275,7 +275,7 @@ namespace Symbiote.Core
             if (variableNames != null)
             {
                 if (variableNames.Length != variables.Length)
-                    action(prefix + LinePrefix + "[Variable name/variable count mismatch; variables: " + variables.Length + ", names: " + variableNames.Length + "]");
+                    Log(level, prefix + LinePrefix + "[Variable name/variable count mismatch; variables: " + variables.Length + ", names: " + variableNames.Length + "]");
                 else
                     useVariableNames = true;
             }
@@ -290,7 +290,7 @@ namespace Symbiote.Core
 
                 for (int l = 0; l < lines.Count(); l++)
                 {
-                    action(prefix + ((v == variables.Length - 1) && (l == lines.Count() - 1) ? FinalLinePrefix : LinePrefix) + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + lines[l]);
+                    Log(level, prefix + ((v == variables.Length - 1) && (l == lines.Count() - 1) ? FinalLinePrefix : LinePrefix) + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + lines[l]);
                 }
             }
 
@@ -299,12 +299,12 @@ namespace Symbiote.Core
         /// <summary>
         /// Logs the execution duration for the persisted method matching the supplied Guid using the supplied message.
         /// </summary>
-        /// <param name="action">The logging method with which to log the execution duration.</param>
+        /// <param name="level">The logging level to which to log the execution duration.</param>
         /// <param name="message">The message to log.</param>
         /// <param name="guid">The Guid of the persisted method for which the execution duration should be calculated.</param>
         /// <param name="remove">If true, removes the supplied Guid from the list of persisted methods after logging.</param>
         /// <param name="prefix">The optional prefix string.</param>
-        private void LogExecutionDuration(Action<string> action, string message, Guid guid, bool remove = false, string prefix = "")
+        private void LogExecutionDuration(LogLevel level, string message, Guid guid, bool remove = false, string prefix = "")
         {
             // try to fetch the matching tuple
             Tuple<Guid, DateTime> tuple = PersistedMethods.Where(m => m.Item1 == guid).FirstOrDefault();
@@ -312,8 +312,8 @@ namespace Symbiote.Core
             // make sure we found a match
             if (tuple != default(Tuple<Guid, DateTime>))
             {
-                action(prefix + InnerSeparator);
-                action(prefix + ExecutionDurationPrefix + message + (DateTime.UtcNow - tuple.Item2).TotalMilliseconds.ToString() + "ms");
+                Log(level, prefix + InnerSeparator);
+                Log(level, prefix + ExecutionDurationPrefix + message + (DateTime.UtcNow - tuple.Item2).TotalMilliseconds.ToString() + "ms");
 
                 // if the remove option is used, remove the tuple from the list of persisted methods after logging.
                 if (remove)
@@ -332,9 +332,9 @@ namespace Symbiote.Core
         /// <summary>
         /// Logs the current stack trace, excluding everything before Main() and after the calling method using the supplied logging method.
         /// </summary>
-        /// <param name="action">The logging method with which to log the stack trace.</param>
+        /// <param name="level">The logging level to which to log the stack trace.</param>
         /// <param name="prefix">The optional prefix string.</param>
-        private void LogStackTrace(Action<string> action, string prefix = "")
+        private void LogStackTrace(LogLevel level, string prefix = "")
         {
             int lineIndent = 0;
 
@@ -343,7 +343,7 @@ namespace Symbiote.Core
             {
                 // indent the current frame appropriately
                 string spaces = new string(' ', lineIndent * Indent);
-                action(prefix + LinePrefixVariable.Replace("$", spaces) + GetMethodSignature(frame.GetMethod()));
+                Log(level, prefix + LinePrefixVariable.Replace("$", spaces) + GetMethodSignature(frame.GetMethod()));
                 lineIndent++;
             }
         }
@@ -351,39 +351,6 @@ namespace Symbiote.Core
         #endregion
 
         #region Public
-
-        /// <summary>
-        /// Returns true if the log level corresponding to the specified logging method is enabled, false otherwise.
-        /// </summary>
-        /// <param name="action">The logging method to check.</param>
-        /// <returns>True if the log level is enabled, false otherwise.</returns>
-        /// <example>
-        /// <code>
-        /// // log a trace message if trace is enabled
-        /// if (logger.IsLogLevelEnabled(logger.Trace))
-        ///     logger.Trace("My trace message");
-        /// </code>
-        /// </example>
-        public bool IsLogLevelEnabled(Action<string> action)
-        {
-            switch (action.GetMethodInfo().Name)
-            {
-                case "Trace":
-                    return IsTraceEnabled;
-                case "Debug":
-                    return IsDebugEnabled;
-                case "Info":
-                    return IsInfoEnabled;
-                case "Warn":
-                    return IsWarnEnabled;
-                case "Error":
-                    return IsErrorEnabled;
-                case "Fatal":
-                    return IsFatalEnabled;
-                default:
-                    return false;
-            }
-        }
 
         /// <summary>
         /// Prunes the PersistedMethods list of any tuples older than the specified age in seconds.
@@ -419,27 +386,27 @@ namespace Symbiote.Core
         /// Splits the supplied string into a string array by newline characters, then prints each element of the string array as a new 
         /// log message with the logging function specified in action.
         /// </summary>
-        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to split and log.</param>
-        /// <seealso cref="Multiline(Action{string}, string)"/>
+        /// <seealso cref="Multiline(NLog.LogLevel, string[])"/>
         /// <example>
         /// <code>
         /// // create a string with newline characters
         /// string s = "Hello \r\n World!"
         /// 
         /// // invoke the method
-        /// logger.Multiline(logger.Info, s);
+        /// logger.Multiline(LogLevel.Info, s);
         /// </code>
         /// </example>
-        public void Multiline(Action<string> action, string message)
+        public void Multiline(LogLevel level, string message)
         {
-            Multiline(action, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
+            Multiline(level, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
         }
 
         /// <summary>
-        /// Logs each element of the supplied string array as a new log message with the logging function specified in action.
+        /// Logs each element of the supplied string array as a new log message to the logging level specified in level.
         /// </summary>
-        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to log.</param>
         /// <example>
         /// <code>
@@ -447,22 +414,22 @@ namespace Symbiote.Core
         /// string[] s = new string[] { "line 1", "line 2", "line 3" };
         /// 
         /// // invoke the method
-        /// logger.Multiline(logger.Info, s);
+        /// logger.Multiline(LogLevel.Info, s);
         /// </code>
         /// </example>
-        public void Multiline(Action<string> action, string[] message)
+        public void Multiline(LogLevel level, string[] message)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!IsLogLevelEnabled(action)) return;
+            if (!IsEnabled(level)) return;
 
             foreach (string line in message)
-                    action(line);
+                    Log(level, line);
         }
 
         /// <summary>
         /// Appends the line prefix to each line of the supplied message and wraps the text in the header and footer.
         /// </summary>
-        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to wrap and log.</param>
         /// <example>
         /// <code>
@@ -470,18 +437,18 @@ namespace Symbiote.Core
         /// string[] s = new string[] { "hello", "world", "!!!!" };
         /// 
         /// // invoke the method
-        /// logger.MultilineWrapped(logger.Info, s);
+        /// logger.MultilineWrapped(LogLevel.Info, s);
         /// </code>
         /// </example>
-        public void MultilineWrapped(Action<string> action, string message)
+        public void MultilineWrapped(LogLevel level, string message)
         {
-            MultilineWrapped(action, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
+            MultilineWrapped(level, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
         }
 
         /// <summary>
         /// Appends the line prefix to each line of the supplied message and wraps the text in the header and footer.
         /// </summary>
-        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to wrap and log.</param>
         /// <example>
         /// <code>
@@ -489,13 +456,13 @@ namespace Symbiote.Core
         /// string[] s = new string[] { "hello", "world", "!!!!" };
         /// 
         /// // invoke the method
-        /// logger.MultilineWrapped(logger.Info, s);
+        /// logger.MultilineWrapped(LogLevel.Info, s);
         /// </code>
         /// </example>
-        public void MultilineWrapped(Action<string> action, string[] message)
+        public void MultilineWrapped(LogLevel level, string[] message)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!IsLogLevelEnabled(action)) return;
+            if (!IsEnabled(level)) return;
 
             List<string> wrappedMessage = new List<string>();
 
@@ -510,25 +477,25 @@ namespace Symbiote.Core
             wrappedMessage.Add(Footer);
 
             // log
-            Multiline(action, wrappedMessage.ToArray());
+            Multiline(level, wrappedMessage.ToArray());
         }
 
         /// <summary>
         /// Logs a separator with the logging function specified in action.
         /// </summary>
-        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="level">The logging level to which to log the message.</param>
         /// <example>
         /// <code>
         /// // log the separator using the Info logging level
-        /// logger.Separator(logger.Info);
+        /// logger.Separator(LogLevel.Info);
         /// </code>
         /// </example>
-        public void Separator(Action<string> action)
+        public void Separator(LogLevel level)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!IsLogLevelEnabled(action)) return;
+            if (!IsEnabled(level)) return;
 
-            LogOuterSeparator(action);
+            LogOuterSeparator(level);
         }
 
         /// <summary>
@@ -538,21 +505,21 @@ namespace Symbiote.Core
         /// Dependent upon the BigFont class (BigFont.cs)
         /// https://github.com/jpdillingham/BigFont
         /// </remarks>
-        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to convert and log.</param>
         /// <example>
         /// <code>
         /// // log a heading using the Debug logging level
-        /// logger.Heading(logger.Debug, "Hello World");
+        /// logger.Heading(LogLevel.Debug, "Hello World");
         /// </code>
         /// </example>
-        public void Heading(Action<string> action, string message)
+        public void Heading(LogLevel level, string message)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!IsLogLevelEnabled(action)) return;
+            if (!IsEnabled(level)) return;
 
             // get the BigFont for the message
-            string[] heading = BigFont.Generate(message, BigFont.FontSize.Large);
+            string[] heading = BigFont.Generate(message, BigFont.Font.Graffiti, BigFont.FontSize.Large);
 
             // convert the array to a list so we can easily append a line
             List<string> styledHeading = new List<string>(heading);
@@ -561,7 +528,7 @@ namespace Symbiote.Core
             styledHeading.Add(OuterSeparator);
 
             // wrap and log 
-            MultilineWrapped(action, styledHeading.ToArray());
+            MultilineWrapped(level, styledHeading.ToArray());
         }
 
         /// <summary>
@@ -571,17 +538,17 @@ namespace Symbiote.Core
         /// Dependent upon the BigFont class (BigFont.cs)
         /// https://github.com/jpdillingham/BigFont
         /// </remarks>
-        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to convert and log.</param>
         /// <example>
         /// <code>
         /// // log a subheading using the Info logging level
-        /// logger.SubHeading(logger.Info, "This is a subheading!");
+        /// logger.SubHeading(LogLevel.Info, "This is a subheading!");
         /// </code>
         /// </example>
-        public void SubHeading(Action<string> action, string message)
+        public void SubHeading(LogLevel level, string message)
         {
-            MultilineWrapped(action, BigFont.Generate(message, BigFont.FontSize.Medium));
+            MultilineWrapped(level, BigFont.Generate(message, BigFont.Font.Block, BigFont.FontSize.Medium));
         }
 
         /// <summary>
@@ -591,17 +558,17 @@ namespace Symbiote.Core
         /// Dependent upon the BigFont class (BigFont.cs)
         /// https://github.com/jpdillingham/BigFont
         /// </remarks>
-        /// <param name="action">The logging method with which to log the message.</param>
+        /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to convert and log.</param>
         /// <example>
         /// <code>
         /// // log a sub-subheading using the Trace logging level
-        /// logger.SubSubHeading(logger.Trace, "This is a sub-subheading!");
+        /// logger.SubSubHeading(LogLevel.Trace, "This is a sub-subheading!");
         /// </code>
         /// </example>
-        public void SubSubHeading(Action<string> action, string message)
+        public void SubSubHeading(LogLevel level, string message)
         {
-            MultilineWrapped(action, BigFont.Generate(message, BigFont.FontSize.Small));
+            MultilineWrapped(level, BigFont.Generate(message, BigFont.Font.Block, BigFont.FontSize.Small));
         }
 
         #region EnterMethod
@@ -753,8 +720,11 @@ namespace Symbiote.Core
         /// </example>
         public Guid EnterMethod(object[] parameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
+            // default to Trace
+            LogLevel level = LogLevel.Trace;
+
             // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
-            if (!IsTraceEnabled) return default(Guid);
+            if (!IsEnabled(level)) return default(Guid);
 
             Guid methodGuid;
 
@@ -773,10 +743,10 @@ namespace Symbiote.Core
                 methodGuid = default(Guid);
 
             // log the header
-            LogHeader(Trace);
+            LogHeader(level);
 
             // log the method signature
-            Trace(EnterPrefix + "Entering " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+            Log(level, EnterPrefix + "Entering " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
                 ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
                 (persist ? ", persisting with Guid: " + methodGuid : "")
             );
@@ -792,7 +762,7 @@ namespace Symbiote.Core
                     ParameterInfo[] parameterInfo = GetCallingStackFrame().GetMethod().GetParameters();
 
                     if (parameterInfo.Length != parameters.Length)
-                        Trace(FinalLinePrefix + "[Parameter count mismatch]");
+                        Log(level, FinalLinePrefix + "[Parameter count mismatch]");
                     else
                     {
                         // the counts match, meaning we can infer that a complete parameter list has been supplied.
@@ -801,21 +771,21 @@ namespace Symbiote.Core
                         {
                             // gracefully handle nulls
                             if (parameters[p] == null)
-                                Trace((p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": null");
+                                Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": null");
                             // check to see if the param was excluded intentionally
                             else if (parameters[p].GetType() == typeof(ExcludedParam))
-                                Trace((p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": <parameter intentionally excluded>");
+                                Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": <parameter intentionally excluded>");
                             // check to ensure the type of the supplied parameter in position p is the same
                             // as the type in the method signature parameter list
                             else if (!parameterInfo[p].ParameterType.IsAssignableFrom(parameters[p].GetType()))
-                                Trace((p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
+                                Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
                             // everything checks out; print the object serialization
                             else
                             {
                                 List<string> lines = GetObjectSerialization(parameters[p]);
 
                                 for (int pl = 0; pl < lines.Count; pl++)
-                                    Trace(((p == parameters.Length - 1) && (pl == lines.Count - 1) ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": " + lines[pl]);
+                                    Log(level, ((p == parameters.Length - 1) && (pl == lines.Count - 1) ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": " + lines[pl]);
                             }
                         }
                     }
@@ -823,12 +793,12 @@ namespace Symbiote.Core
                 // swallow any errors we might encounter; this isn't important enough to stop the application.
                 catch (Exception ex)
                 {
-                    Trace(LinePrefix + "[Error: " + ex.Message + "]");
+                    Log(level, LinePrefix + "[Error: " + ex.Message + "]");
                 }
             }
 
             // log the footer.
-            LogFooter(Trace);
+            LogFooter(level);
 
             return methodGuid;
         }
@@ -941,14 +911,17 @@ namespace Symbiote.Core
         /// </example>
         public void ExitMethod(object returnValue, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
+            // default to the Trace log level
+            LogLevel level = LogLevel.Trace;
+
             // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
-            if (!IsTraceEnabled) return;
+            if (!IsEnabled(level)) return;
 
             // log the header
-            LogHeader(Trace);
+            LogHeader(level);
 
             // log the method signature
-            Trace(ExitPrefix + "Exiting " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+            Log(level, ExitPrefix + "Exiting " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
                 ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
                 (guid != default(Guid) ? ", Guid: " + guid : "")
             );
@@ -956,18 +929,18 @@ namespace Symbiote.Core
             // if returnValue is null, log a simple message and move on.  we do this to differentiate a null returnValue 
             // from a method invocation that didn't supply anything for returnValue
             if (returnValue == null)
-                Trace(LinePrefix + "return: null");
+                Log(level, LinePrefix + "return: null");
             // if returnValue isn't null compare the provided returnValue Type to our internal type UnspecifiedReturnValue.
             // this should only evaluate to true if an instance of UnspecifiedReturnValue is passed in from an overload.
             else if (returnValue.GetType() != typeof(UnspecifiedReturnValue))
-                LogVariables(Trace, Vars(returnValue), Names("return"));
+                LogVariables(level, Vars(returnValue), Names("return"));
 
             // if a Guid was provided, locate it in the PersistedMethods list, log the duration
             // and remove it from the list
-            if (guid != default(Guid)) LogExecutionDuration(Trace, "Method execution duration: ", guid, true);
+            if (guid != default(Guid)) LogExecutionDuration(level, "Method execution duration: ", guid, true);
 
             // log the footer.
-            LogFooter(Trace);
+            LogFooter(level);
 
             // prune the PersistedMethods list if automatic pruning is enabled.
             if (AutoPruneEnabled) PrunePersistedMethods(AutoPruneAge);
@@ -1295,11 +1268,14 @@ namespace Symbiote.Core
         /// </example>
         public void Checkpoint(string name, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
+            // default to the Trace logging level
+            LogLevel level = LogLevel.Trace;
+
             // if tracing isn't enabled, bail immediately
-            if (!IsTraceEnabled) return;
+            if (!IsEnabled(level)) return;
 
             // log the checkpoint header
-            LogHeader(Trace);
+            LogHeader(level);
 
             // log the method signature
             Trace(CheckpointPrefix + "Checkpoint " + (name != null ? "'" + name + "' " : "") + 
@@ -1309,13 +1285,13 @@ namespace Symbiote.Core
             );
 
             // ensure variables have been supplied before continuing
-            if (variables != null) LogVariables(Trace, variables, variableNames);
+            if (variables != null) LogVariables(level, variables, variableNames);
             
             // if persistence is enabled, print the execution duration 
-            if (guid != default(Guid)) LogExecutionDuration(Trace, "Current execution duration: ", guid);
+            if (guid != default(Guid)) LogExecutionDuration(level, "Current execution duration: ", guid);
 
             // log the footer
-            LogFooter(Trace);
+            LogFooter(level);
         }
 
         #endregion
@@ -1329,7 +1305,7 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
         /// // catch an exception
@@ -1346,18 +1322,18 @@ namespace Symbiote.Core
         /// </example>
         public void Exception(Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(Error, exception, null, null, default(Guid), caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, null, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
-        /// <param name="action">The logging method with which to log the exception.</param>
+        /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
         /// // catch an exception
@@ -1368,13 +1344,13 @@ namespace Symbiote.Core
         /// catch (Exception ex)
         /// {
         ///     // log the exception using the Debug logging level
-        ///     logger.Exception(logger.Debug, ex);
+        ///     logger.Exception(LogLevel.Debug, ex);
         /// }
         /// </code>
         /// </example>
-        public void Exception(Action<string> action, Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(LogLevel level, Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(action, exception, null, null, default(Guid), caller, filePath, lineNumber);
+            Exception(level, exception, null, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -1385,7 +1361,7 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
         /// // invoke EnterMethod using persistence
@@ -1405,19 +1381,19 @@ namespace Symbiote.Core
         /// </example>
         public void Exception(Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(Error, exception, null, null, guid, caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, null, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
-        /// <param name="action">The logging method with which to log the exception.</param>
+        /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
         /// // invoke EnterMethod using persistence
@@ -1431,13 +1407,13 @@ namespace Symbiote.Core
         /// catch (Exception ex)
         /// {
         ///     // log the exception with persistence using the Trace logging level
-        ///     logger.Exception(logger.Trace, ex, guid);
+        ///     logger.Exception(LogLevel.Trace, ex, guid);
         /// }
         /// </code>
         /// </example>
-        public void Exception(Action<string> action, Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(LogLevel level, Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(action, exception, null, null, guid, caller, filePath, lineNumber);
+            Exception(level, exception, null, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -1448,7 +1424,7 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
@@ -1470,19 +1446,19 @@ namespace Symbiote.Core
         /// </example>
         public void Exception(Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(Error, exception, variables, null, default(Guid), caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, variables, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
-        /// <param name="action">The logging method with which to log the exception.</param>
+        /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
@@ -1498,13 +1474,13 @@ namespace Symbiote.Core
         /// catch (Exception ex)
         /// {
         ///     // log the exception with unnamed variables using the Info logging level
-        ///     logger.Exception(logger.Info, ex, xLogger.Vars(one, two));
+        ///     logger.Exception(LogLevel.Info, ex, xLogger.Vars(one, two));
         /// }
         /// </code>
         /// </example>
-        public void Exception(Action<string> action, Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(LogLevel level, Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(action, exception, variables, null, default(Guid), caller, filePath, lineNumber);
+            Exception(level, exception, variables, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -1516,7 +1492,7 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
@@ -1541,20 +1517,20 @@ namespace Symbiote.Core
         /// </example>
         public void Exception(Exception exception, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(Error, exception, variables, null, guid, caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, variables, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
-        /// <param name="action">The logging method with which to log the exception.</param>
+        /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
         /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
@@ -1573,13 +1549,13 @@ namespace Symbiote.Core
         /// catch (Exception ex)
         /// {
         ///     // log the exception with unnamed variables and using persistence using the Debug logging level
-        ///     logger.Exception(logger.Debug, ex, xLogger.Vars(one, two), guid);
+        ///     logger.Exception(LogLevel.Debug, ex, xLogger.Vars(one, two), guid);
         /// }
         /// </code>
         /// </example>
-        public void Exception(Action<string> action, Exception exception, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(LogLevel level, Exception exception, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(action, exception, variables, null, guid, caller, filePath, lineNumber);
+            Exception(level, exception, variables, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -1591,7 +1567,7 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <seealso cref="Names(string[])"/>
         /// <example>
@@ -1614,20 +1590,20 @@ namespace Symbiote.Core
         /// </example>
         public void Exception(Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(Error, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
-        /// <param name="action">The logging method with which to log the exception.</param>
+        /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <seealso cref="Names(string[])"/>
         /// <example>
@@ -1644,13 +1620,13 @@ namespace Symbiote.Core
         /// catch (Exception ex)
         /// {
         ///     // log the exception with named variables using the Trace logging level
-        ///     logger.Exception(logger.Trace, ex, xLogger.Vars(one, two), xLogger.Names("one", "two"));
+        ///     logger.Exception(LogLevel.Trace, ex, xLogger.Vars(one, two), xLogger.Names("one", "two"));
         /// }
         /// </code>
         /// </example>
-        public void Exception(Action<string> action, Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(LogLevel level, Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(action, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+            Exception(level, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -1663,6 +1639,7 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Vars(object[])"/>
         /// <seealso cref="Names(string[])"/>
         /// <example>
@@ -1688,13 +1665,13 @@ namespace Symbiote.Core
         /// </example>
         public void Exception(Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            Exception(Error, exception, variables, variableNames, guid, caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, variables, variableNames, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs Exception details.
         /// </summary>
-        /// <param name="action">The logging method with which to log the exception.</param>
+        /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
         /// <param name="variables">A list of variables to be logged.  Use the Vars() method to build this.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
@@ -1721,49 +1698,49 @@ namespace Symbiote.Core
         /// catch (Exception ex)
         /// {
         ///     // log the exception with named variables and using persistence using the Debug logging level
-        ///     logger.Exception(logger.Debug, ex, xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
+        ///     logger.Exception(LogLevel.Debug, ex, xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
         /// }
         /// </code>
         /// </example>
-        public void Exception(Action<string> action, Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void Exception(LogLevel level, Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!IsLogLevelEnabled(action)) return;
+            if (!IsEnabled(level)) return;
 
             // log the header
-            LogHeader(action, ExceptionHeaderPrefix);
+            LogHeader(level, ExceptionHeaderPrefix);
 
             // log the method signature
-            action(ExceptionLinePrefix + ExceptionPrefix + "Exception '" + exception.GetType().Name +
+            Log(level, ExceptionLinePrefix + ExceptionPrefix + "Exception '" + exception.GetType().Name +
                 "' caught in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") +
                 ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" +
                 (guid != default(Guid) ? ", Guid: " + guid : "") + ":" 
             );
 
             // log the message
-            action(ExceptionLinePrefix + FinalLinePrefix + "\"" + exception.Message + "\"");
+            Log(level, ExceptionLinePrefix + FinalLinePrefix + "\"" + exception.Message + "\"");
 
-            LogInnerSeparator(action, ExceptionLinePrefix);
+            LogInnerSeparator(level, ExceptionLinePrefix);
 
             // log the stack trace from the invocation point followed by a separator
-            LogStackTrace(action, ExceptionLinePrefix);
-            LogInnerSeparator(action, ExceptionLinePrefix);
+            LogStackTrace(level, ExceptionLinePrefix);
+            LogInnerSeparator(level, ExceptionLinePrefix);
 
             // log the exception 
-            LogVariables(action, Params(exception), Names("ex"), ExceptionLinePrefix);
+            LogVariables(level, Params(exception), Names("ex"), ExceptionLinePrefix);
 
             // if a variable list was supplied, log it 
             if (variables != null)
             {
-                LogInnerSeparator(action, ExceptionLinePrefix);
-                LogVariables(action, variables, variableNames);
+                LogInnerSeparator(level, ExceptionLinePrefix);
+                LogVariables(level, variables, variableNames);
             }
 
             // if persistence is used, log the current execution duration
-            if (guid != default(Guid)) LogExecutionDuration(action, "Current execution duration: ", guid);
+            if (guid != default(Guid)) LogExecutionDuration(level, "Current execution duration: ", guid, false, ExceptionLinePrefix);
 
             // log the footer
-            LogFooter(action, ExceptionFooterPrefix);
+            LogFooter(level, ExceptionFooterPrefix);
         }
 
         #endregion
@@ -1776,7 +1753,7 @@ namespace Symbiote.Core
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <seealso cref="StackTrace(Action{string}, string, string, int)"/>
+        /// <seealso cref="StackTrace(NLog.LogLevel, string, string, int)"/>
         /// <example>
         /// <code>
         /// // log the stack trace using the default (Trace) logging level
@@ -1785,13 +1762,13 @@ namespace Symbiote.Core
         /// </example>
         public void StackTrace([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            StackTrace(Trace, caller, filePath, lineNumber);
+            StackTrace(LogLevel.Trace, caller, filePath, lineNumber);
         }
 
         /// <summary>
         /// Logs the current execution stack.
         /// </summary>
-        /// <param name="action">The logging method with which to log the exception.</param>
+        /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1801,20 +1778,20 @@ namespace Symbiote.Core
         /// logger.StackTrace(logger.Debug);
         /// </code>
         /// </example>
-        public void StackTrace(Action<string> action, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        public void StackTrace(LogLevel level, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!IsTraceEnabled) return;
+            if (!IsEnabled(level)) return;
 
             // log the header
-            LogHeader(action);
-            action(StackTracePrefix + "Stack Trace from method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
+            LogHeader(level);
+            Log(level, StackTracePrefix + "Stack Trace from method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
 
             // log the stack trace followed by a separator
-            LogStackTrace(action);
+            LogStackTrace(level);
 
             // log the footer
-            LogFooter(action);
+            LogFooter(level);
         }
 
         #endregion
@@ -1889,7 +1866,12 @@ namespace Symbiote.Core
                 string json = JsonConvert.SerializeObject(
                     obj,
                     Formatting.Indented,
-                    new JsonSerializerSettings() { Converters = new List<JsonConverter> { new StringEnumConverter() } }
+                    new JsonSerializerSettings()
+                    {
+                        Converters = new List<JsonConverter> { new StringEnumConverter() }, // serialize enumerations using the value string
+                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore, // handle reference loops without throwing errors
+                        NullValueHandling = NullValueHandling.Include // include null values
+                    }
                 );
 
                 // split by \n after replacing \r\n with just \n.  if we don't do this extra lines are added to logs in some editors.
@@ -2039,7 +2021,7 @@ namespace Symbiote.Core
         /// <param name="variables">A dynamic object array of variables.</param>
         /// <returns>The provided object array.</returns>
         /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
-        /// <seealso cref="Exception(Action{string}, System.Exception, object[], string[], Guid, string, string, int)"/>
+        /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <seealso cref="Params(object[])"/>
         /// <example>
         /// <code>

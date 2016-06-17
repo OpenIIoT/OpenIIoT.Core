@@ -48,9 +48,8 @@ namespace Symbiote.Core
         /// logging level, e.g. "trace", "debug", "info", "warn", "error" and "fatal".
         /// </param>
         internal static void Main(string[] args)
-        {             
-            logger.Heading(logger.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
-
+        {
+            logger.Heading(LogLevel.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
             logger.EnterMethod(xLogger.Params((object)args));
 
             try
@@ -115,7 +114,7 @@ namespace Symbiote.Core
                 // instantiate the Program Manager.
                 // the Program Manager acts as a Service Locator for the application.
                 // all of the various IManager instances are instantiated (but not started) within the constructor of ProgramManager.
-                logger.Heading(logger.Debug, "Initialization");
+                logger.Heading(LogLevel.Debug, "Initialization");
                 logger.Debug("Instantiating the Program Manager...");
                 manager = ProgramManager.Instance(safeMode);
                 logger.Debug("The Program Manager was instantiated successfully.");
@@ -125,7 +124,7 @@ namespace Symbiote.Core
                 //----------------------------------------------- - ------------  - - -
                 // start the Platform Manager so we can get the platform details
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
-                logger.SubHeading(logger.Debug, "Platform Manager");
+                logger.SubHeading(LogLevel.Debug, "Platform Manager");
                 logger.Info("Starting the Platform Manager...");
                 manager.StartManager(manager.PlatformManager);
                 logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
@@ -137,7 +136,7 @@ namespace Symbiote.Core
                 // start the application.
                 // if the platform is windows and it is not being run as an interactive application, Windows 
                 // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
-                logger.Heading(logger.Debug, "Startup");
+                logger.Heading(LogLevel.Debug, "Startup");
 
                 if ((manager.PlatformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
                 {
@@ -155,7 +154,7 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Fatal(ex, "The application failed to initialize.");
-                logger.Exception(logger.Fatal, ex);
+                logger.Exception(LogLevel.Fatal, ex);
             }
             finally
             {
@@ -177,7 +176,7 @@ namespace Symbiote.Core
             {
                 //- - - - ------- -   --------------------------- - ---------------------  -    -
                 // start the program manager.
-                logger.SubHeading(logger.Debug, "Program Manager");
+                logger.SubHeading(LogLevel.Debug, "Program Manager");
                 logger.Info("Invoking the Program Manager Start routine...");
                 manager.StartManager(manager);
                 logger.Info("Program Manager Started.");
@@ -187,7 +186,7 @@ namespace Symbiote.Core
                 //--------------------------- - -        -------  - -   - - -  - - - -
                 // load the configuration.
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                logger.SubHeading(logger.Debug, "Configuration Manager");
+                logger.SubHeading(LogLevel.Debug, "Configuration Manager");
                 logger.Info("Invoking the Configuration Manager Start routine...");
                 manager.StartManager(manager.ConfigurationManager);
                 logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
@@ -197,7 +196,7 @@ namespace Symbiote.Core
                 //--------------------------------------------- - - --------- ----  - -    -
                 // load plugins.  
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
-                logger.SubHeading(logger.Debug, "Plugin Manager");
+                logger.SubHeading(LogLevel.Debug, "Plugin Manager");
                 logger.Info("Invoking the Plugin Manager Start routine...");
                 manager.StartManager(manager.PluginManager);
                 logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
@@ -220,7 +219,7 @@ namespace Symbiote.Core
                 manager.PluginManager.PluginInstances.Add("Platform", manager.PlatformManager.Platform.Connector);
                 //------ - -      ---------------------- - -     ----------------------------- - - -
 
-                logger.Multiline(logger.Debug, "MODEL");
+                logger.Multiline(LogLevel.Debug, "MODEL");
 
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
@@ -230,7 +229,7 @@ namespace Symbiote.Core
 
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
 
-                logger.Multiline(logger.Debug, "PLATFORM ITEMS");
+                logger.Multiline(LogLevel.Debug, "PLATFORM ITEMS");
 
                 //----------------------------------- - - --------  - -------- -  -   -  -           -
                 // attach the Platform connector items to the model
@@ -296,7 +295,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Exception(logger.Fatal, ex);
+                logger.Exception(LogLevel.Fatal, ex);
                 if (!Environment.UserInteractive) throw;
             }
             finally
@@ -324,7 +323,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Exception(logger.Error, ex);
+                logger.Exception(LogLevel.Error, ex);
             }
             finally
             {

@@ -195,7 +195,7 @@ namespace Symbiote.Core.Plugin
 
             //---------------- - ------- - - -
             // generate a list of valid archive files in the archive directory 
-            logger.SubSubHeading(logger.Debug, "Archives...");
+            logger.SubSubHeading(LogLevel.Debug, "Archives...");
 
             PluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
 
@@ -229,7 +229,7 @@ namespace Symbiote.Core.Plugin
 
             // ---------- -   -    ------------  
             // load installed plugin assemblies into memory and register them with the configuration manager
-            logger.SubSubHeading(logger.Debug, "Assemblies...");
+            logger.SubSubHeading(LogLevel.Debug, "Assemblies...");
 
             OperationResult<List<PluginAssembly>> pluginAssemblyLoadResult = LoadPluginAssemblies();
 
@@ -255,7 +255,7 @@ namespace Symbiote.Core.Plugin
 
             //   - --   ------------- -    -
             // instantiate all of the configured Plugin instances
-            logger.SubSubHeading(logger.Debug, "Instances...");
+            logger.SubSubHeading(LogLevel.Debug, "Instances...");
 
             OperationResult<Dictionary<string, IPluginInstance>> pluginInstantiationResult = InstantiatePlugins();
 
@@ -459,7 +459,7 @@ namespace Symbiote.Core.Plugin
             // iterate over the list of found files
             foreach (string fileName in searchResult.Result)
             {
-                logger.SubSubHeading(logger.Trace, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
+                logger.SubSubHeading(LogLevel.Trace, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
                 logger.Debug("Parsing Archive file '" + fileName + "'...");
 
                 // parse the current plugin archive file
@@ -561,7 +561,7 @@ namespace Symbiote.Core.Plugin
                             catch (Exception ex)
                             {
                                 retVal.AddError("Failed to deserialize the contents of the configuration file.");
-                                logger.Exception(logger.Debug, ex, guid);
+                                logger.Exception(LogLevel.Debug, ex, guid);
                             }
                         }
                         else retVal.AddError("Failed to read the contents of the extracted file.");
@@ -980,7 +980,7 @@ namespace Symbiote.Core.Plugin
                 catch (Exception ex)
                 {
                     retVal.AddError("Exception caught while attempting to delete directory '" + pluginDirectory + "': " + ex.Message);
-                    logger.Exception(logger.Debug, ex);
+                    logger.Exception(LogLevel.Debug, ex);
                 }
             }
             else
@@ -1114,7 +1114,7 @@ namespace Symbiote.Core.Plugin
             {
                 string assemblyFileName = System.IO.Path.Combine(GetPluginDirectory(plugin), plugin.FQN + ".dll");
 
-                logger.SubSubHeading(logger.Trace, "Assembly: .." + String.Join(".", System.IO.Path.GetFileName(assemblyFileName).Split('.').TakeLast(3).ToArray()));
+                logger.SubSubHeading(LogLevel.Trace, "Assembly: .." + String.Join(".", System.IO.Path.GetFileName(assemblyFileName).Split('.').TakeLast(3).ToArray()));
 
                 // load the assembly
                 OperationResult<PluginAssembly> loadResult = LoadPluginAssembly(plugin);
@@ -1235,7 +1235,7 @@ namespace Symbiote.Core.Plugin
             }
             catch (ReflectionTypeLoadException ex)
             {
-                logger.Exception(logger.Debug, ex);
+                logger.Exception(LogLevel.Debug, ex);
 
                 // a multitude of exceptions can be thrown under the ReflectionTypeLoaderException type
                 // iterate over them
@@ -1246,7 +1246,7 @@ namespace Symbiote.Core.Plugin
             }
             catch (Exception ex)
             {
-                logger.Exception(logger.Debug, ex);
+                logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError("Failed to load assembly from plugin file '" + assemblyFileName + "': " + ex.Message);
             }
             //--------------------------  - 
@@ -1379,7 +1379,7 @@ namespace Symbiote.Core.Plugin
             }
             catch (Exception ex)
             {
-                logger.Exception(logger.Error, ex);
+                logger.Exception(LogLevel.Error, ex);
                 retVal.AddError("Exception caught while creating plugin instance '" + instanceName + "': " + ex.Message);
             }
 
