@@ -548,7 +548,7 @@ namespace Symbiote.Core
         /// </example>
         public void SubHeading(LogLevel level, string message)
         {
-            MultilineWrapped(level, BigFont.Generate(message, BigFont.Font.Block, BigFont.FontSize.Medium));
+            MultilineWrapped(level, BigFont.Generate(message, BigFont.Font.Graffiti, BigFont.FontSize.Medium));
         }
 
         /// <summary>

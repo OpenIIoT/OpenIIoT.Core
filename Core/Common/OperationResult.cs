@@ -13,15 +13,38 @@
  ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       █ 
-      █  Encapsulates the result of any operation, including a result code and a list of messages generated during the operation.
+      █  Encapsulates the result of any operation. Includes a result code and a list of messages generated during the operation.
       █
       █  Additional methods provide logging functionality for convenience, and a generic extension class is provided to allow for 
       █  OperationResult instances which contain an object as a return value.
       █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The MIT License (MIT)
+      █  
+      █  Copyright (c) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  Permission is hereby granted, free of charge, to any person obtaining a copy
+      █  of this software and associated documentation files (the "Software"), to deal
+      █  in the Software without restriction, including without limitation the rights
+      █  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+      █  copies of the Software, and to permit persons to whom the Software is
+      █  furnished to do so, subject to the following conditions:
+      █  
+      █  The above copyright notice and this permission notice shall be included in all
+      █  copies or substantial portions of the Software.
+      █  
+      █  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+      █  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+      █  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+      █  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+      █  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+      █  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+      █  SOFTWARE. 
+      █ 
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀     ▀▀▀   
       █  Dependencies:
       █     └─ NLog (https://www.nuget.org/packages/NLog/)
-      █ 
+      █     
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██   
                                                                                                ▀█▄ ██ ▄█▀                       
@@ -62,10 +85,6 @@ namespace Symbiote.Core
     /// </summary>
     public enum OperationResultMessageType
     {
-        /// <summary>
-        /// The default return type.
-        /// </summary>
-        Unknown,
         /// <summary>
         /// The message contains low level trace information.
         /// </summary>
@@ -138,12 +157,12 @@ namespace Symbiote.Core
         /// <summary>
         /// The result of the operation.
         /// </summary>
-        public OperationResultCode ResultCode { get; set; }
+        public OperationResultCode ResultCode { get; private set; }
 
         /// <summary>
         /// The list of messages generated during the operation.
         /// </summary>
-        public List<OperationResultMessage> Messages { get; set; }
+        public List<OperationResultMessage> Messages { get; private set; }
 
         #endregion
 
@@ -152,6 +171,12 @@ namespace Symbiote.Core
         /// <summary>
         /// Constructs a new OperationResult with a Resultcode of Success and an empty list of messages.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// // create a new OperationResult
+        /// OperationResult retVal = new OperationResult();
+        /// </code>
+        /// </example>
         public OperationResult()
         {
             ResultCode = OperationResultCode.Success;
@@ -240,9 +265,15 @@ namespace Symbiote.Core
         /// The default logging methods are applied to corresponding message types; Info for Info, Warn for Warning and Error for Errors.
         /// </summary>
         /// <remarks>
+        /// <para>
         /// The caller parameter is automatically set to the calling method.  In some cases, such as when a result for a method
         /// is logged within a method different from the executing method, this will need to be explicitly specified
         /// to reflect the actual source of the OperationResult.
+        /// </para>
+        /// <para>
+        /// If a logger different from NLog is desired, modify the type of the logger parameter accordingly and substitute
+        /// the appropriate methods for info, warn and error log levels (assuming they are applicable).
+        /// </para>
         /// </remarks>
         /// <param name="logger">The logger with which to log the result.</param>
         /// <param name="caller">The name of calling method.</param>
@@ -489,6 +520,20 @@ namespace Symbiote.Core
         /// Allows for implicit casts to boolean.  Returns false if ResultCode is Failure, true otherwise.
         /// </summary>
         /// <param name="operationResult">The OperationResult to convert.</param>
+        /// <example>
+        /// <code>
+        /// // generate an OperationResult
+        /// OperationResult result = SomeOperation();
+        /// 
+        /// // check the result
+        /// if (!result)
+        /// {
+        ///     Console.WriteLine("Operation failed!");
+        /// }
+        /// else
+        ///     Console.WriteLine("Operation succeeded!");
+        /// </code>
+        /// </example>
         public static implicit operator bool(OperationResult operationResult)
         {
             return (operationResult.ResultCode != OperationResultCode.Failure);
@@ -610,7 +655,7 @@ namespace Symbiote.Core
         /// 
         /// // log the result.  the combined list of messages from both inner and outer
         /// // are logged, and the ResultCode is equal to the lesser of the two ResultCodes.
-        /// outer.LogResult(logger); 
+        /// outer.LogResult(logger.Debug); 
         /// </code>
         /// </example>
         new public virtual OperationResult<T> Incorporate(OperationResult operationResult)

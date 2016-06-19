@@ -166,9 +166,11 @@
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Plugin\Connector\ConnectorEventArgs.cs" />
     <Compile Include="Plugin\Connector\ConnectorManager.cs" />
+    <Compile Include="Plugin\Connector\IAddable.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
+    <Compile Include="Plugin\Connector\ISubscribable.cs" />
+    <Compile Include="Plugin\Connector\IWriteable.cs" />
     <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
     <Compile Include="Plugin\Endpoint\EndpointManager.cs" />
     <Compile Include="Plugin\IPluginInstance.cs" />

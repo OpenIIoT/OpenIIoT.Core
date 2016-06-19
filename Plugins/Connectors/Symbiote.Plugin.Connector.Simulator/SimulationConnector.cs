@@ -4,29 +4,79 @@ using Symbiote.Core.Plugin;
 using Symbiote.Core;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin.Connector;
+using System.Linq;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
-    public class SimulationConnector : IConnector, IConfigurable<SimulationConnectorConfiguration>
+    /// <summary>
+    /// Provides simulation data.
+    /// </summary>
+    public class SimulationConnector : IConnector, IAddable, ISubscribable, IConfigurable<SimulationConnectorConfiguration>
     {
+        #region Variables
+
+        /// <summary>
+        /// The root node for the item tree.
+        /// </summary>
         private ConnectorItem itemRoot;
-       
+
+        #endregion
+
+        #region Properties
+
+        #region IConnector Implementation
+
+        /// <summary>
+        /// The connector name.
+        /// </summary>
         public string Name { get; private set; }
+
+        /// <summary>
+        /// The connector FQN.
+        /// </summary>
         public string FQN { get; private set; }
+
+        /// <summary>
+        /// The connector Version.
+        /// </summary>
         public string Version { get; private set; }
+
+        /// <summary>
+        /// The connector type.
+        /// </summary>
         public PluginType PluginType { get; private set; }
+
+        /// <summary>
+        /// The name of the connector instance.
+        /// </summary>
+        public string InstanceName { get; private set; }
+
+        #endregion
+
+        #region ISubscribable Implementation
+
+        /// <summary>
+        /// The <see cref="Dictionary{TKey, TValue}"/> containing the current list of subscribed items and the number of subscribers.
+        /// </summary>
+        public Dictionary<ConnectorItem, int> Subscriptions { get; private set; }
+
+        #endregion
+
+        #region IConfigurable Implemenation
 
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public SimulationConnectorConfiguration Configuration { get; private set; }
 
-        public string InstanceName { get; private set; }
-        public bool Browseable { get { return true; } }
-        public bool Writeable { get { return false; } }
+        #endregion
 
-        public event EventHandler<ConnectorEventArgs> Changed;
+
 
         private System.Timers.Timer timer;
         private int counter;
+
+        #endregion
+
+        #region Constructors
 
         public SimulationConnector(string instanceName)
         {
@@ -39,17 +89,118 @@ namespace Symbiote.Plugin.Connector.Simulation
 
             InitializeItems();
 
+            Subscriptions = new Dictionary<ConnectorItem, int>();
+
             counter = 0;
             timer = new System.Timers.Timer(50);
             timer.Elapsed += Timer_Elapsed;
         }
 
+        #endregion
+
+        #region Instance Methods
+
+        #region IAddable Implementation
+
+        public OperationResult<Item> Add(string fqn, string sourceFQN)
+        {
+            OperationResult<Item> retVal = new OperationResult<Item>();
+
+            try
+            {
+                // split the specified FQN by '.' to get each tuple of the path
+                string[] path = fqn.Split('.');
+
+                // iterate over each tuple and make sure it exists in the connector's item model
+                // if it doesn't, create it.
+                Item currentNode = itemRoot;
+                foreach (string tuple in path)
+                {
+                    if (!currentNode.Children.Exists(n => n.Name == tuple))
+                    {
+                        currentNode = currentNode.AddChild(new ConnectorItem(this, tuple)).Result;
+                        retVal.AddInfo("Added node " + currentNode.FQN);
+                    }
+                    else
+                        currentNode = currentNode.Children.Where(n => n.Name == tuple).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error adding Item '" + fqn + "': " + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
+        #region ISubscribable Implementation
+
+        public OperationResult Subscribe(ConnectorItem item)
+        {
+            OperationResult retVal = new OperationResult();
+
+            try
+            {
+                if (Subscriptions.ContainsKey(item))
+                    Subscriptions[item]++;
+                else
+                    Subscriptions.Add(item, 1);
+
+                retVal.AddInfo("The Item '" + item.FQN + "' now has " + Subscriptions[item] + " subscriber(s).");
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error subscribing to Item '" + item.FQN + "': " + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        public OperationResult UnSubscribe(ConnectorItem item)
+        {
+            OperationResult retVal = new OperationResult();
+
+            try
+            {
+                if (!Subscriptions.ContainsKey(item))
+                    retVal.AddError("The Item '" + item.FQN + "' is not currently subscribed.");
+                else
+                {
+                    Subscriptions[item]--;
+
+                    if (Subscriptions[item] <= 0)
+                    {
+                        Subscriptions.Remove(item);
+                        retVal.AddInfo("The Item '" + item.FQN + "' has been fully unsubscribed.");
+                    }
+                    else
+                        retVal.AddInfo("The Item '" + item.FQN + "' now has " + Subscriptions[item] + " subscriber(s).");
+                }
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error unsubscribing from Item '" + item.FQN + "': " + ex.Message);
+            }
+
+            return retVal;
+        }
+
+        #endregion
+
         private void Timer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             counter++;
-            ((ConnectorItem)FindItem(InstanceName + ".Process.Ramp")).Write(counter);
-            ((ConnectorItem)FindItem(InstanceName + ".DateTime.Time")).Write(DateTime.Now);
-            ((ConnectorItem)FindItem(InstanceName + ".Motor")).Write(new Motor("Test Motor", "ABCXYZ", counter, true));
+
+            // iterate over the subscribed tags and update them using Write()
+            // this will update the value of the ConnectorItem and will fire the Changed event
+            // which will cascade the value through the model
+            foreach (Item key in Subscriptions.Keys)
+            {
+                if (key.FQN == InstanceName + ".DateTime.Time") key.Write(DateTime.Now);
+                if (key.FQN == InstanceName + ".Process.Ramp") key.Write(counter);
+            }
         }
 
         /// <summary>
@@ -103,19 +254,19 @@ namespace Symbiote.Plugin.Connector.Simulation
             throw new NotImplementedException();
         }
 
-        public Item FindItem(string fqn)
+        public Item Find(string fqn)
         {
-            return FindItem(itemRoot, fqn);
+            return Find(itemRoot, fqn);
         }
 
-        private Item FindItem(Item root, string fqn)
+        private Item Find(Item root, string fqn)
         {
             if (root.FQN == fqn) return root;
 
             Item found = default(Item);
             foreach (Item child in root.Children)
             {
-                found = FindItem(child, fqn);
+                found = Find(child, fqn);
                 if (found != default(Item)) break;
             }
             return found;
@@ -131,37 +282,45 @@ namespace Symbiote.Plugin.Connector.Simulation
             return (root == null ? itemRoot.Children : root.Children);
         }
 
-        public object Read(string value)
+        public OperationResult<object> Read(Item item)
         {
+            OperationResult<object> retVal = new OperationResult<object>();
+
             double val = DateTime.Now.Second;
-            switch (value.Split('.')[value.Split('.').Length - 1])
+            switch (item.FQN.Split('.')[item.FQN.Split('.').Length - 1])
             {
                 case "Sine":
-                    return Math.Sin(val);
+                    retVal.Result = Math.Sin(val);
+                    return retVal;
                 case "Cosine":
-                    return Math.Cos(val);
+                    retVal.Result = Math.Cos(val);
+                    return retVal;
                 case "Tangent":
-                    return Math.Tan(val);
+                    retVal.Result = Math.Tan(val);
+                    return retVal;
                 case "Ramp":
-                    return val;
+                    retVal.Result = val;
+                    return retVal;
                 case "Step":
-                    return val % 5;
+                    retVal.Result = val % 5;
+                    return retVal;
                 case "Toggle":
-                    return val % 2;
+                    retVal.Result = val % 2;
+                    return retVal;
                 case "Time":
-                    return DateTime.Now.ToString("HH:mm:ss");
+                    retVal.Result = DateTime.Now.ToString("HH:mm:ss");
+                    return retVal;
                 case "Date":
-                    return DateTime.Now.ToString("MM/dd/yyyy");
+                    retVal.Result = DateTime.Now.ToString("MM/dd/yyyy");
+                    return retVal;
                 case "TimeZone":
-                    return DateTime.Now.ToString("zzz");
+                    retVal.Result = DateTime.Now.ToString("zzz");
+                    return retVal;
                 case "Array":
-                    return new int[5] { 1, 2, 3, 4, 5 };
-                case "Motor":
-                    return new Motor("Test Motor", "ABC123XYZ", 30, false);
-                case "MotorArray":
-                    return Motor.GetMotorArray();
+                    retVal.Result = new int[5] { 1, 2, 3, 4, 5 };
+                    return retVal;
                 default:
-                    return 0;
+                    return retVal;
             }
                 
         }
@@ -200,6 +359,8 @@ namespace Symbiote.Plugin.Connector.Simulation
             ConnectorItem motorArrayRoot = itemRoot.AddChild(new ConnectorItem(this, "MotorArray")).Result;
 
         }
+
+        #endregion
 
         #region Static Methods
 
@@ -246,40 +407,15 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         #endregion
 
-        private void OnChange(string fqn, object value)
-        {
-            if (Changed != null)
-                Changed(this, new ConnectorEventArgs(fqn, value));
-        }
+        //private void OnItemChange(string fqn, object value)
+        //{
+        //    if (ItemChanged != null)
+        //        ItemChanged(this, new ConnectorEventArgs(fqn, value));
+        //}
     }
 
     public class SimulationConnectorConfiguration
     {
         public int Interval { set; get; }
-    }
-
-    public class Motor
-    {
-        public string Name { get; set; }
-        public string Model { get; set; }
-        public int HorsePower { get; set; }
-        public bool IsRunning { get; set; }
-
-        public Motor(string name, string model, int horsePower, bool isRunning)
-        {
-            Name = name;
-            Model = model;
-            HorsePower = horsePower;
-            IsRunning = isRunning;
-        }
-
-        public static List<Motor> GetMotorArray()
-        {
-            List<Motor> retVal = new List<Motor>();
-            retVal.Add(new Motor("Motor A", "ABC123XYZ.1", 30, true));
-            retVal.Add(new Motor("Motor B", "ABC123XYZ.2", 30, false));
-            retVal.Add(new Motor("Motor C", "ABC123XYZ.x", 35, true));
-            return retVal;
-        }
     }
 }

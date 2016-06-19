@@ -4,6 +4,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
+using Symbiote.Core.Plugin.Connector;
 
 namespace Symbiote.Core
 {
@@ -35,7 +36,7 @@ namespace Symbiote.Core
         public string Path { get; set; }
 
         /// <summary>
-        /// The fully qualified name name of the source item
+        /// The fully qualified name name of the source item.
         /// </summary>
         public string SourceFQN { get; set; }
 
@@ -321,6 +322,17 @@ namespace Symbiote.Core
             try
             {
                 SourceItem.Changed += SourceItemChanged;
+
+                // if we are subscribing to a ConnectorItem, subscribe the source item to it's connector's ItemChanged event.
+                if (SourceItem is ConnectorItem)
+                {
+                    OperationResult sourceSubscription = ((ConnectorItem)SourceItem).SubscribeToSource();
+
+                    if (sourceSubscription.ResultCode == OperationResultCode.Failure)
+                        retVal.AddWarning("Failed to subscribe SourceItem to it's Connector source.");
+
+                    retVal.Incorporate(sourceSubscription);
+                }
             }
             catch (Exception ex)
             {

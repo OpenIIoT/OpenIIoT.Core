@@ -249,16 +249,29 @@ namespace Symbiote.Core
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
 
+                ((IAddable)manager.PluginManager.FindPluginInstance("Simulation")).Add("One.Two.Three.Four.Five", "fart");
+                ((IAddable)manager.PluginManager.FindPluginInstance("Simulation")).Add("One.Two.Three.ThreeThree.ThreeThreeThree", "fart");
 
 
 
 
+                Item symItem = manager.ModelManager.FindItem(manager.InstanceName);
+                if (symItem == default(Item))
+                    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName)).Result;
 
-                //Item symItem = manager.ModelManager.FindItem(manager.InstanceName + ".Simulation");
-                //if (symItem == default(Item))
-                //    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName + ".Simulation")).Result;
+                manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
 
-                //manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
+
+                OperationResult subscribe = manager.ModelManager.FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+
+                subscribe.LogResult(logger.Info);
+
+                OperationResult subscribe2 = manager.ModelManager.FindItem("Symbiote.Simulation.Process.Ramp").SubscribeToSource();
+
+                subscribe2.LogResult(logger.Info);
+
+                logger.Info("Starting Simulation Connector...");
+                manager.PluginManager.FindPluginInstance("Simulation").Start();
 
                 //----------------------------- - -       --
                 // show 'em what they've won!
@@ -310,7 +323,6 @@ namespace Symbiote.Core
         public static void Stop()
         {
             logger.EnterMethod();
-
             logger.Info(manager.ProductName + " is stopping.  Saving configuration...");
 
             try
@@ -331,52 +343,6 @@ namespace Symbiote.Core
             }
         }
 
-        public static void Test()
-        {
-            //Logger logger = new Logger();
-
-            //Guid guid = MethodLogger.Enter(MethodLogger.Params(arg), true);
-
-            //logger.Trace("some messages");
-
-            //MethodLogger.Checkpoint();
-            //MethodLogger.Checkpoint(logger);
-
-            //MethodLogger.Checkpoint(guid);
-            //MethodLogger.Checkpoint(logger, guid);
-
-            //MethodLogger.Checkpoint(MethodLogger.Vars(arg, arg));
-            //MethodLogger.Checkpoint(logger, MethodLogger.Vars(arg, arg));
-            //MethodLogger.Checkpoint(logger, MethodLogger.Vars(arg, arg), guid);
-
-            //MethodLogger.Checkpoint(MethodLogger.Vars(arg, arg), MethodLogger.Names("one", "two"));
-            //MethodLogger.Checkpoint(logger, MethodLogger.Params(arg, arg), MethodLogger.Names("one", "two"));
-            //MethodLogger.Checkpoint(logger, MethodLogger.Params(arg, arg), MethodLogger.Names("one", "two"), guid);
-
-            //MethodLogger.Checkpoint(MethodLogger.Params(arg, arg), MethodLogger.Names("one", "two"), guid);
-
-
-
-            //logger.Trace("-------------------------------------------------------------------");
-
-            logger.Exception(new Exception());
-
-            Guid guid = logger.EnterMethod(true);
-            //logger.Checkpoint(xLogger.Vars(arg, arg), xLogger.Names("one", "two"), guid);
-
-            //try
-            //{
-            //    throw new Exception("Some exception");
-            //}
-            //catch(Exception ex)
-            //{
-            //    logger.Exception(ex, xLogger.Vars(guid), xLogger.Names("guid"), guid);
-            //}
-            logger.StackTrace();
-
-
-            logger.ExitMethod(guid);
-        }
         #endregion
     }
 }

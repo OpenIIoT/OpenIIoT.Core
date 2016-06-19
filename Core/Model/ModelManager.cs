@@ -317,7 +317,7 @@ namespace Symbiote.Core.Model
         private ModelBuildResult BuildModel(string instanceName, List<ModelManagerConfigurationItem> itemList)
         {
             logger.Info("Building Model...");
-            ModelBuildResult retVal = new ModelBuildResult() { ResultCode = OperationResultCode.Success, UnresolvedList = itemList.Clone() };
+            ModelBuildResult retVal = new ModelBuildResult() { UnresolvedList = itemList.Clone() };
 
             BuildModel(instanceName, itemList, retVal);
 

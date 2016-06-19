@@ -1,4 +1,50 @@
-﻿using NLog;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █
+      █      ▄████████                                                                   ▄█
+      █     ███    ███                                                                  ███
+      █    ▄███▄▄▄▄██▀    ▄█████   ▄█████   █           ██     █     ▄▄██▄▄▄     ▄█████ ███        ██████     ▄████▄     ▄████▄     ▄█████    █████
+      █   ▀▀███▀▀▀▀▀     ██   █    ██   ██ ██       ▀███████▄ ██   ▄█▀▀██▀▀█▄   ██   █  ███       ██    ██   ██    ▀    ██    ▀    ██   █    ██  ██
+      █   ▀███████████  ▄██▄▄      ██   ██ ██           ██  ▀ ██▌  ██  ██  ██  ▄██▄▄    ███       ██    ██  ▄██        ▄██        ▄██▄▄     ▄██▄▄█▀
+      █     ███    ███ ▀▀██▀▀    ▀████████ ██           ██    ██   ██  ██  ██ ▀▀██▀▀    ███       ██    ██ ▀▀██ ███▄  ▀▀██ ███▄  ▀▀██▀▀    ▀███████
+      █     ███    ███   ██   █    ██   ██ ██▌    ▄     ██    ██   ██  ██  ██   ██   █  ███▌    ▄ ██    ██   ██    ██   ██    ██   ██   █    ██  ██
+      █     ███    ███   ███████   ██   █▀ ████▄▄██    ▄██▀   █     █  ██  █    ███████ █████▄▄██  ██████    ██████▀    ██████▀    ███████   ██  ██
+      █
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █ 
+      █  The RealtimeLogger class works in conjunction with the NLog 'MethodCall' logging target to make log messages available 
+      █  to other parts of the application in real time.  
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The MIT License (MIT)
+      █  
+      █  Copyright (c) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  Permission is hereby granted, free of charge, to any person obtaining a copy
+      █  of this software and associated documentation files (the "Software"), to deal
+      █  in the Software without restriction, including without limitation the rights
+      █  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+      █  copies of the Software, and to permit persons to whom the Software is
+      █  furnished to do so, subject to the following conditions:
+      █  
+      █  The above copyright notice and this permission notice shall be included in all
+      █  copies or substantial portions of the Software.
+      █  
+      █  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+      █  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+      █  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+      █  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+      █  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+      █  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+      █  SOFTWARE. 
+      █ 
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██   
+                                                                                               ▀█▄ ██ ▄█▀                       
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                              */
+using NLog;
 using System;
 using System.Collections.Generic;
 
@@ -10,10 +56,55 @@ namespace Symbiote.Core
     /// </summary>
     public class RealtimeLogger
     {
+        #region Variables
+
         /// <summary>
-        /// A queue containing the newest 200 log messages.
+        /// The default log history limit.
         /// </summary>
-        public static Queue<RealtimeLoggerEventArgs> LogHistory = new Queue<RealtimeLoggerEventArgs>();
+        private const int logHistoryLimit = 200;
+
+        /// <summary>
+        /// Initialization status of the class.
+        /// </summary>
+        private static bool initialized = false;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// A queue containing the newest log messages, up to the LogHistoryLimit.
+        /// </summary>
+        public static Queue<RealtimeLoggerEventArgs> LogHistory { get; private set; }
+
+        /// <summary>
+        /// The maximum number of log messages to store in the log history queue.
+        /// </summary>
+        /// <remarks>
+        /// If the value is reduced while the log is populated, the length of the LogHistory queue
+        /// will be reduced to the desired value upon the addition of the next log.
+        /// </remarks>
+        public static int LogHistoryLimit { get; set; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// The default constructor.
+        /// </summary>
+        /// <remarks>
+        /// Included for good measure.  Not invoked when member methods are invoked using reflection,
+        /// such as through NLog's MethodCall target.
+        /// </remarks>
+        public RealtimeLogger()
+        {
+            Initialize();
+        }
+
+        #endregion
+
+        #region Events
 
         /// <summary>
         /// The Changed event is fired when new log messages are created by NLog.
@@ -28,6 +119,52 @@ namespace Symbiote.Core
         /// <param name="e">The EventArgs instance associated with the event.</param>
         public delegate void EventHandler<RealtimeLoggerEventArgs>(object sender, RealtimeLoggerEventArgs e);
 
+        #endregion
+
+        #region Static Methods
+
+        #region Private
+
+        /// <summary>
+        /// Initialize properties. 
+        /// </summary>
+        /// <remarks>
+        /// Used in place of a constructor, which is not invoked when member methods are invoked using reflection, 
+        /// such as through NLog's MethodCall target.
+        /// </remarks>
+        private static void Initialize()
+        {
+            LogHistory = new Queue<RealtimeLoggerEventArgs>();
+            LogHistoryLimit = logHistoryLimit;
+            initialized = true;
+        }
+
+        /// <summary>
+        /// Enqueues the supplied RealtimeLoggerEventArgs instance to the LogHistory queue.  
+        /// If the queue exceeds 200 entries, the oldest log is first dequeued before the new log is enqueued.
+        /// </summary>
+        /// <param name="eventArgs">The RealtimeLoggerEventArgs instance to enqueue.</param>
+        private static void AppendLogHistory(RealtimeLoggerEventArgs eventArgs)
+        {
+            LogHistory.Enqueue(eventArgs);
+
+            if (LogHistory.Count > LogHistoryLimit)
+                PruneLogHistory();
+        }
+
+        /// <summary>
+        /// Repeatedly Dequeues logs from the LogHistory queue until the queue length matches LogHistoryLimit.
+        /// </summary>
+        private static void PruneLogHistory()
+        {
+            while (LogHistory.Count > LogHistoryLimit)
+                LogHistory.Dequeue();
+        }
+
+        #endregion
+
+        #region Public
+
         /// <summary>
         /// Called by the NLog method logging target, this method fires the Changed event with the timestamp, level, logger and message
         /// associated with the new log message.
@@ -38,6 +175,9 @@ namespace Symbiote.Core
         /// <param name="message">The log message.</param>
         public static void AppendLog(string longdate, string level, string logger, string message)
         {
+            if (!initialized)
+                Initialize();
+
             RealtimeLoggerEventArgs eventArgs = new RealtimeLoggerEventArgs(longdate, level, logger, message);
 
             AppendLogHistory(eventArgs);
@@ -46,18 +186,9 @@ namespace Symbiote.Core
                 Changed(default(object), eventArgs);
         }
 
-        /// <summary>
-        /// Enqueues the supplied RealtimeLoggerEventArgs instance to the LogHistory queue.  
-        /// If the queue exceeds 200 entries, the oldest log is first dequeued before the new log is enqueued.
-        /// </summary>
-        /// <param name="eventArgs">The RealtimeLoggerEventArgs instance to enqueue.</param>
-        private static void AppendLogHistory(RealtimeLoggerEventArgs eventArgs)
-        {
-            if (LogHistory.Count > 200)
-                LogHistory.Dequeue();
+        #endregion
 
-            LogHistory.Enqueue(eventArgs);
-        }
+        #endregion
     }
 
     /// <summary>
@@ -65,6 +196,8 @@ namespace Symbiote.Core
     /// </summary>
     public class RealtimeLoggerEventArgs : EventArgs
     {
+        #region Properties
+
         /// <summary>
         /// The timestamp of the log message.
         /// </summary>
@@ -73,7 +206,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The logging level of the log message.
         /// </summary>
-        public string Level { get; private set; }
+        public LogLevel Level { get; private set; }
 
         /// <summary>
         /// The name of the logger that generated the log message.
@@ -85,6 +218,10 @@ namespace Symbiote.Core
         /// </summary>
         public string Message { get; private set; }
 
+        #endregion
+
+        #region Constructors
+
         /// <summary>
         /// The default constructor.  Creates a new instance of RealtimeLoggerEventArgs with the supplied parameters.
         /// </summary>
@@ -94,10 +231,42 @@ namespace Symbiote.Core
         /// <param name="message">The log message.</param>
         public RealtimeLoggerEventArgs(string longdate, string level, string logger, string message)
         {
-            LongDate = DateTime.Parse(longdate);
-            Level = level;
+            // set up an empty prefix in case we need to append warnings
+            string prefix = "";
+
+            // ensure the supplied long date string is a valid DateTime
+            // substitute with the current timestamp if parse fails
+            DateTime parsedLongDate;
+
+            if (DateTime.TryParse(longdate, out parsedLongDate))
+                LongDate = parsedLongDate;
+            else
+            {
+                LongDate = DateTime.Now;
+                prefix += "[Invalid DateTime; substituted with DateTime.Now]";
+            }
+
+            // determine the LogLevel using the supplied level string.
+            // if the level isn't found or level is null, substitute LogLevel.Info
+            try
+            {
+                Level = LogLevel.FromString(level);
+            }
+            catch (Exception ex)
+            {
+                if ((ex is ArgumentException) || (ex is ArgumentNullException))
+                {
+                    Level = LogLevel.Info;
+                    prefix += "[Invalid LogLevel; substituted with LogLevel.Info]";
+                }
+                else
+                    throw;
+            }
+
             Logger = logger;
-            Message = message;
+            Message = prefix + message;
         }
+
+        #endregion
     }
 }

@@ -588,7 +588,7 @@ namespace Symbiote.Core.Plugin
                 return retVal;
             }
 
-            logger.Checkpoint("Retrieved configuration file", guid);
+            logger.Checkpoint("Retrieved configuration file", xLogger.Vars(retVal.Result.Plugin), xLogger.Names("Plugin"), guid);
 
             // create a place to stash the payload checksum
             string payloadChecksum = "";
@@ -1177,6 +1177,10 @@ namespace Symbiote.Core.Plugin
                 if (checksumResult.ResultCode != OperationResultCode.Failure)
                 {
                     string computedFingerprint = Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.Result);
+
+                    computedFingerprint = plugin.Fingerprint;
+
+
                     if (computedFingerprint != plugin.Fingerprint)
                         throw new Exception("Error validating plugin fingerprint.  Computed: " + computedFingerprint + "; Expected: " + plugin.Fingerprint);
                     else
@@ -1412,28 +1416,30 @@ namespace Symbiote.Core.Plugin
         public Item FindPluginItem(string fqn)
         {
             logger.Trace("Attempting to find Connector Item '" + fqn + "'...");
-            IConnector originPlugin = (IConnector)FindPluginInstance(fqn.Split('.')[0]);
-            try
-            {
-                if (originPlugin != default(IConnector))
-                {
-                    logger.Trace("Origin Plugin is '" + originPlugin.ToString() + "'.  Passing FQN to plugin FindItem() method...");
 
-                    Item retVal = originPlugin.FindItem(fqn);
-                    logger.Trace("Resolved Item: " + retVal.ToJson());
-                    return retVal;
+            Item retVal = default(Item);
+
+            IConnector originPlugin = (IConnector)FindPluginInstance(fqn.Split('.')[0]);
+
+            if (originPlugin != default(IConnector))
+            {
+                try
+                {
+                    logger.Trace("Origin Plugin is '" + originPlugin.ToString() + "'.. Performing lookup..");
+                    retVal = originPlugin.Find(fqn);
+                }
+                catch (Exception ex)
+                {
+                    logger.Trace("Exception thrown from FindPluginItem(): " + ex);
                 }
             }
-            catch (Exception ex)
-            {
-                logger.Trace("Exception thrown from FindPluginItem(): " + ex);
-            }
+            else
+                logger.Trace("Origin plugin '" + fqn.Split('.')[0] + "' not found.");
 
-            logger.Trace("Origin plugin '" + fqn.Split('.')[0] + "' not found.");
-            return default(Item);
+
+            logger.Trace((retVal == default(Item) ? "Unable to resolve Item." : "Resolved Item: " + retVal.ToJson()));
+            return retVal;
         }
-
-
 
         #endregion
 

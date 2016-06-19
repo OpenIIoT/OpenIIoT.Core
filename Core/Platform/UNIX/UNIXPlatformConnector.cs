@@ -7,7 +7,7 @@ using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core.Platform.UNIX
 {
-    internal class UNIXPlatformConnector : IConnector
+    public class UNIXPlatformConnector : IConnector
     {
         private ConnectorItem itemRoot;
         private PerformanceCounter cpuUsed;
@@ -24,10 +24,6 @@ namespace Symbiote.Core.Platform.UNIX
         public string InstanceName { get; private set; }
         public string Configuration { get; private set; }
         public bool IsConfigured { get { return true; } }
-        public bool Browseable { get { return true; } }
-        public bool Writeable { get { return false; } }
-
-        public event EventHandler<ConnectorEventArgs> Changed;
 
         public UNIXPlatformConnector(string instanceName)
         {
@@ -63,19 +59,19 @@ namespace Symbiote.Core.Platform.UNIX
             return new OperationResult();
         }
 
-        public Item FindItem(string fqn)
+        public Item Find(string fqn)
         {
-            return FindItem(itemRoot, fqn);
+            return Find(itemRoot, fqn);
         }
 
-        private Item FindItem(Item root, string fqn)
+        private Item Find(Item root, string fqn)
         {
             if (root.FQN == fqn) return root;
 
             Item found = default(Item);
             foreach (Item child in root.Children)
             {
-                found = FindItem(child, fqn);
+                found = Find(child, fqn);
                 if (found != default(Item)) break;
             }
             return found;
@@ -92,9 +88,11 @@ namespace Symbiote.Core.Platform.UNIX
             return root.Children;
         }
 
-        public object Read(string item)
+        public OperationResult<object> Read(Item item)
         {
-            string[] itemName = item.Split('.');
+            OperationResult<object> retVal = new OperationResult<object>();
+
+            string[] itemName = item.FQN.Split('.');
 
             if (itemName.Length < 3) return null;
 
@@ -103,21 +101,27 @@ namespace Symbiote.Core.Platform.UNIX
                 case "CPU.% Processor Time":
                     lastCPUUsed = cpuUsed.NextValue();
                     lastCPUIdle = cpuIdle.NextValue();
-                    return lastCPUUsed;
+                    retVal.Result = lastCPUUsed;
+                    return retVal;
                 case "CPU.% Idle Time":
                     lastCPUUsed = cpuUsed.NextValue();
                     lastCPUIdle = cpuIdle.NextValue();
-                    return lastCPUIdle;
+                    retVal.Result = lastCPUIdle;
+                    return retVal;
                 case "Memory.Total":
-                    return 0;
+                    retVal.Result = 0;
+                    return retVal;
                 case "Memory.Available":
-                    return new PerformanceCounter("Memory", "Available Bytes").NextValue();
+                    retVal.Result = new PerformanceCounter("Memory", "Available Bytes").NextValue();
+                    return retVal;
                 case "Memory.Cached":
-                    return new PerformanceCounter("Memory", "Cache Bytes").NextValue();
+                    retVal.Result = new PerformanceCounter("Memory", "Cache Bytes").NextValue();
+                    return retVal;
                 case "Memory.% Used":
-                    return new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
+                    retVal.Result = new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
+                    return retVal;
                 default:
-                    return 0;
+                    return retVal.AddError("Unable to find Item '" + item + "'.");
             }
         }
 
@@ -175,10 +179,10 @@ namespace Symbiote.Core.Platform.UNIX
             ddRoot.AddChild(new ConnectorItem(this, "PercentFree"));
         }
 
-        private void OnChange(string fqn, object value)
-        {
-            if (Changed != null)
-                Changed(this, new ConnectorEventArgs(fqn, value));
-        }
+        //private void OnItemChange(string fqn, object value)
+        //{
+        //    if (ItemChanged != null)
+        //        ItemChanged(this, new ConnectorEventArgs(fqn, value));
+        //}
     }
 }
