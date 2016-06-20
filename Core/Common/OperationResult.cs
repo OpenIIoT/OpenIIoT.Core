@@ -107,7 +107,7 @@ namespace Symbiote.Core
         #region Properties
 
         /// <summary>
-        /// The type of the message.
+        /// The <see cref="OperationResultMessageType"/> of the message.
         /// </summary>
         public OperationResultMessageType Type { get; set; }
 
@@ -121,9 +121,10 @@ namespace Symbiote.Core
         #region Constructors
 
         /// <summary>
-        /// Constructs a message of the optionally supplied type with the optionally supplied message.
+        /// Constructs a message of the optionally supplied <see cref="OperationResultMessageType"/> 
+        /// with the optionally supplied message.
         /// </summary>
-        /// <param name="type">The type of message to construct.</param>
+        /// <param name="type">The <see cref="OperationResultMessageType"/> of the message.</param>
         /// <param name="message">The content of the message.</param>
         public OperationResultMessage(OperationResultMessageType type = OperationResultMessageType.Info, string message = "")
         {
@@ -155,12 +156,12 @@ namespace Symbiote.Core
         #region Properties
 
         /// <summary>
-        /// The result of the operation.
+        /// The <see cref="OperationResultCode"/> of the operation.
         /// </summary>
         public OperationResultCode ResultCode { get; private set; }
 
         /// <summary>
-        /// The list of messages generated during the operation.
+        /// The <see cref="List{T}"/> of <see cref="OperationResultMessage"/>es generated during the operation.
         /// </summary>
         public List<OperationResultMessage> Messages { get; private set; }
 
@@ -169,7 +170,8 @@ namespace Symbiote.Core
         #region Constructors
 
         /// <summary>
-        /// Constructs a new OperationResult with a Resultcode of Success and an empty list of messages.
+        /// Constructs a new OperationResult with a <see cref="ResultCode"/> of type <see cref="OperationResultCode.Success"/> 
+        /// and containing an empty list of <see cref="Messages"/>.
         /// </summary>
         /// <example>
         /// <code>
@@ -187,11 +189,31 @@ namespace Symbiote.Core
 
         #region Instance Methods
 
+        #region Private
+
         /// <summary>
-        /// Adds a message of type Info to the message list.
+        /// Logs the supplied message using the supplied logging method <see cref="Action{T}"/>.
+        /// </summary>
+        /// <param name="action">The logging method <see cref="Action{T}"/> with which to log the message.</param>
+        /// <param name="message">The message.</param>
+        /// <remarks>
+        ///     The accessibility for this method is set to protected as there is no use case for this beyond the 
+        ///     support of the other logging methods in this class or derived classes.
+        /// </remarks>
+        protected void Log(Action<string> action, string message = "")
+        {
+            action(message);
+        }
+
+        #endregion
+
+        #region Public
+
+        /// <summary>
+        /// Adds a message of type <see cref="OperationResultMessageType.Info"/> to the message list.
         /// </summary>
         /// <param name="message">The message to add.</param>
-        /// <returns>The OperationResult.</returns>
+        /// <returns>This OperationResult.</returns>
         /// <example>
         /// <code>
         /// // create a new OperationResult
@@ -208,10 +230,13 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Adds a message of type Warning to the message list and sets the ResultCode to Warning.
+        /// Adds a message of type <see cref="OperationResultMessageType.Warning"/> to the message list and sets the ResultCode to Warning.
         /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
         /// <param name="message">The message to add.</param>
-        /// <returns>The OperationResult.</returns>
+        /// <returns>This OperationResult</returns>
         /// <example>
         /// <code>
         /// // create a new OperationResult
@@ -229,10 +254,10 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Adds a message of type Error to the message list and sets the ResultCode to Error.
+        /// Adds a message of type <see cref="OperationResultMessageType.Error"/> to the message list and sets the ResultCode to Error.
         /// </summary>
         /// <param name="message">The message to add.</param>
-        /// <returns>The OperationResult.</returns>
+        /// <returns>This OperationResult.</returns>
         /// <example>
         /// <code>
         /// // create a new OperationResult
@@ -250,33 +275,23 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Logs the supplied message using the supplied logging method
-        /// </summary>
-        /// <param name="action">The logging method with which to log the message.</param>
-        /// <param name="message">The message.</param>
-        /// <remarks>The accessibility for this method is set to protected as there is no use case for this beyond the support of the other logging methods in this class or derived classes.</remarks>
-        protected void Log(Action<string> action, string message ="")
-        {
-            action(message);
-        }
-
-        /// <summary>
-        /// Logs the result of the operation using the supplied logger method and the optional caller as the source.
-        /// The default logging methods are applied to corresponding message types; Info for Info, Warn for Warning and Error for Errors.
+        ///     Logs the result of the operation using the supplied logger method and the optional caller as the source.
+        ///     The default logging methods are applied to corresponding message types; Info for Info, Warn for Warning and Error for Errors.
         /// </summary>
         /// <remarks>
         /// <para>
-        /// The caller parameter is automatically set to the calling method.  In some cases, such as when a result for a method
-        /// is logged within a method different from the executing method, this will need to be explicitly specified
-        /// to reflect the actual source of the OperationResult.
+        ///     The caller parameter is automatically set to the calling method.  In some cases, such as when a result for a method
+        ///     is logged within a method different from the executing method, this will need to be explicitly specified
+        ///     to reflect the actual source of the OperationResult.
         /// </para>
         /// <para>
-        /// If a logger different from NLog is desired, modify the type of the logger parameter accordingly and substitute
-        /// the appropriate methods for info, warn and error log levels (assuming they are applicable).
+        ///     If a logger different from NLog is desired, modify the type of the logger parameter accordingly and substitute
+        ///     the appropriate methods for info, warn and error log levels (assuming they are applicable).
         /// </para>
         /// </remarks>
         /// <param name="logger">The logger with which to log the result.</param>
         /// <param name="caller">The name of calling method.</param>
+        /// <returns>This <see cref="OperationResult"/>.</returns>
         /// <seealso cref="LogResult(Action{string}, Action{string}, Action{string}, string)"/>
         /// <example>
         /// <code>
@@ -292,9 +307,9 @@ namespace Symbiote.Core
         /// retVal.LogResult(logger);
         /// </code>
         /// </example>
-        public virtual void LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
+        public virtual OperationResult LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
-            LogResult(logger.Info, logger.Warn, logger.Error, caller);
+            return LogResult(logger.Info, logger.Warn, logger.Error, caller);
         }
 
         /// <summary>
@@ -308,6 +323,7 @@ namespace Symbiote.Core
         /// </remarks>
         /// <param name="action">The logging method with which to log the result.</param>
         /// <param name="caller">The name of the calling method.</param>
+        /// <returns>This <see cref="OperationResult"/>.</returns>
         /// <seealso cref="LogResult(Action{string}, Action{string}, Action{string}, string)"/>
         /// <example>
         /// <code>
@@ -321,9 +337,9 @@ namespace Symbiote.Core
         /// retVal.LogResult(logger.Debug);
         /// </code>
         /// </example>
-        public virtual void LogResult(Action<string> action, [CallerMemberName]string caller ="")
+        public virtual OperationResult LogResult(Action<string> action, [CallerMemberName]string caller ="")
         {
-            LogResult(action, action, action, caller);
+            return LogResult(action, action, action, caller);
         }
 
         /// <summary>
@@ -338,6 +354,7 @@ namespace Symbiote.Core
         /// <param name="warningAction">The logging method with which to log warning messages.</param>
         /// <param name="failureAction">The logging method with which to log messages.</param>
         /// <param name="caller">The name of the calling method.</param>
+        /// <returns>This <see cref="OperationResult"/>.</returns>
         /// <example>
         /// <code>
         /// // create a new OperationResult
@@ -352,7 +369,7 @@ namespace Symbiote.Core
         /// retVal.LogResult(logger.Trace, logger.Debug, logger.Warn);
         /// </code>
         /// </example>
-        public virtual void LogResult(Action<string> successAction, Action<string> warningAction, Action<string> failureAction, [CallerMemberName]string caller = "")
+        public virtual OperationResult LogResult(Action<string> successAction, Action<string> warningAction, Action<string> failureAction, [CallerMemberName]string caller = "")
         {
             // the operation suceeded, with or without warnings
             if (ResultCode != OperationResultCode.Failure)
@@ -373,6 +390,8 @@ namespace Symbiote.Core
                 Log(failureAction, "The operation '" + caller + "' failed.");
                 LogAllMessages(failureAction, "The following messages were generated during the operation:");
             }
+
+            return this;
         }
 
         /// <summary>
@@ -381,6 +400,7 @@ namespace Symbiote.Core
         /// <param name="action">The logging method with which to log the messages.</param>
         /// <param name="header">A header message to log prior to the list of messages.</param>
         /// <param name="footer">A footer message to display after the list of messages.</param>
+        /// <returns>This <see cref="OperationResult"/>.</returns>
         /// <example>
         /// <code>
         /// // create a new OperationResult
@@ -397,7 +417,7 @@ namespace Symbiote.Core
         /// retVal.LogAllMessages(logger.Info, "Message list:", "End of list.");
         /// </code>
         /// </example>
-        public virtual void LogAllMessages(Action<string> action, string header = "", string footer = "")
+        public virtual OperationResult LogAllMessages(Action<string> action, string header = "", string footer = "")
         {
             if (header != "") Log(action, header);
 
@@ -405,6 +425,8 @@ namespace Symbiote.Core
                 Log(action, new string(' ', 5) + message.Message);
 
             if (footer != "") Log(action, footer);
+
+            return this;
         }
 
         /// <summary>
@@ -511,6 +533,8 @@ namespace Symbiote.Core
 
             return this;
         }
+        
+        #endregion 
 
         #endregion
 
@@ -545,7 +569,7 @@ namespace Symbiote.Core
     /// <summary>
     /// Encapsulates the result of any operation, including a result code, a list of messages generated during the operation, and an object of type T.
     /// </summary>
-    /// <typeparam name="T">The type of the Result object.</typeparam>
+    /// <typeparam name="T">The type of the <see cref="Result"/> property.</typeparam>
     public class OperationResult<T> : OperationResult
     {
         #region Properties
@@ -571,18 +595,22 @@ namespace Symbiote.Core
 
         #region Instance Methods
 
+        #region Public 
+
         /// <summary>
-        /// Adds a message of type Warning to the message list and sets the ResultCode to Warning.
+        /// Adds a message of type <see cref="OperationResultMessageType.Info"/> to the message list.
         /// </summary>
         /// <param name="message">The message to add.</param>
-        /// <returns>The OperationResult.</returns>
+        /// <returns>This OperationResult.</returns>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // create a new OperationResult
-        /// OperationResult retVal = new OperationResult();
+        /// OperationResult<object> retVal = new OperationResult<object>();
         /// 
         /// // add an informational message
-        /// retVal.AddWarning("This is a warning message");
+        /// retVal.AddInfo("This is an informational message");
+        /// ]]>
         /// </code>
         /// </example>
         new public virtual OperationResult<T> AddInfo(string message)
@@ -592,17 +620,22 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Adds a message of type Warning to the message list and sets the ResultCode to Warning.
+        /// Adds a message of type <see cref="OperationResultMessageType.Warning"/> to the message list and sets the ResultCode to Warning.
         /// </summary>
+        /// <remarks>
+        /// 
+        /// </remarks>
         /// <param name="message">The message to add.</param>
-        /// <returns>The OperationResult.</returns>
+        /// <returns>This OperationResult.</returns>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // create a new OperationResult
-        /// OperationResult retVal = new OperationResult();
+        /// OperationResult<object> retVal = new OperationResult<object>();
         /// 
         /// // add an informational message
         /// retVal.AddWarning("This is a warning message");
+        /// ]]>
         /// </code>
         /// </example>
         new public virtual OperationResult<T> AddWarning(string message)
@@ -612,17 +645,19 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Adds a message of type Error to the message list and sets the ResultCode to Error.
+        /// Adds a message of type <see cref="OperationResultMessageType.Error"/> to the message list and sets the ResultCode to Error.
         /// </summary>
         /// <param name="message">The message to add.</param>
-        /// <returns>The OperationResult.</returns>
+        /// <returns>This OperationResult.</returns>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // create a new OperationResult
-        /// OperationResult retVal = new OperationResult();
+        /// OperationResult<object> retVal = new OperationResult<object>();
         /// 
         /// // add an informational message
         /// retVal.AddError("This is an error message");
+        /// ]]>
         /// </code>
         /// </example>
         new public virtual OperationResult<T> AddError(string message)
@@ -631,38 +666,71 @@ namespace Symbiote.Core
             return this;
         }
 
-        /// <summary>
-        /// Adds details from the supplied OperationResult to this OperationResult.
-        /// Copies all Messages and the status if lesser than this status.
-        /// </summary>
-        /// <param name="operationResult">The OperationResult from which to copy the Messages.</param>
-        /// <example>
-        /// <code>
-        /// // create an "outer" OperationResult
-        /// // the ResultCode of this instance is Success by default.
-        /// OperationResult outer = new OperationResult();
-        /// 
-        /// // ... some logic ...
-        /// 
-        /// // create an "inner" OperationResult
-        /// // set this to the result of a different method
-        /// OperationResult inner = MyMethod();
-        /// 
-        /// // incorporate the inner OperationResult into the outer
-        /// // this copies all messages and, if the inner instance's ResultCode
-        /// // is lesser (Success > Warning > Failure) than the outer, copies the ResultCode as well.
-        /// outer.Incorporate(inner);
-        /// 
-        /// // log the result.  the combined list of messages from both inner and outer
-        /// // are logged, and the ResultCode is equal to the lesser of the two ResultCodes.
-        /// outer.LogResult(logger.Debug); 
-        /// </code>
-        /// </example>
+        /// <inheritdoc/>
+        /// <returns>This <see cref="OperationResult{T}"/>.</returns>
+        new public virtual OperationResult<T> LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
+        {
+            base.LogResult(logger, caller);
+            return this;
+        }
+
+        /// <inheritdoc/>
+        /// <returns>This <see cref="OperationResult{T}"/>.</returns>
+        new public virtual OperationResult<T> LogResult(Action<string> action, [CallerMemberName]string caller = "")
+        {
+            base.LogResult(action, caller);
+            return this;
+        }
+
+        /// <inheritdoc/>
+        /// <returns>This <see cref="OperationResult{T}"/>.</returns>
+        new public virtual OperationResult LogResult(Action<string> successAction, Action<string> warningAction, Action<string> failureAction, [CallerMemberName]string caller = "")
+        {
+            base.LogResult(successAction, warningAction, failureAction, caller);
+            return this;
+        }
+
+        /// <inheritdoc/>
+        /// <returns>This <see cref="OperationResult{T}"/>.</returns>
+        new public virtual OperationResult<T> LogAllMessages(Action<string> action, string header = "", string footer = "")
+        {
+            base.LogAllMessages(action, header, footer);
+            return this;
+        }
+
+        /// <inheritdoc/>
+        /// <returns>This <see cref="OperationResult{T}"/>.</returns>
         new public virtual OperationResult<T> Incorporate(OperationResult operationResult)
         {
             base.Incorporate(operationResult);
             return this;
         }
+
+        /// <summary>
+        /// Sets the <see cref="Result"/> property to the specified value.
+        /// </summary>
+        /// <param name="result">The value to which the <see cref="Result"/> property is to be set.</param>
+        /// <returns>This <see cref="OperationResult{T}"/>.</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// ///create a new OperationResult
+        /// OperationResult<string> or = new OperationResult<string>()
+        /// or
+        ///   .SetResult("Hello World!")
+        ///   .AddInfo("Set value.")
+        ///   .LogResult(logger.Info);
+        ///  
+        /// ]]>
+        /// </code>
+        /// </example>
+        public OperationResult<T> SetResult(T result)
+        {
+            Result = result;
+            return this;
+        }
+
+        #endregion
 
         #endregion
     }

@@ -70,10 +70,10 @@ namespace Symbiote.Core.Plugin.Connector
         #region Instance Methods
 
         /// <summary>
-        /// 
+        /// Sets this <see cref="Item"/>'s parent Item to the specified Item.
         /// </summary>
-        /// <param name="parent"></param>
-        /// <returns></returns>
+        /// <param name="parent">The <see cref="Item"/> to which this Item's Parent property is to be set.</param>
+        /// <returns>An <see cref="OperationResult{T}"/> containing the result of the operation and this <see cref="Item"/>.</returns>
         public OperationResult<ConnectorItem> SetParent(ConnectorItem parent)
         {
             OperationResult<ConnectorItem> retVal = new OperationResult<ConnectorItem>();
@@ -103,6 +103,8 @@ namespace Symbiote.Core.Plugin.Connector
             retVal.Incorporate(removeResult);
             return retVal;
         }
+
+        #region Overridden Methods
 
         public override object Read()
         {
@@ -154,6 +156,8 @@ namespace Symbiote.Core.Plugin.Connector
             else
                 return new OperationResult().AddError("The source Connector is not subscribable");
         }
+
+        #endregion
 
         #endregion
     }

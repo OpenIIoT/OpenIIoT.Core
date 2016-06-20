@@ -81,7 +81,7 @@ namespace Symbiote.Core.Service.Web
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        public override void LogResult(Action<string> successLogLevel, Action<string> warningLogLevel, Action<string> failureLogLevel, [CallerMemberName]string caller = "")
+        new public ApiOperationResult<T> LogResult(Action<string> successLogLevel, Action<string> warningLogLevel, Action<string> failureLogLevel, [CallerMemberName]string caller = "")
         {
             if (ResultCode != OperationResultCode.Failure)
             {
@@ -97,6 +97,8 @@ namespace Symbiote.Core.Service.Web
                 Log(failureLogLevel, "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP + "; Response: " + StatusCode);
                 LogAllMessages(failureLogLevel, "The following messages were generated during the operation:");
             }
+
+            return this;
         }
 
         /// <summary>
