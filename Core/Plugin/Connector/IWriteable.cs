@@ -20,6 +20,8 @@
                                                                                                ▀█▄ ██ ▄█▀                       
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using Symbiote.Core.OperationResult;
+
 namespace Symbiote.Core.Plugin.Connector
 {
     /// <summary>
@@ -32,7 +34,7 @@ namespace Symbiote.Core.Plugin.Connector
     ///     ConnectorItem instance and a value boxed in an <see cref="object"/>.
     /// </para>
     /// <para>
-    ///     The Write() method must return a valid <see cref="OperationResult"/> containing the result of the operation,
+    ///     The Write() method must return a valid <see cref="Result"/> containing the result of the operation,
     ///     including any informational, warning or error messages generated during the operation.
     /// </para>
     /// </remarks>
@@ -43,7 +45,7 @@ namespace Symbiote.Core.Plugin.Connector
         /// </summary>
         /// <param name="item">The <see cref="Item"/> to write.</param>
         /// <param name="value">The value to write to the <see cref="Item"/>.</param>
-        /// <returns>An <see cref="OperationResult"/> containing the result of the operation.</returns>
-        OperationResult Write(Item item, object value);
+        /// <returns>An <see cref="Result"/> containing the result of the operation.</returns>
+        Result Write(Item item, object value);
     }
 }

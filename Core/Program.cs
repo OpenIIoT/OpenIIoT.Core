@@ -6,6 +6,7 @@ using System.Reflection;
 using Symbiote.Core.Platform;
 using System.Text.RegularExpressions;
 using Symbiote.Core.Plugin.Connector;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core
 {
@@ -242,7 +243,7 @@ namespace Symbiote.Core
                 // find or create the parent for the Platform items
                 Item systemItem = manager.ModelManager.FindItem(manager.InstanceName + ".System");
                 if (systemItem == default(Item))
-                    systemItem = manager.ModelManager.AddItem(new Item(manager.InstanceName + ".System")).Result;
+                    systemItem = manager.ModelManager.AddItem(new Item(manager.InstanceName + ".System")).ReturnValue;
 
                 // attach the Platform items to Symbiote.System
                 manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
@@ -257,16 +258,16 @@ namespace Symbiote.Core
 
                 Item symItem = manager.ModelManager.FindItem(manager.InstanceName);
                 if (symItem == default(Item))
-                    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName)).Result;
+                    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName)).ReturnValue;
 
                 manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
 
 
-                OperationResult subscribe = manager.ModelManager.FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                Result subscribe = manager.ModelManager.FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
 
                 subscribe.LogResult(logger.Info);
 
-                OperationResult subscribe2 = manager.ModelManager.FindItem("Symbiote.Simulation.Process.Ramp").SubscribeToSource();
+                Result subscribe2 = manager.ModelManager.FindItem("Symbiote.Simulation.Process.Ramp").SubscribeToSource();
 
                 subscribe2.LogResult(logger.Info);
 
@@ -295,8 +296,8 @@ namespace Symbiote.Core
 
                 //Item test = FQNResolver.Resolve("Symbiote.AddTest");
 
-                //Task<OperationResult> writeTask = test.WriteAsync("Hello World!");
-                //OperationResult writeResult = writeTask.Result;
+                //Task<Result> writeTask = test.WriteAsync("Hello World!");
+                //Result writeResult = writeTask.ReturnValue;
 
                 //writeResult.LogResult(logger);
 
@@ -327,7 +328,7 @@ namespace Symbiote.Core
 
             try
             {
-                if (manager.ModelManager.SaveModel().ResultCode != OperationResultCode.Failure)
+                if (manager.ModelManager.SaveModel().ResultCode != ResultCode.Failure)
                     manager.ConfigurationManager.SaveConfiguration();
 
                 logger.Info("Configuration saved.");

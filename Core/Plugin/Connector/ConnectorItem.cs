@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Plugin.Connector
 {
@@ -73,33 +74,33 @@ namespace Symbiote.Core.Plugin.Connector
         /// Sets this <see cref="Item"/>'s parent Item to the specified Item.
         /// </summary>
         /// <param name="parent">The <see cref="Item"/> to which this Item's Parent property is to be set.</param>
-        /// <returns>An <see cref="OperationResult{T}"/> containing the result of the operation and this <see cref="Item"/>.</returns>
-        public OperationResult<ConnectorItem> SetParent(ConnectorItem parent)
+        /// <returns>An <see cref="Result{T}"/> containing the result of the operation and this <see cref="Item"/>.</returns>
+        public Result<ConnectorItem> SetParent(ConnectorItem parent)
         {
-            OperationResult<ConnectorItem> retVal = new OperationResult<ConnectorItem>();
-            OperationResult<Item> setResult = base.SetParent((Item)parent);
+            Result<ConnectorItem> retVal = new Result<ConnectorItem>();
+            Result<Item> setResult = base.SetParent((Item)parent);
 
-            retVal.Result = (ConnectorItem)setResult.Result;
+            retVal.ReturnValue = (ConnectorItem)setResult.ReturnValue;
             retVal.Incorporate(setResult);
             return retVal;
         }
 
-        public OperationResult<ConnectorItem> AddChild(ConnectorItem pluginItem)
+        public Result<ConnectorItem> AddChild(ConnectorItem pluginItem)
         {
-            OperationResult<ConnectorItem> retVal = new OperationResult<ConnectorItem>();
-            OperationResult<Item> addResult = base.AddChild((Item)pluginItem);
+            Result<ConnectorItem> retVal = new Result<ConnectorItem>();
+            Result<Item> addResult = base.AddChild((Item)pluginItem);
 
-            retVal.Result = (ConnectorItem)addResult.Result;
+            retVal.ReturnValue = (ConnectorItem)addResult.ReturnValue;
             retVal.Incorporate(addResult);
             return retVal;
         }
 
-        public OperationResult<ConnectorItem> RemoveChild(ConnectorItem pluginItem)
+        public Result<ConnectorItem> RemoveChild(ConnectorItem pluginItem)
         {
-            OperationResult<ConnectorItem> retVal = new OperationResult<ConnectorItem>();
-            OperationResult<Item> removeResult = base.RemoveChild(pluginItem);
+            Result<ConnectorItem> retVal = new Result<ConnectorItem>();
+            Result<Item> removeResult = base.RemoveChild(pluginItem);
 
-            retVal.Result = (ConnectorItem)removeResult.Result;
+            retVal.ReturnValue = (ConnectorItem)removeResult.ReturnValue;
             retVal.Incorporate(removeResult);
             return retVal;
         }
@@ -122,12 +123,12 @@ namespace Symbiote.Core.Plugin.Connector
         /// </summary>
         /// <remarks>Should never be called by anything other than the parent Connector plugin.</remarks>
         /// <param name="value">The value with which to update the ConnectorItem.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public override OperationResult Write(object value)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public override Result Write(object value)
         {
             Value = value;
             base.OnChange(value);
-            return new OperationResult();
+            return new Result();
         }
 
         /// <summary>
@@ -135,8 +136,8 @@ namespace Symbiote.Core.Plugin.Connector
         /// </summary>
         /// <remarks>Any and all writes to ConnectorItems (other than by the Connector plugin) should be performed with WriteToSource.</remarks>
         /// <param name="value">The value with which to update the ConnectorItem.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public override OperationResult WriteToSource(object value)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public override Result WriteToSource(object value)
         {
             if (Connector is IWriteable)
             {
@@ -146,15 +147,15 @@ namespace Symbiote.Core.Plugin.Connector
                 return ((IWriteable)Connector).Write(this, value);
             }
             else
-                return new OperationResult().AddError("The source Connector is not writeable.");
+                return new Result().AddError("The source Connector is not writeable.");
         }
 
-        public override OperationResult SubscribeToSource()
+        public override Result SubscribeToSource()
         {
             if (Connector is ISubscribable)
                 return ((ISubscribable)Connector).Subscribe(this);
             else
-                return new OperationResult().AddError("The source Connector is not subscribable");
+                return new Result().AddError("The source Connector is not subscribable");
         }
 
         #endregion

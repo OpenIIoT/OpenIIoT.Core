@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Plugin
 {
     /// <summary>
-    /// The PluginArchiveLoadResult extends the OperationResult class and adds a list of type PluginArchive
+    /// The PluginArchiveLoadResult extends the Result class and adds a list of type PluginArchive
     /// and a Dictionary with key and value types of string.
     /// 
     /// The ValidArchives PluginArchive list contains the list of valid plugin archives discovered during the load.
@@ -11,7 +12,7 @@ namespace Symbiote.Core.Plugin
     /// The InvalidArchive dictionary contains the list of archives that did not pass validation, along with the reason
     /// validation failed.
     /// </summary>
-    public class PluginArchiveLoadResult : OperationResult
+    public class PluginArchiveLoadResult : Result
     {
         /// <summary>
         /// The list of valid Plugin Archives discovered during the load.

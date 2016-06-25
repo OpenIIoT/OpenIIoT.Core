@@ -21,6 +21,7 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using System.Collections.Generic;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Plugin.Connector
 {
@@ -40,8 +41,8 @@ namespace Symbiote.Core.Plugin.Connector
     ///     Fully Qualified Name within the data structure, if it exists.
     /// </para>
     /// <para>
-    ///     The <see cref="Read(Item)"/> method must return an <see cref="OperationResult{T}"/> containing an object representing the 
-    ///     current value of the specified Item.  The OperationResult must contain the result of the operation, including the status
+    ///     The <see cref="Read(Item)"/> method must return an <see cref="Result{T}"/> containing an object representing the 
+    ///     current value of the specified Item.  The Result must contain the result of the operation, including the status
     ///     and any informational, warning or error messages that were generated.
     /// </para>
     /// <para>
@@ -81,6 +82,6 @@ namespace Symbiote.Core.Plugin.Connector
         /// </summary>
         /// <param name="item">The <see cref="Item"/> to read.</param>
         /// <returns>The current value of the <see cref="Item"/>.</returns>
-        OperationResult<object> Read(Item item);
+        Result<object> Read(Item item);
     }
 }

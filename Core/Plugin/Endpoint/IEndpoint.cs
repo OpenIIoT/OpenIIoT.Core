@@ -4,11 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Plugin
 {
     public interface IEndpoint : IPluginInstance
     {
-        OperationResult Send(object value);
+        Result Send(object value);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Symbiote.Core.Plugin.Connector;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Platform
 {
@@ -49,29 +50,29 @@ namespace Symbiote.Core.Platform
         /// Returns a list of subdirectories within the supplied path.
         /// </summary>
         /// <param name="parentDirectory">The parent directory to search.</param>
-        /// <returns>An OperationResult containing the result of the operation and list containing the fully qualified path of each directory found.</returns>
-        OperationResult<List<string>> ListDirectories(string parentDirectory);
+        /// <returns>An Result containing the result of the operation and list containing the fully qualified path of each directory found.</returns>
+        Result<List<string>> ListDirectories(string parentDirectory);
 
         /// <summary>
         /// Deletes the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult DeleteDirectory(string directory);
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result DeleteDirectory(string directory);
 
         /// <summary>
         /// Deletes all files and subdirectories within the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to clear.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult ClearDirectory(string directory);
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result ClearDirectory(string directory);
 
         /// <summary>
         /// Creates the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to create.</param>
-        /// <returns>An OperationResult containing the result of the operation and the fully qualified path to the directory.</returns>
-        OperationResult<string> CreateDirectory(string directory);
+        /// <returns>An Result containing the result of the operation and the fully qualified path to the directory.</returns>
+        Result<string> CreateDirectory(string directory);
 
         #endregion
 
@@ -89,29 +90,29 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <param name="parentDirectory">The directory to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
-        /// <returns>An OperationResult containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
-        OperationResult<List<string>> ListFiles(string parentDirectory, string searchPattern);
+        /// <returns>An Result containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
+        Result<List<string>> ListFiles(string parentDirectory, string searchPattern);
 
         /// <summary>
         /// Deletes the specified file.
         /// </summary>
         /// <param name="file">The file to delete.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult DeleteFile(string file);
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result DeleteFile(string file);
 
         /// <summary>
         /// Reads the contents of the specified file into a single string.
         /// </summary>
         /// <param name="file">The file to read.</param>
-        /// <returns>An OperationResult containing the result of the operation and a string containing the entire contents of the file.</returns>
-        OperationResult<string> ReadFile(string file);
+        /// <returns>An Result containing the result of the operation and a string containing the entire contents of the file.</returns>
+        Result<string> ReadFile(string file);
 
         /// <summary>
         /// Reads the contents of the specified file into a string array.
         /// </summary>
         /// <param name="file">The file to read.</param>
-        /// <returns>An OperationResult containing the result of the operation and a string array containing all of the lines from the file.</returns>
-        OperationResult<string[]> ReadFileLines(string file);
+        /// <returns>An Result containing the result of the operation and a string array containing all of the lines from the file.</returns>
+        Result<string[]> ReadFileLines(string file);
 
         /// <summary>
         /// Writes the contents of the supplied string into the specified file.  If the destination file already exists it is overwritten.
@@ -119,7 +120,7 @@ namespace Symbiote.Core.Platform
         /// <param name="file">The file to write.</param>
         /// <param name="contents">The text to write to the file.</param>
         /// <returns>The fully qualified name of the written file.</returns>
-        OperationResult<string> WriteFile(string file, string contents);
+        Result<string> WriteFile(string file, string contents);
 
         #endregion
 
@@ -130,8 +131,8 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <param name="zipFile">The zip file to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
-        /// <returns>An OperationResult containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
-        OperationResult<List<string>> ListZipFiles(string zipFile, string searchPattern);
+        /// <returns>An Result containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
+        Result<List<string>> ListZipFiles(string zipFile, string searchPattern);
 
         /// <summary>
         /// Extracts the contents of the supplied zip file to the specified destination, 
@@ -140,8 +141,8 @@ namespace Symbiote.Core.Platform
         /// <param name="zipFile">The zip file to extract.</param>
         /// <param name="destination">The destination directory.</param>
         /// <param name="clearDestination">True if the destination directory should be cleared prior to extraction, false otherwise.</param>
-        /// <returns>An OperationResult containing the result of the operation and the fully qualified path to the extracted files.</returns>
-        OperationResult<string> ExtractZip(string zipFile, string destination, bool clearDestination = true);
+        /// <returns>An Result containing the result of the operation and the fully qualified path to the extracted files.</returns>
+        Result<string> ExtractZip(string zipFile, string destination, bool clearDestination = true);
 
         /// <summary>
         /// Extracts the supplied file from the supplied zip file to the supplied destination, overwriting the file if overwrite is true.
@@ -150,8 +151,8 @@ namespace Symbiote.Core.Platform
         /// <param name="file">The file to extract from the zip file.</param>
         /// <param name="destination">The destination directory.</param>
         /// <param name="overwrite">True if an existing file should be overwritten, false otherwise.</param>
-        /// <returns>An OperationResult containing the result of the operation and the fully qualified filename of the extracted file.</returns>
-        OperationResult<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true);
+        /// <returns>An Result containing the result of the operation and the fully qualified filename of the extracted file.</returns>
+        Result<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true);
 
         #endregion
 
@@ -160,8 +161,8 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <remarks>To ensure cross-platform, cross-installation compatibility, only an unsalted SHA256 algorithm is to be used.</remarks>
         /// <param name="file">The file for which the checksum is to be computed.</param>
-        /// <returns>An OperationResult containing the result of the operation and the computed checksum.</returns>
-        OperationResult<string> ComputeFileChecksum(string file);
+        /// <returns>An Result containing the result of the operation and the computed checksum.</returns>
+        Result<string> ComputeFileChecksum(string file);
 
         #endregion
     }

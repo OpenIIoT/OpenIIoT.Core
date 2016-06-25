@@ -4,6 +4,7 @@ using Symbiote.Core.Plugin;
 using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Platform.Windows
 {
@@ -50,19 +51,19 @@ namespace Symbiote.Core.Platform.Windows
 
         }
 
-        public OperationResult Start()
+        public Result Start()
         {
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult Restart()
+        public Result Restart()
         {
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult Stop()
+        public Result Stop()
         {
-            return new OperationResult();
+            return new Result();
         }
 
         public Item Find(string fqn)
@@ -93,9 +94,9 @@ namespace Symbiote.Core.Platform.Windows
             return root.Children;
         }
 
-        public OperationResult<object> Read(Item item)
+        public Result<object> Read(Item item)
         {
-            OperationResult<object> retVal = new OperationResult<object>();
+            Result<object> retVal = new Result<object>();
 
             string[] itemName = item.FQN.Split('.');
 
@@ -106,33 +107,33 @@ namespace Symbiote.Core.Platform.Windows
                 case "CPU.% Processor Time":
                     lastCPUUsed = cpuUsed.NextValue();
                     lastCPUIdle = cpuIdle.NextValue();
-                    retVal.Result = lastCPUUsed;
+                    retVal.ReturnValue = lastCPUUsed;
                     return retVal;
                 case "CPU.% Idle Time":
                     lastCPUUsed = cpuUsed.NextValue();
                     lastCPUIdle = cpuIdle.NextValue();
-                    retVal.Result = lastCPUIdle;
+                    retVal.ReturnValue = lastCPUIdle;
                     return retVal;
                 case "Memory.Total":
-                    retVal.Result = 0;
+                    retVal.ReturnValue = 0;
                     return retVal;
                 case "Memory.Available":
-                    retVal.Result = new PerformanceCounter("Memory", "Available Bytes").NextValue();
+                    retVal.ReturnValue = new PerformanceCounter("Memory", "Available Bytes").NextValue();
                     return retVal;
                 case "Memory.Cached":
-                    retVal.Result = new PerformanceCounter("Memory", "Cache Bytes").NextValue();
+                    retVal.ReturnValue = new PerformanceCounter("Memory", "Cache Bytes").NextValue();
                     return retVal;
                 case "Memory.% Used":
-                    retVal.Result = new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
+                    retVal.ReturnValue = new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
                     return retVal;
                 default:
                     return retVal.AddError("Unable to find Item '" + item + "'.");
             }
         }
 
-        public OperationResult Write(string fqn, object value)
+        public Result Write(string fqn, object value)
         {
-            return new OperationResult().AddError("The connector is not writeable.");
+            return new Result().AddError("The connector is not writeable.");
         }
 
         private void InitializeItems()
@@ -141,7 +142,7 @@ namespace Symbiote.Core.Platform.Windows
             itemRoot = new ConnectorItem(this, InstanceName);
 
             // create CPU items
-            Item cpuRoot = itemRoot.AddChild(new ConnectorItem(this, "CPU")).Result;
+            Item cpuRoot = itemRoot.AddChild(new ConnectorItem(this, "CPU")).ReturnValue;
             cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Processor Time"));
             cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Idle Time"));
 
@@ -152,17 +153,17 @@ namespace Symbiote.Core.Platform.Windows
             lastCPUIdle = 0;
 
             // create memory items
-            Item memRoot = itemRoot.AddChild(new ConnectorItem(this, "Memory")).Result;
+            Item memRoot = itemRoot.AddChild(new ConnectorItem(this, "Memory")).ReturnValue;
             memRoot.AddChild(new ConnectorItem(this, "Memory.Total"));
             memRoot.AddChild(new ConnectorItem(this, "Memory.Available"));
             memRoot.AddChild(new ConnectorItem(this, "Memory.Cached"));
             memRoot.AddChild(new ConnectorItem(this, "Memory.% Used"));
 
             // create drive items
-            ConnectorItem dRoot = itemRoot.AddChild(new ConnectorItem(this, "Drives")).Result;
+            ConnectorItem dRoot = itemRoot.AddChild(new ConnectorItem(this, "Drives")).ReturnValue;
 
             // system drive
-            ConnectorItem sdRoot = dRoot.AddChild(new ConnectorItem(this, "Drives.System")).Result;
+            ConnectorItem sdRoot = dRoot.AddChild(new ConnectorItem(this, "Drives.System")).ReturnValue;
             sdRoot.AddChild(new ConnectorItem(this, "Drives.System.Name"));
             sdRoot.AddChild(new ConnectorItem(this, "Path"));
             sdRoot.AddChild(new ConnectorItem(this, "Type"));
@@ -173,7 +174,7 @@ namespace Symbiote.Core.Platform.Windows
             sdRoot.AddChild(new ConnectorItem(this, "PercentFree"));
 
             // data drive
-            ConnectorItem ddRoot = dRoot.AddChild(new ConnectorItem(this, "Data")).Result;
+            ConnectorItem ddRoot = dRoot.AddChild(new ConnectorItem(this, "Data")).ReturnValue;
             ddRoot.AddChild(new ConnectorItem(this, "Name"));
             ddRoot.AddChild(new ConnectorItem(this, "Path"));
             ddRoot.AddChild(new ConnectorItem(this, "Type"));

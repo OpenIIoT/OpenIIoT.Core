@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Service.IoT.MQTT
 {
@@ -33,33 +34,33 @@ namespace Symbiote.Core.Service.IoT.MQTT
             return instance;
         }
 
-        public OperationResult Configure()
+        public Result Configure()
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
-            OperationResult<MQTTBrokerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType());
+            Result<MQTTBrokerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
-            if (fetchResult.ResultCode != OperationResultCode.Failure)
-                Configure(fetchResult.Result);
+            if (fetchResult.ResultCode != ResultCode.Failure)
+                Configure(fetchResult.ReturnValue);
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                OperationResult<MQTTBrokerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType(), GetDefaultConfiguration());
-                if (createResult.ResultCode != OperationResultCode.Failure)
-                    Configure(createResult.Result);
+                Result<MQTTBrokerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != ResultCode.Failure)
+                    Configure(createResult.ReturnValue);
             }
 
-            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType()).Result);
+            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType()).ReturnValue);
         }
 
-        public OperationResult Configure(MQTTBrokerConfiguration configuration)
+        public Result Configure(MQTTBrokerConfiguration configuration)
         {
             Configuration = configuration;
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult SaveConfiguration()
+        public Result SaveConfiguration()
         {
             return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
@@ -80,23 +81,23 @@ namespace Symbiote.Core.Service.IoT.MQTT
             return retVal;
         }
 
-        public OperationResult Start()
+        public Result Start()
         {
             logger.Info("Starting MQTT Broker...");
             Configure();
 
             running = false;
             logger.Info("The MQTT Broker was started successfully.");
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult Stop()
+        public Result Stop()
         {
             logger.Info("Stopping MQTT Broker...");
             Configure();
 
             running = false;
-            return new OperationResult();
+            return new Result();
         }
     }
 

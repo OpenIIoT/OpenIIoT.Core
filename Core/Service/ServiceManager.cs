@@ -9,6 +9,7 @@ using Microsoft.AspNet.SignalR;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Service
 {
@@ -56,22 +57,22 @@ namespace Symbiote.Core.Service
         /// Starts the Service Manager and all services.
         /// </summary>
         /// <remarks>Don't forget that you tried to do this with reflection once and it ended badly.  Just copy/paste.</remarks>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Start()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Start()
         {
             logger.Debug("Starting services...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             State = ManagerState.Starting;
 
-            OperationResult<Dictionary<string, Type>> registerResult = RegisterServices();
-            if (registerResult.ResultCode != OperationResultCode.Failure)
+            Result<Dictionary<string, Type>> registerResult = RegisterServices();
+            if (registerResult.ResultCode != ResultCode.Failure)
             {
-                ServiceTypes = registerResult.Result;
-                OperationResult<Dictionary<string, IService>> instantiateResult = InstantiateServices();
-                if (instantiateResult.ResultCode != OperationResultCode.Failure)
+                ServiceTypes = registerResult.ReturnValue;
+                Result<Dictionary<string, IService>> instantiateResult = InstantiateServices();
+                if (instantiateResult.ResultCode != ResultCode.Failure)
                 {
-                    Services = instantiateResult.Result;
+                    Services = instantiateResult.ReturnValue;
                     retVal = StartServices();
                 }
                 else
@@ -80,7 +81,7 @@ namespace Symbiote.Core.Service
             else
                 retVal.AddError("Failed to register Service types. " + retVal.LastErrorMessage());
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Running;
             else
                 State = ManagerState.Faulted;
@@ -88,10 +89,10 @@ namespace Symbiote.Core.Service
             return retVal;
         }
 
-        public OperationResult Restart()
+        public Result Restart()
         {
             logger.Info("Restarting services...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             retVal.Incorporate(Stop());
             retVal.Incorporate(Start());
@@ -100,14 +101,14 @@ namespace Symbiote.Core.Service
             return retVal;
         }
 
-        public OperationResult Stop()
+        public Result Stop()
         {
             logger.Info("Stopping services...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             State = ManagerState.Stopping;
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Stopped;
             else
                 State = ManagerState.Faulted;
@@ -118,28 +119,28 @@ namespace Symbiote.Core.Service
 
         #endregion
 
-        private OperationResult<Dictionary<string, Type>> RegisterServices()
+        private Result<Dictionary<string, Type>> RegisterServices()
         {
             logger.Debug("Registering Service types...");
-            OperationResult<Dictionary<string, Type>> retVal = RegisterServices(manager.ConfigurationManager);
+            Result<Dictionary<string, Type>> retVal = RegisterServices(manager.ConfigurationManager);
             retVal.LogResult(logger.Debug);
             return retVal;
         }
 
-        private OperationResult<Dictionary<string, Type>> RegisterServices(ConfigurationManager configurationManager)
+        private Result<Dictionary<string, Type>> RegisterServices(ConfigurationManager configurationManager)
         {
             logger.Trace("Registering Service types...");
-            OperationResult<Dictionary<string, Type>> retVal = new OperationResult<Dictionary<string, Type>>();
-            retVal.Result = new Dictionary<string, Type>();
+            Result<Dictionary<string, Type>> retVal = new Result<Dictionary<string, Type>>();
+            retVal.ReturnValue = new Dictionary<string, Type>();
 
             try
             {
                 logger.Trace("Registering Web Services...");
-                retVal.Result.Add("Web Services", typeof(Web.WebService));
+                retVal.ReturnValue.Add("Web Services", typeof(Web.WebService));
                 configurationManager.RegisterType(typeof(Web.WebService));
 
                 logger.Trace("Registering MQTT Broker...");
-                retVal.Result.Add("MQTT Broker", typeof(IoT.MQTT.MQTTBroker));
+                retVal.ReturnValue.Add("MQTT Broker", typeof(IoT.MQTT.MQTTBroker));
                 configurationManager.RegisterType(typeof(Web.WebService));
             }
             catch (Exception ex)
@@ -150,19 +151,19 @@ namespace Symbiote.Core.Service
             return retVal;
         }
 
-        private OperationResult<Dictionary<string, IService>> InstantiateServices()
+        private Result<Dictionary<string, IService>> InstantiateServices()
         {
             logger.Debug("Instantiating Services...");
-            OperationResult<Dictionary<string, IService>> retVal = InstantiateServices(ServiceTypes);
+            Result<Dictionary<string, IService>> retVal = InstantiateServices(ServiceTypes);
             retVal.LogResult(logger.Debug);
             return retVal;
         }
 
-        private OperationResult<Dictionary<string, IService>> InstantiateServices(Dictionary<string, Type> serviceTypes)
+        private Result<Dictionary<string, IService>> InstantiateServices(Dictionary<string, Type> serviceTypes)
         {
             logger.Debug("Instantiating services...");
-            OperationResult<Dictionary<string, IService>> retVal = new OperationResult<Dictionary<string, IService>>();
-            retVal.Result = new Dictionary<string, IService>();
+            Result<Dictionary<string, IService>> retVal = new Result<Dictionary<string, IService>>();
+            retVal.ReturnValue = new Dictionary<string, IService>();
 
             try
             {
@@ -172,7 +173,7 @@ namespace Symbiote.Core.Service
                     IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { manager });
 
                     if (serviceInstance != default(IService))
-                        retVal.Result.Add(serviceType, serviceInstance);
+                        retVal.ReturnValue.Add(serviceType, serviceInstance);
                     else
                         retVal.AddWarning("Unable to instantiate service '" + serviceType + "'.");
 
@@ -186,18 +187,18 @@ namespace Symbiote.Core.Service
             return retVal;
         }
 
-        private OperationResult StartServices()
+        private Result StartServices()
         {
             logger.Debug("Starting Services...");
-            OperationResult retVal = StartServices(Services);
+            Result retVal = StartServices(Services);
             retVal.LogResult(logger.Debug);
             return retVal;
         }
 
-        private OperationResult StartServices(Dictionary<string, IService> serviceInstances)
+        private Result StartServices(Dictionary<string, IService> serviceInstances)
         {
             logger.Trace("Starting services...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             // iterate over the list of registered services and try to start each one
             foreach (string serviceName in serviceInstances.Keys)
@@ -207,15 +208,15 @@ namespace Symbiote.Core.Service
                 try
                 {
                     IService service = serviceInstances[serviceName];
-                    OperationResult startResult = service.Start();
+                    Result startResult = service.Start();
 
-                    if (startResult.ResultCode == OperationResultCode.Failure)
+                    if (startResult.ResultCode == ResultCode.Failure)
                         retVal.AddWarning("Failed to start service '" + serviceName + "'.");
                     else
                     {
                         logger.Info("Started service '" + serviceName + "'.");
 
-                        if (startResult.ResultCode == OperationResultCode.Warning)
+                        if (startResult.ResultCode == ResultCode.Warning)
                             startResult.LogAllMessages(logger.Debug, "The following warnings were generated when starting '" + serviceName + "':");
                     }
                     if (!service.IsRunning)

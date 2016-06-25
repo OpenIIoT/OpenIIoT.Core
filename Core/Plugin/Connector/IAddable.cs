@@ -20,6 +20,8 @@
                                                                                                ▀█▄ ██ ▄█▀                       
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using Symbiote.Core.OperationResult;
+
 namespace Symbiote.Core.Plugin.Connector
 {
     /// <summary>
@@ -34,7 +36,7 @@ namespace Symbiote.Core.Plugin.Connector
     /// <para>
     ///     New ConnectorItems are added via the <see cref="Add(string, string)"/> method.  This method accepts a string containing the
     ///     Fully Qualified Name for the new item, and a string containing the Fully Qualified Source Name for the item.  The Source Name
-    ///     should be validated by the Plugin to ensure it is well formed.  The Add() method must return an <see cref="OperationResult{T}"/>
+    ///     should be validated by the Plugin to ensure it is well formed.  The Add() method must return an <see cref="Result{T}"/>
     ///     containing the result of the operation and Item that was added, as well as any informational, warning or error messages that 
     ///     were generated during the operation.
     /// </para>
@@ -56,7 +58,7 @@ namespace Symbiote.Core.Plugin.Connector
         /// </remarks>
         /// <param name="fqn">The Fully Qualifed Name of the <see cref="Item"/> to add.</param>
         /// <param name="sourceFQN">The Fully Qualified Source Name of the backing data point or structure.</param>
-        /// <returns>An <see cref="OperationResult{T}"/> containing an <see cref="Item"/> and the result of the operation.</returns>
-        OperationResult<Item> Add(string fqn, string sourceFQN);
+        /// <returns>An <see cref="Result{T}"/> containing an <see cref="Item"/> and the result of the operation.</returns>
+        Result<Item> Add(string fqn, string sourceFQN);
     }
 }

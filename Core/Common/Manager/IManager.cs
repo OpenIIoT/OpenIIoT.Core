@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core
 {
@@ -15,19 +15,19 @@ namespace Symbiote.Core
         /// <summary>
         /// Starts the Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult Start();
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result Start();
 
         /// <summary>
         /// Restarts the Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult Restart();
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result Restart();
 
         /// <summary>
         /// Stops the Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult Stop();
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result Stop();
     }
 }

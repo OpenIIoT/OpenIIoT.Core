@@ -1,4 +1,6 @@
-﻿namespace Symbiote.Core.Configuration
+﻿using Symbiote.Core.OperationResult;
+
+namespace Symbiote.Core.Configuration
 {
     /// <summary>
     /// Defines the interface for Configurable objects.  When implemented, the implementing class gains the ability to store named instances of type T
@@ -28,20 +30,20 @@
         /// Fetches the configuration for the current instance of the implementation from the Configuration Manager
         /// and configures the instance with the returned Configuration T.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult Configure();
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result Configure();
 
         /// <summary>
         /// Configures the current instance of the implementation with the supplied Configuration T.
         /// </summary>
         /// <param name="configuration">The instance of T containing the Configuration to be used to configure the instance.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult Configure(T configuration);
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result Configure(T configuration);
 
         /// <summary>
         /// Stores the Configuration for the current instance of the implementation to the Configuration Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        OperationResult SaveConfiguration();
+        /// <returns>An Result containing the result of the operation.</returns>
+        Result SaveConfiguration();
     }
 }

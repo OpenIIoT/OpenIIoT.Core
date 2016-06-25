@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Model
 {
@@ -107,13 +108,13 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Starts the Model manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Start()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Start()
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Starting the Model Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             State = ManagerState.Starting;
 
@@ -121,9 +122,9 @@ namespace Symbiote.Core.Model
 
             //--------------- - - -
             // Configure the Manager
-            OperationResult configureResult = Configure();
+            Result configureResult = Configure();
 
-            if (configureResult.ResultCode == OperationResultCode.Failure)
+            if (configureResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to configure the Model Manager: " + configureResult.LastErrorMessage());
 
             retVal.Incorporate(configureResult);
@@ -137,7 +138,7 @@ namespace Symbiote.Core.Model
             // Build the model
             ModelBuildResult modelBuildResult = BuildModel(manager.InstanceName, Configuration.Items);
 
-            if (modelBuildResult.ResultCode == OperationResultCode.Failure)
+            if (modelBuildResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to build the model: " + modelBuildResult.LastErrorMessage()); 
 
             retVal.Incorporate(modelBuildResult);
@@ -149,9 +150,9 @@ namespace Symbiote.Core.Model
 
             //------------------------------   -
             // Attach the newly built model to the Model Manager
-            OperationResult attachResult = AttachModel(modelBuildResult);
+            Result attachResult = AttachModel(modelBuildResult);
 
-            if (attachResult.ResultCode == OperationResultCode.Failure)
+            if (attachResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to attach the model to the Model Manager: " + attachResult.LastErrorMessage());
 
             retVal.Incorporate(attachResult);
@@ -159,7 +160,7 @@ namespace Symbiote.Core.Model
 
             #endregion
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Running;
             else
                 State = ManagerState.Faulted;
@@ -172,13 +173,13 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Restarts the Configuration manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Restart()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Restart()
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Model Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             retVal.Incorporate(Stop());
             retVal.Incorporate(Start());
@@ -191,19 +192,19 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Stops the Configuration manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Stop()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Stop()
         {
             logger.EnterMethod();
 
             logger.Info("Stopping the Model Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             State = ManagerState.Stopping;
 
             retVal.Incorporate(SaveModel());
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Stopped;
             else
                 State = ManagerState.Faulted;
@@ -220,31 +221,31 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Configures the Model Manager using the configuration stored in the Configuration Manager, or, failing that, using the default configuration.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Configure()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Configure()
         {
             logger.EnterMethod();
 
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
-            OperationResult<ModelManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
+            Result<ModelManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
-            if (fetchResult.ResultCode != OperationResultCode.Failure)
+            if (fetchResult.ResultCode != ResultCode.Failure)
             {
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
-                Configure(fetchResult.Result);
+                Configure(fetchResult.ReturnValue);
             }
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                OperationResult<ModelManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
-                if (createResult.ResultCode != OperationResultCode.Failure)
+                Result<ModelManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
-                    Configure(createResult.Result);
+                    Configure(createResult.ReturnValue);
                 }
                 else
                     retVal.Incorporate(createResult);
@@ -259,12 +260,12 @@ namespace Symbiote.Core.Model
         /// Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
         /// </summary>
         /// <param name="configuration">The configuration with which the Model Manager should be configured.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Configure(ModelManagerConfiguration configuration)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Configure(ModelManagerConfiguration configuration)
         {
             logger.EnterMethod(xLogger.Params(configuration));
 
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             // update the configuration
             Configuration = configuration;
@@ -282,11 +283,11 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Saves the configuration to the Configuration Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult SaveConfiguration()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result SaveConfiguration()
         {
             logger.EnterMethod();
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
@@ -324,7 +325,7 @@ namespace Symbiote.Core.Model
             retVal.LogResult(logger);
 
             // if the model was built successfully (with or without warnings), report the success and show some statistics.
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 logger.Info(retVal.ResolvedList.Count() + " Item(s) were resolved.");
 
@@ -415,9 +416,9 @@ namespace Symbiote.Core.Model
                         }
                     }
                     
-                    OperationResult addResult = AddItem(result.Model, result.Dictionary, newItem);
+                    Result addResult = AddItem(result.Model, result.Dictionary, newItem);
 
-                    if (addResult.ResultCode != OperationResultCode.Failure)
+                    if (addResult.ResultCode != ResultCode.Failure)
                     {
                         result.UnresolvedList.Remove(item);
                         result.ResolvedList.Add(item);
@@ -479,15 +480,15 @@ namespace Symbiote.Core.Model
         /// <param name="model">The model to which to attach the model contained within the ModelBuildResult.</param>
         /// <param name="dictionary">The dictionary to which to attach the dictionary contained within the ModelBuildResult.</param>
         /// <param name="modelBuildResult">The built model to attach.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult AttachModel(ModelBuildResult modelBuildResult)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result AttachModel(ModelBuildResult modelBuildResult)
         {
             logger.Info("Attaching Model...");
 
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             // if the ModelBuildResult that was passed in built successfully, update the Model and Dictionary properties with the contents of the build result
-            if (modelBuildResult.ResultCode != OperationResultCode.Failure)
+            if (modelBuildResult.ResultCode != ResultCode.Failure)
             {
                 Model = modelBuildResult.Model;
                 Dictionary = modelBuildResult.Dictionary;
@@ -503,19 +504,19 @@ namespace Symbiote.Core.Model
         /// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
         /// </summary>
         /// <param name="flushToDisk">Save the updated Configuration to disk.</param>
-        /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
-        public OperationResult<List<ModelManagerConfigurationItem>> SaveModel()
+        /// <returns>An Result containing the list of saved ConfigurationModelItems.</returns>
+        public Result<List<ModelManagerConfigurationItem>> SaveModel()
         {
             logger.Info("Saving Model...");
 
-            OperationResult<List<ModelManagerConfigurationItem>> configuration = new OperationResult<List<ModelManagerConfigurationItem>>();
-            configuration.Result = new List<ModelManagerConfigurationItem>();
+            Result<List<ModelManagerConfigurationItem>> configuration = new Result<List<ModelManagerConfigurationItem>>();
+            configuration.ReturnValue = new List<ModelManagerConfigurationItem>();
 
-            OperationResult<List<ModelManagerConfigurationItem>> retVal = SaveModel(Model, configuration);
+            Result<List<ModelManagerConfigurationItem>> retVal = SaveModel(Model, configuration);
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
-                Configuration.Items = retVal.Result;
+                Configuration.Items = retVal.ReturnValue;
                 SaveConfiguration();
             }
 
@@ -524,14 +525,14 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Updates and returns the provided OperationResult containing the list of ConfigurationModelItems with the recursively listed contents of the provided ModelItem.
+        /// Updates and returns the provided Result containing the list of ConfigurationModelItems with the recursively listed contents of the provided ModelItem.
         /// </summary>
         /// <param name="itemRoot">The ModelItem from which to start recursively updating the list.</param>
-        /// <param name="configuration">An OperationResult containing the list of ConfigurationModelItems to update.</param>
-        /// <returns>An OperationResult containing the list of saved ConfigurationModelItems.</returns>
-        private OperationResult<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, OperationResult<List<ModelManagerConfigurationItem>> configuration)
+        /// <param name="configuration">An Result containing the list of ConfigurationModelItems to update.</param>
+        /// <returns>An Result containing the list of saved ConfigurationModelItems.</returns>
+        private Result<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, Result<List<ModelManagerConfigurationItem>> configuration)
         {
-            configuration.Result.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(manager.InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
+            configuration.ReturnValue.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(manager.InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
 
             foreach (Item mi in itemRoot.Children)
             {
@@ -549,8 +550,8 @@ namespace Symbiote.Core.Model
         /// Adds an Item to the ModelManager's instance of Model and Dictionary.
         /// </summary>
         /// <param name="item">The Item to add.</param>
-        /// <returns>An OperationResult containing the added Item.</returns>
-        public OperationResult<Item> AddItem(Item item)
+        /// <returns>An Result containing the added Item.</returns>
+        public Result<Item> AddItem(Item item)
         {
             return AddItem(Model, Dictionary, item);
         }
@@ -561,13 +562,13 @@ namespace Symbiote.Core.Model
         /// <param name="model">The Model to which to add the Item.</param>
         /// <param name="dictionary">The Dictionary to which to add the Item.</param>
         /// <param name="item">The Item to add.</param>
-        /// <returns>An OperationResult containing the added Item.</returns>
-        private OperationResult<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
+        /// <returns>An Result containing the added Item.</returns>
+        private Result<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
             if (manager.State != ManagerState.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
             else logger.Debug("Adding item '" + item.FQN + "' to the model...");
 
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
 
             string parentFQN = GetParentFQNFromItemFQN(item.FQN);
 
@@ -586,7 +587,7 @@ namespace Symbiote.Core.Model
                     logger.Trace("Adding item to dictionary with key: " + item.FQN);
                     dictionary.Add(model.FQN, model);
 
-                    retVal.Result = model;
+                    retVal.ReturnValue = model;
                 }
             }
             else
@@ -607,7 +608,7 @@ namespace Symbiote.Core.Model
                             logger.Trace("Adding item to dictionary with key: " + item.FQN);
                             dictionary.Add(item.FQN, item);
 
-                            retVal.Result = item;
+                            retVal.ReturnValue = item;
 
 
                         }
@@ -658,18 +659,18 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to update.</param>
         /// <param name="sourceItem">The SourceItem with which to update the Item.</param>
-        /// <returns>An OperationResult containing the result of the operation and the updated Item.</returns>
-        public OperationResult<Item> UpdateItem(Item item, Item sourceItem)
+        /// <returns>An Result containing the result of the operation and the updated Item.</returns>
+        public Result<Item> UpdateItem(Item item, Item sourceItem)
         {
             logger.Info("Updating Item '" + item.FQN + "'s SourceItem to '" + sourceItem.FQN + "'...");
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
 
             if (sourceItem != default(Item))
             {
                 item.SourceItem = sourceItem;
                 item.SourceFQN = sourceItem.FQN;
 
-                retVal.Result = item;
+                retVal.ReturnValue = item;
             }
             else
                 retVal.AddError("The supplied SourceItem is invalid.");
@@ -682,8 +683,8 @@ namespace Symbiote.Core.Model
         /// Removes an Item from the ModelManager's Dictionary and from its parent Item.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
-        /// <returns>An OperationResult containing the removed Item.</returns>
-        public OperationResult<Item> RemoveItem(Item item)
+        /// <returns>An Result containing the removed Item.</returns>
+        public Result<Item> RemoveItem(Item item)
         {
             return RemoveItem(Dictionary, item);
         }
@@ -693,16 +694,16 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="dictionary">The Dictionary from which to remove the Item.</param>
         /// <param name="item">The Item to remove.</param>
-        /// <returns>An OperationResult containing the removed Item.</returns>
-        private OperationResult<Item> RemoveItem(Dictionary<string, Item> dictionary, Item item)
+        /// <returns>An Result containing the removed Item.</returns>
+        private Result<Item> RemoveItem(Dictionary<string, Item> dictionary, Item item)
         {
             if (item != default(Item))
                 logger.Info("Removing Item '" + item.FQN + "' from the model...");
             else
-                return new OperationResult<Item>().AddError("The specified Item is null.");
+                return new Result<Item>().AddError("The specified Item is null.");
 
-            OperationResult<Item> retVal = new OperationResult<Item>();
-            retVal.Result = item;
+            Result<Item> retVal = new Result<Item>();
+            retVal.ReturnValue = item;
 
             try
             {
@@ -750,8 +751,8 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the item.</param>
-        /// <returns>An OperationResult containing the moved Item.</returns>
-        public OperationResult<Item> MoveItem(Item item, string fqn)
+        /// <returns>An Result containing the moved Item.</returns>
+        public Result<Item> MoveItem(Item item, string fqn)
         {
             return MoveItem(Dictionary, item, fqn);
         }
@@ -762,11 +763,11 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary containing the supplied Item.</param>
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the Item.</param>
-        /// <returns>An OperationResult containing the moved Item.</returns>
-        private OperationResult<Item> MoveItem(Dictionary<string, Item> dictionary, Item item, string fqn)
+        /// <returns>An Result containing the moved Item.</returns>
+        private Result<Item> MoveItem(Dictionary<string, Item> dictionary, Item item, string fqn)
         {
             logger.Info("Moving Item '" + item.FQN + "' to new FQN '" + fqn + "'...");
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
 
             // find the parent item first to ensure the provided FQN is valid
             Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
@@ -776,12 +777,12 @@ namespace Symbiote.Core.Model
             else
             {
                 // copy the item to the new location
-                OperationResult copyResult = CopyItem(item, fqn);
+                Result copyResult = CopyItem(item, fqn);
                 retVal.Incorporate(copyResult);
 
-                if (copyResult.ResultCode != OperationResultCode.Failure)
+                if (copyResult.ResultCode != ResultCode.Failure)
                 {
-                    OperationResult deleteResult = RemoveItem(dictionary, item);
+                    Result deleteResult = RemoveItem(dictionary, item);
                     retVal.Incorporate(deleteResult);
                 }
             }
@@ -795,8 +796,8 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to copy.</param>
         /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
-        /// <returns>An OperationResult containing the result of the operation and the newly created Item.</returns>
-        public OperationResult<Item> CopyItem(Item item, string fqn)
+        /// <returns>An Result containing the result of the operation and the newly created Item.</returns>
+        public Result<Item> CopyItem(Item item, string fqn)
         {
             return CopyItem(Model, Dictionary, item, fqn);
         }
@@ -808,10 +809,10 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary in which to copy the Item.</param>
         /// <param name="item">The Item to copy.</param>
         /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
-        /// <returns>An OperationResult containing the result of the operation and the newly created Item.</returns>
-        private OperationResult<Item> CopyItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
+        /// <returns>An Result containing the result of the operation and the newly created Item.</returns>
+        private Result<Item> CopyItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
             if ((item == null) || (fqn == "")) return retVal;
 
             logger.Info("Copying Item '" + item.FQN + "' to FQN '" + fqn + "'...");
@@ -826,14 +827,14 @@ namespace Symbiote.Core.Model
                 Item copiedItem = (Item)item.Clone();
 
                 // set the FQN to the new FQN
-                OperationResult<Item> renameResult = RenameItemInstance(copiedItem, fqn);
+                Result<Item> renameResult = RenameItemInstance(copiedItem, fqn);
                 retVal.Incorporate(renameResult);
 
-                if (renameResult.ResultCode != OperationResultCode.Failure)
+                if (renameResult.ResultCode != ResultCode.Failure)
                 {
                     // add the new item to the model
-                    OperationResult<Item> addResult = AddItem(model, dictionary, renameResult.Result);
-                    retVal.Result = addResult.Result;
+                    Result<Item> addResult = AddItem(model, dictionary, renameResult.ReturnValue);
+                    retVal.ReturnValue = addResult.ReturnValue;
 
                     retVal.Incorporate(addResult);
                 }
@@ -849,10 +850,10 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to attach to the Model.</param>
         /// <param name="parentItem">The Item to which the new Item should be attached.</param>
-        /// <returns>An OperationResult containing the result of the operation and the attached Item.</returns>
-        public OperationResult<Item> AttachItem(Item item, Item parentItem)
+        /// <returns>An Result containing the result of the operation and the attached Item.</returns>
+        public Result<Item> AttachItem(Item item, Item parentItem)
         {
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
             if ((item == null) || (parentItem == null)) return retVal;
                
             if (manager.State != ManagerState.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
@@ -861,35 +862,35 @@ namespace Symbiote.Core.Model
             try
             {
                 // create a 1:1 clone of the supplied item
-                retVal.Result = (Item)item.Clone();
+                retVal.ReturnValue = (Item)item.Clone();
 
                 // set the SourceFQN of the new item to the FQN of the original item to create a link
-                retVal.Result.SourceFQN = retVal.Result.FQN;
-                retVal.Result.SourceItem = FQNResolver.Resolve(retVal.Result.SourceFQN);
+                retVal.ReturnValue.SourceFQN = retVal.ReturnValue.FQN;
+                retVal.ReturnValue.SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN);
 
                 // modify the FQN of the cloned item to reflect it's new path
-                retVal.Result.FQN = parentItem.FQN + "." + retVal.Result.Name;
+                retVal.ReturnValue.FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
 
                 // create a temporary list of the items children
-                List<Item> children = retVal.Result.Children.Clone<Item>();
+                List<Item> children = retVal.ReturnValue.Children.Clone<Item>();
 
                 // remove the children from the item (you leave my babies!)
-                retVal.Result.Children.Clear();
+                retVal.ReturnValue.Children.Clear();
                 // they're my babies now, you commie son of a bitch!
 
                 // add the cloned and cleaned item to the model
-                AddItem(retVal.Result);
+                AddItem(retVal.ReturnValue);
 
                 // for each child of the original item, attach that item to the model under the cloned and cleaned parent
                 foreach (Item child in children)
                 {
-                    AttachItem(child, retVal.Result);
+                    AttachItem(child, retVal.ReturnValue);
                 }
             }
             catch (Exception ex)
             {
                 retVal.AddError("Exception thrown when attempting to Attach Item '" + item.FQN + "':" + ex);
-                retVal.Result = default(Item);
+                retVal.ReturnValue = default(Item);
             }
 
             if (manager.State != ManagerState.Starting) retVal.LogResult(logger);
@@ -908,25 +909,25 @@ namespace Symbiote.Core.Model
         /// <param name="item">The Item to rename.</param>
         /// <param name="fqn">The new Fully Qualified Name for the Item.</param>
         /// <returns>A renamed clone of the provided Item.</returns>
-        private OperationResult<Item> RenameItemInstance(Item item, string fqn)
+        private Result<Item> RenameItemInstance(Item item, string fqn)
         {
             logger.Debug("Renaming Item '" + item.FQN + "' to '" + fqn + "'");
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
 
-            retVal.Result = (Item)item.Clone();
+            retVal.ReturnValue = (Item)item.Clone();
 
-            retVal.Result.Name = GetItemNameFromItemFQN(fqn);
-            retVal.Result.FQN = fqn;
+            retVal.ReturnValue.Name = GetItemNameFromItemFQN(fqn);
+            retVal.ReturnValue.FQN = fqn;
 
-            List<Item> childrenToRename = retVal.Result.Children.Clone();
+            List<Item> childrenToRename = retVal.ReturnValue.Children.Clone();
 
             foreach (Item child in childrenToRename)
             {
-                OperationResult<Item> renameResult = RenameItemInstance(child, retVal.Result.FQN + '.' + child.Name);
-                if (renameResult.ResultCode != OperationResultCode.Failure)
+                Result<Item> renameResult = RenameItemInstance(child, retVal.ReturnValue.FQN + '.' + child.Name);
+                if (renameResult.ResultCode != ResultCode.Failure)
                 {
-                    retVal.Result.RemoveChild(child);
-                    retVal.Result.AddChild(renameResult.Result);
+                    retVal.ReturnValue.RemoveChild(child);
+                    retVal.ReturnValue.AddChild(renameResult.ReturnValue);
                 }
 
                 retVal.Incorporate(renameResult);

@@ -41,8 +41,8 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage Read(string fqn, bool fromSource)
         {
-            ApiOperationResult<List<Item>> retVal = new ApiOperationResult<List<Item>>(Request);
-            retVal.Result = new List<Item>();
+            ApiResult<List<Item>> retVal = new ApiResult<List<Item>>(Request);
+            retVal.ReturnValue = new List<Item>();
 
             retVal.LogRequest(logger.Info);
 
@@ -53,7 +53,7 @@ namespace Symbiote.Core.Service.Web.API
             if (fromSource)
                 foundItem.ReadFromSource();
             
-            retVal.Result.Add(foundItem);
+            retVal.ReturnValue.Add(foundItem);
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolver.ContractResolverType.OptIn, true));

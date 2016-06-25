@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 using Symbiote.Core.Plugin.Connector;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core
 {
@@ -185,10 +186,10 @@ namespace Symbiote.Core
         /// Sets the Item's parent Item to the supplied Item.
         /// </summary>
         /// <param name="parent">The Item to set as the Item's parent.</param>
-        /// <returns>An OperationResult containing the result of the operation and the current Item.</returns>
-        public virtual OperationResult<Item> SetParent(Item parent)
+        /// <returns>A Result containing the result of the operation and the current Item.</returns>
+        public virtual Result<Item> SetParent(Item parent)
         {
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
 
             // update the Path and FQN to match the parent values
             // this is set in the constructor however this code will prevent issues if items are moved.
@@ -196,7 +197,7 @@ namespace Symbiote.Core
             FQN = Path + '.' + Name;
             Parent = parent;
 
-            retVal.Result = this;
+            retVal.ReturnValue = this;
             return retVal;
         }
 
@@ -204,22 +205,22 @@ namespace Symbiote.Core
         /// Adds the supplied item to this Item's Children collection.
         /// </summary>
         /// <param name="item">The Item to add.</param>
-        /// <returns>An OperationResult containing the result of the operation and the added Item.</returns>
-        public virtual OperationResult<Item> AddChild(Item item)
+        /// <returns>An Result containing the result of the operation and the added Item.</returns>
+        public virtual Result<Item> AddChild(Item item)
         {
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
            
             if (item != default(Item))
             {
                 // set the new child's parent to this before adding it
-                OperationResult<Item> setResult = item.SetParent(this);
+                Result<Item> setResult = item.SetParent(this);
 
                 // ensure that went ok
-                if (setResult.ResultCode != OperationResultCode.Failure)
+                if (setResult.ResultCode != ResultCode.Failure)
                 {
                     // add the new item
-                    Children.Add(setResult.Result);
-                    retVal.Result = setResult.Result;
+                    Children.Add(setResult.ReturnValue);
+                    retVal.ReturnValue = setResult.ReturnValue;
                 }
 
                 retVal.Incorporate(setResult);
@@ -232,18 +233,18 @@ namespace Symbiote.Core
         /// Removes the specified child Item from this Item's Children collection.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
-        /// <returns>An OperationResult containing the result of the operation and the removed Item.</returns>
-        public virtual OperationResult<Item> RemoveChild(Item item)
+        /// <returns>An Result containing the result of the operation and the removed Item.</returns>
+        public virtual Result<Item> RemoveChild(Item item)
         {
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
 
-            retVal.Result = Children.Find(i => i.FQN == item.FQN);
+            retVal.ReturnValue = Children.Find(i => i.FQN == item.FQN);
 
-            if (retVal.Result == default(Item))
+            if (retVal.ReturnValue == default(Item))
                 retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
             else
             {
-                if (!Children.Remove(retVal.Result))
+                if (!Children.Remove(retVal.ReturnValue))
                     retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + FQN + "'.");
             }
             
@@ -314,10 +315,10 @@ namespace Symbiote.Core
         /// <summary>
         /// Adds the SourceItemChanged event handler for this Item to the SourceItem's Changed event.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual OperationResult SubscribeToSource()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual Result SubscribeToSource()
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             try
             {
@@ -326,9 +327,9 @@ namespace Symbiote.Core
                 // if we are subscribing to a ConnectorItem, subscribe the source item to it's connector's ItemChanged event.
                 if (SourceItem is ConnectorItem)
                 {
-                    OperationResult sourceSubscription = ((ConnectorItem)SourceItem).SubscribeToSource();
+                    Result sourceSubscription = ((ConnectorItem)SourceItem).SubscribeToSource();
 
-                    if (sourceSubscription.ResultCode == OperationResultCode.Failure)
+                    if (sourceSubscription.ResultCode == ResultCode.Failure)
                         retVal.AddWarning("Failed to subscribe SourceItem to it's Connector source.");
 
                     retVal.Incorporate(sourceSubscription);
@@ -344,10 +345,10 @@ namespace Symbiote.Core
         /// <summary>
         /// Removes the SourceItemChanged event handler for this Item from the SourceItem's Changed event.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual OperationResult UnsubscribeFromSource()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual Result UnsubscribeFromSource()
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             try
             {
@@ -365,10 +366,10 @@ namespace Symbiote.Core
         /// Writes the provided value to this Item's Value property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual OperationResult Write(object value)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual Result Write(object value)
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             if (!Writeable)
                 retVal.AddError("Unable to write to '" + FQN + "'; the item is not writeable.");
@@ -385,8 +386,8 @@ namespace Symbiote.Core
         /// Asynchronously writes the provided value to this Item's Value property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual async Task<OperationResult> WriteAsync(object value)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual async Task<Result> WriteAsync(object value)
         {
             return await Task.Run(() => Write(value));
         }
@@ -395,10 +396,10 @@ namespace Symbiote.Core
         /// Writes the provided value to this Item's SourceItem.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual OperationResult WriteToSource(object value)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual Result WriteToSource(object value)
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             if (!SourceItem.Writeable)
                 retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is not writeable.");
@@ -406,8 +407,8 @@ namespace Symbiote.Core
                 retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is null.");
             else
             {
-                OperationResult writeResult = SourceItem.WriteToSource(value);
-                if (writeResult.ResultCode != OperationResultCode.Failure)
+                Result writeResult = SourceItem.WriteToSource(value);
+                if (writeResult.ResultCode != ResultCode.Failure)
                     Write(value);
 
                 retVal.Incorporate(writeResult);
@@ -420,8 +421,8 @@ namespace Symbiote.Core
         /// Asynchronously writes the provided value to this Item's SourceItem.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual async Task<OperationResult> WriteToSourceAsync(object value)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual async Task<Result> WriteToSourceAsync(object value)
         {
             return await Task.Run(() => SourceItem.WriteToSource(value));
         }

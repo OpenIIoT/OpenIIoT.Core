@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Service.Web.SignalR
 {
@@ -110,7 +111,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// <param name="args">An object array containing the Fully Qualified Name of the Item to update in the first index and an object containing the new value in the second.</param>
         public void Write(object[] args)
         {
-            OperationResult retVal;
+            Result retVal;
 
             string castFQN = (string)args[0];
 
@@ -120,7 +121,7 @@ namespace Symbiote.Core.Service.Web.SignalR
             {
                 retVal = foundItem.Write(args[1]);
 
-                if (retVal.ResultCode != OperationResultCode.Failure)
+                if (retVal.ResultCode != ResultCode.Failure)
                 {
                     Clients.Caller.writeSuccess(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "updated item '" + foundItem.FQN + "' with value '" + args[1] + "'.");
@@ -141,7 +142,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// <param name="args">An object array containing the Fully Qualified Name of the Item to update in the first index and an object containing the new value in the second.</param>
         public void WriteToSource(object[] args)
         {
-            OperationResult retVal;
+            Result retVal;
 
             string castFQN = (string)args[0];
 
@@ -151,7 +152,7 @@ namespace Symbiote.Core.Service.Web.SignalR
             {
                 retVal = foundItem.WriteToSource(args[1]);
 
-                if (retVal.ResultCode != OperationResultCode.Failure)
+                if (retVal.ResultCode != ResultCode.Failure)
                 {
                     Clients.Caller.writeToSourceSuccess(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "updated item source '" + foundItem.FQN + "' with value '" + args[1] + "'.");

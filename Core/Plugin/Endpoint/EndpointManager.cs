@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using NLog;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Plugin.Endpoint
 {
@@ -54,23 +55,23 @@ namespace Symbiote.Core.Plugin.Endpoint
 
         #region IManager Implementation
 
-        public OperationResult Start()
+        public Result Start()
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
             Configure();
 
             State = ManagerState.Starting;
 
             // register endpoints
-            OperationResult<Dictionary<string, Type>> registerResult = RegisterEndpoints();
+            Result<Dictionary<string, Type>> registerResult = RegisterEndpoints();
 
-            if (registerResult.ResultCode != OperationResultCode.Failure)
+            if (registerResult.ResultCode != ResultCode.Failure)
             {
-                Endpoints = registerResult.Result;
+                Endpoints = registerResult.ReturnValue;
                 registerResult.LogResult(logger.Info, "RegisterEndpoints");
                 logger.Info(Endpoints.Count + " Endpoints(s) registered.");
 
-                if (registerResult.ResultCode == OperationResultCode.Warning)
+                if (registerResult.ResultCode == ResultCode.Warning)
                     registerResult.LogAllMessages(logger.Warn, "Warn", "The following warnings were generated during the registration:");
             }
             else
@@ -81,7 +82,7 @@ namespace Symbiote.Core.Plugin.Endpoint
                 logger.Info("Instance: " + i.Name);
             }
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Running;
             else
                 State = ManagerState.Faulted;
@@ -89,47 +90,47 @@ namespace Symbiote.Core.Plugin.Endpoint
             return retVal;
         }
 
-        public OperationResult Restart()
+        public Result Restart()
         {
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult Stop()
+        public Result Stop()
         {
             State = ManagerState.Stopped;
 
-            return new OperationResult();
+            return new Result();
         }
 
         #endregion
 
-        public OperationResult Configure()
+        public Result Configure()
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
-            OperationResult<EndpointManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType());
+            Result<EndpointManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
-            if (fetchResult.ResultCode != OperationResultCode.Failure)
-                Configure(fetchResult.Result);
+            if (fetchResult.ResultCode != ResultCode.Failure)
+                Configure(fetchResult.ReturnValue);
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                OperationResult<EndpointManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<EndpointManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
-                if (createResult.ResultCode != OperationResultCode.Failure)
-                    Configure(createResult.Result);
+                Result<EndpointManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<EndpointManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != ResultCode.Failure)
+                    Configure(createResult.ReturnValue);
             }
 
-            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType()).Result);
+            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType()).ReturnValue);
         }
 
-        public OperationResult Configure(EndpointManagerConfiguration configuration)
+        public Result Configure(EndpointManagerConfiguration configuration)
         {
             Configuration = configuration;
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult SaveConfiguration()
+        public Result SaveConfiguration()
         {
             return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
@@ -151,11 +152,11 @@ namespace Symbiote.Core.Plugin.Endpoint
             return retVal;
         }
 
-        private OperationResult<Dictionary<string, Type>> RegisterEndpoints()
+        private Result<Dictionary<string, Type>> RegisterEndpoints()
         {
             logger.Info("Registering Endpoint types...");
-            OperationResult<Dictionary<string, Type>> retVal = new OperationResult<Dictionary<string, Type>>();
-            retVal.Result = new Dictionary<string, Type>();
+            Result<Dictionary<string, Type>> retVal = new Result<Dictionary<string, Type>>();
+            retVal.ReturnValue = new Dictionary<string, Type>();
 
             try
             {

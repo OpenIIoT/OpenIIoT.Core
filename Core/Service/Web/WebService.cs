@@ -10,6 +10,7 @@ using System.Web.Http;
 using Newtonsoft.Json;
 using Symbiote.Core.Configuration;
 using System.Web.Http.Services;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Service.Web
 {
@@ -56,34 +57,34 @@ namespace Symbiote.Core.Service.Web
             return instance;
         }
 
-        public OperationResult Configure()
+        public Result Configure()
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
-            OperationResult<WebServiceConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType());
+            Result<WebServiceConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
-            if (fetchResult.ResultCode != OperationResultCode.Failure)
-                Configure(fetchResult.Result);
+            if (fetchResult.ResultCode != ResultCode.Failure)
+                Configure(fetchResult.ReturnValue);
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                OperationResult<WebServiceConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<WebServiceConfiguration>(this.GetType(), GetDefaultConfiguration());
-                if (createResult.ResultCode != OperationResultCode.Failure)
-                    Configure(createResult.Result);
+                Result<WebServiceConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<WebServiceConfiguration>(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != ResultCode.Failure)
+                    Configure(createResult.ReturnValue);
             }
 
-            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType()).Result);
+            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType()).ReturnValue);
         }
 
-        public OperationResult Configure(WebServiceConfiguration configuration)
+        public Result Configure(WebServiceConfiguration configuration)
         {
             Configuration = configuration;
             GetConfiguration = configuration;
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult SaveConfiguration()
+        public Result SaveConfiguration()
         {
             return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
@@ -105,11 +106,11 @@ namespace Symbiote.Core.Service.Web
             return retVal;
         }
 
-        public OperationResult Start()
+        public Result Start()
         {
             logger.Info("Starting Web server...");
             Configure();
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             URL = "http://*:" + Configuration.Port;
 
@@ -127,10 +128,10 @@ namespace Symbiote.Core.Service.Web
             return retVal;
         }
 
-        public OperationResult Stop()
+        public Result Stop()
         {
             logger.Info("Stopping Web server...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             try
             {

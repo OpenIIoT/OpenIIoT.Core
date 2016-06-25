@@ -6,6 +6,7 @@ using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
 using NLog;
 using Symbiote.Core.Service;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core
 {
@@ -208,17 +209,17 @@ namespace Symbiote.Core
         /// <summary>
         /// Starts the Program Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Start()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Start()
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Starting the Program Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             State = ManagerState.Starting;
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Running;
             else
                 State = ManagerState.Faulted;
@@ -231,13 +232,13 @@ namespace Symbiote.Core
         /// <summary>
         /// Restarts the Program Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Restart()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Restart()
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Program Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
             
             retVal.Incorporate(Stop());
             retVal.Incorporate(Start());
@@ -250,24 +251,24 @@ namespace Symbiote.Core
         /// <summary>
         /// Stops the Program Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Stop()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Stop()
         {
             logger.EnterMethod();
 
             logger.Info("Stopping the Program Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             State = ManagerState.Stopping;
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Stopped;
             else
                 State = ManagerState.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
-            return new OperationResult();
+            return new Result();
         }
 
         #endregion
@@ -276,22 +277,22 @@ namespace Symbiote.Core
         /// Starts the specified IManager instance
         /// </summary>
         /// <param name="manager">The IManager instance to start.</param>
-        /// <returns>An OperationResult containing the result of the operation and the specified IManager instance.</returns>
-        internal OperationResult<IManager> StartManager(IManager manager)
+        /// <returns>An Result containing the result of the operation and the specified IManager instance.</returns>
+        internal Result<IManager> StartManager(IManager manager)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
 
             logger.Debug("Starting " + manager.GetType().Name + "...");
-            OperationResult<IManager> retVal = new OperationResult<IManager>();
+            Result<IManager> retVal = new Result<IManager>();
 
             // invoke the Start() method on the specified manager
-            OperationResult startResult = manager.Start();
+            Result startResult = manager.Start();
 
             // if the manager fails to start, throw an exception and halt the program
-            if (startResult.ResultCode == OperationResultCode.Failure)
+            if (startResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to start " + manager.GetType().Name + "." + startResult.LastErrorMessage());
 
-            retVal.Result = manager;
+            retVal.ReturnValue = manager;
             retVal.Incorporate(startResult);
 
             retVal.LogResult(logger);

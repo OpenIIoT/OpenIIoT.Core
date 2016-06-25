@@ -1,5 +1,6 @@
 ﻿using System;
 using NLog;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Platform
 {
@@ -102,11 +103,11 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Starts the Platform manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Start()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Start()
         {
             Guid guid = logger.EnterMethod(true);
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             logger.Info("Starting the Platform Manager...");
 
@@ -143,12 +144,12 @@ namespace Symbiote.Core.Platform
             //  replace the pipe character placeholder with the platform specific directory separator
             directoryList = directoryList.Replace('|', System.IO.Path.DirectorySeparatorChar);
             
-            OperationResult<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(directoryList);
+            Result<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(directoryList);
 
-            if (loadDirectoryResult.ResultCode == OperationResultCode.Failure)
+            if (loadDirectoryResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to load application directory list: " + loadDirectoryResult.LastErrorMessage());
 
-            Directories = loadDirectoryResult.Result;
+            Directories = loadDirectoryResult.ReturnValue;
             loadDirectoryResult.LogResult(logger.Debug, "LoadDirectories");
 
             retVal.Incorporate(loadDirectoryResult);
@@ -163,8 +164,8 @@ namespace Symbiote.Core.Platform
             //-------------------------- - - -               -  
             // Check to ensure all directories exist.  If not, create them.
             logger.Debug("Checking directories...");
-            OperationResult checkResult = Directories.CheckDirectories();
-            if (checkResult.ResultCode == OperationResultCode.Failure)
+            Result checkResult = Directories.CheckDirectories();
+            if (checkResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to verify and/or create one or more required program directory: " + checkResult.LastErrorMessage());
 
             checkResult.LogResult(logger.Debug, "CheckDirectories");
@@ -176,7 +177,7 @@ namespace Symbiote.Core.Platform
 
             #endregion
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Running;
             else
                 State = ManagerState.Faulted;
@@ -189,13 +190,13 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Restarts the Platform manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Restart()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Restart()
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Platform Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             retVal.Incorporate(Stop());
             retVal.Incorporate(Start());
@@ -208,17 +209,17 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Stops the Platform manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Stop()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Stop()
         {
             logger.EnterMethod();
 
             logger.Info("Stopping the Platform Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             State = ManagerState.Stopping;
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Stopped;
             else
                 State = ManagerState.Faulted;

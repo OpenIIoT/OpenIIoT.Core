@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Model
 {
     /// <summary>
-    /// The ModelBuildResult extends the OperationResult class and adds properties to return various
+    /// The ModelBuildResult extends the Result class and adds properties to return various
     /// products of a model build operation.
     /// 
     /// The model build operation produces the model itself, which implements the composite design pattern,
@@ -13,7 +14,7 @@ namespace Symbiote.Core.Model
     /// built from the list of items stored in the configuration, a number of checks and lookups are done
     /// to ensure that the items are valid.  Any items that are invalid are discarded and added to the unresolved list.
     /// </summary>
-    public class ModelBuildResult : OperationResult
+    public class ModelBuildResult : Result
     {
         /// <summary>
         /// The Item model created by the build result.

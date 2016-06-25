@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Plugin
 {
@@ -68,28 +69,28 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Starts the Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Start()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Start()
         {
-            return new OperationResult();
+            return new Result();
         }
 
         /// <summary>
         /// Restarts the Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Restart()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Restart()
         {
-            return new OperationResult();
+            return new Result();
         }
 
         /// <summary>
         /// Stops the Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Stop()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Stop()
         {
-            return new OperationResult();
+            return new Result();
         }
 
         #endregion

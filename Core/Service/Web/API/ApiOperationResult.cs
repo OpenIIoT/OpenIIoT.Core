@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Runtime.CompilerServices;
 using System;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Service.Web
 {
@@ -11,7 +12,7 @@ namespace Symbiote.Core.Service.Web
     /// Encapsulates the result of an API operation. 
     /// </summary>
     /// <typeparam name="T">The type of the Result object.</typeparam>
-    public class ApiOperationResult<T> : OperationResult<T>
+    public class ApiResult<T> : Result<T>
     {
         #region Properties
         /// <summary>
@@ -49,10 +50,10 @@ namespace Symbiote.Core.Service.Web
         #region Constructors
 
         /// <summary>
-        /// Constructs a new APIOperationResult using the supplied request, a new ShortGuid and with a StatusCode of 200/OK.
+        /// Constructs a new APIResult using the supplied request, a new ShortGuid and with a StatusCode of 200/OK.
         /// </summary>
         /// <param name="request"></param>
-        public ApiOperationResult(HttpRequestMessage request) : base()
+        public ApiResult(HttpRequestMessage request) : base()
         {
             Request = request;
             ShortGuid = Utility.ShortGuid();
@@ -81,14 +82,14 @@ namespace Symbiote.Core.Service.Web
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
         /// <param name="caller">The name of the method that called this method.</param>
-        new public ApiOperationResult<T> LogResult(Action<string> successLogLevel, Action<string> warningLogLevel, Action<string> failureLogLevel, [CallerMemberName]string caller = "")
+        new public ApiResult<T> LogResult(Action<string> successLogLevel, Action<string> warningLogLevel, Action<string> failureLogLevel, [CallerMemberName]string caller = "")
         {
-            if (ResultCode != OperationResultCode.Failure)
+            if (ResultCode != ResultCode.Failure)
             {
                 Log(successLogLevel, "API Request [ID: " + ShortGuid + "]; Route: " + Route + "; Remote IP: " + RemoteIP + "; Response: " + StatusCode);
 
                 // if any warnings were generated, print them to the logger
-                if (ResultCode == OperationResultCode.Warning)
+                if (ResultCode == ResultCode.Warning)
                     LogAllMessages(warningLogLevel, "The following warnings were generated during the operation:");
             }
             // the operation failed
@@ -108,7 +109,7 @@ namespace Symbiote.Core.Service.Web
         /// <returns>The generated HttpResponseMessage.</returns>
         public HttpResponseMessage CreateResponse(JsonMediaTypeFormatter jsonFormatter)
         {
-            Response = Request.CreateResponse(StatusCode, Result, jsonFormatter);
+            Response = Request.CreateResponse(StatusCode, ReturnValue, jsonFormatter);
             return Response;
         }
 

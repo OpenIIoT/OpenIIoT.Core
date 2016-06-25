@@ -5,6 +5,7 @@ using Symbiote.Core;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin.Connector;
 using System.Linq;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
@@ -102,9 +103,9 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         #region IAddable Implementation
 
-        public OperationResult<Item> Add(string fqn, string sourceFQN)
+        public Result<Item> Add(string fqn, string sourceFQN)
         {
-            OperationResult<Item> retVal = new OperationResult<Item>();
+            Result<Item> retVal = new Result<Item>();
 
             try
             {
@@ -118,7 +119,7 @@ namespace Symbiote.Plugin.Connector.Simulation
                 {
                     if (!currentNode.Children.Exists(n => n.Name == tuple))
                     {
-                        currentNode = currentNode.AddChild(new ConnectorItem(this, tuple)).Result;
+                        currentNode = currentNode.AddChild(new ConnectorItem(this, tuple)).ReturnValue;
                         retVal.AddInfo("Added node " + currentNode.FQN);
                     }
                     else
@@ -137,9 +138,9 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         #region ISubscribable Implementation
 
-        public OperationResult Subscribe(ConnectorItem item)
+        public Result Subscribe(ConnectorItem item)
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             try
             {
@@ -158,9 +159,9 @@ namespace Symbiote.Plugin.Connector.Simulation
             return retVal;
         }
 
-        public OperationResult UnSubscribe(ConnectorItem item)
+        public Result UnSubscribe(ConnectorItem item)
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             try
             {
@@ -210,28 +211,28 @@ namespace Symbiote.Plugin.Connector.Simulation
         /// This is akin to saying "configure yourself using whatever is in the config file"
         /// </summary>
         /// <returns></returns>
-        public OperationResult Configure()
+        public Result Configure()
         {
             throw new NotImplementedException();
         }
 
-        public OperationResult Start()
+        public Result Start()
         {
             timer.Start();
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult Restart()
+        public Result Restart()
         {
             Stop();
             Start();
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult Stop()
+        public Result Stop()
         {
             timer.Stop();
-            return new OperationResult();
+            return new Result();
         }
 
         /// <summary>
@@ -241,15 +242,15 @@ namespace Symbiote.Plugin.Connector.Simulation
         /// this method.
         /// </summary>
         /// <param name="configuration">The instance of the model/configuration type to apply.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Configure(SimulationConnectorConfiguration configuration)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Configure(SimulationConnectorConfiguration configuration)
         {
             Configuration = configuration;
 
-            return new OperationResult();
+            return new Result();
         }
 
-        public OperationResult SaveConfiguration()
+        public Result SaveConfiguration()
         {
             throw new NotImplementedException();
         }
@@ -282,42 +283,42 @@ namespace Symbiote.Plugin.Connector.Simulation
             return (root == null ? itemRoot.Children : root.Children);
         }
 
-        public OperationResult<object> Read(Item item)
+        public Result<object> Read(Item item)
         {
-            OperationResult<object> retVal = new OperationResult<object>();
+            Result<object> retVal = new Result<object>();
 
             double val = DateTime.Now.Second;
             switch (item.FQN.Split('.')[item.FQN.Split('.').Length - 1])
             {
                 case "Sine":
-                    retVal.Result = Math.Sin(val);
+                    retVal.ReturnValue = Math.Sin(val);
                     return retVal;
                 case "Cosine":
-                    retVal.Result = Math.Cos(val);
+                    retVal.ReturnValue = Math.Cos(val);
                     return retVal;
                 case "Tangent":
-                    retVal.Result = Math.Tan(val);
+                    retVal.ReturnValue = Math.Tan(val);
                     return retVal;
                 case "Ramp":
-                    retVal.Result = val;
+                    retVal.ReturnValue = val;
                     return retVal;
                 case "Step":
-                    retVal.Result = val % 5;
+                    retVal.ReturnValue = val % 5;
                     return retVal;
                 case "Toggle":
-                    retVal.Result = val % 2;
+                    retVal.ReturnValue = val % 2;
                     return retVal;
                 case "Time":
-                    retVal.Result = DateTime.Now.ToString("HH:mm:ss");
+                    retVal.ReturnValue = DateTime.Now.ToString("HH:mm:ss");
                     return retVal;
                 case "Date":
-                    retVal.Result = DateTime.Now.ToString("MM/dd/yyyy");
+                    retVal.ReturnValue = DateTime.Now.ToString("MM/dd/yyyy");
                     return retVal;
                 case "TimeZone":
-                    retVal.Result = DateTime.Now.ToString("zzz");
+                    retVal.ReturnValue = DateTime.Now.ToString("zzz");
                     return retVal;
                 case "Array":
-                    retVal.Result = new int[5] { 1, 2, 3, 4, 5 };
+                    retVal.ReturnValue = new int[5] { 1, 2, 3, 4, 5 };
                     return retVal;
                 default:
                     return retVal;
@@ -326,9 +327,9 @@ namespace Symbiote.Plugin.Connector.Simulation
         }
 
 
-        public OperationResult Write(string item, object value)
+        public Result Write(string item, object value)
         {
-            return new OperationResult().AddError("The connector is not writeable.");
+            return new Result().AddError("The connector is not writeable.");
         }
 
         private void InitializeItems()
@@ -337,26 +338,26 @@ namespace Symbiote.Plugin.Connector.Simulation
             itemRoot = new ConnectorItem(this, InstanceName, true);
 
             // create some simulation items
-            ConnectorItem mathRoot = itemRoot.AddChild(new ConnectorItem(this, "Math")).Result;
+            ConnectorItem mathRoot = itemRoot.AddChild(new ConnectorItem(this, "Math")).ReturnValue;
             mathRoot.AddChild(new ConnectorItem(this, "Sine"));
             mathRoot.AddChild(new ConnectorItem(this, "Cosine"));
             mathRoot.AddChild(new ConnectorItem(this, "Tangent"));
 
-            ConnectorItem processRoot = itemRoot.AddChild(new ConnectorItem(this, "Process")).Result;
+            ConnectorItem processRoot = itemRoot.AddChild(new ConnectorItem(this, "Process")).ReturnValue;
             processRoot.AddChild(new ConnectorItem(this, "Ramp"));
             processRoot.AddChild(new ConnectorItem(this, "Step"));
             processRoot.AddChild(new ConnectorItem(this, "Toggle"));
 
-            ConnectorItem timeRoot = itemRoot.AddChild(new ConnectorItem(this, "DateTime")).Result;
+            ConnectorItem timeRoot = itemRoot.AddChild(new ConnectorItem(this, "DateTime")).ReturnValue;
             timeRoot.AddChild(new ConnectorItem(this, "Time"));
             timeRoot.AddChild(new ConnectorItem(this, "Date"));
             timeRoot.AddChild(new ConnectorItem(this, "TimeZone"));
 
-            ConnectorItem arrayRoot = itemRoot.AddChild(new ConnectorItem(this, "Array")).Result;
+            ConnectorItem arrayRoot = itemRoot.AddChild(new ConnectorItem(this, "Array")).ReturnValue;
 
-            ConnectorItem motorRoot = itemRoot.AddChild(new ConnectorItem(this, "Motor")).Result;
+            ConnectorItem motorRoot = itemRoot.AddChild(new ConnectorItem(this, "Motor")).ReturnValue;
 
-            ConnectorItem motorArrayRoot = itemRoot.AddChild(new ConnectorItem(this, "MotorArray")).Result;
+            ConnectorItem motorArrayRoot = itemRoot.AddChild(new ConnectorItem(this, "MotorArray")).ReturnValue;
 
         }
 

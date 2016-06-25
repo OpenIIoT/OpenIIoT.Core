@@ -8,6 +8,7 @@ using System.Text;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Symbiote.Core.Plugin.Connector;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Platform
 {
@@ -84,18 +85,18 @@ namespace Symbiote.Core.Platform
         /// Returns a list of subdirectories within the supplied path.
         /// </summary>
         /// <param name="parentDirectory">The parent directory to search.</param>
-        /// <returns>An OperationResult containing the result of the operation and list containing the fully qualified path of each directory found.</returns>
-        public virtual OperationResult<List<string>> ListDirectories(string parentDirectory)
+        /// <returns>An Result containing the result of the operation and list containing the fully qualified path of each directory found.</returns>
+        public virtual Result<List<string>> ListDirectories(string parentDirectory)
         {
             logger.EnterMethod(xLogger.Params(parentDirectory));
             logger.Trace("Listing subdirectories of '" + parentDirectory + "'...");
 
-            OperationResult<List<string>> retVal = new OperationResult<List<string>>();
-            retVal.Result = new List<string>();
+            Result<List<string>> retVal = new Result<List<string>>();
+            retVal.ReturnValue = new List<string>();
 
             try
             {
-                retVal.Result = Directory.EnumerateDirectories(parentDirectory).ToList<string>();
+                retVal.ReturnValue = Directory.EnumerateDirectories(parentDirectory).ToList<string>();
             }
             catch (IOException ex)
             {
@@ -112,13 +113,13 @@ namespace Symbiote.Core.Platform
         /// Deletes the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual OperationResult DeleteDirectory(string directory)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual Result DeleteDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Trace("Attempting to delete directory '" + directory + "'...");
 
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             try
             {
@@ -140,13 +141,13 @@ namespace Symbiote.Core.Platform
         /// Deletes all files and subdirectories within the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to clear.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual OperationResult ClearDirectory(string directory)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual Result ClearDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Trace("Attempting to clear the contents of directory '" + directory + "'...");
 
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             try
             {
@@ -176,17 +177,17 @@ namespace Symbiote.Core.Platform
         /// Creates the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to create.</param>
-        /// <returns>An OperationResult containing the result of the operation and the fully qualified path to the directory.</returns>
-        public virtual OperationResult<string> CreateDirectory(string directory)
+        /// <returns>An Result containing the result of the operation and the fully qualified path to the directory.</returns>
+        public virtual Result<string> CreateDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Trace("Creating directory '" + directory + "'...");
 
-            OperationResult<string> retVal = new OperationResult<string>();
+            Result<string> retVal = new Result<string>();
 
             try
             {
-                retVal.Result = Directory.CreateDirectory(directory).FullName;
+                retVal.ReturnValue = Directory.CreateDirectory(directory).FullName;
             }
             catch (Exception ex)
             {
@@ -218,18 +219,18 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <param name="parentDirectory">The directory to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
-        /// <returns>An OperationResult containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
-        public virtual OperationResult<List<string>> ListFiles(string parentDirectory, string searchPattern)
+        /// <returns>An Result containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
+        public virtual Result<List<string>> ListFiles(string parentDirectory, string searchPattern)
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
             logger.Trace("Listing files in directory '" + parentDirectory + "' matching searchPattern '" + searchPattern + "'...");
 
-            OperationResult<List<string>> retVal = new OperationResult<List<string>>();
-            retVal.Result = new List<string>();
+            Result<List<string>> retVal = new Result<List<string>>();
+            retVal.ReturnValue = new List<string>();
 
             try
             {
-                retVal.Result = Directory.EnumerateFiles(parentDirectory, searchPattern, SearchOption.AllDirectories).ToList<string>();
+                retVal.ReturnValue = Directory.EnumerateFiles(parentDirectory, searchPattern, SearchOption.AllDirectories).ToList<string>();
             }
             catch (IOException ex)
             {
@@ -246,13 +247,13 @@ namespace Symbiote.Core.Platform
         /// Deletes the specified file.
         /// </summary>
         /// <param name="file">The file to delete.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public virtual OperationResult DeleteFile(string file)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public virtual Result DeleteFile(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Deleting file '" + file + "'...");
 
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             try
             {
@@ -273,17 +274,17 @@ namespace Symbiote.Core.Platform
         /// Reads the contents of the specified file into a single string.
         /// </summary>
         /// <param name="file">The file to read.</param>
-        /// <returns>An OperationResult containing the result of the operation and a string containing the entire contents of the file.</returns>
-        public virtual OperationResult<string> ReadFile(string file)
+        /// <returns>An Result containing the result of the operation and a string containing the entire contents of the file.</returns>
+        public virtual Result<string> ReadFile(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Reading contents of file '" + file + "'...");
 
-            OperationResult<string> retVal = new OperationResult<string>();
+            Result<string> retVal = new Result<string>();
 
             try
             {
-                retVal.Result = File.ReadAllText(file);
+                retVal.ReturnValue = File.ReadAllText(file);
             }
             catch (Exception ex)
             {
@@ -300,17 +301,17 @@ namespace Symbiote.Core.Platform
         /// Reads the contents of the specified file into a string array.
         /// </summary>
         /// <param name="file">The file to read.</param>
-        /// <returns>An OperationResult containing the result of the operation and a string array containing all of the lines from the file.</returns>
-        public virtual OperationResult<string[]> ReadFileLines(string file)
+        /// <returns>An Result containing the result of the operation and a string array containing all of the lines from the file.</returns>
+        public virtual Result<string[]> ReadFileLines(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Reading lines from file '" + file + "'...");
 
-            OperationResult<string[]> retVal = new OperationResult<string[]>();
+            Result<string[]> retVal = new Result<string[]>();
 
             try
             {
-                retVal.Result = File.ReadAllLines(file);
+                retVal.ReturnValue = File.ReadAllLines(file);
             }
             catch (Exception ex)
             {
@@ -329,17 +330,17 @@ namespace Symbiote.Core.Platform
         /// <param name="file">The file to write.</param>
         /// <param name="contents">The text to write to the file.</param>
         /// <returns>The fully qualified name of the written file.</returns>
-        public virtual OperationResult<string> WriteFile(string file, string contents)
+        public virtual Result<string> WriteFile(string file, string contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
             logger.Trace("Writing to file '" + file + "'...");
 
-            OperationResult<string> retVal = new OperationResult<string>();
+            Result<string> retVal = new Result<string>();
 
             try
             {
                 File.WriteAllText(file, contents);
-                retVal.Result = file;
+                retVal.ReturnValue = file;
             }
             catch (Exception ex)
             {
@@ -361,14 +362,14 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <param name="zipFile">The zip file to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
-        /// <returns>An OperationResult containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
-        public virtual OperationResult<List<string>> ListZipFiles(string zipFile, string searchPattern)
+        /// <returns>An Result containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
+        public virtual Result<List<string>> ListZipFiles(string zipFile, string searchPattern)
         {
             logger.EnterMethod(xLogger.Params(zipFile, searchPattern));
             logger.Trace("Listing files in zip file '" + zipFile + "' matching searchPattern '" + searchPattern + "'...");
 
-            OperationResult<List<string>> retVal = new OperationResult<List<string>>();
-            retVal.Result = new List<string>();
+            Result<List<string>> retVal = new Result<List<string>>();
+            retVal.ReturnValue = new List<string>();
 
             logger.Trace("Converting pattern '" + searchPattern + "' to RegEx..");
             Regex regex = new Regex(Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
@@ -383,10 +384,10 @@ namespace Symbiote.Core.Platform
                     foreach (ZipArchiveEntry entry in archive.Entries)
                     {
                         if (regex.IsMatch(entry.Name))
-                            retVal.Result.Add(entry.FullName);
+                            retVal.ReturnValue.Add(entry.FullName);
                     }
 
-                    logger.Trace(retVal.Result.Count + " matches for '" + regex + "' found.");
+                    logger.Trace(retVal.ReturnValue.Count + " matches for '" + regex + "' found.");
                 }
             }
             catch (Exception ex)
@@ -407,13 +408,13 @@ namespace Symbiote.Core.Platform
         /// <param name="zipFile">The zip file to extract.</param>
         /// <param name="destination">The destination directory.</param>
         /// <param name="clearDestination">True if the destination directory should be cleared prior to extraction, false otherwise.</param>
-        /// <returns>An OperationResult containing the result of the operation and the fully qualified path to the extracted files.</returns>
-        public virtual OperationResult<string> ExtractZip(string zipFile, string destination, bool clearDestination = true)
+        /// <returns>An Result containing the result of the operation and the fully qualified path to the extracted files.</returns>
+        public virtual Result<string> ExtractZip(string zipFile, string destination, bool clearDestination = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, destination, clearDestination));
             logger.Trace("Extracting zip file '" + zipFile + "' to destination '" + destination + "'...");
 
-            OperationResult<string> retVal = new OperationResult<string>();
+            Result<string> retVal = new Result<string>();
 
             try
             {
@@ -423,8 +424,8 @@ namespace Symbiote.Core.Platform
                 if (clearDestination)
                 {
                     logger.Trace("Attempting to clear destination directory '" + destination + "'...");
-                    OperationResult clearResult = ClearDirectory(destination);
-                    if (clearResult.ResultCode != OperationResultCode.Success)
+                    Result clearResult = ClearDirectory(destination);
+                    if (clearResult.ResultCode != ResultCode.Success)
                         throw new Exception("Error clearing destination directory: " + clearResult.LastErrorMessage());
                 }
 
@@ -449,13 +450,13 @@ namespace Symbiote.Core.Platform
         /// <param name="file">The file to extract from the zip file.</param>
         /// <param name="destination">The destination directory.</param>
         /// <param name="overwrite">True if an existing file should be overwritten, false otherwise.</param>
-        /// <returns>An OperationResult containing the result of the operation and the fully qualified filename of the extracted file.</returns>
-        public virtual OperationResult<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true)
+        /// <returns>An Result containing the result of the operation and the fully qualified filename of the extracted file.</returns>
+        public virtual Result<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, file, destination, overwrite));
             logger.Trace("Extracting file '" + file + "' from zip file '" + zipFile + "' into directory '" + destination + "'...");
 
-            OperationResult<string> retVal = new OperationResult<string>();
+            Result<string> retVal = new Result<string>();
 
             try
             {
@@ -468,7 +469,7 @@ namespace Symbiote.Core.Platform
 
                     logger.Trace("Extracting file '" + file + "'...");
                     entry.ExtractToFile(extractedFile, overwrite);
-                    retVal.Result = extractedFile;
+                    retVal.ReturnValue = extractedFile;
                 }
             }
             catch (Exception ex)
@@ -488,13 +489,13 @@ namespace Symbiote.Core.Platform
         /// Computes the checksum of the specified file.
         /// </summary>
         /// <param name="file">The file for which the checksum is to be computed.</param>
-        /// <returns>An OperationResult containing the result of the operation and the computed checksum.</returns>
-        public virtual OperationResult<string> ComputeFileChecksum(string file)
+        /// <returns>An Result containing the result of the operation and the computed checksum.</returns>
+        public virtual Result<string> ComputeFileChecksum(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Computing checksum for file '" + file + "'...");
 
-            OperationResult<string> retVal = new OperationResult<string>();
+            Result<string> retVal = new Result<string>();
 
             try
             {
@@ -507,7 +508,7 @@ namespace Symbiote.Core.Platform
                     builtString.Append(b.ToString("x2"));
                 }
 
-                retVal.Result = builtString.ToString();
+                retVal.ReturnValue = builtString.ToString();
             }
             catch (Exception ex)
             {

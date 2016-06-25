@@ -21,6 +21,7 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using System.Collections.Generic;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Plugin.Connector
 {
@@ -37,14 +38,14 @@ namespace Symbiote.Core.Plugin.Connector
     ///     Subscriptions are added via the <see cref="Subscribe(ConnectorItem)"/> method.  If the specified ConnectorItem does not exist
     ///     in the Dictionary at the time of the method call, the method must add an entry to the Dictionary with value 1.  If the specified
     ///     ConnectorItem exists in the Dictionary, the value must be incremented by 1.  The Subscribe() method must return an 
-    ///     <see cref="OperationResult"/> containing the result of the operation as well as any informational, warning or error messages 
+    ///     <see cref="Result"/> containing the result of the operation as well as any informational, warning or error messages 
     ///     that were generated.
     /// </para>
     /// <para>
     ///     Subscription are removed via the <see cref="UnSubscribe(ConnectorItem)"/> method.  Assuming the specified ConnectorItem exists
     ///     in the Dictionary at the time of the method call, the value for the entry must be decremented by 1.  If, after the decrement,
     ///     the value is zero or less, the item must be removed from the Dictionary completely.  The UnSubscribe() method must return an
-    ///     OperationResult containing the result of the operation as well as any informational, warning or error messages that were generated.
+    ///     Result containing the result of the operation as well as any informational, warning or error messages that were generated.
     /// </para>
     /// </remarks>
     public interface ISubscribable
@@ -63,8 +64,8 @@ namespace Symbiote.Core.Plugin.Connector
         ///     increment the quantity by one.
         /// </remarks>
         /// <param name="item">The <see cref="Item"/> to which the subscription should be added.</param>
-        /// <returns>An <see cref="OperationResult"/> containing the result of the operation.</returns>
-        OperationResult Subscribe(ConnectorItem item);
+        /// <returns>An <see cref="Result"/> containing the result of the operation.</returns>
+        Result Subscribe(ConnectorItem item);
 
         /// <summary>
         /// Removes a subscription from the specified ConnectorItem.
@@ -74,7 +75,7 @@ namespace Symbiote.Core.Plugin.Connector
         ///     Upon removal of the final subscriber, the subscription is completely removed.
         /// </remarks>
         /// <param name="item">The <see cref="Item"/> for which the subscription should be removed.</param>
-        /// <returns>An <see cref="OperationResult"/> containing the result of the operation.</returns>
-        OperationResult UnSubscribe(ConnectorItem item);
+        /// <returns>An <see cref="Result"/> containing the result of the operation.</returns>
+        Result UnSubscribe(ConnectorItem item);
     }
 }

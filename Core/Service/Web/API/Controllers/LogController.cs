@@ -20,10 +20,10 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage GetLog()
         {
-            ApiOperationResult<RealtimeLoggerEventArgs[]> retVal = new ApiOperationResult<RealtimeLoggerEventArgs[]>(Request);
+            ApiResult<RealtimeLoggerEventArgs[]> retVal = new ApiResult<RealtimeLoggerEventArgs[]>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.Result = RealtimeLogger.LogHistory.ToArray();
+            retVal.ReturnValue = RealtimeLogger.LogHistory.ToArray();
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));

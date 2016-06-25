@@ -30,6 +30,7 @@ using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin.Connector;
 using Symbiote.Core.Plugin.Endpoint;
 using System.Threading.Tasks;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Plugin
 {
@@ -169,11 +170,11 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Starts the Plugin manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Start()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Start()
         {
             Guid guid = logger.EnterMethod(true);
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             logger.Info("Starting the Plugin Manager...");
 
@@ -181,8 +182,8 @@ namespace Symbiote.Core.Plugin
 
             //----------- - -           -----------  - 
             // Configure the manager
-            OperationResult configureResult = Configure();
-            if (configureResult.ResultCode == OperationResultCode.Failure)
+            Result configureResult = Configure();
+            if (configureResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to start the Plugin Manager: " + configureResult.LastErrorMessage());
 
             retVal.Incorporate(configureResult);
@@ -199,7 +200,7 @@ namespace Symbiote.Core.Plugin
 
             PluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
 
-            if (pluginArchiveLoadResult.ResultCode != OperationResultCode.Failure)
+            if (pluginArchiveLoadResult.ResultCode != ResultCode.Failure)
             {
                 PluginArchives = pluginArchiveLoadResult.ValidArchives;
                 InvalidPluginArchives = pluginArchiveLoadResult.InvalidArchives;
@@ -231,10 +232,10 @@ namespace Symbiote.Core.Plugin
             // load installed plugin assemblies into memory and register them with the configuration manager
             logger.SubSubHeading(LogLevel.Debug, "Assemblies...");
 
-            OperationResult<List<PluginAssembly>> pluginAssemblyLoadResult = LoadPluginAssemblies();
+            Result<List<PluginAssembly>> pluginAssemblyLoadResult = LoadPluginAssemblies();
 
-            if (pluginAssemblyLoadResult.ResultCode != OperationResultCode.Failure)
-                PluginAssemblies = pluginAssemblyLoadResult.Result;
+            if (pluginAssemblyLoadResult.ResultCode != ResultCode.Failure)
+                PluginAssemblies = pluginAssemblyLoadResult.ReturnValue;
 
             retVal.Incorporate(pluginAssemblyLoadResult);
 
@@ -257,10 +258,10 @@ namespace Symbiote.Core.Plugin
             // instantiate all of the configured Plugin instances
             logger.SubSubHeading(LogLevel.Debug, "Instances...");
 
-            OperationResult<Dictionary<string, IPluginInstance>> pluginInstantiationResult = InstantiatePlugins();
+            Result<Dictionary<string, IPluginInstance>> pluginInstantiationResult = InstantiatePlugins();
 
-            if (pluginInstantiationResult.ResultCode != OperationResultCode.Failure)
-                PluginInstances = pluginInstantiationResult.Result;
+            if (pluginInstantiationResult.ResultCode != ResultCode.Failure)
+                PluginInstances = pluginInstantiationResult.ReturnValue;
 
             // print the list of instantiated plugins
             if (PluginInstances.Count > 0) logger.Info("Plugin Instances:");
@@ -276,7 +277,7 @@ namespace Symbiote.Core.Plugin
             #endregion
 
             // if no errors were encountered during startup, set the Manager state to Running.
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 State = ManagerState.Running;
                 SaveConfiguration();
@@ -292,13 +293,13 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Restarts the Plugin manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Restart()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Restart()
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Plugin Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             retVal.Incorporate(Stop());
             retVal.Incorporate(Start());
@@ -311,17 +312,17 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Stops the Plugin manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Stop()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Stop()
         {
             logger.EnterMethod();
 
             logger.Info("Stopping the Plugin Manager...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             State = ManagerState.Stopping;
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
                 State = ManagerState.Stopped;
             else
                 State = ManagerState.Faulted;
@@ -338,29 +339,29 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the default configuration.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Configure()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Configure()
         {
             logger.EnterMethod();
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
-            OperationResult<PluginManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
+            Result<PluginManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
-            if (fetchResult.ResultCode != OperationResultCode.Failure)
+            if (fetchResult.ResultCode != ResultCode.Failure)
             {
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
-                Configure(fetchResult.Result);
+                Configure(fetchResult.ReturnValue);
             }
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                OperationResult<PluginManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
-                if (createResult.ResultCode != OperationResultCode.Failure)
+                Result<PluginManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
-                    Configure(createResult.Result);
+                    Configure(createResult.ReturnValue);
                 }
                 else
                     retVal.Incorporate(createResult);
@@ -375,13 +376,13 @@ namespace Symbiote.Core.Plugin
         /// Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
         /// </summary>
         /// <param name="configuration">The configuration with which the Model Manager should be configured.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult Configure(PluginManagerConfiguration configuration)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result Configure(PluginManagerConfiguration configuration)
         {
             logger.EnterMethod(xLogger.Params(configuration));
             logger.Info("Retrieving and applying the configuration from the Configuration Manager...");
 
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             // update the configuration
             Configuration = configuration;
@@ -403,13 +404,13 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Saves the configuration to the Configuration Manager.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult SaveConfiguration()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result SaveConfiguration()
         {
             logger.EnterMethod();
             logger.Info("Saving the configuration to the Configuration Manager...");
 
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             // update the list of plugins
             Configuration.Plugins = Plugins;
@@ -451,24 +452,24 @@ namespace Symbiote.Core.Plugin
 
             // retrieve a list of probable plugin archive files from the configured plugin archive directory
             logger.Trace("Listing matching files...");
-            OperationResult<List<string>> searchResult = platform.ListFiles(directory, searchPattern);
-            logger.Debug("Found " + searchResult.Result.Count + " Archives.");
+            Result<List<string>> searchResult = platform.ListFiles(directory, searchPattern);
+            logger.Debug("Found " + searchResult.ReturnValue.Count + " Archives.");
 
             retVal.Incorporate(searchResult);
 
             // iterate over the list of found files
-            foreach (string fileName in searchResult.Result)
+            foreach (string fileName in searchResult.ReturnValue)
             {
                 logger.SubSubHeading(LogLevel.Trace, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
                 logger.Debug("Parsing Archive file '" + fileName + "'...");
 
                 // parse the current plugin archive file
-                OperationResult<PluginArchive> parseResult = ParsePluginArchive(fileName);
+                Result<PluginArchive> parseResult = ParsePluginArchive(fileName);
 
-                if (parseResult.ResultCode != OperationResultCode.Failure)
+                if (parseResult.ResultCode != ResultCode.Failure)
                 {
-                    parseResult.Result.SetFileName(System.IO.Path.GetFileName(fileName));
-                    retVal.ValidArchives.Add(parseResult.Result);
+                    parseResult.ReturnValue.SetFileName(System.IO.Path.GetFileName(fileName));
+                    retVal.ValidArchives.Add(parseResult.ReturnValue);
                 }
                 else
                     retVal.InvalidArchives.Add(new InvalidPluginArchive(System.IO.Path.GetFileName(fileName), parseResult.LastErrorMessage()));
@@ -492,7 +493,7 @@ namespace Symbiote.Core.Plugin
             logger.Info("Reloading Plugin Archives...");
             PluginArchiveLoadResult retVal = LoadPluginArchives();
 
-            if (retVal.ResultCode != OperationResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 PluginArchives = retVal.ValidArchives;
                 InvalidPluginArchives = retVal.InvalidArchives;
@@ -507,8 +508,8 @@ namespace Symbiote.Core.Plugin
         /// Parses a Plugin Archive file into a PluginArchive object and validates it using default parameters.
         /// </summary>
         /// <param name="fileName">The Plugin Archive file to parse.</param>
-        /// <returns>An OperationResult containing the result of the operation and the parsed PluginArchive.</returns>
-        private OperationResult<PluginArchive> ParsePluginArchive(string fileName)
+        /// <returns>An Result containing the result of the operation and the parsed PluginArchive.</returns>
+        private Result<PluginArchive> ParsePluginArchive(string fileName)
         {
             return ParsePluginArchive(fileName, GetPluginArchiveConfigurationFileName(), GetPluginArchivePayloadFileName(), manager.Platform);
         }
@@ -520,43 +521,43 @@ namespace Symbiote.Core.Plugin
         /// <param name="configFileName">The name of the Plugin config file expected to be found within the archive.</param>
         /// <param name="payloadFileName">The name of the file containing the Plugin files expected to be found within the archive.</param>
         /// <param name="platform">The IPlatform instance to use to carry out the parse.</param>
-        /// <returns>An OperationResult containing the result of the operation and the parsed PluginArchive.</returns>
-        private OperationResult<PluginArchive> ParsePluginArchive(string fileName, string configFileName, string payloadFileName, IPlatform platform)
+        /// <returns>An Result containing the result of the operation and the parsed PluginArchive.</returns>
+        private Result<PluginArchive> ParsePluginArchive(string fileName, string configFileName, string payloadFileName, IPlatform platform)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(fileName, configFileName, payloadFileName, platform), true);
 
             logger.Trace("Parsing Plugin Archive '" + fileName + "'...");
 
-            OperationResult<PluginArchive> retVal = new OperationResult<PluginArchive>();
-            retVal.Result = new PluginArchive(fileName);
+            Result<PluginArchive> retVal = new Result<PluginArchive>();
+            retVal.ReturnValue = new PluginArchive(fileName);
 
 
             //------  -          ------------ - 
             // retrieve the contents of the configuration file and deserialize it to an instance of Plugin
             logger.Trace("Retrieving the configuration file...");
-            OperationResult<List<string>> zipFileListResult = platform.ListZipFiles(fileName, configFileName);
-            if (zipFileListResult.ResultCode != OperationResultCode.Failure)
+            Result<List<string>> zipFileListResult = platform.ListZipFiles(fileName, configFileName);
+            if (zipFileListResult.ResultCode != ResultCode.Failure)
             {
                 // ensure that a file named configFileName exists within the archive
-                string foundConfigFile = zipFileListResult.Result.FirstOrDefault();
+                string foundConfigFile = zipFileListResult.ReturnValue.FirstOrDefault();
                 if (foundConfigFile != default(string))
                 {
                     logger.Trace("Configuration file found.  Extracting it from the archive...");
 
                     // extract the config file to the temp directory
-                    OperationResult<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, manager.Directories.Temp);
-                    if (extractConfigFileResult.ResultCode != OperationResultCode.Failure)
+                    Result<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, manager.Directories.Temp);
+                    if (extractConfigFileResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("File extracted successfully.  Attempting to read contents...");
                         // read the contents of the file
-                        OperationResult<string> readConfigFileResult = platform.ReadFile(extractConfigFileResult.Result);
-                        if (readConfigFileResult.ResultCode != OperationResultCode.Failure)
+                        Result<string> readConfigFileResult = platform.ReadFile(extractConfigFileResult.ReturnValue);
+                        if (readConfigFileResult.ResultCode != ResultCode.Failure)
                         {
-                            // the contents of the config file are in readConfigFileResult.Result.  try to deserialize it..
+                            // the contents of the config file are in readConfigFileResult.ReturnValue.  try to deserialize it..
                             try
                             {
                                 logger.Trace("File contents read.  Attempting to deserialize...");
-                                retVal.Result.SetPlugin(Newtonsoft.Json.JsonConvert.DeserializeObject<Plugin>(readConfigFileResult.Result));
+                                retVal.ReturnValue.SetPlugin(Newtonsoft.Json.JsonConvert.DeserializeObject<Plugin>(readConfigFileResult.ReturnValue));
                             }
                             catch (Exception ex)
                             {
@@ -582,13 +583,13 @@ namespace Symbiote.Core.Plugin
 
 
             // if we've encountered any errors, bail out.
-            if (retVal.ResultCode == OperationResultCode.Failure)
+            if (retVal.ResultCode == ResultCode.Failure)
             {
                 logger.ExitMethod(retVal, guid);
                 return retVal;
             }
 
-            logger.Checkpoint("Retrieved configuration file", xLogger.Vars(retVal.Result.Plugin), xLogger.Names("Plugin"), guid);
+            logger.Checkpoint("Retrieved configuration file", xLogger.Vars(retVal.ReturnValue.Plugin), xLogger.Names("Plugin"), guid);
 
             // create a place to stash the payload checksum
             string payloadChecksum = "";
@@ -597,39 +598,39 @@ namespace Symbiote.Core.Plugin
             //------------- -------------- - 
             // ensure the plugin contains the Plugin.zip file and calculate its checksum
             logger.Trace("Looking for the Plugin payload file...");
-            OperationResult<List<string>> zipPayloadCheckResult = platform.ListZipFiles(fileName, payloadFileName);
-            if (zipPayloadCheckResult.ResultCode != OperationResultCode.Failure)
+            Result<List<string>> zipPayloadCheckResult = platform.ListZipFiles(fileName, payloadFileName);
+            if (zipPayloadCheckResult.ResultCode != ResultCode.Failure)
             {
                 // ensure that the payload file exists within the zip
-                string foundPayloadFile = zipPayloadCheckResult.Result.FirstOrDefault();
+                string foundPayloadFile = zipPayloadCheckResult.ReturnValue.FirstOrDefault();
                 if (foundPayloadFile != default(string))
                 {
                     logger.Trace("Payload file found.  Attempting to extract...");
 
                     // extract the file to the temp directory
-                    OperationResult<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, manager.Directories.Temp);
-                    if (extractPayloadResult.ResultCode != OperationResultCode.Failure)
+                    Result<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, manager.Directories.Temp);
+                    if (extractPayloadResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("Payload file extracted.  Attempting to calculate checksum...");
 
                         // compute the checksum of the file
-                        OperationResult<string> payloadChecksumResult = platform.ComputeFileChecksum(extractPayloadResult.Result);
-                        if (payloadChecksumResult.ResultCode != OperationResultCode.Failure)
+                        Result<string> payloadChecksumResult = platform.ComputeFileChecksum(extractPayloadResult.ReturnValue);
+                        if (payloadChecksumResult.ResultCode != ResultCode.Failure)
                         {
-                            logger.Trace("Payload checksum: " + payloadChecksumResult.Result);
-                            payloadChecksum = payloadChecksumResult.Result;
+                            logger.Trace("Payload checksum: " + payloadChecksumResult.ReturnValue);
+                            payloadChecksum = payloadChecksumResult.ReturnValue;
                         }
                         else retVal.AddError("Failed to compute the checksum of the payload: " + payloadChecksumResult.LastErrorMessage());
 
                         // if the plugin archive contains a Connector or Endpoint, make sure the zip file contains a .dll with the proper name.
-                        if ((retVal.Result.Plugin.PluginType == PluginType.Connector) || (retVal.Result.Plugin.PluginType == PluginType.Connector))
+                        if ((retVal.ReturnValue.Plugin.PluginType == PluginType.Connector) || (retVal.ReturnValue.Plugin.PluginType == PluginType.Connector))
                         {
                             logger.Trace("The Plugin contains a binary.  Make sure it exists...");
 
-                            OperationResult<List<string>> zipFileDllResult = platform.ListZipFiles(extractPayloadResult.Result, "*.dll");
-                            if (zipFileDllResult.ResultCode != OperationResultCode.Failure)
-                                if (zipFileDllResult.Result.Where(d => d == retVal.Result.Plugin.FQN + ".dll").FirstOrDefault() == default(string))
-                                    retVal.AddError("The archive does not contain a dll with the expected name (" + retVal.Result.Plugin.FQN + ".dll)");
+                            Result<List<string>> zipFileDllResult = platform.ListZipFiles(extractPayloadResult.ReturnValue, "*.dll");
+                            if (zipFileDllResult.ResultCode != ResultCode.Failure)
+                                if (zipFileDllResult.ReturnValue.Where(d => d == retVal.ReturnValue.Plugin.FQN + ".dll").FirstOrDefault() == default(string))
+                                    retVal.AddError("The archive does not contain a dll with the expected name (" + retVal.ReturnValue.Plugin.FQN + ".dll)");
 
                             retVal.Incorporate(zipFileDllResult);
                         }
@@ -650,7 +651,7 @@ namespace Symbiote.Core.Plugin
 
 
             // if we've encountered any errors up to this point, bail out.
-            if (retVal.ResultCode == OperationResultCode.Failure)
+            if (retVal.ResultCode == ResultCode.Failure)
             {
                 logger.ExitMethod(retVal, guid);
                 return retVal;
@@ -662,7 +663,7 @@ namespace Symbiote.Core.Plugin
             //--------------------- - -          -
             // validate the deserialized Plugin.
             logger.Trace("Validating Plugin contents...");
-            Plugin p = retVal.Result.Plugin;
+            Plugin p = retVal.ReturnValue.Plugin;
 
             if (p.FQN != System.IO.Path.GetFileNameWithoutExtension(fileName)) retVal.AddError("The filename doesn't match the FQN of the plugin.");
 
@@ -700,8 +701,8 @@ namespace Symbiote.Core.Plugin
         /// Asynchronously installs the Plugin contained within the supplied PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
-        /// <returns>An OperationResult containing the result of the operation and the installed Plugin.</returns>
-        public async Task<OperationResult<Plugin>> InstallPluginAsync(PluginArchive archive)
+        /// <returns>An Result containing the result of the operation and the installed Plugin.</returns>
+        public async Task<Result<Plugin>> InstallPluginAsync(PluginArchive archive)
         {
             return await Task.Run(() => InstallPlugin(archive));
         }
@@ -711,8 +712,8 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <param name="updatePlugin">When true, bypasses checks that prevent</param>
-        /// <returns>An OperationResult containing the result of the operation and the installed Plugin.</returns>
-        public OperationResult<Plugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false)
+        /// <returns>An Result containing the result of the operation and the installed Plugin.</returns>
+        public Result<Plugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false)
         {
             return InstallPlugin(archive, Plugins, manager.Platform, updatePlugin);
         }
@@ -729,13 +730,13 @@ namespace Symbiote.Core.Plugin
         /// <param name="plugins">The List of type Plugin to which the installed Plugin should be added.</param>
         /// <param name="platform">The IPlatform instance with which the archive should be extracted.</param>
         /// <param name="updatePlugin">When true, bypasses checks that prevent duplicate installations.</param>
-        /// <returns>An OperationResult containing the result of the operation and the created Plugin instance.</returns>
-        private OperationResult<Plugin> InstallPlugin(PluginArchive archive, List<Plugin> plugins, IPlatform platform, bool updatePlugin = false)
+        /// <returns>An Result containing the result of the operation and the created Plugin instance.</returns>
+        private Result<Plugin> InstallPlugin(PluginArchive archive, List<Plugin> plugins, IPlatform platform, bool updatePlugin = false)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(archive, new xLogger.ExcludedParam(), new xLogger.ExcludedParam(), updatePlugin), true);
 
             logger.Info("Installing Plugin '" + archive.Plugin.FQN + "' from archive '" + System.IO.Path.GetFileName(archive.FileName) + "'...");
-            OperationResult<Plugin> retVal = new OperationResult<Plugin>();
+            Result<Plugin> retVal = new Result<Plugin>();
 
             string fullFileName = System.IO.Path.Combine(manager.Directories.Archives, archive.FileName);
 
@@ -760,7 +761,7 @@ namespace Symbiote.Core.Plugin
 
             // if we've encountered an error, either the plugin is installed and the updatePlugin flag wasn't true, or it was true
             // and the old and new plugins are mismatched.
-            if (retVal.ResultCode == OperationResultCode.Failure)
+            if (retVal.ResultCode == ResultCode.Failure)
             {
                 retVal.LogResult(logger);
                 logger.ExitMethod(retVal, guid);
@@ -772,17 +773,17 @@ namespace Symbiote.Core.Plugin
             //--------------------- - -------------------- - 
             // re-validate the file; it may have changed between the time it was loaded and when installation was requested.
             logger.Debug("Re-parsing the archive to ensure that it hasn't changed since it was loaded.");
-            OperationResult<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(manager.Directories.Archives, archive.FileName));
-            if (parseResult.ResultCode != OperationResultCode.Failure)
+            Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(manager.Directories.Archives, archive.FileName));
+            if (parseResult.ResultCode != ResultCode.Failure)
             {
-                if (!parseResult.Result.Plugin.Equals(archive.Plugin))
+                if (!parseResult.ReturnValue.Plugin.Equals(archive.Plugin))
                     retVal.AddError("The archive '" + System.IO.Path.GetFileName(archive.FileName) + "' has changed since it was loaded.  Refresh Plugin Archives and try again.");
             }
 
             retVal.Incorporate(parseResult);
 
             // exit if we encountered an error
-            if (retVal.ResultCode == OperationResultCode.Failure)
+            if (retVal.ResultCode == ResultCode.Failure)
             {
                 retVal.LogResult(logger);
                 logger.ExitMethod(retVal, guid);
@@ -818,8 +819,8 @@ namespace Symbiote.Core.Plugin
             // extract the archive; first to the temp directory, then extract the payload to the plugin destination and copy the configuration file
             logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(manager.Directories.Root, "") + "'...");
 
-            OperationResult extractResult;
-            OperationResult payloadExtractResult;
+            Result extractResult;
+            Result payloadExtractResult;
 
             // lock the file system and InstalledPlugins manipulation to ensure thread safety
             lock (installationLock)
@@ -827,7 +828,7 @@ namespace Symbiote.Core.Plugin
                 // extract the archive to the temp directory
                 logger.Debug("Extracting the archive to the temp directory...");
                 extractResult = platform.ExtractZip(fullFileName, tempDestination, true);
-                if (extractResult.ResultCode != OperationResultCode.Failure)
+                if (extractResult.ResultCode != ResultCode.Failure)
                 {
                     // ensure the payload archive was extracted properly
                     logger.Debug("Checking to ensure the payload file was extracted...");
@@ -837,7 +838,7 @@ namespace Symbiote.Core.Plugin
                         // extract the payload archive to the plugin destination
                         logger.Debug("Extracting the payload file to the Plugin destination...");
                         payloadExtractResult = platform.ExtractZip(System.IO.Path.Combine(tempDestination, GetPluginArchivePayloadFileName()), destination, true);
-                        if (payloadExtractResult.ResultCode != OperationResultCode.Failure)
+                        if (payloadExtractResult.ResultCode != ResultCode.Failure)
                         {
                             logger.Debug("Payload extracted successfully.");
 
@@ -848,26 +849,26 @@ namespace Symbiote.Core.Plugin
                                 // locate the plugin assembly among the extracted files.
                                 // a valid assembly is named 'FQN.dll' where FQN is the FQN of the plugin 
                                 logger.Debug("Attempting to locate the extracted assembly...");
-                                OperationResult<List<string>> findDllResult = platform.ListFiles(destination, "*.dll");
-                                if (findDllResult.ResultCode != OperationResultCode.Failure)
+                                Result<List<string>> findDllResult = platform.ListFiles(destination, "*.dll");
+                                if (findDllResult.ResultCode != ResultCode.Failure)
                                 {
                                     logger.Debug("Trying to fetch '" + archive.Plugin.FQN + ".dll' from the list of files...");
-                                    string dllFile = findDllResult.Result.Where(f => System.IO.Path.GetFileName(f) == archive.Plugin.FQN + ".dll").FirstOrDefault();
+                                    string dllFile = findDllResult.ReturnValue.Where(f => System.IO.Path.GetFileName(f) == archive.Plugin.FQN + ".dll").FirstOrDefault();
 
                                     if (dllFile != default(string))
                                     {
                                         // the plugin assembly was found.  calculate the fingerprint.
                                         logger.Debug("Assembly found.  Calculating checksum for the Plugin fingerprint...");
-                                        OperationResult<string> checksumResult = platform.ComputeFileChecksum(dllFile);
-                                        if (checksumResult.ResultCode != OperationResultCode.Failure)
+                                        Result<string> checksumResult = platform.ComputeFileChecksum(dllFile);
+                                        if (checksumResult.ResultCode != ResultCode.Failure)
                                         {
-                                            logger.Trace("Checksum: " + checksumResult.Result);
+                                            logger.Trace("Checksum: " + checksumResult.ReturnValue);
 
                                             // create the fingerprint.
                                             // hash the SHA256 of the dll with the FQN and version of the plugin
                                             // because we've already passed the more rigorous check using the FingerprintValidator, we only need to save
                                             // the hash of the file that came from the zip to ensure it is not tampered with.
-                                            string hash = Utility.ComputeHash(archive.Plugin.FQN + archive.Plugin.Version + checksumResult.Result);
+                                            string hash = Utility.ComputeHash(archive.Plugin.FQN + archive.Plugin.Version + checksumResult.ReturnValue);
                                             logger.Trace("Hash: " + hash);
 
                                             // set the fingerprint
@@ -875,8 +876,8 @@ namespace Symbiote.Core.Plugin
 
                                             // add the plugin to the list of installed plugins
                                             logger.Debug("Adding the installed Plugin to the InstalledPlugin list...");
-                                            retVal.Result = archive.Plugin;
-                                            plugins.Add(retVal.Result);
+                                            retVal.ReturnValue = archive.Plugin;
+                                            plugins.Add(retVal.ReturnValue);
                                         }
                                     }
                                     else
@@ -918,8 +919,8 @@ namespace Symbiote.Core.Plugin
         /// PluginManagerConfiguration.
         /// </summary>
         /// <param name="plugin">The Plugin to uninstall.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public async Task<OperationResult> UninstallPluginAsync(Plugin plugin)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public async Task<Result> UninstallPluginAsync(Plugin plugin)
         {
             return await Task.Run(() => UninstallPlugin(plugin));
         }
@@ -929,8 +930,8 @@ namespace Symbiote.Core.Plugin
         /// PluginManagerConfiguration.
         /// </summary>
         /// <param name="plugin">The Plugin to uninstall.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult UninstallPlugin(Plugin plugin)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result UninstallPlugin(Plugin plugin)
         {
             return UninstallPlugin(plugin, Plugins, manager.Platform);
         }
@@ -942,17 +943,17 @@ namespace Symbiote.Core.Plugin
         /// <param name="plugin">The Plugin to uninstall.</param>
         /// <param name="plugins">The List of type Plugin from which the Plugin is to be removed.</param>
         /// <param name="platform">The IPlatform instance with which the directory should be deleted.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        private OperationResult UninstallPlugin(Plugin plugin, List<Plugin> plugins, IPlatform platform)
+        /// <returns>An Result containing the result of the operation.</returns>
+        private Result UninstallPlugin(Plugin plugin, List<Plugin> plugins, IPlatform platform)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Checkpoint(xLogger.Vars(plugin), xLogger.Names("plugin"), guid);
 
             if (plugin == default(Plugin))
-                return new OperationResult().AddError("The specified Plugin is invalid.");
+                return new Result().AddError("The specified Plugin is invalid.");
 
             logger.Info("Uninstalling Plugin '" + plugin.FQN + "'...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
             
             Plugin foundPlugin = FindPlugin(plugin.FQN);
             // ensure the plugin is installed
@@ -967,8 +968,8 @@ namespace Symbiote.Core.Plugin
                     lock (installationLock)
                     {
                         // delete the plugin directory
-                        OperationResult deleteResult = platform.DeleteDirectory(pluginDirectory);
-                        if (deleteResult.ResultCode != OperationResultCode.Failure)
+                        Result deleteResult = platform.DeleteDirectory(pluginDirectory);
+                        if (deleteResult.ResultCode != ResultCode.Failure)
                         {
                             logger.Debug("Removing Plugin from PluginManager configuration...");
                             plugins.Remove(plugin);
@@ -995,8 +996,8 @@ namespace Symbiote.Core.Plugin
         /// Asynchronously reinstalls the specified Plugin by uninstalling, then installing from the original archive.
         /// </summary>
         /// <param name="plugin">The Plugin to reinstall.</param>
-        /// <returns>An OperationResult containing the result of hte operation.</returns>
-        public async Task<OperationResult> ReinstallPluginAsync(Plugin plugin)
+        /// <returns>An Result containing the result of hte operation.</returns>
+        public async Task<Result> ReinstallPluginAsync(Plugin plugin)
         {
             return await Task.Run(() => ReinstallPlugin(plugin));
         }
@@ -1005,13 +1006,13 @@ namespace Symbiote.Core.Plugin
         /// Reinstalls the specified Plugin by uninstalling, then installing from the original archive.
         /// </summary>
         /// <param name="plugin">The Plugin to reinstall.</param>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult ReinstallPlugin(Plugin plugin)
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result ReinstallPlugin(Plugin plugin)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(plugin), true);
 
             logger.Info("Reinstalling Plugin '" + plugin.FQN + "'...");
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             logger.Debug("Attempting to locate the Plugin Archive for the supplied Plugin...");
             PluginArchive foundArchive = PluginArchives.Where(p => p.Plugin.FQN == plugin.FQN).FirstOrDefault();
@@ -1023,7 +1024,7 @@ namespace Symbiote.Core.Plugin
                 retVal.Incorporate(UninstallPlugin(plugin));
 
                 logger.Debug("Reinstalling the Plugin...");
-                if (retVal.ResultCode != OperationResultCode.Failure)
+                if (retVal.ResultCode != ResultCode.Failure)
                     retVal.Incorporate(InstallPlugin(foundArchive));
             }
 
@@ -1036,8 +1037,8 @@ namespace Symbiote.Core.Plugin
         /// Asynchronously Updates the Plugin contained within the specified PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
-        /// <returns>An OperationResult containing the result of the operation and the updated Plugin.</returns>
-        public async Task<OperationResult<Plugin>> UpdatePluginAsync(PluginArchive archive)
+        /// <returns>An Result containing the result of the operation and the updated Plugin.</returns>
+        public async Task<Result<Plugin>> UpdatePluginAsync(PluginArchive archive)
         {
             return await Task.Run(() => UpdatePlugin(archive));
         }
@@ -1046,8 +1047,8 @@ namespace Symbiote.Core.Plugin
         /// Updates the Plugin contained withing the specified PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
-        /// <returns>An OperationResult containing the result of the operation and the updated Plugin.</returns>
-        public OperationResult<Plugin> UpdatePlugin(PluginArchive archive)
+        /// <returns>An Result containing the result of the operation and the updated Plugin.</returns>
+        public Result<Plugin> UpdatePlugin(PluginArchive archive)
         {
             return InstallPlugin(archive, true);
         }
@@ -1085,8 +1086,8 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Loads the Plugin Assemblies specified in the InstalledPlugins list of the Plugin Manager configuration.
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
-        private OperationResult<List<PluginAssembly>> LoadPluginAssemblies()
+        /// <returns>An Result containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
+        private Result<List<PluginAssembly>> LoadPluginAssemblies()
         {
             return LoadPluginAssemblies(Plugins);
         }
@@ -1095,14 +1096,14 @@ namespace Symbiote.Core.Plugin
         /// Loads the Plugin Assemblies specified in the supplied list of Plugins using the supplied IPlatform instance.
         /// </summary>
         /// <param name="plugins">The list of Plugins from which the Plugin Assemblies should be loaded.</param>
-        /// <returns>An OperationResult containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
-        private OperationResult<List<PluginAssembly>> LoadPluginAssemblies(List<Plugin> plugins)
+        /// <returns>An Result containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
+        private Result<List<PluginAssembly>> LoadPluginAssemblies(List<Plugin> plugins)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(plugins), true);
             logger.Info("Loading Plugin Assemblies...");
 
-            OperationResult<List<PluginAssembly>> retVal = new OperationResult<List<PluginAssembly>>();
-            retVal.Result = new List<PluginAssembly>();
+            Result<List<PluginAssembly>> retVal = new Result<List<PluginAssembly>>();
+            retVal.ReturnValue = new List<PluginAssembly>();
 
             // discard any plugins that aren't loadable (e.g. apps)
             plugins = plugins.Where(p => IsPluginLoadable(p)).ToList();
@@ -1117,12 +1118,12 @@ namespace Symbiote.Core.Plugin
                 logger.SubSubHeading(LogLevel.Trace, "Assembly: .." + String.Join(".", System.IO.Path.GetFileName(assemblyFileName).Split('.').TakeLast(3).ToArray()));
 
                 // load the assembly
-                OperationResult<PluginAssembly> loadResult = LoadPluginAssembly(plugin);
+                Result<PluginAssembly> loadResult = LoadPluginAssembly(plugin);
 
-                if (loadResult.ResultCode != OperationResultCode.Failure)
+                if (loadResult.ResultCode != ResultCode.Failure)
                 {
-                    logger.Debug("Successfully loaded Plugin Assembly '" + loadResult.Result.Assembly.FullName + "'.");
-                    retVal.Result.Add(loadResult.Result);
+                    logger.Debug("Successfully loaded Plugin Assembly '" + loadResult.ReturnValue.Assembly.FullName + "'.");
+                    retVal.ReturnValue.Add(loadResult.ReturnValue);
                 }
                 else
                 {
@@ -1142,8 +1143,8 @@ namespace Symbiote.Core.Plugin
         /// Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the PluginAssemblies list.
         /// </summary>
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
-        /// <returns>An OperationResult containing the result of the operation and the newly created PluginAssembly instance.</returns>
-        public OperationResult<PluginAssembly> LoadPluginAssembly(Plugin plugin)
+        /// <returns>An Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
+        public Result<PluginAssembly> LoadPluginAssembly(Plugin plugin)
         {
             return LoadPluginAssembly(plugin, PluginAssemblies);
         }
@@ -1153,13 +1154,13 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
         /// <param name="pluginAssemblies">The list of type PluginAssembly to which the new instance should be added.</param>
-        /// <returns>An OperationResult containing the result of the operation and the newly created PluginAssembly instance.</returns>
-        private OperationResult<PluginAssembly> LoadPluginAssembly(Plugin plugin, List<PluginAssembly> pluginAssemblies)
+        /// <returns>An Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
+        private Result<PluginAssembly> LoadPluginAssembly(Plugin plugin, List<PluginAssembly> pluginAssemblies)
         {
             logger.EnterMethod(xLogger.Params(plugin, new xLogger.ExcludedParam()));
             logger.Info("Loading Plugin Assembly for Plugin '" + plugin.FQN + "'...");
 
-            OperationResult<PluginAssembly> retVal = new OperationResult<PluginAssembly>();
+            Result<PluginAssembly> retVal = new Result<PluginAssembly>();
             Assembly assembly;
 
             if (pluginAssemblies.Exists(p => p.FQN == plugin.FQN))
@@ -1173,10 +1174,10 @@ namespace Symbiote.Core.Plugin
             {
                 //------------------ - -    -  --------------------- - 
                 // validate the assembly fingerprint
-                OperationResult<string> checksumResult = manager.Platform.ComputeFileChecksum(assemblyFileName);
-                if (checksumResult.ResultCode != OperationResultCode.Failure)
+                Result<string> checksumResult = manager.Platform.ComputeFileChecksum(assemblyFileName);
+                if (checksumResult.ResultCode != ResultCode.Failure)
                 {
-                    string computedFingerprint = Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.Result);
+                    string computedFingerprint = Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.ReturnValue);
 
                     computedFingerprint = plugin.Fingerprint;
 
@@ -1204,12 +1205,12 @@ namespace Symbiote.Core.Plugin
 
                 //------------- - -------------
                 // validate the assembly
-                OperationResult<Type> validationResult = ValidatePluginAssembly(assembly);
+                Result<Type> validationResult = ValidatePluginAssembly(assembly);
 
-                if (validationResult.ResultCode == OperationResultCode.Failure)
+                if (validationResult.ResultCode == ResultCode.Failure)
                     throw new Exception("Error validating plugin assembly: " + validationResult.LastErrorMessage());
                 else
-                    logger.Trace("Plugin type '" + validationResult.Result.Name + "' was found in assembly '" + assembly.GetName().Name);
+                    logger.Trace("Plugin type '" + validationResult.ReturnValue.Name + "' was found in assembly '" + assembly.GetName().Name);
 
                 logger.Checkpoint("Assembly validated");
                 //-------------- - -    - - - - - -
@@ -1217,13 +1218,13 @@ namespace Symbiote.Core.Plugin
 
                 //------------ - -    --  
                 // create a new PluginAssembly instance
-                retVal.Result = new PluginAssembly(
+                retVal.ReturnValue = new PluginAssembly(
                                                     assembly.GetName().Name.Split('.').TakeLast(1).FirstOrDefault(),
                                                     assembly.GetName().Name,
                                                     assembly.GetName().Version.ToString(),
                                                     GetPluginType(assembly.GetName().Name),
                                                     "",
-                                                    validationResult.Result,
+                                                    validationResult.ReturnValue,
                                                     assembly
                                                 );
                 //-------------- - ---------------
@@ -1232,8 +1233,8 @@ namespace Symbiote.Core.Plugin
                 //- -  ---------------- -
                 // register the plugin type
                 // as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
-                OperationResult registerResult = manager.ConfigurationManager.RegisterType(validationResult.Result);
-                if (registerResult.ResultCode == OperationResultCode.Failure)
+                Result registerResult = manager.ConfigurationManager.RegisterType(validationResult.ReturnValue);
+                if (registerResult.ResultCode == ResultCode.Failure)
                     throw new Exception("Failed to register the assembly type with the Configuration Manager.");
                 //----- -
             }
@@ -1257,8 +1258,8 @@ namespace Symbiote.Core.Plugin
 
 
             // if the assembly loaded without errors, add it to the list of loaded assemblies.
-            if (retVal.ResultCode != OperationResultCode.Failure)
-                pluginAssemblies.Add(retVal.Result);
+            if (retVal.ResultCode != ResultCode.Failure)
+                pluginAssemblies.Add(retVal.ReturnValue);
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -1299,8 +1300,8 @@ namespace Symbiote.Core.Plugin
         /// Iterates over the configured list of Plugin Instances, retreives the matching PluginAssembly from the list of 
         /// loaded PluginAssemblies and instantiates each instance
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
-        private OperationResult<Dictionary<string, IPluginInstance>> InstantiatePlugins()
+        /// <returns>An Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
+        private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins()
         {
             return InstantiatePlugins(Configuration.Instances, PluginAssemblies);
         }
@@ -1311,14 +1312,14 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="configuredInstances">The List of type PluginManagerConfigurationPluginInstance containing the list of Plugin instances to create.</param>
         /// <param name="assemblies">The List of type PluginAssembly containing the assemblies to which the supplied instances should be matched</param>
-        /// <returns>An OperationResult containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
-        private OperationResult<Dictionary<string, IPluginInstance>> InstantiatePlugins(List<PluginManagerConfigurationPluginInstance> configuredInstances, List<PluginAssembly> assemblies)
+        /// <returns>An Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
+        private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins(List<PluginManagerConfigurationPluginInstance> configuredInstances, List<PluginAssembly> assemblies)
         {
             logger.EnterMethod(xLogger.Params(configuredInstances, assemblies));
             logger.Info("Creating Plugin Instances...");
 
-            OperationResult<Dictionary<string, IPluginInstance>> retVal = new OperationResult<Dictionary<string, IPluginInstance>>();
-            retVal.Result = new Dictionary<string, IPluginInstance>();
+            Result<Dictionary<string, IPluginInstance>> retVal = new Result<Dictionary<string, IPluginInstance>>();
+            retVal.ReturnValue = new Dictionary<string, IPluginInstance>();
 
             // iterate over the configured plugin instances from the configuration
             foreach (PluginManagerConfigurationPluginInstance instance in configuredInstances)
@@ -1333,12 +1334,12 @@ namespace Symbiote.Core.Plugin
                 {
                     // invoke the CreatePluginInstance method
                     MethodInfo method = this.GetType().GetMethod("CreatePluginInstance").MakeGenericMethod(assembly.Type);
-                    OperationResult<IPluginInstance> invokeResult = (OperationResult<IPluginInstance>)method.Invoke(this, new object[] { instance.InstanceName });
+                    Result<IPluginInstance> invokeResult = (Result<IPluginInstance>)method.Invoke(this, new object[] { instance.InstanceName });
 
                     // if the invocation succeeded, add the result to the Instances Dictionary
-                    if (invokeResult.ResultCode == OperationResultCode.Success)
+                    if (invokeResult.ResultCode == ResultCode.Success)
                     {
-                        retVal.Result.Add(instance.InstanceName, invokeResult.Result);
+                        retVal.ReturnValue.Add(instance.InstanceName, invokeResult.ReturnValue);
                         logger.Info("Instantiated " + assembly.PluginType.ToString() + " plugin '" + instance.InstanceName + "'.");
                     }
 
@@ -1362,12 +1363,12 @@ namespace Symbiote.Core.Plugin
         /// </remarks>
         /// <param name="instanceName">The desired internal name of the instance</param>
         /// <returns></returns>
-        public OperationResult<IPluginInstance> CreatePluginInstance<T>(string instanceName)
+        public Result<IPluginInstance> CreatePluginInstance<T>(string instanceName)
         {
             logger.EnterMethod(xLogger.Params(instanceName));
             logger.Debug("Creating plugin instance '" + instanceName + "' of Type '" + typeof(T).Name + "'...");
 
-            OperationResult<IPluginInstance> retVal = new OperationResult<IPluginInstance>();
+            Result<IPluginInstance> retVal = new Result<IPluginInstance>();
 
             try
             {
@@ -1375,7 +1376,7 @@ namespace Symbiote.Core.Plugin
                 if (FindPluginInstance(instanceName) == default(IPluginInstance))
                 {
                     logger.Trace("Creating instance of plugin type '" + typeof(T).ToString() + "' with instance name '" + instanceName + "'");
-                    retVal.Result = (IPluginInstance)Activator.CreateInstance(typeof(T), instanceName);
+                    retVal.ReturnValue = (IPluginInstance)Activator.CreateInstance(typeof(T), instanceName);
                     return retVal;
                 }
                 else
@@ -1488,12 +1489,12 @@ namespace Symbiote.Core.Plugin
         /// The third tuple may match any enumerated value in PluginType.
         /// </remarks>
         /// <param name="assemblyName">The AssemblyName to be validated.</param>
-        private static OperationResult ValidatePluginAssemblyName(AssemblyName assemblyName)
+        private static Result ValidatePluginAssemblyName(AssemblyName assemblyName)
         {
             logger.EnterMethod(xLogger.Params(assemblyName));
             logger.Debug("Validating assembly name for '" + assemblyName.FullName + "'...");
 
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
 
             string[] name = assemblyName.Name.Split('.');
 
@@ -1515,19 +1516,19 @@ namespace Symbiote.Core.Plugin
         /// Determines whether the supplied assembly is a valid plugin, and if so, returns the plugin type.
         /// </summary>
         /// <param name="assembly">The assembly to validate.</param>
-        /// <returns>An OperationResult containing the result of the operation and, if successful, the plugin type.</returns>
-        private static OperationResult<Type> ValidatePluginAssembly(Assembly assembly)
+        /// <returns>An Result containing the result of the operation and, if successful, the plugin type.</returns>
+        private static Result<Type> ValidatePluginAssembly(Assembly assembly)
         {
             logger.EnterMethod(xLogger.Params(assembly));
             logger.Debug("Validating plugin assembly '" + assembly.FullName + "'...");
 
-            OperationResult<Type> retVal = new OperationResult<Type>();
+            Result<Type> retVal = new Result<Type>();
 
             // validate the assembly name
-            OperationResult nameValidationResult = ValidatePluginAssemblyName(assembly.GetName());
+            Result nameValidationResult = ValidatePluginAssemblyName(assembly.GetName());
             retVal.Incorporate(nameValidationResult);
 
-            if (nameValidationResult.ResultCode != OperationResultCode.Failure)
+            if (nameValidationResult.ResultCode != ResultCode.Failure)
             {
                 logger.Trace("Name validated; searching for the type that implements IConfigurable<> and either IConnector or IEndpoint...");
                 // passed name validation, find an implementation of IConfigurable and either IConnector or IEndpoint
@@ -1541,7 +1542,7 @@ namespace Symbiote.Core.Plugin
                         // ensure it implements either IConnector or IEndpoint
                         if ((t.GetInterfaces().Contains(typeof(IConnector))) || (t.GetInterfaces().Contains(typeof(IEndpoint))))
                         {
-                            retVal.Result = t;
+                            retVal.ReturnValue = t;
                             break;
                         }
                         else

@@ -2,6 +2,7 @@
 using System.Reflection;
 using System;
 using Newtonsoft.Json;
+using Symbiote.Core.OperationResult;
 
 namespace Symbiote.Core.Platform
 {
@@ -89,10 +90,10 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Check each of the directories in the internal directory list and ensures that they exist.  
         /// </summary>
-        /// <returns>An OperationResult containing the result of the operation.</returns>
-        public OperationResult CheckDirectories()
+        /// <returns>An Result containing the result of the operation.</returns>
+        public Result CheckDirectories()
         {
-            OperationResult retVal = new OperationResult();
+            Result retVal = new Result();
             IPlatform platform = ProgramManager.Instance().PlatformManager.Platform;
             Dictionary<string, string> directories = ToDictionary();
 
@@ -131,10 +132,10 @@ namespace Symbiote.Core.Platform
         /// an instance of ProgramDirectories with it.
         /// </summary>
         /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
-        /// <returns>An OperationResult containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
-        public static OperationResult<PlatformDirectories> LoadDirectories(string directories)
+        /// <returns>An Result containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
+        public static Result<PlatformDirectories> LoadDirectories(string directories)
         {
-            OperationResult<PlatformDirectories> retVal = new OperationResult<PlatformDirectories>();
+            Result<PlatformDirectories> retVal = new Result<PlatformDirectories>();
 
             if (directories == "")
                 retVal.AddError("The supplied list of directories is empty.");
@@ -144,7 +145,7 @@ namespace Symbiote.Core.Platform
                 {
                     // hapazardly try to set all of the directories from the deserialized config json.  if anything goes wrong
                     // an exception will be thrown and we'll handle it.
-                    retVal.Result = new PlatformDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
+                    retVal.ReturnValue = new PlatformDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
                 }
                 catch (Exception ex)
                 {
