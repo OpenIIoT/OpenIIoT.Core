@@ -1,4 +1,4 @@
-﻿using Symbiote.Core.OperationResult;
+﻿using OperationResult;
 
 namespace Symbiote.Core.Configuration
 {

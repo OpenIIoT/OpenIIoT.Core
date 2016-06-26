@@ -5,7 +5,7 @@ using Symbiote.Core;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin.Connector;
 using System.Linq;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {

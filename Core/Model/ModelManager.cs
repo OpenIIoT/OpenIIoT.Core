@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Symbiote.Core.Configuration;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Model
 {

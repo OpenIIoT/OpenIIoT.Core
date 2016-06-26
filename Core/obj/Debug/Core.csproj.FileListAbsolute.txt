@@ -234,3 +234,4 @@ C:\Users\JP.WHATNET\Google Drive\Projects\Symbiote\Core\bin\Debug\WebActivatorEx
 C:\Users\JP.WHATNET\Google Drive\Projects\Symbiote\Core\obj\Debug\Core.csprojResolveAssemblyReference.cache
 C:\Users\JP.WHATNET\Google Drive\Projects\Symbiote\Core\obj\Debug\Symbiote.Core.ProjectInstaller.resources
 C:\Users\JP.WHATNET\Google Drive\Projects\Symbiote\Core\obj\Debug\Core.csproj.GenerateResource.Cache
+C:\Users\JP.WHATNET\Google Drive\Projects\Symbiote\Core\bin\Debug\OperationResult.dll

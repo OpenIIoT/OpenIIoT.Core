@@ -4,7 +4,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Runtime.CompilerServices;
 using System;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Service.Web
 {

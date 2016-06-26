@@ -1,6 +1,6 @@
 ﻿using System;
 using NLog;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Platform
 {

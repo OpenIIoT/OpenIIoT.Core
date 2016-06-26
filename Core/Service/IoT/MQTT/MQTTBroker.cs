@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Service.IoT.MQTT
 {

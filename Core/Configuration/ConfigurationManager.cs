@@ -4,7 +4,7 @@ using NLog;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Reflection;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Configuration
 {

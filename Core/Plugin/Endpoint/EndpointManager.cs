@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NLog;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Plugin.Endpoint
 {

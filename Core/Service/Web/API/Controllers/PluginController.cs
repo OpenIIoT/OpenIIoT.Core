@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NLog;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 using Symbiote.Core.Plugin;
 using System.Collections.Generic;
 using System.Linq;

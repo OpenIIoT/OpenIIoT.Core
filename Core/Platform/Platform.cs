@@ -8,7 +8,7 @@ using System.Text;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using Symbiote.Core.Plugin.Connector;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Platform
 {

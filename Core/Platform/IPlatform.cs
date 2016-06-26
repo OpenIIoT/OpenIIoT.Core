@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Symbiote.Core.Plugin.Connector;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Platform
 {

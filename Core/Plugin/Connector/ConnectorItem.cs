@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using Symbiote.Core.OperationResult;
+using OperationResult;
 
 namespace Symbiote.Core.Plugin.Connector
 {
