@@ -1,6 +1,4 @@
-﻿using OperationResult;
-
-namespace Symbiote.Core.Configuration
+﻿namespace Symbiote.Core.Configuration
 {
     /// <summary>
     /// Defines the interface for Configurable objects.  When implemented, the implementing class gains the ability to store named instances of type T

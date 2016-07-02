@@ -6,7 +6,6 @@ using Symbiote.Core.Model;
 using Symbiote.Core.Configuration;
 using NLog;
 using Symbiote.Core.Service;
-using OperationResult;
 
 namespace Symbiote.Core
 {

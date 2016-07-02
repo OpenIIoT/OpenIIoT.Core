@@ -1,4 +1,4 @@
-﻿/*
+/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
       █
       █   ▀█████████▄   ▄█     ▄██████▄     ▄████████  ▄██████▄  ███▄▄▄▄       ███         
@@ -51,29 +51,50 @@ namespace Symbiote.Core
     /// <summary>
     /// BigFont transforms strings into large, stylized characters.
     /// </summary>
-    static class BigFont
+    public static class BigFont
     {
         #region Enumerations
-
-        /// <summary>
-        /// Font size enumeration; the integer value indicates the height in lines
-        /// </summary>
-        public enum FontSize
-        {
-            Default,
-            Large = 8,
-            Medium = 6,
-            Small = 4
-        }
 
         /// <summary>
         /// Font type enumeration
         /// </summary>
         public enum Font
         {
+            /// <summary>
+            /// Default font; DefaultFont property will be substituted when used.
+            /// </summary>
             Default,
+            /// <summary>
+            /// Block font.
+            /// </summary>
             Block,
+            /// <summary>
+            /// Graffiti font.
+            /// </summary>
             Graffiti
+        }
+
+        /// <summary>
+        /// Font size enumeration; the integer value indicates the height in lines
+        /// </summary>
+        public enum FontSize
+        {
+            /// <summary>
+            /// Default size; DefaultFontSize property will be substituted when used.
+            /// </summary>
+            Default,
+            /// <summary>
+            /// Large font size (8 lines).
+            /// </summary>
+            Large = 8,
+            /// <summary>
+            /// Medium font size (6 lines).
+            /// </summary>
+            Medium = 6,
+            /// <summary>
+            /// Small font size (4 lines).
+            /// </summary>
+            Small = 4
         }
 
         #endregion

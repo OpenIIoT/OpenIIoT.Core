@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using NLog;
 using Symbiote.Core.Configuration;
-using OperationResult;
 
 namespace Symbiote.Core.Plugin.Connector
 {

@@ -44,7 +44,7 @@ namespace Symbiote.Core.Service.Web.SignalR
             if (hubManager == default(HubHelper))
             {
                 hubManager = new HubHelper(manager, this);
-                RealtimeLogger.Changed += hubManager.OnChange;
+                RealtimeLogger.LogArrived += hubManager.OnChange;
             }
         }
 

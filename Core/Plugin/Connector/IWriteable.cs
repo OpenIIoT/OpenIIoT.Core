@@ -20,8 +20,6 @@
                                                                                                ▀█▄ ██ ▄█▀                       
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
-using OperationResult;
-
 namespace Symbiote.Core.Plugin.Connector
 {
     /// <summary>

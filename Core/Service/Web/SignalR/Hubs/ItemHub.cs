@@ -5,8 +5,6 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
-using OperationResult;
-
 namespace Symbiote.Core.Service.Web.SignalR
 {
     /// <summary>

@@ -4,7 +4,6 @@ using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
-using OperationResult;
 
 namespace Symbiote.Core.Platform.UNIX
 {

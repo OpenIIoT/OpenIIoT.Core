@@ -10,8 +10,6 @@ using System.Web.Http;
 using Newtonsoft.Json;
 using Symbiote.Core.Configuration;
 using System.Web.Http.Services;
-using OperationResult;
-
 namespace Symbiote.Core.Service.Web
 {
     public class WebService : IService, IConfigurable<WebServiceConfiguration>

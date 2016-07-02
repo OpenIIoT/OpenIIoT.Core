@@ -1,7 +1,4 @@
-﻿using OperationResult;
-
-
-namespace Symbiote.Core.Plugin
+﻿namespace Symbiote.Core.Plugin
 {
     /// <summary>
     /// Defines the interface for PluginInstance objects.

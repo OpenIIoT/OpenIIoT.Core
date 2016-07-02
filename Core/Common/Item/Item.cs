@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 using Symbiote.Core.Plugin.Connector;
-using OperationResult;
 
 namespace Symbiote.Core
 {

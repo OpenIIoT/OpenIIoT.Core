@@ -13,8 +13,8 @@
  ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       █ 
-      █  The RealtimeLogger class works in conjunction with the NLog 'MethodCall' logging target to make log messages available 
-      █  to other parts of the application in real time.  
+      █  The RealtimeLogger class works in conjunction with the NLog 'MethodCall' logging target to expose log messages via an event
+      █  in real time.  
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
       █  The MIT License (MIT)
@@ -39,6 +39,10 @@
       █  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
       █  SOFTWARE. 
       █ 
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀     ▀▀▀   
+      █  Dependencies:
+      █     └─ NLog (https://www.nuget.org/packages/NLog/)
+      █ 
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██   
                                                                                                ▀█▄ ██ ▄█▀                       
@@ -52,7 +56,7 @@ namespace Symbiote.Core
 {
     /// <summary>
     /// The RealtimeLogger class acts as a target for the NLog method logging target.  
-    /// Fires the Changed event when new log messages are created by NLog.
+    /// Fires the LogArrived event when new log messages are created by NLog.
     /// </summary>
     public class RealtimeLogger
     {
@@ -109,7 +113,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The Changed event is fired when new log messages are created by NLog.
         /// </summary>
-        public static event EventHandler<RealtimeLoggerEventArgs> Changed;
+        public static event EventHandler<RealtimeLoggerEventArgs> LogArrived;
         
         /// <summary>
         /// This delegate is called when the Changed event fires.
@@ -169,21 +173,21 @@ namespace Symbiote.Core
         /// Called by the NLog method logging target, this method fires the Changed event with the timestamp, level, logger and message
         /// associated with the new log message.
         /// </summary>
-        /// <param name="longdate">The timestamp of the log message in long date format.</param>
+        /// <param name="dateTime">The timestamp of the log message in long date format.</param>
         /// <param name="level">The level of the log message.</param>
         /// <param name="logger">The logger instance that generated the message.</param>
         /// <param name="message">The log message.</param>
-        public static void AppendLog(string longdate, string level, string logger, string message)
+        public static void AppendLog(string dateTime, string level, string logger, string message)
         {
             if (!initialized)
                 Initialize();
 
-            RealtimeLoggerEventArgs eventArgs = new RealtimeLoggerEventArgs(longdate, level, logger, message);
+            RealtimeLoggerEventArgs eventArgs = new RealtimeLoggerEventArgs(dateTime, level, logger, message);
 
             AppendLogHistory(eventArgs);
 
-            if (Changed != null)
-                Changed(default(object), eventArgs);
+            if (LogArrived != null)
+                LogArrived(default(object), eventArgs);
         }
 
         #endregion
@@ -201,7 +205,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The timestamp of the log message.
         /// </summary>
-        public DateTime LongDate { get; private set; }
+        public DateTime DateTime { get; private set; }
 
         /// <summary>
         /// The logging level of the log message.
@@ -225,24 +229,24 @@ namespace Symbiote.Core
         /// <summary>
         /// The default constructor.  Creates a new instance of RealtimeLoggerEventArgs with the supplied parameters.
         /// </summary>
-        /// <param name="longdate">The timestamp of the log message in long date format.</param>
+        /// <param name="dateTime">The timestamp of the log message in long date format.</param>
         /// <param name="level">The level of the log message.</param>
         /// <param name="logger">The logger instance that generated the message.</param>
         /// <param name="message">The log message.</param>
-        public RealtimeLoggerEventArgs(string longdate, string level, string logger, string message)
+        public RealtimeLoggerEventArgs(string dateTime, string level, string logger, string message)
         {
             // set up an empty prefix in case we need to append warnings
             string prefix = "";
 
             // ensure the supplied long date string is a valid DateTime
             // substitute with the current timestamp if parse fails
-            DateTime parsedLongDate;
+            DateTime parsedDateTime;
 
-            if (DateTime.TryParse(longdate, out parsedLongDate))
-                LongDate = parsedLongDate;
+            if (DateTime.TryParse(dateTime, out parsedDateTime))
+                DateTime = parsedDateTime;
             else
             {
-                LongDate = DateTime.Now;
+                DateTime = DateTime.Now;
                 prefix += "[Invalid DateTime; substituted with DateTime.Now]";
             }
 

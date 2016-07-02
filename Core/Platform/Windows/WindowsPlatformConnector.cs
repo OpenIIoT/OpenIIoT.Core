@@ -4,8 +4,6 @@ using Symbiote.Core.Plugin;
 using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
 using Symbiote.Core.Configuration;
-using OperationResult;
-
 namespace Symbiote.Core.Platform.Windows
 {
     public class WindowsPlatformConnector : IConnector

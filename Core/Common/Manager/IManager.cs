@@ -1,6 +1,4 @@
-﻿using OperationResult;
-
-namespace Symbiote.Core
+﻿namespace Symbiote.Core
 {
     /// <summary>
     /// Defines the interface used for the various Managers within the application.

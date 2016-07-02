@@ -1,4 +1,4 @@
-﻿/*
+/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
       █
       █             ▄█        ▄██████▄     ▄██████▄     ▄██████▄     ▄████████    ▄████████  
@@ -81,7 +81,7 @@ namespace Symbiote.Core
     /// private xLogger logger = (xLogger)LogManager.GetLogger("generic logger name", typeof(xLogger));
     /// </code>
     /// </example>
-    class xLogger : Logger
+    public class xLogger : Logger
     {
         #region Variables
 
@@ -519,7 +519,7 @@ namespace Symbiote.Core
             if (!IsEnabled(level)) return;
 
             // get the BigFont for the message
-            string[] heading = BigFont.Generate(message, BigFont.Font.Graffiti, BigFont.FontSize.Large);
+            string[] heading = BigFont.Generate(message, BigFont.FontSize.Large);
 
             // convert the array to a list so we can easily append a line
             List<string> styledHeading = new List<string>(heading);
@@ -548,7 +548,7 @@ namespace Symbiote.Core
         /// </example>
         public void SubHeading(LogLevel level, string message)
         {
-            MultilineWrapped(level, BigFont.Generate(message, BigFont.Font.Graffiti, BigFont.FontSize.Medium));
+            MultilineWrapped(level, BigFont.Generate(message, BigFont.FontSize.Medium));
         }
 
         /// <summary>
@@ -568,7 +568,7 @@ namespace Symbiote.Core
         /// </example>
         public void SubSubHeading(LogLevel level, string message)
         {
-            MultilineWrapped(level, BigFont.Generate(message, BigFont.Font.Block, BigFont.FontSize.Small));
+            MultilineWrapped(level, BigFont.Generate(message, BigFont.FontSize.Small));
         }
 
         #region EnterMethod
