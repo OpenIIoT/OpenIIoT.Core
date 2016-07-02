@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Symbiote.Core.Plugin;
-using Symbiote.Core;
+﻿using Symbiote.Core;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Plugin;
 using Symbiote.Core.Plugin.Connector;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Timers;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
@@ -19,6 +20,16 @@ namespace Symbiote.Plugin.Connector.Simulation
         /// The root node for the item tree.
         /// </summary>
         private ConnectorItem itemRoot;
+
+        /// <summary>
+        /// The main timer.
+        /// </summary>
+        private Timer timer;
+
+        /// <summary>
+        /// The main counter.
+        /// </summary>
+        private int counter;
 
         #endregion
 
@@ -56,7 +67,7 @@ namespace Symbiote.Plugin.Connector.Simulation
         #region ISubscribable Implementation
 
         /// <summary>
-        /// The <see cref="Dictionary{TKey, TValue}"/> containing the current list of subscribed items and the number of subscribers.
+        /// The dictionary containing the current list of subscribed Items and the number of subscribers for each Item..
         /// </summary>
         public Dictionary<ConnectorItem, int> Subscriptions { get; private set; }
 
@@ -68,11 +79,6 @@ namespace Symbiote.Plugin.Connector.Simulation
         public SimulationConnectorConfiguration Configuration { get; private set; }
 
         #endregion
-
-
-
-        private System.Timers.Timer timer;
-        private int counter;
 
         #endregion
 
@@ -102,6 +108,13 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         #region IAddable Implementation
 
+        /// <summary>
+        /// Adds a user defined <see cref="Item"/> to the Connector's item list.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to add.</param>
+        /// <param name="sourceFQN">A string representing the source of the Item's data.</param>
+        /// <returns>A Result containing the result of the operation and the added Item.</returns>
+        /// <seealso cref="IAddable"/>
         public Result<Item> Add(string fqn, string sourceFQN)
         {
             Result<Item> retVal = new Result<Item>();

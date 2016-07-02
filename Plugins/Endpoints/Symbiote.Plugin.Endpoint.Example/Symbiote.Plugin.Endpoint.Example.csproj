@@ -4,20 +4,19 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}</ProjectGuid>
+    <ProjectGuid>{5DA85DD0-B058-459F-AE89-EFE972CB7E34}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Symbiote.Plugin.Connector.Simulator</RootNamespace>
-    <AssemblyName>Symbiote.Plugin.Connector.Simulation</AssemblyName>
+    <RootNamespace>Symbiote.Plugin.Endpoint.Example</RootNamespace>
+    <AssemblyName>Symbiote.Plugin.Endpoint.Example</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\Symbiote.Core\bin\Debug\Plugins\Connector\Simulation\</OutputPath>
+    <OutputPath>..\..\Symbiote\Core\bin\Debug\Plugins\Endpoints\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -25,14 +24,14 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Core\bin\Release\Plugins\Connectors\</OutputPath>
+    <OutputPath>..\..\..\Core\bin\Release\Plugins\Endpoints\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OperationResult">
-      <HintPath>..\..\..\Core\lib\OperationResult.dll</HintPath>
+    <Reference Include="Symbiote">
+      <HintPath>..\..\..\Symbiote.Core\bin\Debug\Symbiote.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -44,17 +43,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SimulationConnector.cs" />
+    <Compile Include="ExampleEndpoint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Symbiote.Core\Symbiote.Core.csproj">
-      <Project>{899d0a77-77e8-4bcf-848e-2167c8cc036f}</Project>
-      <Name>Symbiote.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -1,13 +1,36 @@
-﻿using Newtonsoft.Json;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █   
+      █   ▄████████                                                                           ▄█                                  
+      █   ███    ███                                                                         ███                                  
+      █   ███    █▀   ██████  ██▄▄▄▄  ██▄▄▄▄     ▄█████  ▄██████     ██     ██████     █████ ███▌     ██       ▄█████    ▄▄██▄▄▄  
+      █   ███        ██    ██ ██▀▀▀█▄ ██▀▀▀█▄   ██   █  ██    ██ ▀███████▄ ██    ██   ██  ██ ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ 
+      █   ███        ██    ██ ██   ██ ██   ██  ▄██▄▄    ██    ▀      ██  ▀ ██    ██  ▄██▄▄█▀ ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ 
+      █   ███    █▄  ██    ██ ██   ██ ██   ██ ▀▀██▀▀    ██    ▄      ██    ██    ██ ▀███████ ███      ██    ▀▀██▀▀     ██  ██  ██ 
+      █   ███    ███ ██    ██ ██   ██ ██   ██   ██   █  ██    ██     ██    ██    ██   ██  ██ ███      ██      ██   █   ██  ██  ██ 
+      █   ████████▀   ██████   █   █   █   █    ███████ ██████▀     ▄██▀    ██████    ██  ██ █▀      ▄██▀     ███████   █  ██  █  
+      █   
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █  
+      █  ConnectorItem is an extension of the Item class.  This class represents Items that are provided by Connector Plugins. 
+      █  
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██ 
+                                                                                               ▀█▄ ██ ▄█▀ 
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
+using Newtonsoft.Json;
 
 namespace Symbiote.Core.Plugin.Connector
 {
     /// <summary>
-    /// The ConnectorItem is an extension of the Item class.  This class represents Items that are provided by Connector Plugins.
+    ///     ConnectorItem is an extension of the <see cref="Item"/> class.  This class represents Items that are provided by <see cref="Connector"/> 
+    ///     <see cref="Plugin"/>s.
     /// </summary>
     /// <remarks>
     /// <para>
-    /// The primary differences between the two types are:
+    /// The primary differences between this class and the base Item are:
     /// <list>
     ///     <item>The ConnectorItem stores no values.  Furthermore it does not implement persistence.</item>
     ///     <item>The ConnectorItem reads and writes directly to the parent Connector Plugin using the Fully Qualified Name of the item.</item>
@@ -83,6 +106,7 @@ namespace Symbiote.Core.Plugin.Connector
             retVal.Incorporate(setResult);
             return retVal;
         }
+
 
         public Result<ConnectorItem> AddChild(ConnectorItem pluginItem)
         {
