@@ -24,7 +24,7 @@ namespace Symbiote.Core.Service
 
         #region Properties
 
-        public ManagerState State { get; private set; }
+        public State State { get; private set; }
         public Dictionary<string, IService> Services { get; private set; }
         public Dictionary<string, Type> ServiceTypes { get; private set; }
 
@@ -56,13 +56,13 @@ namespace Symbiote.Core.Service
         /// Starts the Service Manager and all services.
         /// </summary>
         /// <remarks>Don't forget that you tried to do this with reflection once and it ended badly.  Just copy/paste.</remarks>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Start()
         {
             logger.Debug("Starting services...");
             Result retVal = new Result();
 
-            State = ManagerState.Starting;
+            State = State.Starting;
 
             Result<Dictionary<string, Type>> registerResult = RegisterServices();
             if (registerResult.ResultCode != ResultCode.Failure)
@@ -81,9 +81,9 @@ namespace Symbiote.Core.Service
                 retVal.AddError("Failed to register Service types. " + retVal.LastErrorMessage());
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = ManagerState.Running;
+                State = State.Running;
             else
-                State = ManagerState.Faulted;
+                State = State.Faulted;
 
             return retVal;
         }
@@ -105,12 +105,12 @@ namespace Symbiote.Core.Service
             logger.Info("Stopping services...");
             Result retVal = new Result();
 
-            State = ManagerState.Stopping;
+            State = State.Stopping;
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = ManagerState.Stopped;
+                State = State.Stopped;
             else
-                State = ManagerState.Faulted;
+                State = State.Faulted;
 
             retVal.LogResult(logger);
             return retVal;

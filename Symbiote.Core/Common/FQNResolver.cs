@@ -1,4 +1,6 @@
-﻿namespace Symbiote.Core
+﻿using Symbiote.Core.Model;
+
+namespace Symbiote.Core
 {
     /// <summary>
     /// Given an FQN, the AddressResolver locates and returns the corresponding Item.

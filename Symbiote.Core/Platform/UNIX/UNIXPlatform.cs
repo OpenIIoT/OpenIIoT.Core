@@ -1,20 +1,44 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █   
+      █   ███    █▄  ███▄▄▄▄    ▄█  ▀████    ▐████▀    ▄███████▄                                                                      
+      █   ███    ███ ███▀▀▀██▄ ███    ███▌   ████▀    ███    ███                                                                      
+      █   ███    ███ ███   ███ ███▌    ███  ▐███      ███    ███  █         ▄█████      ██       ▄█████  ██████     █████    ▄▄██▄▄▄  
+      █   ███    ███ ███   ███ ███▌    ▀███▄███▀      ███    ███ ██         ██   ██ ▀███████▄   ██   ▀█ ██    ██   ██  ██  ▄█▀▀██▀▀█▄ 
+      █   ███    ███ ███   ███ ███▌    ████▀██▄     ▀█████████▀  ██         ██   ██     ██  ▀  ▄██▄▄    ██    ██  ▄██▄▄█▀  ██  ██  ██ 
+      █   ███    ███ ███   ███ ███     ▐███  ▀███     ███        ██       ▀████████     ██    ▀▀██▀▀    ██    ██ ▀███████  ██  ██  ██ 
+      █   ███    ███ ███   ███ ███   ▄███     ███▄    ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██ 
+      █   ████████▀   ▀█   █▀  █▀   ████       ███▄  ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █  
+      █   
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █  
+      █  The UNIX namespace is responsible for providing the necessary Platform and Platform Connector for the application when run
+      █  on the UNIX platform.
+      █
+      █  The UNIXPlatform class extends the Platform class and overloads the necessary methods to run the application on the UNIX platform.
+      █  
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██ 
+                                                                                               ▀█▄ ██ ▄█▀ 
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
+using System;
 using Symbiote.Core.Plugin.Connector;
 
 namespace Symbiote.Core.Platform.UNIX
 {
     /// <summary>
-    /// The Windows class implements the platform interfaces necessary to run the application on the UNIX platform.
+    ///     The UNIX namespace is responsible for providing the necessary Platform and Platform Connector for the application when run
+    ///     on the UNIX platform.
     /// </summary>
-    /// <remarks>
-    /// Some wierdness in the C# compiler won't allow implicitly defined interface properties if the property is less
-    /// accessible than public.  For whatever reason the properties can be public but the class can be internal.
-    /// The effective accessibility for these classes and all of their members is internal.
-    /// </remarks>
     [System.Runtime.CompilerServices.CompilerGenerated]
     class NamespaceDoc { }
 
-    internal class UNIXPlatform : Platform
+    /// <summary>
+    /// The UNIXPlatform class extends the Platform class and overloads the necessary methods to run the application on the UNIX platform.
+    /// </summary>
+    public class UNIXPlatform : Platform
     {
         #region Constructors
 

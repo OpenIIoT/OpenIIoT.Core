@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
+using Symbiote.Core.Model;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
@@ -15,6 +16,11 @@ namespace Symbiote.Plugin.Connector.Simulation
     public class SimulationConnector : IConnector, IAddable, ISubscribable, IConfigurable<SimulationConnectorConfiguration>
     {
         #region Variables
+
+        /// <summary>
+        /// the logger for the Connector.
+        /// </summary>
+        private xLogger logger;
 
         /// <summary>
         /// The root node for the item tree.
@@ -38,29 +44,34 @@ namespace Symbiote.Plugin.Connector.Simulation
         #region IConnector Implementation
 
         /// <summary>
-        /// The connector name.
+        /// The Connector name.
         /// </summary>
         public string Name { get; private set; }
 
         /// <summary>
-        /// The connector FQN.
+        /// The Connector FQN.
         /// </summary>
         public string FQN { get; private set; }
 
         /// <summary>
-        /// The connector Version.
+        /// The Connector Version.
         /// </summary>
         public string Version { get; private set; }
 
         /// <summary>
-        /// The connector type.
+        /// The Connector type.
         /// </summary>
         public PluginType PluginType { get; private set; }
 
         /// <summary>
-        /// The name of the connector instance.
+        /// The name of the Connector instance.
         /// </summary>
         public string InstanceName { get; private set; }
+
+        /// <summary>
+        /// The State of the Connector.
+        /// </summary>
+        public State State { get; private set; }
 
         #endregion
 
@@ -84,14 +95,17 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         #region Constructors
 
-        public SimulationConnector(string instanceName)
+        public SimulationConnector(ProgramManager manager, string instanceName, xLogger logger)
         {
             InstanceName = instanceName;
+            this.logger = logger;
 
             Name = "Simulation";
             FQN = "Symbiote.Plugin.Connector.Simulation";
             Version = "1.0.0.0";
             PluginType = PluginType.Connector;
+
+            logger.Info("Initializing " + PluginType + " " + FQN + "." + instanceName);
 
             InitializeItems();
 
@@ -254,7 +268,7 @@ namespace Symbiote.Plugin.Connector.Simulation
         /// this method.
         /// </summary>
         /// <param name="configuration">The instance of the model/configuration type to apply.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Configure(SimulationConnectorConfiguration configuration)
         {
             Configuration = configuration;

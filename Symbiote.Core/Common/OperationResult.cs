@@ -180,7 +180,7 @@ namespace Symbiote.Core
     ///     The <see cref="Incorporate(Result)"/> method is provided so that Result objects can be merged with one another.  The instance
     ///     on which the Incorporate() method is invoked will copy all messages from the specified Result into it's list, and if the ResultCode
     ///     of the specified Result is "less than" that of the current instance, the instance will take on the new ResultCode.  For instance, if the invoking
-    ///     instance has a ResultCode of Warning and an Result with a ResultCode of Failure is incorporated, the ResultCode of the invoking instance
+    ///     instance has a ResultCode of Warning and A Result with a ResultCode of Failure is incorporated, the ResultCode of the invoking instance
     ///     will be changed to Failure.  This functionality is provided for nested or sequential operations.
     /// </para>
     /// </remarks>
@@ -191,12 +191,12 @@ namespace Symbiote.Core
         /// <summary>
         /// The result of the operation.
         /// </summary>
-        public ResultCode ResultCode { get; private set; }
+        public ResultCode ResultCode { get; protected set; }
 
         /// <summary>
         /// The list of messages generated during the operation.
         /// </summary>
-        public List<Message> Messages { get; private set; }
+        public List<Message> Messages { get; protected set; }
 
         #endregion
 
@@ -304,6 +304,53 @@ namespace Symbiote.Core
         {
             Messages.Add(new Message(MessageType.Error, message));
             ResultCode = ResultCode.Failure;
+            return this;
+        }
+
+        /// <summary>
+        ///     Removes all messages of the optionally specified MessageType, or all messages
+        ///     if MessageType is not specified.
+        /// </summary>
+        /// <param name="messageType">The type of messages to remove.</param>
+        /// <returns>This Result.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new Result
+        /// Result retVal = new Result();
+        /// 
+        /// // add a few messages
+        /// retVal.AddError("This is an error message");
+        /// retVal.AddError("This is another error message");
+        /// 
+        /// // remove the messages that were just added
+        /// retVal.RemoveMessages(MessageType.Error);
+        /// </code>
+        /// </example>
+        public virtual Result RemoveMessages(MessageType messageType = MessageType.Any)
+        {
+            if (messageType == MessageType.Any)
+                Messages.Clear();
+            else
+                Messages.RemoveAll(m => m.Type == messageType);
+
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets the ResultCode property to the optionally supplied ResultCode,
+        ///     or to ResultCode.Success if ResultCode is not specified.
+        /// </summary>
+        /// <param name="resultCode">The ResultCode to which the ResultCode property should be set.</param>
+        /// <returns>This Result.</returns>
+        /// <example>
+        /// <code>
+        /// // create a new Result and initialize the ResultCode to ResultCode.Failure
+        /// Result retVal = new Result().SetResultCode(ResultCode.Failure);
+        /// </code>
+        /// </example>
+        public virtual Result SetResultCode(ResultCode resultCode = ResultCode.Success)
+        {
+            ResultCode = resultCode;
             return this;
         }
 
@@ -624,7 +671,7 @@ namespace Symbiote.Core
         /// <param name="Result">The Result to convert.</param>
         /// <example>
         /// <code>
-        /// // generate an Result
+        /// // generate A Result
         /// Result result = SomeOperation();
         /// 
         /// // check the result
@@ -673,7 +720,7 @@ namespace Symbiote.Core
     ///     The <see cref="Incorporate(Result)"/> method is provided so that Result objects can be merged with one another.  The instance
     ///     on which the Incorporate() method is invoked will copy all messages from the specified Result into it's list, and if the ResultCode
     ///     of the specified Result is "less than" that of the current instance, the instance will take on the new ResultCode.  For instance, if the invoking
-    ///     instance has a ResultCode of Warning and an Result with a ResultCode of Failure is incorporated, the ResultCode of the invoking instance
+    ///     instance has a ResultCode of Warning and A Result with a ResultCode of Failure is incorporated, the ResultCode of the invoking instance
     ///     will be changed to Failure.  This functionality is provided for nested or sequential operations.
     /// </para>
     /// <para>
@@ -774,6 +821,53 @@ namespace Symbiote.Core
         new public virtual Result<T> AddError(string message)
         {
             base.AddError(message);
+            return this;
+        }
+
+        /// <summary>
+        ///     Removes all messages of the optionally specified MessageType, or all messages
+        ///     if MessageType is not specified.
+        /// </summary>
+        /// <param name="messageType">The type of messages to remove.</param>
+        /// <returns>This Result.</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// // create a new Result
+        /// Result<object> retVal = new Result<object>();
+        /// 
+        /// // add a few messages
+        /// retVal.AddError("This is an error message");
+        /// retVal.AddError("This is another error message");
+        /// 
+        /// // remove the messages that were just added
+        /// retVal.RemoveMessages(MessageType.Error);
+        /// ]]>
+        /// </code>
+        /// </example>
+        new public virtual Result<T> RemoveMessages(MessageType messageType = MessageType.Any)
+        {
+            base.RemoveMessages(messageType);
+            return this;
+        }
+
+        /// <summary>
+        ///     Sets the ResultCode property to the optionally supplied ResultCode,
+        ///     or to ResultCode.Success if ResultCode is not specified.
+        /// </summary>
+        /// <param name="resultCode">The ResultCode to which the ResultCode property should be set.</param>
+        /// <returns>This Result.</returns>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// // create a new Result and initialize the ResultCode to ResultCode.Failure
+        /// Result<object> retVal = new Result<object>().SetResultCode(ResultCode.Failure);
+        /// ]]>
+        /// </code>
+        /// </example>
+        new public virtual Result<T> SetResultCode(ResultCode resultCode = ResultCode.Success)
+        {
+            base.SetResultCode(resultCode);
             return this;
         }
 

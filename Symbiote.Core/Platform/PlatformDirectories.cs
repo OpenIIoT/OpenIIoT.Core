@@ -88,7 +88,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Check each of the directories in the internal directory list and ensures that they exist.  
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result CheckDirectories()
         {
             Result retVal = new Result();
@@ -130,7 +130,7 @@ namespace Symbiote.Core.Platform
         /// an instance of ProgramDirectories with it.
         /// </summary>
         /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
-        /// <returns>An Result containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
+        /// <returns>A Result containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
         public static Result<PlatformDirectories> LoadDirectories(string directories)
         {
             Result<PlatformDirectories> retVal = new Result<PlatformDirectories>();

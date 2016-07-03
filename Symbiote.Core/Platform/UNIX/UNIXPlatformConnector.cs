@@ -4,6 +4,7 @@ using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.Model;
 
 namespace Symbiote.Core.Platform.UNIX
 {
@@ -22,6 +23,9 @@ namespace Symbiote.Core.Platform.UNIX
         public PluginType PluginType { get; private set; }
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
+
+        public State State { get; private set; }
+
         public string Configuration { get; private set; }
         public bool IsConfigured { get { return true; } }
 

@@ -1,15 +1,15 @@
 /*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-      █
-      █             ▄█        ▄██████▄     ▄██████▄     ▄██████▄     ▄████████    ▄████████  
-      █            ███       ███    ███   ███    ███   ███    ███   ███    ███   ███    ███ 
-      █            ███       ███    ███   ███    █▀    ███    █▀    ███    █▀    ███    ███ 
-      █            ███       ███    ███  ▄███         ▄███         ▄███▄▄▄      ▄███▄▄▄▄██▀  
-      █    ██   ██ ███       ███    ███ ▀▀███ ████▄  ▀▀███ ████▄  ▀▀███▀▀▀     ▀▀███▀▀▀▀▀    
-      █     ██▄██▀ ███       ███    ███   ███    ███   ███    ███   ███    █▄  ▀███████████  
-      █     ▄█▀█▄  ███▌    ▄ ███    ███   ███    ███   ███    ███   ███    ███   ███    ███  
-      █   ▄██  ▀██ █████▄▄██  ▀██████▀    ████████▀    ████████▀    ██████████   ███    ███  
-      █
+      █   
+      █               ▄█                                                         
+      █              ███                                                         
+      █   ▀███  ▐██▀ ███        ██████     ▄████▄     ▄████▄     ▄█████    █████ 
+      █     ██  ██   ███       ██    ██   ██    ▀    ██    ▀    ██   █    ██  ██ 
+      █      ████▀   ███       ██    ██  ▄██        ▄██        ▄██▄▄     ▄██▄▄█▀ 
+      █      ████    ███       ██    ██ ▀▀██ ███▄  ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
+      █    ▄██ ▀██   ███▌    ▄ ██    ██   ██    ██   ██    ██   ██   █    ██  ██ 
+      █   ███    ██▄ █████▄▄██  ██████    ██████▀    ██████▀    ███████   ██  ██ 
+      █   
  ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       █ 
@@ -723,6 +723,9 @@ namespace Symbiote.Core
             // default to Trace
             LogLevel level = LogLevel.Trace;
 
+            // get the method reference
+            MethodBase method = GetCallingStackFrame().GetMethod();
+
             // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
             if (!IsEnabled(level)) return default(Guid);
 
@@ -746,11 +749,11 @@ namespace Symbiote.Core
             LogHeader(level);
 
             // log the method signature
-            Log(level, EnterPrefix + "Entering " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") + 
+            Log(level, EnterPrefix + "Entering " + (method.IsConstructor ? "constructor" : "method") + 
                 ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" + 
                 (persist ? ", persisting with Guid: " + methodGuid : "")
             );
-
+            
             // compose and print the parameter list, but not if the list is null
             if (parameters != null)
             {
@@ -759,7 +762,7 @@ namespace Symbiote.Core
                 // vs the method signature ordering, so just bail out.
                 try
                 {
-                    ParameterInfo[] parameterInfo = GetCallingStackFrame().GetMethod().GetParameters();
+                    ParameterInfo[] parameterInfo = method.GetParameters();
 
                     if (parameterInfo.Length != parameters.Length)
                         Log(level, FinalLinePrefix + "[Parameter count mismatch]");
@@ -1962,8 +1965,22 @@ namespace Symbiote.Core
             if (!methodBase.IsConstructor)
                 returnType = ((MethodInfo)methodBase).ReturnType;
 
+            string typeParameters = "";
+
+            // check to see if this is a generic method
+            if (methodBase.IsGenericMethod)
+            {
+                // it is.  start building the string.
+                typeParameters = "<";
+
+                foreach (Type t in methodBase.GetGenericArguments())
+                    typeParameters += (typeParameters.Length > 1 ? ", " : "") + GetColloquialTypeName(t);
+
+                typeParameters += ">";
+            }
+
             // build a signature string to display by iterating over the method parameters and retrieving names and types
-            string methodSignature = GetColloquialTypeName(returnType) + " " + (methodBase.IsConstructor ? methodBase.ReflectedType.Name : methodBase.Name) + "(";
+            string methodSignature = GetColloquialTypeName(returnType) + " " + (methodBase.IsConstructor ? methodBase.ReflectedType.Name : methodBase.Name) + typeParameters + "(";
             List<string> parameters = new List<string>();
 
             foreach (ParameterInfo pi in methodBase.GetParameters())

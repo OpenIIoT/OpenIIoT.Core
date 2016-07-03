@@ -24,6 +24,7 @@ using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Symbiote.Core.Model;
 
 namespace Symbiote.Core
 {

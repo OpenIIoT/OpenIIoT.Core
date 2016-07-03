@@ -20,7 +20,7 @@ namespace Symbiote.Core.Platform
     /// accessible than public.  For whatever reason the properties can be public but the class can be internal.
     /// The effective accessibility for these classes and all of their members is internal.
     /// </remarks>
-    internal abstract class Platform : IPlatform
+    public abstract class Platform : IPlatform
     {
         #region Variables
 
@@ -84,7 +84,7 @@ namespace Symbiote.Core.Platform
         /// Returns a list of subdirectories within the supplied path.
         /// </summary>
         /// <param name="parentDirectory">The parent directory to search.</param>
-        /// <returns>An Result containing the result of the operation and list containing the fully qualified path of each directory found.</returns>
+        /// <returns>A Result containing the result of the operation and list containing the fully qualified path of each directory found.</returns>
         public virtual Result<List<string>> ListDirectories(string parentDirectory)
         {
             logger.EnterMethod(xLogger.Params(parentDirectory));
@@ -112,7 +112,7 @@ namespace Symbiote.Core.Platform
         /// Deletes the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result DeleteDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
@@ -140,7 +140,7 @@ namespace Symbiote.Core.Platform
         /// Deletes all files and subdirectories within the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to clear.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result ClearDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
@@ -176,7 +176,7 @@ namespace Symbiote.Core.Platform
         /// Creates the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to create.</param>
-        /// <returns>An Result containing the result of the operation and the fully qualified path to the directory.</returns>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the directory.</returns>
         public virtual Result<string> CreateDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
@@ -218,7 +218,7 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <param name="parentDirectory">The directory to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
-        /// <returns>An Result containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
+        /// <returns>A Result containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
         public virtual Result<List<string>> ListFiles(string parentDirectory, string searchPattern)
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
@@ -246,7 +246,7 @@ namespace Symbiote.Core.Platform
         /// Deletes the specified file.
         /// </summary>
         /// <param name="file">The file to delete.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result DeleteFile(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
@@ -273,7 +273,7 @@ namespace Symbiote.Core.Platform
         /// Reads the contents of the specified file into a single string.
         /// </summary>
         /// <param name="file">The file to read.</param>
-        /// <returns>An Result containing the result of the operation and a string containing the entire contents of the file.</returns>
+        /// <returns>A Result containing the result of the operation and a string containing the entire contents of the file.</returns>
         public virtual Result<string> ReadFile(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
@@ -300,7 +300,7 @@ namespace Symbiote.Core.Platform
         /// Reads the contents of the specified file into a string array.
         /// </summary>
         /// <param name="file">The file to read.</param>
-        /// <returns>An Result containing the result of the operation and a string array containing all of the lines from the file.</returns>
+        /// <returns>A Result containing the result of the operation and a string array containing all of the lines from the file.</returns>
         public virtual Result<string[]> ReadFileLines(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
@@ -361,7 +361,7 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <param name="zipFile">The zip file to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
-        /// <returns>An Result containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
+        /// <returns>A Result containing the result of the operation and a list containing the fully qualified filename of each file found.</returns>
         public virtual Result<List<string>> ListZipFiles(string zipFile, string searchPattern)
         {
             logger.EnterMethod(xLogger.Params(zipFile, searchPattern));
@@ -407,7 +407,7 @@ namespace Symbiote.Core.Platform
         /// <param name="zipFile">The zip file to extract.</param>
         /// <param name="destination">The destination directory.</param>
         /// <param name="clearDestination">True if the destination directory should be cleared prior to extraction, false otherwise.</param>
-        /// <returns>An Result containing the result of the operation and the fully qualified path to the extracted files.</returns>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the extracted files.</returns>
         public virtual Result<string> ExtractZip(string zipFile, string destination, bool clearDestination = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, destination, clearDestination));
@@ -449,7 +449,7 @@ namespace Symbiote.Core.Platform
         /// <param name="file">The file to extract from the zip file.</param>
         /// <param name="destination">The destination directory.</param>
         /// <param name="overwrite">True if an existing file should be overwritten, false otherwise.</param>
-        /// <returns>An Result containing the result of the operation and the fully qualified filename of the extracted file.</returns>
+        /// <returns>A Result containing the result of the operation and the fully qualified filename of the extracted file.</returns>
         public virtual Result<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, file, destination, overwrite));
@@ -488,7 +488,7 @@ namespace Symbiote.Core.Platform
         /// Computes the checksum of the specified file.
         /// </summary>
         /// <param name="file">The file for which the checksum is to be computed.</param>
-        /// <returns>An Result containing the result of the operation and the computed checksum.</returns>
+        /// <returns>A Result containing the result of the operation and the computed checksum.</returns>
         public virtual Result<string> ComputeFileChecksum(string file)
         {
             logger.EnterMethod(xLogger.Params(file));

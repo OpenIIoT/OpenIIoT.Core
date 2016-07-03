@@ -13,7 +13,7 @@ namespace Symbiote.Core.Service.Web.API
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static Dictionary<Type, Dictionary<string, object>> configuration = manager.ConfigurationManager.Configuration;
+        private static Dictionary<string, Dictionary<string, object>> configuration = manager.ConfigurationManager.Configuration;
 
         private static List<string> serializationProperties = new List<string>(new string[] { });
          

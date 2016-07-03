@@ -29,7 +29,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public ManagerState State { get; private set; }
+        public State State { get; private set; }
 
         #endregion
 
@@ -67,7 +67,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Starts the Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Start()
         {
             return new Result();
@@ -76,7 +76,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Restarts the Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Restart()
         {
             return new Result();
@@ -85,7 +85,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Stops the Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Stop()
         {
             return new Result();

@@ -27,8 +27,9 @@
       <Argument Key="maxVersionParts" Value="" xmlns="" />
     </TransformComponentArguments>
     <DocumentationSources>
-      <DocumentationSource sourceFile="..\Core\bin\Debug\Documentation.XML" />
-      <DocumentationSource sourceFile="..\Core\bin\Debug\Symbiote.exe" />
+      <DocumentationSource sourceFile="..\Symbiote.Core\bin\Debug\Documentation.XML" />
+      <DocumentationSource sourceFile="..\Symbiote.Core\bin\Debug\Symbiote.exe" />
+      <DocumentationSource sourceFile="..\Symbiote.Cryptography\bin\Debug\Symbiote.Cryptography.dll" />
     </DocumentationSources>
     <BuildAssemblerVerbosity>OnlyWarningsAndErrors</BuildAssemblerVerbosity>
     <HelpFileFormat>Website</HelpFileFormat>

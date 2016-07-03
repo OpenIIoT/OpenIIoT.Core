@@ -1,37 +1,32 @@
 ﻿namespace Symbiote.Core
 {
     /// <summary>
-    /// Enumeration of the different Manager states.
+    /// Enumeration of the different component states.
     /// </summary>
-    public enum ManagerState
+    public enum State
     {
         /// <summary>
         /// The default value
         /// </summary>
         Unknown,
-
         /// <summary>
-        /// The Manager is starting
+        /// The component is starting
         /// </summary>
         Starting,
-
         /// <summary>
-        /// The Manager is running
+        /// The component is running
         /// </summary>
         Running,
-
         /// <summary>
-        /// The Manager is stopping
+        /// The component is stopping
         /// </summary>
         Stopping,
-
         /// <summary>
-        /// The Manager has stopped
+        /// The component has stopped
         /// </summary>
         Stopped,
-
         /// <summary>
-        /// The Manager is faulted
+        /// The component is faulted
         /// </summary>
         Faulted
     }

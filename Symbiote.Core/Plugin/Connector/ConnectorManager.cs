@@ -18,7 +18,7 @@ namespace Symbiote.Core.Plugin.Connector
 
         #region Properties
 
-        public ManagerState State { get; private set; }
+        public State State { get; private set; }
 
         public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
@@ -57,7 +57,7 @@ namespace Symbiote.Core.Plugin.Connector
             Result retVal = new Result();
             Configure();
 
-            State = ManagerState.Starting;
+            State = State.Starting;
 
             // register endpoints
             Result<Dictionary<string, Type>> registerResult = RegisterEndpoints();
@@ -80,9 +80,9 @@ namespace Symbiote.Core.Plugin.Connector
             }
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = ManagerState.Running;
+                State = State.Running;
             else
-                State = ManagerState.Faulted;
+                State = State.Faulted;
 
             return retVal;
         }
@@ -94,7 +94,7 @@ namespace Symbiote.Core.Plugin.Connector
 
         public Result Stop()
         {
-            State = ManagerState.Stopped;
+            State = State.Stopped;
             return new Result();
         }
 

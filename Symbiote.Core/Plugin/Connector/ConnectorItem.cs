@@ -21,6 +21,7 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using Newtonsoft.Json;
+using Symbiote.Core.Model;
 
 namespace Symbiote.Core.Plugin.Connector
 {
@@ -146,7 +147,7 @@ namespace Symbiote.Core.Plugin.Connector
         /// </summary>
         /// <remarks>Should never be called by anything other than the parent Connector plugin.</remarks>
         /// <param name="value">The value with which to update the ConnectorItem.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public override Result Write(object value)
         {
             Value = value;
@@ -159,7 +160,7 @@ namespace Symbiote.Core.Plugin.Connector
         /// </summary>
         /// <remarks>Any and all writes to ConnectorItems (other than by the Connector plugin) should be performed with WriteToSource.</remarks>
         /// <param name="value">The value with which to update the ConnectorItem.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public override Result WriteToSource(object value)
         {
             if (Connector is IWriteable)

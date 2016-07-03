@@ -1,24 +1,53 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █   
+      █      ▄███████▄                                                                         ▄▄▄▄███▄▄▄▄                                                             
+      █     ███    ███                                                                       ▄██▀▀▀███▀▀▀██▄                                                           
+      █     ███    ███  █         ▄█████      ██       ▄█████  ██████     █████    ▄▄██▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
+      █     ███    ███ ██         ██   ██ ▀███████▄   ██   ▀█ ██    ██   ██  ██  ▄█▀▀██▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
+      █   ▀█████████▀  ██         ██   ██     ██  ▀  ▄██▄▄    ██    ██  ▄██▄▄█▀  ██  ██  ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
+      █     ███        ██       ▀████████     ██    ▀▀██▀▀    ██    ██ ▀███████  ██  ██  ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
+      █     ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
+      █    ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
+      █   
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █  
+      █  The Platform namespace abstracts the platform on which the app runs.
+      █  
+      █  The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
+      █  
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██ 
+                                                                                               ▀█▄ ██ ▄█▀ 
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
+using System;
 using NLog;
 
 namespace Symbiote.Core.Platform
 {
     /// <summary>
     /// The Platform namespace abstracts the platform on which the app runs.
-    /// 
-    /// The primary purposes are to assist the application in determining the current platform (e.g. Windows or UNIX) and to
-    /// allow for platform dependent code such as file IO to be substituted at run time. This allows for a single project that can 
-    /// be compiled and run on both Windows and UNIX systems with no programatic changes.
-    /// 
-    /// Each Platform type gets a folder (e.g. UNIX, Windows) and within that folder an implementation of IPlatform named as "PlatformPlatform"
-    /// where the first "Platform" is the name.  Each Platform type is required to provide an implementation of IConnector for the platform which
-    /// returns statistical information about the hardware and OS hosting the application.  Of primary concern is CPU, Memory and Hard Disk usage.
-    /// 
-    /// Finally, the Platform Manager and PlatformDirectories class work together to ensure that the necessary directories are present in the 
-    /// configured locations.  If any directories are missing they are recreated at startup.  The app.exe.config file contains the definition
-    /// for these directories.  If the configuration file is missing any or all of the programatically defined directories an exception will be
-    /// thrown by the constructor of PlatformDirectories, causing the initialization of the application to fail.
     /// </summary>
+    /// <remarks>
+    /// <para>
+    ///     The primary purposes are to assist the application in determining the current platform (e.g. Windows or UNIX) and to
+    ///     allow for platform dependent code such as file IO to be substituted at run time. This allows for a single project that can 
+    ///     be compiled and run on both Windows and UNIX systems with no programatic changes.
+    /// </para>
+    /// <para>
+    ///     Each Platform type gets a folder (e.g. UNIX, Windows) and within that folder a derivation of Platform named as "PlatformPlatform"
+    ///     where the first "Platform" is the name.  Each Platform type is required to provide an implementation of IConnector for the platform which
+    ///     returns statistical information about the hardware and OS hosting the application.  Of primary concern is CPU, Memory and Hard Disk usage.
+    /// </para>
+    /// <para>
+    ///     Finally, the Platform Manager and PlatformDirectories class work together to ensure that the necessary directories are present in the 
+    ///     configured locations.  If any directories are missing they are recreated at startup.  The app.exe.config file contains the definition
+    ///     for these directories.  If the configuration file is missing any or all of the programatically defined directories an exception will be
+    ///     thrown by the constructor of PlatformDirectories, causing the initialization of the application to fail.
+    /// </para>
+    /// </remarks>
     [System.Runtime.CompilerServices.CompilerGenerated]
     class NamespaceDoc { }
 
@@ -53,7 +82,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public ManagerState State { get; private set; }
+        public State State { get; private set; }
 
         #endregion
 
@@ -102,7 +131,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Starts the Platform manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Start()
         {
             Guid guid = logger.EnterMethod(true);
@@ -110,7 +139,7 @@ namespace Symbiote.Core.Platform
 
             logger.Info("Starting the Platform Manager...");
 
-            State = ManagerState.Starting;
+            State = State.Starting;
 
             #region Platform Instantiation
 
@@ -177,9 +206,9 @@ namespace Symbiote.Core.Platform
             #endregion
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = ManagerState.Running;
+                State = State.Running;
             else
-                State = ManagerState.Faulted;
+                State = State.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -189,7 +218,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Restarts the Platform manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Restart()
         {
             Guid guid = logger.EnterMethod(true);
@@ -208,7 +237,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Stops the Platform manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Stop()
         {
             logger.EnterMethod();
@@ -216,12 +245,12 @@ namespace Symbiote.Core.Platform
             logger.Info("Stopping the Platform Manager...");
             Result retVal = new Result();
 
-            State = ManagerState.Stopping;
+            State = State.Stopping;
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = ManagerState.Stopped;
+                State = State.Stopped;
             else
-                State = ManagerState.Faulted;
+                State = State.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);

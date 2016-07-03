@@ -66,7 +66,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// </summary>
         /// <param name="key">The object to which the client is subscribing.</param>
         /// <param name="client">The client subscribing to the object.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Subscribe(object key, string client)
         {
             return Subscribe(key, client, Subscriptions);
@@ -78,7 +78,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// <param name="key">The object to which the client is subscribing.</param>
         /// <param name="client">The client subscribing to the object.</param>
         /// <param name="dictionary">The dictionary to which to add the entry.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Subscribe(object key, string client, Dictionary<object, List<string>> dictionary)
         {
             Result retVal = new Result();
@@ -108,7 +108,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// </summary>
         /// <param name="key">The object to which the client is unsubscribing.</param>
         /// <param name="client">The client unsubscribing from the object.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Unsubscribe(object key, string client)
         {
             return Unsubscribe(key, client, Subscriptions);
@@ -120,7 +120,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// <param name="key">The object from which the client is unsubscribing.</param>
         /// <param name="client">The client unsubscribing from the object.</param>
         /// <param name="dictionary">The dictionary from which to remove the entry.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Unsubscribe(object key, string client, Dictionary<object, List<string>> dictionary)
         {
             Result retVal = new Result();

@@ -20,6 +20,8 @@
                                                                                                ▀█▄ ██ ▄█▀                       
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using Symbiote.Core.Model;
+
 namespace Symbiote.Core.Plugin.Connector
 {
     /// <summary>

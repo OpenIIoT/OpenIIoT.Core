@@ -6,26 +6,26 @@
     public interface IManager
     {
         /// <summary>
-        /// Indicates the state of the Manager.
+        /// Indicates the State of the Manager.
         /// </summary>
-        ManagerState State { get; }
+        State State { get; }
 
         /// <summary>
         /// Starts the Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         Result Start();
 
         /// <summary>
         /// Restarts the Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         Result Restart();
 
         /// <summary>
         /// Stops the Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         Result Stop();
     }
 }

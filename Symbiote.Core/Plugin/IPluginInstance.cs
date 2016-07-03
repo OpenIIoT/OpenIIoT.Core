@@ -13,6 +13,11 @@
         /// </summary>
         string InstanceName { get; }
 
+        /// <summary>
+        /// Indicates the State of the Plugin.
+        /// </summary>
+        State State { get; }
+
         #endregion
 
         #region Instance Methods
@@ -20,19 +25,19 @@
         /// <summary>
         /// Starts the PluginInstance.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         Result Start();
 
         /// <summary>
         /// Restarts the PluginInstance.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         Result Restart();
 
         /// <summary>
         /// Stops the PluginInstance.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         Result Stop();
 
         #endregion

@@ -21,6 +21,7 @@
                                                                                                 ▀████▀   
                                                                                                   ▀▀                            */
 using System.Collections.Generic;
+using Symbiote.Core.Model;
 
 namespace Symbiote.Core.Plugin.Connector
 {
@@ -59,28 +60,28 @@ namespace Symbiote.Core.Plugin.Connector
         /// <summary>
         /// Returns the root node of the connector's <see cref="Item"/> tree.
         /// </summary>
-        /// <returns>The root node of the connector's <see cref="Item"/> tree.</returns>
+        /// <returns>The root node of the connector's Item tree.</returns>
         Item Browse();
 
         /// <summary>
         /// Returns a list of the children <see cref="Item"/>s for the specified Item within the connector's Item tree.
         /// </summary>
-        /// <param name="root">The <see cref="Item"/> for which the children are to be returned.</param>
-        /// <returns>A <see cref="List{T}"/> of type <see cref="Item"/> containing all of the specified Item's children.</returns>
+        /// <param name="root">The Item for which the children are to be returned.</param>
+        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
         List<Item> Browse(Item root);
 
         /// <summary>
         /// Returns the <see cref="Item"/> matching the specified Fully Qualified Name.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> to return.</param>
-        /// <returns>The found <see cref="Item"/>, or the default(Item) if not found.</returns>
+        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        /// <returns>The found Item, or the default(Item) if not found.</returns>
         Item Find(string fqn);
 
         /// <summary>
         /// Returns the current value of the specified <see cref="Item"/>.
         /// </summary>
-        /// <param name="item">The <see cref="Item"/> to read.</param>
-        /// <returns>The current value of the <see cref="Item"/>.</returns>
+        /// <param name="item">The Item to read.</param>
+        /// <returns>The current value of the Item.</returns>
         Result<object> Read(Item item);
     }
 }

@@ -36,7 +36,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The state of the Manager.
         /// </summary>
-        public ManagerState State { get; private set; }
+        public State State { get; private set; }
 
         #endregion
 
@@ -88,7 +88,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The configuration for the application.
         /// </summary>
-        public Dictionary<Type, Dictionary<string, object>> Configuration { get { return ConfigurationManager.Configuration; } }
+        public Dictionary<string, Dictionary<string, object>> Configuration { get { return ConfigurationManager.Configuration; } }
         /// <summary>
         /// The filename of the configuration file.
         /// </summary>
@@ -96,7 +96,7 @@ namespace Symbiote.Core
         /// <summary>
         /// A dictionary containing the types and ConfigurationDefinitions for the configurable types within the application.
         /// </summary>
-        public Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get { return ConfigurationManager.RegisteredTypes; } }
+        public Dictionary<string, ConfigurationDefinition> RegisteredTypes { get { return ConfigurationManager.RegisteredTypes; } }
         //---------------------------------- -   ----------------- - -------------------------------------------------  ---------- 
 
 
@@ -208,7 +208,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Starts the Program Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Start()
         {
             Guid guid = logger.EnterMethod(true);
@@ -216,12 +216,12 @@ namespace Symbiote.Core
             logger.Info("Starting the Program Manager...");
             Result retVal = new Result();
 
-            State = ManagerState.Starting;
+            State = State.Starting;
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = ManagerState.Running;
+                State = State.Running;
             else
-                State = ManagerState.Faulted;
+                State = State.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -231,7 +231,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Restarts the Program Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Restart()
         {
             Guid guid = logger.EnterMethod(true);
@@ -250,7 +250,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Stops the Program Manager.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public Result Stop()
         {
             logger.EnterMethod();
@@ -258,12 +258,12 @@ namespace Symbiote.Core
             logger.Info("Stopping the Program Manager...");
             Result retVal = new Result();
 
-            State = ManagerState.Stopping;
+            State = State.Stopping;
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = ManagerState.Stopped;
+                State = State.Stopped;
             else
-                State = ManagerState.Faulted;
+                State = State.Faulted;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -276,7 +276,7 @@ namespace Symbiote.Core
         /// Starts the specified IManager instance
         /// </summary>
         /// <param name="manager">The IManager instance to start.</param>
-        /// <returns>An Result containing the result of the operation and the specified IManager instance.</returns>
+        /// <returns>A Result containing the result of the operation and the specified IManager instance.</returns>
         internal Result<IManager> StartManager(IManager manager)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager), true);

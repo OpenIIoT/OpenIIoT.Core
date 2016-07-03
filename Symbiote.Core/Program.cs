@@ -6,6 +6,7 @@ using System.Reflection;
 using Symbiote.Core.Platform;
 using System.Text.RegularExpressions;
 using Symbiote.Core.Plugin.Connector;
+using Symbiote.Core.Model;
 
 namespace Symbiote.Core
 {
@@ -249,29 +250,46 @@ namespace Symbiote.Core
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
 
-                ((IAddable)manager.PluginManager.FindPluginInstance("Simulation")).Add("One.Two.Three.Four.Five", "fart");
-                ((IAddable)manager.PluginManager.FindPluginInstance("Simulation")).Add("One.Two.Three.ThreeThree.ThreeThreeThree", "fart");
+                //((IAddable)manager.PluginManager.FindPluginInstance("Simulation")).Add("One.Two.Three.Four.Five", "fart");
+                //((IAddable)manager.PluginManager.FindPluginInstance("Simulation")).Add("One.Two.Three.ThreeThree.ThreeThreeThree", "fart");
 
 
 
 
-                Item symItem = manager.ModelManager.FindItem(manager.InstanceName);
-                if (symItem == default(Item))
-                    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName)).ReturnValue;
+                //Item symItem = manager.ModelManager.FindItem(manager.InstanceName);
+                //if (symItem == default(Item))
+                //    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName)).ReturnValue;
 
-                manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
+                //manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
 
 
-                Result subscribe = manager.ModelManager.FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                //Result subscribe = manager.ModelManager.FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
 
-                subscribe.LogResult(logger.Info);
+                //subscribe.LogResult(logger.Info);
 
-                Result subscribe2 = manager.ModelManager.FindItem("Symbiote.Simulation.Process.Ramp").SubscribeToSource();
+                //Result subscribe2 = manager.ModelManager.FindItem("Symbiote.Simulation.Process.Ramp").SubscribeToSource();
 
-                subscribe2.LogResult(logger.Info);
+                //subscribe2.LogResult(logger.Info);
 
-                logger.Info("Starting Simulation Connector...");
-                manager.PluginManager.FindPluginInstance("Simulation").Start();
+                //logger.Info("Starting Simulation Connector...");
+                //manager.PluginManager.FindPluginInstance("Simulation").Start();
+
+                ////-------------------------------------------------------------------------------------------------
+
+                //IConnector example = (IConnector)manager.PluginManager.FindPluginInstance("Example");
+
+
+                // ((IAddable)example).Add("New.Item", "None");
+
+                //manager.ModelManager.AttachItem(example.Browse(), symItem);
+
+     
+
+                //Result subscribe3 = manager.ModelManager.FindItem("Symbiote.Example.CurrentTime").SubscribeToSource();
+
+                //subscribe3.LogResult(logger.Info);
+
+                //example.Start().LogResult(logger.Info) ;
 
                 //----------------------------- - -       --
                 // show 'em what they've won!
@@ -291,7 +309,7 @@ namespace Symbiote.Core
 
                 //manager.RenameInstance("Symbiote2");
 
-                Utility.PrintModel(logger, manager.ModelManager.Model, 0);
+                //Utility.PrintModel(logger, manager.ModelManager.Model, 0);
 
                 //Item test = FQNResolver.Resolve("Symbiote.AddTest");
 

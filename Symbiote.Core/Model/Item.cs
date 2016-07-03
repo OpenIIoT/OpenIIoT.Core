@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 using Symbiote.Core.Plugin.Connector;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Model
 {
     /// <summary>
     /// A semi-generic container impementing the Composite design pattern
@@ -204,7 +204,7 @@ namespace Symbiote.Core
         /// Adds the supplied item to this Item's Children collection.
         /// </summary>
         /// <param name="item">The Item to add.</param>
-        /// <returns>An Result containing the result of the operation and the added Item.</returns>
+        /// <returns>A Result containing the result of the operation and the added Item.</returns>
         public virtual Result<Item> AddChild(Item item)
         {
             Result<Item> retVal = new Result<Item>();
@@ -232,7 +232,7 @@ namespace Symbiote.Core
         /// Removes the specified child Item from this Item's Children collection.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
-        /// <returns>An Result containing the result of the operation and the removed Item.</returns>
+        /// <returns>A Result containing the result of the operation and the removed Item.</returns>
         public virtual Result<Item> RemoveChild(Item item)
         {
             Result<Item> retVal = new Result<Item>();
@@ -314,7 +314,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Adds the SourceItemChanged event handler for this Item to the SourceItem's Changed event.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result SubscribeToSource()
         {
             Result retVal = new Result();
@@ -344,7 +344,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Removes the SourceItemChanged event handler for this Item from the SourceItem's Changed event.
         /// </summary>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result UnsubscribeFromSource()
         {
             Result retVal = new Result();
@@ -365,7 +365,7 @@ namespace Symbiote.Core
         /// Writes the provided value to this Item's Value property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result Write(object value)
         {
             Result retVal = new Result();
@@ -385,7 +385,7 @@ namespace Symbiote.Core
         /// Asynchronously writes the provided value to this Item's Value property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual async Task<Result> WriteAsync(object value)
         {
             return await Task.Run(() => Write(value));
@@ -395,7 +395,7 @@ namespace Symbiote.Core
         /// Writes the provided value to this Item's SourceItem.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result WriteToSource(object value)
         {
             Result retVal = new Result();
@@ -420,7 +420,7 @@ namespace Symbiote.Core
         /// Asynchronously writes the provided value to this Item's SourceItem.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>An Result containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         public virtual async Task<Result> WriteToSourceAsync(object value)
         {
             return await Task.Run(() => SourceItem.WriteToSource(value));
