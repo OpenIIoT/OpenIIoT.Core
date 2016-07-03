@@ -41,17 +41,13 @@ namespace Symbiote.Core.Plugin.Connector
     ///     Fully Qualified Name within the data structure, if it exists.
     /// </para>
     /// <para>
-    ///     The <see cref="Read(Item)"/> method must return an <see cref="Result{T}"/> containing an object representing the 
-    ///     current value of the specified Item.  The Result must contain the result of the operation, including the status
-    ///     and any informational, warning or error messages that were generated.
-    /// </para>
-    /// <para>
     ///     The IConnector interface represents the minimun implementation of the class.  Other functionality may be implemented by 
     ///     implementing one or more of the following interfaces:
     ///     <list>
-    ///         <item><see cref="IAddable"/>: Allows the application to add additional ConnectorItems to the Connector at runtime.</item>
-    ///         <item><see cref="IWriteable"/>: Allows the application to write values to the source of a ConnectorItem.</item>
+    ///         <item><see cref="IReadable"/>: Allows the application to read the value of ConnectorItems from the Connector's data source.</item>
     ///         <item><see cref="ISubscribable"/>: Allows the application to subscribe Model Items to ConnectorItems to receive value updates.</item>
+    ///         <item><see cref="IWriteable"/>: Allows the application to write values to the source of a ConnectorItem.</item>
+    ///         <item><see cref="IExtensible"/>: Allows the application to add additional ConnectorItems to the Connector at runtime.</item>
     ///     </list>
     /// </para>
     /// </remarks>
@@ -76,12 +72,5 @@ namespace Symbiote.Core.Plugin.Connector
         /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
         /// <returns>The found Item, or the default(Item) if not found.</returns>
         Item Find(string fqn);
-
-        /// <summary>
-        /// Returns the current value of the specified <see cref="Item"/>.
-        /// </summary>
-        /// <param name="item">The Item to read.</param>
-        /// <returns>The current value of the Item.</returns>
-        Result<object> Read(Item item);
     }
 }

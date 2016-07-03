@@ -13,7 +13,7 @@ namespace Symbiote.Plugin.Connector.Simulation
     /// <summary>
     /// Provides simulation data.
     /// </summary>
-    public class SimulationConnector : IConnector, IAddable, ISubscribable, IConfigurable<SimulationConnectorConfiguration>
+    public class SimulationConnector : IConnector, IReadable, ISubscribable, IConfigurable<SimulationConnectorConfiguration>
     {
         #region Variables
 
@@ -119,48 +119,6 @@ namespace Symbiote.Plugin.Connector.Simulation
         #endregion
 
         #region Instance Methods
-
-        #region IAddable Implementation
-
-        /// <summary>
-        /// Adds a user defined <see cref="Item"/> to the Connector's item list.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to add.</param>
-        /// <param name="sourceFQN">A string representing the source of the Item's data.</param>
-        /// <returns>A Result containing the result of the operation and the added Item.</returns>
-        /// <seealso cref="IAddable"/>
-        public Result<Item> Add(string fqn, string sourceFQN)
-        {
-            Result<Item> retVal = new Result<Item>();
-
-            try
-            {
-                // split the specified FQN by '.' to get each tuple of the path
-                string[] path = fqn.Split('.');
-
-                // iterate over each tuple and make sure it exists in the connector's item model
-                // if it doesn't, create it.
-                Item currentNode = itemRoot;
-                foreach (string tuple in path)
-                {
-                    if (!currentNode.Children.Exists(n => n.Name == tuple))
-                    {
-                        currentNode = currentNode.AddChild(new ConnectorItem(this, tuple)).ReturnValue;
-                        retVal.AddInfo("Added node " + currentNode.FQN);
-                    }
-                    else
-                        currentNode = currentNode.Children.Where(n => n.Name == tuple).FirstOrDefault();
-                }
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Error adding Item '" + fqn + "': " + ex.Message);
-            }
-
-            return retVal;
-        }
-
-        #endregion
 
         #region ISubscribable Implementation
 
@@ -433,12 +391,6 @@ namespace Symbiote.Plugin.Connector.Simulation
         }
 
         #endregion
-
-        //private void OnItemChange(string fqn, object value)
-        //{
-        //    if (ItemChanged != null)
-        //        ItemChanged(this, new ConnectorEventArgs(fqn, value));
-        //}
     }
 
     public class SimulationConnectorConfiguration

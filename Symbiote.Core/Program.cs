@@ -250,15 +250,10 @@ namespace Symbiote.Core
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
 
-                //((IAddable)manager.PluginManager.FindPluginInstance("Simulation")).Add("One.Two.Three.Four.Five", "fart");
-                //((IAddable)manager.PluginManager.FindPluginInstance("Simulation")).Add("One.Two.Three.ThreeThree.ThreeThreeThree", "fart");
 
-
-
-
-                //Item symItem = manager.ModelManager.FindItem(manager.InstanceName);
-                //if (symItem == default(Item))
-                //    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName)).ReturnValue;
+                Item symItem = manager.ModelManager.FindItem(manager.InstanceName);
+                if (symItem == default(Item))
+                    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName)).ReturnValue;
 
                 //manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
 
@@ -276,20 +271,22 @@ namespace Symbiote.Core
 
                 ////-------------------------------------------------------------------------------------------------
 
-                //IConnector example = (IConnector)manager.PluginManager.FindPluginInstance("Example");
+                IConnector example = (IConnector)manager.PluginManager.FindPluginInstance("Example");
 
 
                 // ((IAddable)example).Add("New.Item", "None");
 
-                //manager.ModelManager.AttachItem(example.Browse(), symItem);
+                manager.ModelManager.AttachItem(example.Browse(), symItem);
 
-     
 
-                //Result subscribe3 = manager.ModelManager.FindItem("Symbiote.Example.CurrentTime").SubscribeToSource();
 
-                //subscribe3.LogResult(logger.Info);
+                Result subscribe3 = manager.ModelManager.FindItem("Symbiote.Example.CurrentTime").SubscribeToSource();
 
-                //example.Start().LogResult(logger.Info) ;
+                subscribe3.LogResult(logger.Info);
+
+                example.Start().LogResult(logger.Info);
+
+                manager.ModelManager.FindItem("Symbiote").RemoveChild(manager.ModelManager.FindItem("Symbiote.Example"));
 
                 //----------------------------- - -       --
                 // show 'em what they've won!

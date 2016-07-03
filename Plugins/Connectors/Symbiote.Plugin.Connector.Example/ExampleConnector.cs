@@ -42,25 +42,22 @@ namespace Symbiote.Plugin.Connector.Example
     ///     which in turn extends <see cref="IPlugin"/>.
     /// </para>
     /// <para>
-    ///     The IPlugin interface provides the plugin metadata such as <see cref="IPlugin.Name"/>, <see cref="IPlugin.FQN"/>, <see cref="IPlugin.Version"/>,
+    ///     The <see cref="IPlugin"/> interface provides the plugin metadata such as <see cref="IPlugin.Name"/>, <see cref="IPlugin.FQN"/>, <see cref="IPlugin.Version"/>,
     ///     and <see cref="IPlugin.PluginType"/>, and the IPluginInstance interface provides <see cref="IPluginInstance.InstanceName"/> and the 
     ///     <see cref="IPluginInstance.Start()"/>, <see cref="IPluginInstance.Restart()"/> and <see cref="IPluginInstance.Stop()"/> methods.  
     /// </para>
     /// <para>
-    ///     The IConnector interface provides the <see cref="Browse()"/> and <see cref="Browse(Item)"/> methods, used to retrieve the available
-    ///     Items from the Connector, <see cref="Find(string)"/>, used to locate <see cref="Item"/>s, and <see cref="Read(Item)"/>, used to retrieve the value
-    ///     of Items.
+    ///     The <see cref="IConnector"/> interface provides the <see cref="Browse()"/> and <see cref="Browse(Item)"/> methods, used to retrieve the available
+    ///     Items from the Connector, and <see cref="Find(string)"/>, used to locate <see cref="Item"/>s.
     /// </para>
     /// <para>
-    ///     Depending on the nature of the Connector, it may implement the additional interfaces <see cref="IAddable"/>, <see cref="ISubscribable"/>
-    ///     and/or <see cref="IWriteable"/>.
+    ///     Depending on the nature of the Connector, it may implement the additional interfaces <see cref="IReadable"/>, <see cref="ISubscribable"/>,
+    ///     <see cref="IWriteable"/> and/or <see cref="IExtensible"/>.
     /// </para>
     /// <para>
-    ///     The <see cref="IAddable"/> interface is implemented by Connectors which are capable of allowing user-defined Items to be added at runtime.  This is primarily
-    ///     intended for data sources without the capability of fully describing the Items that are available for reading.  The IAddable interface provides 
-    ///     the <see cref="IAddable.Add(string, string)"/> method which accepts two strings; the Fully Qualified Name of the item to add, and the Fully
-    ///     Qualified Name of the source for the item.  The source FQN will generally be an arbitrary string that is meaningful only to the user adding
-    ///     the Item and the Connector.
+    ///     The <see cref="IReadable"/> interface is implemented by Connectors which are capable of providing data to ConnectorItems from the source of the
+    ///     Connector data.  The interface provides the <see cref="IReadable.Read(Item)"/> which is used by Model Items to retrieve the value on demand.  The Connector
+    ///     may implement an internal data cache if it is advantageous to do so, however the caching strategy must be designed and implemented by the Connector author.
     /// </para>
     /// <para>
     ///     The <see cref="ISubscribable"/> interface is implemented by Connectors which are capable of providing unsolicited value updates to configured Items.
@@ -81,11 +78,30 @@ namespace Symbiote.Plugin.Connector.Example
     ///     Item and returning a valid Result upon completion.  
     /// </para>
     /// <para>
+    ///     The <see cref="IExtensible"/> interface is implemented by Connectors which are capable of allowing user-defined Items to be added at runtime.  This is primarily
+    ///     intended for data sources without the capability of fully describing the Items that are available for reading.  The IExtensible interface provides 
+    ///     the <see cref="IExtensible.AddItem(string, string)"/> method which accepts two strings; the Fully Qualified Name of the item to add, and the Fully
+    ///     Qualified Name of the source for the item.  The source FQN will generally be an arbitrary string that is meaningful only to the user adding
+    ///     the Item and the Connector.
+    /// </para>
+    /// <para>
+    ///     Items added via <see cref="IExtensible.AddItem(string, string)"/> are persisted within <see cref="IExtensible.AddedItems"/> as a dictionary keyed
+    ///     on the FQN string of the Item and containing the source FQN as the value.  Connectors must recreate added Items upon initialization.  User-defined 
+    ///     Items may be removed from the Connector using the <see cref="IExtensible.RemoveItem(string)"/> method.
+    /// </para>
+    /// <para>
     ///     Lastly, the <see cref="IConfigurable{T}"/> interface allows the Connector to use the ConfigurationManager to store configuration items in the 
     ///     application configuration.  For a full explanation, see the <see cref="IConfigurable{T}"/> and <see cref="ConfigurationManager"/> documentation.
     /// </para>
+    /// <para>
+    ///     Each Plugin instance is provided with two references upon instantiation; the global instance of <see cref="ProgramManager"/>, which serves as a 
+    ///     Service Locator for the various parts of the application, and a new instance of <see cref="xLogger"/>.  The majority of methods within the 
+    ///     Connector should make use of the <see cref="xLogger.EnterMethod(object[], bool, string, string, int)"/> and 
+    ///     <see cref="xLogger.ExitMethod(object, Guid, string, string, int)"/> methods at a minimum.  This is required to maintain the logging strategy
+    ///     for the application.
+    /// </para>
     /// </remarks>
-    public class ExampleConnector : IConnector, IAddable, ISubscribable, IWriteable, IConfigurable<ExampleConnectorConfiguration>
+    public class ExampleConnector : IConnector, IReadable, ISubscribable, IWriteable, IExtensible, IConfigurable<ExampleConnectorConfiguration>
     {
         #region Variables
 
@@ -113,7 +129,7 @@ namespace Symbiote.Plugin.Connector.Example
 
         #region Properties
 
-        #region IConnector Implementation
+        #region IConnector Properties
 
         /// <summary>
         /// The Connector name.
@@ -147,7 +163,7 @@ namespace Symbiote.Plugin.Connector.Example
 
         #endregion
 
-        #region ISubscribable Implementation
+        #region ISubscribable Properties
 
         /// <summary>
         /// The dictionary containing the current list of subscribed Items and the number of subscribers for each Item.
@@ -156,7 +172,18 @@ namespace Symbiote.Plugin.Connector.Example
 
         #endregion
 
-        #region IConfigurable Implementation
+        #region IExtensible Properties
+
+        /// <summary>
+        ///     Returns a dictionary of the user defined <see cref="Item"/>s that have been added to the Connector, keyed on the 
+        ///     Fully Qualified Name of the item and containing the Source Fully Qualified Name as the value.
+        /// </summary>
+        /// <seealso cref="IExtensible.AddedItems"/>
+        public Dictionary<string, string> AddedItems { get; private set; }
+
+        #endregion
+
+        #region IConfigurable Properties
 
         /// <summary>
         /// The ConfigurationDefinition for the Connector.
@@ -186,12 +213,19 @@ namespace Symbiote.Plugin.Connector.Example
         /// <param name="instanceName">The name of the instance, provided by the Plugin Manager.</param>
         public ExampleConnector(ProgramManager manager, string instanceName, xLogger logger)
         {
+            //------ ----------------------  --------------------------------------   -   -     -  -         ---- -
+            // boilerplate code; this should appear in the majority of Connectors
+            
+            // assign variables and properties
             this.manager = manager;
             InstanceName = instanceName;
             this.logger = logger;
 
+            // log the entry of the method
             logger.EnterMethod(xLogger.Params(new xLogger.ExcludedParam(), instanceName, new xLogger.ExcludedParam()));
+            logger.Info("Initializing Plugin " + FQN + "." + instanceName + "'...");
 
+            // set up metadata
             // The name of the assembly should generally be the same as the Connector Name.
             Name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
 
@@ -209,16 +243,21 @@ namespace Symbiote.Plugin.Connector.Example
             // Set the initial State
             State = State.Stopped;
 
+            // end of boilerplate
+            //-------------------   --- -- ----------------------------------------------------  --  -  -
+
+
             // If the Connector implements ISubscribable, initialize the Subscriptions dictionary.
             Subscriptions = new Dictionary<ConnectorItem, int>();
-
-            logger.Info("Initializing " + PluginType + " '" + FQN + "." + instanceName + "'...");
 
             // create a timer to "poll" for the current time
             // this is analogous to code that would poll an external data source
             timer = new Timer(1000);
             timer.Elapsed += Timer_Elapsed;
 
+
+            //----------------------------------------------------- -  --------------  - 
+            // configuration boilerplate
             logger.Info("Configuring '" + instanceName + "'...");
 
             // configure the Connector
@@ -236,10 +275,13 @@ namespace Symbiote.Plugin.Connector.Example
 
             logger.Checkpoint("Configured " + InstanceName, xLogger.Vars(Configuration));
 
-            // the code is discretionary from this point on; InitializeItems() is used for this
-            // particular example but does not need to be used otherwise.
+            // end of configuration boilerplate
+            //-------------------------  -      ------------------  -       --
+
+            // create the Item model for the Connector
             InitializeItems();
 
+            // log the exit of the method
             logger.ExitMethod();
         }
 
@@ -393,6 +435,10 @@ namespace Symbiote.Plugin.Connector.Example
             return found;
         }
 
+        #endregion
+
+        #region IReadable Implementation
+
         /// <summary>
         /// Returns the current value of the specified <see cref="Item"/>.
         /// </summary>
@@ -407,59 +453,6 @@ namespace Symbiote.Plugin.Connector.Example
             // in a real implementation the code would either return the value from an 
             // internal model, or would go out to the data source and fetch the value
             return new Result<object>().SetReturnValue("Hello World!");
-        }
-
-        #endregion
-
-        #region IAddable Implementation
-
-        /// <summary>
-        /// Adds a user defined <see cref="Item"/> to the Connector's item list.
-        /// </summary>
-        /// <remarks>
-        ///     If some part of the specified Item's Fully Qualified Path doesn't exist, it must be created.
-        ///     For example, if the FQN of a specified Item is "Weather.Midwest.Chicago.OHare.Temperature",
-        ///     and the "Midwest" Item does not yet contain a "Chicago" item, the "Chicago", "OHare" and 
-        ///     "Temperature" items must all be created.
-        /// </remarks>
-        /// <param name="fqn">The Fully Qualified Name of the Item to add.</param>
-        /// <param name="sourceFQN">A string representing the source of the Item's data.</param>
-        /// <returns>A Result containing the result of the operation and the added Item.</returns>
-        /// <seealso cref="IAddable"/>
-        public Result<Item> Add(string fqn, string sourceFQN)
-        {
-            logger.EnterMethod(xLogger.Params(fqn, sourceFQN));
-            logger.Info("Adding user defined Item '" + fqn + "' with Source FQN '" + sourceFQN + "'...");
-
-            Result<Item> retVal = new Result<Item>();
-
-            try
-            {
-                // split the specified FQN by '.' to get each tuple of the path
-                string[] path = fqn.Split('.');
-
-                // iterate over each tuple and make sure it exists in the connector's item model
-                // if it doesn't, create it.
-                Item currentNode = itemRoot;
-                foreach (string tuple in path)
-                {
-                    if (!currentNode.Children.Exists(n => n.Name == tuple))
-                    {
-                        currentNode = currentNode.AddChild(new ConnectorItem(this, tuple)).ReturnValue;
-                        retVal.AddInfo("Added node " + currentNode.FQN);
-                    }
-                    else
-                        currentNode = currentNode.Children.Where(n => n.Name == tuple).FirstOrDefault();
-                }
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Error adding Item '" + fqn + "': " + ex.Message);
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal);
-            return retVal;
         }
 
         #endregion
@@ -573,6 +566,97 @@ namespace Symbiote.Plugin.Connector.Example
             else if (item.Name == "CurrentTime")
                 retVal.AddError("Unable to write value.");
 
+            return retVal;
+        }
+
+        #endregion
+
+        #region IExtensible Implementation
+
+        /// <summary>
+        /// Adds a new <see cref="Item"/> with the specified Fully Qualified Name and Fully Qualified Source Name
+        /// to the Connector Plugin's data structure.
+        /// </summary>
+        /// <remarks>
+        /// Items contained within the Fully Qualified Path for the Item must be created if they don't yet exist.
+        /// </remarks>
+        /// <param name="fqn">The Fully Qualifed Name of the <see cref="Item"/> to add.</param>
+        /// <param name="sourceFQN">The Fully Qualified Source Name of the backing data point or structure.</param>
+        /// <returns>A Result containing the result of the operation and the newly created Item.</returns>
+        public Result<Item> AddItem(string fqn, string sourceFQN)
+        {
+            logger.EnterMethod(xLogger.Params(fqn, sourceFQN));
+            logger.Info("Adding user defined Item '" + fqn + "' with Source FQN '" + sourceFQN + "'...");
+
+            Result<Item> retVal = new Result<Item>();
+
+            try
+            {
+                // split the specified FQN by '.' to get each tuple of the path
+                string[] path = fqn.Split('.');
+
+                // iterate over each tuple and make sure it exists in the connector's item model
+                // if it doesn't, create it.
+                Item currentNode = itemRoot;
+                foreach (string tuple in path)
+                {
+                    if (!currentNode.Children.Exists(n => n.Name == tuple))
+                    {
+                        currentNode = currentNode.AddChild(new ConnectorItem(this, tuple)).ReturnValue;
+                        retVal.AddInfo("Added node " + currentNode.FQN);
+                    }
+                    else
+                        currentNode = currentNode.Children.Where(n => n.Name == tuple).FirstOrDefault();
+                }
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error adding Item '" + fqn + "': " + ex.Message);
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Removes a user defined <see cref="Item"/> from the Connector Plugin's data structure.
+        /// </summary>
+        /// <remarks>
+        /// <para>If an Item being removed has child Items, all children are also removed.</para>
+        /// </remarks>
+        /// <param name="fqn">The Item to remove.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result RemoveItem(string fqn)
+        {
+            logger.EnterMethod(xLogger.Params(fqn));
+            logger.Info("Removing user defined Item '" + fqn + "...");
+
+            Result retVal = new Result<Item>();
+
+            // check to see if the specified Item has been added previously
+            if (AddedItems.ContainsKey(fqn))
+            {
+                // try to find the matching Item instance
+                Item foundItem = Find(fqn);
+
+                if (foundItem != default(Item))
+                {
+                    // leverage the Item's parent to remove it from the model.
+                    // The RemoveChild() method in Item will recursively remove all children.
+                    foundItem.Parent.RemoveChild(foundItem);
+                }
+                else
+                    retVal.AddWarning("The Item '" + fqn + "' was not found in the Item data structure, but exists in the list of added items.  It will be removed from the list.");
+
+                // remove the item from the AddedItems list
+                AddedItems.Remove(fqn);
+            }
+            else
+                retVal.AddError("The Item '" + fqn + "' does not exist in the list of added Items.");
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 

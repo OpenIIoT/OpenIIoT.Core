@@ -236,13 +236,24 @@ namespace Symbiote.Core.Model
         public virtual Result<Item> RemoveChild(Item item)
         {
             Result<Item> retVal = new Result<Item>();
-
+            System.Diagnostics.Debug.WriteLine("Removing " + item.FQN);
+            // locate the item
             retVal.ReturnValue = Children.Find(i => i.FQN == item.FQN);
 
+            // ensure that it was found in the collection
             if (retVal.ReturnValue == default(Item))
                 retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
             else
             {
+                List<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
+
+                // if it was found, recursively remove all children before removing the found Item
+                foreach (Item child in childrenToRemove)
+                {
+                    retVal.ReturnValue.RemoveChild(child);
+                }
+                
+                // remove the item itself
                 if (!Children.Remove(retVal.ReturnValue))
                     retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + FQN + "'.");
             }

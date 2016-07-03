@@ -138,7 +138,10 @@ namespace Symbiote.Core.Plugin.Connector
 
         public override object ReadFromSource()
         {
-            return Connector.Read(this);
+            if (Connector is IReadable)
+                return ((IReadable)Connector).Read(this);
+            else
+                return null;
         }
 
         /// <summary>
