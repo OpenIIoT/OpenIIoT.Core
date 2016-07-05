@@ -30,6 +30,16 @@ namespace Symbiote.Core.Plugin.Connector
 
         #endregion
 
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         #region Constructors
 
         private ConnectorManager(PluginManager pluginManager, ProgramManager programManager)

@@ -7,6 +7,8 @@ using Symbiote.Core.Platform;
 using System.Text.RegularExpressions;
 using Symbiote.Core.Plugin.Connector;
 using Symbiote.Core.Model;
+using System.Threading;
+using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core
 {
@@ -273,6 +275,7 @@ namespace Symbiote.Core
 
                 IConnector example = (IConnector)manager.PluginManager.FindPluginInstance("Example");
 
+                example.StateChanged += PluginStateChanged;
 
                 // ((IAddable)example).Add("New.Item", "None");
 
@@ -284,9 +287,12 @@ namespace Symbiote.Core
 
                 subscribe3.LogResult(logger.Info);
 
-                example.Start().LogResult(logger.Info);
+                Thread test = new Thread(() => 
+                    example.Start().LogResult(logger.Info));
 
-                manager.ModelManager.FindItem("Symbiote").RemoveChild(manager.ModelManager.FindItem("Symbiote.Example"));
+                test.Start();
+
+                //manager.ModelManager.FindItem("Symbiote").RemoveChild(manager.ModelManager.FindItem("Symbiote.Example"));
 
                 //----------------------------- - -       --
                 // show 'em what they've won!
@@ -330,6 +336,11 @@ namespace Symbiote.Core
             {
                 logger.ExitMethod();
             }
+        }
+
+        private static void PluginStateChanged(object sender, StateChangedEventArgs e)
+        {
+            logger.Info("Plugin " + ((IPluginInstance)sender).InstanceName + "state changed from " + e.PreviousState + " to "  + e.State + " (" + e.Message + ")");
         }
 
         /// <summary>

@@ -44,7 +44,8 @@ namespace Symbiote.Plugin.Connector.Example
     /// <para>
     ///     The <see cref="IPlugin"/> interface provides the plugin metadata such as <see cref="IPlugin.Name"/>, <see cref="IPlugin.FQN"/>, <see cref="IPlugin.Version"/>,
     ///     and <see cref="IPlugin.PluginType"/>, and the IPluginInstance interface provides <see cref="IPluginInstance.InstanceName"/> and the 
-    ///     <see cref="IPluginInstance.Start()"/>, <see cref="IPluginInstance.Restart()"/> and <see cref="IPluginInstance.Stop()"/> methods.  
+    ///     <see cref="IPluginInstance.Start()"/>, <see cref="IPluginInstance.Restart()"/> and <see cref="IPluginInstance.Stop()"/> methods.  The IPluginInstance interface
+    ///     also implements <see cref="IStateful"/> which provies the <see cref="IStateful.State"/> property and the <see cref="IStateful.StateChanged"/> event.
     /// </para>
     /// <para>
     ///     The <see cref="IConnector"/> interface provides the <see cref="Browse()"/> and <see cref="Browse(Item)"/> methods, used to retrieve the available
@@ -205,6 +206,20 @@ namespace Symbiote.Plugin.Connector.Example
 
         #endregion
 
+        #region Events
+
+        #region IConnector Events
+
+        /// <summary>
+        /// Fired when the State property changes.
+        /// </summary>
+        /// <event cref="StateChanged"></event>
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -299,6 +314,7 @@ namespace Symbiote.Plugin.Connector.Example
         ///     and should either be set to <see cref="State.Running"/> or <see cref="State.Faulted"/> pending
         ///     the outcome of the operation.
         /// </remarks>
+        /// <remarks>Any changes to the State property should fire the <see cref="StateChanged"/> event.</remarks>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result Start()
         {
@@ -306,7 +322,7 @@ namespace Symbiote.Plugin.Connector.Example
 
             // instantiate a new Result and set the State to State.Starting
             Result retVal = new Result();
-            State = State.Starting;
+            ChangeState(State.Starting);
 
             // place the startup code in a try/catch to be sure we won't have issues
             // this is a bit dubious for this example, however this serves as a good template.
@@ -322,9 +338,9 @@ namespace Symbiote.Plugin.Connector.Example
             // examine the Result to make sure we didn't encounter any issues.
             // warnings are ok here, we'll send the messages back to the caller in the Result.
             if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Running;
+                ChangeState(State.Running);
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -350,6 +366,12 @@ namespace Symbiote.Plugin.Connector.Example
         /// <summary>
         /// Stops the Connector.
         /// </summary>
+        /// <remarks>
+        ///     The State property should be set to <see cref="State.Stopping"/> at the beginning of the method,
+        ///     and should either be set to <see cref="State.Stopped"/> or <see cref="State.Faulted"/> pending
+        ///     the outcome of the operation.
+        /// </remarks>
+        /// <remarks>Any changes to the State property should fire the <see cref="StateChanged"/> event.</remarks>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result Stop()
         {
@@ -357,7 +379,7 @@ namespace Symbiote.Plugin.Connector.Example
 
             // instantiate a new Result and set the State to State.Stopping
             Result retVal = new Result();
-            State = State.Stopping;
+            ChangeState(State.Stopping);
 
             // place the shutdown code in a try/catch to be sure we won't have issues
             try
@@ -372,15 +394,15 @@ namespace Symbiote.Plugin.Connector.Example
             // examine the Result to make sure we didn't encounter any issues.
             // warnings are ok here, we'll send the messages back to the caller in the Result.
             if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Stopped;
+                ChangeState(State.Stopped);
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted);
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
-
+        
         /// <summary>
         /// Returns the root node of the connector's <see cref="Item"/> tree.
         /// </summary>
@@ -408,31 +430,6 @@ namespace Symbiote.Plugin.Connector.Example
         public Item Find(string fqn)
         {
             return Find(itemRoot, fqn);
-        }
-
-        /// <summary>
-        ///     Returns the child <see cref="Item"/> within the specified Item matching the 
-        ///     specified Fully Qualified Name
-        /// </summary>
-        /// <remarks>
-        ///     Note that this is a private method; it is included to facilitate the Item search
-        ///     but is not part of the IConnector interface.  Ergo, supply your own method if you like,
-        ///     or do everything within the other overload.
-        /// </remarks>
-        /// <param name="root">The Parent Item to search.</param>
-        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        /// <returns>The found Item, or default(Item) if not found.</returns>
-        private Item Find(Item root, string fqn)
-        {
-            if (root.FQN == fqn) return root;
-
-            Item found = default(Item);
-            foreach (Item child in root.Children)
-            {
-                found = Find(child, fqn);
-                if (found != default(Item)) break;
-            }
-            return found;
         }
 
         #endregion
@@ -731,6 +728,13 @@ namespace Symbiote.Plugin.Connector.Example
 
                 timer.Interval = Configuration.UpdateRate;
 
+                // load the list of added Items
+                AddedItems = Configuration.AddedItems;
+
+                // create all of the Items
+                foreach (string key in AddedItems.Keys)
+                    retVal.Incorporate(AddItem(key, AddedItems[key]));
+
                 SaveConfiguration();
             }
             catch (Exception ex)
@@ -750,6 +754,9 @@ namespace Symbiote.Plugin.Connector.Example
 
             Result retVal = new Result();
 
+            // update the list of added Items
+            Configuration.AddedItems = AddedItems;
+            
             retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration, InstanceName));
 
             retVal.LogResult(logger);
@@ -758,6 +765,48 @@ namespace Symbiote.Plugin.Connector.Example
         }
 
         #endregion
+
+        /// <summary>
+        ///     Returns the child <see cref="Item"/> within the specified Item matching the 
+        ///     specified Fully Qualified Name
+        /// </summary>
+        /// <remarks>
+        ///     Note that this is a private method; it is included to facilitate the Item search
+        ///     but is not part of the IConnector interface.  Ergo, supply your own method if you like,
+        ///     or do everything within the other overload.
+        /// </remarks>
+        /// <param name="root">The Parent Item to search.</param>
+        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        /// <returns>The found Item, or default(Item) if not found.</returns>
+        private Item Find(Item root, string fqn)
+        {
+            if (root.FQN == fqn) return root;
+
+            Item found = default(Item);
+            foreach (Item child in root.Children)
+            {
+                found = Find(child, fqn);
+                if (found != default(Item)) break;
+            }
+            return found;
+        }
+
+        /// <summary>
+        ///     Changes the <see cref="State"/> of the Connector to the specified state and fires the
+        ///     StateChanged event with the updates State, the previous state and the optionally supplied 
+        ///     message, if listeners are subscribed to the event.
+        /// </summary>
+        /// <param name="state">The State to which the State property should be changed.</param>
+        /// <param name="message">The optional message describing the nature or reason for the change.</param>
+        private void ChangeState(State state, string message = "")
+        {
+            State previousState = State;
+
+            State = state;
+
+            if (StateChanged != null)
+                StateChanged(this, new StateChangedEventArgs(state, previousState, message));
+        }
 
         /// <summary>
         /// Create mockup Items and start a "polling" timer.

@@ -131,6 +131,16 @@ namespace Symbiote.Core.Plugin
 
         #endregion
 
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         #region Constructors
 
         /// <summary>
@@ -388,7 +398,7 @@ namespace Symbiote.Core.Plugin
             Configuration = configuration;
 
             // populate the plugin list
-            Plugins = Configuration.Plugins;
+            Plugins = Configuration.InstalledPlugins;
 
             logger.Debug("Successfully configured the Manager.");
 
@@ -413,7 +423,7 @@ namespace Symbiote.Core.Plugin
             Result retVal = new Result();
 
             // update the list of plugins
-            Configuration.Plugins = Plugins;
+            Configuration.InstalledPlugins = Plugins;
 
             retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
@@ -1491,7 +1501,6 @@ namespace Symbiote.Core.Plugin
             PluginManagerConfigurationPluginInstance sim = new PluginManagerConfigurationPluginInstance();
             sim.InstanceName = "Simulation";
             sim.AssemblyName = "Symbiote.Plugin.Connector.Simulation";
-            sim.Configuration = "";
 
             retVal.Instances.Add(sim);
             return retVal;

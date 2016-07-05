@@ -9,12 +9,12 @@ namespace Symbiote.Core.Plugin
     public class PluginManagerConfiguration
     {
         public List<PluginManagerConfigurationPluginInstance> Instances { get; set; }
-        public List<Plugin> Plugins { get; set; }
+        public List<Plugin> InstalledPlugins { get; set; }
 
         public PluginManagerConfiguration()
         {
             Instances = new List<PluginManagerConfigurationPluginInstance>();
-            Plugins = new List<Plugin>();
+            InstalledPlugins = new List<Plugin>();
         }
     }
 
@@ -22,6 +22,5 @@ namespace Symbiote.Core.Plugin
     {
         public string InstanceName { get; set; }
         public string AssemblyName { get; set; }
-        public string Configuration { get; set; }
     }
 }

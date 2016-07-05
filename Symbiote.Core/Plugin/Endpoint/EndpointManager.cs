@@ -31,6 +31,16 @@ namespace Symbiote.Core.Plugin.Endpoint
 
         #endregion
 
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         #region Constructors
 
 

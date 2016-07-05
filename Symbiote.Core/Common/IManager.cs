@@ -3,13 +3,8 @@
     /// <summary>
     /// Defines the interface used for the various Managers within the application.
     /// </summary>
-    public interface IManager
+    public interface IManager: IStateful
     {
-        /// <summary>
-        /// Indicates the State of the Manager.
-        /// </summary>
-        State State { get; }
-
         /// <summary>
         /// Starts the Manager.
         /// </summary>

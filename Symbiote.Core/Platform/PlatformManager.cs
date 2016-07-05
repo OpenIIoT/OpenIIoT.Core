@@ -77,6 +77,16 @@ namespace Symbiote.Core.Platform
 
         #region Properties
 
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         #region IManager Implementation
 
         /// <summary>

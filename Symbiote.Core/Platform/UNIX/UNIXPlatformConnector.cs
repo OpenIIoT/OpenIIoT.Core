@@ -29,6 +29,16 @@ namespace Symbiote.Core.Platform.UNIX
         public string Configuration { get; private set; }
         public bool IsConfigured { get { return true; } }
 
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         public UNIXPlatformConnector(string instanceName)
         {
             InstanceName = instanceName;

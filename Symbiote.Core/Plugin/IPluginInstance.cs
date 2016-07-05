@@ -3,7 +3,7 @@
     /// <summary>
     /// Defines the interface for PluginInstance objects.
     /// </summary>
-    public interface IPluginInstance : IPlugin
+    public interface IPluginInstance : IPlugin, IStateful
     {
         #region Properties
 
@@ -12,11 +12,6 @@
         /// persists the PluginInstance.
         /// </summary>
         string InstanceName { get; }
-
-        /// <summary>
-        /// Indicates the State of the Plugin.
-        /// </summary>
-        State State { get; }
 
         #endregion
 

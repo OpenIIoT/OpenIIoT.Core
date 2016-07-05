@@ -1,4 +1,6 @@
-﻿namespace Symbiote.Core
+﻿using System;
+
+namespace Symbiote.Core
 {
     /// <summary>
     /// Enumeration of the different component states.

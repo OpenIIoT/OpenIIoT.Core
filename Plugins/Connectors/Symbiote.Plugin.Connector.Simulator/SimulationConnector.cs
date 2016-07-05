@@ -93,6 +93,16 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         #endregion
 
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         #region Constructors
 
         public SimulationConnector(ProgramManager manager, string instanceName, xLogger logger)

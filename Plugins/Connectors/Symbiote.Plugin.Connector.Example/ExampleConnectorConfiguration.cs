@@ -29,6 +29,8 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using System.Collections.Generic;
+
 namespace Symbiote.Plugin.Connector.Example
 {
     /// <summary>
@@ -40,5 +42,10 @@ namespace Symbiote.Plugin.Connector.Example
         /// The update rate, in milliseconds, of the DateTime Item.
         /// </summary>
         public int UpdateRate { get; set; }
+
+        /// <summary>
+        /// The list of Items added.  Supports <see cref="IExtensible"/>.
+        /// </summary>
+        public Dictionary<string, string> AddedItems { get; set; }
     }
 }

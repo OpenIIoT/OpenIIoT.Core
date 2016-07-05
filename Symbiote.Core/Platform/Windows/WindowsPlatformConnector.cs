@@ -31,6 +31,16 @@ namespace Symbiote.Core.Platform.Windows
         public bool Browseable { get { return true; } }
         public bool Writeable { get { return false; } }
 
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         //public event EventHandler<ConnectorEventArgs> ItemChanged;
 
         public WindowsPlatformConnector(string instanceName)

@@ -125,7 +125,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiResult<List<Plugin.Plugin>> retVal = new ApiResult<List<Plugin.Plugin>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.PluginManager.Configuration.Plugins;
+            retVal.ReturnValue = manager.PluginManager.Configuration.InstalledPlugins;
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolver.ContractResolverType.OptOut, true));

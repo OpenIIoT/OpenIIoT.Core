@@ -30,6 +30,16 @@ namespace Symbiote.Core.Service
 
         #endregion
 
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
+
+        #endregion
+
         #region Constructors
 
         private ServiceManager(ProgramManager manager)
