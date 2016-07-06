@@ -30,6 +30,7 @@ using Symbiote.Core.Plugin.Connector;
 using System.Linq;
 using System.Timers;
 using Symbiote.Core.Model;
+using System.Threading.Tasks;
 
 namespace Symbiote.Plugin.Connector.Example
 {
@@ -213,7 +214,6 @@ namespace Symbiote.Plugin.Connector.Example
         /// <summary>
         /// Fired when the State property changes.
         /// </summary>
-        /// <event cref="StateChanged"></event>
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
         #endregion
@@ -413,6 +413,15 @@ namespace Symbiote.Plugin.Connector.Example
         }
 
         /// <summary>
+        /// Asynchronously returns the root node of the connector's <see cref="Item"/> tree.
+        /// </summary>
+        /// <returns>The root node of the connector's Item tree.</returns>
+        public async Task<Item> BrowseAsync()
+        {
+            return await Task.Run(() => Browse());
+        }
+
+        /// <summary>
         /// Returns a list of the children <see cref="Item"/>s for the specified Item within the connector's Item tree.
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
@@ -420,6 +429,16 @@ namespace Symbiote.Plugin.Connector.Example
         public List<Item> Browse(Item root)
         {
             return (root == null ? itemRoot.Children : root.Children);
+        }
+
+        /// <summary>
+        /// Asynchronously returns a list of the children <see cref="Item"/>s for the specified Item within the connector's Item tree.
+        /// </summary>
+        /// <param name="root">The Item for which the children are to be returned.</param>
+        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        public async Task<List<Item>> BrowseAsync(Item root)
+        {
+            return await Task.Run(() => Browse(root));
         }
 
         /// <summary>
@@ -432,24 +451,44 @@ namespace Symbiote.Plugin.Connector.Example
             return Find(itemRoot, fqn);
         }
 
+        /// <summary>
+        /// Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        /// <returns>The found Item, or the default(Item) if not found.</returns>
+        public async Task<Item> FindAsync(string fqn)
+        {
+            return await Task.Run(() => Find(fqn));
+        }
+
         #endregion
 
         #region IReadable Implementation
 
         /// <summary>
-        /// Returns the current value of the specified <see cref="Item"/>.
+        /// Reads and returns the current value of the specified <see cref="Item"/>.
         /// </summary>
         /// <remarks>
-        /// Retrieve the current value either from an internal cache, or the data source.  
-        /// Caching is at the discretion (and is the responsibility) of the Connector.
+        ///     Retrieve the current value either from an internal cache or the data source.  
+        ///     Caching is at the discretion (and, if used, is the responsibility) of the Connector.
         /// </remarks>
         /// <param name="item">The Item to read.</param>
-        /// <returns>The current value of the Item.</returns>
+        /// <returns>A Result containing the result of the operation and the current value of the Item.</returns>
         public Result<object> Read(Item item)
         {
             // in a real implementation the code would either return the value from an 
             // internal model, or would go out to the data source and fetch the value
             return new Result<object>().SetReturnValue("Hello World!");
+        }
+
+        /// <summary>
+        /// Asyncronously reads and returns the current value of the specified <see cref="Item"/>
+        /// </summary>
+        /// <param name="item">The Item to read.</param>
+        /// <returns>A Result containing the result of the operation and the current value of the Item.</returns>
+        public async Task<Result<object>> ReadAsync(Item item)
+        {
+            return await Task.Run(() => Read(item));
         }
 
         #endregion
@@ -564,6 +603,17 @@ namespace Symbiote.Plugin.Connector.Example
                 retVal.AddError("Unable to write value.");
 
             return retVal;
+        }
+
+        /// <summary>
+        /// Asynchronously writes the specified value to the specified <see cref="Item"/>.
+        /// </summary>
+        /// <param name="item">The Item to write.</param>
+        /// <param name="value">The value to write to the <see cref="Item"/>.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public async Task<Result> WriteAsync(Item item, object value)
+        {
+            return await Task.Run(() => Write(item, value));
         }
 
         #endregion

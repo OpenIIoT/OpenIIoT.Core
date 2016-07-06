@@ -5,6 +5,7 @@ using System.Diagnostics;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
+using System.Threading.Tasks;
 
 namespace Symbiote.Core.Platform.UNIX
 {
@@ -78,6 +79,11 @@ namespace Symbiote.Core.Platform.UNIX
             return Find(itemRoot, fqn);
         }
 
+        public async Task<Item> FindAsync(string fqn)
+        {
+            return await Task.Run(() => Find(fqn));
+        }
+
         private Item Find(Item root, string fqn)
         {
             if (root.FQN == fqn) return root;
@@ -96,10 +102,19 @@ namespace Symbiote.Core.Platform.UNIX
             return itemRoot;
         }
 
+        public async Task<Item> BrowseAsync()
+        {
+            return await Task.Run(() => Browse());
+        }
 
         public List<Item> Browse(Item root)
         {
             return root.Children;
+        }
+
+        public async Task<List<Item>> BrowseAsync(Item root)
+        {
+            return await Task.Run(() => Browse(root));
         }
 
         public Result<object> Read(Item item)

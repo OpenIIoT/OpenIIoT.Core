@@ -22,6 +22,7 @@
                                                                                                    ▀▀                            */
 using Newtonsoft.Json;
 using Symbiote.Core.Model;
+using System.Threading.Tasks;
 
 namespace Symbiote.Core.Plugin.Connector
 {
@@ -136,12 +137,22 @@ namespace Symbiote.Core.Plugin.Connector
             return ReadFromSource();
         }
 
+        public override async Task<object> ReadAsync()
+        {
+            return await Task.Run(() => Read());
+        }
+
         public override object ReadFromSource()
         {
             if (Connector is IReadable)
                 return ((IReadable)Connector).Read(this);
             else
                 return null;
+        }
+
+        public override async Task<object> ReadFromSourceAsync()
+        {
+            return await Task.Run(() => ReadFromSource());
         }
 
         /// <summary>
@@ -153,9 +164,17 @@ namespace Symbiote.Core.Plugin.Connector
         /// <returns>A Result containing the result of the operation.</returns>
         public override Result Write(object value)
         {
-            Value = value;
-            base.OnChange(value);
+            lock (WriteLock)
+            {
+                Value = value;
+                base.OnChange(value);
+            }
             return new Result();
+        }
+
+        public override async Task<Result> WriteAsync(object value)
+        {
+            return await Task.Run(() => Write(value));
         }
 
         /// <summary>
@@ -175,6 +194,11 @@ namespace Symbiote.Core.Plugin.Connector
             }
             else
                 return new Result().AddError("The source Connector is not writeable.");
+        }
+
+        public override async Task<Result> WriteToSourceAsync(object value)
+        {
+            return await Task.Run(() => WriteToSource(value));
         }
 
         public override Result SubscribeToSource()

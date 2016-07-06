@@ -13,6 +13,12 @@ namespace Symbiote.Core.Model
     /// </summary>
     public class Item : ICloneable
     {
+        #region Variables
+
+        protected object WriteLock = new object();
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -385,8 +391,11 @@ namespace Symbiote.Core.Model
                 retVal.AddError("Unable to write to '" + FQN + "'; the item is not writeable.");
             else
             {
-                Value = value;
-                OnChange(value);
+                lock (WriteLock)
+                {
+                    Value = value;
+                    OnChange(value);
+                }
             }
 
             return retVal;

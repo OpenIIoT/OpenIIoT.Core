@@ -21,6 +21,7 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using Symbiote.Core.Model;
+using System.Threading.Tasks;
 
 namespace Symbiote.Core.Plugin.Connector
 {
@@ -43,9 +44,17 @@ namespace Symbiote.Core.Plugin.Connector
         /// <summary>
         /// Writes the specified value to the specified <see cref="Item"/>.
         /// </summary>
-        /// <param name="item">The <see cref="Item"/> to write.</param>
+        /// <param name="item">The Item to write.</param>
         /// <param name="value">The value to write to the <see cref="Item"/>.</param>
-        /// <returns>An <see cref="Result"/> containing the result of the operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         Result Write(Item item, object value);
+
+        /// <summary>
+        /// Asynchronously writes the specified value to the specified <see cref="Item"/>.
+        /// </summary>
+        /// <param name="item">The Item to write.</param>
+        /// <param name="value">The value to write to the <see cref="Item"/>.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<Result> WriteAsync(Item item, object value);
     }
 }

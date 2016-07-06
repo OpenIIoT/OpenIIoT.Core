@@ -170,19 +170,20 @@ namespace Symbiote.Core
         #region Public
 
         /// <summary>
-        /// Called by the NLog method logging target, this method fires the Changed event with the timestamp, level, logger and message
-        /// associated with the new log message.
+        ///     Called by the NLog method logging target, this method fires the Changed event with the thread ID, timestamp, 
+        ///     level, logger and message associated with the new log message.
         /// </summary>
+        /// <param name="threadID">The ID of the thread that originated the log message.</param>
         /// <param name="dateTime">The timestamp of the log message in long date format.</param>
         /// <param name="level">The level of the log message.</param>
         /// <param name="logger">The logger instance that generated the message.</param>
         /// <param name="message">The log message.</param>
-        public static void AppendLog(string dateTime, string level, string logger, string message)
+        public static void AppendLog(string threadID, string dateTime, string level, string logger, string message)
         {
             if (!initialized)
                 Initialize();
 
-            RealtimeLoggerEventArgs eventArgs = new RealtimeLoggerEventArgs(dateTime, level, logger, message);
+            RealtimeLoggerEventArgs eventArgs = new RealtimeLoggerEventArgs(threadID, dateTime, level, logger, message);
 
             AppendLogHistory(eventArgs);
 
@@ -201,6 +202,11 @@ namespace Symbiote.Core
     public class RealtimeLoggerEventArgs : EventArgs
     {
         #region Properties
+
+        /// <summary>
+        /// The ID of the thread that originated the log message.
+        /// </summary>
+        public int ThreadID { get; private set; }
 
         /// <summary>
         /// The timestamp of the log message.
@@ -229,14 +235,26 @@ namespace Symbiote.Core
         /// <summary>
         /// The default constructor.  Creates a new instance of RealtimeLoggerEventArgs with the supplied parameters.
         /// </summary>
+        /// <param name="threadID">The ID of the thread that originated the log message.</param>
         /// <param name="dateTime">The timestamp of the log message in long date format.</param>
         /// <param name="level">The level of the log message.</param>
         /// <param name="logger">The logger instance that generated the message.</param>
         /// <param name="message">The log message.</param>
-        public RealtimeLoggerEventArgs(string dateTime, string level, string logger, string message)
+        public RealtimeLoggerEventArgs(string threadID, string dateTime, string level, string logger, string message)
         {
             // set up an empty prefix in case we need to append warnings
             string prefix = "";
+
+            // parse the thread ID
+            int parsedThreadID;
+
+            if (int.TryParse(threadID, out parsedThreadID))
+                ThreadID = parsedThreadID;
+            else
+            {
+                ThreadID = 1;
+                prefix += "[Invalid ThreadID; substituted with default]";
+            }
 
             // ensure the supplied long date string is a valid DateTime
             // substitute with the current timestamp if parse fails

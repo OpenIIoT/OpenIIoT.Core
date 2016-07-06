@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
 using Symbiote.Core.Model;
+using System.Threading.Tasks;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
@@ -254,6 +255,11 @@ namespace Symbiote.Plugin.Connector.Simulation
             return Find(itemRoot, fqn);
         }
 
+        public async Task<Item> FindAsync(string fqn)
+        {
+            return await Task.Run(() => Find(fqn));
+        }
+
         private Item Find(Item root, string fqn)
         {
             if (root.FQN == fqn) return root;
@@ -272,9 +278,19 @@ namespace Symbiote.Plugin.Connector.Simulation
             return itemRoot;
         }
 
+        public async Task<Item> BrowseAsync()
+        {
+            return await Task.Run(() => Browse());
+        }
+
         public List<Item> Browse(Item root)
         {
             return (root == null ? itemRoot.Children : root.Children);
+        }
+
+        public async Task<List<Item>> BrowseAsync(Item root)
+        {
+            return await Task.Run(() => Browse(root));
         }
 
         public Result<object> Read(Item item)
@@ -320,6 +336,10 @@ namespace Symbiote.Plugin.Connector.Simulation
                 
         }
 
+        public async Task<Result<object>> ReadAsync(Item item)
+        {
+            return await Task.Run(() => Read(item));
+        }
 
         public Result Write(string item, object value)
         {
