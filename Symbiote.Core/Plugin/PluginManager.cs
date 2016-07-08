@@ -78,6 +78,10 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         public State State { get; private set; }
 
+        /// <summary>
+        /// The list of dependencies for the Manager.
+        /// </summary>
+        public List<Type> Dependencies { get { return new Type[] { typeof(ProgramManager), typeof(PlatformManager), typeof(ConfigurationManager) }.ToList(); } }
         #endregion
 
         #region IConfigurable Implementation
@@ -163,7 +167,7 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="manager">The ProgramManager instance for the application.</param>
         /// <returns>The Singleton instance of PluginManager.</returns>
-        internal static PluginManager Instance(ProgramManager manager)
+        private static PluginManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new PluginManager(manager);
@@ -304,14 +308,14 @@ namespace Symbiote.Core.Plugin
         /// Restarts the Plugin manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Plugin Manager...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop());
+            retVal.Incorporate(Stop(stopType));
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
@@ -323,7 +327,7 @@ namespace Symbiote.Core.Plugin
         /// Stops the Plugin manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             logger.EnterMethod();
 
@@ -355,7 +359,7 @@ namespace Symbiote.Core.Plugin
             logger.EnterMethod();
             Result retVal = new Result();
 
-            Result<PluginManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
+            Result<PluginManagerConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -367,7 +371,7 @@ namespace Symbiote.Core.Plugin
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<PluginManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<PluginManagerConfiguration> createResult = manager.GetManager<ConfigurationManager>().AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -425,7 +429,7 @@ namespace Symbiote.Core.Plugin
             // update the list of plugins
             Configuration.InstalledPlugins = Plugins;
 
-            retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(manager.GetManager<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -442,7 +446,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         private PluginArchiveLoadResult LoadPluginArchives()
         {
-            return LoadPluginArchives(manager.Directories.Archives, GetPluginArchiveExtension() , manager.Platform);
+            return LoadPluginArchives(manager.GetManager<PlatformManager>().Directories.Archives, GetPluginArchiveExtension() , manager.GetManager<PlatformManager>().Platform);
         }
 
         /// <summary>
@@ -521,7 +525,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>A Result containing the result of the operation and the parsed PluginArchive.</returns>
         private Result<PluginArchive> ParsePluginArchive(string fileName)
         {
-            return ParsePluginArchive(fileName, GetPluginArchiveConfigurationFileName(), GetPluginArchivePayloadFileName(), manager.Platform);
+            return ParsePluginArchive(fileName, GetPluginArchiveConfigurationFileName(), GetPluginArchivePayloadFileName(), manager.GetManager<PlatformManager>().Platform);
         }
 
         /// <summary>
@@ -555,7 +559,7 @@ namespace Symbiote.Core.Plugin
                     logger.Trace("Configuration file found.  Extracting it from the archive...");
 
                     // extract the config file to the temp directory
-                    Result<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, manager.Directories.Temp);
+                    Result<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, manager.GetManager<PlatformManager>().Directories.Temp);
                     if (extractConfigFileResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("File extracted successfully.  Attempting to read contents...");
@@ -588,7 +592,7 @@ namespace Symbiote.Core.Plugin
             //-------------- - ------
             // clean up the temp directory.  this will fail if the file wasn't extracted but we don't care.
             logger.Trace("Cleaning up the temp directory...");
-            platform.DeleteFile(System.IO.Path.Combine(manager.Directories.Temp, configFileName));
+            platform.DeleteFile(System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Temp, configFileName));
             //----------- - -
 
 
@@ -618,7 +622,7 @@ namespace Symbiote.Core.Plugin
                     logger.Trace("Payload file found.  Attempting to extract...");
 
                     // extract the file to the temp directory
-                    Result<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, manager.Directories.Temp);
+                    Result<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, manager.GetManager<PlatformManager>().Directories.Temp);
                     if (extractPayloadResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("Payload file extracted.  Attempting to calculate checksum...");
@@ -656,7 +660,7 @@ namespace Symbiote.Core.Plugin
             //-------------- - ------
             // clean up the temp directory.  this will fail if the file wasn't extracted but we don't care.
             logger.Trace("Cleaning up the temp directory (again)...");
-            platform.DeleteFile(System.IO.Path.Combine(manager.Directories.Temp, payloadFileName));
+            platform.DeleteFile(System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Temp, payloadFileName));
             //------------------- - -
 
 
@@ -725,7 +729,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
         public Result<Plugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false)
         {
-            return InstallPlugin(archive, Plugins, manager.Platform, updatePlugin);
+            return InstallPlugin(archive, Plugins, manager.GetManager<PlatformManager>().Platform, updatePlugin);
         }
 
         /// <summary>
@@ -748,7 +752,7 @@ namespace Symbiote.Core.Plugin
             logger.Info("Installing Plugin '" + archive.Plugin.FQN + "' from archive '" + System.IO.Path.GetFileName(archive.FileName) + "'...");
             Result<Plugin> retVal = new Result<Plugin>();
 
-            string fullFileName = System.IO.Path.Combine(manager.Directories.Archives, archive.FileName);
+            string fullFileName = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Archives, archive.FileName);
 
             //-------------------------- -   -  
             // check to see if the app is installed already
@@ -783,7 +787,7 @@ namespace Symbiote.Core.Plugin
             //--------------------- - -------------------- - 
             // re-validate the file; it may have changed between the time it was loaded and when installation was requested.
             logger.Debug("Re-parsing the archive to ensure that it hasn't changed since it was loaded.");
-            Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(manager.Directories.Archives, archive.FileName));
+            Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Archives, archive.FileName));
             if (parseResult.ResultCode != ResultCode.Failure)
             {
                 if (!parseResult.ReturnValue.Plugin.Equals(archive.Plugin))
@@ -810,14 +814,14 @@ namespace Symbiote.Core.Plugin
             string tempDestination;
             string destination;
 
-            tempDestination = System.IO.Path.Combine(manager.Directories.Temp, archive.Plugin.FQN);
+            tempDestination = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Temp, archive.Plugin.FQN);
 
             // ..\Web\AppName
             if (archive.Plugin.PluginType == PluginType.App)
-                destination = System.IO.Path.Combine(manager.Directories.Web, archive.Plugin.Name);
+                destination = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Web, archive.Plugin.Name);
             // ..\Plugins\(Connector|Endpoint)\AppName
             else
-                destination = System.IO.Path.Combine(manager.Directories.Plugins, archive.Plugin.PluginType.ToString(), archive.Plugin.Name);
+                destination = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Plugins, archive.Plugin.PluginType.ToString(), archive.Plugin.Name);
 
             logger.Debug("Output folders: Temp: '" + tempDestination + "'; Plugin: '" + destination + "'");
 
@@ -827,7 +831,7 @@ namespace Symbiote.Core.Plugin
 
             //--------------------- - ----------------  -- 
             // extract the archive; first to the temp directory, then extract the payload to the plugin destination and copy the configuration file
-            logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(manager.Directories.Root, "") + "'...");
+            logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(manager.GetManager<PlatformManager>().Directories.Root, "") + "'...");
 
             Result extractResult;
             Result payloadExtractResult;
@@ -943,7 +947,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>A Result containing the result of the operation.</returns>
         public Result UninstallPlugin(Plugin plugin)
         {
-            return UninstallPlugin(plugin, Plugins, manager.Platform);
+            return UninstallPlugin(plugin, Plugins, manager.GetManager<PlatformManager>().Platform);
         }
 
         /// <summary>
@@ -1184,7 +1188,7 @@ namespace Symbiote.Core.Plugin
             {
                 //------------------ - -    -  --------------------- - 
                 // validate the assembly fingerprint
-                Result<string> checksumResult = manager.Platform.ComputeFileChecksum(assemblyFileName);
+                Result<string> checksumResult = manager.GetManager<PlatformManager>().Platform.ComputeFileChecksum(assemblyFileName);
                 if (checksumResult.ResultCode != ResultCode.Failure)
                 {
                     string computedFingerprint = Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.ReturnValue);
@@ -1243,7 +1247,7 @@ namespace Symbiote.Core.Plugin
                 //- -  ---------------- -
                 // register the plugin type
                 // as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
-                Result registerResult = manager.ConfigurationManager.RegisterType(validationResult.ReturnValue);
+                Result registerResult = manager.GetManager<ConfigurationManager>().RegisterType(validationResult.ReturnValue);
                 if (registerResult.ResultCode == ResultCode.Failure)
                     throw new Exception("Failed to register the assembly type with the Configuration Manager.");
                 //----- -
@@ -1621,9 +1625,9 @@ namespace Symbiote.Core.Plugin
         private static string GetPluginDirectory(Plugin plugin)
         {
             if (plugin.PluginType == PluginType.App)
-                return System.IO.Path.Combine(ProgramManager.Instance().Directories.Web, plugin.Name);
+                return System.IO.Path.Combine(ProgramManager.Instance().GetManager<PlatformManager>().Directories.Web, plugin.Name);
             else
-                return System.IO.Path.Combine(ProgramManager.Instance().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
+                return System.IO.Path.Combine(ProgramManager.Instance().GetManager<PlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
         }
 
         /// <summary>

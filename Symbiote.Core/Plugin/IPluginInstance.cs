@@ -14,27 +14,5 @@
         string InstanceName { get; }
 
         #endregion
-
-        #region Instance Methods
-
-        /// <summary>
-        /// Starts the PluginInstance.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result Start();
-
-        /// <summary>
-        /// Restarts the PluginInstance.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result Restart();
-
-        /// <summary>
-        /// Stops the PluginInstance.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result Stop();
-
-        #endregion
     }
 }

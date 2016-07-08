@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Plugin;
+
 namespace Symbiote.Core.Model
 {
     /// <summary>
@@ -79,6 +81,11 @@ namespace Symbiote.Core.Model
 
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
+        /// <summary>
+        /// The list of dependencies for the Manager.
+        /// </summary>
+        public List<Type> Dependencies { get { return new Type[] { typeof(ProgramManager), typeof(PluginManager) }.ToList(); } }
+
         #endregion
 
         #endregion
@@ -111,7 +118,7 @@ namespace Symbiote.Core.Model
 
         #region Instance Methods
 
-        #region IManager Implementation
+        #region IStateful Implementation
 
         /// <summary>
         /// Starts the Model manager.
@@ -182,14 +189,14 @@ namespace Symbiote.Core.Model
         /// Restarts the Configuration manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Model Manager...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop());
+            retVal.Incorporate(Stop(stopType));
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
@@ -201,7 +208,7 @@ namespace Symbiote.Core.Model
         /// Stops the Configuration manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             logger.EnterMethod();
 
@@ -237,7 +244,7 @@ namespace Symbiote.Core.Model
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            Result<ModelManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
+            Result<ModelManagerConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -249,7 +256,7 @@ namespace Symbiote.Core.Model
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<ModelManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<ModelManagerConfiguration> createResult = manager.GetManager<ConfigurationManager>().AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -297,7 +304,7 @@ namespace Symbiote.Core.Model
             logger.EnterMethod();
             Result retVal = new Result();
 
-            retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(manager.GetManager<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);

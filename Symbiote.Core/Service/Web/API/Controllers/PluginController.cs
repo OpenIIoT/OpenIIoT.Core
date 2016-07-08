@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NLog;
+using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +50,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiResult<List<PluginArchive>> retVal = new ApiResult<List<PluginArchive>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.PluginManager.PluginArchives;
+            retVal.ReturnValue = manager.GetManager<PluginManager>().PluginArchives;
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolver.ContractResolverType.OptOut, true));
@@ -66,7 +67,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiResult<PluginArchiveLoadResult> retVal = new ApiResult<PluginArchiveLoadResult>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.PluginManager.ReloadPluginArchives();
+            retVal.ReturnValue = manager.GetManager<PluginManager>().ReloadPluginArchives();
 
             if (retVal.ReturnValue.ResultCode == ResultCode.Failure)
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
@@ -87,7 +88,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiResult<PluginArchive> retVal = new ApiResult<PluginArchive>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.PluginManager.PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault();
+            retVal.ReturnValue = manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault();
 
             if (retVal.ReturnValue == default(PluginArchive))
                 retVal.StatusCode = HttpStatusCode.NotFound;
@@ -108,7 +109,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiResult<Result<Plugin.Plugin>> retVal = new ApiResult<Result<Plugin.Plugin>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = await manager.PluginManager.InstallPluginAsync(manager.PluginManager.PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault());
+            retVal.ReturnValue = await manager.GetManager<PluginManager>().InstallPluginAsync(manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault());
 
             if ((retVal.ReturnValue == default(Result<Plugin.Plugin>)) || (retVal.ReturnValue.ResultCode == ResultCode.Failure))
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
@@ -125,7 +126,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiResult<List<Plugin.Plugin>> retVal = new ApiResult<List<Plugin.Plugin>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.PluginManager.Configuration.InstalledPlugins;
+            retVal.ReturnValue = manager.GetManager<PluginManager>().Configuration.InstalledPlugins;
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolver.ContractResolverType.OptOut, true));
@@ -143,7 +144,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiResult<Result> retVal = new ApiResult<Result>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = await manager.PluginManager.UninstallPluginAsync(manager.PluginManager.FindPlugin(fqn));
+            retVal.ReturnValue = await manager.GetManager<PluginManager>().UninstallPluginAsync(manager.GetManager<PluginManager>().FindPlugin(fqn));
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
@@ -157,7 +158,7 @@ namespace Symbiote.Core.Service.Web.API
             ApiResult<bool> retVal = new ApiResult<bool>(Request);
             retVal.LogRequest(logger.Info);
 
-            string pluginArchive = System.IO.Path.Combine(manager.Directories.Archives, manager.PluginManager.PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
+            string pluginArchive = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Archives, manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
 
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
 

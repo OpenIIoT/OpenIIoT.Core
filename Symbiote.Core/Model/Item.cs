@@ -15,7 +15,24 @@ namespace Symbiote.Core.Model
     {
         #region Variables
 
-        protected object WriteLock = new object();
+        #region Locks
+
+        /// <summary>
+        /// Lock for the Value property.
+        /// </summary>
+        protected object ValueLock = new object();
+
+        /// <summary>
+        /// Lock for the Parent property.
+        /// </summary>
+        protected object ParentLock = new object();
+
+        /// <summary>
+        /// Lock for the Children property.
+        /// </summary>
+        protected object ChildrenLock = new object();
+
+        #endregion
 
         #endregion
 
@@ -191,6 +208,7 @@ namespace Symbiote.Core.Model
         /// Sets the Item's parent Item to the supplied Item.
         /// </summary>
         /// <param name="parent">The Item to set as the Item's parent.</param>
+        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the current Item.</returns>
         public virtual Result<Item> SetParent(Item parent)
         {
@@ -198,9 +216,14 @@ namespace Symbiote.Core.Model
 
             // update the Path and FQN to match the parent values
             // this is set in the constructor however this code will prevent issues if items are moved.
-            Path = parent.FQN;
-            FQN = Path + '.' + Name;
-            Parent = parent;
+
+            // lock the Parent property
+            lock (ParentLock)
+            {
+                Path = parent.FQN;
+                FQN = Path + '.' + Name;
+                Parent = parent;
+            }
 
             retVal.ReturnValue = this;
             return retVal;
@@ -210,6 +233,7 @@ namespace Symbiote.Core.Model
         /// Adds the supplied item to this Item's Children collection.
         /// </summary>
         /// <param name="item">The Item to add.</param>
+        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the added Item.</returns>
         public virtual Result<Item> AddChild(Item item)
         {
@@ -223,9 +247,13 @@ namespace Symbiote.Core.Model
                 // ensure that went ok
                 if (setResult.ResultCode != ResultCode.Failure)
                 {
-                    // add the new item
-                    Children.Add(setResult.ReturnValue);
-                    retVal.ReturnValue = setResult.ReturnValue;
+                    // lock the Children collection
+                    lock (ChildrenLock)
+                    {
+                        // add the new item
+                        Children.Add(setResult.ReturnValue);
+                        retVal.ReturnValue = setResult.ReturnValue;
+                    }
                 }
 
                 retVal.Incorporate(setResult);
@@ -238,6 +266,7 @@ namespace Symbiote.Core.Model
         /// Removes the specified child Item from this Item's Children collection.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
+        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the removed Item.</returns>
         public virtual Result<Item> RemoveChild(Item item)
         {
@@ -251,17 +280,21 @@ namespace Symbiote.Core.Model
                 retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
             else
             {
-                List<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
-
-                // if it was found, recursively remove all children before removing the found Item
-                foreach (Item child in childrenToRemove)
+                // lock the Children collection
+                lock (ChildrenLock)
                 {
-                    retVal.ReturnValue.RemoveChild(child);
+                    List<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
+
+                    // if it was found, recursively remove all children before removing the found Item
+                    foreach (Item child in childrenToRemove)
+                    {
+                        retVal.ReturnValue.RemoveChild(child);
+                    }
+
+                    // remove the item itself
+                    if (!Children.Remove(retVal.ReturnValue))
+                        retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + FQN + "'.");
                 }
-                
-                // remove the item itself
-                if (!Children.Remove(retVal.ReturnValue))
-                    retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + FQN + "'.");
             }
             
             return retVal;
@@ -312,7 +345,12 @@ namespace Symbiote.Core.Model
             if ((SourceItem != null) && (SourceItem != default(Item)))
             {
                 retVal = SourceItem.ReadFromSource();
-                Write(retVal);
+
+                // check to see if the value read from the source is the same
+                // as the Value property.  if it isn't, update the Value property
+                // with the latest. 
+                if (retVal != Value)
+                    Write(retVal);
             }
 
             return Read();
@@ -382,6 +420,7 @@ namespace Symbiote.Core.Model
         /// Writes the provided value to this Item's Value property.
         /// </summary>
         /// <param name="value">The value to write.</param>
+        /// <threadsafety instance="true"/> 
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result Write(object value)
         {
@@ -391,7 +430,7 @@ namespace Symbiote.Core.Model
                 retVal.AddError("Unable to write to '" + FQN + "'; the item is not writeable.");
             else
             {
-                lock (WriteLock)
+                lock (ValueLock)
                 {
                     Value = value;
                     OnChange(value);

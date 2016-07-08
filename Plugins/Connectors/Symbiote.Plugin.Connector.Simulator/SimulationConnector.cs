@@ -217,14 +217,12 @@ namespace Symbiote.Plugin.Connector.Simulation
             return new Result();
         }
 
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
-            Stop();
-            Start();
-            return new Result();
+            return Start().Incorporate(Stop(stopType));
         }
 
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             timer.Stop();
             return new Result();

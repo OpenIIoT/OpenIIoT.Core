@@ -24,6 +24,8 @@
                                                                                                    ▀▀                            */
 using System;
 using NLog;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Symbiote.Core.Platform
 {
@@ -77,22 +79,17 @@ namespace Symbiote.Core.Platform
 
         #region Properties
 
-        #region Events
-
-        #region IManager Events
-
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        #endregion
-
-        #endregion
-
         #region IManager Implementation
 
         /// <summary>
         /// The state of the Manager.
         /// </summary>
         public State State { get; private set; }
+
+        /// <summary>
+        /// The list of dependencies for the Manager.
+        /// </summary>
+        public List<Type> Dependencies { get { return new Type[] { typeof(ProgramManager) }.ToList(); } }
 
         #endregion
 
@@ -105,6 +102,17 @@ namespace Symbiote.Core.Platform
         /// A Dictionary containing all of the application directories, loaded from the App.config.
         /// </summary>
         public PlatformDirectories Directories { get; private set; }
+
+        #endregion
+
+
+        #region Events
+
+        #region IManager Events
+
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion
 
         #endregion
 
@@ -124,7 +132,7 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <param name="manager">The ProgramManager instance for the application.</param>
         /// <returns>The Singleton instance of PlatformManager.</returns>
-        internal static PlatformManager Instance(ProgramManager manager)
+        private static PlatformManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new PlatformManager(manager);
@@ -149,7 +157,23 @@ namespace Symbiote.Core.Platform
 
             logger.Info("Starting the Platform Manager...");
 
-            State = State.Starting;
+            ChangeState(State.Starting);
+
+            // check to ensure the dependencies have been instantiated and are running
+            Result<List<Type>> dependencyCheck = manager.CheckDependencies(Dependencies);
+
+            if (manager.CheckDependencies(Dependencies).ResultCode == ResultCode.Failure)
+            {
+                dependencyCheck.LogResult(logger);
+
+                string list = "";
+                foreach (Type t in dependencyCheck.ReturnValue)
+                {
+                    list += (list.Length == 0 ? "" : ", ") + t.Name;
+                }
+
+                throw new Exception("Failed to start '" + this.GetType().Name + "'; the following dependencies were not satisfied: " + list);
+            }
 
             #region Platform Instantiation
 
@@ -229,14 +253,14 @@ namespace Symbiote.Core.Platform
         /// Restarts the Platform manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Platform Manager...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop());
+            retVal.Incorporate(Stop(stopType));
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
@@ -248,7 +272,7 @@ namespace Symbiote.Core.Platform
         /// Stops the Platform manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             logger.EnterMethod();
 
@@ -268,6 +292,21 @@ namespace Symbiote.Core.Platform
         }
 
         #endregion
+
+        /// <summary>
+        /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
+        /// </summary>
+        /// <param name="state">The State to which the State property should be changed.</param>
+        /// <param name="message">The optional message describing the nature or reason for the change.</param>
+        private void ChangeState(State state, string message = "")
+        {
+            State previousState = State;
+
+            State = state;
+
+            if (StateChanged != null)
+                StateChanged(this, new StateChangedEventArgs(State, previousState, message));
+        }
 
         #endregion
 

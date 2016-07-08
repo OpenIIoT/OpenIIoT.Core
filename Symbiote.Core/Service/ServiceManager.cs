@@ -25,6 +25,9 @@ namespace Symbiote.Core.Service
         #region Properties
 
         public State State { get; private set; }
+
+        public List<Type> Dependencies { get { return default(List<Type>); } }
+
         public Dictionary<string, IService> Services { get; private set; }
         public Dictionary<string, Type> ServiceTypes { get; private set; }
 
@@ -48,7 +51,7 @@ namespace Symbiote.Core.Service
             Services = new Dictionary<string, IService>();
         }
 
-        public static ServiceManager Instance(ProgramManager manager)
+        private static ServiceManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new ServiceManager(manager);
@@ -98,19 +101,19 @@ namespace Symbiote.Core.Service
             return retVal;
         }
 
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
             logger.Info("Restarting services...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop());
+            retVal.Incorporate(Stop(stopType));
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
             return retVal;
         }
 
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             logger.Info("Stopping services...");
             Result retVal = new Result();
@@ -131,7 +134,7 @@ namespace Symbiote.Core.Service
         private Result<Dictionary<string, Type>> RegisterServices()
         {
             logger.Debug("Registering Service types...");
-            Result<Dictionary<string, Type>> retVal = RegisterServices(manager.ConfigurationManager);
+            Result<Dictionary<string, Type>> retVal = RegisterServices(manager.GetManager<ConfigurationManager>());
             retVal.LogResult(logger.Debug);
             return retVal;
         }

@@ -59,7 +59,7 @@ namespace Symbiote.Core.Service.Web
         {
             Result retVal = new Result();
 
-            Result<WebServiceConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType());
+            Result<WebServiceConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<WebServiceConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -67,12 +67,12 @@ namespace Symbiote.Core.Service.Web
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                Result<WebServiceConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<WebServiceConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<WebServiceConfiguration> createResult = manager.GetManager<ConfigurationManager>().AddInstanceConfiguration<WebServiceConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                     Configure(createResult.ReturnValue);
             }
 
-            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType()).ReturnValue);
+            return Configure(manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<WebServiceConfiguration>(this.GetType()).ReturnValue);
         }
 
         public Result Configure(WebServiceConfiguration configuration)
@@ -84,7 +84,7 @@ namespace Symbiote.Core.Service.Web
 
         public Result SaveConfiguration()
         {
-            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
+            return manager.GetManager<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
 
         public static ConfigurationDefinition GetConfigurationDefinition()

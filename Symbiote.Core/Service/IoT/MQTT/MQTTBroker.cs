@@ -37,7 +37,7 @@ namespace Symbiote.Core.Service.IoT.MQTT
         {
             Result retVal = new Result();
 
-            Result<MQTTBrokerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType());
+            Result<MQTTBrokerConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -45,12 +45,12 @@ namespace Symbiote.Core.Service.IoT.MQTT
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                Result<MQTTBrokerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<MQTTBrokerConfiguration> createResult = manager.GetManager<ConfigurationManager>().AddInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                     Configure(createResult.ReturnValue);
             }
 
-            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType()).ReturnValue);
+            return Configure(manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<MQTTBrokerConfiguration>(this.GetType()).ReturnValue);
         }
 
         public Result Configure(MQTTBrokerConfiguration configuration)
@@ -61,7 +61,7 @@ namespace Symbiote.Core.Service.IoT.MQTT
 
         public Result SaveConfiguration()
         {
-            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
+            return manager.GetManager<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
 
         public static ConfigurationDefinition GetConfigurationDefinition()

@@ -6,7 +6,7 @@ using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core.Plugin.Endpoint
 {
-    public class EndpointManager : IManager, IConfigurable<EndpointManagerConfiguration>
+    public class EndpointManager : IStateful, IConfigurable<EndpointManagerConfiguration>
     {
         #region Variables
 
@@ -99,12 +99,12 @@ namespace Symbiote.Core.Plugin.Endpoint
             return retVal;
         }
 
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
             return new Result();
         }
 
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             State = State.Stopped;
 
@@ -117,7 +117,7 @@ namespace Symbiote.Core.Plugin.Endpoint
         {
             Result retVal = new Result();
 
-            Result<EndpointManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType());
+            Result<EndpointManagerConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -125,12 +125,12 @@ namespace Symbiote.Core.Plugin.Endpoint
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                Result<EndpointManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<EndpointManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<EndpointManagerConfiguration> createResult = manager.GetManager<ConfigurationManager>().AddInstanceConfiguration<EndpointManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                     Configure(createResult.ReturnValue);
             }
 
-            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType()).ReturnValue);
+            return Configure(manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<EndpointManagerConfiguration>(this.GetType()).ReturnValue);
         }
 
         public Result Configure(EndpointManagerConfiguration configuration)
@@ -141,7 +141,7 @@ namespace Symbiote.Core.Plugin.Endpoint
 
         public Result SaveConfiguration()
         {
-            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
+            return manager.GetManager<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
 
         public static ConfigurationDefinition GetConfigurationDefinition()

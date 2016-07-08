@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 namespace Symbiote.Core.Plugin
 {
-    class PluginTypeManager<T> : IManager
+    class PluginTypeManager<T> : IStateful
     {
         #region Variables
 
@@ -87,7 +87,7 @@ namespace Symbiote.Core.Plugin
         /// Restarts the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
             return new Result();
         }
@@ -96,7 +96,7 @@ namespace Symbiote.Core.Plugin
         /// Stops the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             return new Result();
         }

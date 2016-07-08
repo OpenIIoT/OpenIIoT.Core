@@ -1,4 +1,5 @@
 ﻿using Symbiote.Core.Model;
+using Symbiote.Core.Plugin;
 
 namespace Symbiote.Core
 {
@@ -61,11 +62,11 @@ namespace Symbiote.Core
             // if the origin is the product, the FQN belongs to a Model item. 
             // use the ModelManager to look it up.
             else if (source == ItemSource.Model)
-                retVal = manager.ModelManager.FindItem(lookupFQN);
+                retVal = manager.GetManager<ModelManager>().FindItem(lookupFQN);
             // if the origin is something other than the product, the FQN belongs to a plugin item.
             // use the PluginManager to look it up.
             else
-                retVal = manager.PluginManager.FindPluginItem(lookupFQN);
+                retVal = manager.GetManager<PluginManager>().FindPluginItem(lookupFQN);
 
             return retVal;
         }

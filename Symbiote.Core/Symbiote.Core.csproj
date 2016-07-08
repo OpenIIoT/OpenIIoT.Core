@@ -158,10 +158,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BigFont.cs" />
+    <Compile Include="Common\IManager.cs" />
+    <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\IStateful.cs" />
     <Compile Include="Common\State\State.cs" />
-    <Compile Include="Common\IManager.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Model\ItemEventArgs.cs" />
     <Compile Include="Common\xLogger.cs" />

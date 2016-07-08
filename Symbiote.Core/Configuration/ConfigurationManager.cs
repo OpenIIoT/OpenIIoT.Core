@@ -27,6 +27,7 @@ using NLog;
 using Newtonsoft.Json;
 using System.Linq;
 using System.Reflection;
+using Symbiote.Core.Platform;
 
 namespace Symbiote.Core.Configuration
 {
@@ -89,6 +90,15 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         private static ConfigurationManager instance;
 
+        #region Locks
+
+        /// <summary>
+        /// Lock for the State property.
+        /// </summary>
+        private object StateLock = new object();
+
+        #endregion
+
         #endregion
 
         #region Properties
@@ -99,6 +109,11 @@ namespace Symbiote.Core.Configuration
         /// The state of the Manager.
         /// </summary>
         public State State { get; private set; }
+
+        /// <summary>
+        /// The list of dependencies for the Manager.
+        /// </summary>
+        public List<Type> Dependencies { get { return new List<Type>(new Type[] { typeof(ProgramManager), typeof(PlatformManager) }); } }
 
         #endregion
 
@@ -123,6 +138,9 @@ namespace Symbiote.Core.Configuration
 
         #region IManager Events
 
+        /// <summary>
+        /// Fired when the State property changes.
+        /// </summary>
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
         #endregion
@@ -147,7 +165,7 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         /// <param name="manager">The ProgramManager instance for the application.</param>
         /// <returns>The Singleton instance of the ConfigurationManager.</returns>
-        internal static ConfigurationManager Instance(ProgramManager manager)
+        private static ConfigurationManager Instance(ProgramManager manager)
         {
             if (instance == null)
                 instance = new ConfigurationManager(manager);
@@ -159,7 +177,7 @@ namespace Symbiote.Core.Configuration
 
         #region Instance Methods
 
-        #region IManager Implementation
+        #region IStateful Implementation
 
         /// <summary>
         /// Starts the Configuration Manager.
@@ -172,13 +190,13 @@ namespace Symbiote.Core.Configuration
             logger.Info("Starting the Configuration Manager...");
             Result retVal = new Result();
 
-            State = State.Starting;
+            ChangeState(State.Starting);
 
             #region Configuration File Validation/Generation
 
             //------------------------------ - -           ---
             // check whether the configuration file exists and if it doesn't, build it from scratch.
-            if (!manager.Platform.FileExists(ConfigurationFileName))
+            if (!manager.GetManager<PlatformManager>().Platform.FileExists(ConfigurationFileName))
             {
                 logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
                 Result<Dictionary<string, Dictionary<string, object>>> buildResult = BuildNewConfiguration();
@@ -246,10 +264,10 @@ namespace Symbiote.Core.Configuration
             if (retVal.ResultCode != ResultCode.Failure)
             {
                 Configuration = loadResult.ReturnValue;
-                State = State.Running;
+                ChangeState(State.Running);
             }
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted);
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -260,14 +278,14 @@ namespace Symbiote.Core.Configuration
         /// Restarts the Configuration manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Restarting the Configuration Manager...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop());
+            retVal.Incorporate(Stop(stopType));
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
@@ -279,19 +297,22 @@ namespace Symbiote.Core.Configuration
         /// Stops the Configuration manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             logger.EnterMethod();
 
             logger.Info("Stopping the Configuration Manager...");
             Result retVal = new Result();
 
-            State = State.Stopping;
+            ChangeState(State.Stopping);
+
+            if (stopType == StopType.Normal)
+                SaveConfiguration();
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Stopped;
+                ChangeState(State.Stopped);
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted);
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -328,7 +349,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 // read the entirety of the configuration file into configFile
-                configFile = manager.PlatformManager.Platform.ReadFile(fileName).ReturnValue;
+                configFile = manager.GetManager<PlatformManager>().Platform.ReadFile(fileName).ReturnValue;
                 logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
                 // attempt to deserialize the contents of the file to an object of type ApplicationConfiguration
@@ -387,7 +408,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-                manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
+                manager.GetManager<PlatformManager>().Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
                 //manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, new JsonSerializerSettings() { Formatting = Formatting.Indented, ContractResolver = new DictionaryAsArrayResolver() }));
             }
             catch (Exception ex)
@@ -815,6 +836,26 @@ namespace Symbiote.Core.Configuration
         }
 
         #endregion
+
+        /// <summary>
+        /// Changes the <see cref="State"/> property to the specified state and fires the StateChanged event.
+        /// </summary>
+        /// <param name="state">The State to which the State property should be changed.</param>
+        /// <param name="message">The optional message describing the nature or reason for the change.</param>
+        /// <threadsafety instance="true"/>
+        private void ChangeState(State state, string message = "")
+        {
+            State previousState = State;
+
+            // lock the State property
+            lock (StateLock)
+            {
+                State = state;
+
+                if (StateChanged != null)
+                    StateChanged(this, new StateChangedEventArgs(State, previousState, message));
+            }
+        }
 
         #endregion
 

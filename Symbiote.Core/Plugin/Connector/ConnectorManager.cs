@@ -5,7 +5,7 @@ using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core.Plugin.Connector
 {
-    public class ConnectorManager : IManager, IConfigurable<ConnectorManagerConfiguration>
+    public class ConnectorManager : IStateful, IConfigurable<ConnectorManagerConfiguration>
     {
         #region Variables
 
@@ -97,12 +97,12 @@ namespace Symbiote.Core.Plugin.Connector
             return retVal;
         }
 
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
-            return new Result();
+            return Start().Incorporate(Stop(stopType));
         }
 
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             State = State.Stopped;
             return new Result();
@@ -114,7 +114,7 @@ namespace Symbiote.Core.Plugin.Connector
         {
             Result retVal = new Result();
 
-            Result<ConnectorManagerConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<ConnectorManagerConfiguration>(this.GetType());
+            Result<ConnectorManagerConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<ConnectorManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -122,12 +122,12 @@ namespace Symbiote.Core.Plugin.Connector
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                Result<ConnectorManagerConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<ConnectorManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<ConnectorManagerConfiguration> createResult = manager.GetManager<ConfigurationManager>().AddInstanceConfiguration<ConnectorManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                     Configure(createResult.ReturnValue);
             }
 
-            return Configure(manager.ConfigurationManager.GetInstanceConfiguration<ConnectorManagerConfiguration>(this.GetType()).ReturnValue);
+            return Configure(manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<ConnectorManagerConfiguration>(this.GetType()).ReturnValue);
         }
 
         public Result Configure(ConnectorManagerConfiguration configuration)
@@ -138,7 +138,7 @@ namespace Symbiote.Core.Plugin.Connector
 
         public Result SaveConfiguration()
         {
-            return manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration);
+            return manager.GetManager<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration);
         }
 
         public static ConfigurationDefinition GetConfigurationDefinition()

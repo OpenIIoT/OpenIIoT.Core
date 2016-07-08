@@ -40,13 +40,13 @@ namespace Symbiote.Plugin.Connector.Example
     /// <remarks>
     /// <para>
     ///     The class must implement, at a minimum, <see cref="IConnector"/>.  The IConnector interface extends <see cref="IPluginInstance"/>
-    ///     which in turn extends <see cref="IPlugin"/>.
+    ///     which in turn extends <see cref="IPlugin"/>, as well as the <see cref="IStateful"/> interface.
     /// </para>
     /// <para>
     ///     The <see cref="IPlugin"/> interface provides the plugin metadata such as <see cref="IPlugin.Name"/>, <see cref="IPlugin.FQN"/>, <see cref="IPlugin.Version"/>,
-    ///     and <see cref="IPlugin.PluginType"/>, and the IPluginInstance interface provides <see cref="IPluginInstance.InstanceName"/> and the 
-    ///     <see cref="IPluginInstance.Start()"/>, <see cref="IPluginInstance.Restart()"/> and <see cref="IPluginInstance.Stop()"/> methods.  The IPluginInstance interface
-    ///     also implements <see cref="IStateful"/> which provies the <see cref="IStateful.State"/> property and the <see cref="IStateful.StateChanged"/> event.
+    ///     and <see cref="IPlugin.PluginType"/>, and the IPluginInstance interface provides <see cref="IPluginInstance.InstanceName"/>, and the <see cref="IStateful"/> 
+    ///     interface provides the <see cref="IStateful.Start()"/>, <see cref="IStateful.Restart()"/> and <see cref="IStateful.Stop()"/> methods.  Also provided are the 
+    ///     the <see cref="IStateful.State"/> property and the <see cref="IStateful.StateChanged"/> event.
     /// </para>
     /// <para>
     ///     The <see cref="IConnector"/> interface provides the <see cref="Browse()"/> and <see cref="Browse(Item)"/> methods, used to retrieve the available
@@ -60,6 +60,7 @@ namespace Symbiote.Plugin.Connector.Example
     ///     The <see cref="IReadable"/> interface is implemented by Connectors which are capable of providing data to ConnectorItems from the source of the
     ///     Connector data.  The interface provides the <see cref="IReadable.Read(Item)"/> which is used by Model Items to retrieve the value on demand.  The Connector
     ///     may implement an internal data cache if it is advantageous to do so, however the caching strategy must be designed and implemented by the Connector author.
+    ///     The <see cref="IReadable.ReadAsync(Item)"/> method must asynchronously invoke the Read() method.
     /// </para>
     /// <para>
     ///     The <see cref="ISubscribable"/> interface is implemented by Connectors which are capable of providing unsolicited value updates to configured Items.
@@ -77,7 +78,8 @@ namespace Symbiote.Plugin.Connector.Example
     ///     The <see cref="IWriteable"/> interface is implemented by Connectors which are capable of writing data to the source of the Connector data.  The
     ///     interface provides the <see cref="IWriteable.Write(Item, object)"/> method which is called by the <see cref="Item.WriteToSource(object)"/> method
     ///     if the source Connector implements the IWriteable interface.  The Connector is responsible for writing the supplied value to the specified
-    ///     Item and returning a valid Result upon completion.  
+    ///     Item and returning a valid Result upon completion.  The <see cref="IWriteable.WriteAsync(Item, object)"/> method must asynchronously invoke
+    ///     the Write() method.
     /// </para>
     /// <para>
     ///     The <see cref="IExtensible"/> interface is implemented by Connectors which are capable of allowing user-defined Items to be added at runtime.  This is primarily
@@ -126,6 +128,20 @@ namespace Symbiote.Plugin.Connector.Example
         /// "Polling" timer used as an example; discard in actual implementations.
         /// </summary>
         private Timer timer;
+
+        #region Locks
+
+        /// <summary>
+        /// A lock for the Subscriptions collection.
+        /// </summary>
+        private object SubscriptionsLock = new object();
+
+        /// <summary>
+        /// A lock for the State property.
+        /// </summary>
+        private object StateLock = new object();
+
+        #endregion
 
         #endregion
 
@@ -351,12 +367,12 @@ namespace Symbiote.Plugin.Connector.Example
         /// Stops, then Starts the Connector.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart()
+        public Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
 
             // short and sweet.  This should work in most instances.
-            Result retVal = Start().Incorporate(Stop());
+            Result retVal = Start().Incorporate(Stop(stopType));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -371,9 +387,13 @@ namespace Symbiote.Plugin.Connector.Example
         ///     and should either be set to <see cref="State.Stopped"/> or <see cref="State.Faulted"/> pending
         ///     the outcome of the operation.
         /// </remarks>
+        /// <remarks>
+        ///     The Plugin configuration should be saved within this method, but only if the supplied <see cref="StopType"/>
+        ///     parameter is <see cref="StopType.Normal"/>.
+        /// </remarks>
         /// <remarks>Any changes to the State property should fire the <see cref="StateChanged"/> event.</remarks>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop()
+        public Result Stop(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
 
@@ -385,6 +405,9 @@ namespace Symbiote.Plugin.Connector.Example
             try
             {
                 timer.Stop();
+
+                if (stopType == StopType.Normal)
+                    SaveConfiguration();
             }
             catch (Exception ex)
             {
@@ -504,6 +527,7 @@ namespace Symbiote.Plugin.Connector.Example
         ///     increment the quantity by one.
         /// </remarks>
         /// <param name="item">The <see cref="Item"/> to which the subscription should be added.</param>
+        /// <threadsafety instance="true"/> 
         /// <returns>An <see cref="Result"/> containing the result of the operation.</returns>
         public Result Subscribe(ConnectorItem item)
         {
@@ -514,15 +538,19 @@ namespace Symbiote.Plugin.Connector.Example
 
             try
             {
-                // always ensure the key exists before trying to reference it.
-                if (Subscriptions.ContainsKey(item))
-                    // if it exists, increment the number of subscriptions
-                    Subscriptions[item]++;
-                else
-                    // if it doesn't yet exist, add it and set the number of subscriptions to 1.
-                    Subscriptions.Add(item, 1);
+                // lock the Subscriptions collection
+                lock (SubscriptionsLock)
+                {
+                    // always ensure the key exists before trying to reference it.
+                    if (Subscriptions.ContainsKey(item))
+                        // if it exists, increment the number of subscriptions
+                        Subscriptions[item]++;
+                    else
+                        // if it doesn't yet exist, add it and set the number of subscriptions to 1.
+                        Subscriptions.Add(item, 1);
 
-                retVal.AddInfo("The Item '" + item.FQN + "' now has " + Subscriptions[item] + " subscriber(s).");
+                    retVal.AddInfo("The Item '" + item.FQN + "' now has " + Subscriptions[item] + " subscriber(s).");
+                }
             }
             catch (Exception ex)
             {
@@ -542,6 +570,7 @@ namespace Symbiote.Plugin.Connector.Example
         ///     Upon removal of the final subscriber, the subscription is completely removed.
         /// </remarks>
         /// <param name="item">The <see cref="Item"/> for which the subscription should be removed.</param>
+        /// <threadsafety instance="true"/>
         /// <returns>An <see cref="Result"/> containing the result of the operation.</returns>
         public Result UnSubscribe(ConnectorItem item)
         {
@@ -557,18 +586,22 @@ namespace Symbiote.Plugin.Connector.Example
                     retVal.AddError("The Item '" + item.FQN + "' is not currently subscribed.");
                 else
                 {
-                    // decrement the number of active subscriptions
-                    Subscriptions[item]--;
-
-                    // if the number of subscriptions is zero (or less than zero somehow),
-                    // remove it from the dictionary.
-                    if (Subscriptions[item] <= 0)
+                    // lock the Subscriptions collection
+                    lock (SubscriptionsLock)
                     {
-                        Subscriptions.Remove(item);
-                        retVal.AddInfo("The Item '" + item.FQN + "' has been fully unsubscribed.");
+                        // decrement the number of active subscriptions
+                        Subscriptions[item]--;
+
+                        // if the number of subscriptions is zero (or less than zero somehow),
+                        // remove it from the dictionary.
+                        if (Subscriptions[item] <= 0)
+                        {
+                            Subscriptions.Remove(item);
+                            retVal.AddInfo("The Item '" + item.FQN + "' has been fully unsubscribed.");
+                        }
+                        else
+                            retVal.AddInfo("The Item '" + item.FQN + "' now has " + Subscriptions[item] + " subscriber(s).");
                     }
-                    else
-                        retVal.AddInfo("The Item '" + item.FQN + "' now has " + Subscriptions[item] + " subscriber(s).");
                 }
             }
             catch (Exception ex)
@@ -598,7 +631,7 @@ namespace Symbiote.Plugin.Connector.Example
             // Place the logic to write the specified value to the Item's source here
 
             if (item.Name == "HelloWorld")
-                item.Write(value);
+                retVal.Incorporate(item.Write(value));
             else if (item.Name == "CurrentTime")
                 retVal.AddError("Unable to write value.");
 
@@ -723,7 +756,7 @@ namespace Symbiote.Plugin.Connector.Example
             logger.EnterMethod();
             Result retVal = new Result();
 
-            Result<ExampleConnectorConfiguration> fetchResult = manager.ConfigurationManager.GetInstanceConfiguration<ExampleConnectorConfiguration>(this.GetType(), InstanceName);
+            Result<ExampleConnectorConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<ExampleConnectorConfiguration>(this.GetType(), InstanceName);
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -735,7 +768,7 @@ namespace Symbiote.Plugin.Connector.Example
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<ExampleConnectorConfiguration> createResult = manager.ConfigurationManager.AddInstanceConfiguration<ExampleConnectorConfiguration>(this.GetType(), GetDefaultConfiguration(), InstanceName);
+                Result<ExampleConnectorConfiguration> createResult = manager.GetManager<ConfigurationManager>().AddInstanceConfiguration<ExampleConnectorConfiguration>(this.GetType(), GetDefaultConfiguration(), InstanceName);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -784,8 +817,6 @@ namespace Symbiote.Plugin.Connector.Example
                 // create all of the Items
                 foreach (string key in AddedItems.Keys)
                     retVal.Incorporate(AddItem(key, AddedItems[key]));
-
-                SaveConfiguration();
             }
             catch (Exception ex)
             {
@@ -807,7 +838,7 @@ namespace Symbiote.Plugin.Connector.Example
             // update the list of added Items
             Configuration.AddedItems = AddedItems;
             
-            retVal.Incorporate(manager.ConfigurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration, InstanceName));
+            retVal.Incorporate(manager.GetManager<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration, InstanceName));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -848,14 +879,19 @@ namespace Symbiote.Plugin.Connector.Example
         /// </summary>
         /// <param name="state">The State to which the State property should be changed.</param>
         /// <param name="message">The optional message describing the nature or reason for the change.</param>
+        /// <threadsafety instance="true"/>
         private void ChangeState(State state, string message = "")
         {
             State previousState = State;
 
-            State = state;
+            // lock the State property
+            lock (StateLock)
+            {
+                State = state;
 
-            if (StateChanged != null)
-                StateChanged(this, new StateChangedEventArgs(state, previousState, message));
+                if (StateChanged != null)
+                    StateChanged(this, new StateChangedEventArgs(State, previousState, message));
+            }
         }
 
         /// <summary>

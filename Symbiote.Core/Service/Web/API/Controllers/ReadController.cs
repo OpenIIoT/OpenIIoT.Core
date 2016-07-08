@@ -21,7 +21,7 @@ namespace Symbiote.Core.Service.Web.API
         /// </summary>
         private static ProgramManager manager = ProgramManager.Instance();
 
-        private static Item model = manager.ModelManager.Model;
+        private static Item model = manager.GetManager<ModelManager>().Model;
 
         [Route("api/read")]
         [HttpGet]

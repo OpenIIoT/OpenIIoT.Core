@@ -9,6 +9,8 @@ using Symbiote.Core.Plugin.Connector;
 using Symbiote.Core.Model;
 using System.Threading;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.Configuration;
+using Symbiote.Core.Service;
 
 namespace Symbiote.Core
 {
@@ -121,6 +123,9 @@ namespace Symbiote.Core
                 logger.Debug("Instantiating the Program Manager...");
                 manager = ProgramManager.Instance(safeMode);
                 logger.Debug("The Program Manager was instantiated successfully.");
+
+                manager.StartManager(manager);
+                logger.Info("The Program Manager is now " + manager.State);
                 //-------------------------------  ------------------------ - - - --------------- - -
 
 
@@ -129,8 +134,8 @@ namespace Symbiote.Core
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
                 logger.SubHeading(LogLevel.Debug, "Platform Manager");
                 logger.Info("Starting the Platform Manager...");
-                manager.StartManager(manager.PlatformManager);
-                logger.Info("Platform: " + manager.PlatformManager.Platform.PlatformType.ToString() + " (" + manager.PlatformManager.Platform.Version + ")");
+                manager.StartManager(manager.GetManager<PlatformManager>());
+                logger.Info("Platform: " + manager.GetManager<PlatformManager>().Platform.PlatformType.ToString() + " (" + manager.GetManager<PlatformManager>().Platform.Version + ")");
                 logger.Info("Program is running " + (Environment.UserInteractive ? "" : "non-") + "interactively.");
                 //------------------- - -----------                      ------------- 
 
@@ -141,7 +146,7 @@ namespace Symbiote.Core
                 // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
                 logger.Heading(LogLevel.Debug, "Startup");
 
-                if ((manager.PlatformManager.Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
+                if ((manager.GetManager<PlatformManager>().Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
                 {
                     logger.Info("Starting the application in service mode...");
                     ServiceBase.Run(new WindowsService());
@@ -156,7 +161,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Fatal(ex, "The application failed to initialize.");
+                logger.Fatal("The application failed to initialize.");
                 logger.Exception(LogLevel.Fatal, ex);
             }
             finally
@@ -191,8 +196,8 @@ namespace Symbiote.Core
                 // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
                 logger.SubHeading(LogLevel.Debug, "Configuration Manager");
                 logger.Info("Invoking the Configuration Manager Start routine...");
-                manager.StartManager(manager.ConfigurationManager);
-                logger.Info("Loaded Configuration from '" + manager.ConfigurationFileName + "'.");
+                manager.StartManager(manager.GetManager<ConfigurationManager>());
+                logger.Info("Loaded Configuration from '" + manager.GetManager<ConfigurationManager>().ConfigurationFileName + "'.");
                 //--------------------------------------- - -  - --------            -------- -
 
 
@@ -201,8 +206,8 @@ namespace Symbiote.Core
                 // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
                 logger.SubHeading(LogLevel.Debug, "Plugin Manager");
                 logger.Info("Invoking the Plugin Manager Start routine...");
-                manager.StartManager(manager.PluginManager);
-                logger.Info(manager.PluginManager.PluginAssemblies.Count() + " Plugin(s) loaded.");
+                manager.StartManager(manager.GetManager<PluginManager>());
+                logger.Info(manager.GetManager<PluginManager>().PluginAssemblies.Count() + " Plugin(s) loaded.");
                 //----------------------------------------------------------------  --  ---         ------ - 
 
 
@@ -218,8 +223,8 @@ namespace Symbiote.Core
                 //------------------ - --           --          --  - -
                 // create the platform connector plugin instance.
                 // instantiates the connector plugin and adds it to the PluginManager so that it can be treated as a regular plugin
-                manager.PlatformManager.Platform.InstantiateConnector("Platform");
-                manager.PluginManager.PluginInstances.Add("Platform", manager.PlatformManager.Platform.Connector);
+                manager.GetManager<PlatformManager>().Platform.InstantiateConnector("Platform");
+                manager.GetManager<PluginManager>().PluginInstances.Add("Platform", manager.GetManager<PlatformManager>().Platform.Connector);
                 //------ - -      ---------------------- - -     ----------------------------- - - -
 
                 logger.Multiline(LogLevel.Debug, "MODEL");
@@ -227,8 +232,8 @@ namespace Symbiote.Core
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
                 // builds and attaches the model stored within the configuration file to the Model Manager.
-                manager.StartManager(manager.ModelManager);
-                logger.Info(manager.ModelManager.Dictionary.Count + " Item(s) resolved.");
+                manager.StartManager(manager.GetManager<ModelManager>());
+                logger.Info(manager.GetManager<ModelManager>().Dictionary.Count + " Item(s) resolved.");
 
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
 
@@ -238,24 +243,24 @@ namespace Symbiote.Core
                 // attach the Platform connector items to the model
                 // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
                 logger.Info("Detatching potentially stale Platform items...");
-                manager.ModelManager.RemoveItem(manager.ModelManager.FindItem(manager.InstanceName + ".System.Platform"));
+                manager.GetManager<ModelManager>().RemoveItem(manager.GetManager<ModelManager>().FindItem(manager.InstanceName + ".System.Platform"));
 
                 logger.Info("Attaching new Platform items...");
 
                 // find or create the parent for the Platform items
-                Item systemItem = manager.ModelManager.FindItem(manager.InstanceName + ".System");
+                Item systemItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName + ".System");
                 if (systemItem == default(Item))
-                    systemItem = manager.ModelManager.AddItem(new Item(manager.InstanceName + ".System")).ReturnValue;
+                    systemItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName + ".System")).ReturnValue;
 
                 // attach the Platform items to Symbiote.System
-                manager.ModelManager.AttachItem(manager.PlatformManager.Platform.Connector.Browse(), systemItem);
+                manager.GetManager<ModelManager>().AttachItem(manager.GetManager<PlatformManager>().Platform.Connector.Browse(), systemItem);
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
 
 
-                Item symItem = manager.ModelManager.FindItem(manager.InstanceName);
+                Item symItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName);
                 if (symItem == default(Item))
-                    symItem = manager.ModelManager.AddItem(new Item(manager.InstanceName)).ReturnValue;
+                    symItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName)).ReturnValue;
 
                 //manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
 
@@ -273,17 +278,17 @@ namespace Symbiote.Core
 
                 ////-------------------------------------------------------------------------------------------------
 
-                IConnector example = (IConnector)manager.PluginManager.FindPluginInstance("Example");
+                IConnector example = (IConnector)manager.GetManager<PluginManager>().FindPluginInstance("Example");
 
                 example.StateChanged += PluginStateChanged;
 
                 // ((IAddable)example).Add("New.Item", "None");
 
-                manager.ModelManager.AttachItem(example.Browse(), symItem);
+                manager.GetManager<ModelManager>().AttachItem(example.Browse(), symItem);
 
 
 
-                Result subscribe3 = manager.ModelManager.FindItem("Symbiote.Example.CurrentTime").SubscribeToSource();
+                Result subscribe3 = manager.GetManager<ModelManager>().FindItem("Symbiote.Example.CurrentTime").SubscribeToSource();
 
                 subscribe3.LogResult(logger.Info);
 
@@ -297,10 +302,10 @@ namespace Symbiote.Core
                 //----------------------------- - -       --
                 // show 'em what they've won!
                 Utility.PrintLogo(logger);
-                Utility.PrintModel(logger, manager.ModelManager.Model, 0);
+                Utility.PrintModel(logger, manager.GetManager<ModelManager>().Model, 0);
                 //-------------------------------- --------- - -      -              -
 
-                manager.StartManager(manager.ServiceManager);
+                manager.StartManager(manager.GetManager<ServiceManager>());
 
                 //manager.PluginManager.StartPlugins();
 
@@ -353,8 +358,9 @@ namespace Symbiote.Core
 
             try
             {
-                if (manager.ModelManager.SaveModel().ResultCode != ResultCode.Failure)
-                    manager.ConfigurationManager.SaveConfiguration();
+                manager.Stop();
+                if (manager.GetManager<ModelManager>().SaveModel().ResultCode != ResultCode.Failure)
+                    manager.GetManager<ConfigurationManager>().SaveConfiguration();
 
                 logger.Info("Configuration saved.");
                 logger.Info(manager.ProductName + " stopped.");

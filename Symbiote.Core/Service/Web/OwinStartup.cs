@@ -6,6 +6,7 @@ using Microsoft.Owin.FileSystems;
 using System.Web.Http;
 using Microsoft.AspNet.SignalR;
 using Swashbuckle.Application;
+using Symbiote.Core.Platform;
 
 namespace Symbiote.Core.Service.Web
 {
@@ -46,7 +47,7 @@ namespace Symbiote.Core.Service.Web
             // windows uses web\content, linux uses web/content. 
             app.UseFileServer(new FileServerOptions()
             {
-                FileSystem = new PhysicalFileSystem(manager.Directories.Web),
+                FileSystem = new PhysicalFileSystem(manager.GetManager<PlatformManager>().Directories.Web),
                 RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : "") + webRoot)
             });
         }

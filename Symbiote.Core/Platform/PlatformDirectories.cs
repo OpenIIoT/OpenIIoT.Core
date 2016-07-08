@@ -92,7 +92,7 @@ namespace Symbiote.Core.Platform
         public Result CheckDirectories()
         {
             Result retVal = new Result();
-            IPlatform platform = ProgramManager.Instance().PlatformManager.Platform;
+            IPlatform platform = ProgramManager.Instance().GetManager<PlatformManager>().Platform;
             Dictionary<string, string> directories = ToDictionary();
 
             foreach (string directory in directories.Keys)

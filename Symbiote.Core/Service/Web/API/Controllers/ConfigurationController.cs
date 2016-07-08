@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NLog;
+using Symbiote.Core.Configuration;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -13,7 +14,7 @@ namespace Symbiote.Core.Service.Web.API
     {
         private static ProgramManager manager = ProgramManager.Instance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static Dictionary<string, Dictionary<string, object>> configuration = manager.ConfigurationManager.Configuration;
+        private static Dictionary<string, Dictionary<string, object>> configuration = manager.GetManager<ConfigurationManager>().Configuration;
 
         private static List<string> serializationProperties = new List<string>(new string[] { });
          
@@ -21,7 +22,7 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage GetConfiguration()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, manager.ConfigurationManager.Configuration , JsonFormatter(serializationProperties, ContractResolver.ContractResolverType.OptOut, true));
+            return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration , JsonFormatter(serializationProperties, ContractResolver.ContractResolverType.OptOut, true));
         }
 
         private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolver.ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
