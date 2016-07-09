@@ -9,8 +9,8 @@ namespace Symbiote.Core.Plugin.Connector
     {
         #region Variables
 
-        private ProgramManager manager;
-        private PluginManager pluginManager;
+        private IProgramManager manager;
+        private IPluginManager pluginManager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static ConnectorManager instance;
 
@@ -42,13 +42,13 @@ namespace Symbiote.Core.Plugin.Connector
 
         #region Constructors
 
-        private ConnectorManager(PluginManager pluginManager, ProgramManager programManager)
+        private ConnectorManager(IPluginManager pluginManager, IProgramManager programManager)
         {
             manager = programManager;
             this.pluginManager = pluginManager;
         }
 
-        public static ConnectorManager Instance(PluginManager pluginManager, ProgramManager programManager)
+        public static ConnectorManager Instance(IPluginManager pluginManager, IProgramManager programManager)
         {
             if (instance == null)
                 instance = new ConnectorManager(pluginManager, programManager);

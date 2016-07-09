@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
+using Newtonsoft.Json;
 
 namespace Symbiote.Core.Model
 {
@@ -21,7 +22,7 @@ namespace Symbiote.Core.Model
     /// <summary>
     /// The ModelManager class manages the Model for the application.
     /// </summary>
-    public class ModelManager : IManager, IConfigurable<ModelManagerConfiguration>
+    public class ModelManager : IStateful, IManager, IConfigurable<ModelManagerConfiguration>, IModelManager
     {
         #region Variables
 
@@ -33,7 +34,17 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private IProgramManager manager;
+
+        /// <summary>
+        /// The ConfigurationManager for the application.
+        /// </summary>
+        private IConfigurationManager configurationManager;
+
+        /// <summary>
+        /// The PluginManager for the application.
+        /// </summary>
+        private IPluginManager pluginManager;
 
         /// <summary>
         /// The Singleton instance of ModelManager.
@@ -44,7 +55,7 @@ namespace Symbiote.Core.Model
 
         #region Properties
 
-        #region IManager Implementation
+        #region IStateful Properties
 
         /// <summary>
         /// The state of the Manager.
@@ -52,6 +63,8 @@ namespace Symbiote.Core.Model
         public State State { get; private set; }
 
         #endregion
+
+        #region IConfigurable Properties
 
         /// <summary>
         /// The ConfigurationDefinition for the Manager.
@@ -63,15 +76,23 @@ namespace Symbiote.Core.Model
         /// </summary>
         public ModelManagerConfiguration Configuration { get; private set; }
 
+        #endregion
+
+        #region IModelManager Properties
+
         /// <summary>
         /// The root Item for the model.
         /// </summary>
-        internal Item Model { get; private set; }
+        [JsonIgnore]
+        public Item Model { get; private set; }
 
         /// <summary>
         /// A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
         /// </summary>
-        internal Dictionary<string, Item> Dictionary { get; private set; }
+        [JsonIgnore]
+        public Dictionary<string, Item> Dictionary { get; private set; }
+
+        #endregion
 
         #endregion
 
@@ -79,12 +100,10 @@ namespace Symbiote.Core.Model
 
         #region IManager Events
 
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
         /// <summary>
-        /// The list of dependencies for the Manager.
+        /// Occurs when the State of the component changes.
         /// </summary>
-        public List<Type> Dependencies { get { return new Type[] { typeof(ProgramManager), typeof(PluginManager) }.ToList(); } }
+        public event EventHandler<StateChangedEventArgs> StateChanged;
 
         #endregion
 
@@ -96,20 +115,31 @@ namespace Symbiote.Core.Model
         /// Private constructor, only called by Instance()
         /// </summary>
         /// <param name="manager">The ProgramManager instance for the application.</param>
-        private ModelManager(ProgramManager manager)
+        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
+        /// <param name="pluginManager">The PluginManager instance for the application.</param>
+        private ModelManager(IProgramManager manager, IConfigurationManager configurationManager, IPluginManager pluginManager)
         {
             this.manager = manager;
+            this.configurationManager = configurationManager;
+            this.pluginManager = pluginManager;
         }
 
         /// <summary>
         /// Instantiates and/or returns the ModelManager instance.
         /// </summary>
+        /// <remarks>
+        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
+        /// injected when the method is invoked.
+        /// </remarks>
         /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
+        /// <param name="pluginManager">The PluginManager instance for the application.</param>
         /// <returns>The Singleton instance of the ModelManager.</returns>
-        internal static ModelManager Instance(ProgramManager manager)
+        internal static ModelManager Instantiate(IProgramManager manager, IConfigurationManager configurationManager, IPluginManager pluginManager)
         {
             if (instance == null)
-                instance = new ModelManager(manager);
+                instance = new ModelManager(manager, configurationManager, pluginManager);
 
             return instance;
         }
@@ -131,7 +161,7 @@ namespace Symbiote.Core.Model
             logger.Info("Starting the Model Manager...");
             Result retVal = new Result();
 
-            State = State.Starting;
+            ChangeState(State.Starting);
 
             #region Configuration
 
@@ -176,9 +206,9 @@ namespace Symbiote.Core.Model
             #endregion
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Running;
+                ChangeState(State.Running);
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -215,14 +245,14 @@ namespace Symbiote.Core.Model
             logger.Info("Stopping the Model Manager...");
             Result retVal = new Result();
 
-            State = State.Stopping;
+            ChangeState(State.Stopping);
 
             retVal.Incorporate(SaveModel());
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Stopped;
+                ChangeState(State.Stopped);
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -244,7 +274,7 @@ namespace Symbiote.Core.Model
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            Result<ModelManagerConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
+            Result<ModelManagerConfiguration> fetchResult = configurationManager.GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -256,7 +286,7 @@ namespace Symbiote.Core.Model
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<ModelManagerConfiguration> createResult = manager.GetManager<ConfigurationManager>().AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<ModelManagerConfiguration> createResult = configurationManager.AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -304,7 +334,7 @@ namespace Symbiote.Core.Model
             logger.EnterMethod();
             Result retVal = new Result();
 
-            retVal.Incorporate(manager.GetManager<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(configurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
@@ -492,8 +522,6 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Assigns the Model and Dictionary contained within the supplied ModelBuildResult to the supplied model and dictionary.
         /// </summary>
-        /// <param name="model">The model to which to attach the model contained within the ModelBuildResult.</param>
-        /// <param name="dictionary">The dictionary to which to attach the dictionary contained within the ModelBuildResult.</param>
         /// <param name="modelBuildResult">The built model to attach.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result AttachModel(ModelBuildResult modelBuildResult)
@@ -518,7 +546,6 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
         /// </summary>
-        /// <param name="flushToDisk">Save the updated Configuration to disk.</param>
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
         public Result<List<ModelManagerConfigurationItem>> SaveModel()
         {
@@ -950,6 +977,21 @@ namespace Symbiote.Core.Model
 
             retVal.LogResult(logger.Debug);
             return retVal;
+        }
+
+        /// <summary>
+        /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
+        /// </summary>
+        /// <param name="state">The State to which the State property should be changed.</param>
+        /// <param name="message">The optional message describing the nature or reason for the change.</param>
+        private void ChangeState(State state, string message = "")
+        {
+            State previousState = State;
+
+            State = state;
+
+            if (StateChanged != null)
+                StateChanged(this, new StateChangedEventArgs(State, previousState, message));
         }
 
         #endregion

@@ -37,7 +37,7 @@ namespace Symbiote.Core.Plugin
     /// <summary>
     /// The PluginManager class controls the plugin subsystem.
     /// </summary>
-    public class PluginManager : IManager, IConfigurable<PluginManagerConfiguration>
+    public class PluginManager : IStateful, IManager, IConfigurable<PluginManagerConfiguration>, IPluginManager
     {
         #region Variables
 
@@ -49,7 +49,17 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private IProgramManager manager;
+
+        /// <summary>
+        /// The PlatformManager for the application.
+        /// </summary>
+        private IPlatformManager platformManager;
+
+        /// <summary>
+        /// The ConfigurationManager for the application.
+        /// </summary>
+        private IConfigurationManager configurationManager;
 
         /// <summary>
         /// The Singleton instance of PluginManager.
@@ -71,20 +81,16 @@ namespace Symbiote.Core.Plugin
 
         #region Properties
 
-        #region IManager Implementation
+        #region IStateful Properties
 
         /// <summary>
         /// The state of the Manager.
         /// </summary>
         public State State { get; private set; }
 
-        /// <summary>
-        /// The list of dependencies for the Manager.
-        /// </summary>
-        public List<Type> Dependencies { get { return new Type[] { typeof(ProgramManager), typeof(PlatformManager), typeof(ConfigurationManager) }.ToList(); } }
         #endregion
 
-        #region IConfigurable Implementation
+        #region IConfigurable Properties
 
         /// <summary>
         /// The ConfigurationDefinition for the Manager.
@@ -97,6 +103,8 @@ namespace Symbiote.Core.Plugin
         public PluginManagerConfiguration Configuration { get; private set; }
 
         #endregion
+
+        #region IPluginManager Properties
 
         /// <summary>
         /// A list of currently loaded plugin assemblies.
@@ -135,10 +143,15 @@ namespace Symbiote.Core.Plugin
 
         #endregion
 
+        #endregion
+
         #region Events
 
-        #region IManager Events
+        #region IStateful Events
 
+        /// <summary>
+        /// Occurs when the State of the component changes.
+        /// </summary>
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
         #endregion
@@ -151,8 +164,12 @@ namespace Symbiote.Core.Plugin
         /// Private constructor, only called by Instance()
         /// </summary>
         /// <param name="manager">The ProgramManager instance for the application.</param>
-        private PluginManager(ProgramManager manager) {
+        /// <param name="platformManager">The PlatformManager instance for the application.</param>
+        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
+        private PluginManager(IProgramManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager) {
             this.manager = manager;
+            this.platformManager = platformManager;
+            this.configurationManager = configurationManager;
 
             PluginAssemblies = new List<PluginAssembly>();
             PluginInstances = new Dictionary<string, IPluginInstance>();
@@ -160,17 +177,26 @@ namespace Symbiote.Core.Plugin
             // initialize the Connector and Endpoint managers
             ConnectorManager = ConnectorManager.Instance(this, manager);
             EndpointManager = EndpointManager.Instance(this, manager);
+
+            ChangeState(State.Initialized);
         }
 
         /// <summary>
         /// Instantiates and/or returns the PluginManager instance.
         /// </summary>
+        /// <remarks>
+        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
+        /// injected when the method is invoked.
+        /// </remarks>
         /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="platformManager">The PlatformManager instance for the application.</param>
+        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
         /// <returns>The Singleton instance of PluginManager.</returns>
-        private static PluginManager Instance(ProgramManager manager)
+        private static PluginManager Instantiate(IProgramManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
         {
             if (instance == null)
-                instance = new PluginManager(manager);
+                instance = new PluginManager(manager, platformManager, configurationManager);
 
             return instance;
         }
@@ -190,7 +216,10 @@ namespace Symbiote.Core.Plugin
             Guid guid = logger.EnterMethod(true);
             Result retVal = new Result();
 
+            if (State == State.Running) return retVal.AddWarning("The Manager is already in the Running state.");
+
             logger.Info("Starting the Plugin Manager...");
+            ChangeState(State.Starting);
 
             #region Configuration
 
@@ -290,14 +319,17 @@ namespace Symbiote.Core.Plugin
 
             #endregion
 
+            platformManager.Platform.InstantiateConnector("Platform");
+            PluginInstances.Add("Platform", platformManager.Platform.Connector);
+
             // if no errors were encountered during startup, set the Manager state to Running.
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                State = State.Running;
+                ChangeState(State.Running);
                 SaveConfiguration();
             }
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
             
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -334,12 +366,12 @@ namespace Symbiote.Core.Plugin
             logger.Info("Stopping the Plugin Manager...");
             Result retVal = new Result();
 
-            State = State.Stopping;
+            ChangeState(State.Stopping);
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Stopped;
+                ChangeState(State.Stopped);
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -1333,7 +1365,7 @@ namespace Symbiote.Core.Plugin
         /// <param name="assemblies">The List of type PluginAssembly containing the assemblies to which the supplied instances should be matched</param>
         /// <param name="instanceManager">The ProgramManager instance to be passed to Plugin instances.</param>
         /// <returns>A Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
-        private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins(List<PluginManagerConfigurationPluginInstance> configuredInstances, List<PluginAssembly> assemblies, ProgramManager instanceManager)
+        private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins(List<PluginManagerConfigurationPluginInstance> configuredInstances, List<PluginAssembly> assemblies, IProgramManager instanceManager)
         {
             logger.EnterMethod(xLogger.Params(configuredInstances, assemblies));
             logger.Info("Creating Plugin Instances...");
@@ -1472,6 +1504,21 @@ namespace Symbiote.Core.Plugin
 
             logger.Trace((retVal == default(Item) ? "Unable to resolve Item." : "Resolved Item: " + retVal.ToJson()));
             return retVal;
+        }
+
+        /// <summary>
+        /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
+        /// </summary>
+        /// <param name="state">The State to which the State property should be changed.</param>
+        /// <param name="message">The optional message describing the nature or reason for the change.</param>
+        private void ChangeState(State state, string message = "")
+        {
+            State previousState = State;
+
+            State = state;
+
+            if (StateChanged != null)
+                StateChanged(this, new StateChangedEventArgs(State, previousState, message));
         }
 
         #endregion
@@ -1625,9 +1672,9 @@ namespace Symbiote.Core.Plugin
         private static string GetPluginDirectory(Plugin plugin)
         {
             if (plugin.PluginType == PluginType.App)
-                return System.IO.Path.Combine(ProgramManager.Instance().GetManager<PlatformManager>().Directories.Web, plugin.Name);
+                return System.IO.Path.Combine(ProgramManager.GetInstance().GetManager<PlatformManager>().Directories.Web, plugin.Name);
             else
-                return System.IO.Path.Combine(ProgramManager.Instance().GetManager<PlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
+                return System.IO.Path.Combine(ProgramManager.GetInstance().GetManager<PlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
         }
 
         /// <summary>

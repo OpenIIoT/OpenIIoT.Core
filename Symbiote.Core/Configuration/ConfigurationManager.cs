@@ -71,7 +71,7 @@ namespace Symbiote.Core.Configuration
     /// <summary>
     /// The Configuration Manager class manages the configuration file for the application.
     /// </summary>
-    public class ConfigurationManager : IManager
+    public class ConfigurationManager : IStateful, IManager, IConfigurationManager
     {
         #region Variables
 
@@ -83,7 +83,12 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private IProgramManager manager;
+
+        /// <summary>
+        /// The PlatformManager for the application.
+        /// </summary>
+        private IPlatformManager platformManager;
         
         /// <summary>
         /// The Singleton instance of ConfigurationManager.
@@ -103,17 +108,12 @@ namespace Symbiote.Core.Configuration
 
         #region Properties
 
-        #region IManager Implementation
+        #region IStateful Implementation
 
         /// <summary>
         /// The state of the Manager.
         /// </summary>
         public State State { get; private set; }
-
-        /// <summary>
-        /// The list of dependencies for the Manager.
-        /// </summary>
-        public List<Type> Dependencies { get { return new List<Type>(new Type[] { typeof(ProgramManager), typeof(PlatformManager) }); } }
 
         #endregion
 
@@ -153,22 +153,33 @@ namespace Symbiote.Core.Configuration
         /// Private constructor, only called by Instance()
         /// </summary>
         /// <param name="manager">The ProgramManager instance for the application.</param>
-        private ConfigurationManager(ProgramManager manager)
+        /// <param name="platformManager">The PlatformManager instance for the application.</param>
+        private ConfigurationManager(IProgramManager manager, IPlatformManager platformManager)
         {
             this.manager = manager;
+            this.platformManager = platformManager;
+
             RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
             ConfigurationFileName = GetConfigurationFileName();
+
+            ChangeState(State.Initialized);
         }
 
         /// <summary>
         /// Instantiates and/or returns the ConfigurationManager instance.
         /// </summary>
+        /// <remarks>
+        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
+        /// injected when the method is invoked.
+        /// </remarks>
         /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="platformManager">The PlatformManager instance for the application.</param>
         /// <returns>The Singleton instance of the ConfigurationManager.</returns>
-        private static ConfigurationManager Instance(ProgramManager manager)
+        private static ConfigurationManager Instantiate(IProgramManager manager, IPlatformManager platformManager)
         {
             if (instance == null)
-                instance = new ConfigurationManager(manager);
+                instance = new ConfigurationManager(manager, platformManager);
 
             return instance;
         }
@@ -196,7 +207,7 @@ namespace Symbiote.Core.Configuration
 
             //------------------------------ - -           ---
             // check whether the configuration file exists and if it doesn't, build it from scratch.
-            if (!manager.GetManager<PlatformManager>().Platform.FileExists(ConfigurationFileName))
+            if (!platformManager.Platform.FileExists(ConfigurationFileName))
             {
                 logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
                 Result<Dictionary<string, Dictionary<string, object>>> buildResult = BuildNewConfiguration();
@@ -267,7 +278,7 @@ namespace Symbiote.Core.Configuration
                 ChangeState(State.Running);
             }
             else
-                ChangeState(State.Faulted);
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -312,7 +323,7 @@ namespace Symbiote.Core.Configuration
             if (retVal.ResultCode != ResultCode.Failure)
                 ChangeState(State.Stopped);
             else
-                ChangeState(State.Faulted);
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -349,7 +360,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 // read the entirety of the configuration file into configFile
-                configFile = manager.GetManager<PlatformManager>().Platform.ReadFile(fileName).ReturnValue;
+                configFile = platformManager.Platform.ReadFile(fileName).ReturnValue;
                 logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
                 // attempt to deserialize the contents of the file to an object of type ApplicationConfiguration
@@ -408,7 +419,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-                manager.GetManager<PlatformManager>().Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
+                platformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
                 //manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, new JsonSerializerSettings() { Formatting = Formatting.Indented, ContractResolver = new DictionaryAsArrayResolver() }));
             }
             catch (Exception ex)

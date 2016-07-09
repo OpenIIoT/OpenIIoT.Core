@@ -11,7 +11,7 @@ namespace Symbiote.Core.Service.Web.API
 {
     public class BrowseController : ApiController
     {
-        private static ProgramManager manager = ProgramManager.Instance();
+        private static ProgramManager manager = ProgramManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static Item model = manager.GetManager<ModelManager>().Model;
 

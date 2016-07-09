@@ -12,7 +12,7 @@ namespace Symbiote.Core.Service.Web.API
 {
     public class ConfigurationController : ApiController
     {
-        private static ProgramManager manager = ProgramManager.Instance();
+        private static ProgramManager manager = ProgramManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static Dictionary<string, Dictionary<string, object>> configuration = manager.GetManager<ConfigurationManager>().Configuration;
 

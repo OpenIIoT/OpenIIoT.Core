@@ -19,7 +19,7 @@ namespace Symbiote.Core.Service.Web.API
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private static ProgramManager manager = ProgramManager.Instance();
+        private static ProgramManager manager = ProgramManager.GetInstance();
 
         private static Item model = manager.GetManager<ModelManager>().Model;
 

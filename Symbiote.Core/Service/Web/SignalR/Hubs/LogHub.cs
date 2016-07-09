@@ -18,7 +18,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private ProgramManager manager = ProgramManager.Instance();
+        private ProgramManager manager = ProgramManager.GetInstance();
 
         /// <summary>
         /// The Logger for this class.

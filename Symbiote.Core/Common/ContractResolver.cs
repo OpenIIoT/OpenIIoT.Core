@@ -38,16 +38,6 @@ namespace Symbiote.Core
         #region Variables
 
         /// <summary>
-        /// The ProgramManager for the application.
-        /// </summary>
-        private static ProgramManager manager = ProgramManager.Instance();
-
-        /// <summary>
-        /// The Logger for this class.
-        /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
         /// The list of properties to either include or exclude, depending on contractResolverType.
         /// </summary>
         private List<string> propertyList;

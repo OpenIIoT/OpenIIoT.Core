@@ -88,12 +88,12 @@ namespace Symbiote.Core
         /// <summary>
         /// Generic prefix to append to the beginning of the other prefixes
         /// </summary>
-        private static readonly string Prefix = "│ ";
+        private static readonly string Prefix = " │ ";
 
         /// <summary>
         /// String to log prior to any text block.  If no header is desired, specify a blank string.
         /// </summary>
-        private static readonly string Header = "┌─────────── ─ ───────────────────────── ─────────────────────────────────────────────────────────────────── ─────── ─    ─     ─";
+        private static readonly string Header = " ┌─────────── ─ ───────────────────────── ─────────────────────────────────────────────────────────────────── ─────── ─    ─     ─";
 
         /// <summary>
         /// String to append to the beginning of the method entry message.
@@ -144,12 +144,12 @@ namespace Symbiote.Core
         /// <summary>
         /// String to log following any text block.  If no footer is desired, specify a blank string.
         /// </summary>
-        private static readonly string Footer = "└──────────────────── ───────────────────────────────  ─  ─          ─ ─ ─    ─   ─";
+        private static readonly string Footer = " └──────────────────── ───────────────────────────────  ─  ─          ─ ─ ─    ─   ─";
 
         /// <summary>
         /// String to log when LogSeparator() is invoked.
         /// </summary>
-        private static readonly string InnerSeparator = "├──────────────────────── ─       ──  ─";
+        private static readonly string InnerSeparator = " ├──────────────────────── ─       ──  ─";
 
         /// <summary>
         /// String to log when the Separator() method is invoked.
@@ -519,7 +519,7 @@ namespace Symbiote.Core
             if (!IsEnabled(level)) return;
 
             // get the BigFont for the message
-            string[] heading = BigFont.Generate(message, BigFont.FontSize.Large);
+            string[] heading = BigFont.Generate(message, BigFont.Font.Graffiti, BigFont.FontSize.Large);
 
             // convert the array to a list so we can easily append a line
             List<string> styledHeading = new List<string>(heading);
@@ -578,18 +578,21 @@ namespace Symbiote.Core
         /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <remakrs>
+        /// <para>
         /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
         /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
         /// of parameters and values to work properly.
-        /// 
+        /// </para>
+        /// <para>
         /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
         /// an object array explicitly.
+        /// </para>
         /// </remakrs>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <returns>The Guid for the persisted method.</returns>
-        /// <seealso cref="EnterMethod(object[], bool, string, string, int)"/>
+        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
         /// <example>
         /// <code>
         /// // simplest example with no persistence and no parameters
@@ -605,7 +608,7 @@ namespace Symbiote.Core
         /// </example>
         public Guid EnterMethod([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return EnterMethod(null, false, caller, filePath, lineNumber);
+            return EnterMethod(null, null, false, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -613,19 +616,63 @@ namespace Symbiote.Core
         /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <remakrs>
+        /// <para>
         /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
         /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
         /// of parameters and values to work properly.
-        /// 
+        /// </para>
+        /// <para>
         /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
         /// an object array explicitly.
+        /// </para>
+        /// </remakrs>
+        /// <param name="typeParameters">A Type array containing the type parameters provided with the logged method.  Use the TypeParams() method to build this.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// // simplest example with no persistence, no parameters and one type parameter
+        /// public void MyMethod<T>()
+        /// {
+        ///     logger.EnterMethod(xLogger.TypeParams(typeof(T)));
+        ///     
+        ///     // method body
+        ///     
+        ///     logger.ExitMethod();
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public Guid EnterMethod(Type[] typeParameters, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            return EnterMethod(typeParameters, null, false, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
+        /// </summary>
+        /// <remakrs>
+        /// <para>
+        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
+        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
+        /// of parameters and values to work properly.
+        /// </para>
+        /// <para>
+        /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
+        /// an object array explicitly.
+        /// </para>
         /// </remakrs>
         /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <returns>The Guid for the persisted method.</returns>
-        /// <seealso cref="EnterMethod(object[], bool, string, string, int)"/>
+        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
         /// <example>
         /// <code>
         /// // log the method entry and parameters
@@ -641,7 +688,7 @@ namespace Symbiote.Core
         /// </example>
         public Guid EnterMethod(object[] parameters, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return EnterMethod(parameters, false, caller, filePath, lineNumber);
+            return EnterMethod(null, parameters, false, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -649,12 +696,57 @@ namespace Symbiote.Core
         /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <remakrs>
+        /// <para>
         /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
         /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
         /// of parameters and values to work properly.
-        /// 
+        /// </para>
+        /// <para>
         /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
         /// an object array explicitly.
+        /// </para>
+        /// </remakrs>
+        /// <param name="typeParameters">A Type array containing the type parameters provided with the logged method.  Use the TypeParams() method to build this.</param>
+        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// // log the method entry, parameters and type parameters
+        /// public void MyMethod<T1,T2>(int one, int two)
+        /// {
+        ///     logger.EnterMethod(xLogger.TypeParams(typeof(T1), typeof(T2)), xLogger.Params(one, two));
+        ///     
+        ///     // method body
+        ///     
+        ///     logger.ExitMethod();
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public Guid EnterMethod(Type[] typeParameters, object[] parameters, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            return EnterMethod(typeParameters, parameters, false, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
+        /// </summary>
+        /// <remakrs>
+        /// <para>
+        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
+        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
+        /// of parameters and values to work properly.
+        /// </para>
+        /// <para>
+        /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
+        /// an object array explicitly.
+        /// </para>
         /// </remakrs>
         /// <param name="persist">
         /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
@@ -664,7 +756,7 @@ namespace Symbiote.Core
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <returns>The Guid for the persisted method.</returns>
-        /// <seealso cref="EnterMethod(object[], bool, string, string, int)"/>
+        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
         /// <example>
         /// <code>
         /// // log the method entry with persistence and no parameters
@@ -680,7 +772,7 @@ namespace Symbiote.Core
         /// </example>
         public Guid EnterMethod(bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return EnterMethod(null, persist, caller, filePath, lineNumber);
+            return EnterMethod(null, null, persist, caller, filePath, lineNumber);
         }
 
         /// <summary>
@@ -688,12 +780,60 @@ namespace Symbiote.Core
         /// and attempts to log the parameters passed in.  
         /// </summary>
         /// <remakrs>
+        /// <para>
         /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
         /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
         /// of parameters and values to work properly.
-        /// 
+        /// </para>
+        /// <para>
         /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
         /// an object array explicitly.
+        /// </para>
+        /// </remakrs>
+        /// <param name="typeParameters">A Type array containing the type parameters provided with the logged method.  Use the TypeParams() method to build this.</param>
+        /// <param name="persist">
+        /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
+        /// when invoking the Exit() method or a memory leak will occur.
+        /// </param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// // log the method entry with persistence, no parameters and one type parameter
+        /// public void MyMethod<T>()
+        /// {
+        ///     Guid persistedGuid = logger.EnterMethod(xLogger.TypeParam(typeof(T)), true);
+        ///     
+        ///     // method body
+        ///     
+        ///     logger.ExitMethod(persistedGuid);
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public Guid EnterMethod(Type[] typeParameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            return EnterMethod(typeParameters, null, persist, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
+        /// </summary>
+        /// <remakrs>
+        /// <para>
+        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
+        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
+        /// of parameters and values to work properly.
+        /// </para>
+        /// <para>
+        /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
+        /// an object array explicitly.
+        /// </para>
         /// </remakrs>
         /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
         /// <param name="persist">
@@ -719,6 +859,52 @@ namespace Symbiote.Core
         /// </code>
         /// </example>
         public Guid EnterMethod(object[] parameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            return EnterMethod(null, parameters, persist, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
+        /// and attempts to log the parameters passed in.  
+        /// </summary>
+        /// <remakrs>
+        /// <para>
+        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
+        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
+        /// of parameters and values to work properly.
+        /// </para>
+        /// <para>
+        /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
+        /// an object array explicitly.
+        /// </para>
+        /// </remakrs>
+        /// <param name="typeParameters">A Type array containing the type parameters provided with the logged method.  Use the TypeParams() method to build this.</param>
+        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the Params() method to build this.</param>
+        /// <param name="persist">
+        /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
+        /// when invoking the Exit() method or a memory leak will occur.
+        /// </param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="Params(object[])"/>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// // log the method entry with persistence, parameters and type parameters
+        /// public void MyMethod<T1, T2>(int one, int two)
+        /// {
+        ///     Guid persistedGuid = logger.EnterMethod(xLogger.TypeParams(typeof(T1), typeof(T2)), xLogger.Params(one, two), true);
+        ///     
+        ///     // method body
+        ///     
+        ///     logger.ExitMethod(persistedGuid);
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public Guid EnterMethod(Type[] typeParameters, object[] parameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             // default to Trace
             LogLevel level = LogLevel.Trace;
@@ -754,6 +940,11 @@ namespace Symbiote.Core
                 (persist ? ", persisting with Guid: " + methodGuid : "")
             );
             
+            // if type parameters were supplied, log them
+            if (typeParameters != null)
+                for (int t = 0; t < typeParameters.Length; t++)
+                    Log(level, (t == typeParameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "T" + (t + 1) + ": " + typeParameters[t].ToString());
+
             // compose and print the parameter list, but not if the list is null
             if (parameters != null)
             {
@@ -2029,6 +2220,12 @@ namespace Symbiote.Core
         public static object[] Params(params object[] parameters)
         {
             return parameters;
+        }
+
+
+        public static Type[] TypeParams(params Type[] typeParameters)
+        {
+            return typeParameters;
         }
 
         /// <summary>

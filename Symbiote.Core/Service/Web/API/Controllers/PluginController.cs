@@ -28,7 +28,7 @@ namespace Symbiote.Core.Service.Web.API
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private ProgramManager manager = ProgramManager.Instance();
+        private ProgramManager manager = ProgramManager.GetInstance();
 
         /// <summary>
         /// The default serialization properties for an AppArchive.

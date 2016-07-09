@@ -11,7 +11,7 @@ namespace Symbiote.Core.Service.Web.API
 {
     public class LogController : ApiController, IApiController
     {
-        private static ProgramManager manager = ProgramManager.Instance();
+        private static ProgramManager manager = ProgramManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         //private static List<string> appArchiveSerializationProperties = new List<string>(new string[] { "FQN", "FileName", "Version", "AppType", "ConfigurationDefinition" });

@@ -26,8 +26,6 @@ namespace Symbiote.Core.Service
 
         public State State { get; private set; }
 
-        public List<Type> Dependencies { get { return default(List<Type>); } }
-
         public Dictionary<string, IService> Services { get; private set; }
         public Dictionary<string, Type> ServiceTypes { get; private set; }
 
@@ -51,7 +49,7 @@ namespace Symbiote.Core.Service
             Services = new Dictionary<string, IService>();
         }
 
-        private static ServiceManager Instance(ProgramManager manager)
+        private static ServiceManager Instantiate(ProgramManager manager)
         {
             if (instance == null)
                 instance = new ServiceManager(manager);

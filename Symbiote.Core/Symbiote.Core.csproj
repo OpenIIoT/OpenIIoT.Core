@@ -158,17 +158,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\BigFont.cs" />
-    <Compile Include="Common\IManager.cs" />
+    <Compile Include="Common\Manager\IManager.cs" />
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\IStateful.cs" />
     <Compile Include="Common\State\State.cs" />
+    <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Model\ItemEventArgs.cs" />
     <Compile Include="Common\xLogger.cs" />
+    <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
+    <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\PlatformType.cs" />
     <Compile Include="Plugin\Connector\ConnectorManager.cs" />
     <Compile Include="Plugin\Connector\IExtensible.cs" />
@@ -182,9 +185,11 @@
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginArchive.cs" />
     <Compile Include="Plugin\PluginArchiveLoadResult.cs" />
+    <Compile Include="Plugin\IPluginManager.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
     <Compile Include="Plugin\PluginType.cs" />
     <Compile Include="Plugin\PluginTypeManager.cs" />
+    <Compile Include="IProgramManager.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -1,4 +1,26 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █   
+      █      ▄███████▄                                                                                  
+      █     ███    ███                                                                                  
+      █     ███    ███    █████  ██████     ▄████▄     █████   ▄█████     ▄▄██▄▄▄      ▄██████   ▄█████ 
+      █     ███    ███   ██  ██ ██    ██   ██    ▀    ██  ██   ██   ██  ▄█▀▀██▀▀█▄    ██    ██   ██  ▀  
+      █   ▀█████████▀   ▄██▄▄█▀ ██    ██  ▄██        ▄██▄▄█▀   ██   ██  ██  ██  ██    ██    ▀    ██     
+      █     ███        ▀███████ ██    ██ ▀▀██ ███▄  ▀███████ ▀████████  ██  ██  ██    ██    ▄  ▀███████ 
+      █     ███          ██  ██ ██    ██   ██    ██   ██  ██   ██   ██  ██  ██  ██    ██    ██    ▄  ██ 
+      █    ▄████▀        ██  ██  ██████    ██████▀    ██  ██   ██   █▀   █  ██  █  ██ ██████▀   ▄████▀  
+      █   
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █  
+      █  The main application class.
+      █  
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██ 
+                                                                                               ▀█▄ ██ ▄█▀ 
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
+using System;
 using System.Linq;
 using System.ServiceProcess;
 using NLog;
@@ -45,16 +67,18 @@ namespace Symbiote.Core
         /// Main entry point for the application.
         /// </summary>
         /// <remarks>
-        /// Responsible for instantiating the platform, and determining whether to start
-        /// the application as a Windows service or console/interactive application.
+        ///     Responsible for instantiating the platform and determining whether to start  the application as a 
+        ///     Windows service or console/interactive application.
         /// </remarks>
         /// <param name="args">
-        /// Command line arguments; the first value corresponds to the highest active 
-        /// logging level, e.g. "trace", "debug", "info", "warn", "error" and "fatal".
+        ///     Command line arguments; the first value corresponds to the highest active 
+        ///     logging level, e.g. "trace", "debug", "info", "warn", "error" and "fatal".
         /// </param>
         internal static void Main(string[] args)
         {
+            // print a heading with the application name and version
             logger.Heading(LogLevel.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+
             logger.EnterMethod(xLogger.Params((object)args));
 
             try
@@ -121,22 +145,38 @@ namespace Symbiote.Core
                 // all of the various IManager instances are instantiated (but not started) within the constructor of ProgramManager.
                 logger.Heading(LogLevel.Debug, "Initialization");
                 logger.Debug("Instantiating the Program Manager...");
-                manager = ProgramManager.Instance(safeMode);
+
+                // invoke the Instance() method on ProgramManager to instantiate it.
+                // provide a Type array containing each of the application Managers in the order in which they are to be instantiated/started.
+                manager = ProgramManager.Instantiate(
+                    new Type[] {
+                        typeof(PlatformManager),
+                        typeof(ConfigurationManager),
+                        typeof(PluginManager),
+                        typeof(ModelManager),
+                        typeof(ServiceManager)
+                    },
+                    safeMode
+                );
+
                 logger.Debug("The Program Manager was instantiated successfully.");
 
-                manager.StartManager(manager);
-                logger.Info("The Program Manager is now " + manager.State);
+                //Result managerResult = manager.Start();
+
+                //if (managerResult.ResultCode == ResultCode.Failure)
+                //    throw new Exception("Failed to start the Program Manager: " + managerResult.LastErrorMessage());
                 //-------------------------------  ------------------------ - - - --------------- - -
 
 
                 //----------------------------------------------- - ------------  - - -
                 // start the Platform Manager so we can get the platform details
                 // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
-                logger.SubHeading(LogLevel.Debug, "Platform Manager");
-                logger.Info("Starting the Platform Manager...");
-                manager.StartManager(manager.GetManager<PlatformManager>());
-                logger.Info("Platform: " + manager.GetManager<PlatformManager>().Platform.PlatformType.ToString() + " (" + manager.GetManager<PlatformManager>().Platform.Version + ")");
-                logger.Info("Program is running " + (Environment.UserInteractive ? "" : "non-") + "interactively.");
+                //logger.SubHeading(LogLevel.Debug, "Platform Manager");
+
+                //Result<IManager> platformResult = manager.StartManager(manager.GetManager<PlatformManager>());
+
+                //if (platformResult.ResultCode == ResultCode.Failure)
+                //    throw new Exception("Failed to start the Platform Manager: " + platformResult.LastErrorMessage());
                 //------------------- - -----------                      ------------- 
 
 
@@ -144,9 +184,11 @@ namespace Symbiote.Core
                 // start the application.
                 // if the platform is windows and it is not being run as an interactive application, Windows 
                 // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
-                logger.Heading(LogLevel.Debug, "Startup");
+                ///logger.Heading(LogLevel.Debug, "Startup");
 
-                if ((manager.GetManager<PlatformManager>().Platform.PlatformType == PlatformType.Windows) && (!Environment.UserInteractive))
+                ///logger.Info("The Program is running " + (Environment.UserInteractive ? "" : "non-") + "interactively.");
+
+                if ((PlatformManager.GetPlatformType() == PlatformType.Windows) && (!Environment.UserInteractive))
                 {
                     logger.Info("Starting the application in service mode...");
                     ServiceBase.Run(new WindowsService());
@@ -178,6 +220,7 @@ namespace Symbiote.Core
         {
             logger.EnterMethod(xLogger.Params((object)args));
 
+            logger.Heading(LogLevel.Debug, "Startup");
             // this is the main try/catch for the application logic.  If an unhandled exception is thrown
             // anywhere in the application it will be caught here and treated as a fatal error, stopping the application.
             try
@@ -191,40 +234,30 @@ namespace Symbiote.Core
                 //----------- - -
 
 
-                //--------------------------- - -        -------  - -   - - -  - - - -
-                // load the configuration.
-                // reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                logger.SubHeading(LogLevel.Debug, "Configuration Manager");
-                logger.Info("Invoking the Configuration Manager Start routine...");
-                manager.StartManager(manager.GetManager<ConfigurationManager>());
-                logger.Info("Loaded Configuration from '" + manager.GetManager<ConfigurationManager>().ConfigurationFileName + "'.");
-                //--------------------------------------- - -  - --------            -------- -
+                ////--------------------------- - -        -------  - -   - - -  - - - -
+                //// load the configuration.
+                //// reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
+                //logger.SubHeading(LogLevel.Debug, "Configuration Manager");
+                //logger.Info("Invoking the Configuration Manager Start routine...");
+                //manager.StartManager(manager.GetManager<ConfigurationManager>());
+                //logger.Info("Loaded Configuration from '" + manager.GetManager<ConfigurationManager>().ConfigurationFileName + "'.");
+                ////--------------------------------------- - -  - --------            -------- -
 
 
-                //--------------------------------------------- - - --------- ----  - -    -
-                // load plugins.  
-                // populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
-                logger.SubHeading(LogLevel.Debug, "Plugin Manager");
-                logger.Info("Invoking the Plugin Manager Start routine...");
-                manager.StartManager(manager.GetManager<PluginManager>());
-                logger.Info(manager.GetManager<PluginManager>().PluginAssemblies.Count() + " Plugin(s) loaded.");
-                //----------------------------------------------------------------  --  ---         ------ - 
-
-
-                //--------------------- - --------------------- -  -
-                // create plugin instances.
-                // instantiates each plugin instance defined within the configuration and configures it
-                //logger.Info("Creating plugin instances...");
-                //manager.PluginManager.InstantiatePlugins();
-                //logger.Info(manager.PluginManager.PluginInstances.Count() + " Plugin instance(s) created.");
-                //--------------------------------------------- - -   -     -------  -     - - -  ---
-
+                ////--------------------------------------------- - - --------- ----  - -    -
+                //// load plugins.  
+                //// populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
+                //logger.SubHeading(LogLevel.Debug, "Plugin Manager");
+                //logger.Info("Invoking the Plugin Manager Start routine...");
+                //manager.StartManager(manager.GetManager<PluginManager>());
+                //logger.Info(manager.GetManager<PluginManager>().PluginAssemblies.Count() + " Plugin(s) loaded.");
+                ////----------------------------------------------------------------  --  ---         ------ - 
 
                 //------------------ - --           --          --  - -
                 // create the platform connector plugin instance.
                 // instantiates the connector plugin and adds it to the PluginManager so that it can be treated as a regular plugin
-                manager.GetManager<PlatformManager>().Platform.InstantiateConnector("Platform");
-                manager.GetManager<PluginManager>().PluginInstances.Add("Platform", manager.GetManager<PlatformManager>().Platform.Connector);
+                //manager.GetManager<PlatformManager>().Platform.InstantiateConnector("Platform");
+                //manager.GetManager<PluginManager>().PluginInstances.Add("Platform", manager.GetManager<PlatformManager>().Platform.Connector);
                 //------ - -      ---------------------- - -     ----------------------------- - - -
 
                 logger.Multiline(LogLevel.Debug, "MODEL");
@@ -232,8 +265,8 @@ namespace Symbiote.Core
                 //------------- - ----------------------- - - -------------------  -- - --- - 
                 // instantiate the item model.
                 // builds and attaches the model stored within the configuration file to the Model Manager.
-                manager.StartManager(manager.GetManager<ModelManager>());
-                logger.Info(manager.GetManager<ModelManager>().Dictionary.Count + " Item(s) resolved.");
+                //manager.StartManager(manager.GetManager<ModelManager>());
+                //logger.Info(manager.GetManager<ModelManager>().Dictionary.Count + " Item(s) resolved.");
 
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
 

@@ -10,8 +10,8 @@ namespace Symbiote.Core.Plugin.Endpoint
     {
         #region Variables
 
-        private ProgramManager manager;
-        private PluginManager pluginManager;
+        private IProgramManager manager;
+        private IPluginManager pluginManager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static EndpointManager instance;
 
@@ -44,13 +44,13 @@ namespace Symbiote.Core.Plugin.Endpoint
         #region Constructors
 
 
-        private EndpointManager(PluginManager pluginManager, ProgramManager programManager)
+        private EndpointManager(IPluginManager pluginManager, IProgramManager programManager)
         {
             manager = programManager;
             this.pluginManager = pluginManager;
         }
 
-        public static EndpointManager Instance(PluginManager pluginManager, ProgramManager programManager)
+        public static EndpointManager Instance(IPluginManager pluginManager, IProgramManager programManager)
         {
             if (instance == null)
                 instance = new EndpointManager(pluginManager, programManager);

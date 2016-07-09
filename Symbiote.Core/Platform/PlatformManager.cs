@@ -24,8 +24,6 @@
                                                                                                    ▀▀                            */
 using System;
 using NLog;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace Symbiote.Core.Platform
 {
@@ -56,7 +54,7 @@ namespace Symbiote.Core.Platform
     /// <summary>
     /// The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>
-    public class PlatformManager : IManager
+    public class PlatformManager : IStateful, IManager, IPlatformManager
     {
         #region Variables
 
@@ -68,7 +66,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private IProgramManager manager;
 
         /// <summary>
         /// The Singleton instance of PlatformManager.
@@ -79,19 +77,16 @@ namespace Symbiote.Core.Platform
 
         #region Properties
 
-        #region IManager Implementation
+        #region IStateful Properties
 
         /// <summary>
         /// The state of the Manager.
         /// </summary>
         public State State { get; private set; }
 
-        /// <summary>
-        /// The list of dependencies for the Manager.
-        /// </summary>
-        public List<Type> Dependencies { get { return new Type[] { typeof(ProgramManager) }.ToList(); } }
-
         #endregion
+
+        #region IPlatformManager Properties
 
         /// <summary>
         /// The current platform.
@@ -105,11 +100,15 @@ namespace Symbiote.Core.Platform
 
         #endregion
 
+        #endregion
 
         #region Events
 
-        #region IManager Events
+        #region IStateful Events
 
+        /// <summary>
+        /// Occurs when the State property changes.
+        /// </summary>
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
         #endregion
@@ -122,17 +121,24 @@ namespace Symbiote.Core.Platform
         /// Private constructor, only called by Instance()
         /// </summary>
         /// <param name="manager">The ProgramManager instance for the application.</param>
-        private PlatformManager(ProgramManager manager)
+        private PlatformManager(IProgramManager manager)
         {
             this.manager = manager;
+
+            ChangeState(State.Initialized);
         }
 
         /// <summary>
         /// Instantiates and/or returns the PlatformManager instance.
         /// </summary>
+        /// <remarks>
+        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
+        /// injected when the method is invoked.
+        /// </remarks>
         /// <param name="manager">The ProgramManager instance for the application.</param>
         /// <returns>The Singleton instance of PlatformManager.</returns>
-        private static PlatformManager Instance(ProgramManager manager)
+        private static PlatformManager Instantiate(IProgramManager manager)
         {
             if (instance == null)
                 instance = new PlatformManager(manager);
@@ -144,7 +150,7 @@ namespace Symbiote.Core.Platform
 
         #region Instance Methods
 
-        #region IManager Implementation
+        #region IStateful Implementation
 
         /// <summary>
         /// Starts the Platform manager.
@@ -158,22 +164,6 @@ namespace Symbiote.Core.Platform
             logger.Info("Starting the Platform Manager...");
 
             ChangeState(State.Starting);
-
-            // check to ensure the dependencies have been instantiated and are running
-            Result<List<Type>> dependencyCheck = manager.CheckDependencies(Dependencies);
-
-            if (manager.CheckDependencies(Dependencies).ResultCode == ResultCode.Failure)
-            {
-                dependencyCheck.LogResult(logger);
-
-                string list = "";
-                foreach (Type t in dependencyCheck.ReturnValue)
-                {
-                    list += (list.Length == 0 ? "" : ", ") + t.Name;
-                }
-
-                throw new Exception("Failed to start '" + this.GetType().Name + "'; the following dependencies were not satisfied: " + list);
-            }
 
             #region Platform Instantiation
 
@@ -240,11 +230,15 @@ namespace Symbiote.Core.Platform
             #endregion
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Running;
+                ChangeState(State.Running);
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
+
+            logger.Info("The Platform Manager is now in the " + State + " state.");
+            logger.Info("Platform: " + Platform.PlatformType.ToString() + " (" + Platform.Version + ")");
+
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
@@ -264,6 +258,7 @@ namespace Symbiote.Core.Platform
             retVal.Incorporate(Start());
 
             retVal.LogResult(logger);
+
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
@@ -279,14 +274,17 @@ namespace Symbiote.Core.Platform
             logger.Info("Stopping the Platform Manager...");
             Result retVal = new Result();
 
-            State = State.Stopping;
+            ChangeState(State.Stopping);
 
             if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Stopped;
+                ChangeState(State.Stopped);
             else
-                State = State.Faulted;
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
+
+            logger.Info("The Platform Manager is now " + State + ".");
+
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -316,7 +314,7 @@ namespace Symbiote.Core.Platform
         /// Evaluates Environment.OSVersion.Platform to determine the current platform.
         /// </summary>
         /// <returns>A PlatformType enumeration corresponding to the current platform.</returns>
-        private static PlatformType GetPlatformType()
+        public static PlatformType GetPlatformType()
         {
             int p = (int)Environment.OSVersion.Platform;
             return ((p == 4) || (p == 6) || (p == 128) ? PlatformType.UNIX : PlatformType.Windows);

@@ -39,7 +39,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The ProgramManager for the application.
         /// </summary>
-        private static ProgramManager manager = ProgramManager.Instance();
+        private static ProgramManager manager = ProgramManager.GetInstance();
 
         #endregion
 

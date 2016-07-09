@@ -1,5 +1,25 @@
-﻿using System;
-
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █   
+      █      ▄████████                                                 ▄████████                             
+      █     ███    ███                                                ███    ███                             
+      █     ███    █▀      ██      ▄█████      ██       ▄█████        ███    █▀  ██▄▄▄▄  ██   █     ▄▄██▄▄▄  
+      █     ███        ▀███████▄   ██   ██ ▀███████▄   ██   █        ▄███▄▄▄     ██▀▀▀█▄ ██   ██  ▄█▀▀██▀▀█▄ 
+      █   ▀███████████     ██  ▀   ██   ██     ██  ▀  ▄██▄▄         ▀▀███▀▀▀     ██   ██ ██   ██  ██  ██  ██ 
+      █            ███     ██    ▀████████     ██    ▀▀██▀▀           ███    █▄  ██   ██ ██   ██  ██  ██  ██ 
+      █      ▄█    ███     ██      ██   ██     ██      ██   █         ███    ███ ██   ██ ██   ██  ██  ██  ██ 
+      █    ▄████████▀     ▄██▀     ██   █▀    ▄██▀     ███████        ██████████  █   █  ██████    █  ██  █  
+      █   
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █  
+      █  Enumeration of the different component states.
+      █  
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██ 
+                                                                                               ▀█▄ ██ ▄█▀ 
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
 namespace Symbiote.Core
 {
     /// <summary>
@@ -8,27 +28,31 @@ namespace Symbiote.Core
     public enum State
     {
         /// <summary>
-        /// The default value
+        /// The default value.
         /// </summary>
-        Unknown,
+        Undefined,
         /// <summary>
-        /// The component is starting
+        /// The component has been initialized.
+        /// </summary>
+        Initialized,
+        /// <summary>
+        /// The component is starting.
         /// </summary>
         Starting,
         /// <summary>
-        /// The component is running
+        /// The component is running.
         /// </summary>
         Running,
         /// <summary>
-        /// The component is stopping
+        /// The component is stopping.
         /// </summary>
         Stopping,
         /// <summary>
-        /// The component has stopped
+        /// The component has stopped.
         /// </summary>
         Stopped,
         /// <summary>
-        /// The component is faulted
+        /// The component is faulted.
         /// </summary>
         Faulted
     }
