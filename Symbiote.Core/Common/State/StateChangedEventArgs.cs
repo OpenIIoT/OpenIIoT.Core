@@ -58,14 +58,33 @@ namespace Symbiote.Core
         /// </summary>
         public StopType StopType { get; private set; }
 
+        public bool RestartPending { get; private set; }
+
         /// <summary>
         /// Constructs a new instance with the specified state, previousState and message parameters.
         /// </summary>
         /// <param name="state">The State to which the state changed.</param>
         /// <param name="previousState">The State from which the state changed.</param>
         /// <param name="message">The optional message associated with the event.</param>
-        public StateChangedEventArgs(State state, State previousState, string message = "") : this(state, previousState, (state == State.Faulted ? StopType.Abnormal : StopType.Normal), message) { }
-        
+        public StateChangedEventArgs(State state, State previousState, string message = "") : this(state, previousState, message, (state == State.Faulted ? StopType.Abnormal : StopType.Normal), false) { }
+
+        /// <summary>
+        /// Constructs a new instance with the specified state, previousState and stopType parameters.
+        /// </summary>
+        /// <param name="state">The State to which the state changed.</param>
+        /// <param name="previousState">The State from which the state changed.</param>
+        /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
+        /// <param name="restartPending">An optional bool indicating that a restart of a stopped component is pending.</param>
+        public StateChangedEventArgs(State state, State previousState, StopType stopType = StopType.Normal, bool restartPending = false) : this(state, previousState, "", stopType, false) { }
+
+        /// <summary>
+        /// Constructs a new instance with the specified state, previousState and restartPending parameters.
+        /// </summary>
+        /// <param name="state">The State to which the state changed.</param>
+        /// <param name="previousState">The State from which the state changed.</param>
+        /// <param name="restartPending">An optional bool indicating that a restart of a stopped component is pending.</param>
+        public StateChangedEventArgs(State state, State previousState, bool restartPending) : this(state, previousState, "", (state == State.Faulted ? StopType.Abnormal : StopType.Normal), restartPending) { }
+
         /// <summary>
         /// Constructs a new instance with the specified state, previousState, stopType and message parameters.
         /// </summary>
@@ -73,11 +92,13 @@ namespace Symbiote.Core
         /// <param name="previousState">The State from which the state changed.</param>
         /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
         /// <param name="message">The optional message associated with the event.</param>
-        public StateChangedEventArgs(State state, State previousState, StopType stopType = StopType.Normal, string message = "")
+        /// <param name="restartPending">An optional bool indicating that a restart of a stopped component is pending.</param>
+        public StateChangedEventArgs(State state, State previousState, string message = "", StopType stopType = StopType.Normal, bool restartPending = false)
         {
             State = state;
             PreviousState = previousState;
             Message = message;
+            RestartPending = restartPending;
         }
     }
 }

@@ -135,7 +135,7 @@ namespace Symbiote.Core
         /// <param name="state">The State to which the State property is to be changed.</param>
         protected virtual void ChangeState(State state)
         {
-            ChangeState(state, StopType.Normal, "");
+            ChangeState(state, "", StopType.Normal);
         }
 
         /// <summary>
@@ -145,16 +145,17 @@ namespace Symbiote.Core
         /// <param name="message">The optional message describing the nature or reason for the change.</param>
         protected virtual void ChangeState(State state, string message = "")
         {
-            ChangeState(state, StopType.Normal, message);
+            ChangeState(state, message, StopType.Normal);
         }
 
         /// <summary>
         /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
         /// </summary>
         /// <param name="state">The State to which the State property is to be changed.</param>
-        /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
         /// <param name="message">The optional message describing the nature or reason for the change.</param>
-        protected virtual void ChangeState(State state, StopType stopType = StopType.Normal, string message = "")
+        /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
+        /// <param name="restartPending">True if the Manager is being stopped pending a restart, false otherwise.</param>
+        protected virtual void ChangeState(State state, string message = "", StopType stopType = StopType.Normal, bool restartPending = false)
         {
             State previousState = State;
 
@@ -163,7 +164,7 @@ namespace Symbiote.Core
             if (State == State.Faulted) stopType = StopType.Abnormal;
 
             if (StateChanged != null)
-                StateChanged(this, new StateChangedEventArgs(State, previousState, stopType, message));
+                StateChanged(this, new StateChangedEventArgs(State, previousState, message, stopType, restartPending));
         }
 
         #endregion
@@ -202,7 +203,8 @@ namespace Symbiote.Core
                 if ((e.State == State.Stopped) || (e.State == State.Faulted))
                 {
                     logger.Info("The dependency '" + sender.GetType().Name + "' has stopped.  Stopping...");
-                    Stop();
+
+                    Stop((e.State == State.Faulted ? StopType.Abnormal : e.StopType));
                 }
             }
         }
