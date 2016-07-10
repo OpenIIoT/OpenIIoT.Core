@@ -393,7 +393,7 @@ namespace Symbiote.Plugin.Connector.Example
         /// </remarks>
         /// <remarks>Any changes to the State property should fire the <see cref="StateChanged"/> event.</remarks>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Normal)
+        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             Guid guid = logger.EnterMethod(true);
 

@@ -159,6 +159,7 @@
   <ItemGroup>
     <Compile Include="Common\BigFont.cs" />
     <Compile Include="Common\Manager\IManager.cs" />
+    <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\IStateful.cs" />

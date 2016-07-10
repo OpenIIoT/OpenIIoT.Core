@@ -42,14 +42,14 @@ namespace Symbiote.Core
     ///     Managers can be retrieved using <see cref="GetManager{T}()"/>.
     /// </para>
     /// </remarks>
-    public class ProgramManager : IStateful, IManager, IProgramManager
+    public class ProgramManager : Manager, IStateful, IManager, IProgramManager
     {
         #region Variables
 
         /// <summary>
-        /// The logger for this class.
+        /// The Logger for this class.
         /// </summary>
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The Singleton instance of ProgramManager.
@@ -65,22 +65,19 @@ namespace Symbiote.Core
         private List<Type> managerTypes;
 
         /// <summary>
-        /// The list of application Managers.
+        /// The list of application Manager instances.
         /// </summary>
-        private List<IManager> managers;
+        //private List<IManager> managerInstances;
+        private List<IManager> managerInstances;
+
+        /// <summary>
+        /// A dictionary containing a list of dependencies for each application Manager.
+        /// </summary>
+        private Dictionary<Type, List<Type>> managerDependencies;
 
         #endregion
 
         #region Properties
-
-        #region IStateful Properties
-
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        public State State { get; private set; }
-
-        #endregion
 
         #region IProgramManager Properties
 
@@ -111,18 +108,50 @@ namespace Symbiote.Core
 
         #endregion
 
-        #endregion
+        /// <summary>
+        /// The list of application Manager Types.
+        /// </summary>
+        private List<Type> ManagerTypes
+        {
+            get
+            {
+                if (managerTypes == default(List<Type>))
+                    managerTypes = new List<Type>();
 
-        #region Events
-
-        #region IStateful Events
+                return managerTypes;
+            }
+            set { managerTypes = value; }
+        }
 
         /// <summary>
-        /// Occurs when the State of the component changes.
+        /// The list of application Manager instances.
         /// </summary>
-        public event EventHandler<StateChangedEventArgs> StateChanged;
+        private List<IManager> ManagerInstances
+        {
+            get
+            {
+                if (managerInstances == default(List<IManager>))
+                    managerInstances = new List<IManager>();
 
-        #endregion
+                return managerInstances;
+            }
+            set { managerInstances = value; }
+        }
+
+        /// <summary>
+        /// A dictionary containing a list of dependencies for each application Manager.
+        /// </summary>
+        private Dictionary<Type, List<Type>> ManagerDependencies
+        {
+            get
+            {
+                if (managerDependencies == default(Dictionary<Type, List<Type>>))
+                    managerDependencies = new Dictionary<Type, List<Type>>();
+
+                return managerDependencies;
+            }
+            set { managerDependencies = value; }
+        }
 
         #endregion
 
@@ -131,17 +160,17 @@ namespace Symbiote.Core
         /// <summary>
         /// The default constructor.
         /// </summary>
-        /// <remarks>
-        /// If you've forgotten, you made this code dynamic so that you coud iterate over IManagers and it was 
-        /// a mess.  Even more verbose than the way it is now, plus debugging it was a nightmare.  Don't try it again.
-        /// </remarks>
+        /// <param name="managerTypes">The array of Manager Types for the application.</param>
+        /// <param name="safeMode">True if the ProgramManager is being started in Safe Mode, false otherwise.</param>
         private ProgramManager(Type[] managerTypes, bool safeMode = false)
         {
+            base.logger = logger;
             Guid guid = logger.EnterMethod(xLogger.Params(managerTypes, safeMode), true);
 
+            managerName = "Program Manager";
+
             // configure ManagerTypes
-            this.managerTypes = managerTypes.ToList();
-            managers = new List<IManager>();
+            ManagerTypes = managerTypes.ToList();
 
             //-------------------------   -  -
             // configure the SafeMode option
@@ -159,9 +188,7 @@ namespace Symbiote.Core
             //---------------------- -   ----------------------- -      --------  -    -
             // create an instance of each Manager Type in the ManagerTypes list
             logger.Debug("Instantiating Managers...");
-
             InstantiateManagers();
-
             logger.Debug("Managers instantiated successfully.");
             //------------------------------- -  -               ------------ 
 
@@ -173,8 +200,8 @@ namespace Symbiote.Core
         /// <summary>
         /// Returns the singleton instance of the ProgramManager.  Creates an instance if null.
         /// </summary>
-        /// <param name="safeMode">True if the ProgramManager is being started in Safe Mode, false otherwise.</param>
         /// <param name="managers">The array of Manager Types for the application.</param>
+        /// <param name="safeMode">True if the ProgramManager is being started in Safe Mode, false otherwise.</param>
         /// <returns>The singleton instance of the ProgramManager</returns>
         internal static ProgramManager Instantiate(Type[] managers, bool safeMode = false)
         {
@@ -194,23 +221,24 @@ namespace Symbiote.Core
         /// Starts the Program Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Start()
+        public override Result Start()
         {
             Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
 
             logger.Info("Starting the Program Manager...");
-            Result retVal = new Result();
+
+            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
 
             ChangeState(State.Starting);
 
-            // any future startup logic goes here
-
-            StartManagers();
+            retVal.Incorporate(StartManagers());
 
             if (retVal.ResultCode != ResultCode.Failure)
                 ChangeState(State.Running);
             else
-                ChangeState(State.Faulted);
+                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
 
@@ -224,12 +252,17 @@ namespace Symbiote.Core
         /// Restarts the Program Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart(StopType stopType = StopType.Normal)
+        public override Result Restart(StopType stopType)
         {
             Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
 
             logger.Info("Restarting the Program Manager...");
-            Result retVal = Start().Incorporate(Stop(stopType));
+
+            if (State != State.Running)
+                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
+
+            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -240,7 +273,7 @@ namespace Symbiote.Core
         /// Stops the Program Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Normal)
+        public override Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             logger.EnterMethod();
 
@@ -269,7 +302,7 @@ namespace Symbiote.Core
         /// <exception cref="Exception">Thrown when the Manager instantiation returns an abnormal response.</exception>
         private void InstantiateManagers()
         {
-            InstantiateManagers(managerTypes);
+            InstantiateManagers(ManagerTypes);
         }
 
         /// <summary>
@@ -395,6 +428,9 @@ namespace Symbiote.Core
 
             List<Type> retVal = new List<Type>();
 
+            // the ProgramManager has no dependencies (that we need to track).
+            if (typeof(T) == GetType()) return retVal;
+
             try
             {
                 // retrieve the list of parameters for the Instantiate() method of the specified Manager Type and add the type of each
@@ -487,21 +523,17 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Adds the specified Manager to the <see cref="managers"/> list and subscribes to its StateChanged event.
+        /// Adds the specified Manager to the <see cref="ManagerInstances"/> list and subscribes to its StateChanged event.
         /// </summary>
         /// <typeparam name="T">The Type of the specified Manager.</typeparam>
         /// <param name="manager">The Manager to register.</param>
         /// <returns>The registered Manager.</returns>
         /// <exception cref="Exception">Thrown if the specified Manager has already been registered.</exception>
+        /// <exception cref="Exception">Thrown if the dependency list retrieved for the Manager is empty.</exception>
         /// <exception cref="Exception">Thrown if the registration fails.</exception>
         private T RegisterManager<T>(IManager manager) where T : IManager
         {
-            logger.EnterMethod(xLogger.TypeParams(typeof(T)), xLogger.Params(manager));
-
-            T retVal = RegisterManager<T>(manager, managers);
-
-            logger.ExitMethod(retVal);
-            return retVal;
+            return RegisterManager<T>(manager, ManagerInstances, ManagerDependencies);
         }
 
         /// <summary>
@@ -509,18 +541,16 @@ namespace Symbiote.Core
         /// </summary>
         /// <typeparam name="T">The Type of the specified Manager.</typeparam>
         /// <param name="manager">The Manager to register.</param>
-        /// <param name="managers">The list of Managers to which the Manager is to be registered.</param>
+        /// <param name="managerInstances">The list of Managers to which the Manager is to be registered.</param>
+        /// <param name="managerDependencies">The dictionary containing the list of dependencies for each application Manager.</param>
         /// <returns>The registered Manager.</returns>
         /// <exception cref="Exception">Thrown if the specified Manager has already been registered.</exception>
+        /// <exception cref="Exception">Thrown if the dependency list retrieved for the Manager is empty.</exception>
         /// <exception cref="Exception">Thrown if the registration fails.</exception>
-        private T RegisterManager<T>(IManager manager, List<IManager> managers) where T : IManager 
+        private T RegisterManager<T>(IManager manager, List<IManager> managerInstances, Dictionary<Type, List<Type>> managerDependencies) where T : IManager 
         {
-            logger.EnterMethod(xLogger.TypeParams(typeof(T)), xLogger.Params(manager, managers));
+            logger.EnterMethod(xLogger.TypeParams(typeof(T)), xLogger.Params(manager, new xLogger.ExcludedParam(), new xLogger.ExcludedParam()));
             logger.Trace("Registering Manager '" + manager.GetType().Name + "'...");
-
-            // ensure the Managers list has been initialized, and if not, initialize it.
-            if (managers == default(List<IManager>))
-                managers = new List<IManager>();
 
             // ensure the specified Manager hasn't already been registered.  There can only be one of each Type
             // in the Manager list.
@@ -529,8 +559,17 @@ namespace Symbiote.Core
 
             try
             {
+                // retrieve the dependencies for the Manager
+                List<Type> dependencies = GetManagerDependencies<T>();
+
+                if (dependencies == default(List<Type>))
+                    throw new Exception("The dependency list for the Manager '" + manager.GetType().Name + "' is empty; all Managers must have at least one dependency.");
+
+                logger.Trace("Registering Manager with " + dependencies.Count() + " dependencies...");
+
                 // add the specified Manager to the list and attach an event handler to its StateChanged event
-                managers.Add(manager);
+                managerInstances.Add(manager);
+                managerDependencies.Add(typeof(T), dependencies);
                 manager.StateChanged += ManagerStateChanged;
             }
             catch (Exception ex)
@@ -552,7 +591,7 @@ namespace Symbiote.Core
         /// <returns>The requested Manager.</returns>
         public T GetManager<T>() where T : IManager
         {
-            return GetManager<T>(managers);
+            return GetManager<T>(ManagerInstances);
         }
 
         /// <summary>
@@ -567,13 +606,40 @@ namespace Symbiote.Core
         }
 
         /// <summary>
+        /// Returns a list of Manager Types for which the ManagerDependencies dictionary contains an entry for the specified Manager Type.
+        /// </summary>
+        /// <typeparam name="T">The Manager Type for which the dependent Types are to be returned.</typeparam>
+        /// <returns>The list of Manager Types for which the ManagerDependencies dictionary contains an entry for the specified Manager Type.</returns>
+        private List<Type> GetManagerDependentTypes<T>() where T : IManager
+        {
+            return GetManagerDependentTypes<T>(ManagerDependencies);
+        }
+
+        /// <summary>
+        /// Returns a list of Manager Types for which the specfied dependency dictionary contains an entry for the specified Manager Type.
+        /// </summary>
+        /// <typeparam name="T">The Manager Type for which the dependent Types are to be returned.</typeparam>
+        /// <param name="managerDependencies">The dictionary of Manager dependencies to search.</param>
+        /// <returns>The list of Manager Types for which the ManagerDependencies dictionary contains an entry for the specified Manager Type.</returns>
+        private List<Type> GetManagerDependentTypes<T>(Dictionary<Type, List<Type>> managerDependencies) where T : IManager
+        {
+            List<Type> retVal = new List<Type>();
+
+            foreach (Type key in managerDependencies.Keys)
+                if (managerDependencies[key].Where(t => t.IsAssignableFrom(typeof(T))).Count() > 0)
+                    retVal.Add(key);
+
+            return retVal;
+        }
+
+        /// <summary>
         /// Returns true if the specified Manager Type is registered, false otherwise.
         /// </summary>
         /// <typeparam name="T">The Manager Type to check.</typeparam>
         /// <returns>True if the specified Manager Type is registered, false otherwise.</returns>
         public bool IsRegistered<T>() where T : IManager
         {
-            return IsRegistered<T>(managers);
+            return IsRegistered<T>(ManagerInstances);
         }
 
         /// <summary>
@@ -584,28 +650,88 @@ namespace Symbiote.Core
         /// <returns>True if the specified Manager Type is registered, false otherwise.</returns>
         private bool IsRegistered<T>(List<IManager> managers) where T : IManager
         {
-            if (managers.Count() > 0)
-                return managers.OfType<T>().Count() > 0;
-
-            return false;
+            return managers.OfType<T>().Count() > 0;
         }
 
-        private void StartManagers()
+        /// <summary>
+        /// Starts each Manager contained within the <see cref="ManagerInstances"/> list.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result StartManagers()
         {
-            StartManagers(managers);
+            logger.EnterMethod();
+
+            Result retVal = StartManagers(ManagerInstances);
+
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
-        private Result StartManagers(List<IManager> managers)
+        /// <summary>
+        /// Starts each Manager contained within the specified list of Manager instances.
+        /// </summary>
+        /// <remarks>
+        /// Does not Start the ProgramManager instance.
+        /// </remarks>
+        /// <param name="managerInstances">The list of Manager instances to start.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result StartManagers(List<IManager> managerInstances)
         {
-            Guid guid = logger.EnterMethod(xLogger.Params(managers), true);
+            Guid guid = logger.EnterMethod(xLogger.Params(managerInstances), true);
 
             logger.Debug("Starting Managers...");
 
             Result retVal = new Result();
 
-            foreach (IManager manager in managers)
+            // iterate over the Manager instance list and start each manager.
+            // skip the ProgramManager as it has already been started.
+            foreach (IManager manager in managerInstances)
+            {
                 if (manager != this)
+                {
                     retVal.Incorporate(StartManager(manager));
+
+                    if (retVal.ResultCode == ResultCode.Failure)
+                        return retVal.AddError("Failed to start Managers.");
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        private Result StopManagers(StopType stopType = StopType.Normal)
+        {
+            logger.EnterMethod();
+
+            Result retVal = StopManagers(stopType, ManagerInstances);
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Stops each of the <see cref="IManager"/> instances in <see cref="ManagerInstances"/>.
+        /// </summary>
+        /// <remarks>
+        /// Does not Stop the ProgramManager instance.
+        /// </remarks>
+        /// <param name="stopType">The type of stoppage.</param>
+        /// <param name="managerInstances">The list of Manager instances to stop.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result StopManagers(StopType stopType, List<IManager> managerInstances)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(stopType, managerInstances));
+            logger.Debug("Stopping Managers...");
+
+            Result retVal = new Result();
+
+            // iterate over the Manager instance list in reverse order, stopping each manager.
+            // skip the ProgramManager as it will stop when this process is complete.
+            for (int i = managerInstances.Count(); i <= 0; i--)
+                if (managerInstances[i] != this)
+                    retVal.Incorporate(StopManager(managerInstances[i]));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -634,7 +760,10 @@ namespace Symbiote.Core
             retVal.ReturnValue = manager;
             retVal.Incorporate(startResult);
 
-            logger.Debug("Successfully started " + manager.GetType().Name + ".");
+            if (retVal.ResultCode != ResultCode.Failure)
+                logger.Debug("Successfully started " + manager.GetType().Name + ".");
+            else
+                logger.Debug("Failed to start " + manager.GetType().Name + ": " + retVal.LastErrorMessage());
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -663,21 +792,6 @@ namespace Symbiote.Core
             return retVal;
         }
 
-        /// <summary>
-        /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
-        /// </summary>
-        /// <param name="state">The State to which the State property should be changed.</param>
-        /// <param name="message">The optional message describing the nature or reason for the change.</param>
-        private void ChangeState(State state, string message = "")
-        {
-            State previousState = State;
-
-            State = state;
-
-            if (StateChanged != null)
-                    StateChanged(this, new StateChangedEventArgs(State, previousState, message));
-        }
-
         #endregion
 
         #region Event Handlers
@@ -687,6 +801,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="sender">The Manager which fired the event.</param>
         /// <param name="e">The EventArgs for the event.</param>
+        /// <exception cref="MissingMethodException">Thrown if the method 'GetManagerDependentTypes()' can not be found.</exception>"
         private void ManagerStateChanged(object sender, StateChangedEventArgs e)
         {
             logger.Info("Manager '" + sender.GetType().Name + "' state changed from '" + e.PreviousState + "' to '" + e.State + "'." + (e.Message != "" ? "(" + e.Message + ")" : ""));

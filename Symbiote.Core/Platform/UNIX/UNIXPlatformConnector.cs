@@ -69,7 +69,7 @@ namespace Symbiote.Core.Platform.UNIX
             return Start().Incorporate(Stop(stopType));
         }
 
-        public Result Stop(StopType stopType = StopType.Normal)
+        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             return new Result();
         }

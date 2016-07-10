@@ -102,7 +102,7 @@ namespace Symbiote.Core.Plugin.Connector
             return Start().Incorporate(Stop(stopType));
         }
 
-        public Result Stop(StopType stopType = StopType.Normal)
+        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             State = State.Stopped;
             return new Result();

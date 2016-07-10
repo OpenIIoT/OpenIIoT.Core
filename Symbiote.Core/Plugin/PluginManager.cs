@@ -37,19 +37,14 @@ namespace Symbiote.Core.Plugin
     /// <summary>
     /// The PluginManager class controls the plugin subsystem.
     /// </summary>
-    public class PluginManager : IStateful, IManager, IConfigurable<PluginManagerConfiguration>, IPluginManager
+    public class PluginManager : Manager, IStateful, IManager, IConfigurable<PluginManagerConfiguration>, IPluginManager
     {
         #region Variables
 
         /// <summary>
         /// The Logger for this class.
         /// </summary>
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        /// <summary>
-        /// The ProgramManager for the application.
-        /// </summary>
-        private IProgramManager manager;
+        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The PlatformManager for the application.
@@ -80,15 +75,6 @@ namespace Symbiote.Core.Plugin
         #endregion
 
         #region Properties
-
-        #region IStateful Properties
-
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        public State State { get; private set; }
-
-        #endregion
 
         #region IConfigurable Properties
 
@@ -145,19 +131,6 @@ namespace Symbiote.Core.Plugin
 
         #endregion
 
-        #region Events
-
-        #region IStateful Events
-
-        /// <summary>
-        /// Occurs when the State of the component changes.
-        /// </summary>
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        #endregion
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -166,10 +139,20 @@ namespace Symbiote.Core.Plugin
         /// <param name="manager">The ProgramManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
-        private PluginManager(IProgramManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager) {
-            this.manager = manager;
+        private PluginManager(IProgramManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
+        {
+            base.logger = logger;
+            logger.EnterMethod();
+
+            managerName = "Plugin Manager";
+
+            base.manager = manager;
             this.platformManager = platformManager;
             this.configurationManager = configurationManager;
+
+            manager.StateChanged += DependencyStateChanged;
+            platformManager.StateChanged += DependencyStateChanged;
+            configurationManager.StateChanged += DependencyStateChanged;
 
             PluginAssemblies = new List<PluginAssembly>();
             PluginInstances = new Dictionary<string, IPluginInstance>();
@@ -179,6 +162,8 @@ namespace Symbiote.Core.Plugin
             EndpointManager = EndpointManager.Instance(this, manager);
 
             ChangeState(State.Initialized);
+
+            logger.ExitMethod();
         }
 
         /// <summary>
@@ -211,14 +196,21 @@ namespace Symbiote.Core.Plugin
         /// Starts the Plugin manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Start()
+        public override Result Start()
         {
             Guid guid = logger.EnterMethod(true);
             Result retVal = new Result();
 
-            if (State == State.Running) return retVal.AddWarning("The Manager is already in the Running state.");
-
             logger.Info("Starting the Plugin Manager...");
+
+            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
+
+            retVal.Incorporate(CheckDependencies(manager, platformManager, configurationManager));
+
+            if (retVal.ResultCode == ResultCode.Failure)
+                return retVal.AddError("The Manager '" + GetType().Name + "' can not be started because one or more dependencies have not been started.");
+
             ChangeState(State.Starting);
 
             #region Configuration
@@ -340,15 +332,17 @@ namespace Symbiote.Core.Plugin
         /// Restarts the Plugin manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart(StopType stopType = StopType.Normal)
+        public override Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
-
-            logger.Info("Restarting the Plugin Manager...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop(stopType));
-            retVal.Incorporate(Start());
+            logger.Info("Restarting the Plugin Manager...");
+
+            if ((State == State.Undefined) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
+
+            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -359,12 +353,15 @@ namespace Symbiote.Core.Plugin
         /// Stops the Plugin manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Normal)
+        public override Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
-            logger.EnterMethod();
+            Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
 
             logger.Info("Stopping the Plugin Manager...");
-            Result retVal = new Result();
+
+            if ((State == State.Undefined) || (State == State.Faulted) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
 
             ChangeState(State.Stopping);
 
@@ -374,7 +371,7 @@ namespace Symbiote.Core.Plugin
                 ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
-            logger.ExitMethod(retVal);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -1417,11 +1414,6 @@ namespace Symbiote.Core.Plugin
         ///     The instanceName is propagated through the plugin instance and any internal reference (such as a ConnectorItem).  This name
         ///     should match references to the plugin, either through fully qualified addressing or configuration.
         /// </para>
-        /// <para>
-        ///     Note that this method is only called via reflection from 
-        ///     <see cref="InstantiatePlugins(List{PluginManagerConfigurationPluginInstance}, List{PluginAssembly}, ProgramManager)"/>, therefore the
-        ///     displayed references within Visual Studio (> Pro) will always be zero. 
-        /// </para>
         /// </remarks>
         /// <param name="instanceManager">The ProgramManager instance to be passed to the Plugin instance.</param>
         /// <param name="instanceName">The desired internal name of the instance</param>
@@ -1504,21 +1496,6 @@ namespace Symbiote.Core.Plugin
 
             logger.Trace((retVal == default(Item) ? "Unable to resolve Item." : "Resolved Item: " + retVal.ToJson()));
             return retVal;
-        }
-
-        /// <summary>
-        /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
-        /// </summary>
-        /// <param name="state">The State to which the State property should be changed.</param>
-        /// <param name="message">The optional message describing the nature or reason for the change.</param>
-        private void ChangeState(State state, string message = "")
-        {
-            State previousState = State;
-
-            State = state;
-
-            if (StateChanged != null)
-                StateChanged(this, new StateChangedEventArgs(State, previousState, message));
         }
 
         #endregion

@@ -54,19 +54,14 @@ namespace Symbiote.Core.Platform
     /// <summary>
     /// The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>
-    public class PlatformManager : IStateful, IManager, IPlatformManager
+    public class PlatformManager : Manager, IStateful, IManager, IPlatformManager
     {
         #region Variables
 
         /// <summary>
-        /// The logger for this class.
+        /// The Logger for this class.
         /// </summary>
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        /// <summary>
-        /// The ProgramManager for the application.
-        /// </summary>
-        private IProgramManager manager;
+        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The Singleton instance of PlatformManager.
@@ -76,15 +71,6 @@ namespace Symbiote.Core.Platform
         #endregion
 
         #region Properties
-
-        #region IStateful Properties
-
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        public State State { get; private set; }
-
-        #endregion
 
         #region IPlatformManager Properties
 
@@ -102,19 +88,6 @@ namespace Symbiote.Core.Platform
 
         #endregion
 
-        #region Events
-
-        #region IStateful Events
-
-        /// <summary>
-        /// Occurs when the State property changes.
-        /// </summary>
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        #endregion
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -123,9 +96,18 @@ namespace Symbiote.Core.Platform
         /// <param name="manager">The ProgramManager instance for the application.</param>
         private PlatformManager(IProgramManager manager)
         {
-            this.manager = manager;
+            base.logger = logger;
+            Guid guid = logger.EnterMethod();
+
+            managerName = "Platform Manager";
+
+            base.manager = manager;
+
+            manager.StateChanged += DependencyStateChanged;
 
             ChangeState(State.Initialized);
+
+            logger.ExitMethod();
         }
 
         /// <summary>
@@ -156,13 +138,22 @@ namespace Symbiote.Core.Platform
         /// Starts the Platform manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Start()
+        public override Result Start()
         {
             Guid guid = logger.EnterMethod(true);
             Result retVal = new Result();
 
             logger.Info("Starting the Platform Manager...");
 
+            // ensure the Manager is in a state from which it can be started
+            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
+
+            retVal.Incorporate(CheckDependencies(manager));
+
+            if (retVal.ResultCode == ResultCode.Failure)
+                return retVal.AddError("The Manager '" + GetType().Name + "' can not be started because one or more dependencies have not been started.");
+            
             ChangeState(State.Starting);
 
             #region Platform Instantiation
@@ -247,18 +238,19 @@ namespace Symbiote.Core.Platform
         /// Restarts the Platform manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart(StopType stopType = StopType.Normal)
+        public override Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
-
-            logger.Info("Restarting the Platform Manager...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop(stopType));
-            retVal.Incorporate(Start());
+            logger.Info("Restarting the Platform Manager...");
+
+            if ((State == State.Undefined) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
+
+            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
 
             retVal.LogResult(logger);
-
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
@@ -267,12 +259,15 @@ namespace Symbiote.Core.Platform
         /// Stops the Platform manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Normal)
+        public override Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
-            logger.EnterMethod();
+            Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
 
             logger.Info("Stopping the Platform Manager...");
-            Result retVal = new Result();
+
+            if ((State == State.Undefined) || (State == State.Faulted) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
 
             ChangeState(State.Stopping);
 
@@ -290,21 +285,6 @@ namespace Symbiote.Core.Platform
         }
 
         #endregion
-
-        /// <summary>
-        /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
-        /// </summary>
-        /// <param name="state">The State to which the State property should be changed.</param>
-        /// <param name="message">The optional message describing the nature or reason for the change.</param>
-        private void ChangeState(State state, string message = "")
-        {
-            State previousState = State;
-
-            State = state;
-
-            if (StateChanged != null)
-                StateChanged(this, new StateChangedEventArgs(State, previousState, message));
-        }
 
         #endregion
 

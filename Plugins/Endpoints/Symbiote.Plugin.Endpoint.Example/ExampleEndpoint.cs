@@ -151,7 +151,7 @@ namespace Symbiote.Core.Plugin.Endpoint.Example
             return retVal;
         }
 
-        public Result Stop(StopType stopType = StopType.Normal)
+        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             Guid guid = logger.EnterMethod(true);
 

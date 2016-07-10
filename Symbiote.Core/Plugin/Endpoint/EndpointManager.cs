@@ -104,7 +104,7 @@ namespace Symbiote.Core.Plugin.Endpoint
             return new Result();
         }
 
-        public Result Stop(StopType stopType = StopType.Normal)
+        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             State = State.Stopped;
 

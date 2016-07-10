@@ -71,19 +71,14 @@ namespace Symbiote.Core.Configuration
     /// <summary>
     /// The Configuration Manager class manages the configuration file for the application.
     /// </summary>
-    public class ConfigurationManager : IStateful, IManager, IConfigurationManager
+    public class ConfigurationManager : Manager, IStateful, IManager, IConfigurationManager
     {
         #region Variables
 
         /// <summary>
         /// The Logger for this class.
         /// </summary>
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        /// <summary>
-        /// The ProgramManager for the application.
-        /// </summary>
-        private IProgramManager manager;
+        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The PlatformManager for the application.
@@ -108,15 +103,6 @@ namespace Symbiote.Core.Configuration
 
         #region Properties
 
-        #region IStateful Implementation
-
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        public State State { get; private set; }
-
-        #endregion
-
         /// <summary>
         /// The current configuration.
         /// </summary>
@@ -134,19 +120,6 @@ namespace Symbiote.Core.Configuration
 
         #endregion
 
-        #region Events
-
-        #region IManager Events
-
-        /// <summary>
-        /// Fired when the State property changes.
-        /// </summary>
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        #endregion
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -156,13 +129,23 @@ namespace Symbiote.Core.Configuration
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
         private ConfigurationManager(IProgramManager manager, IPlatformManager platformManager)
         {
-            this.manager = manager;
+            base.logger = logger;
+            logger.EnterMethod();
+
+            managerName = "Configuration Manager";
+
+            base.manager = manager;
             this.platformManager = platformManager;
+
+            manager.StateChanged += DependencyStateChanged;
+            platformManager.StateChanged += DependencyStateChanged;
 
             RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
             ConfigurationFileName = GetConfigurationFileName();
 
             ChangeState(State.Initialized);
+
+            logger.ExitMethod();
         }
 
         /// <summary>
@@ -194,12 +177,20 @@ namespace Symbiote.Core.Configuration
         /// Starts the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Start()
+        public override Result Start()
         {
             Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
 
             logger.Info("Starting the Configuration Manager...");
-            Result retVal = new Result();
+
+            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
+
+            retVal.Incorporate(CheckDependencies(manager, platformManager));
+
+            if (retVal.ResultCode == ResultCode.Failure)
+                return retVal.AddError("The Manager '" + GetType().Name + "' can not be started because one or more dependencies have not been started.");
 
             ChangeState(State.Starting);
 
@@ -289,15 +280,17 @@ namespace Symbiote.Core.Configuration
         /// Restarts the Configuration manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart(StopType stopType = StopType.Normal)
+        public override Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
-
-            logger.Info("Restarting the Configuration Manager...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop(stopType));
-            retVal.Incorporate(Start());
+            logger.Info("Restarting the Configuration Manager...");
+
+            if ((State == State.Undefined) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
+
+            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -308,17 +301,22 @@ namespace Symbiote.Core.Configuration
         /// Stops the Configuration manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Normal)
+        public override Result Stop(StopType stopType = StopType.Normal, Boolean restartPending = false)
         {
-            logger.EnterMethod();
+            Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
 
             logger.Info("Stopping the Configuration Manager...");
-            Result retVal = new Result();
+
+            if ((State == State.Undefined) || (State == State.Faulted) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
 
             ChangeState(State.Stopping);
 
             if (stopType == StopType.Normal)
                 SaveConfiguration();
+            else
+                logger.Info("Abnormal stop detected; discarding configuration changes.");
 
             if (retVal.ResultCode != ResultCode.Failure)
                 ChangeState(State.Stopped);
@@ -326,7 +324,7 @@ namespace Symbiote.Core.Configuration
                 ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
-            logger.ExitMethod(retVal);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -384,10 +382,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
         {
-            logger.Info("Saving configuration...");
-            Result retVal = SaveConfiguration(Configuration, ConfigurationFileName);
-            retVal.LogResult(logger);
-            return retVal;
+            return SaveConfiguration(Configuration, ConfigurationFileName);
         }
 
         /// <summary>
@@ -847,26 +842,6 @@ namespace Symbiote.Core.Configuration
         }
 
         #endregion
-
-        /// <summary>
-        /// Changes the <see cref="State"/> property to the specified state and fires the StateChanged event.
-        /// </summary>
-        /// <param name="state">The State to which the State property should be changed.</param>
-        /// <param name="message">The optional message describing the nature or reason for the change.</param>
-        /// <threadsafety instance="true"/>
-        private void ChangeState(State state, string message = "")
-        {
-            State previousState = State;
-
-            // lock the State property
-            lock (StateLock)
-            {
-                State = state;
-
-                if (StateChanged != null)
-                    StateChanged(this, new StateChangedEventArgs(State, previousState, message));
-            }
-        }
 
         #endregion
 

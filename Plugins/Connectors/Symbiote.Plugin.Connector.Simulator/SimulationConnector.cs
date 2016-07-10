@@ -222,7 +222,7 @@ namespace Symbiote.Plugin.Connector.Simulation
             return Start().Incorporate(Stop(stopType));
         }
 
-        public Result Stop(StopType stopType = StopType.Normal)
+        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             timer.Stop();
             return new Result();

@@ -65,7 +65,7 @@ namespace Symbiote.Core
         /// Stops the stateful object.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Stop(StopType stopType = StopType.Normal);
+        Result Stop(StopType stopType = StopType.Normal, bool restartPending = false);
 
         #endregion
     }

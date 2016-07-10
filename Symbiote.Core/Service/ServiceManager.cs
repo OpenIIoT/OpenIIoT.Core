@@ -111,7 +111,7 @@ namespace Symbiote.Core.Service
             return retVal;
         }
 
-        public Result Stop(StopType stopType = StopType.Normal)
+        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             logger.Info("Stopping services...");
             Result retVal = new Result();

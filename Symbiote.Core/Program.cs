@@ -359,6 +359,8 @@ namespace Symbiote.Core
 
                 //writeResult.LogResult(logger);
 
+                manager.GetManager<PlatformManager>().Stop();
+
                 Console.ReadLine();
             }
             catch (TargetInvocationException ex)

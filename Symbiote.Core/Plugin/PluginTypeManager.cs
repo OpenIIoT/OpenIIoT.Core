@@ -96,7 +96,7 @@ namespace Symbiote.Core.Plugin
         /// Stops the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Normal)
+        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             return new Result();
         }

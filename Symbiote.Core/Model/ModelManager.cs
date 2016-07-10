@@ -22,19 +22,14 @@ namespace Symbiote.Core.Model
     /// <summary>
     /// The ModelManager class manages the Model for the application.
     /// </summary>
-    public class ModelManager : IStateful, IManager, IConfigurable<ModelManagerConfiguration>, IModelManager
+    public class ModelManager : Manager, IStateful, IManager, IConfigurable<ModelManagerConfiguration>, IModelManager
     {
         #region Variables
 
         /// <summary>
         /// The Logger for this class.
         /// </summary>
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        /// <summary>
-        /// The ProgramManager for the application.
-        /// </summary>
-        private IProgramManager manager;
+        new private xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The ConfigurationManager for the application.
@@ -54,15 +49,6 @@ namespace Symbiote.Core.Model
         #endregion
 
         #region Properties
-
-        #region IStateful Properties
-
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        public State State { get; private set; }
-
-        #endregion
 
         #region IConfigurable Properties
 
@@ -96,19 +82,6 @@ namespace Symbiote.Core.Model
 
         #endregion
 
-        #region Events
-
-        #region IManager Events
-
-        /// <summary>
-        /// Occurs when the State of the component changes.
-        /// </summary>
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        #endregion
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
@@ -119,9 +92,20 @@ namespace Symbiote.Core.Model
         /// <param name="pluginManager">The PluginManager instance for the application.</param>
         private ModelManager(IProgramManager manager, IConfigurationManager configurationManager, IPluginManager pluginManager)
         {
-            this.manager = manager;
+            base.logger = logger;
+            Guid guid = logger.EnterMethod(true);
+
+            managerName = "Model Manager";
+
+            base.manager = manager;
             this.configurationManager = configurationManager;
             this.pluginManager = pluginManager;
+
+            manager.StateChanged += DependencyStateChanged;
+            configurationManager.StateChanged += DependencyStateChanged;
+            pluginManager.StateChanged += DependencyStateChanged;
+
+            ChangeState(State.Initialized);
         }
 
         /// <summary>
@@ -154,12 +138,20 @@ namespace Symbiote.Core.Model
         /// Starts the Model manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Start()
+        public override Result Start()
         {
             Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
 
             logger.Info("Starting the Model Manager...");
-            Result retVal = new Result();
+
+            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
+
+            retVal.Incorporate(CheckDependencies(manager, configurationManager, pluginManager));
+
+            if (retVal.ResultCode == ResultCode.Failure)
+                return retVal.AddError("The Manager '" + GetType().Name + "' can not be started because one or more dependencies have not been started.");
 
             ChangeState(State.Starting);
 
@@ -219,15 +211,17 @@ namespace Symbiote.Core.Model
         /// Restarts the Configuration manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart(StopType stopType = StopType.Normal)
+        public override Result Restart(StopType stopType = StopType.Normal)
         {
             Guid guid = logger.EnterMethod(true);
-
-            logger.Info("Restarting the Model Manager...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop(stopType));
-            retVal.Incorporate(Start());
+            logger.Info("Restarting the Model Manager...");
+
+            if (State != State.Running)
+                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
+
+            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -238,12 +232,15 @@ namespace Symbiote.Core.Model
         /// Stops the Configuration manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Normal)
+        public override Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
-            logger.EnterMethod();
+            Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
 
             logger.Info("Stopping the Model Manager...");
-            Result retVal = new Result();
+
+            if ((State == State.Undefined) || (State == State.Faulted) || (State == State.Stopping) || (State == State.Starting))
+                return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
 
             ChangeState(State.Stopping);
 
@@ -255,7 +252,7 @@ namespace Symbiote.Core.Model
                 ChangeState(State.Faulted, retVal.LastErrorMessage());
 
             retVal.LogResult(logger);
-            logger.ExitMethod(retVal);
+            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
@@ -977,21 +974,6 @@ namespace Symbiote.Core.Model
 
             retVal.LogResult(logger.Debug);
             return retVal;
-        }
-
-        /// <summary>
-        /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
-        /// </summary>
-        /// <param name="state">The State to which the State property should be changed.</param>
-        /// <param name="message">The optional message describing the nature or reason for the change.</param>
-        private void ChangeState(State state, string message = "")
-        {
-            State previousState = State;
-
-            State = state;
-
-            if (StateChanged != null)
-                StateChanged(this, new StateChangedEventArgs(State, previousState, message));
         }
 
         #endregion
