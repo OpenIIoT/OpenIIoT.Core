@@ -58,6 +58,9 @@ namespace Symbiote.Core
         /// </summary>
         public StopType StopType { get; private set; }
 
+        /// <summary>
+        /// True if the program stopped with component with the intention of later restarting it.
+        /// </summary>
         public bool RestartPending { get; private set; }
 
         /// <summary>
@@ -98,6 +101,7 @@ namespace Symbiote.Core
             State = state;
             PreviousState = previousState;
             Message = message;
+            StopType = stopType;
             RestartPending = restartPending;
         }
     }

@@ -79,12 +79,7 @@ namespace Symbiote.Core.Configuration
         /// The Logger for this class.
         /// </summary>
         new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        /// <summary>
-        /// The PlatformManager for the application.
-        /// </summary>
-        private IPlatformManager platformManager;
-        
+       
         /// <summary>
         /// The Singleton instance of ConfigurationManager.
         /// </summary>
@@ -132,13 +127,15 @@ namespace Symbiote.Core.Configuration
             base.logger = logger;
             logger.EnterMethod();
 
-            managerName = "Configuration Manager";
+            ManagerName = "Configuration Manager";
 
-            base.manager = manager;
-            this.platformManager = platformManager;
+            // register dependencies
+            RegisterDependency<ProgramManager>(manager);
+            RegisterDependency<PlatformManager>(platformManager);
 
-            manager.StateChanged += DependencyStateChanged;
-            platformManager.StateChanged += DependencyStateChanged;
+            // subscribe to dependency state changes
+            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
+            Dependency<PlatformManager>().StateChanged += DependencyStateChanged;
 
             RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
             ConfigurationFileName = GetConfigurationFileName();
@@ -171,34 +168,17 @@ namespace Symbiote.Core.Configuration
 
         #region Instance Methods
 
-        #region IStateful Implementation
-
-        /// <summary>
-        /// Starts the Configuration Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Start()
+        protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
-
-            logger.Info("Starting the Configuration Manager...");
-
-            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
-
-            retVal.Incorporate(CheckDependencies(manager, platformManager));
-
-            if (retVal.ResultCode == ResultCode.Failure)
-                return retVal.AddError("The Manager '" + GetType().Name + "' can not be started because one or more dependencies have not been started.");
-
-            ChangeState(State.Starting);
 
             #region Configuration File Validation/Generation
 
             //------------------------------ - -           ---
             // check whether the configuration file exists and if it doesn't, build it from scratch.
-            if (!platformManager.Platform.FileExists(ConfigurationFileName))
+            if (!Dependency<PlatformManager>().Platform.FileExists(ConfigurationFileName))
             {
                 logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
                 Result<Dictionary<string, Dictionary<string, object>>> buildResult = BuildNewConfiguration();
@@ -266,69 +246,28 @@ namespace Symbiote.Core.Configuration
             if (retVal.ResultCode != ResultCode.Failure)
             {
                 Configuration = loadResult.ReturnValue;
-                ChangeState(State.Running);
             }
-            else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
 
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
-        /// <summary>
-        /// Restarts the Configuration manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Restart(StopType stopType = StopType.Normal)
+        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
-
-            logger.Info("Restarting the Configuration Manager...");
-
-            if ((State == State.Undefined) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
-
-            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Stops the Configuration manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Stop(StopType stopType = StopType.Normal, Boolean restartPending = false)
-        {
-            Guid guid = logger.EnterMethod(true);
-            Result retVal = new Result();
-
-            logger.Info("Stopping the Configuration Manager...");
-
-            if ((State == State.Undefined) || (State == State.Faulted) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
-
-            ChangeState(State.Stopping);
 
             if (stopType == StopType.Normal)
+            {
                 SaveConfiguration();
-            else
-                logger.Info("Abnormal stop detected; discarding configuration changes.");
+            }
 
-            if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Stopped);
-            else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
-
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
-
-        #endregion
 
         #region Configuration Management
 
@@ -358,7 +297,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 // read the entirety of the configuration file into configFile
-                configFile = platformManager.Platform.ReadFile(fileName).ReturnValue;
+                configFile = Dependency<PlatformManager>().Platform.ReadFile(fileName).ReturnValue;
                 logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
                 // attempt to deserialize the contents of the file to an object of type ApplicationConfiguration
@@ -414,7 +353,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-                platformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
+                Dependency<PlatformManager>().Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
                 //manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, new JsonSerializerSettings() { Formatting = Formatting.Indented, ContractResolver = new DictionaryAsArrayResolver() }));
             }
             catch (Exception ex)

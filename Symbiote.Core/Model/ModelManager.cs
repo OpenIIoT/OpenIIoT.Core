@@ -32,16 +32,6 @@ namespace Symbiote.Core.Model
         new private xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The ConfigurationManager for the application.
-        /// </summary>
-        private IConfigurationManager configurationManager;
-
-        /// <summary>
-        /// The PluginManager for the application.
-        /// </summary>
-        private IPluginManager pluginManager;
-
-        /// <summary>
         /// The Singleton instance of ModelManager.
         /// </summary>
         private static ModelManager instance;
@@ -95,15 +85,15 @@ namespace Symbiote.Core.Model
             base.logger = logger;
             Guid guid = logger.EnterMethod(true);
 
-            managerName = "Model Manager";
+            ManagerName = "Model Manager";
 
-            base.manager = manager;
-            this.configurationManager = configurationManager;
-            this.pluginManager = pluginManager;
+            RegisterDependency<ProgramManager>(manager);
+            RegisterDependency<ConfigurationManager>(configurationManager);
+            RegisterDependency<PluginManager>(pluginManager);
 
-            manager.StateChanged += DependencyStateChanged;
-            configurationManager.StateChanged += DependencyStateChanged;
-            pluginManager.StateChanged += DependencyStateChanged;
+            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
+            Dependency<ConfigurationManager>().StateChanged += DependencyStateChanged;
+            Dependency<PluginManager>().StateChanged += DependencyStateChanged;
 
             ChangeState(State.Initialized);
         }
@@ -132,28 +122,11 @@ namespace Symbiote.Core.Model
 
         #region Instance Methods
 
-        #region IStateful Implementation
-
-        /// <summary>
-        /// Starts the Model manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Start()
+        protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
-
-            logger.Info("Starting the Model Manager...");
-
-            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
-
-            retVal.Incorporate(CheckDependencies(manager, configurationManager, pluginManager));
-
-            if (retVal.ResultCode == ResultCode.Failure)
-                return retVal.AddError("The Manager '" + GetType().Name + "' can not be started because one or more dependencies have not been started.");
-
-            ChangeState(State.Starting);
 
             #region Configuration
 
@@ -173,10 +146,10 @@ namespace Symbiote.Core.Model
 
             //--  -  -- ---------------  -
             // Build the model
-            ModelBuildResult modelBuildResult = BuildModel(manager.InstanceName, Configuration.Items);
+            ModelBuildResult modelBuildResult = BuildModel(Dependency<ProgramManager>().InstanceName, Configuration.Items);
 
             if (modelBuildResult.ResultCode == ResultCode.Failure)
-                throw new Exception("Failed to build the model: " + modelBuildResult.LastErrorMessage()); 
+                throw new Exception("Failed to build the model: " + modelBuildResult.LastErrorMessage());
 
             retVal.Incorporate(modelBuildResult);
             //--- - ------------
@@ -195,68 +168,26 @@ namespace Symbiote.Core.Model
             retVal.Incorporate(attachResult);
             //---- - ------------  - 
 
-            #endregion
-
-            if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Running);
-            else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
-
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
-        /// <summary>
-        /// Restarts the Configuration manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Restart(StopType stopType = StopType.Normal)
+        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            logger.Info("Restarting the Model Manager...");
+            if (stopType == StopType.Normal)
+            {
+                retVal.Incorporate(SaveModel());
+            }
 
-            if (State != State.Running)
-                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
-
-            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
-
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
-
-        /// <summary>
-        /// Stops the Configuration manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
-        {
-            Guid guid = logger.EnterMethod(true);
-            Result retVal = new Result();
-
-            logger.Info("Stopping the Model Manager...");
-
-            if ((State == State.Undefined) || (State == State.Faulted) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
-
-            ChangeState(State.Stopping);
-
-            retVal.Incorporate(SaveModel());
-
-            if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Stopped);
-            else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        #endregion
 
         #region IConfigurable Implementation
 
@@ -271,7 +202,7 @@ namespace Symbiote.Core.Model
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            Result<ModelManagerConfiguration> fetchResult = configurationManager.GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
+            Result<ModelManagerConfiguration> fetchResult = Dependency<ConfigurationManager>().GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -283,7 +214,7 @@ namespace Symbiote.Core.Model
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<ModelManagerConfiguration> createResult = configurationManager.AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<ModelManagerConfiguration> createResult = Dependency<ConfigurationManager>().AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -331,7 +262,7 @@ namespace Symbiote.Core.Model
             logger.EnterMethod();
             Result retVal = new Result();
 
-            retVal.Incorporate(configurationManager.UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(Dependency<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
@@ -348,7 +279,10 @@ namespace Symbiote.Core.Model
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         public ModelBuildResult BuildModel()
         {
-            return BuildModel(manager.InstanceName, Configuration.Items);
+            if (!IsInState(State.Running, State.Starting))
+                return (ModelBuildResult)new Result().AddError("The current operation is invalid in the current state (it is currently in the " + State + " state).");
+
+            return BuildModel(Dependency<ProgramManager>().InstanceName, Configuration.Items);
         }
 
         /// <summary>
@@ -525,6 +459,9 @@ namespace Symbiote.Core.Model
         {
             logger.Info("Attaching Model...");
 
+            if (!IsInState(State.Running, State.Starting))
+                return new Result().AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+
             Result retVal = new Result();
 
             // if the ModelBuildResult that was passed in built successfully, update the Model and Dictionary properties with the contents of the build result
@@ -547,6 +484,11 @@ namespace Symbiote.Core.Model
         public Result<List<ModelManagerConfigurationItem>> SaveModel()
         {
             logger.Info("Saving Model...");
+
+            if (!IsInState(State.Running, State.Stopping))
+                return (Result<List<ModelManagerConfigurationItem>>)new Result()
+                    .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Stopping states (it is currently in the " + State + " state).");
+
 
             Result<List<ModelManagerConfigurationItem>> configuration = new Result<List<ModelManagerConfigurationItem>>();
             configuration.ReturnValue = new List<ModelManagerConfigurationItem>();
@@ -571,7 +513,7 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
         private Result<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, Result<List<ModelManagerConfigurationItem>> configuration)
         {
-            configuration.ReturnValue.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(manager.InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
+            configuration.ReturnValue.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<ProgramManager>().InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
 
             foreach (Item mi in itemRoot.Children)
             {
@@ -592,6 +534,10 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the added Item.</returns>
         public Result<Item> AddItem(Item item)
         {
+            if (!IsInState(State.Running, State.Starting))
+                return (Result<Item>)new Result()
+                    .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+
             return AddItem(Model, Dictionary, item);
         }
 
@@ -604,7 +550,7 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the added Item.</returns>
         private Result<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
-            if (manager.State != State.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
+            if (Dependency<ProgramManager>().State != State.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
             else logger.Debug("Adding item '" + item.FQN + "' to the model...");
 
             Result<Item> retVal = new Result<Item>();
@@ -662,7 +608,7 @@ namespace Symbiote.Core.Model
                 }
             }
 
-            if (manager.State != State.Starting) retVal.LogResult(logger);
+            if (Dependency<ProgramManager>().State != State.Starting) retVal.LogResult(logger);
             else retVal.LogResult(logger.Debug);
 
             return retVal;
@@ -702,6 +648,11 @@ namespace Symbiote.Core.Model
         public Result<Item> UpdateItem(Item item, Item sourceItem)
         {
             logger.Info("Updating Item '" + item.FQN + "'s SourceItem to '" + sourceItem.FQN + "'...");
+
+            if (!IsInState(State.Running, State.Starting))
+                return (Result<Item>)new Result()
+                    .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+
             Result<Item> retVal = new Result<Item>();
 
             if (sourceItem != default(Item))
@@ -725,6 +676,10 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the removed Item.</returns>
         public Result<Item> RemoveItem(Item item)
         {
+            if (!IsInState(State.Running, State.Starting))
+                return (Result<Item>)new Result()
+                    .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+
             return RemoveItem(Dictionary, item);
         }
 
@@ -793,6 +748,10 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the moved Item.</returns>
         public Result<Item> MoveItem(Item item, string fqn)
         {
+            if (!IsInState(State.Running, State.Starting))
+                return (Result<Item>)new Result()
+                    .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+
             return MoveItem(Dictionary, item, fqn);
         }
 
@@ -838,6 +797,10 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the result of the operation and the newly created Item.</returns>
         public Result<Item> CopyItem(Item item, string fqn)
         {
+            if (!IsInState(State.Running, State.Starting))
+                return (Result<Item>)new Result()
+                    .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+
             return CopyItem(Model, Dictionary, item, fqn);
         }
 
@@ -892,10 +855,14 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the result of the operation and the attached Item.</returns>
         public Result<Item> AttachItem(Item item, Item parentItem)
         {
+            if (!IsInState(State.Running, State.Starting))
+                return (Result<Item>)new Result()
+                    .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+
             Result<Item> retVal = new Result<Item>();
             if ((item == null) || (parentItem == null)) return retVal;
                
-            if (manager.State != State.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
+            if (Dependency<ProgramManager>().State != State.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
             else logger.Debug("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
       
             try
@@ -932,7 +899,7 @@ namespace Symbiote.Core.Model
                 retVal.ReturnValue = default(Item);
             }
 
-            if (manager.State != State.Starting) retVal.LogResult(logger);
+            if (Dependency<ProgramManager>().State != State.Starting) retVal.LogResult(logger);
             else retVal.LogResult(logger.Debug);
 
             return retVal;
@@ -1037,4 +1004,6 @@ namespace Symbiote.Core.Model
 
         #endregion
     }
+
+    #endregion
 }

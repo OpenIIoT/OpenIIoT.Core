@@ -25,5 +25,11 @@ namespace Symbiote.Core
     /// <summary>
     /// Defines the interface for Managers.
     /// </summary>
-    public interface IManager : IStateful { }
+    public interface IManager : IStateful
+    {
+        /// <summary>
+        /// The name of the Manager.
+        /// </summary>
+        string ManagerName { get; }
+    }
 }

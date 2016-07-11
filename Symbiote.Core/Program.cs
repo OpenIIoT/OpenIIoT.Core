@@ -229,7 +229,11 @@ namespace Symbiote.Core
                 // start the program manager.
                 logger.SubHeading(LogLevel.Debug, "Program Manager");
                 logger.Info("Invoking the Program Manager Start routine...");
-                manager.StartManager(manager);
+                Result managerStartResult = manager.StartManager(manager);
+
+                if (managerStartResult.ResultCode == ResultCode.Failure)
+                    throw new Exception("The Program Manager failed to start: " + managerStartResult.LastErrorMessage());
+
                 logger.Info("Program Manager Started.");
                 //----------- - -
 
@@ -295,42 +299,6 @@ namespace Symbiote.Core
                 if (symItem == default(Item))
                     symItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName)).ReturnValue;
 
-                //manager.ModelManager.AttachItem(((IConnector)manager.PluginManager.FindPluginInstance("Simulation")).Browse(), symItem);
-
-
-                //Result subscribe = manager.ModelManager.FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
-
-                //subscribe.LogResult(logger.Info);
-
-                //Result subscribe2 = manager.ModelManager.FindItem("Symbiote.Simulation.Process.Ramp").SubscribeToSource();
-
-                //subscribe2.LogResult(logger.Info);
-
-                //logger.Info("Starting Simulation Connector...");
-                //manager.PluginManager.FindPluginInstance("Simulation").Start();
-
-                ////-------------------------------------------------------------------------------------------------
-
-                IConnector example = (IConnector)manager.GetManager<PluginManager>().FindPluginInstance("Example");
-
-                example.StateChanged += PluginStateChanged;
-
-                // ((IAddable)example).Add("New.Item", "None");
-
-                manager.GetManager<ModelManager>().AttachItem(example.Browse(), symItem);
-
-
-
-                Result subscribe3 = manager.GetManager<ModelManager>().FindItem("Symbiote.Example.CurrentTime").SubscribeToSource();
-
-                subscribe3.LogResult(logger.Info);
-
-                Thread test = new Thread(() => 
-                    example.Start().LogResult(logger.Info));
-
-                test.Start();
-
-                //manager.ModelManager.FindItem("Symbiote").RemoveChild(manager.ModelManager.FindItem("Symbiote.Example"));
 
                 //----------------------------- - -       --
                 // show 'em what they've won!
@@ -359,7 +327,7 @@ namespace Symbiote.Core
 
                 //writeResult.LogResult(logger);
 
-                manager.GetManager<PlatformManager>().Stop();
+                manager.GetManager<PluginManager>().Stop(StopType.Abnormal, true);
 
                 Console.ReadLine();
             }
@@ -394,10 +362,6 @@ namespace Symbiote.Core
             try
             {
                 manager.Stop();
-                if (manager.GetManager<ModelManager>().SaveModel().ResultCode != ResultCode.Failure)
-                    manager.GetManager<ConfigurationManager>().SaveConfiguration();
-
-                logger.Info("Configuration saved.");
                 logger.Info(manager.ProductName + " stopped.");
             }
             catch (Exception ex)

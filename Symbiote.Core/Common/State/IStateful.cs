@@ -50,6 +50,13 @@ namespace Symbiote.Core
         #region Instance Methods
 
         /// <summary>
+        /// Returns true if any of the specified <see cref="State"/>s match the current <see cref="State"/>.
+        /// </summary>
+        /// <param name="states">The list of States to check.</param>
+        /// <returns>True if the current State matches any of the specified States, false otherwise.</returns>
+        bool IsInState(params State[] states);
+
+        /// <summary>
         /// Starts the stateful object.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -64,6 +71,8 @@ namespace Symbiote.Core
         /// <summary>
         /// Stops the stateful object.
         /// </summary>
+        /// <param name="stopType">The nature of the stoppage.</param>
+        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Result Stop(StopType stopType = StopType.Normal, bool restartPending = false);
 

@@ -167,7 +167,7 @@ namespace Symbiote.Core
             base.logger = logger;
             Guid guid = logger.EnterMethod(xLogger.Params(managerTypes, safeMode), true);
 
-            managerName = "Program Manager";
+            ManagerName = "Program Manager";
 
             // configure ManagerTypes
             ManagerTypes = managerTypes.ToList();
@@ -215,84 +215,29 @@ namespace Symbiote.Core
 
         #region Instance Methods
 
-        #region IStateful Implementation
-
-        /// <summary>
-        /// Starts the Program Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Start()
+        protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            logger.Info("Starting the Program Manager...");
+            retVal = StartManagers();
 
-            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
-
-            ChangeState(State.Starting);
-
-            retVal.Incorporate(StartManagers());
-
-            if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Running);
-            else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
-
-            retVal.LogResult(logger);
-
-            logger.Info("The Program Manager is now in the " + State + " state.");
-
-            logger.ExitMethod(retVal, guid);
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(guid);
             return retVal;
         }
 
-        /// <summary>
-        /// Restarts the Program Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Restart(StopType stopType)
+        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            logger.Info("Restarting the Program Manager...");
-
-            if (State != State.Running)
-                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
-
-            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(guid);
             return retVal;
         }
-
-        /// <summary>
-        /// Stops the Program Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
-        {
-            logger.EnterMethod();
-
-            logger.Info("Stopping the Program Manager...");
-            Result retVal = new Result();
-
-            ChangeState(State.Stopping);
-
-            if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Stopped);
-            else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal);
-            return new Result();
-        }
-
-        #endregion
 
         /// <summary>
         /// Iterates over the list of Manager Types and instantiates each in the order in which they are represented in the list.
@@ -689,10 +634,11 @@ namespace Symbiote.Core
             {
                 if (manager != this)
                 {
+                    logger.SubHeading(LogLevel.Debug, manager.GetType().Name);
                     retVal.Incorporate(StartManager(manager));
 
                     if (retVal.ResultCode == ResultCode.Failure)
-                        return retVal.AddError("Failed to start Managers.");
+                        return retVal.AddError("Failed to start one or more Managers.");
                 }
             }
 

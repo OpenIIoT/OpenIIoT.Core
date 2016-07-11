@@ -6,6 +6,7 @@ using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
+using System.Linq;
 
 namespace Symbiote.Core.Platform.UNIX
 {
@@ -57,6 +58,16 @@ namespace Symbiote.Core.Platform.UNIX
         public void Configure(string configuration)
         {
 
+        }
+
+        /// <summary>
+        /// Returns true if any of the specified <see cref="State"/>s match the current <see cref="State"/>.
+        /// </summary>
+        /// <param name="states">The list of States to check.</param>
+        /// <returns>True if the current State matches any of the specified States, false otherwise.</returns>
+        public virtual bool IsInState(params State[] states)
+        {
+            return states.Any(s => s == State);
         }
 
         public Result Start()

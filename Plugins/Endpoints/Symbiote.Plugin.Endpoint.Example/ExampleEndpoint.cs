@@ -1,5 +1,6 @@
 ﻿using System;
 using Symbiote.Core.Configuration;
+using System.Linq;
 
 namespace Symbiote.Core.Plugin.Endpoint.Example
 {
@@ -113,6 +114,15 @@ namespace Symbiote.Core.Plugin.Endpoint.Example
 
         #region IEndpoint Implementation
 
+        /// <summary>
+        /// Returns true if any of the specified <see cref="State"/>s match the current <see cref="State"/>.
+        /// </summary>
+        /// <param name="states">The list of States to check.</param>
+        /// <returns>True if the current State matches any of the specified States, false otherwise.</returns>
+        public virtual bool IsInState(params State[] states)
+        {
+            return states.Any(s => s == State);
+        }
 
         public Result Start()
         {

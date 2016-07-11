@@ -99,11 +99,13 @@ namespace Symbiote.Core.Platform
             base.logger = logger;
             Guid guid = logger.EnterMethod();
 
-            managerName = "Platform Manager";
+            ManagerName = "Platform Manager";
 
-            base.manager = manager;
+            // register dependencies
+            RegisterDependency<ProgramManager>(manager);
 
-            manager.StateChanged += DependencyStateChanged;
+            // subscribe to dependency state changes
+            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
 
             ChangeState(State.Initialized);
 
@@ -132,29 +134,11 @@ namespace Symbiote.Core.Platform
 
         #region Instance Methods
 
-        #region IStateful Implementation
-
-        /// <summary>
-        /// Starts the Platform manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Start()
+        protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
-
-            logger.Info("Starting the Platform Manager...");
-
-            // ensure the Manager is in a state from which it can be started
-            if ((State == State.Undefined) || (State == State.Running) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
-
-            retVal.Incorporate(CheckDependencies(manager));
-
-            if (retVal.ResultCode == ResultCode.Failure)
-                return retVal.AddError("The Manager '" + GetType().Name + "' can not be started because one or more dependencies have not been started.");
-            
-            ChangeState(State.Starting);
 
             #region Platform Instantiation
 
@@ -186,7 +170,7 @@ namespace Symbiote.Core.Platform
 
             //  replace the pipe character placeholder with the platform specific directory separator
             directoryList = directoryList.Replace('|', System.IO.Path.DirectorySeparatorChar);
-            
+
             Result<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(directoryList);
 
             if (loadDirectoryResult.ResultCode == ResultCode.Failure)
@@ -220,71 +204,21 @@ namespace Symbiote.Core.Platform
 
             #endregion
 
-            if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Running);
-            else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
-
-            retVal.LogResult(logger);
-
-            logger.Info("The Platform Manager is now in the " + State + " state.");
-            logger.Info("Platform: " + Platform.PlatformType.ToString() + " (" + Platform.Version + ")");
-
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
-        /// <summary>
-        /// Restarts the Platform manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Restart(StopType stopType = StopType.Normal)
+        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            logger.Info("Restarting the Platform Manager...");
-
-            if ((State == State.Undefined) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
-
-            retVal.Incorporate(Start().Incorporate(Stop(stopType, true)));
-
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
-
-        /// <summary>
-        /// Stops the Platform manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public override Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
-        {
-            Guid guid = logger.EnterMethod(true);
-            Result retVal = new Result();
-
-            logger.Info("Stopping the Platform Manager...");
-
-            if ((State == State.Undefined) || (State == State.Faulted) || (State == State.Stopping) || (State == State.Starting))
-                return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
-
-            ChangeState(State.Stopping);
-
-            if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Stopped);
-            else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
-
-            retVal.LogResult(logger);
-
-            logger.Info("The Platform Manager is now " + State + ".");
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        #endregion
 
         #endregion
 

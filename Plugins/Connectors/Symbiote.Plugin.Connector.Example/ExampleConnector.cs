@@ -321,6 +321,16 @@ namespace Symbiote.Plugin.Connector.Example
         #region Instance Methods
 
         #region IConnector Implementation
+        
+        /// <summary>
+        /// Returns true if any of the specified <see cref="State"/>s match the current <see cref="State"/>.
+        /// </summary>
+        /// <param name="states">The list of States to check.</param>
+        /// <returns>True if the current State matches any of the specified States, false otherwise.</returns>
+        public virtual bool IsInState(params State[] states)
+        {
+            return states.Any(s => s == State);
+        }
 
         /// <summary>
         /// Starts the Connector.

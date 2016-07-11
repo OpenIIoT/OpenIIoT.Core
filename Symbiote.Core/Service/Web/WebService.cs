@@ -59,7 +59,7 @@ namespace Symbiote.Core.Service.Web
         {
             Result retVal = new Result();
 
-            Result<WebServiceConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<WebServiceConfiguration>(this.GetType());
+            Result<WebServiceConfiguration> fetchResult = manager.GetManager<ConfigurationManager>().GetInstanceConfiguration<WebServiceConfiguration>(GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)

@@ -12,19 +12,16 @@ using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core.Service
 {
-    public class ServiceManager : IManager
+    public class ServiceManager : Manager, IManager
     {
         #region Variables
 
-        private ProgramManager manager;
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
         private static ServiceManager instance;
 
         #endregion
 
         #region Properties
-
-        public State State { get; private set; }
 
         public Dictionary<string, IService> Services { get; private set; }
         public Dictionary<string, Type> ServiceTypes { get; private set; }
@@ -43,16 +40,29 @@ namespace Symbiote.Core.Service
 
         #region Constructors
 
-        private ServiceManager(ProgramManager manager)
+        private ServiceManager(IProgramManager manager, IConfigurationManager configurationManager)
         {
-            this.manager = manager;
+            base.logger = logger;
+            logger.EnterMethod();
+
+            ManagerName = "Service Manager";
+
+            RegisterDependency<ProgramManager>(manager);
+            RegisterDependency<ConfigurationManager>(configurationManager);
+
+            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
+            Dependency<ConfigurationManager>().StateChanged += DependencyStateChanged;
+
+            ChangeState(State.Initialized);
+
             Services = new Dictionary<string, IService>();
+            ServiceTypes = new Dictionary<string, Type>();
         }
 
-        private static ServiceManager Instantiate(ProgramManager manager)
+        private static ServiceManager Instantiate(IProgramManager manager, IConfigurationManager configurationManager)
         {
             if (instance == null)
-                instance = new ServiceManager(manager);
+                instance = new ServiceManager(manager, configurationManager);
 
             return instance;
         }
@@ -61,19 +71,11 @@ namespace Symbiote.Core.Service
 
         #region Instance Methods
 
-        #region IManager Implementation
-
-        /// <summary>
-        /// Starts the Service Manager and all services.
-        /// </summary>
-        /// <remarks>Don't forget that you tried to do this with reflection once and it ended badly.  Just copy/paste.</remarks>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Start()
+        protected override Result Startup()
         {
-            logger.Debug("Starting services...");
+            Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
-
-            State = State.Starting;
 
             Result<Dictionary<string, Type>> registerResult = RegisterServices();
             if (registerResult.ResultCode != ResultCode.Failure)
@@ -91,48 +93,28 @@ namespace Symbiote.Core.Service
             else
                 retVal.AddError("Failed to register Service types. " + retVal.LastErrorMessage());
 
-            if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Running;
-            else
-                State = State.Faulted;
+            retVal.Incorporate(registerResult);
 
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(guid);
             return retVal;
         }
 
-        public Result Restart(StopType stopType = StopType.Normal)
+        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
         {
-            logger.Info("Restarting services...");
+            Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Stop(stopType));
-            retVal.Incorporate(Start());
-
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(guid);
             return retVal;
         }
-
-        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
-        {
-            logger.Info("Stopping services...");
-            Result retVal = new Result();
-
-            State = State.Stopping;
-
-            if (retVal.ResultCode != ResultCode.Failure)
-                State = State.Stopped;
-            else
-                State = State.Faulted;
-
-            retVal.LogResult(logger);
-            return retVal;
-        }
-
-        #endregion
 
         private Result<Dictionary<string, Type>> RegisterServices()
         {
             logger.Debug("Registering Service types...");
-            Result<Dictionary<string, Type>> retVal = RegisterServices(manager.GetManager<ConfigurationManager>());
+            Result<Dictionary<string, Type>> retVal = RegisterServices(Dependency<ConfigurationManager>());
             retVal.LogResult(logger.Debug);
             return retVal;
         }
@@ -180,7 +162,7 @@ namespace Symbiote.Core.Service
                 foreach (string serviceType in serviceTypes.Keys)
                 {
                     logger.Trace("Instantiating service '" + serviceType + "'...");
-                    IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { manager });
+                    IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { Dependency<ProgramManager>() });
 
                     if (serviceInstance != default(IService))
                         retVal.ReturnValue.Add(serviceType, serviceInstance);
