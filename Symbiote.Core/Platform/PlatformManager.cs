@@ -104,9 +104,6 @@ namespace Symbiote.Core.Platform
             // register dependencies
             RegisterDependency<ProgramManager>(manager);
 
-            // subscribe to dependency state changes
-            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
-
             ChangeState(State.Initialized);
 
             logger.ExitMethod();

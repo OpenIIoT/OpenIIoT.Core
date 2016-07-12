@@ -274,6 +274,7 @@ namespace Symbiote.Core
         protected virtual T RegisterDependency<T>(IManager manager)
         {
             Dependencies.Add(typeof(T), manager);
+            manager.StateChanged += DependencyStateChanged;
             return (T)manager;
         }
 

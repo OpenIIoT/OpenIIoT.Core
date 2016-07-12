@@ -133,10 +133,6 @@ namespace Symbiote.Core.Configuration
             RegisterDependency<ProgramManager>(manager);
             RegisterDependency<PlatformManager>(platformManager);
 
-            // subscribe to dependency state changes
-            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
-            Dependency<PlatformManager>().StateChanged += DependencyStateChanged;
-
             RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
             ConfigurationFileName = GetConfigurationFileName();
 

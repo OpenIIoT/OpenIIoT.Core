@@ -50,9 +50,6 @@ namespace Symbiote.Core.Service
             RegisterDependency<ProgramManager>(manager);
             RegisterDependency<ConfigurationManager>(configurationManager);
 
-            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
-            Dependency<ConfigurationManager>().StateChanged += DependencyStateChanged;
-
             ChangeState(State.Initialized);
 
             Services = new Dictionary<string, IService>();

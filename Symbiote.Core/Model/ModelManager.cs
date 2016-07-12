@@ -91,10 +91,6 @@ namespace Symbiote.Core.Model
             RegisterDependency<ConfigurationManager>(configurationManager);
             RegisterDependency<PluginManager>(pluginManager);
 
-            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
-            Dependency<ConfigurationManager>().StateChanged += DependencyStateChanged;
-            Dependency<PluginManager>().StateChanged += DependencyStateChanged;
-
             ChangeState(State.Initialized);
         }
 

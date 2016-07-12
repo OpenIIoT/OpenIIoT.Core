@@ -140,10 +140,6 @@ namespace Symbiote.Core.Plugin
             RegisterDependency<PlatformManager>(platformManager);
             RegisterDependency<ConfigurationManager>(configurationManager);
 
-            Dependency<ProgramManager>().StateChanged += DependencyStateChanged;
-            Dependency<PlatformManager>().StateChanged += DependencyStateChanged;
-            Dependency<ConfigurationManager>().StateChanged += DependencyStateChanged;
-
             PluginAssemblies = new List<PluginAssembly>();
             PluginInstances = new Dictionary<string, IPluginInstance>();
 
