@@ -166,7 +166,7 @@
     <Compile Include="Common\State\State.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
-    <Compile Include="Model\ItemEventArgs.cs" />
+    <Compile Include="Common\Item\ItemEventArgs.cs" />
     <Compile Include="Common\xLogger.cs" />
     <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
@@ -207,7 +207,7 @@
     <Compile Include="Common\FQNResolver.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Common\ContractResolver.cs" />
-    <Compile Include="Model\Item.cs" />
+    <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformConnector.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />

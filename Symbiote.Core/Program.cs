@@ -22,18 +22,15 @@
                                                                                                    ▀▀                            */
 using System;
 using System.Linq;
-using System.ServiceProcess;
-using NLog;
 using System.Reflection;
-using Symbiote.Core.Platform;
+using System.ServiceProcess;
 using System.Text.RegularExpressions;
-using Symbiote.Core.Plugin.Connector;
-using Symbiote.Core.Model;
-using System.Threading;
-using Symbiote.Core.Plugin;
+using NLog;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Model;
+using Symbiote.Core.Platform;
+using Symbiote.Core.Plugin;
 using Symbiote.Core.Service;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Symbiote.Core
 {
@@ -48,7 +45,7 @@ namespace Symbiote.Core
     /// </summary>
     public class Program
     {
-        #region Variables
+        #region Fields
 
         /// <summary>
         /// The main logger for the application.

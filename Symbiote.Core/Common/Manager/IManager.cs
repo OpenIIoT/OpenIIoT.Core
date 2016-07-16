@@ -45,9 +45,13 @@ namespace Symbiote.Core
     /// </summary>
     public interface IManager : IStateful
     {
+        #region Properties
+
         /// <summary>
         /// Gets the name of the Manager.
         /// </summary>
         string ManagerName { get; }
+
+        #endregion
     }
 }

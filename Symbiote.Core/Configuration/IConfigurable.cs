@@ -63,6 +63,8 @@ namespace Symbiote.Core.Configuration
     /// <typeparam name="T">The Configuration type</typeparam>
     public interface IConfigurable<T> 
     {
+        #region Properties 
+
         /// <summary>
         /// Gets the ConfigurationDefinition for the class.  
         /// </summary>
@@ -96,5 +98,7 @@ namespace Symbiote.Core.Configuration
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         Result SaveConfiguration();
+
+        #endregion
     }
 }

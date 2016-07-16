@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Symbiote.Core.Model
+namespace Symbiote.Core
 {
     /// <summary>
     /// The ItemEventArgs contain the event arguments for Item Changed events.

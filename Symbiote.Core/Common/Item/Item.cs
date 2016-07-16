@@ -1,92 +1,115 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using Newtonsoft.Json;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Symbiote.Core.Plugin.Connector;
 
-namespace Symbiote.Core.Model
+namespace Symbiote.Core
 {
     /// <summary>
-    /// A semi-generic container impementing the Composite design pattern
+    /// The Item class represents a single data entity within the application Model.
     /// </summary>
     public class Item : ICloneable
     {
-        #region Variables
+        #region Fields
 
         #region Locks
 
         /// <summary>
         /// Lock for the Value property.
         /// </summary>
-        protected object ValueLock = new object();
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
+        protected object valueLock = new object();
 
         /// <summary>
         /// Lock for the Parent property.
         /// </summary>
-        protected object ParentLock = new object();
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
+        protected object parentLock = new object();
 
         /// <summary>
         /// Lock for the Children property.
         /// </summary>
-        protected object ChildrenLock = new object();
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
+        protected object childrenLock = new object();
 
         #endregion
 
         #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// The Item's parent Item.
-        /// </summary>
-        public Item Parent { get; private set; }
-
-        /// <summary>
-        /// The name of the Item; corresponds to the final tuple of the FQN.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// The Fully Qualified Name of the item.
-        /// </summary>
-        public string FQN { get; set; }
         
-        /// <summary>
-        /// The path to the Item; corresponds to the FQN less the final tuple (the name).
-        /// </summary>
-        public string Path { get; set; }
+        #region Constructors
 
         /// <summary>
-        /// The fully qualified name name of the source item.
+        /// Initializes a new instance of the <see cref="Item"/> class.
         /// </summary>
-        public string SourceFQN { get; set; }
+        public Item() : this(string.Empty, string.Empty, true)
+        {
+        }
 
         /// <summary>
-        /// The Item instance resolved from the SourceFQN.
+        /// Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name to be used as the root of a model.
         /// </summary>
-        public Item SourceItem { get; set; }
-        
-        /// <summary>
-        /// A Guid for the Item, generated when it is instantiated.
-        /// </summary>
-        public Guid Guid { get; private set; }
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
+        public Item(string fqn, bool isRoot) : this(fqn, string.Empty, isRoot)
+        {
+        }
 
         /// <summary>
-        /// True if this item is writeable, false otherwise.  If false, write methods will throw an error when called.
+        /// Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name and type.
         /// </summary>
-        public bool Writeable { get; set; }
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
+        /// <remarks>This constructor is used for deserialization.</remarks>
+        public Item(string fqn, string sourceFQN) : this(fqn, sourceFQN, false)
+        {
+        }
 
         /// <summary>
-        /// The value of the composite item.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name and type.  
+        ///     If isRoot is true, marks the Item as the root item in a model.
         /// </summary>
-        public object Value { get; protected set; }
-        
-        /// <summary>
-        /// The collection of Items contained within this Item.
-        /// </summary>
-        public List<Item> Children { get; private set; }
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
+        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
+        public Item(string fqn, string sourceFQN = "", bool isRoot = false) 
+        {
+            this.FQN = fqn;
+            this.SourceFQN = sourceFQN;
+
+            this.Value = string.Empty;
+
+            // generate Name and Path from FQN
+            string[] splitFQN = fqn.Split('.');
+
+            // set the name.  if it is blank after the split, there was only one tuple in the FQN, so name = fqn
+            this.Name = splitFQN[splitFQN.Length - 1];
+            if (this.Name == string.Empty)
+            {
+                this.Name = this.FQN;
+            }
+
+            this.Path = string.Join(".", splitFQN.Take(splitFQN.Length - 1));
+
+            // create a unique Guid for this item.  useful for debugging.
+            this.Guid = System.Guid.NewGuid();
+
+            // instantiate the list of children
+            this.Children = new List<Item>();
+
+            // if we are creating the root item, make Parent self-referential.
+            if (isRoot)
+            {
+                this.FQN = this.Name;
+                this.Path = this.FQN;
+                this.Parent = this;
+            }
+
+            this.Writeable = true;
+        }
 
         #endregion
 
@@ -97,76 +120,59 @@ namespace Symbiote.Core.Model
         /// </summary>
         public event EventHandler<ItemEventArgs> Changed;
 
-        /// <summary>
-        /// The EventHandler for the Changed event.
-        /// </summary>
-        /// <typeparam name="ItemEventArgs">The Type of EventArgs for the EventHandler.</typeparam>
-        /// <param name="sender">The Item that raised the event.</param>
-        /// <param name="e">The instance of ItemEventArgs belonging to the event.</param>
-        public delegate void EventHandler<ItemEventArgs>(Item sender, ItemEventArgs e);
-
         #endregion
 
-        #region Constructors
+        #region Properties
 
         /// <summary>
-        /// An empty constructor used for instantiating the root node of a model.
+        /// Gets the Item's parent Item.
         /// </summary>
-        public Item() : this("", "", true) { }
+        public Item Parent { get; private set; }
 
         /// <summary>
-        /// Creates an instance of an Item with the given Fully Qualified Name to be used as the root of a model.
+        /// Gets or sets the name of the Item; corresponds to the final tuple of the FQN.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, bool isRoot) : this(fqn, "", isRoot) { }
+        public string Name { get; set; }
 
         /// <summary>
-        /// Creates an instance of an Item with the given Fully Qualified Name and type.
+        /// Gets or sets the Fully Qualified Name of the item.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
-        /// <remarks>This constructor is used for deserialization.</remarks>
-        public Item(string fqn, string sourceFQN) : this(fqn, sourceFQN, false) { }
+        public string FQN { get; set; }
 
         /// <summary>
-        /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
+        /// Gets or sets the path to the Item; corresponds to the FQN less the final tuple (the name).
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
-        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, string sourceFQN = "", bool isRoot = false) 
-        {
-            FQN = fqn;
-            SourceFQN = sourceFQN;
+        public string Path { get; set; }
 
-            Value = "";
+        /// <summary>
+        /// Gets or sets the fully qualified name name of the source item.
+        /// </summary>
+        public string SourceFQN { get; set; }
 
-            // generate Name and Path from FQN
-            string[] splitFQN = fqn.Split('.');
+        /// <summary>
+        /// Gets or sets the Item instance resolved from the SourceFQN.
+        /// </summary>
+        public Item SourceItem { get; set; }
 
-            // set the name.  if it is blank after the split, there was only one tuple in the FQN, so name = fqn
-            Name = splitFQN[splitFQN.Length - 1];
-            if (Name == "") Name = FQN;
+        /// <summary>
+        /// Gets a Guid for the Item, generated when it is instantiated.
+        /// </summary>
+        public Guid Guid { get; private set; }
 
-            Path = String.Join(".",splitFQN.Take(splitFQN.Length - 1));
+        /// <summary>
+        /// Gets or sets a value indicating whether the Item's value is writeable.
+        /// </summary>
+        public bool Writeable { get; set; }
 
-            // create a unique Guid for this item.  useful for debugging.
-            Guid = System.Guid.NewGuid();
+        /// <summary>
+        /// Gets or sets the value of the composite item.
+        /// </summary>
+        public object Value { get; protected set; }
 
-            // instantiate the list of children
-            Children = new List<Item>();
-
-            // if we are creating the root item, make Parent self-referential.
-            if (isRoot)
-            {
-                FQN = Name;
-                Path = FQN;
-                Parent = this;
-            }
-
-            Writeable = true;
-        }
+        /// <summary>
+        /// Gets the collection of Items contained within this Item.
+        /// </summary>
+        public List<Item> Children { get; private set; }
 
         #endregion
 
@@ -177,15 +183,15 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Creates and returns a clone of the Item.
         /// </summary>
-        /// <remarks>We aren't using .MemberWiseClone() because of the GuID.  We need a "deep copy".</remarks>
+        /// <remarks>We aren't using .MemberWiseClone() because of the GUID.  We need a "deep copy".</remarks>
         /// <returns>A clone of the Item.</returns>
         public virtual object Clone()
         {
-            Item retVal = new Item(FQN, SourceFQN, (Parent == this));
-            retVal.Name = Name;
-            retVal.Path = Path;
-            retVal.Parent = Parent;
-            retVal.Children = Children.Clone<Item>();
+            Item retVal = new Item(this.FQN, this.SourceFQN, this.Parent == this);
+            retVal.Name = this.Name;
+            retVal.Path = this.Path;
+            retVal.Parent = this.Parent;
+            retVal.Children = this.Children.Clone<Item>();
             return retVal;
         }
 
@@ -199,7 +205,7 @@ namespace Symbiote.Core.Model
         /// <returns>The string representation of the object.</returns>
         public override string ToString()
         {
-            return FQN;
+            return this.FQN;
         }
 
         #endregion
@@ -218,11 +224,11 @@ namespace Symbiote.Core.Model
             // this is set in the constructor however this code will prevent issues if items are moved.
 
             // lock the Parent property
-            lock (ParentLock)
+            lock (this.parentLock)
             {
-                Path = parent.FQN;
-                FQN = Path + '.' + Name;
-                Parent = parent;
+                this.Path = parent.FQN;
+                this.FQN = this.Path + '.' + this.Name;
+                this.Parent = parent;
             }
 
             retVal.ReturnValue = this;
@@ -248,10 +254,10 @@ namespace Symbiote.Core.Model
                 if (setResult.ResultCode != ResultCode.Failure)
                 {
                     // lock the Children collection
-                    lock (ChildrenLock)
+                    lock (this.childrenLock)
                     {
                         // add the new item
-                        Children.Add(setResult.ReturnValue);
+                        this.Children.Add(setResult.ReturnValue);
                         retVal.ReturnValue = setResult.ReturnValue;
                     }
                 }
@@ -272,16 +278,19 @@ namespace Symbiote.Core.Model
         {
             Result<Item> retVal = new Result<Item>();
             System.Diagnostics.Debug.WriteLine("Removing " + item.FQN);
+
             // locate the item
-            retVal.ReturnValue = Children.Find(i => i.FQN == item.FQN);
+            retVal.ReturnValue = this.Children.Find(i => i.FQN == item.FQN);
 
             // ensure that it was found in the collection
             if (retVal.ReturnValue == default(Item))
-                retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
+            {
+                retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + this.FQN + "'.");
+            }
             else
             {
                 // lock the Children collection
-                lock (ChildrenLock)
+                lock (this.childrenLock)
                 {
                     List<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
 
@@ -292,8 +301,10 @@ namespace Symbiote.Core.Model
                     }
 
                     // remove the item itself
-                    if (!Children.Remove(retVal.ReturnValue))
-                        retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + FQN + "'.");
+                    if (!this.Children.Remove(retVal.ReturnValue))
+                    {
+                        retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + this.FQN + "'.");
+                    }
                 }
             }
             
@@ -306,7 +317,7 @@ namespace Symbiote.Core.Model
         /// <returns>True if the Item has children, false otherwise.</returns>
         public virtual bool HasChildren()
         {
-            return (Children.Count > 0);
+            return this.Children.Count > 0;
         }
 
         /// <summary>
@@ -315,7 +326,7 @@ namespace Symbiote.Core.Model
         /// <returns>The retrieved value.</returns>
         public virtual object Read()
         {
-            return Value;
+            return this.Value;
         }
 
         /// <summary>
@@ -324,7 +335,7 @@ namespace Symbiote.Core.Model
         /// <returns>The retrieved value.</returns>
         public virtual async Task<object> ReadAsync()
         {
-            return await Task.Run(() => Read());
+            return await Task.Run(() => this.Read());
         }
 
         /// <summary>
@@ -337,23 +348,29 @@ namespace Symbiote.Core.Model
             object retVal;
 
             // recursively call ReadFromSource() on each child below this Item
-            if (HasChildren())
-                foreach (Item child in Children)
+            if (this.HasChildren())
+            {
+                foreach (Item child in this.Children)
+                {
                     child.ReadFromSource();
+                }
+            }
 
             // ensure the SourceItem exists before trying to read it
-            if ((SourceItem != null) && (SourceItem != default(Item)))
+            if ((this.SourceItem != null) && (this.SourceItem != default(Item)))
             {
-                retVal = SourceItem.ReadFromSource();
+                retVal = this.SourceItem.ReadFromSource();
 
                 // check to see if the value read from the source is the same
                 // as the Value property.  if it isn't, update the Value property
                 // with the latest. 
-                if (retVal != Value)
-                    Write(retVal);
+                if (retVal != this.Value)
+                {
+                    this.Write(retVal);
+                }
             }
 
-            return Read();
+            return this.Read();
         }
 
         /// <summary>
@@ -363,7 +380,7 @@ namespace Symbiote.Core.Model
         /// <returns>The retrieved value.</returns>
         public virtual async Task<object> ReadFromSourceAsync()
         {
-            return await Task.Run(() => ReadFromSource());
+            return await Task.Run(() => this.ReadFromSource());
         }
 
         /// <summary>
@@ -376,23 +393,26 @@ namespace Symbiote.Core.Model
 
             try
             {
-                SourceItem.Changed += SourceItemChanged;
+                this.SourceItem.Changed += this.SourceItemChanged;
 
                 // if we are subscribing to a ConnectorItem, subscribe the source item to it's connector's ItemChanged event.
-                if (SourceItem is ConnectorItem)
+                if (this.SourceItem is ConnectorItem)
                 {
-                    Result sourceSubscription = ((ConnectorItem)SourceItem).SubscribeToSource();
+                    Result sourceSubscription = ((ConnectorItem)this.SourceItem).SubscribeToSource();
 
                     if (sourceSubscription.ResultCode == ResultCode.Failure)
+                    {
                         retVal.AddWarning("Failed to subscribe SourceItem to it's Connector source.");
+                    }
 
                     retVal.Incorporate(sourceSubscription);
                 }
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception caught while subscribing '" + FQN + "' to source item '" + SourceItem.FQN + "': " + ex.Message);
+                retVal.AddError("Exception caught while subscribing '" + this.FQN + "' to source item '" + this.SourceItem.FQN + "': " + ex.Message);
             }
+
             return retVal;
         }
 
@@ -406,11 +426,11 @@ namespace Symbiote.Core.Model
 
             try
             {
-                SourceItem.Changed -= SourceItemChanged;
+                this.SourceItem.Changed -= this.SourceItemChanged;
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception caught while unsubscribing '" + FQN + "' from source item '" + SourceItem.FQN + "': " + ex.Message);
+                retVal.AddError("Exception caught while unsubscribing '" + this.FQN + "' from source item '" + this.SourceItem.FQN + "': " + ex.Message);
             }
 
             return retVal;
@@ -426,14 +446,16 @@ namespace Symbiote.Core.Model
         {
             Result retVal = new Result();
 
-            if (!Writeable)
-                retVal.AddError("Unable to write to '" + FQN + "'; the item is not writeable.");
+            if (!this.Writeable)
+            {
+                retVal.AddError("Unable to write to '" + this.FQN + "'; the item is not writeable.");
+            }
             else
             {
-                lock (ValueLock)
+                lock (this.valueLock)
                 {
-                    Value = value;
-                    OnChange(value);
+                    this.Value = value;
+                    this.OnChange(value);
                 }
             }
 
@@ -447,7 +469,7 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual async Task<Result> WriteAsync(object value)
         {
-            return await Task.Run(() => Write(value));
+            return await Task.Run(() => this.Write(value));
         }
 
         /// <summary>
@@ -459,15 +481,21 @@ namespace Symbiote.Core.Model
         {
             Result retVal = new Result();
 
-            if (!SourceItem.Writeable)
-                retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is not writeable.");
-            else if ((SourceItem == null) || (SourceItem == default(Item)))
-                retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is null.");
+            if (!this.SourceItem.Writeable)
+            {
+                retVal.AddError("Unable to write to the source item for '" + this.FQN + "'; the source item is not writeable.");
+            }
+            else if ((this.SourceItem == null) || (this.SourceItem == default(Item)))
+            {
+                retVal.AddError("Unable to write to the source item for '" + this.FQN + "'; the source item is null.");
+            }
             else
             {
-                Result writeResult = SourceItem.WriteToSource(value);
+                Result writeResult = this.SourceItem.WriteToSource(value);
                 if (writeResult.ResultCode != ResultCode.Failure)
-                    Write(value);
+                {
+                    this.Write(value);
+                }
 
                 retVal.Incorporate(writeResult);
             }
@@ -482,7 +510,7 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual async Task<Result> WriteToSourceAsync(object value)
         {
-            return await Task.Run(() => SourceItem.WriteToSource(value));
+            return await Task.Run(() => this.SourceItem.WriteToSource(value));
         }
 
         /// <summary>
@@ -491,7 +519,7 @@ namespace Symbiote.Core.Model
         /// <returns>The serialization of the Item.</returns>
         public virtual string ToJson()
         {
-            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
+            return this.ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
         }
 
         /// <summary>
@@ -510,8 +538,10 @@ namespace Symbiote.Core.Model
         /// <param name="value">The value for the raised event.</param>
         protected virtual void OnChange(object value)
         {
-            if (Changed != null)
-                Changed(this, new ItemEventArgs(value));
+            if (this.Changed != null)
+            {
+                this.Changed(this, new ItemEventArgs(value));
+            }
         }
 
         #region Event Handlers
@@ -521,9 +551,9 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="sender">The Item that raised the event.</param>
         /// <param name="e">The EventArgs for the event.</param>
-        protected virtual void SourceItemChanged(Item sender, ItemEventArgs e)
+        protected virtual void SourceItemChanged(object sender, ItemEventArgs e)
         {
-            Write(e.Value);
+            this.Write(e.Value);
         }
 
         #endregion

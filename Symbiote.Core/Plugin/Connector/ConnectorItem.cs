@@ -164,7 +164,7 @@ namespace Symbiote.Core.Plugin.Connector
         /// <returns>A Result containing the result of the operation.</returns>
         public override Result Write(object value)
         {
-            lock (ValueLock)
+            lock (valueLock)
             {
                 Value = value;
                 base.OnChange(value);

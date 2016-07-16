@@ -175,18 +175,26 @@ namespace Symbiote.Core
             Result retVal = new Result();
 
             // start all application managers.
-            retVal = StartManagers();
+            retVal.Incorporate(StartManagers());
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
             return retVal;
         }
 
+        /// <summary>
+        /// Executed upon shutdown of the Manager.  Stops all application managers.
+        /// </summary>
+        /// <param name="stopType">The nature of the stoppage.</param>
+        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
+
+            retVal.Incorporate(StopManagers());
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);

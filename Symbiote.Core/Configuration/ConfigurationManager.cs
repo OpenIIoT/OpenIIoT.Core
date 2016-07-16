@@ -9,76 +9,99 @@
       █   ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████     ██    ██  ██    ██ ██   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
       █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██     ██    ██  ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
       █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀    ▄██▀   █    ██████   █   █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
-      █   
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      ▄  
+      █  The Configuration Manager manages the configuration file for the application and all plugins.
       █  
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The GNU Affero General Public License (GNU AGPL)
       █  
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █  
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █  
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
       █  
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██ 
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
-
 using System;
 using System.Collections.Generic;
-using NLog;
-using Newtonsoft.Json;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json;
+using NLog;
 using Symbiote.Core.Platform;
 
 namespace Symbiote.Core.Configuration
 {
     /// <summary>
+    /// The Configuration Manager manages the configuration file for the application and all plugins.
+    /// </summary>
+    /// <remarks>
+    /// <para>
     /// The Configuration namespace encapsulates the Configuration Manager and the classes and interfaces used by various application
     /// components to allow the configuration of application level objects.
-    /// 
+    /// </para>
+    /// <para>
     /// The Configuration file is generated from the json serialization of the Configuration model.  The Configuration model consists of
     /// a single instance of type Dictionary(Type, Dictionary(string, object)).  This instance creates a nested dictionary keyed on type
     /// first, then by name.  The resulting key value pair contains the Configuration object for the specified Type and named instance.
-    /// 
+    /// </para>
+    /// <para>
     /// There are two main types of configuration supported by this scheme; configuration for static objects like the various application
     /// Managers and Services, and for dynamic objects encompassed by Plugins; namely Endpoints and Connectors.  The key difference is the 
     /// number of instances of each; static objects will have only one instance while the Plugin objects may have any number.  Static objects 
     /// do not supply an instance name when using the Configuration Manager, and their configuration is saved within the model with an empty
     /// string.  Dynamic objects must supply an instance name.
-    /// 
+    /// </para>
+    /// <para>
     /// The Configuration file maintained by the Configuration Manager is capable of being rebuilt from scratch.  If missing, the Manager
     /// automatically adds a default, nameless instance of each registered type to the configuration model and flushes it to disk before
     /// loading it.  This ensures the application can start normally in the event of a deletion.
-    /// 
+    /// </para>
+    /// <para>
     /// The method IsConfigurable uses reflection to examine the given Type to ensure that:
     ///     1. it implements IConfigurable
     ///     2. it contains the static method GetConfigurationDefinition
     ///     3. it contains the static method GetDefaultConfiguration
-    ///     
+    /// <para>
+    /// </para>
     /// If all three predicates are true, the Type can be registered with the Configuration Manager and instances of that type can load 
     /// and save configuration data.
-    /// 
+    /// <para>
+    /// </para>
     /// Before any Type can use the Configuration Manager, the method RegisterType() must be called and passed the Type of that class.
     /// This method checks IsConfigurable and if passing, fetches the ConfigurationDefinition for the Type from the static method
     /// GetConfigurationDefinition and stores the Type and the ConfigurationDefinition in the RegisteredTypes dictionary.
-    /// 
+    /// </para>
+    /// <para>
     /// The GetInstanceConfiguration(T) method is called by configurable instances to retrieve the saved configuration for the calling
     /// class and instance.  By default, if the configuration is not found the default configuration is retrieved from the calling class
-    /// and returned to the caller.  
-    /// </summary>
-    [System.Runtime.CompilerServices.CompilerGenerated]
-    class NamespaceDoc { }
-
-    /// <summary>
-    /// The Configuration Manager class manages the configuration file for the application.
-    /// </summary>
-    public class ConfigurationManager : Manager, IStateful, IManager, IConfigurationManager
+    /// and returned to the caller.
+    /// </para>
+    /// </remarks>
+    public sealed class ConfigurationManager : Manager, IStateful, IManager, IConfigurationManager
     {
-        #region Variables
+        #region Fields
 
         /// <summary>
         /// The Logger for this class.
         /// </summary>
-        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
        
         /// <summary>
         /// The Singleton instance of ConfigurationManager.
@@ -90,36 +113,21 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// Lock for the State property.
         /// </summary>
-        private object StateLock = new object();
+        private object stateLock = new object();
 
         #endregion
-
-        #endregion
-
-        #region Properties
-
-        /// <summary>
-        /// The current configuration.
-        /// </summary>
-        public Dictionary<string, Dictionary<string, object>> Configuration { get; private set; }
-
-        /// <summary>
-        /// The filename of the configuration file.
-        /// </summary>
-        public string ConfigurationFileName { get; private set; }
-
-        /// <summary>
-        /// A dictionary containing all registered configuratble types and their ConfigurationDefinitions.
-        /// </summary>
-        public Dictionary<string, ConfigurationDefinition> RegisteredTypes { get; private set; }
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Private constructor, only called by Instance()
+        /// Initializes a new instance of the <see cref="ConfigurationManager"/> class.
         /// </summary>
+        /// <remarks>
+        ///     This constructor is marked private and is intended to be called from the <see cref="Instantiate(IProgramManager, IPlatformManager)"/>
+        ///     method exclusively in order to implement the Singleton design pattern.
+        /// </remarks>
         /// <param name="manager">The ProgramManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
         private ConfigurationManager(IProgramManager manager, IPlatformManager platformManager)
@@ -127,663 +135,49 @@ namespace Symbiote.Core.Configuration
             base.logger = logger;
             logger.EnterMethod();
 
-            ManagerName = "Configuration Manager";
+            this.ManagerName = "Configuration Manager";
 
             // register dependencies
-            RegisterDependency<ProgramManager>(manager);
-            RegisterDependency<PlatformManager>(platformManager);
+            this.RegisterDependency<ProgramManager>(manager);
+            this.RegisterDependency<PlatformManager>(platformManager);
 
-            RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
-            ConfigurationFileName = GetConfigurationFileName();
+            this.RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
+            this.ConfigurationFileName = GetConfigurationFileName();
 
-            ChangeState(State.Initialized);
-
-            logger.ExitMethod();
-        }
-
-        /// <summary>
-        /// Instantiates and/or returns the ConfigurationManager instance.
-        /// </summary>
-        /// <remarks>
-        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
-        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
-        /// injected when the method is invoked.
-        /// </remarks>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
-        /// <param name="platformManager">The PlatformManager instance for the application.</param>
-        /// <returns>The Singleton instance of the ConfigurationManager.</returns>
-        private static ConfigurationManager Instantiate(IProgramManager manager, IPlatformManager platformManager)
-        {
-            if (instance == null)
-                instance = new ConfigurationManager(manager, platformManager);
-
-            return instance;
-        }
-
-        #endregion
-
-        #region Instance Methods
-
-        protected override Result Startup()
-        {
-            Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
-            Result retVal = new Result();
-
-            #region Configuration File Validation/Generation
-
-            //------------------------------ - -           ---
-            // check whether the configuration file exists and if it doesn't, build it from scratch.
-            if (!Dependency<PlatformManager>().Platform.FileExists(ConfigurationFileName))
-            {
-                logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
-                Result<Dictionary<string, Dictionary<string, object>>> buildResult = BuildNewConfiguration();
-
-                if (buildResult.ResultCode != ResultCode.Failure)
-                {
-                    // the replacement configuration was built successfully; print the result.
-                    buildResult.LogResult(logger, "BuildNewConfiguration");
-
-                    // try to save the new configuration to file
-                    logger.Info("Saving the new configuration to '" + ConfigurationFileName + "'...");
-                    Result saveResult = SaveConfiguration(buildResult.ReturnValue);
-
-                    if (saveResult.ResultCode != ResultCode.Failure)
-                    {
-                        // the file saved properly.  print the result and a final confirmation.
-                        saveResult.LogResult(logger, "SaveConfiguration");
-                        logger.Info("Saved the new configuration to '" + ConfigurationFileName + "'.");
-                    }
-                    else
-                        throw new Exception("Failed to save the new configuration: " + saveResult.LastErrorMessage());
-                }
-                else
-                    throw new Exception("The configuration file was missing and the application failed to build a replacement: " + buildResult.LastErrorMessage());
-            }
-
-            logger.Checkpoint("Configuration file validated/generated", guid);
-            //--------- - ----------- - - -------------------------------------------------- - - 
-
-            #endregion
-
-            #region Configuration Loading for Validation
-
-            //----------------------- - --
-            // load the configuration.
-            Result<Dictionary<string, Dictionary<string, object>>> loadResult = LoadConfiguration();
-
-            if (loadResult.ResultCode == ResultCode.Failure)
-                throw new Exception("Failed to load the configuration: " + loadResult.LastErrorMessage());
-
-            retVal.Incorporate(loadResult);
-
-            logger.Checkpoint("Configuration loaded for validation", guid);
-            //------------------------------------ - -
-
-            #endregion
-
-            #region Configuration Validation
-
-            //-------------------- - ------- - - - - -- 
-            // validate the configuration.
-            Result validationResult = ValidateConfiguration(Configuration);
-
-            if (validationResult.ResultCode == ResultCode.Failure)
-                throw new Exception("The loaded configuration is invalid: " + validationResult.LastErrorMessage());
-
-            retVal.Incorporate(validationResult);
-
-            logger.Checkpoint("Configuration validated", guid);
-            //--------- - - - - -    - - -   ----------- - - -
-
-            #endregion
-
-            // attach the configuration
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                Configuration = loadResult.ReturnValue;
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
-        {
-            Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
-            Result retVal = new Result();
-
-            if (stopType == StopType.Normal)
-            {
-                SaveConfiguration();
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        #region Configuration Management
-
-        /// <summary>
-        /// Loads the configuration from the file specified in the ConfigurationFileName property.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation and the instance of Configuration containing the loaded configuration.</returns>
-        private Result<Dictionary<string, Dictionary<string, object>>> LoadConfiguration()
-        {
-            return LoadConfiguration(ConfigurationFileName);
-        }
-
-        /// <summary>
-        /// Reads the given file and attempts to deserialize it to an instance of Configuration.
-        /// </summary>
-        /// <param name="fileName">The file to read and deserialize.</param>
-        /// <returns>A Result containing the result of the operation and the Configuration instance created from the file.</returns>
-        private Result<Dictionary<string, Dictionary<string, object>>> LoadConfiguration(string fileName)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(fileName), true);
-
-            logger.Info("Loading configuration from '" + fileName + "'...");
-            Result<Dictionary<string, Dictionary<string, object>>> retVal = new Result<Dictionary<string, Dictionary<string, object>>>();
-
-            string configFile = "";
-
-            try
-            {
-                // read the entirety of the configuration file into configFile
-                configFile = Dependency<PlatformManager>().Platform.ReadFile(fileName).ReturnValue;
-                logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
-
-                // attempt to deserialize the contents of the file to an object of type ApplicationConfiguration
-                retVal.ReturnValue = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(configFile);
-                logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Exception thrown while loading Configuration from '" + fileName + "': " + ex);
-                logger.Exception(LogLevel.Error, ex, xLogger.Vars(configFile), xLogger.Names("configFile"), guid);
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Saves the current configuration to the file specified in app.exe.config.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
-        {
-            return SaveConfiguration(Configuration, ConfigurationFileName);
-        }
-
-        /// <summary>
-        /// Saves the provided configuration to the file specified in app.exe.config.
-        /// </summary>
-        /// <param name="configuration">The Configuration instance to save.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result SaveConfiguration(Dictionary<string, Dictionary<string, object>> configuration)
-        {
-            logger.Info("Saving specified configuration to '" + ConfigurationFileName + "'...");
-            Result retVal = SaveConfiguration(configuration, ConfigurationFileName);
-            retVal.LogResult(logger);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Saves the given configuration to the specified file.
-        /// </summary>
-        /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
-        /// <param name="fileName">The file in which to save the configuration.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result SaveConfiguration(Dictionary<string, Dictionary<string, object>> configuration, string fileName)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(configuration, fileName), true);
-
-            logger.Info("Saving configuration to '" + fileName + "'...");
-            Result retVal = new Result();
-
-            try
-            {
-                logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-                Dependency<PlatformManager>().Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
-                //manager.PlatformManager.Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, new JsonSerializerSettings() { Formatting = Formatting.Indented, ContractResolver = new DictionaryAsArrayResolver() }));
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Exception thrown when attempting to save the Configuration to '" + fileName + "': " + ex.Message);
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Validates the current configuration.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result ValidateConfiguration()
-        {
-            return ValidateConfiguration(Configuration);
-        }
-
-        /// <summary>
-        /// Examines the supplied Configuration for errors and returns the result.  If returning a Warning or Invalid result code,
-        /// includes the validation message in the Message member of the return type.
-        /// </summary>
-        /// <param name="configuration">The Configuration to validate.</param>
-        /// <returns>A Result containing the result of the validation.</returns>
-        private Result ValidateConfiguration(Dictionary<string, Dictionary<string, object>> configuration)
-        {
-            logger.EnterMethod();
-
-            logger.Info("Validating configuration...");
-            Result retVal = new Result();
-
-            //TODO: implement this
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Manually builds an instance of Configuration with default values.
-        /// </summary>
-        /// <returns>A Result containing the default instance of a Configuration.</returns>
-        private Result<Dictionary<string, Dictionary<string, object>>> BuildNewConfiguration()
-        {
-            logger.EnterMethod();
-
-            Result<Dictionary<string, Dictionary<string, object>>> retVal = new Result<Dictionary<string, Dictionary<string, object>>>();
-            retVal.ReturnValue = new Dictionary<string, Dictionary<string, object>>();
+            this.ChangeState(State.Initialized);
 
             logger.ExitMethod();
-            return retVal;
         }
 
         #endregion
 
-        #region Instance Registration
+        #region Properties
 
         /// <summary>
-        /// Evaluates the provided type regarding whether it can be configured and returns the result.
-        /// To be configurable, the type must implement IConfigurable and must have static methods GetConfigurationDefinition and 
-        /// GetDefaultConfiguration.
+        /// Gets the current configuration.
         /// </summary>
-        /// <param name="type">The Type to evaluate.</param>
-        /// <returns>A Result containing the result of the operation and the Type of the configuration.</returns>
-        public Result<Type> IsConfigurable(Type type)
-        {
-            logger.EnterMethod(xLogger.Params(type));
-        
-            Result<Type> retVal = new Result<Type>();
-
-            // check whether the Type implements IConfigurable
-            if (!type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
-                retVal.AddError("The provided type '" + type.Name + "' does not implement IConfigurable.");    
-
-            // check whether the Type contains the static method "GetConfigurationDefinition"
-            if (type.GetMethod("GetConfigurationDefinition") == default(MethodInfo))
-                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetConfigurationDefinition'");
-
-            // check whether the Type contains the static method "GetDefaultConfiguration"
-            if (type.GetMethod("GetDefaultConfiguration") == default(MethodInfo))
-                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetDefaultConfiguration'");
-
-            // if any of the previous checks failed, the Type is not configurable.
-            if (retVal.ResultCode == ResultCode.Failure)
-                retVal.AddError("The type '" + type.Name + "' can not be registered.");
-            else
-            {
-                // the Type is configurable.  Determine the generic type parameter used with IConfigurable<T> so that we can return it
-                // first get the IConfigurable<T> Type
-                Type configurable = type.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)).FirstOrDefault();
-
-                // retrieve the first generic argument (there will only be one)
-                retVal.ReturnValue = configurable.GetGenericArguments()[0];
-            }
-
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
+        public Dictionary<string, Dictionary<string, object>> Configuration { get; private set; }
 
         /// <summary>
-        /// Checks to see if the supplied Type is in the RegisteredTypes dictionary.
+        /// Gets the filename of the configuration file.
         /// </summary>
-        /// <param name="type">The Type to check.</param>
-        /// <returns>A Result containing the result of the operation and a boolean indicating whether the specified Type was found in the dictionary.</returns>
-        public Result<bool> IsRegistered(Type type)
-        {
-            logger.EnterMethod(xLogger.Params(type));
-            Result<bool> retVal = new Result<bool>();
-
-            // the type is registered if it exists within the RegisteredTypes dictionary
-            retVal.ReturnValue = RegisteredTypes.ContainsKey(type.FullName);
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
+        public string ConfigurationFileName { get; private set; }
 
         /// <summary>
-        /// Registers the supplied Type with the Configuration Manager.
+        /// Gets a dictionary containing all registered configurable types and their ConfigurationDefinitions.
         /// </summary>
-        /// <remarks>When called during application startup, throwExceptionOnFailure should be set to true.</remarks>
-        /// <param name="type">The Type to register.</param>
-        /// <param name="throwExceptionOnFailure">If true, throws an exception on failure.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result RegisterType(Type type, bool throwExceptionOnFailure = false)
-        {
-            logger.EnterMethod(xLogger.Params(type, throwExceptionOnFailure));
-
-            logger.Debug("Registering type '" + type.Name + "'...");
-            Result retVal = new Result();
-
-            // ensure the provided Type is configurable
-            Result<Type> checkResult = IsConfigurable(type);
-
-            if (checkResult.ResultCode == ResultCode.Failure)
-                retVal.Incorporate(checkResult);
-            else
-            {
-                // the type is configurable; try to get the configuration definition
-                try
-                {
-                    ConfigurationDefinition typedef = (ConfigurationDefinition)type.GetMethod("GetConfigurationDefinition").Invoke(null, null);
-                    if (typedef == default(ConfigurationDefinition))
-                        retVal.AddError("The ConfigurationDefinition retrieved from the supplied type is invalid.");
-                    else
-                        retVal = RegisterType(type, typedef, RegisteredTypes);
-                }
-                catch (Exception ex)
-                {
-                    retVal.AddError("Exception thrown while registering the type: " + ex);
-                }
-            }
-
-            if (retVal.ResultCode == ResultCode.Failure)
-                retVal.LogResult(logger);
-            else
-                retVal.LogResult(logger.Debug);
-
-            if (throwExceptionOnFailure)
-                throw new Exception("Failed to register the type '" + type.Name + "' for configuration.");
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Registers the supplied Type with the Configuration Manager using the supplied ConfigurationDefiniton.
-        /// </summary>
-        /// <param name="type">The Type to register.</param>
-        /// <param name="definition">The ConfigurationDefintion with which to register the Type.</param>
-        /// <param name="registeredTypes">The Dictionary of registered types.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result RegisterType(Type type, ConfigurationDefinition definition, Dictionary<string, ConfigurationDefinition> registeredTypes)
-        {
-            logger.EnterMethod();
-            logger.Trace("Registering type '" + type.Name + "'...");
-
-            Result retVal = new Result();
-
-            // check to ensure that the type hasn't already been registered
-            if (!registeredTypes.ContainsKey(type.FullName))
-            {
-                try
-                {
-                    registeredTypes.Add(type.FullName, definition);
-                    logger.Debug("Registered type '" + type.Name + "' for configuration.");
-                }
-                catch (Exception ex)
-                {
-                    retVal.AddError("Exception thrown while registering the type: " + ex);
-                }
-            }
-            else
-                retVal.AddWarning("The Type '" + type.Name + "' has already been registered.  Ignoring.");
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
+        public Dictionary<string, ConfigurationDefinition> RegisteredTypes { get; private set; }
 
         #endregion
 
-        #region Instance Configuration Management
+        #region Methods
+
+        #region Public Methods
+
+        #region Public Static Methods
 
         /// <summary>
-        /// Determines whether the specified instance of the specified type is configured.
-        /// </summary>
-        /// <param name="type">The Type of the instance to check.</param>
-        /// <param name="instanceName">The name of the instance to check.</param>
-        /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
-        public Result<bool> IsConfigured(Type type, string instanceName = "")
-        {
-            return IsConfigured(type, Configuration, instanceName);
-        }
-
-        /// <summary>
-        /// Determines whether the specified instance of the specified type is configured.
-        /// </summary>
-        /// <param name="type">The Type of the instance to check.</param>
-        /// <param name="configuration">The ApplicationConfiguration to examine.</param>
-        /// <param name="instanceName">The name of the instance to check.</param>
-        /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
-        private Result<bool> IsConfigured(Type type, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
-
-            Result<bool> retVal = new Result<bool>();
-
-            // check to see if the type is in the comfiguration
-            if (configuration.ContainsKey(type.FullName))
-            {
-                // check to see if the specified instance is in the type configuration
-                if (!configuration[type.FullName].ContainsKey(instanceName))
-                    retVal.AddError("The specified instance name '" + instanceName + "' wasn't found in the configuration for type '" + type.Name + "'.");
-            }
-            else
-                retVal.AddError("The specified type '" + type.Name + "' was not found in the configuration.");
-
-            // if any messages were generated the configuration wasn't found, so return false.
-            retVal.ReturnValue = (retVal.ResultCode != ResultCode.Failure);
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Adds the specified configuration to the specified instance of the specified type.
-        /// </summary>
-        /// <param name="type">The Type of the instance to be configured.</param>
-        /// <param name="instanceConfiguration">The Configuration instance of the configuration model of the calling class.</param>
-        /// <param name="instanceName">The name of the instance to configure.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, string instanceName = "")
-        {
-            return AddInstanceConfiguration<T>(type, instanceConfiguration, Configuration, instanceName);
-        }
-
-        /// <summary>
-        /// Adds the specified configuration to the specified instance of the specified type.
-        /// </summary>
-        /// <param name="type">The Type of the instance to be configured.</param>
-        /// <param name="configuration">The Configuration instance of the configuration model of the calling class.</param>
-        /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
-        /// <param name="instanceName">The name of the instance to configure.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
-
-            Result<T> retVal = new Result<T>();
-
-            if (IsConfigurable(type).ResultCode == ResultCode.Failure)
-                retVal.AddError("The type '" + type.Name + "' is not configurable.");
-            else if (!IsRegistered(type).ReturnValue)
-                retVal.AddError("The type '" + type.Name + "' is configurable but has not been registered.");
-            // ensure the configuration doesn't already exist
-            else if (!IsConfigured(type, instanceName).ReturnValue)
-            {
-                logger.Trace("Inserting configuration into the Configuration dictionary...");
-                // if the configuration doesn't contain a section for the type, add it
-                if (!configuration.ContainsKey(type.FullName))
-                    configuration.Add(type.FullName, new Dictionary<string, object>());
-
-                // add the default configuration for the requested type/instance to the configuration.
-                configuration[type.FullName].Add(instanceName, instanceConfiguration);
-
-                retVal.ReturnValue = (T)instanceConfiguration;
-
-                logger.Trace("The configuration was inserted successfully.");
-            }
-            else
-                retVal.AddError("The configuration for instance '" + instanceName + "' of type '" + type.Name + "' already exists.");
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Retrieves the configuration for the instance matching instanceName of the supplied Type.
-        /// If the configuration can't be found, returns the default configuration for the Type.
-        /// </summary>
-        /// <typeparam name="T">The Type matching the Configuration model for the calling class.</typeparam>
-        /// <param name="type">The Type of the calling class.</param>
-        /// <param name="instanceName">The name of the instance for which to retrieve the configuration.</param>
-        /// <returns>A Result containing the result of the operation and an instance of the Configuration model 
-        /// for the calling class containing the retrieved configuration.</returns>
-        public Result<T> GetInstanceConfiguration<T>(Type type, string instanceName = "")
-        {
-            return GetInstanceConfiguration<T>(type, Configuration, instanceName);
-        }
-
-        /// <summary>
-        /// Retrieves the configuration for the instance matching instanceName of the supplied Type.
-        /// If the configuration can't be found, returns the default configuration for the Type.
-        /// </summary>
-        /// <typeparam name="T">The Type matching the Configuration model for the calling class.</typeparam>
-        /// <param name="type">The Type of the calling class.</param>
-        /// <param name="configuration">The ApplicationConfiguration from which to retrieve the configuration.</param>
-        /// <param name="instanceName">The name of the instance for which to retrieve the configuration.</param>
-        /// <returns>A Result containing the result of the operation and an instance of the Configuration model 
-        /// for the calling class containing the retrieved configuration.</returns>
-        private Result<T> GetInstanceConfiguration<T>(Type type, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
-
-            Result<T> retVal = new Result<T>();
-
-            // ensure the specified type and instance is configured
-            if (IsConfigured(type, instanceName).ReturnValue)
-            {
-                try
-                {
-                    // json.net needs to know the type when it deserializes; we can't cast or convert after the fact.
-                    // the solution is to grab our object, serialize it again, then deserialize it into the required type.
-                    var rawObject = configuration[type.FullName][instanceName];
-                    var reSerializedObject = JsonConvert.SerializeObject(rawObject);
-                    var reDeSerializedObject = JsonConvert.DeserializeObject<T>(reSerializedObject);
-                    retVal.ReturnValue = reDeSerializedObject;
-                }
-                catch (Exception ex)
-                {
-                    retVal.AddError("Error retrieving and re-serializing the data from the configuration for type '" + type.Name + "', instance '" + instanceName + "': " + ex);
-                }
-            }
-            else
-                retVal.AddError("The specified type '" + type.Name + "' is not configured.");
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Saves the specified Configuration model to the Configuration for the specified instance and Type.
-        /// </summary>
-        /// <param name="type">The Type of the calling class.</param>
-        /// <param name="instanceConfiguration">The Configuration model to save.</param>
-        /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "")
-        {
-            return UpdateInstanceConfiguration(type, instanceConfiguration, Configuration, instanceName);
-        }
-
-        /// <summary>
-        /// Saves the specified Configuration model to the Configuration for the specified instance and Type.
-        /// </summary>
-        /// <param name="type">The Type of the calling class.</param>
-        /// <param name="instanceConfiguration">The Configuration model to save.</param>
-        /// <param name="configuration">The ApplicationConfiguration to update.</param>
-        /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
-
-            logger.Debug("Updating configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
-            Result retVal = new Result();
-
-            if (IsConfigured(type, instanceName).ReturnValue)
-                configuration[type.FullName][instanceName] = instanceConfiguration;
-            else
-                retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Removes the specified instance of the specified type from the configuration.
-        /// </summary>
-        /// <param name="type">The Type of instance to remove.</param>
-        /// <param name="instanceName">The name of the instance to remove from the Type.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result RemoveInstanceConfiguration(Type type, string instanceName = "")
-        {
-            return RemoveInstanceConfiguration(type, Configuration, instanceName);
-        }
-
-        /// <summary>
-        /// Removes the specified instance of the specified type from the configuration.
-        /// </summary>
-        /// <param name="type">The Type of instance to remove.</param>
-        /// <param name="configuration">The ApplicationConfiguration from which to remove the configuration.</param>
-        /// <param name="instanceName">The name of the instance to remove from the Type.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result RemoveInstanceConfiguration(Type type, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, configuration, instanceName));
-
-            logger.Debug("Removing configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
-            Result retVal = new Result();
-
-            if (IsConfigured(type, instanceName).ReturnValue)
-                configuration[type.FullName].Remove(instanceName);
-            else
-                retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        #endregion
-
-        #endregion
-
-        #region Static Methods
-
-        /// <summary>
-        /// Returns the fully qualified path to the configuration file incluidng file name and extension.
+        /// Returns the fully qualified path to the configuration file including file name and extension.
         /// </summary>
         /// <returns>The fully qualified path, filename and extension of the configuration file.</returns>
         public static string GetConfigurationFileName()
@@ -856,6 +250,714 @@ namespace Symbiote.Core.Configuration
             retVal.LogResult(logger);
             return retVal;
         }
+
+        #endregion
+
+        #region Public Instance Methods
+
+        /// <summary>
+        /// Determines whether the specified instance of the specified type is configured.
+        /// </summary>
+        /// <param name="type">The Type of the instance to check.</param>
+        /// <param name="instanceName">The name of the instance to check.</param>
+        /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
+        public Result<bool> IsConfigured(Type type, string instanceName = "")
+        {
+            return this.IsConfigured(type, this.Configuration, instanceName);
+        }
+        
+        /// <summary>
+        /// Adds the specified configuration to the specified instance of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The configuration Type.</typeparam>
+        /// <param name="type">The Type of the instance to be configured.</param>
+        /// <param name="instanceConfiguration">The Configuration instance of the configuration model of the calling class.</param>
+        /// <param name="instanceName">The name of the instance to configure.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, string instanceName = "")
+        {
+            return this.AddInstanceConfiguration<T>(type, instanceConfiguration, this.Configuration, instanceName);
+        }
+        
+        /// <summary>
+        /// Retrieves the configuration for the instance matching instanceName of the supplied Type.
+        /// If the configuration can't be found, returns the default configuration for the Type.
+        /// </summary>
+        /// <typeparam name="T">The Type matching the Configuration model for the calling class.</typeparam>
+        /// <param name="type">The Type of the calling class.</param>
+        /// <param name="instanceName">The name of the instance for which to retrieve the configuration.</param>
+        /// <returns>A Result containing the result of the operation and an instance of the Configuration model 
+        /// for the calling class containing the retrieved configuration.</returns>
+        public Result<T> GetInstanceConfiguration<T>(Type type, string instanceName = "")
+        {
+            return this.GetInstanceConfiguration<T>(type, this.Configuration, instanceName);
+        }
+
+        /// <summary>
+        /// Saves the specified Configuration model to the Configuration for the specified instance and Type.
+        /// </summary>
+        /// <param name="type">The Type of the calling class.</param>
+        /// <param name="instanceConfiguration">The Configuration model to save.</param>
+        /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "")
+        {
+            return this.UpdateInstanceConfiguration(type, instanceConfiguration, this.Configuration, instanceName);
+        }
+
+        /// <summary>
+        /// Removes the specified instance of the specified type from the configuration.
+        /// </summary>
+        /// <param name="type">The Type of instance to remove.</param>
+        /// <param name="instanceName">The name of the instance to remove from the Type.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result RemoveInstanceConfiguration(Type type, string instanceName = "")
+        {
+            return this.RemoveInstanceConfiguration(type, this.Configuration, instanceName);
+        }
+
+        /// <summary>
+        /// Saves the current configuration to the file specified in app.exe.config.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result SaveConfiguration()
+        {
+            return this.SaveConfiguration(this.Configuration, this.ConfigurationFileName);
+        }
+
+        /// <summary>
+        /// Validates the current configuration.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result ValidateConfiguration()
+        {
+            return this.ValidateConfiguration(this.Configuration);
+        }
+
+        /// <summary>
+        ///     Evaluates the provided type regarding whether it can be configured and returns the result.
+        ///     To be configurable, the type must implement IConfigurable and must have static methods GetConfigurationDefinition and 
+        ///     GetDefaultConfiguration.
+        /// </summary>
+        /// <param name="type">The Type to evaluate.</param>
+        /// <returns>A Result containing the result of the operation and the Type of the configuration.</returns>
+        public Result<Type> IsConfigurable(Type type)
+        {
+            logger.EnterMethod(xLogger.Params(type));
+
+            Result<Type> retVal = new Result<Type>();
+
+            // check whether the Type implements IConfigurable
+            if (!type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
+            {
+                retVal.AddError("The provided type '" + type.Name + "' does not implement IConfigurable.");
+            }
+
+            // check whether the Type contains the static method "GetConfigurationDefinition"
+            if (type.GetMethod("GetConfigurationDefinition") == default(MethodInfo))
+            {
+                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetConfigurationDefinition'");
+            }
+
+            // check whether the Type contains the static method "GetDefaultConfiguration"
+            if (type.GetMethod("GetDefaultConfiguration") == default(MethodInfo))
+            {
+                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetDefaultConfiguration'");
+            }
+
+            // if any of the previous checks failed, the Type is not configurable.
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("The type '" + type.Name + "' can not be registered.");
+            }
+            else
+            {
+                // the Type is configurable.  Determine the generic type parameter used with IConfigurable<T> so that we can return it
+                // first get the IConfigurable<T> Type
+                Type configurable = type.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)).FirstOrDefault();
+
+                // retrieve the first generic argument (there will only be one)
+                retVal.ReturnValue = configurable.GetGenericArguments()[0];
+            }
+
+            retVal.LogResult(logger.Trace);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Checks to see if the supplied Type is in the RegisteredTypes dictionary.
+        /// </summary>
+        /// <param name="type">The Type to check.</param>
+        /// <returns>A Result containing the result of the operation and a boolean indicating whether the specified Type was found in the dictionary.</returns>
+        public Result<bool> IsRegistered(Type type)
+        {
+            logger.EnterMethod(xLogger.Params(type));
+            Result<bool> retVal = new Result<bool>();
+
+            // the type is registered if it exists within the RegisteredTypes dictionary
+            retVal.ReturnValue = this.RegisteredTypes.ContainsKey(type.FullName);
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Registers the supplied Type with the Configuration Manager.
+        /// </summary>
+        /// <remarks>When called during application startup, throwExceptionOnFailure should be set to true.</remarks>
+        /// <param name="type">The Type to register.</param>
+        /// <param name="throwExceptionOnFailure">If true, throws an exception on failure.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result RegisterType(Type type, bool throwExceptionOnFailure = false)
+        {
+            logger.EnterMethod(xLogger.Params(type, throwExceptionOnFailure));
+
+            logger.Debug("Registering type '" + type.Name + "'...");
+            Result retVal = new Result();
+
+            // ensure the provided Type is configurable
+            Result<Type> checkResult = this.IsConfigurable(type);
+
+            if (checkResult.ResultCode == ResultCode.Failure)
+            {
+                retVal.Incorporate(checkResult);
+            }
+            else
+            {
+                // the type is configurable; try to get the configuration definition
+                try
+                {
+                    ConfigurationDefinition typedef = (ConfigurationDefinition)type.GetMethod("GetConfigurationDefinition").Invoke(null, null);
+                    if (typedef == default(ConfigurationDefinition))
+                    {
+                        retVal.AddError("The ConfigurationDefinition retrieved from the supplied type is invalid.");
+                    }
+                    else
+                    {
+                        retVal = this.RegisterType(type, typedef, this.RegisteredTypes);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError("Exception thrown while registering the type: " + ex);
+                }
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.LogResult(logger);
+            }
+            else
+            {
+                retVal.LogResult(logger.Debug);
+            }
+
+            if (throwExceptionOnFailure)
+            {
+                throw new Exception("Failed to register the type '" + type.Name + "' for configuration.");
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Protected Methods
+
+        #region Protected Instance Methods
+
+        /// <summary>
+        /// <para>
+        /// Executed upon startup of the Manager. 
+        /// </para>
+        /// <para>
+        ///     Verifies the existence of the configuration file and if missing, builds it using all default options.  Loads the
+        ///     configuration, validates it, and, if valid, attaches it to the <see cref="Configuration"/> property.
+        /// </para>
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Startup()
+        {
+            Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
+            Result retVal = new Result();
+
+            // check whether the configuration file exists and if it doesn't, build it from scratch.
+            if (!Dependency<PlatformManager>().Platform.FileExists(this.ConfigurationFileName))
+            {
+                logger.Info("The configuration file '" + this.ConfigurationFileName + "' could not be found.  Rebuilding...");
+                Result<Dictionary<string, Dictionary<string, object>>> buildResult = this.BuildNewConfiguration();
+
+                if (buildResult.ResultCode != ResultCode.Failure)
+                {
+                    // the replacement configuration was built successfully; print the result.
+                    buildResult.LogResult(logger, "BuildNewConfiguration");
+
+                    // try to save the new configuration to file
+                    logger.Info("Saving the new configuration to '" + this.ConfigurationFileName + "'...");
+                    Result saveResult = this.SaveConfiguration(buildResult.ReturnValue);
+
+                    if (saveResult.ResultCode != ResultCode.Failure)
+                    {
+                        // the file saved properly.  print the result and a final confirmation.
+                        saveResult.LogResult(logger, "SaveConfiguration");
+                        logger.Info("Saved the new configuration to '" + this.ConfigurationFileName + "'.");
+                    }
+                    else
+                    {
+                        throw new Exception("Failed to save the new configuration: " + saveResult.LastErrorMessage());
+                    }
+                }
+                else
+                {
+                    throw new Exception("The configuration file was missing and the application failed to build a replacement: " + buildResult.LastErrorMessage());
+                }
+            }
+
+            logger.Checkpoint("Configuration file validated/generated", guid);
+
+            // load the configuration.
+            Result<Dictionary<string, Dictionary<string, object>>> loadResult = this.LoadConfiguration();
+
+            if (loadResult.ResultCode == ResultCode.Failure)
+            {
+                throw new Exception("Failed to load the configuration: " + loadResult.LastErrorMessage());
+            }
+
+            retVal.Incorporate(loadResult);
+
+            logger.Checkpoint("Configuration loaded for validation", guid);
+            
+            // validate the configuration.
+            Result validationResult = this.ValidateConfiguration(this.Configuration);
+
+            if (validationResult.ResultCode == ResultCode.Failure)
+            {
+                throw new Exception("The loaded configuration is invalid: " + validationResult.LastErrorMessage());
+            }
+
+            retVal.Incorporate(validationResult);
+
+            logger.Checkpoint("Configuration validated", guid);
+
+            // attach the configuration
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                this.Configuration = loadResult.ReturnValue;
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// <para>
+        /// Executed upon shutdown of the Manager. 
+        /// </para>
+        /// <para>
+        /// If the specified <see cref="StopType"/> is <see cref="StopType.Normal"/>, saves the configuration to disk.
+        /// </para>
+        /// </summary>
+        /// <param name="stopType">The nature of the stoppage.</param>
+        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
+        {
+            Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+            Result retVal = new Result();
+
+            if (stopType == StopType.Normal)
+            {
+                this.SaveConfiguration();
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        #region Private Static Methods
+
+        /// <summary>
+        /// Instantiates and/or returns the ConfigurationManager instance.
+        /// </summary>
+        /// <remarks>
+        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
+        /// injected when the method is invoked.
+        /// </remarks>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="platformManager">The PlatformManager instance for the application.</param>
+        /// <returns>The Singleton instance of the ConfigurationManager.</returns>
+        private static ConfigurationManager Instantiate(IProgramManager manager, IPlatformManager platformManager)
+        {
+            if (instance == null)
+            {
+                instance = new ConfigurationManager(manager, platformManager);
+            }
+
+            return instance;
+        }
+
+        #endregion
+
+        #region Private Instance Methods
+
+        /// <summary>
+        /// Loads the configuration from the file specified in the ConfigurationFileName property.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the instance of Configuration containing the loaded configuration.</returns>
+        private Result<Dictionary<string, Dictionary<string, object>>> LoadConfiguration()
+        {
+            return this.LoadConfiguration(this.ConfigurationFileName);
+        }
+
+        /// <summary>
+        /// Reads the given file and attempts to deserialize it to an instance of Configuration.
+        /// </summary>
+        /// <param name="fileName">The file to read and deserialize.</param>
+        /// <returns>A Result containing the result of the operation and the Configuration instance created from the file.</returns>
+        private Result<Dictionary<string, Dictionary<string, object>>> LoadConfiguration(string fileName)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(fileName), true);
+
+            logger.Info("Loading configuration from '" + fileName + "'...");
+            Result<Dictionary<string, Dictionary<string, object>>> retVal = new Result<Dictionary<string, Dictionary<string, object>>>();
+
+            string configFile = string.Empty;
+
+            try
+            {
+                // read the entirety of the configuration file into configFile
+                configFile = Dependency<PlatformManager>().Platform.ReadFile(fileName).ReturnValue;
+                logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
+
+                // attempt to deserialize the contents of the file to an object of type ApplicationConfiguration
+                retVal.ReturnValue = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(configFile);
+                logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown while loading Configuration from '" + fileName + "': " + ex);
+                logger.Exception(LogLevel.Error, ex, xLogger.Vars(configFile), xLogger.Names("configFile"), guid);
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Saves the provided configuration to the file specified in app.exe.config.
+        /// </summary>
+        /// <param name="configuration">The Configuration instance to save.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result SaveConfiguration(Dictionary<string, Dictionary<string, object>> configuration)
+        {
+            logger.Info("Saving specified configuration to '" + this.ConfigurationFileName + "'...");
+            Result retVal = this.SaveConfiguration(configuration, this.ConfigurationFileName);
+            retVal.LogResult(logger);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Saves the given configuration to the specified file.
+        /// </summary>
+        /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
+        /// <param name="fileName">The file in which to save the configuration.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result SaveConfiguration(Dictionary<string, Dictionary<string, object>> configuration, string fileName)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(configuration, fileName), true);
+
+            logger.Info("Saving configuration to '" + fileName + "'...");
+            Result retVal = new Result();
+
+            try
+            {
+                logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
+                Dependency<PlatformManager>().Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown when attempting to save the Configuration to '" + fileName + "': " + ex.Message);
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Examines the supplied Configuration for errors and returns the result.  If returning a Warning or Invalid result code,
+        /// includes the validation message in the Message member of the return type.
+        /// </summary>
+        /// <param name="configuration">The Configuration to validate.</param>
+        /// <returns>A Result containing the result of the validation.</returns>
+        private Result ValidateConfiguration(Dictionary<string, Dictionary<string, object>> configuration)
+        {
+            logger.EnterMethod();
+
+            logger.Info("Validating configuration...");
+            Result retVal = new Result();
+
+            //// TODO: implement this
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Manually builds an instance of Configuration with default values.
+        /// </summary>
+        /// <returns>A Result containing the default instance of a Configuration.</returns>
+        private Result<Dictionary<string, Dictionary<string, object>>> BuildNewConfiguration()
+        {
+            logger.EnterMethod();
+
+            Result<Dictionary<string, Dictionary<string, object>>> retVal = new Result<Dictionary<string, Dictionary<string, object>>>();
+            retVal.ReturnValue = new Dictionary<string, Dictionary<string, object>>();
+
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
+        /// Registers the supplied Type with the Configuration Manager using the supplied ConfigurationDefinition.
+        /// </summary>
+        /// <param name="type">The Type to register.</param>
+        /// <param name="definition">The ConfigurationDefinition with which to register the Type.</param>
+        /// <param name="registeredTypes">The Dictionary of registered types.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result RegisterType(Type type, ConfigurationDefinition definition, Dictionary<string, ConfigurationDefinition> registeredTypes)
+        {
+            logger.EnterMethod();
+            logger.Trace("Registering type '" + type.Name + "'...");
+
+            Result retVal = new Result();
+
+            // check to ensure that the type hasn't already been registered
+            if (!registeredTypes.ContainsKey(type.FullName))
+            {
+                try
+                {
+                    registeredTypes.Add(type.FullName, definition);
+                    logger.Debug("Registered type '" + type.Name + "' for configuration.");
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError("Exception thrown while registering the type: " + ex);
+                }
+            }
+            else
+            {
+                retVal.AddWarning("The Type '" + type.Name + "' has already been registered.  Ignoring.");
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Determines whether the specified instance of the specified type is configured.
+        /// </summary>
+        /// <param name="type">The Type of the instance to check.</param>
+        /// <param name="configuration">The ApplicationConfiguration to examine.</param>
+        /// <param name="instanceName">The name of the instance to check.</param>
+        /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
+        private Result<bool> IsConfigured(Type type, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
+        {
+            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
+
+            Result<bool> retVal = new Result<bool>();
+
+            // check to see if the type is in the comfiguration
+            if (configuration.ContainsKey(type.FullName))
+            {
+                // check to see if the specified instance is in the type configuration
+                if (!configuration[type.FullName].ContainsKey(instanceName))
+                {
+                    retVal.AddError("The specified instance name '" + instanceName + "' wasn't found in the configuration for type '" + type.Name + "'.");
+                }
+            }
+            else
+            {
+                retVal.AddError("The specified type '" + type.Name + "' was not found in the configuration.");
+            }
+
+            // if any messages were generated the configuration wasn't found, so return false.
+            retVal.ReturnValue = retVal.ResultCode != ResultCode.Failure;
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Adds the specified configuration to the specified instance of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The configuration Type.</typeparam>
+        /// <param name="type">The Type of the instance to be configured.</param>
+        /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
+        /// <param name="configuration">The Configuration instance of the configuration model of the calling class.</param>
+        /// <param name="instanceName">The name of the instance to configure.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
+        {
+            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
+
+            Result<T> retVal = new Result<T>();
+
+            if (this.IsConfigurable(type).ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("The type '" + type.Name + "' is not configurable.");
+            }
+            else if (!this.IsRegistered(type).ReturnValue)
+            {
+                retVal.AddError("The type '" + type.Name + "' is configurable but has not been registered.");
+            }
+            else if (!this.IsConfigured(type, instanceName).ReturnValue)
+            {
+                // ensure the configuration doesn't already exist
+                logger.Trace("Inserting configuration into the Configuration dictionary...");
+                
+                // if the configuration doesn't contain a section for the type, add it
+                if (!configuration.ContainsKey(type.FullName))
+                {
+                    configuration.Add(type.FullName, new Dictionary<string, object>());
+                }
+
+                // add the default configuration for the requested type/instance to the configuration.
+                configuration[type.FullName].Add(instanceName, instanceConfiguration);
+
+                retVal.ReturnValue = (T)instanceConfiguration;
+
+                logger.Trace("The configuration was inserted successfully.");
+            }
+            else
+            {
+                retVal.AddError("The configuration for instance '" + instanceName + "' of type '" + type.Name + "' already exists.");
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Saves the specified Configuration model to the Configuration for the specified instance and Type.
+        /// </summary>
+        /// <param name="type">The Type of the calling class.</param>
+        /// <param name="instanceConfiguration">The Configuration model to save.</param>
+        /// <param name="configuration">The ApplicationConfiguration to update.</param>
+        /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
+        {
+            logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
+
+            logger.Debug("Updating configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
+            Result retVal = new Result();
+
+            if (this.IsConfigured(type, instanceName).ReturnValue)
+            {
+                configuration[type.FullName][instanceName] = instanceConfiguration;
+            }
+            else
+            {
+                retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Removes the specified instance of the specified type from the configuration.
+        /// </summary>
+        /// <param name="type">The Type of instance to remove.</param>
+        /// <param name="configuration">The ApplicationConfiguration from which to remove the configuration.</param>
+        /// <param name="instanceName">The name of the instance to remove from the Type.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result RemoveInstanceConfiguration(Type type, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
+        {
+            logger.EnterMethod(xLogger.Params(type, configuration, instanceName));
+
+            logger.Debug("Removing configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
+            Result retVal = new Result();
+
+            if (this.IsConfigured(type, instanceName).ReturnValue)
+            {
+                configuration[type.FullName].Remove(instanceName);
+            }
+            else
+            {
+                retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Retrieves the configuration for the instance matching instanceName of the supplied Type.
+        /// If the configuration can't be found, returns the default configuration for the Type.
+        /// </summary>
+        /// <typeparam name="T">The Type matching the Configuration model for the calling class.</typeparam>
+        /// <param name="type">The Type of the calling class.</param>
+        /// <param name="configuration">The ApplicationConfiguration from which to retrieve the configuration.</param>
+        /// <param name="instanceName">The name of the instance for which to retrieve the configuration.</param>
+        /// <returns>A Result containing the result of the operation and an instance of the Configuration model 
+        /// for the calling class containing the retrieved configuration.</returns>
+        private Result<T> GetInstanceConfiguration<T>(Type type, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
+        {
+            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
+
+            Result<T> retVal = new Result<T>();
+
+            // ensure the specified type and instance is configured
+            if (this.IsConfigured(type, instanceName).ReturnValue)
+            {
+                try
+                {
+                    // json.net needs to know the type when it deserializes; we can't cast or convert after the fact.
+                    // the solution is to grab our object, serialize it again, then deserialize it into the required type.
+                    var rawObject = configuration[type.FullName][instanceName];
+                    var newSerializedObject = JsonConvert.SerializeObject(rawObject);
+                    var newDeSerializedObject = JsonConvert.DeserializeObject<T>(newSerializedObject);
+                    retVal.ReturnValue = newDeSerializedObject;
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError("Error retrieving and re-serializing the data from the configuration for type '" + type.Name + "', instance '" + instanceName + "': " + ex);
+                }
+            }
+            else
+            {
+                retVal.AddError("The specified type '" + type.Name + "' is not configured.");
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        #endregion
+
+        #endregion
 
         #endregion
     }

@@ -1,9 +1,12 @@
 <StyleCopSettings Version="105">
   <GlobalSettings>
     <CollectionProperty Name="RecognizedWords">
+      <Value>json</Value>
+      <Value>schemaform</Value>
       <Value>stateful</Value>
       <Value>Symbiote</Value>
     </CollectionProperty>
+    <IntegerProperty Name="MaxViolationCount">5000</IntegerProperty>
   </GlobalSettings>
   <Analyzers>
     <Analyzer AnalyzerId="StyleCop.CSharp.DocumentationRules">
