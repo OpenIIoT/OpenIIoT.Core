@@ -5,6 +5,6 @@ namespace Symbiote.Core.Service.Web.API
 {
     public interface IApiController
     {
-        JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolver.ContractResolverType contractResolverType, bool includeSecondaryTypes);
+        JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes);
     }
 }

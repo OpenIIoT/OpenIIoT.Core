@@ -1,12 +1,55 @@
-﻿using NLog;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █   
+      █      ▄▄▄▄███▄▄▄▄                                                             
+      █    ▄██▀▀▀███▀▀▀██▄                                                           
+      █    ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
+      █    ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
+      █    ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
+      █    ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
+      █    ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
+      █     ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
+      █   
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      ▄  
+      █  The abstract base class from which all Managers inherit.
+      █  
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █  
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █  
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █  
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██ 
+                                                                                               ▀█▄ ██ ▄█▀ 
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
-using System.Reflection;
 using System.Timers;
+using NLog;
 
 namespace Symbiote.Core
 {
+    /// <summary>
+    /// The abstract base class from which all Managers inherit.
+    /// </summary>
     public abstract class Manager : IStateful, IManager
     {
         #region Variables
@@ -14,6 +57,7 @@ namespace Symbiote.Core
         /// <summary>
         /// The Logger for this class.
         /// </summary>
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
@@ -25,42 +69,6 @@ namespace Symbiote.Core
         /// The restart timer, used to automatically restart the Manager following a Stop with pending restart.
         /// </summary>
         private Timer restartTimer = new Timer(1000);
-
-        #endregion
-
-        #region Properties
-
-        #region IStateful Properties
-
-        /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        public State State { get; private set; }
-
-        #endregion
-
-        /// <summary>
-        /// The name of the Manager.
-        /// </summary>
-        public string ManagerName { get; protected set; }
-
-        /// <summary>
-        /// The dictionary of IManagers upon which this Manager depends, keyed on Type name.
-        /// </summary>
-        /// <remarks>
-        /// Populated in the constructor as injected dependencies are resolved.
-        /// </remarks>
-        private Dictionary<Type, IManager> Dependencies
-        {
-            get
-            {
-                if (dependencies == default(Dictionary<Type, IManager>))
-                    dependencies = new Dictionary<Type, IManager>();
-
-                return dependencies;
-            }
-            set { dependencies = value; }
-        }
 
         #endregion
 
@@ -77,7 +85,57 @@ namespace Symbiote.Core
 
         #endregion
 
-        #region Instance Methods
+        #region Properties
+
+        #region IStateful Properties
+
+        /// <summary>
+        /// Gets the current State of the stateful object.
+        /// </summary>
+        public State State { get; private set; }
+
+        #endregion
+
+        #region IManager Properties
+
+        /// <summary>
+        /// Gets or sets the name of the Manager.
+        /// </summary>
+        public string ManagerName { get; protected set; }
+
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the dictionary of IManagers upon which this Manager depends, keyed on Type name.
+        /// </summary>
+        /// <remarks>
+        /// Populated in the constructor of extension classes as injected dependencies are resolved.
+        /// </remarks>
+        private Dictionary<Type, IManager> Dependencies
+        {
+            get
+            {
+                if (this.dependencies == default(Dictionary<Type, IManager>))
+                {
+                    this.dependencies = new Dictionary<Type, IManager>();
+                }
+
+                return this.dependencies;
+            }
+
+            set
+            {
+                this.dependencies = value;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
+
+        #region Public Instance Methods
 
         #region IStateful Implementation
 
@@ -97,91 +155,117 @@ namespace Symbiote.Core
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result Start()
         {
-            Guid guid = logger.EnterMethod(true);
+            Guid guid = this.logger.EnterMethod(true);
+            this.logger.Info("Starting the " + this.ManagerName + "...");
             Result retVal = new Result();
 
-            logger.Info("Starting the " + ManagerName + "...");
-
-            if (!IsInState(State.Initialized, State.Stopped))
+            if (!this.IsInState(State.Initialized, State.Stopped))
+            {
                 return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
+            }
 
-            if (!CheckDependencies(State.Starting, State.Running))
+            if (!this.DependenciesAreAllInState(State.Starting, State.Running))
+            {
                 return retVal.AddError("One or more dependencies is not in the Starting or Running state.");
+            }
 
-            ChangeState(State.Starting);
+            this.ChangeState(State.Starting);
 
-            retVal.Incorporate(Startup());
+            // invoke the manager-specific startup routine
+            retVal.Incorporate(this.Startup());
 
             if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Running);
+            {
+                this.ChangeState(State.Running);
+            }
             else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
+            {
+                this.ChangeState(State.Faulted, retVal.LastErrorMessage());
+            }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
+            retVal.LogResult(this.logger);
+            this.logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
         /// <summary>
         /// Restarts the Configuration manager.
         /// </summary>
+        /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result Restart(StopType stopType = StopType.Normal)
         {
-            Guid guid = logger.EnterMethod(true);
+            Guid guid = this.logger.EnterMethod(true);
+            this.logger.Info("Restarting the " + this.ManagerName + "...");
             Result retVal = new Result();
 
-            logger.Info("Restarting the " + ManagerName + "...");
-
-            if (!IsInState(State.Running))
+            if (!this.IsInState(State.Running))
+            {
                 return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
+            }
 
-            retVal.Incorporate(Start().Incorporate(Stop(StopType.Normal, true)));
+            retVal.Incorporate(this.Start().Incorporate(this.Stop(StopType.Normal, true)));
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
+            retVal.LogResult(this.logger);
+            this.logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
         /// <summary>
         /// Stops the Configuration manager.
         /// </summary>
-        /// <param name="stopType"></param>
-        /// <param name="restartPending"></param>
+        /// <param name="stopType">The nature of the stoppage.</param>
+        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
         {
-            Guid guid = logger.EnterMethod(true);
+            Guid guid = this.logger.EnterMethod(true);
+            this.logger.Info("Stopping the " + this.ManagerName + "...");
             Result retVal = new Result();
 
-            logger.Info("Stopping the " + ManagerName + "...");
-
-            if (!IsInState(State.Running))
+            if (!this.IsInState(State.Running))
+            {
                 return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
+            }
 
-            ChangeState(State.Stopping);
+            this.ChangeState(State.Stopping);
 
-            if (stopType == StopType.Normal)
-                retVal.Incorporate(Shutdown(stopType, restartPending));
+            // invoke the manager-specific shutdown routine
+            retVal.Incorporate(this.Shutdown(stopType, restartPending));
 
+            // if the restartPending flag is set, start the restart timer
+            // this timer will continuously attempt to restart the Manager until all dependencies
+            // are satisfied, after which point it will start.
             if (restartPending)
             {
-                logger.Info("The " + ManagerName + " will continue to attempt to restart.");
-                restartTimer.Elapsed += RestartTimerElapsed;
-                restartTimer.Start();
+                this.logger.Info("The " + this.ManagerName + " will continue to attempt to restart.");
+                this.restartTimer.Elapsed += this.RestartTimerElapsed;
+                this.restartTimer.Start();
             }
 
             if (retVal.ResultCode != ResultCode.Failure)
-                ChangeState(State.Stopped, stopType, restartPending);
+            {
+                this.ChangeState(State.Stopped, stopType, restartPending);
+            }
             else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
+            {
+                this.ChangeState(State.Faulted, retVal.LastErrorMessage());
+            }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
+            retVal.LogResult(this.logger);
+            this.logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
         #endregion
+
+        #endregion
+
+        #endregion
+
+        #region Protected Methods
+
+        #region Protected Instance Methods
 
         /// <summary>
         /// Implements the Manager-specific startup procedure.
@@ -203,7 +287,7 @@ namespace Symbiote.Core
         /// <param name="state">The State to which the State property is to be changed.</param>
         protected virtual void ChangeState(State state)
         {
-            ChangeState(state, "", StopType.Normal);
+            this.ChangeState(state, string.Empty, StopType.Normal);
         }
 
         /// <summary>
@@ -213,7 +297,7 @@ namespace Symbiote.Core
         /// <param name="message">The optional message describing the nature or reason for the change.</param>
         protected virtual void ChangeState(State state, string message = "")
         {
-            ChangeState(state, message, StopType.Normal, false);
+            this.ChangeState(state, message, StopType.Normal, false);
         }
 
         /// <summary>
@@ -224,7 +308,7 @@ namespace Symbiote.Core
         /// <param name="restartPending">True if the Manager is being stopped pending a restart, false otherwise.</param>
         protected virtual void ChangeState(State state, StopType stopType, bool restartPending = false)
         {
-            ChangeState(state, "", stopType, restartPending);
+            this.ChangeState(state, string.Empty, stopType, restartPending);
         }
 
         /// <summary>
@@ -236,19 +320,24 @@ namespace Symbiote.Core
         /// <param name="restartPending">True if the Manager is being stopped pending a restart, false otherwise.</param>
         protected virtual void ChangeState(State state, string message = "", StopType stopType = StopType.Normal, bool restartPending = false)
         {
-            logger.EnterMethod(xLogger.Params(state, message, stopType, restartPending));
+            this.logger.EnterMethod(xLogger.Params(state, message, stopType, restartPending));
 
             State previousState = State;
 
             State = state;
 
             // if the new State is State.Faulted, ensure StopType is Abnormal
-            if (State == State.Faulted) stopType = StopType.Abnormal;
+            if (State == State.Faulted)
+            {
+                stopType = StopType.Abnormal;
+            }
 
-            if (StateChanged != null)
-                StateChanged(this, new StateChangedEventArgs(State, previousState, message, stopType, restartPending));
+            if (this.StateChanged != null)
+            {
+                this.StateChanged(this, new StateChangedEventArgs(State, previousState, message, stopType, restartPending));
+            }
 
-            logger.ExitMethod();
+            this.logger.ExitMethod();
         }
 
         /// <summary>
@@ -259,10 +348,12 @@ namespace Symbiote.Core
         /// <exception cref="KeyNotFoundException">Thrown if the specified Type is not found in the <see cref="Dependencies"/> dictionary.</exception>
         protected virtual T Dependency<T>()
         {
-            if (!Dependencies.ContainsKey(typeof(T)))
-                throw new KeyNotFoundException("The Dependency '" + typeof(T) + "' for Manager + " + ManagerName + " has not been resolved (no matching key in dictionary).");
+            if (!this.Dependencies.ContainsKey(typeof(T)))
+            {
+                throw new KeyNotFoundException("The Dependency '" + typeof(T) + "' for Manager + " + this.ManagerName + " has not been resolved (no matching key in dictionary).");
+            }
 
-            return (T)Dependencies[typeof(T)];
+            return (T)this.Dependencies[typeof(T)];
         }
 
         /// <summary>
@@ -273,8 +364,8 @@ namespace Symbiote.Core
         /// <returns>The added IManager instance.</returns>
         protected virtual T RegisterDependency<T>(IManager manager)
         {
-            Dependencies.Add(typeof(T), manager);
-            manager.StateChanged += DependencyStateChanged;
+            this.Dependencies.Add(typeof(T), manager);
+            manager.StateChanged += this.DependencyStateChanged;
             return (T)manager;
         }
 
@@ -282,22 +373,33 @@ namespace Symbiote.Core
         /// Examines the <see cref="State"/> of the <see cref="IManager"/>s contained within the <see cref="Dependencies"/> property 
         /// to ensure each is in the <see cref="State.Running"/> state.  If not, an error message is added to the return <see cref="Result"/>.
         /// </summary>
+        /// <param name="states">The list of States to which the state of each dependency will be compared.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected virtual Result CheckDependencies(params State[] states)
+        protected virtual Result DependenciesAreAllInState(params State[] states)
         {
-            logger.EnterMethod();
+            this.logger.EnterMethod();
             Result retVal = new Result();
 
-            foreach (Type managerType in Dependencies.Keys)
-                if (!Dependencies[managerType].IsInState(states))
-                    retVal.AddError("The dependency '" + managerType.GetType().Name + "' has not been started (current state is " + Dependencies[managerType].State + ").");
+            foreach (Type managerType in this.Dependencies.Keys)
+            {
+                if (!this.Dependencies[managerType].IsInState(states))
+                {
+                    retVal.AddError("The dependency '" + managerType.GetType().Name + "' has not been started (current state is " + this.Dependencies[managerType].State + ").");
+                }
+            }
 
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
+            retVal.LogResult(this.logger.Debug);
+            this.logger.ExitMethod(retVal);
             return retVal;
         }
 
         #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        #region Private Instance Methods
 
         #region Event Handlers
 
@@ -311,28 +413,31 @@ namespace Symbiote.Core
         /// <param name="e">The EventArgs for the event.</param>
         private void RestartTimerElapsed(object sender, ElapsedEventArgs e)
         {
-            logger.EnterMethod();
-            logger.Debug("Checking dependencies for " + ManagerName + " to see whether a restart can be attempted...");
+            this.logger.EnterMethod();
+            this.logger.Debug("Checking dependencies for " + this.ManagerName + " to see whether a restart can be attempted...");
 
             // check all of the dependencies to see whether they are running
-            if (CheckDependencies(State.Running))
+            if (this.DependenciesAreAllInState(State.Running))
             {
-                logger.Debug("All dependencies for " + ManagerName + " are running.  Attempting to start...");
+                this.logger.Debug("All dependencies for " + this.ManagerName + " are running.  Attempting to start...");
+
                 // if all of the dependencies are running, start the Manager.
-                Result startResult = Start();
+                Result startResult = this.Start();
 
                 // if it started successfully, stop the timer and remove the event handler.
                 if (startResult.ResultCode != ResultCode.Failure)
                 {
-                    logger.Debug("Restart of " + ManagerName + " successful.");
-                    restartTimer.Stop();
-                    restartTimer.Elapsed -= RestartTimerElapsed;
+                    this.logger.Debug("Restart of " + this.ManagerName + " successful.");
+                    this.restartTimer.Stop();
+                    this.restartTimer.Elapsed -= this.RestartTimerElapsed;
                 }
                 else
-                    logger.Debug("Failed to restart " + ManagerName + ": " + startResult.LastErrorMessage());
+                {
+                    this.logger.Debug("Failed to restart " + this.ManagerName + ": " + startResult.LastErrorMessage());
+                }
             }
 
-            logger.ExitMethod();
+            this.logger.ExitMethod();
         }
 
         /// <summary>
@@ -340,34 +445,42 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="sender">The Manager whose state changed.</param>
         /// <param name="e">The EventArgs for the event.</param>
-        protected virtual void DependencyStateChanged(object sender, StateChangedEventArgs e)
+        private void DependencyStateChanged(object sender, StateChangedEventArgs e)
         {
-            logger.EnterMethod(xLogger.Params(new xLogger.ExcludedParam(), e));
+            this.logger.EnterMethod(xLogger.Params(new xLogger.ExcludedParam(), e));
 
             // only react if the state of this manager is Running or Starting
-            if (IsInState(State.Running, State.Starting))
+            if (this.IsInState(State.Running, State.Starting))
             {
                 // if the new state of the dependency is Faulted, stop with the abnormal flag
                 if (e.State == State.Faulted)
                 {
-                    logger.Info("The dependency " + sender.GetType().Name + " has faulted with the following message:");
-                    logger.Info("\t" + (e.Message.Length > 0 ? e.Message : "[no message provided]"));
-                    logger.Info("The " + ManagerName + " must now stop, and will attempt to restart periodically until the dependency starts again.");
+                    this.logger.Info("The dependency " + sender.GetType().Name + " has faulted with the following message:");
+                    this.logger.Info("\t" + (e.Message.Length > 0 ? e.Message : "[no message provided]"));
+                    this.logger.Info("The " + this.ManagerName + " must now stop, and will attempt to restart periodically until the dependency starts again.");
 
-                    Stop(StopType.Abnormal, e.RestartPending);
+                    this.Stop(StopType.Abnormal, e.RestartPending);
                 }
                 else if (e.State == State.Stopped)
                 {
-                    logger.Info("The dependency '" + sender.GetType().Name + "' has stopped with StopType of " + e.StopType + 
-                        (e.RestartPending ? ", and a restart is pending" : "") + 
-                        ".  The " + ManagerName + " must now stop" + (e.RestartPending ? " and will start when the dependency starts again." : "."));
+                    string msg = "The dependency '" + sender.GetType().Name + "' has stopped with StopType of " + e.StopType +
+                        (e.RestartPending ? ", and a restart is pending" : string.Empty) +
+                        ".  The " + this.ManagerName + " must now stop" + (e.RestartPending ? " and will start when the dependency starts again." : ".");
 
-                    Stop(e.StopType, e.RestartPending);
+                    this.logger.Info(msg);
+
+                    this.Stop(e.StopType, e.RestartPending);
                 }
             }
 
-            logger.ExitMethod();
+            this.logger.ExitMethod();
         }
+
+        #endregion
+
+        #endregion
+
+        #endregion
 
         #endregion
     }

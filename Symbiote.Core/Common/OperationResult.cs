@@ -1,57 +1,58 @@
 ﻿/*
-     █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-     █
-     █    ▄██████▄                                                                              ▄████████
-     █   ███    ███                                                                            ███    ███
-     █   ███    ███    ██████▄    ▄██████    ██████   ▄█████      ██     █   ██████  ██▄▄▄▄    ███    ███    ▄██████   ▄██████ ██    █   █           ██     
-     █   ███    ███   ██    ██   ██    █    ██   ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄  ▄███▄▄▄▄██▀   ██    █    ██   ▀  ██    ██ ██       ▀███████▄  
-     █   ███    ███   ██    ██  ▄██▄▄▄     ▄██▄▄▄█▀   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀▀███▀▀▀▀▀    ▄██▄▄▄      ██      ██    ██ ██           ██  ▀  
-     █   ███    ███ ▀███████▀  ▀▀██▀▀▀    ▀████████ ▀████████     ██    ██  ██    ██ ██   ██ ▀███████████ ▀▀██▀▀▀    ▀████████ ██    ██ ██           ██     
-     █   ███    ███   ██         ██    █    ██   ██   ██   ██     ██    ██  ██    ██ ██   ██   ███    ███   ██    █     ▄   ██ ██    ██ ██▌    ▄     ██     
-     █    ▀██████▀   ▄███▀       ████████   ██   ██   ██   █▀    ▄██▀   █    ██████   █   █    ███    ███   ████████  ▄█████▀  ███████  ████▄▄██    ▄██▀     
-     █
-▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
-█ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-     █ 
-     █  Encapsulates the result of any operation. Includes a result code and a list of messages generated during the operation.
-     █
-     █  Additional methods provide logging functionality for convenience, and a generic extension class is provided to allow for 
-     █  Result instances which contain an object as a return value.
-     █
-     █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
-     █  The MIT License (MIT)
-     █  
-     █  Copyright (c) 2016 JP Dillingham (jp@dillingham.ws)
-     █  
-     █  Permission is hereby granted, free of charge, to any person obtaining a copy
-     █  of this software and associated documentation files (the "Software"), to deal
-     █  in the Software without restriction, including without limitation the rights
-     █  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-     █  copies of the Software, and to permit persons to whom the Software is
-     █  furnished to do so, subject to the following conditions:
-     █  
-     █  The above copyright notice and this permission notice shall be included in all
-     █  copies or substantial portions of the Software.
-     █  
-     █  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-     █  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-     █  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-     █  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-     █  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-     █  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-     █  SOFTWARE. 
-     █ 
-     █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀     ▀▀▀   
-     █  Dependencies:
-     █     └─ NLog (https://www.nuget.org/packages/NLog/)
-     █     
-     ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █   
+      █    ▄██████▄                                                                           ▄████████                                               
+      █   ███    ███                                                                         ███    ███                                               
+      █   ███    ███    █████▄    ▄█████    █████   ▄█████      ██     █   ██████  ██▄▄▄▄   ▄███▄▄▄▄██▀    ▄█████   ▄█████ ██   █   █           ██    
+      █   ███    ███   ██   ██   ██   █    ██  ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄ ▀▀███▀▀▀▀▀     ██   █    ██  ▀  ██   ██ ██       ▀███████▄ 
+      █   ███    ███   ██   ██  ▄██▄▄     ▄██▄▄█▀   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀███████████  ▄██▄▄      ██     ██   ██ ██           ██  ▀ 
+      █   ███    ███ ▀██████▀  ▀▀██▀▀    ▀███████ ▀████████     ██    ██  ██    ██ ██   ██   ███    ███ ▀▀██▀▀    ▀███████ ██   ██ ██           ██    
+      █   ███    ███   ██        ██   █    ██  ██   ██   ██     ██    ██  ██    ██ ██   ██   ███    ███   ██   █     ▄  ██ ██   ██ ██▌    ▄     ██    
+      █    ▀██████▀   ▄███▀      ███████   ██  ██   ██   █▀    ▄██▀   █    ██████   █   █    ███    ███   ███████  ▄████▀  ██████  ████▄▄██    ▄██▀   
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      ▄   
+      █  Encapsulates the result of any operation. Includes a result code and a list of messages generated during the operation.
+      █
+      █  Additional methods provide logging functionality for convenience, and a generic extension class is provided to allow for 
+      █  Result instances which contain an object as a return value.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The MIT License (MIT)
+      █  
+      █  Copyright (c) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  Permission is hereby granted, free of charge, to any person obtaining a copy
+      █  of this software and associated documentation files (the "Software"), to deal
+      █  in the Software without restriction, including without limitation the rights
+      █  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+      █  copies of the Software, and to permit persons to whom the Software is
+      █  furnished to do so, subject to the following conditions:
+      █  
+      █  The above copyright notice and this permission notice shall be included in all
+      █  copies or substantial portions of the Software.
+      █  
+      █  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+      █  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+      █  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+      █  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+      █  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+      █  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+      █  SOFTWARE. 
+      █ 
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀     ▀▀▀   
+      █  Dependencies:
+      █     └─ NLog (https://www.nuget.org/packages/NLog/)
+      █     
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                   ██   
                                                                                               ▀█▄ ██ ▄█▀                       
                                                                                                 ▀████▀   
                                                                                                   ▀▀                               */
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Runtime.CompilerServices;
 
@@ -66,16 +67,19 @@ namespace Symbiote.Core
         /// The default type; represents any level.
         /// </summary>
         Any,
+
         /// <summary>
         /// The message contains low level trace information.
         /// </summary>
         Info,
+
         /// <summary>
         /// The message represents a recoverable issue.
         /// </summary>
         Warning,
+
         /// <summary>
-        /// The message represents an uncoverable error.
+        /// The message represents an unrecoverable error.
         /// </summary>
         Error
     }
@@ -89,14 +93,17 @@ namespace Symbiote.Core
         /// The default return type.
         /// </summary>
         Unknown,
+
         /// <summary>
         /// The operation succeeded.
         /// </summary>
         Success,
+
         /// <summary>
         /// The operation encountered recoverable issues and ultimately succeeded.
         /// </summary>
         Warning,
+
         /// <summary>
         /// The operation encountered unrecoverable errors and did not succeed.
         /// </summary>
@@ -106,38 +113,43 @@ namespace Symbiote.Core
     /// <summary>
     /// Represents messages generated by operations.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class Message
     {
-        #region Properties
-
-        /// <summary>
-        /// The type of the message.
-        /// </summary>
-        public MessageType Type { get; set; }
-
-        /// <summary>
-        /// The content of the message.
-        /// </summary>
-        public string Text { get; set; }
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Constructs a message of the optionally supplied type with the optionally supplied message.
+        /// Initializes a new instance of the <see cref="Message"/> class using the optionally supplied type with the optionally supplied message.
         /// </summary>
         /// <param name="type">The type of the message.</param>
         /// <param name="text">The content of the message.</param>
         public Message(MessageType type = MessageType.Info, string text = "")
         {
-            Type = type;
-            Text = text;
+            this.Type = type;
+            this.Text = text;
         }
 
         #endregion
 
-        #region Instance Methods
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the type of the message.
+        /// </summary>
+        public MessageType Type { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content of the message.
+        /// </summary>
+        public string Text { get; set; }
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
+
+        #region Public Instance Methods
 
         /// <summary>
         /// Returns a formatted string representation of the message.
@@ -145,8 +157,12 @@ namespace Symbiote.Core
         /// <returns>The formatted message string.</returns>
         public override string ToString()
         {
-            return "[" + Type.ToString().ToUpper() + "] " + Text;
+            return "[" + this.Type.ToString().ToUpper() + "] " + this.Text;
         }
+
+        #endregion
+
+        #endregion
 
         #endregion
     }
@@ -184,26 +200,13 @@ namespace Symbiote.Core
     ///     will be changed to Failure.  This functionality is provided for nested or sequential operations.
     /// </para>
     /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class Result
     {
-        #region Properties
-
-        /// <summary>
-        /// The result of the operation.
-        /// </summary>
-        public ResultCode ResultCode { get; protected set; }
-
-        /// <summary>
-        /// The list of messages generated during the operation.
-        /// </summary>
-        public List<Message> Messages { get; protected set; }
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Constructs a new instance with the optionally supplied result code.
+        /// Initializes a new instance of the <see cref="Result"/> class with the optionally supplied result code.
         /// </summary>
         /// <param name="initialResultCode">The initial result code for the instance.</param>
         /// <example>
@@ -217,33 +220,58 @@ namespace Symbiote.Core
         /// </example>
         public Result(ResultCode initialResultCode = ResultCode.Success)
         {
-            ResultCode = initialResultCode;
-            Messages = new List<Message>();
+            this.ResultCode = initialResultCode;
+            this.Messages = new List<Message>();
         }
 
         #endregion
 
-        #region Instance Methods
-
-        #region Private
+        #region Properties
 
         /// <summary>
-        /// Logs the supplied message using the supplied logging action.
+        /// Gets or sets the result of the operation.
         /// </summary>
-        /// <param name="action">The logging action with which to log the message.</param>
-        /// <param name="message">The message.</param>
-        /// <remarks>
-        ///     The accessibility for this method is set to protected as there is no use case for this beyond the 
-        ///     support of the other logging methods in this class or derived classes.
-        /// </remarks>
-        protected void Log(Action<string> action, string message)
+        public ResultCode ResultCode { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the list of messages generated during the operation.
+        /// </summary>
+        public List<Message> Messages { get; protected set; }
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
+
+        #region Public Static Methods
+
+        /// <summary>
+        /// Allows for implicit casts to boolean.  Returns false if ResultCode is Failure, true otherwise.
+        /// </summary>
+        /// <param name="result">The Result to convert.</param>
+        /// <example>
+        /// <code>
+        /// // generate A Result
+        /// Result result = SomeOperation();
+        /// 
+        /// // check the result
+        /// if (!result)
+        /// {
+        ///     Console.WriteLine("Operation failed!");
+        /// }
+        /// else
+        ///     Console.WriteLine("Operation succeeded!");
+        /// </code>
+        /// </example>
+        public static implicit operator bool(Result result)
         {
-            action(message);
+            return result.ResultCode != ResultCode.Failure;
         }
 
         #endregion
 
-        #region Public
+        #region Public Instance Methods
 
         /// <summary>
         /// Adds a message of type Info to the message list.
@@ -261,7 +289,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result AddInfo(string message)
         {
-            Messages.Add(new Message(MessageType.Info, message));
+            this.Messages.Add(new Message(MessageType.Info, message));
             return this;
         }
 
@@ -281,8 +309,8 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result AddWarning(string message)
         {
-            Messages.Add(new Message(MessageType.Warning, message));
-            ResultCode = ResultCode.Warning;
+            this.Messages.Add(new Message(MessageType.Warning, message));
+            this.ResultCode = ResultCode.Warning;
             return this;
         }
 
@@ -302,8 +330,8 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result AddError(string message)
         {
-            Messages.Add(new Message(MessageType.Error, message));
-            ResultCode = ResultCode.Failure;
+            this.Messages.Add(new Message(MessageType.Error, message));
+            this.ResultCode = ResultCode.Failure;
             return this;
         }
 
@@ -329,9 +357,13 @@ namespace Symbiote.Core
         public virtual Result RemoveMessages(MessageType messageType = MessageType.Any)
         {
             if (messageType == MessageType.Any)
-                Messages.Clear();
+            {
+                this.Messages.Clear();
+            }
             else
-                Messages.RemoveAll(m => m.Type == messageType);
+            {
+                this.Messages.RemoveAll(m => m.Type == messageType);
+            }
 
             return this;
         }
@@ -350,7 +382,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result SetResultCode(ResultCode resultCode = ResultCode.Success)
         {
-            ResultCode = resultCode;
+            this.ResultCode = resultCode;
             return this;
         }
 
@@ -390,7 +422,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
-            return LogResult(logger.Info, logger.Warn, logger.Error, caller);
+            return this.LogResult(logger.Info, logger.Warn, logger.Error, caller);
         }
 
         /// <summary>
@@ -423,7 +455,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result LogResult(Action<string> action, [CallerMemberName]string caller = "")
         {
-            return LogResult(action, action, action, caller);
+            return this.LogResult(action, action, action, caller);
         }
 
         /// <summary>
@@ -461,23 +493,27 @@ namespace Symbiote.Core
         public virtual Result LogResult(Action<string> successAction, Action<string> warningAction, Action<string> failureAction, [CallerMemberName]string caller = "")
         {
             // the operation suceeded, with or without warnings
-            if (ResultCode != ResultCode.Failure)
+            if (this.ResultCode != ResultCode.Failure)
             {
-                Log(successAction, "The operation '" + caller + "' completed successfully.");
+                this.Log(successAction, "The operation '" + caller + "' completed successfully.");
 
                 // if any informational messages were generated, print them to the logger
-                if (Messages.Where(m => m.Type == MessageType.Info).Count() > 0)
-                    LogAllMessages(successAction, MessageType.Info, "The following informational messages were generated during the operation:");
+                if (this.Messages.Where(m => m.Type == MessageType.Info).Count() > 0)
+                {
+                    this.LogAllMessages(successAction, MessageType.Info, "The following informational messages were generated during the operation:");
+                }
 
                 // if any warnings were generated, print them to the logger
-                if (ResultCode == ResultCode.Warning)
-                    LogAllMessages(warningAction, MessageType.Warning, "The following warnings were generated during the operation:");
+                if (this.ResultCode == ResultCode.Warning)
+                {
+                    this.LogAllMessages(warningAction, MessageType.Warning, "The following warnings were generated during the operation:");
+                }
             }
-            // the operation failed
             else
             {
-                Log(failureAction, "The operation '" + caller + "' failed.");
-                LogAllMessages(failureAction, MessageType.Error, "The following messages were generated during the operation:");
+                // the operation failed
+                this.Log(failureAction, "The operation '" + caller + "' failed.");
+                this.LogAllMessages(failureAction, MessageType.Error, "The following messages were generated during the operation:");
             }
 
             return this;
@@ -508,7 +544,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result LogAllMessages(Action<string> action, string header = "", string footer = "")
         {
-            return LogAllMessages(action, MessageType.Any, header, footer);
+            return this.LogAllMessages(action, MessageType.Any, header, footer);
         }
 
         /// <summary>
@@ -538,18 +574,28 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result LogAllMessages(Action<string> action, MessageType messageType = MessageType.Any, string header = "", string footer = "")
         {
-            if (header != "") Log(action, header);
+            if (header != string.Empty)
+            {
+                this.Log(action, header);
+            }
 
-            List<Message> messagesToLog = Messages;
+            List<Message> messagesToLog = this.Messages;
 
             // if a MessageType other than Any was specified, filter the list of messages
             if (messageType != MessageType.Any)
-                messagesToLog = Messages.Where(m => m.Type == messageType).ToList();
+            {
+                messagesToLog = this.Messages.Where(m => m.Type == messageType).ToList();
+            }
 
             foreach (Message message in messagesToLog)
-                Log(action, new string(' ', 5) + message.Text);
+            {
+                this.Log(action, new string(' ', 5) + message.Text);
+            }
 
-            if (footer != "") Log(action, footer);
+            if (footer != string.Empty)
+            {
+                this.Log(action, footer);
+            }
 
             return this;
         }
@@ -572,7 +618,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual string LastInfoMessage()
         {
-            return Messages.Where(m => m.Type == MessageType.Info).LastOrDefault().Text ?? "";
+            return this.Messages.Where(m => m.Type == MessageType.Info).LastOrDefault().Text ?? string.Empty;
         }
 
         /// <summary>
@@ -593,7 +639,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual string LastWarningMessage()
         {
-            return Messages.Where(m => m.Type == MessageType.Warning).LastOrDefault().Text ?? "";
+            return this.Messages.Where(m => m.Type == MessageType.Warning).LastOrDefault().Text ?? string.Empty;
         }
 
         /// <summary>
@@ -614,14 +660,15 @@ namespace Symbiote.Core
         /// </example>
         public virtual string LastErrorMessage()
         {
-            return Messages.Where(m => m.Type == MessageType.Error).LastOrDefault().Text ?? "";
+            return this.Messages.Where(m => m.Type == MessageType.Error).LastOrDefault().Text ?? string.Empty;
         }
 
         /// <summary>
         ///     Adds details from the specified Result to this Result, including all Messages and the 
-        ///     ResutCode, if lesser than the ResultCode of this instance.
+        ///     ResultCode, if lesser than the ResultCode of this instance.
         /// </summary>
-        /// <param name="Result">The Result from which to copy the Messages.</param>
+        /// <param name="result">The Result from which to copy the Messages.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         /// <example>
         /// <code>
         /// // create an "outer" Result
@@ -644,17 +691,21 @@ namespace Symbiote.Core
         /// outer.LogResult(logger); 
         /// </code>
         /// </example>
-        public virtual Result Incorporate(Result Result)
+        public virtual Result Incorporate(Result result)
         {
-            foreach (Message message in Result.Messages)
-                Messages.Add(message);
+            foreach (Message message in result.Messages)
+            {
+                this.Messages.Add(message);
+            }
 
             // if the value of this Result's ResultCode is less than the provided Result, 
             // copy the provided ResultCode into this ResultCode.  e.g., if we have a warning and we incorporate
             // a failure, we become a failure.
             // unknown < success < warning < failure
-            if (ResultCode.CompareTo(Result.ResultCode) < 0)
-                ResultCode = Result.ResultCode;
+            if (ResultCode.CompareTo(result.ResultCode) < 0)
+            {
+                this.ResultCode = result.ResultCode;
+            }
 
             return this;
         }
@@ -663,30 +714,27 @@ namespace Symbiote.Core
 
         #endregion
 
-        #region Static Methods
+        #region Protected Methods
+
+        #region Protected Instance Methods
 
         /// <summary>
-        /// Allows for implicit casts to boolean.  Returns false if ResultCode is Failure, true otherwise.
+        /// Logs the supplied message using the supplied logging action.
         /// </summary>
-        /// <param name="Result">The Result to convert.</param>
-        /// <example>
-        /// <code>
-        /// // generate A Result
-        /// Result result = SomeOperation();
-        /// 
-        /// // check the result
-        /// if (!result)
-        /// {
-        ///     Console.WriteLine("Operation failed!");
-        /// }
-        /// else
-        ///     Console.WriteLine("Operation succeeded!");
-        /// </code>
-        /// </example>
-        public static implicit operator bool(Result Result)
+        /// <param name="action">The logging action with which to log the message.</param>
+        /// <param name="message">The message.</param>
+        /// <remarks>
+        ///     The accessibility for this method is set to protected as there is no use case for this beyond the 
+        ///     support of the other logging methods in this class or derived classes.
+        /// </remarks>
+        protected void Log(Action<string> action, string message)
         {
-            return (Result.ResultCode != ResultCode.Failure);
+            action(message);
         }
+
+        #endregion
+
+        #endregion
 
         #endregion
     }
@@ -733,30 +781,32 @@ namespace Symbiote.Core
     /// <typeparam name="T">The type of the object contained within the Result property.</typeparam>
     public class Result<T> : Result
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Result{T}"/> class.
+        /// </summary>
+        public Result() : base()
+        {
+            this.ReturnValue = default(T);
+        }
+
+        #endregion
+
         #region Properties
 
         /// <summary>
-        /// An object containing the result of the operation.
+        /// Gets or sets the object containing the return value of the operation.
         /// </summary>
         public T ReturnValue { get; set; }
 
         #endregion
 
-        #region Constructors
+        #region Methods
 
-        /// <summary>
-        /// Constructs a default Result.
-        /// </summary>
-        public Result() : base()
-        {
-            ReturnValue = default(T);
-        }
+        #region Public Methods
 
-        #endregion
-
-        #region Instance Methods
-
-        #region Public 
+        #region Public Instance Methods
 
         /// <summary>
         /// Adds a message of type Info to the message list.
@@ -774,7 +824,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> AddInfo(string message)
+        public new virtual Result<T> AddInfo(string message)
         {
             base.AddInfo(message);
             return this;
@@ -796,7 +846,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> AddWarning(string message)
+        public new virtual Result<T> AddWarning(string message)
         {
             base.AddWarning(message);
             return this;
@@ -818,7 +868,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> AddError(string message)
+        public new virtual Result<T> AddError(string message)
         {
             base.AddError(message);
             return this;
@@ -845,7 +895,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> RemoveMessages(MessageType messageType = MessageType.Any)
+        public new virtual Result<T> RemoveMessages(MessageType messageType = MessageType.Any)
         {
             base.RemoveMessages(messageType);
             return this;
@@ -865,7 +915,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> SetResultCode(ResultCode resultCode = ResultCode.Success)
+        public new virtual Result<T> SetResultCode(ResultCode resultCode = ResultCode.Success)
         {
             base.SetResultCode(resultCode);
             return this;
@@ -907,7 +957,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
+        public new virtual Result<T> LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
             base.LogResult(logger, caller);
             return this;
@@ -943,7 +993,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> LogResult(Action<string> action, [CallerMemberName]string caller = "")
+        public new virtual Result<T> LogResult(Action<string> action, [CallerMemberName]string caller = "")
         {
             base.LogResult(action, caller);
             return this;
@@ -983,7 +1033,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result LogResult(Action<string> successAction, Action<string> warningAction, Action<string> failureAction, [CallerMemberName]string caller = "")
+        public new virtual Result LogResult(Action<string> successAction, Action<string> warningAction, Action<string> failureAction, [CallerMemberName]string caller = "")
         {
             base.LogResult(successAction, warningAction, failureAction, caller);
             return this;
@@ -1014,7 +1064,7 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> LogAllMessages(Action<string> action, string header = "", string footer = "")
+        public new virtual Result<T> LogAllMessages(Action<string> action, string header = "", string footer = "")
         {
             base.LogAllMessages(action, header, footer);
             return this;
@@ -1022,9 +1072,10 @@ namespace Symbiote.Core
 
         /// <summary>
         ///     Adds details from the specified Result to this Result, including all Messages and the 
-        ///     ResutCode, if lesser than the ResultCode of this instance.
+        ///     ResultCode, if lesser than the ResultCode of this instance.
         /// </summary>
-        /// <param name="Result">The Result from which to copy the Messages.</param>
+        /// <param name="result">The Result from which to copy the Messages.</param>
+        /// <returns>A Result containing the result of the operation and the return value.</returns>
         /// <example>
         /// <code>
         /// <![CDATA[
@@ -1049,9 +1100,9 @@ namespace Symbiote.Core
         /// ]]>
         /// </code>
         /// </example>
-        new public virtual Result<T> Incorporate(Result Result)
+        public new virtual Result<T> Incorporate(Result result)
         {
-            base.Incorporate(Result);
+            base.Incorporate(result);
             return this;
         }
 
@@ -1074,9 +1125,11 @@ namespace Symbiote.Core
         /// </example>
         public Result<T> SetReturnValue(T returnValue)
         {
-            ReturnValue = returnValue;
+            this.ReturnValue = returnValue;
             return this;
         }
+
+        #endregion
 
         #endregion
 

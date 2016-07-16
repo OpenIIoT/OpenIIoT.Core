@@ -33,6 +33,7 @@ using System.Threading;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Service;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Symbiote.Core
 {
@@ -184,9 +185,9 @@ namespace Symbiote.Core
                 // start the application.
                 // if the platform is windows and it is not being run as an interactive application, Windows 
                 // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
-                ///logger.Heading(LogLevel.Debug, "Startup");
+                //logger.Heading(LogLevel.Debug, "Startup");
 
-                ///logger.Info("The Program is running " + (Environment.UserInteractive ? "" : "non-") + "interactively.");
+                //logger.Info("The Program is running " + (Environment.UserInteractive ? "" : "non-") + "interactively.");
 
                 if ((PlatformManager.GetPlatformType() == PlatformType.Windows) && (!Environment.UserInteractive))
                 {
@@ -237,40 +238,7 @@ namespace Symbiote.Core
                 logger.Info("Program Manager Started.");
                 //----------- - -
 
-
-                ////--------------------------- - -        -------  - -   - - -  - - - -
-                //// load the configuration.
-                //// reads the saved configuration from the config file located in Symbiote.exe.config and deserializes the json within
-                //logger.SubHeading(LogLevel.Debug, "Configuration Manager");
-                //logger.Info("Invoking the Configuration Manager Start routine...");
-                //manager.StartManager(manager.GetManager<ConfigurationManager>());
-                //logger.Info("Loaded Configuration from '" + manager.GetManager<ConfigurationManager>().ConfigurationFileName + "'.");
-                ////--------------------------------------- - -  - --------            -------- -
-
-
-                ////--------------------------------------------- - - --------- ----  - -    -
-                //// load plugins.  
-                //// populates the PluginAssemblies list in the Plugin Manager with the assemblies of all of the found and authorized plugins
-                //logger.SubHeading(LogLevel.Debug, "Plugin Manager");
-                //logger.Info("Invoking the Plugin Manager Start routine...");
-                //manager.StartManager(manager.GetManager<PluginManager>());
-                //logger.Info(manager.GetManager<PluginManager>().PluginAssemblies.Count() + " Plugin(s) loaded.");
-                ////----------------------------------------------------------------  --  ---         ------ - 
-
-                //------------------ - --           --          --  - -
-                // create the platform connector plugin instance.
-                // instantiates the connector plugin and adds it to the PluginManager so that it can be treated as a regular plugin
-                //manager.GetManager<PlatformManager>().Platform.InstantiateConnector("Platform");
-                //manager.GetManager<PluginManager>().PluginInstances.Add("Platform", manager.GetManager<PlatformManager>().Platform.Connector);
-                //------ - -      ---------------------- - -     ----------------------------- - - -
-
                 logger.Multiline(LogLevel.Debug, "MODEL");
-
-                //------------- - ----------------------- - - -------------------  -- - --- - 
-                // instantiate the item model.
-                // builds and attaches the model stored within the configuration file to the Model Manager.
-                //manager.StartManager(manager.GetManager<ModelManager>());
-                //logger.Info(manager.GetManager<ModelManager>().Dictionary.Count + " Item(s) resolved.");
 
                 //---------------------------- - --------- - - -  ---        ------- -  --------------  - --
 
@@ -303,7 +271,8 @@ namespace Symbiote.Core
                 //----------------------------- - -       --
                 // show 'em what they've won!
                 Utility.PrintLogo(logger);
-                Utility.PrintModel(logger, manager.GetManager<ModelManager>().Model, 0);
+                Utility.PrintModel(logger, manager.GetManager<ModelManager>().Model, 0, null, true);
+                Utility.PrintLogoFooter(logger);
                 //-------------------------------- --------- - -      -              -
 
                 manager.StartManager(manager.GetManager<ServiceManager>());
@@ -312,22 +281,7 @@ namespace Symbiote.Core
 
                 logger.Info(manager.ProductName + " is running.");
 
-                //FQNResolver.Resolve(manager.InstanceName + ".Simulation.Process.Ramp").SubscribeToSource();
-                //FQNResolver.Resolve(manager.InstanceName + ".Simulation.DateTime.Time").SubscribeToSource();
-                //FQNResolver.Resolve(manager.InstanceName + ".Simulation.Motor").SubscribeToSource();
-
-                //manager.RenameInstance("Symbiote2");
-
-                //Utility.PrintModel(logger, manager.ModelManager.Model, 0);
-
-                //Item test = FQNResolver.Resolve("Symbiote.AddTest");
-
-                //Task<Result> writeTask = test.WriteAsync("Hello World!");
-                //Result writeResult = writeTask.ReturnValue;
-
-                //writeResult.LogResult(logger);
-
-                manager.GetManager<PluginManager>().Stop(StopType.Abnormal, true);
+                //manager.GetManager<PluginManager>().Stop(StopType.Abnormal, true);
 
                 Console.ReadLine();
             }

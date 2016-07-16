@@ -26,10 +26,10 @@ namespace Symbiote.Core.Service.Web.API
             retVal.ReturnValue = RealtimeLogger.LogHistory.ToArray();
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolver.ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
         }
 
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolver.ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 

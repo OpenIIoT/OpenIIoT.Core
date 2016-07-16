@@ -42,7 +42,7 @@ namespace Symbiote.Core.Service.Web.API
 
             JsonMediaTypeFormatter formatter;
 
-            if (verbosity == "concise") formatter = JsonFormatter(conciseSerializationProperties, ContractResolver.ContractResolverType.OptIn);
+            if (verbosity == "concise") formatter = JsonFormatter(conciseSerializationProperties, ContractResolverType.OptIn);
             else formatter = JsonFormatter();
 
             logger.Info("API request; FQN:" + fqn + "; Verbosity: " + verbosity + ". Remote IP: " + Request.GetOwinContext().Request.RemoteIpAddress + "; returning HTTP 200/OK");
@@ -51,10 +51,10 @@ namespace Symbiote.Core.Service.Web.API
 
         private static JsonMediaTypeFormatter JsonFormatter()
         {
-            return JsonFormatter(verboseSerializationProperties, ContractResolver.ContractResolverType.OptOut);
+            return JsonFormatter(verboseSerializationProperties, ContractResolverType.OptOut);
         }
 
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolver.ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 

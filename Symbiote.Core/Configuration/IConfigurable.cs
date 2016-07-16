@@ -9,12 +9,29 @@
       █   ███  ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████ ▀▀██▀▀█▄  ██       ▀▀██▀▀    
       █   ███  ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██   ██   ██ ██▌    ▄   ██   █  
       █   █▀   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀ ▄██████▀  ████▄▄██   ███████ 
-      █   
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      ▄  
+      █  Defines the interface for Configurable objects. 
       █  
-      █  Defines the interface for Configurable objects.  When implemented, the implementing class gains the ability to store named
-      █  named instances of type T in the application configuration file, where the type T is defined by the implementing class.
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The GNU Affero General Public License (GNU AGPL)
+      █  
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █  
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █  
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
       █  
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██ 
@@ -24,10 +41,13 @@
 namespace Symbiote.Core.Configuration
 {
     /// <summary>
-    /// Defines the interface for Configurable objects.  When implemented, the implementing class gains the ability to store named instances of type T
-    /// in the application configuration file.  The type T is defined by the implementing class.
+    /// Defines the interface for Configurable objects.  
     /// </summary>
     /// <remarks>
+    /// <para>
+    ///     When implemented, the implementing class gains the ability to store named instances of type T
+    ///     in the application configuration file.  The type T is defined by the implementing class.
+    /// </para>
     /// <para>
     ///     Any class wishing to store configuration information must to implement this interface and must also provide two
     ///     static methods; GetConfigurationDefinition() and GetDefaultConfiguration().  
@@ -44,12 +64,12 @@ namespace Symbiote.Core.Configuration
     public interface IConfigurable<T> 
     {
         /// <summary>
-        /// The ConfigurationDefinition for the class.  
+        /// Gets the ConfigurationDefinition for the class.  
         /// </summary>
         ConfigurationDefinition ConfigurationDefinition { get; }
 
         /// <summary>
-        /// The instance of T representing the Configuration for the implementation instance.
+        /// Gets the instance of T representing the Configuration for the implementation instance.
         /// </summary>
         /// <remarks>
         /// It is suggested that the implementing class also implements a special Type to model the configuration, however

@@ -491,7 +491,7 @@ namespace Symbiote.Core.Model
         /// <returns>The serialization of the Item.</returns>
         public virtual string ToJson()
         {
-            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolver.ContractResolverType.OptOut, true));
+            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
         }
 
         /// <summary>

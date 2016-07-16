@@ -16,7 +16,7 @@ namespace Symbiote.Core.Service
     {
         #region Variables
 
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
         private static ServiceManager instance;
 
         #endregion
@@ -25,16 +25,6 @@ namespace Symbiote.Core.Service
 
         public Dictionary<string, IService> Services { get; private set; }
         public Dictionary<string, Type> ServiceTypes { get; private set; }
-
-        #endregion
-
-        #region Events
-
-        #region IManager Events
-
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        #endregion
 
         #endregion
 

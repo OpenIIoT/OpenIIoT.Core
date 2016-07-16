@@ -56,25 +56,6 @@ namespace Symbiote.Core
         /// </summary>
         private static ProgramManager instance;
 
-        /// <summary>
-        /// The list of application Manager Types.
-        /// </summary>
-        /// <remarks>
-        /// Types must be added in the order in which they are to be instantiated and started.
-        /// </remarks>
-        private List<Type> managerTypes;
-
-        /// <summary>
-        /// The list of application Manager instances.
-        /// </summary>
-        //private List<IManager> managerInstances;
-        private List<IManager> managerInstances;
-
-        /// <summary>
-        /// A dictionary containing a list of dependencies for each application Manager.
-        /// </summary>
-        private Dictionary<Type, List<Type>> managerDependencies;
-
         #endregion
 
         #region Properties
@@ -111,47 +92,17 @@ namespace Symbiote.Core
         /// <summary>
         /// The list of application Manager Types.
         /// </summary>
-        private List<Type> ManagerTypes
-        {
-            get
-            {
-                if (managerTypes == default(List<Type>))
-                    managerTypes = new List<Type>();
-
-                return managerTypes;
-            }
-            set { managerTypes = value; }
-        }
+        private List<Type> ManagerTypes { get; set; }
 
         /// <summary>
         /// The list of application Manager instances.
         /// </summary>
-        private List<IManager> ManagerInstances
-        {
-            get
-            {
-                if (managerInstances == default(List<IManager>))
-                    managerInstances = new List<IManager>();
-
-                return managerInstances;
-            }
-            set { managerInstances = value; }
-        }
+        private List<IManager> ManagerInstances { get; set; }
 
         /// <summary>
         /// A dictionary containing a list of dependencies for each application Manager.
         /// </summary>
-        private Dictionary<Type, List<Type>> ManagerDependencies
-        {
-            get
-            {
-                if (managerDependencies == default(Dictionary<Type, List<Type>>))
-                    managerDependencies = new Dictionary<Type, List<Type>>();
-
-                return managerDependencies;
-            }
-            set { managerDependencies = value; }
-        }
+        private Dictionary<Type, List<Type>> ManagerDependencies { get; set; }
 
         #endregion
 
@@ -167,19 +118,16 @@ namespace Symbiote.Core
             base.logger = logger;
             Guid guid = logger.EnterMethod(xLogger.Params(managerTypes, safeMode), true);
 
+            // initialize properties
             ManagerName = "Program Manager";
-
-            // configure ManagerTypes
             ManagerTypes = managerTypes.ToList();
+            ManagerInstances = new List<IManager>();
+            ManagerDependencies = new Dictionary<Type, List<Type>>();
 
-            //-------------------------   -  -
             // configure the SafeMode option
             SafeMode = safeMode;
-
             if (safeMode)
                 logger.Info("Safe Mode enabled.  The program is now running in a limited fault tolerant mode.");
-            //---------------- -  
-
 
             // register the ProgramManager
             RegisterManager<ProgramManager>(this);
@@ -191,6 +139,7 @@ namespace Symbiote.Core
             InstantiateManagers();
             logger.Debug("Managers instantiated successfully.");
             //------------------------------- -  -               ------------ 
+
 
             ChangeState(State.Initialized);
 
@@ -215,12 +164,17 @@ namespace Symbiote.Core
 
         #region Instance Methods
 
+        /// <summary>
+        /// Executed upon startup of the Manager.  Starts all application managers.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
         protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
+            // start all application managers.
             retVal = StartManagers();
 
             retVal.LogResult(logger.Debug);
@@ -253,8 +207,8 @@ namespace Symbiote.Core
         /// <summary>
         /// Iterates over the list of Manager Types and instantiates each in the order in which they are represented in the list.
         /// </summary>
-        /// <exception cref="MissingMethodException">Thrown when the 'InstantiateManager()' method can not be found.</exception>
-        /// <exception cref="MissingMethodException">Thrown when the 'RegisterManager()' method can not be found.</exception>
+        /// <exception cref="MissingMethodException">Thrown if the 'InstantiateManager()' method can not be found.</exception>
+        /// <exception cref="MissingMethodException">Thrown if the 'RegisterManager()' method can not be found.</exception>
         /// <exception cref="Exception">Thrown when the Manager instantiation returns an abnormal response.</exception>
         private void InstantiateManagers(List<Type> managerTypes)
         {
@@ -670,7 +624,6 @@ namespace Symbiote.Core
         {
             Guid guid = logger.EnterMethod(xLogger.Params(stopType, managerInstances));
             logger.Debug("Stopping Managers...");
-
             Result retVal = new Result();
 
             // iterate over the Manager instance list in reverse order, stopping each manager.
@@ -692,7 +645,6 @@ namespace Symbiote.Core
         internal Result<IManager> StartManager(IManager manager)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
-
             logger.Debug("Starting " + manager.GetType().Name + "...");
             Result<IManager> retVal = new Result<IManager>();
 

@@ -22,10 +22,10 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage GetConfiguration()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration , JsonFormatter(serializationProperties, ContractResolver.ContractResolverType.OptOut, true));
+            return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration , JsonFormatter(serializationProperties, ContractResolverType.OptOut, true));
         }
 
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolver.ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 
