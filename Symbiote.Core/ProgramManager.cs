@@ -22,9 +22,9 @@
                                                                                                    ▀▀                            */
 using System;
 using System.Collections.Generic;
-using NLog;
 using System.Linq;
 using System.Reflection;
+using NLog;
 
 namespace Symbiote.Core
 {
@@ -44,12 +44,12 @@ namespace Symbiote.Core
     /// </remarks>
     public class ProgramManager : Manager, IStateful, IManager, IProgramManager
     {
-        #region Variables
+        #region Fields
 
         /// <summary>
         /// The Logger for this class.
         /// </summary>
-        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The Singleton instance of ProgramManager.
@@ -58,58 +58,11 @@ namespace Symbiote.Core
 
         #endregion
 
-        #region Properties
-
-        #region IProgramManager Properties
-
-        /// <summary>
-        /// Indicates whether the program is in Safe Mode.  Safe Mode is a sort of fault tolerant mode designed
-        /// to allow the application to run under conditions that would otherwise raise fatal errors.
-        /// </summary>
-        public bool SafeMode { get; private set; }
-
-        /// <summary>
-        /// The name of the product, retrieved from AssemblyInfo.cs.
-        /// </summary>
-        public string ProductName { get { return System.Reflection.Assembly.GetExecutingAssembly().GetName().Name; } }
-
-        /// <summary>
-        /// The version of the product, retrieved from AssemblyInfo.cs.
-        /// </summary>
-        public Version ProductVersion { get { return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version; } }
-
-        /// <summary>
-        /// The name of the application instance.
-        /// </summary>
-        /// <remarks>
-        ///     If the "InstanceName" setting is missing from the application settings, the value of the 
-        ///     ProductName property is substituted.
-        /// </remarks>
-        public string InstanceName { get { return GetInstanceName(); } }
-
-        #endregion
-
-        /// <summary>
-        /// The list of application Manager Types.
-        /// </summary>
-        private List<Type> ManagerTypes { get; set; }
-
-        /// <summary>
-        /// The list of application Manager instances.
-        /// </summary>
-        private List<IManager> ManagerInstances { get; set; }
-
-        /// <summary>
-        /// A dictionary containing a list of dependencies for each application Manager.
-        /// </summary>
-        private Dictionary<Type, List<Type>> ManagerDependencies { get; set; }
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// The default constructor.
+        ///     Initializes a new instance of the <see cref="ProgramManager"/> class with the specified Manager Types and 
+        ///     optionally creates the instance with Safe Mode enabled.
         /// </summary>
         /// <param name="managerTypes">The array of Manager Types for the application.</param>
         /// <param name="safeMode">True if the ProgramManager is being started in Safe Mode, false otherwise.</param>
@@ -127,23 +80,170 @@ namespace Symbiote.Core
             // configure the SafeMode option
             SafeMode = safeMode;
             if (safeMode)
+            {
                 logger.Info("Safe Mode enabled.  The program is now running in a limited fault tolerant mode.");
+            }
 
             // register the ProgramManager
             RegisterManager<ProgramManager>(this);
-
-
-            //---------------------- -   ----------------------- -      --------  -    -
+            
             // create an instance of each Manager Type in the ManagerTypes list
             logger.Debug("Instantiating Managers...");
             InstantiateManagers();
             logger.Debug("Managers instantiated successfully.");
-            //------------------------------- -  -               ------------ 
-
 
             ChangeState(State.Initialized);
 
             logger.ExitMethod(guid);
+        }
+
+        #endregion
+
+        #region Properties
+
+        #region IStateful Properties
+
+        //// See the Manager class for the IStateful properties for this class.
+
+        #endregion
+
+        #region IManager Properties
+
+        //// See the Manager class for the IManager properties for this class.
+
+        #endregion
+
+        #region IProgramManager Properties
+
+        /// <summary>
+        ///     Gets a value indicating whether the program is in Safe Mode.  Safe Mode is a sort of fault tolerant mode designed
+        ///     to allow the application to run under conditions that would otherwise raise fatal errors.
+        /// </summary>
+        public bool SafeMode { get; private set; }
+
+        /// <summary>
+        /// Gets the name of the product, retrieved from AssemblyInfo.cs.
+        /// </summary>
+        public string ProductName
+        {
+            get
+            {
+                return Assembly.GetExecutingAssembly().GetName().Name;
+            }
+        }
+
+        /// <summary>
+        /// Gets the version of the product, retrieved from AssemblyInfo.cs.
+        /// </summary>
+        public Version ProductVersion
+        {
+            get
+            {
+                return Assembly.GetExecutingAssembly().GetName().Version;
+            }
+        }
+
+        /// <summary>
+        /// Gets the name of the application instance.
+        /// </summary>
+        /// <remarks>
+        ///     If the "InstanceName" setting is missing from the application settings, the value of the 
+        ///     ProductName property is substituted.
+        /// </remarks>
+        public string InstanceName
+        {
+            get
+            {
+                return GetInstanceName();
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Gets or sets the list of application Manager Types.
+        /// </summary>
+        private List<Type> ManagerTypes { get; set; }
+
+        /// <summary>
+        /// Gets or sets the list of application Manager instances.
+        /// </summary>
+        private List<IManager> ManagerInstances { get; set; }
+
+        /// <summary>
+        /// Gets or sets a dictionary containing a list of dependencies for each application Manager.
+        /// </summary>
+        private Dictionary<Type, List<Type>> ManagerDependencies { get; set; }
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
+
+        #region Public Static Methods
+
+        #region Settings
+
+        /// <summary>
+        /// Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retrieved.
+        /// </summary>
+        /// <returns>The name of the program instance.</returns>
+        public static string GetInstanceName()
+        {
+            return Utility.GetSetting("InstanceName", "Symbiote");
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Public Instance Methods
+
+        /// <summary>
+        /// Returns the Manager from the list of Managers matching the specified Type.
+        /// </summary>
+        /// <typeparam name="T">The Type of the Manager to return.</typeparam>
+        /// <returns>The requested Manager.</returns>
+        public T GetManager<T>() where T : IManager
+        {
+            return GetManager<T>(ManagerInstances);
+        }
+
+        /// <summary>
+        /// Returns true if the specified Manager Type is registered, false otherwise.
+        /// </summary>
+        /// <typeparam name="T">The Manager Type to check.</typeparam>
+        /// <returns>True if the specified Manager Type is registered, false otherwise.</returns>
+        public bool IsRegistered<T>() where T : IManager
+        {
+            return IsRegistered<T>(ManagerInstances);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Internal Methods
+
+        #region Internal Static Methods
+
+        /// <summary>
+        /// Returns the Singleton instance of ProgramManager
+        /// </summary>
+        /// <remarks>
+        /// Use only in situations where dependency injection is not feasible.
+        /// </remarks>
+        /// <returns>The Singleton instance of ProgramManager</returns>
+        /// <exception cref="Exception">Thrown when the method is invoked prior to the ProgramManager having been instantiated.</exception>
+        internal static ProgramManager GetInstance()
+        {
+            if (instance == null)
+            {
+                throw new Exception("Failed to retrieve the ProgramManager instance; it has not yet been instantiated.");
+            }
+
+            return instance;
         }
 
         /// <summary>
@@ -155,14 +255,85 @@ namespace Symbiote.Core
         internal static ProgramManager Instantiate(Type[] managers, bool safeMode = false)
         {
             if (instance == null)
+            {
                 instance = new ProgramManager(managers, safeMode);
+            }
 
             return instance;
         }
 
         #endregion
 
-        #region Instance Methods
+        #region Internal Instance Methods
+
+        /// <summary>
+        /// Starts the specified IManager instance
+        /// </summary>
+        /// <param name="manager">The IManager instance to start.</param>
+        /// <returns>A Result containing the result of the operation and the specified IManager instance.</returns>
+        internal Result<IManager> StartManager(IManager manager)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
+            logger.Debug("Starting " + manager.GetType().Name + "...");
+            Result<IManager> retVal = new Result<IManager>();
+
+            // invoke the Start() method on the specified manager
+            Result startResult = manager.Start();
+
+            // if the manager fails to start, throw an exception and halt the program
+            if (startResult.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("Failed to start Manager '" + manager.GetType().Name + "'.");
+            }
+
+            retVal.ReturnValue = manager;
+            retVal.Incorporate(startResult);
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                logger.Debug("Successfully started " + manager.GetType().Name + ".");
+            }
+            else
+            {
+                logger.Debug("Failed to start " + manager.GetType().Name + ": " + retVal.LastErrorMessage());
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Stops the specified IManager instance.
+        /// </summary>
+        /// <param name="manager">The IManager instance to stop.</param>
+        /// <param name="stopType">The type of stoppage.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        internal Result StopManager(IManager manager, StopType stopType = StopType.Normal)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(manager, stopType), true);
+
+            logger.Debug("Stopping " + manager.GetType().Name + "...");
+
+            Result retVal = manager.Stop(stopType);
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("Failed to stop " + manager.GetType().Name + "." + retVal.LastErrorMessage());
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Protected Methods
+
+        #region Protected Instance Methods
 
         /// <summary>
         /// Executed upon startup of the Manager.  Starts all application managers.
@@ -201,6 +372,29 @@ namespace Symbiote.Core
             return retVal;
         }
 
+        #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        #region Private Instance Methods
+
+        #region Event Handlers
+
+        /// <summary>
+        /// Event handler for the StateChanged event of registered Managers.
+        /// </summary>
+        /// <param name="sender">The Manager which fired the event.</param>
+        /// <param name="e">The EventArgs for the event.</param>
+        /// <exception cref="MissingMethodException">Thrown if the method 'GetManagerDependentTypes()' can not be found.</exception>"
+        private void ManagerStateChanged(object sender, StateChangedEventArgs e)
+        {
+            logger.Info("Manager '" + sender.GetType().Name + "' state changed from '" + e.PreviousState + "' to '" + e.State + "'." + (e.Message != string.Empty ? "(" + e.Message + ")" : string.Empty));
+        }
+
+        #endregion
+
         /// <summary>
         /// Iterates over the list of Manager Types and instantiates each in the order in which they are represented in the list.
         /// </summary>
@@ -215,6 +409,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Iterates over the list of Manager Types and instantiates each in the order in which they are represented in the list.
         /// </summary>
+        /// <param name="managerTypes">The list of Manager Types to be instantiated.</param>
         /// <exception cref="MissingMethodException">Thrown if the 'InstantiateManager()' method can not be found.</exception>
         /// <exception cref="MissingMethodException">Thrown if the 'RegisterManager()' method can not be found.</exception>
         /// <exception cref="Exception">Thrown when the Manager instantiation returns an abnormal response.</exception>
@@ -232,7 +427,9 @@ namespace Symbiote.Core
                 // find the InstantiateManager() method so that we can invoke it via reflection
                 MethodInfo instantiateMethod = GetType().GetMethod("InstantiateManager", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (instantiateMethod == default(MethodInfo))
+                {
                     throw new MissingMethodException("Failed to find the 'InstantiateManager' method within the '" + GetType().Name + "' class.");
+                }
 
                 // create a generic method using the current Type and invoke it
                 MethodInfo genericInstantiateMethod = instantiateMethod.MakeGenericMethod(managerType);
@@ -246,7 +443,9 @@ namespace Symbiote.Core
                     // find the RegisterManager() method and make sure it was found
                     MethodInfo registerMethod = GetType().GetMethod("RegisterManager", BindingFlags.NonPublic | BindingFlags.Instance, null, CallingConventions.Any, new Type[] { typeof(IManager) }, null);
                     if (registerMethod == default(MethodInfo))
+                    {
                         throw new MissingMethodException("Failed to find the 'RegisterManager' method within the '" + GetType().Name + "' class.");
+                    }
 
                     // create a generic method using the current Type and invoke it
                     MethodInfo genericRegisterMethod = registerMethod.MakeGenericMethod(managerType);
@@ -255,7 +454,9 @@ namespace Symbiote.Core
                     logger.Debug("Successfully registered '" + manager.GetType().Name + "'.");
                 }
                 else
+                {
                     throw new Exception("Instantiation of Manager '" + managerType.Name + "' returned an abnormal response.");
+                }
             }
 
             logger.ExitMethod();
@@ -284,27 +485,37 @@ namespace Symbiote.Core
                 // use reflection to locate the static Instantiate() method, then check to make sure it was found.
                 MethodInfo method = typeof(T).GetMethod("Instantiate", BindingFlags.NonPublic | BindingFlags.Static);
                 if (method == default(MethodInfo))
+                {
                     throw new MissingMethodException("Method 'Instantiate' not found in class '" + typeof(T).Name + "'.");
+                }
 
                 // use reflection to locate the static ResolveManagerDependencies() method, then check to make sure it was found.
                 MethodInfo resolveMethod = GetType().GetMethod("ResolveManagerDependencies", BindingFlags.NonPublic | BindingFlags.Instance);
                 if (resolveMethod == default(MethodInfo))
+                {
                     throw new MissingMethodException("Method 'ResolveManagerDependencies' was not found in class '" + GetType().Name + "'.");
+                }
 
                 // make a generic version of ResolveManagerDependencies() using the specified type, then invoke it and
                 // check the result to ensure it is valid.
                 MethodInfo genericResolveMethod = resolveMethod.MakeGenericMethod(typeof(T));
                 List<IManager> resolvedDependencies = (List<IManager>)genericResolveMethod.Invoke(this, new object[] { });
                 if (resolvedDependencies == default(List<IManager>))
+                {
                     throw new Exception("Failed to resolve Manager dependencies for '" + typeof(T) + "'.");
+                }
 
                 // invoke the Instanctiate() method and pass the resolved dependencies from the step above.
                 // store the result in instance, then check to make sure it is not null and ensure that it implements IManager.
                 instance = (T)method.Invoke(null, resolvedDependencies.ToArray());
                 if (instance == null)
+                {
                     throw new Exception("Instantiate() method invocation from '" + typeof(T).Name + "' returned no result.");
+                }
                 else if (!(instance is IManager))
+                {
                     throw new Exception("The instance returned by Instantiate() method invocation from '" + typeof(T).Name + "' does not implement the IManager interface.");
+                }
 
                 logger.Trace("Successfully instantiated '" + instance.GetType().Name + "'.");
             }
@@ -336,7 +547,10 @@ namespace Symbiote.Core
             List<Type> retVal = new List<Type>();
 
             // the ProgramManager has no dependencies (that we need to track).
-            if (typeof(T) == GetType()) return retVal;
+            if (typeof(T) == GetType())
+            {
+                return retVal;
+            }
 
             try
             {
@@ -345,7 +559,9 @@ namespace Symbiote.Core
                 ParameterInfo[] parameters = typeof(T).GetMethod("Instantiate", BindingFlags.NonPublic | BindingFlags.Static).GetParameters();
 
                 foreach (ParameterInfo p in parameters)
+                {
                     retVal.Add(p.ParameterType);
+                }
             }
             catch (Exception ex)
             {
@@ -381,7 +597,9 @@ namespace Symbiote.Core
                 // find the GetManager() method and check to ensure it was found
                 MethodInfo getManager = GetType().GetMethod("GetManager", BindingFlags.Public | BindingFlags.Instance);
                 if (getManager == default(MethodInfo))
+                {
                     throw new MissingMethodException("Method 'GetManager' was not found in class '" + GetType().Name + "'.");
+                }
 
                 MethodInfo getManagerGeneric;
 
@@ -389,7 +607,9 @@ namespace Symbiote.Core
                 // any instance of IManager needs to have at least one dependency (ProgramManager).  If we get a null or empty list something is wrong.
                 List<Type> dependencies = GetManagerDependencies<T>();
                 if ((dependencies == default(List<Type>)) || (dependencies.Count() == 0))
+                {
                     throw new Exception("Failed to retrieve dependencies for '" + typeof(T).Name + "'.  Method 'GetManagerDependencies()' returned a null or empty List.");
+                }
 
                 // iterate over the dependencies
                 foreach (Type t in dependencies)
@@ -410,12 +630,13 @@ namespace Symbiote.Core
                     }
 
                     if ((IManager)manager == default(IManager))
+                    {
                         throw new Exception("Invocation of method 'GetManager<T>' returned a null instance of IManager.");
+                    }
 
                     logger.Trace("Successfully resolved depencency '" + t.Name + "'.");
                     retVal.Add(manager);
                 }
-
             }
             catch (Exception ex)
             {
@@ -454,7 +675,7 @@ namespace Symbiote.Core
         /// <exception cref="Exception">Thrown if the specified Manager has already been registered.</exception>
         /// <exception cref="Exception">Thrown if the dependency list retrieved for the Manager is empty.</exception>
         /// <exception cref="Exception">Thrown if the registration fails.</exception>
-        private T RegisterManager<T>(IManager manager, List<IManager> managerInstances, Dictionary<Type, List<Type>> managerDependencies) where T : IManager 
+        private T RegisterManager<T>(IManager manager, List<IManager> managerInstances, Dictionary<Type, List<Type>> managerDependencies) where T : IManager
         {
             logger.EnterMethod(xLogger.TypeParams(typeof(T)), xLogger.Params(manager, new xLogger.ExcludedParam(), new xLogger.ExcludedParam()));
             logger.Trace("Registering Manager '" + manager.GetType().Name + "'...");
@@ -462,7 +683,9 @@ namespace Symbiote.Core
             // ensure the specified Manager hasn't already been registered.  There can only be one of each Type
             // in the Manager list.
             if (IsRegistered<T>())
+            {
                 throw new Exception("The Manager '" + manager.GetType().Name + "' is already registered.");
+            }
 
             try
             {
@@ -470,7 +693,9 @@ namespace Symbiote.Core
                 List<Type> dependencies = GetManagerDependencies<T>();
 
                 if (dependencies == default(List<Type>))
+                {
                     throw new Exception("The dependency list for the Manager '" + manager.GetType().Name + "' is empty; all Managers must have at least one dependency.");
+                }
 
                 logger.Trace("Registering Manager with " + dependencies.Count() + " dependencies...");
 
@@ -495,16 +720,6 @@ namespace Symbiote.Core
         /// Returns the Manager from the list of Managers matching the specified Type.
         /// </summary>
         /// <typeparam name="T">The Type of the Manager to return.</typeparam>
-        /// <returns>The requested Manager.</returns>
-        public T GetManager<T>() where T : IManager
-        {
-            return GetManager<T>(ManagerInstances);
-        }
-
-        /// <summary>
-        /// Returns the Manager from the list of Managers matching the specified Type.
-        /// </summary>
-        /// <typeparam name="T">The Type of the Manager to return.</typeparam>
         /// <param name="managers">The list of Managers from which to retrieve the specified Manager Type.</param>
         /// <returns>The requested Manager.</returns>
         private T GetManager<T>(List<IManager> managers) where T : IManager
@@ -523,7 +738,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Returns a list of Manager Types for which the specfied dependency dictionary contains an entry for the specified Manager Type.
+        /// Returns a list of Manager Types for which the specified dependency dictionary contains an entry for the specified Manager Type.
         /// </summary>
         /// <typeparam name="T">The Manager Type for which the dependent Types are to be returned.</typeparam>
         /// <param name="managerDependencies">The dictionary of Manager dependencies to search.</param>
@@ -533,20 +748,14 @@ namespace Symbiote.Core
             List<Type> retVal = new List<Type>();
 
             foreach (Type key in managerDependencies.Keys)
+            {
                 if (managerDependencies[key].Where(t => t.IsAssignableFrom(typeof(T))).Count() > 0)
+                {
                     retVal.Add(key);
+                }
+            }
 
             return retVal;
-        }
-
-        /// <summary>
-        /// Returns true if the specified Manager Type is registered, false otherwise.
-        /// </summary>
-        /// <typeparam name="T">The Manager Type to check.</typeparam>
-        /// <returns>True if the specified Manager Type is registered, false otherwise.</returns>
-        public bool IsRegistered<T>() where T : IManager
-        {
-            return IsRegistered<T>(ManagerInstances);
         }
 
         /// <summary>
@@ -600,7 +809,9 @@ namespace Symbiote.Core
                     retVal.Incorporate(StartManager(manager));
 
                     if (retVal.ResultCode == ResultCode.Failure)
+                    {
                         return retVal.AddError("Failed to start one or more Managers.");
+                    }
                 }
             }
 
@@ -609,6 +820,14 @@ namespace Symbiote.Core
             return retVal;
         }
 
+        /// <summary>
+        /// Stops each of the <see cref="IManager"/> instances in <see cref="ManagerInstances"/>.
+        /// </summary>
+        /// <remarks>
+        /// Does not Stop the ProgramManager instance.
+        /// </remarks>
+        /// <param name="stopType">The type of stoppage.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         private Result StopManagers(StopType stopType = StopType.Normal)
         {
             logger.EnterMethod();
@@ -620,7 +839,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Stops each of the <see cref="IManager"/> instances in <see cref="ManagerInstances"/>.
+        /// Stops each of the <see cref="IManager"/> instances in the specified Manager instance list.
         /// </summary>
         /// <remarks>
         /// Does not Stop the ProgramManager instance.
@@ -637,61 +856,12 @@ namespace Symbiote.Core
             // iterate over the Manager instance list in reverse order, stopping each manager.
             // skip the ProgramManager as it will stop when this process is complete.
             for (int i = managerInstances.Count(); i <= 0; i--)
+            {
                 if (managerInstances[i] != this)
+                {
                     retVal.Incorporate(StopManager(managerInstances[i]));
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Starts the specified IManager instance
-        /// </summary>
-        /// <param name="manager">The IManager instance to start.</param>
-        /// <returns>A Result containing the result of the operation and the specified IManager instance.</returns>
-        internal Result<IManager> StartManager(IManager manager)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
-            logger.Debug("Starting " + manager.GetType().Name + "...");
-            Result<IManager> retVal = new Result<IManager>();
-
-            // invoke the Start() method on the specified manager
-            Result startResult = manager.Start();
-
-            // if the manager fails to start, throw an exception and halt the program
-            if (startResult.ResultCode == ResultCode.Failure)
-                retVal.AddError("Failed to start Manager '" + manager.GetType().Name + "'.");
-
-            retVal.ReturnValue = manager;
-            retVal.Incorporate(startResult);
-
-            if (retVal.ResultCode != ResultCode.Failure)
-                logger.Debug("Successfully started " + manager.GetType().Name + ".");
-            else
-                logger.Debug("Failed to start " + manager.GetType().Name + ": " + retVal.LastErrorMessage());
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Stops the specified IManager instance.
-        /// </summary>
-        /// <param name="manager"></param>
-        /// <param name="stopType"></param>
-        /// <returns></returns>
-        internal Result StopManager(IManager manager, StopType stopType = StopType.Normal)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(manager, stopType), true);
-
-            logger.Debug("Stopping " + manager.GetType().Name + "...");
-
-            Result retVal = manager.Stop(stopType);
-
-            if (retVal.ResultCode == ResultCode.Failure)
-                retVal.AddError("Failed to stop " + manager.GetType().Name + "." + retVal.LastErrorMessage());
+                }
+            }
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -700,47 +870,7 @@ namespace Symbiote.Core
 
         #endregion
 
-        #region Event Handlers
-
-        /// <summary>
-        /// Event handler for the StateChanged event of registered Managers.
-        /// </summary>
-        /// <param name="sender">The Manager which fired the event.</param>
-        /// <param name="e">The EventArgs for the event.</param>
-        /// <exception cref="MissingMethodException">Thrown if the method 'GetManagerDependentTypes()' can not be found.</exception>"
-        private void ManagerStateChanged(object sender, StateChangedEventArgs e)
-        {
-            logger.Info("Manager '" + sender.GetType().Name + "' state changed from '" + e.PreviousState + "' to '" + e.State + "'." + (e.Message != "" ? "(" + e.Message + ")" : ""));
-        }
-
         #endregion
-
-        #region Static Methods
-
-        /// <summary>
-        /// Returns the Singleton instance of ProgramManager
-        /// </summary>
-        /// <remarks>
-        /// Use only in situations where dependency injection is not feasible.
-        /// </remarks>
-        /// <returns>The Singleton instance of ProgramManager</returns>
-        /// <exception cref="Exception">Thrown when the method is invoked prior to the ProgramManager having been instantiated.</exception>
-        internal static ProgramManager GetInstance()
-        {
-            if (instance == null)
-                throw new Exception("Failed to retrieve the ProgramManager instance; it has not yet been instantiated.");
-
-            return instance;
-        }
-
-        /// <summary>
-        /// Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retreived.
-        /// </summary>
-        /// <returns>The name of the program instance.</returns>
-        public static string GetInstanceName()
-        {
-            return Utility.GetSetting("InstanceName", "Symbiote");
-        }
 
         #endregion
     }

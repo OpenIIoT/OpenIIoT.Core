@@ -20,7 +20,6 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
-using Symbiote.Core.Model;
 using System.Threading.Tasks;
 
 namespace Symbiote.Core.Plugin.Connector

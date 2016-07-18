@@ -89,7 +89,9 @@ namespace Symbiote.Core
 
         #region Methods
 
-        #region Static Methods
+        #region Public Methods 
+
+        #region Public Static Methods
 
         /// <summary>
         /// Locates the Item corresponding to the supplied FQN and returns it.
@@ -149,6 +151,8 @@ namespace Symbiote.Core
 
             return retVal;
         }
+
+        #endregion
 
         #endregion
 

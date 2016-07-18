@@ -1,4 +1,44 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
+      █   
+      █    ▄█                                  
+      █   ███                                  
+      █   ███▌     ██       ▄█████    ▄▄██▄▄▄  
+      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ 
+      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ 
+      █   ███      ██    ▀▀██▀▀     ██  ██  ██ 
+      █   ███      ██      ██   █   ██  ██  ██ 
+      █   █▀      ▄██▀     ███████   █  ██  █  
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      ▄  
+      █  Represents a single data entity within the application Model.
+      █  
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The GNU Affero General Public License (GNU AGPL)
+      █  
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █  
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █  
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █  
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
+                                                                                                   ██ 
+                                                                                               ▀█▄ ██ ▄█▀ 
+                                                                                                 ▀████▀   
+                                                                                                   ▀▀                            */
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -10,9 +50,9 @@ using Symbiote.Core.Plugin.Connector;
 namespace Symbiote.Core
 {
     /// <summary>
-    /// The Item class represents a single data entity within the application Model.
+    /// Represents a single data entity within the application Model.
     /// </summary>
-    public class Item : ICloneable
+    public class Item : ICloneable, IItem
     {
         #region Fields
 
@@ -77,38 +117,38 @@ namespace Symbiote.Core
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
         public Item(string fqn, string sourceFQN = "", bool isRoot = false) 
         {
-            this.FQN = fqn;
-            this.SourceFQN = sourceFQN;
+            FQN = fqn;
+            SourceFQN = sourceFQN;
 
-            this.Value = string.Empty;
+            Value = string.Empty;
 
             // generate Name and Path from FQN
             string[] splitFQN = fqn.Split('.');
 
             // set the name.  if it is blank after the split, there was only one tuple in the FQN, so name = fqn
-            this.Name = splitFQN[splitFQN.Length - 1];
-            if (this.Name == string.Empty)
+            Name = splitFQN[splitFQN.Length - 1];
+            if (Name == string.Empty)
             {
-                this.Name = this.FQN;
+                Name = FQN;
             }
 
-            this.Path = string.Join(".", splitFQN.Take(splitFQN.Length - 1));
+            Path = string.Join(".", splitFQN.Take(splitFQN.Length - 1));
 
             // create a unique Guid for this item.  useful for debugging.
-            this.Guid = System.Guid.NewGuid();
+            Guid = Guid.NewGuid();
 
             // instantiate the list of children
-            this.Children = new List<Item>();
+            Children = new List<Item>();
 
             // if we are creating the root item, make Parent self-referential.
             if (isRoot)
             {
-                this.FQN = this.Name;
-                this.Path = this.FQN;
-                this.Parent = this;
+                FQN = Name;
+                Path = FQN;
+                Parent = this;
             }
 
-            this.Writeable = true;
+            Writeable = true;
         }
 
         #endregion
@@ -118,11 +158,13 @@ namespace Symbiote.Core
         /// <summary>
         /// The Changed event; fires when the value of the item changes.
         /// </summary>
-        public event EventHandler<ItemEventArgs> Changed;
+        public event EventHandler<ItemChangedEventArgs> Changed;
 
         #endregion
 
         #region Properties
+
+        #region IItem Properties
 
         /// <summary>
         /// Gets the Item's parent Item.
@@ -176,9 +218,15 @@ namespace Symbiote.Core
 
         #endregion
 
-        #region Instance Methods
+        #endregion
 
-        #region ICloneable Implementation
+        #region Methods
+
+        #region Public Methods
+
+        #region Public Instance Methods
+
+        #region ICloneable Implementation 
 
         /// <summary>
         /// Creates and returns a clone of the Item.
@@ -187,28 +235,17 @@ namespace Symbiote.Core
         /// <returns>A clone of the Item.</returns>
         public virtual object Clone()
         {
-            Item retVal = new Item(this.FQN, this.SourceFQN, this.Parent == this);
-            retVal.Name = this.Name;
-            retVal.Path = this.Path;
-            retVal.Parent = this.Parent;
-            retVal.Children = this.Children.Clone<Item>();
+            Item retVal = new Item(FQN, SourceFQN, Parent == this);
+            retVal.Name = Name;
+            retVal.Path = Path;
+            retVal.Parent = Parent;
+            retVal.Children = Children.Clone<Item>();
             return retVal;
         }
 
         #endregion
 
-        #region Overridden Methods
-
-        /// <summary>
-        /// Returns the string representation of the object.
-        /// </summary>
-        /// <returns>The string representation of the object.</returns>
-        public override string ToString()
-        {
-            return this.FQN;
-        }
-
-        #endregion
+        #region IItem Implementation
 
         /// <summary>
         /// Sets the Item's parent Item to the supplied Item.
@@ -224,11 +261,11 @@ namespace Symbiote.Core
             // this is set in the constructor however this code will prevent issues if items are moved.
 
             // lock the Parent property
-            lock (this.parentLock)
+            lock (parentLock)
             {
-                this.Path = parent.FQN;
-                this.FQN = this.Path + '.' + this.Name;
-                this.Parent = parent;
+                Path = parent.FQN;
+                FQN = Path + '.' + Name;
+                Parent = parent;
             }
 
             retVal.ReturnValue = this;
@@ -254,10 +291,10 @@ namespace Symbiote.Core
                 if (setResult.ResultCode != ResultCode.Failure)
                 {
                     // lock the Children collection
-                    lock (this.childrenLock)
+                    lock (childrenLock)
                     {
                         // add the new item
-                        this.Children.Add(setResult.ReturnValue);
+                        Children.Add(setResult.ReturnValue);
                         retVal.ReturnValue = setResult.ReturnValue;
                     }
                 }
@@ -280,17 +317,17 @@ namespace Symbiote.Core
             System.Diagnostics.Debug.WriteLine("Removing " + item.FQN);
 
             // locate the item
-            retVal.ReturnValue = this.Children.Find(i => i.FQN == item.FQN);
+            retVal.ReturnValue = Children.Find(i => i.FQN == item.FQN);
 
             // ensure that it was found in the collection
             if (retVal.ReturnValue == default(Item))
             {
-                retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + this.FQN + "'.");
+                retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
             }
             else
             {
                 // lock the Children collection
-                lock (this.childrenLock)
+                lock (childrenLock)
                 {
                     List<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
 
@@ -301,9 +338,9 @@ namespace Symbiote.Core
                     }
 
                     // remove the item itself
-                    if (!this.Children.Remove(retVal.ReturnValue))
+                    if (!Children.Remove(retVal.ReturnValue))
                     {
-                        retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + this.FQN + "'.");
+                        retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + FQN + "'.");
                     }
                 }
             }
@@ -317,7 +354,7 @@ namespace Symbiote.Core
         /// <returns>True if the Item has children, false otherwise.</returns>
         public virtual bool HasChildren()
         {
-            return this.Children.Count > 0;
+            return Children.Count > 0;
         }
 
         /// <summary>
@@ -326,7 +363,7 @@ namespace Symbiote.Core
         /// <returns>The retrieved value.</returns>
         public virtual object Read()
         {
-            return this.Value;
+            return Value;
         }
 
         /// <summary>
@@ -335,7 +372,7 @@ namespace Symbiote.Core
         /// <returns>The retrieved value.</returns>
         public virtual async Task<object> ReadAsync()
         {
-            return await Task.Run(() => this.Read());
+            return await Task.Run(() => Read());
         }
 
         /// <summary>
@@ -348,29 +385,29 @@ namespace Symbiote.Core
             object retVal;
 
             // recursively call ReadFromSource() on each child below this Item
-            if (this.HasChildren())
+            if (HasChildren())
             {
-                foreach (Item child in this.Children)
+                foreach (Item child in Children)
                 {
                     child.ReadFromSource();
                 }
             }
 
             // ensure the SourceItem exists before trying to read it
-            if ((this.SourceItem != null) && (this.SourceItem != default(Item)))
+            if ((SourceItem != null) && (SourceItem != default(Item)))
             {
-                retVal = this.SourceItem.ReadFromSource();
+                retVal = SourceItem.ReadFromSource();
 
                 // check to see if the value read from the source is the same
                 // as the Value property.  if it isn't, update the Value property
                 // with the latest. 
-                if (retVal != this.Value)
+                if (retVal != Value)
                 {
-                    this.Write(retVal);
+                    Write(retVal);
                 }
             }
 
-            return this.Read();
+            return Read();
         }
 
         /// <summary>
@@ -380,7 +417,7 @@ namespace Symbiote.Core
         /// <returns>The retrieved value.</returns>
         public virtual async Task<object> ReadFromSourceAsync()
         {
-            return await Task.Run(() => this.ReadFromSource());
+            return await Task.Run(() => ReadFromSource());
         }
 
         /// <summary>
@@ -393,12 +430,12 @@ namespace Symbiote.Core
 
             try
             {
-                this.SourceItem.Changed += this.SourceItemChanged;
+                SourceItem.Changed += SourceItemChanged;
 
                 // if we are subscribing to a ConnectorItem, subscribe the source item to it's connector's ItemChanged event.
-                if (this.SourceItem is ConnectorItem)
+                if (SourceItem is ConnectorItem)
                 {
-                    Result sourceSubscription = ((ConnectorItem)this.SourceItem).SubscribeToSource();
+                    Result sourceSubscription = ((ConnectorItem)SourceItem).SubscribeToSource();
 
                     if (sourceSubscription.ResultCode == ResultCode.Failure)
                     {
@@ -410,7 +447,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception caught while subscribing '" + this.FQN + "' to source item '" + this.SourceItem.FQN + "': " + ex.Message);
+                retVal.AddError("Exception caught while subscribing '" + FQN + "' to source item '" + SourceItem.FQN + "': " + ex.Message);
             }
 
             return retVal;
@@ -426,11 +463,11 @@ namespace Symbiote.Core
 
             try
             {
-                this.SourceItem.Changed -= this.SourceItemChanged;
+                SourceItem.Changed -= SourceItemChanged;
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception caught while unsubscribing '" + this.FQN + "' from source item '" + this.SourceItem.FQN + "': " + ex.Message);
+                retVal.AddError("Exception caught while unsubscribing '" + FQN + "' from source item '" + SourceItem.FQN + "': " + ex.Message);
             }
 
             return retVal;
@@ -446,16 +483,16 @@ namespace Symbiote.Core
         {
             Result retVal = new Result();
 
-            if (!this.Writeable)
+            if (!Writeable)
             {
-                retVal.AddError("Unable to write to '" + this.FQN + "'; the item is not writeable.");
+                retVal.AddError("Unable to write to '" + FQN + "'; the item is not writeable.");
             }
             else
             {
-                lock (this.valueLock)
+                lock (valueLock)
                 {
-                    this.Value = value;
-                    this.OnChange(value);
+                    Value = value;
+                    OnChange(value);
                 }
             }
 
@@ -469,7 +506,7 @@ namespace Symbiote.Core
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual async Task<Result> WriteAsync(object value)
         {
-            return await Task.Run(() => this.Write(value));
+            return await Task.Run(() => Write(value));
         }
 
         /// <summary>
@@ -481,20 +518,20 @@ namespace Symbiote.Core
         {
             Result retVal = new Result();
 
-            if (!this.SourceItem.Writeable)
+            if (!SourceItem.Writeable)
             {
-                retVal.AddError("Unable to write to the source item for '" + this.FQN + "'; the source item is not writeable.");
+                retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is not writeable.");
             }
-            else if ((this.SourceItem == null) || (this.SourceItem == default(Item)))
+            else if ((SourceItem == null) || (SourceItem == default(Item)))
             {
-                retVal.AddError("Unable to write to the source item for '" + this.FQN + "'; the source item is null.");
+                retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is null.");
             }
             else
             {
-                Result writeResult = this.SourceItem.WriteToSource(value);
+                Result writeResult = SourceItem.WriteToSource(value);
                 if (writeResult.ResultCode != ResultCode.Failure)
                 {
-                    this.Write(value);
+                    Write(value);
                 }
 
                 retVal.Incorporate(writeResult);
@@ -510,7 +547,7 @@ namespace Symbiote.Core
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual async Task<Result> WriteToSourceAsync(object value)
         {
-            return await Task.Run(() => this.SourceItem.WriteToSource(value));
+            return await Task.Run(() => SourceItem.WriteToSource(value));
         }
 
         /// <summary>
@@ -519,7 +556,7 @@ namespace Symbiote.Core
         /// <returns>The serialization of the Item.</returns>
         public virtual string ToJson()
         {
-            return this.ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
+            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
         }
 
         /// <summary>
@@ -532,17 +569,24 @@ namespace Symbiote.Core
             return JsonConvert.SerializeObject(this, new JsonSerializerSettings() { ContractResolver = contractResolver });
         }
 
+        #endregion
+
         /// <summary>
-        /// Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
+        /// Returns the string representation of the object.
         /// </summary>
-        /// <param name="value">The value for the raised event.</param>
-        protected virtual void OnChange(object value)
+        /// <returns>The string representation of the object.</returns>
+        public override string ToString()
         {
-            if (this.Changed != null)
-            {
-                this.Changed(this, new ItemEventArgs(value));
-            }
+            return FQN;
         }
+
+        #endregion
+
+        #endregion
+
+        #region Protected Methods
+
+        #region Protected Instance Methods
 
         #region Event Handlers
 
@@ -551,10 +595,26 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="sender">The Item that raised the event.</param>
         /// <param name="e">The EventArgs for the event.</param>
-        protected virtual void SourceItemChanged(object sender, ItemEventArgs e)
+        protected virtual void SourceItemChanged(object sender, ItemChangedEventArgs e)
         {
-            this.Write(e.Value);
+            Write(e.Value);
         }
+
+        #endregion
+
+        /// <summary>
+        /// Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
+        /// </summary>
+        /// <param name="value">The value for the raised event.</param>
+        protected virtual void OnChange(object value)
+        {
+            if (Changed != null)
+            {
+                Changed(this, new ItemChangedEventArgs(value));
+            }
+        }
+
+        #endregion
 
         #endregion
 

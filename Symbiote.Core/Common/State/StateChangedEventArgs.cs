@@ -9,7 +9,7 @@
       █            ███     ██    ▀████████     ██    ▀▀██▀▀    ███    █▄  ▀▀██▀▀▀██▀  ▀████████ ██   ██ ▀▀██ ███▄  ▀▀██▀▀    ██    ██ 
       █      ▄█    ███     ██      ██   ██     ██      ██   █  ███    ███   ██   ██     ██   ██ ██   ██   ██    ██   ██   █  ██   ▄██ 
       █    ▄████████▀     ▄██▀     ██   █▀    ▄██▀     ███████ ████████▀    ██   ██     ██   █▀  █   █    ██████▀    ███████ ██████▀  
-      █   
+      █
       █      ▄████████                                        ▄████████                               
       █     ███    ███                                        ███    ███                              
       █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████ 
@@ -18,11 +18,29 @@
       █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████ 
       █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██ 
       █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀  
-      █   
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      ▄  
+      █  Represents the event arguments for the StateChanged event of stateful components.
       █  
-      █  EventArgs for the StateChanged event.
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The GNU Affero General Public License (GNU AGPL)
+      █  
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █  
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █  
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
       █  
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██ 
@@ -34,10 +52,64 @@ using System;
 namespace Symbiote.Core
 {
     /// <summary>
-    /// EventArgs for the StateChanged event.
+    /// Represents the event arguments for the StateChanged event of stateful components.
     /// </summary>
     public class StateChangedEventArgs : EventArgs
     {
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateChangedEventArgs"/> class with the specified state, previousState and message parameters.
+        /// </summary>
+        /// <param name="state">The State to which the state changed.</param>
+        /// <param name="previousState">The State from which the state changed.</param>
+        /// <param name="message">The optional message associated with the event.</param>
+        public StateChangedEventArgs(State state, State previousState, string message = "") : this(state, previousState, message, state == State.Faulted ? StopType.Abnormal : StopType.Normal, false)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateChangedEventArgs"/> class with the specified state, previousState and stopType parameters.
+        /// </summary>
+        /// <param name="state">The State to which the state changed.</param>
+        /// <param name="previousState">The State from which the state changed.</param>
+        /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
+        /// <param name="restartPending">An optional flag indicating that a restart of a stopped component is pending.</param>
+        public StateChangedEventArgs(State state, State previousState, StopType stopType = StopType.Normal, bool restartPending = false) : this(state, previousState, string.Empty, stopType, false)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateChangedEventArgs"/> class with the specified state, previousState and restartPending parameters.
+        /// </summary>
+        /// <param name="state">The State to which the state changed.</param>
+        /// <param name="previousState">The State from which the state changed.</param>
+        /// <param name="restartPending">An optional flag indicating that a restart of a stopped component is pending.</param>
+        public StateChangedEventArgs(State state, State previousState, bool restartPending) : this(state, previousState, string.Empty, state == State.Faulted ? StopType.Abnormal : StopType.Normal, restartPending)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StateChangedEventArgs"/> class with the specified state, previousState, stopType and message parameters.
+        /// </summary>
+        /// <param name="state">The State to which the state changed.</param>
+        /// <param name="previousState">The State from which the state changed.</param>
+        /// <param name="message">The optional message associated with the event.</param>
+        /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
+        /// <param name="restartPending">An optional flag indicating that a restart of a stopped component is pending.</param>
+        public StateChangedEventArgs(State state, State previousState, string message = "", StopType stopType = StopType.Normal, bool restartPending = false)
+        {
+            State = state;
+            PreviousState = previousState;
+            Message = message;
+            StopType = stopType;
+            RestartPending = restartPending;
+        }
+
+        #endregion
+
+        #region Properties
+
         /// <summary>
         /// Gets the State to which the state changed.
         /// </summary>
@@ -59,56 +131,10 @@ namespace Symbiote.Core
         public StopType StopType { get; private set; }
 
         /// <summary>
-        /// Gets the status of the pending restart bool.  True if the program stopped the component with the intention of later restarting it.
+        /// Gets a value indicating whether the program stopped the component with the intention of later restarting it.
         /// </summary>
         public bool RestartPending { get; private set; }
 
-        /// <summary>
-        /// Constructs a new instance with the specified state, previousState and message parameters.
-        /// </summary>
-        /// <param name="state">The State to which the state changed.</param>
-        /// <param name="previousState">The State from which the state changed.</param>
-        /// <param name="message">The optional message associated with the event.</param>
-        public StateChangedEventArgs(State state, State previousState, string message = "") : this(state, previousState, message, (state == State.Faulted ? StopType.Abnormal : StopType.Normal), false)
-        {
-        }
-
-        /// <summary>
-        /// Constructs a new instance with the specified state, previousState and stopType parameters.
-        /// </summary>
-        /// <param name="state">The State to which the state changed.</param>
-        /// <param name="previousState">The State from which the state changed.</param>
-        /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
-        /// <param name="restartPending">An optional bool indicating that a restart of a stopped component is pending.</param>
-        public StateChangedEventArgs(State state, State previousState, StopType stopType = StopType.Normal, bool restartPending = false) : this(state, previousState, "", stopType, false)
-        {
-        }
-
-        /// <summary>
-        /// Constructs a new instance with the specified state, previousState and restartPending parameters.
-        /// </summary>
-        /// <param name="state">The State to which the state changed.</param>
-        /// <param name="previousState">The State from which the state changed.</param>
-        /// <param name="restartPending">An optional bool indicating that a restart of a stopped component is pending.</param>
-        public StateChangedEventArgs(State state, State previousState, bool restartPending) : this(state, previousState, "", (state == State.Faulted ? StopType.Abnormal : StopType.Normal), restartPending)
-        {
-        }
-
-        /// <summary>
-        /// Constructs a new instance with the specified state, previousState, stopType and message parameters.
-        /// </summary>
-        /// <param name="state">The State to which the state changed.</param>
-        /// <param name="previousState">The State from which the state changed.</param>
-        /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
-        /// <param name="message">The optional message associated with the event.</param>
-        /// <param name="restartPending">An optional bool indicating that a restart of a stopped component is pending.</param>
-        public StateChangedEventArgs(State state, State previousState, string message = "", StopType stopType = StopType.Normal, bool restartPending = false)
-        {
-            State = state;
-            PreviousState = previousState;
-            Message = message;
-            StopType = stopType;
-            RestartPending = restartPending;
-        }
+        #endregion
     }
 }

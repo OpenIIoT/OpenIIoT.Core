@@ -9,11 +9,29 @@
       █   ███    ███        ██       ██   ██ ▀▀██ ███▄  ██  ██   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
       █   ███    ███        ██▌    ▄ ██   ██   ██    ██ ██  ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
       █   █▀    ▄████▀      ████▄▄██ ██████    ██████▀  █    █   █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
-      █   
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      █  
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      ▄  
       █  Defines the interface for the Plugin Manager.
+      █  
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The GNU Affero General Public License (GNU AGPL)
+      █  
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █  
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █  
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
       █  
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██ 
@@ -21,11 +39,8 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using System.Collections.Generic;
-using Symbiote.Core.Configuration;
-using Symbiote.Core.Plugin.Connector;
-using Symbiote.Core.Plugin.Endpoint;
 using System.Threading.Tasks;
-using Symbiote.Core.Model;
+using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core.Plugin
 {
@@ -37,39 +52,29 @@ namespace Symbiote.Core.Plugin
         #region Properties
 
         /// <summary>
-        /// A list of currently loaded plugin assemblies.
+        /// Gets a list of currently loaded plugin assemblies.
         /// </summary>
         List<PluginAssembly> PluginAssemblies { get; }
 
         /// <summary>
-        /// A Dictionary of all Plugin Instances, keyed by instance name.
+        /// Gets a Dictionary of all Plugin Instances, keyed by instance name.
         /// </summary>
         Dictionary<string, IPluginInstance> PluginInstances { get; }
 
         /// <summary>
-        /// A list of installed plugins.
+        /// Gets a list of installed plugins.
         /// </summary>
         List<Plugin> Plugins { get; }
 
         /// <summary>
-        /// A list of all Plugin Archives.
+        /// Gets a list of all Plugin Archives.
         /// </summary>
         List<PluginArchive> PluginArchives { get; }
 
         /// <summary>
-        /// A list of all invalid Plugin Archives.
+        /// Gets a list of all invalid Plugin Archives.
         /// </summary>
         List<InvalidPluginArchive> InvalidPluginArchives { get; }
-
-        /// <summary>
-        /// The manager for Plugins of type Connector.
-        /// </summary>
-        ConnectorManager ConnectorManager { get; }
-
-        /// <summary>
-        /// The manager for Plugins of type Endpoint.
-        /// </summary>
-        EndpointManager EndpointManager { get; }
 
         #endregion
 
@@ -116,7 +121,7 @@ namespace Symbiote.Core.Plugin
         /// Asynchronously reinstalls the specified Plugin by uninstalling, then installing from the original archive.
         /// </summary>
         /// <param name="plugin">The Plugin to reinstall.</param>
-        /// <returns>A Result containing the result of hte operation.</returns>
+        /// <returns>A Result containing the result of the operation.</returns>
         Task<Result> ReinstallPluginAsync(Plugin plugin);
 
         /// <summary>
@@ -134,7 +139,7 @@ namespace Symbiote.Core.Plugin
         Task<Result<Plugin>> UpdatePluginAsync(PluginArchive archive);
 
         /// <summary>
-        /// Updates the Plugin contained withing the specified PluginArchive.
+        /// Updates the Plugin contained within the specified PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>

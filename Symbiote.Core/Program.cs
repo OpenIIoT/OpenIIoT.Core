@@ -159,33 +159,6 @@ namespace Symbiote.Core
 
                 logger.Debug("The Program Manager was instantiated successfully.");
 
-                //Result managerResult = manager.Start();
-
-                //if (managerResult.ResultCode == ResultCode.Failure)
-                //    throw new Exception("Failed to start the Program Manager: " + managerResult.LastErrorMessage());
-                //-------------------------------  ------------------------ - - - --------------- - -
-
-
-                //----------------------------------------------- - ------------  - - -
-                // start the Platform Manager so we can get the platform details
-                // the Platform Manager does not implement IConfigurable, allowing it to be started before the Configuration Manager
-                //logger.SubHeading(LogLevel.Debug, "Platform Manager");
-
-                //Result<IManager> platformResult = manager.StartManager(manager.GetManager<PlatformManager>());
-
-                //if (platformResult.ResultCode == ResultCode.Failure)
-                //    throw new Exception("Failed to start the Platform Manager: " + platformResult.LastErrorMessage());
-                //------------------- - -----------                      ------------- 
-
-
-                //----------------------------------------- - ----------------
-                // start the application.
-                // if the platform is windows and it is not being run as an interactive application, Windows 
-                // is trying to start it as a service, so instantiate the service.  Otherwise launch it as a normal console application.
-                //logger.Heading(LogLevel.Debug, "Startup");
-
-                //logger.Info("The Program is running " + (Environment.UserInteractive ? "" : "non-") + "interactively.");
-
                 if ((PlatformManager.GetPlatformType() == PlatformType.Windows) && (!Environment.UserInteractive))
                 {
                     logger.Info("Starting the application in service mode...");

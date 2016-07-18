@@ -1,4 +1,4 @@
-﻿namespace Symbiote.Core.Plugin
+﻿namespace Symbiote.Core.Plugin.Endpoint
 {
     public interface IEndpoint : IPluginInstance
     {

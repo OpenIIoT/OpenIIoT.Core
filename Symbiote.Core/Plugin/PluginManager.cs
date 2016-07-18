@@ -13,7 +13,7 @@
  ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       █  
-      █  The PluginManager class controls the plugin subsystem.
+      █  Represents and manages the Plugin subsystem.
       █ 
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
       █  The GNU Affero General Public License (GNU AGPL)
@@ -40,29 +40,28 @@
                                                                                                    ▀▀                            */
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using NLog;
-using Symbiote.Core.Platform;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
+using NLog;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin.Connector;
 using Symbiote.Core.Plugin.Endpoint;
-using System.Threading.Tasks;
-using Symbiote.Core.Model;
 
 namespace Symbiote.Core.Plugin
 {
     /// <summary>
-    /// The PluginManager class controls the plugin subsystem.
+    /// Represents and manages the Plugin subsystem.
     /// </summary>
     public class PluginManager : Manager, IStateful, IManager, IConfigurable<PluginManagerConfiguration>, IPluginManager
     {
-        #region Variables
+        #region Fields
 
         /// <summary>
         /// The Logger for this class.
         /// </summary>
-        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
         /// The Singleton instance of PluginManager.
@@ -82,67 +81,10 @@ namespace Symbiote.Core.Plugin
 
         #endregion
 
-        #region Properties
-
-        #region IConfigurable Properties
-
-        /// <summary>
-        /// The ConfigurationDefinition for the Manager.
-        /// </summary>
-        public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
-
-        /// <summary>
-        /// The Configuration for the Manager.
-        /// </summary>
-        public PluginManagerConfiguration Configuration { get; private set; }
-
-        #endregion
-
-        #region IPluginManager Properties
-
-        /// <summary>
-        /// A list of currently loaded plugin assemblies.
-        /// </summary>
-        public List<PluginAssembly> PluginAssemblies { get; private set; }
-
-        /// <summary>
-        /// A Dictionary of all Plugin Instances, keyed by instance name.
-        /// </summary>
-        public Dictionary<string, IPluginInstance> PluginInstances { get; private set; }
-
-        /// <summary>
-        /// A list of installed plugins.
-        /// </summary>
-        public List<Plugin> Plugins { get; private set; }
-
-        /// <summary>
-        /// A list of all Plugin Archives.
-        /// </summary>
-        public List<PluginArchive> PluginArchives { get; private set; }
-
-        /// <summary>
-        /// A list of all invalid Plugin Archives.
-        /// </summary>
-        public List<InvalidPluginArchive> InvalidPluginArchives { get; private set; }
-
-        /// <summary>
-        /// The manager for Plugins of type Connector.
-        /// </summary>
-        public ConnectorManager ConnectorManager { get; private set; }
-
-        /// <summary>
-        /// The manager for Plugins of type Endpoint.
-        /// </summary>
-        public EndpointManager EndpointManager { get; private set; }
-
-        #endregion
-
-        #endregion
-
         #region Constructors
 
         /// <summary>
-        /// Private constructor, only called by Instance()
+        /// Initializes a new instance of the <see cref="PluginManager"/> class.  
         /// </summary>
         /// <param name="manager">The ProgramManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
@@ -154,168 +96,140 @@ namespace Symbiote.Core.Plugin
 
             ManagerName = "Plugin Manager";
 
-            RegisterDependency<ProgramManager>(manager);
-            RegisterDependency<PlatformManager>(platformManager);
-            RegisterDependency<ConfigurationManager>(configurationManager);
+            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IPlatformManager>(platformManager);
+            RegisterDependency<IConfigurationManager>(configurationManager);
 
             PluginAssemblies = new List<PluginAssembly>();
             PluginInstances = new Dictionary<string, IPluginInstance>();
-
-            // initialize the Connector and Endpoint managers
-            ConnectorManager = ConnectorManager.Instance(this, manager);
-            EndpointManager = EndpointManager.Instance(this, manager);
 
             ChangeState(State.Initialized);
 
             logger.ExitMethod();
         }
 
-        /// <summary>
-        /// Instantiates and/or returns the PluginManager instance.
-        /// </summary>
-        /// <remarks>
-        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
-        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
-        /// injected when the method is invoked.
-        /// </remarks>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
-        /// <param name="platformManager">The PlatformManager instance for the application.</param>
-        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
-        /// <returns>The Singleton instance of PluginManager.</returns>
-        private static PluginManager Instantiate(IProgramManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
-        {
-            if (instance == null)
-                instance = new PluginManager(manager, platformManager, configurationManager);
+        #endregion
 
-            return instance;
+        #region Properties
+
+        #region IStateful Properties
+
+        //// See the Manager class for the IStateful implementation for this class.
+
+        #endregion
+
+        #region IManager Properties
+
+        //// See the Manager class for the IManager implementation for this class.
+
+        #endregion
+
+        #region IConfigurable Properties
+
+        /// <summary>
+        /// Gets the ConfigurationDefinition for the Manager.
+        /// </summary>
+        public ConfigurationDefinition ConfigurationDefinition
+        {
+            get
+            {
+                return GetConfigurationDefinition();
+            }
+        }
+
+        /// <summary>
+        /// Gets the Configuration for the Manager.
+        /// </summary>
+        public PluginManagerConfiguration Configuration { get; private set; }
+
+        #endregion
+
+        #region IPluginManager Properties
+
+        /// <summary>
+        /// Gets a list of currently loaded plugin assemblies.
+        /// </summary>
+        public List<PluginAssembly> PluginAssemblies { get; private set; }
+
+        /// <summary>
+        /// Gets a Dictionary of all Plugin Instances, keyed by instance name.
+        /// </summary>
+        public Dictionary<string, IPluginInstance> PluginInstances { get; private set; }
+
+        /// <summary>
+        /// Gets a list of installed plugins.
+        /// </summary>
+        public List<Plugin> Plugins { get; private set; }
+
+        /// <summary>
+        /// Gets a list of all Plugin Archives.
+        /// </summary>
+        public List<PluginArchive> PluginArchives { get; private set; }
+
+        /// <summary>
+        /// Gets a list of all invalid Plugin Archives.
+        /// </summary>
+        public List<InvalidPluginArchive> InvalidPluginArchives { get; private set; }
+
+        #endregion
+
+        #endregion
+
+        #region Methods
+
+        #region Public Methods
+
+        #region Public Static Methods
+
+        #region IConfigurable<T> Implementation
+
+        /// <summary>
+        /// Returns the ConfigurationDefinition for the Type.
+        /// </summary>
+        /// <returns>The ConfigurationDefinition for the Type.</returns>
+        public static ConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
+            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
+            retVal.Model = typeof(PluginManagerConfiguration);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Returns the default instance of the configuration Model for the Type.
+        /// </summary>
+        /// <returns>The default instance of the configuration Model for the Type.</returns>
+        public static PluginManagerConfiguration GetDefaultConfiguration()
+        {
+            PluginManagerConfiguration retVal = new PluginManagerConfiguration();
+            retVal.Instances = new List<PluginManagerConfigurationPluginInstance>();
+
+            PluginManagerConfigurationPluginInstance sim = new PluginManagerConfigurationPluginInstance();
+            sim.InstanceName = "Simulation";
+            sim.AssemblyName = "Symbiote.Plugin.Connector.Simulation";
+
+            retVal.Instances.Add(sim);
+            return retVal;
         }
 
         #endregion
 
-        #region Instance Methods
+        #endregion
 
-        protected override Result Startup()
-        {
-            Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
-            Result retVal = new Result();
+        #region Public Instance Methods
 
-            #region Configuration
+        #region IStateful Implementation
 
-            //----------- - -           -----------  - 
-            // Configure the manager
-            Result configureResult = Configure();
-            if (configureResult.ResultCode == ResultCode.Failure)
-                throw new Exception("Failed to start the Plugin Manager: " + configureResult.LastErrorMessage());
+        //// See the Manager class for the IStateful implementation for this class.
 
-            retVal.Incorporate(configureResult);
-            logger.Checkpoint("Configured the Plugin Manager", guid);
-            //-------------------  --         ------  - - -  -
+        #endregion
 
-            #endregion
+        #region IManager Implementation
 
-            #region Plugin Archive Loading
+        //// See the Manager class for the IManager implementation for this class.
 
-            //---------------- - ------- - - -
-            // generate a list of valid archive files in the archive directory 
-            logger.SubSubHeading(LogLevel.Debug, "Archives...");
-
-            PluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
-
-            if (pluginArchiveLoadResult.ResultCode != ResultCode.Failure)
-            {
-                PluginArchives = pluginArchiveLoadResult.ValidArchives;
-                InvalidPluginArchives = pluginArchiveLoadResult.InvalidArchives;
-            }
-
-            retVal.Incorporate(pluginArchiveLoadResult);
-
-            // print the lists of valid and invalid archives
-            if (PluginArchives.Count > 0) logger.Info("Valid Plugin Archives:");
-
-            foreach (PluginArchive archive in PluginArchives)
-                logger.Info("\t" + System.IO.Path.GetFileName(archive.FileName) + " (" + archive.Plugin.FQN + ")");
-
-            if (InvalidPluginArchives.Count > 0) logger.Info("Invalid Plugin Archives:");
-
-            foreach (InvalidPluginArchive invalidArchive in InvalidPluginArchives)
-                logger.Info(new string(' ', 5) + System.IO.Path.GetFileName(invalidArchive.FileName) + " (" + invalidArchive.Message + ")");
-
-            logger.Info(PluginArchives.Count + " Plugin " + (PluginArchives.Count == 1 ? "Archive" : "Archives") + " loaded.");
-
-            logger.Checkpoint("Plugin Archives loaded", xLogger.Vars(PluginArchives, InvalidPluginArchives), xLogger.Names("PluginArchives", "InvalidPluginArchives"), guid);
-            //-------------------------------------------  - 
-
-            #endregion
-
-            #region Plugin Assembly Loading
-
-            // ---------- -   -    ------------  
-            // load installed plugin assemblies into memory and register them with the configuration manager
-            logger.SubSubHeading(LogLevel.Debug, "Assemblies...");
-
-            Result<List<PluginAssembly>> pluginAssemblyLoadResult = LoadPluginAssemblies();
-
-            if (pluginAssemblyLoadResult.ResultCode != ResultCode.Failure)
-                PluginAssemblies = pluginAssemblyLoadResult.ReturnValue;
-
-            retVal.Incorporate(pluginAssemblyLoadResult);
-
-            // print the list of loaded assemblies
-            if (PluginAssemblies.Count > 0) logger.Info("Loaded Assemblies:");
-
-            foreach (PluginAssembly assembly in PluginAssemblies)
-                logger.Info(new string(' ', 5) + assembly.FQN);
-
-            logger.Info(PluginAssemblies.Count + " Plugin " + (PluginAssemblies.Count == 1 ? "Assembly" : "Assemblies") + " loaded.");
-
-            logger.Checkpoint("Plugin Assemblies loaded", xLogger.Vars(PluginAssemblies), xLogger.Names("PluginAssemblies"), guid);
-            //------------ - 
-
-            #endregion
-
-            #region Plugin Instance Creation
-
-            //   - --   ------------- -    -
-            // instantiate all of the configured Plugin instances
-            logger.SubSubHeading(LogLevel.Debug, "Instances...");
-
-            Result<Dictionary<string, IPluginInstance>> pluginInstantiationResult = InstantiatePlugins();
-
-            if (pluginInstantiationResult.ResultCode != ResultCode.Failure)
-                PluginInstances = pluginInstantiationResult.ReturnValue;
-
-            // print the list of instantiated plugins
-            if (PluginInstances.Count > 0) logger.Info("Plugin Instances:");
-
-            foreach (string key in PluginInstances.Keys)
-                logger.Info(new string(' ', 5) + key + " (" + PluginInstances[key].FQN + ")");
-
-            logger.Info(PluginInstances.Count + " Plugin" + (PluginInstances.Count > 1 ? "s" : "") + " instantiated.");
-
-            logger.Checkpoint("Plugins instantiated", xLogger.Vars(PluginInstances), xLogger.Names("PluginInstances"), guid);
-            //---------------   -    -
-
-            #endregion
-
-            Dependency<PlatformManager>().Platform.InstantiateConnector("Platform");
-            PluginInstances.Add("Platform", Dependency<PlatformManager>().Platform.Connector);
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
-        {
-            Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
-            Result retVal = new Result();
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
+        #endregion
 
         #region IConfigurable Implementation
 
@@ -328,7 +242,7 @@ namespace Symbiote.Core.Plugin
             logger.EnterMethod();
             Result retVal = new Result();
 
-            Result<PluginManagerConfiguration> fetchResult = Dependency<ConfigurationManager>().GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
+            Result<PluginManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -336,18 +250,20 @@ namespace Symbiote.Core.Plugin
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
                 Configure(fetchResult.ReturnValue);
             }
-            // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
+                // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<PluginManagerConfiguration> createResult = Dependency<ConfigurationManager>().AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<PluginManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.ReturnValue);
                 }
                 else
+                {
                     retVal.Incorporate(createResult);
+                }
             }
 
             retVal.LogResult(logger.Debug);
@@ -398,7 +314,7 @@ namespace Symbiote.Core.Plugin
             // update the list of plugins
             Configuration.InstalledPlugins = Plugins;
 
-            retVal.Incorporate(Dependency<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(Dependency<IConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -407,7 +323,658 @@ namespace Symbiote.Core.Plugin
 
         #endregion
 
+        #region IPluginManager Implementation
+
         #region Plugin and PluginArchive Management
+
+        /// <summary>
+        /// Refreshes the lists of valid and invalid Plugin Archives.
+        /// </summary>
+        /// <returns>An instance of PluginArchiveLoadResult.</returns>
+        public PluginArchiveLoadResult ReloadPluginArchives()
+        {
+            Guid guid = logger.EnterMethod(true);
+
+            logger.Info("Reloading Plugin Archives...");
+            PluginArchiveLoadResult retVal = LoadPluginArchives();
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                PluginArchives = retVal.ValidArchives;
+                InvalidPluginArchives = retVal.InvalidArchives;
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Asynchronously installs the Plugin contained within the supplied PluginArchive.
+        /// </summary>
+        /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
+        /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
+        public async Task<Result<Plugin>> InstallPluginAsync(PluginArchive archive)
+        {
+            return await Task.Run(() => InstallPlugin(archive));
+        }
+
+        /// <summary>
+        /// Installs the Plugin contained within the supplied PluginArchive.
+        /// </summary>
+        /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
+        /// <param name="updatePlugin">When true, bypasses checks that prevent</param>
+        /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
+        public Result<Plugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false)
+        {
+            return InstallPlugin(archive, Plugins, Dependency<IPlatformManager>().Platform, updatePlugin);
+        }
+
+        /// <summary>
+        /// Asynchronously uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the default
+        /// PluginManagerConfiguration.
+        /// </summary>
+        /// <param name="plugin">The Plugin to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public async Task<Result> UninstallPluginAsync(Plugin plugin)
+        {
+            return await Task.Run(() => UninstallPlugin(plugin));
+        }
+
+        /// <summary>
+        /// Uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the default 
+        /// PluginManagerConfiguration.
+        /// </summary>
+        /// <param name="plugin">The Plugin to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result UninstallPlugin(Plugin plugin)
+        {
+            return UninstallPlugin(plugin, Plugins, Dependency<IPlatformManager>().Platform);
+        }
+
+        /// <summary>
+        /// Asynchronously reinstalls the specified Plugin by uninstalling, then installing from the original archive.
+        /// </summary>
+        /// <param name="plugin">The Plugin to reinstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public async Task<Result> ReinstallPluginAsync(Plugin plugin)
+        {
+            return await Task.Run(() => ReinstallPlugin(plugin));
+        }
+
+        /// <summary>
+        /// Reinstalls the specified Plugin by uninstalling, then installing from the original archive.
+        /// </summary>
+        /// <param name="plugin">The Plugin to reinstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result ReinstallPlugin(Plugin plugin)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(plugin), true);
+
+            logger.Info("Reinstalling Plugin '" + plugin.FQN + "'...");
+            Result retVal = new Result();
+
+            logger.Debug("Attempting to locate the Plugin Archive for the supplied Plugin...");
+            PluginArchive foundArchive = PluginArchives.Where(p => p.Plugin.FQN == plugin.FQN).FirstOrDefault();
+            if (foundArchive == default(PluginArchive))
+            {
+                retVal.AddError("Unable to locate the Plugin Archive for the supplied Plugin.  The Plugin can not be reinstalled.");
+            }
+            else
+            {
+                logger.Debug("Uninstalling the Plugin...");
+                retVal.Incorporate(UninstallPlugin(plugin));
+
+                logger.Debug("Reinstalling the Plugin...");
+                if (retVal.ResultCode != ResultCode.Failure)
+                {
+                    retVal.Incorporate(InstallPlugin(foundArchive));
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Asynchronously Updates the Plugin contained within the specified PluginArchive.
+        /// </summary>
+        /// <param name="archive">The PluginArchive to use for the update.</param>
+        /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
+        public async Task<Result<Plugin>> UpdatePluginAsync(PluginArchive archive)
+        {
+            return await Task.Run(() => UpdatePlugin(archive));
+        }
+
+        /// <summary>
+        /// Updates the Plugin contained within the specified PluginArchive.
+        /// </summary>
+        /// <param name="archive">The PluginArchive to use for the update.</param>
+        /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
+        public Result<Plugin> UpdatePlugin(PluginArchive archive)
+        {
+            return InstallPlugin(archive, true);
+        }
+
+        /// <summary>
+        /// Searches the Plugins list for a Plugin with an FQN matching the supplied FQN and returns it if found.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Plugin to find.</param>
+        /// <returns>The Plugin matching the supplied FQN, or the default Plugin if not found.</returns>
+        public Plugin FindPlugin(string fqn)
+        {
+            return FindPlugin(fqn, Plugins);
+        }
+
+        #endregion
+
+        #region Plugin Assembly Management
+
+        /// <summary>
+        /// Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the PluginAssemblies list.
+        /// </summary>
+        /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
+        /// <returns>A Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
+        public Result<PluginAssembly> LoadPluginAssembly(Plugin plugin)
+        {
+            return LoadPluginAssembly(plugin, PluginAssemblies);
+        }
+
+        /// <summary>
+        /// Finds and returns the PluginAssembly in the PluginAssemblies list whose FQN matches the specified FQN.
+        /// </summary>
+        /// <param name="fqn">The FQN of the desired PluginAssembly.</param>
+        /// <returns>The PluginAssembly instance whose FQN matches the specified FQN, or the default PluginAssembly if not found.</returns>
+        public PluginAssembly FindPluginAssembly(string fqn)
+        {
+            return FindPluginAssembly(fqn, PluginAssemblies);
+        }
+
+        #endregion
+
+        #region Plugin Instance Management
+
+        /// <summary>
+        /// Creates and returns an instance of the specified plugin type with the specified name
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        ///     The instanceName is propagated through the plugin instance and any internal reference (such as a ConnectorItem).  This name
+        ///     should match references to the plugin, either through fully qualified addressing or configuration.
+        /// </para>
+        /// </remarks>
+        /// <param name="instanceManager">The ProgramManager instance to be passed to the Plugin instance.</param>
+        /// <param name="instanceName">The desired internal name of the instance</param>
+        /// <param name="instanceLogger">The logger for the plugin instance.</param>
+        /// <typeparam name="T">The Type of the Plugin instance to create.</typeparam>
+        /// <returns>A Result containing the result of the operation and the created Plugin instance.</returns>
+        public Result<IPluginInstance> InstantiatePlugin<T>(ProgramManager instanceManager, string instanceName, xLogger instanceLogger)
+        {
+            logger.EnterMethod(xLogger.Params(instanceName));
+            logger.Debug("Creating plugin instance '" + instanceName + "' of Type '" + typeof(T).Name + "'...");
+
+            Result<IPluginInstance> retVal = new Result<IPluginInstance>();
+
+            try
+            {
+                // check to see if the instance name has already been used
+                if (FindPluginInstance(instanceName) == default(IPluginInstance))
+                {
+                    logger.Trace("Creating instance of plugin type '" + typeof(T).ToString() + "' with instance name '" + instanceName + "'");
+                    retVal.ReturnValue = (IPluginInstance)Activator.CreateInstance(typeof(T), instanceManager, instanceName, instanceLogger);
+                }
+                else
+                {
+                    retVal.AddError("A plugin with InstanceName '" + instanceName + "' has already been instantiated.");
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(LogLevel.Error, ex);
+                retVal.AddError("Exception caught while creating plugin instance '" + instanceName + "': " + ex.Message);
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Given an instance name string, return the matching instance of IPluginInstance.
+        /// </summary>
+        /// <param name="instanceName">The name of the instance to find.</param>
+        /// <param name="pluginType">The Type of instance to find.</param>
+        /// <returns>The instance of IPluginInstance matching the requested InstanceName.</returns>
+        public IPluginInstance FindPluginInstance(string instanceName, PluginType pluginType = PluginType.Connector)
+        {
+            // return PluginInstances.Where(p => p.PluginType == pluginType).Where(p => p.InstanceName == instanceName).FirstOrDefault();
+            if (PluginInstances.ContainsKey(instanceName))
+            {
+                return PluginInstances[instanceName];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Attempts to resolve the supplied plugin item Fully Qualified Name to an instance of Item contained in a Connector plugin.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the instance to find.</param>
+        /// <returns>The found Item.</returns>
+        public Item FindPluginItem(string fqn)
+        {
+            logger.Trace("Attempting to find Connector Item '" + fqn + "'...");
+
+            Item retVal = default(Item);
+
+            IConnector originPlugin = (IConnector)FindPluginInstance(fqn.Split('.')[0]);
+
+            if (originPlugin != default(IConnector))
+            {
+                try
+                {
+                    logger.Trace("Origin Plugin is '" + originPlugin.ToString() + "'.. Performing lookup..");
+                    retVal = originPlugin.Find(fqn);
+                }
+                catch (Exception ex)
+                {
+                    logger.Trace("Exception thrown from FindPluginItem(): " + ex);
+                }
+            }
+            else
+            {
+                logger.Trace("Origin plugin '" + fqn.Split('.')[0] + "' not found.");
+            }
+
+            logger.Trace(retVal == default(Item) ? "Unable to resolve Item." : "Resolved Item: " + retVal.ToJson());
+            return retVal;
+        }
+
+        #endregion
+
+        #endregion
+
+        #endregion
+
+        #region Protected Methods
+
+        #region Protected Instance Methods
+
+        /// <summary>
+        /// <para>
+        /// Executed upon startup of the Manager.
+        /// </para>
+        /// <para>
+        ///     Configures the Manager using the Configuration Manager, generates a list of the available Plugin Archives,
+        ///     loads installed Plugin Assemblies and registers them for configuration, and instantiates configured Plugin
+        ///     Instances.
+        /// </para>
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Startup()
+        {
+            Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
+            Result retVal = new Result();
+
+            // Configure the manager
+            Result configureResult = Configure();
+            if (configureResult.ResultCode == ResultCode.Failure)
+            {
+                throw new Exception("Failed to start the Plugin Manager: " + configureResult.LastErrorMessage());
+            }
+
+            retVal.Incorporate(configureResult);
+            logger.Checkpoint("Configured the Plugin Manager", guid);
+
+            // generate a list of valid archive files in the archive directory 
+            logger.SubSubHeading(LogLevel.Debug, "Archives...");
+
+            PluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
+
+            if (pluginArchiveLoadResult.ResultCode != ResultCode.Failure)
+            {
+                PluginArchives = pluginArchiveLoadResult.ValidArchives;
+                InvalidPluginArchives = pluginArchiveLoadResult.InvalidArchives;
+            }
+
+            retVal.Incorporate(pluginArchiveLoadResult);
+
+            // print the lists of valid and invalid archives
+            if (PluginArchives.Count > 0)
+            {
+                logger.Info("Valid Plugin Archives:");
+            }
+
+            foreach (PluginArchive archive in PluginArchives)
+            {
+                logger.Info("\t" + System.IO.Path.GetFileName(archive.FileName) + " (" + archive.Plugin.FQN + ")");
+            }
+
+            if (InvalidPluginArchives.Count > 0)
+            {
+                logger.Info("Invalid Plugin Archives:");
+            }
+
+            foreach (InvalidPluginArchive invalidArchive in InvalidPluginArchives)
+            {
+                logger.Info(new string(' ', 5) + System.IO.Path.GetFileName(invalidArchive.FileName) + " (" + invalidArchive.Message + ")");
+            }
+
+            logger.Info(PluginArchives.Count + " Plugin " + (PluginArchives.Count == 1 ? "Archive" : "Archives") + " loaded.");
+
+            logger.Checkpoint("Plugin Archives loaded", xLogger.Vars(PluginArchives, InvalidPluginArchives), xLogger.Names("PluginArchives", "InvalidPluginArchives"), guid);
+
+            // load installed plugin assemblies into memory and register them with the configuration manager
+            logger.SubSubHeading(LogLevel.Debug, "Assemblies...");
+
+            Result<List<PluginAssembly>> pluginAssemblyLoadResult = LoadPluginAssemblies();
+
+            if (pluginAssemblyLoadResult.ResultCode != ResultCode.Failure)
+            {
+                PluginAssemblies = pluginAssemblyLoadResult.ReturnValue;
+            }
+
+            retVal.Incorporate(pluginAssemblyLoadResult);
+
+            // print the list of loaded assemblies
+            if (PluginAssemblies.Count > 0)
+            {
+                logger.Info("Loaded Assemblies:");
+            }
+
+            foreach (PluginAssembly assembly in PluginAssemblies)
+            {
+                logger.Info(new string(' ', 5) + assembly.FQN);
+            }
+
+            logger.Info(PluginAssemblies.Count + " Plugin " + (PluginAssemblies.Count == 1 ? "Assembly" : "Assemblies") + " loaded.");
+
+            logger.Checkpoint("Plugin Assemblies loaded", xLogger.Vars(PluginAssemblies), xLogger.Names("PluginAssemblies"), guid);
+            
+            // instantiate all of the configured Plugin instances
+            logger.SubSubHeading(LogLevel.Debug, "Instances...");
+
+            Result<Dictionary<string, IPluginInstance>> pluginInstantiationResult = InstantiatePlugins();
+
+            if (pluginInstantiationResult.ResultCode != ResultCode.Failure)
+            {
+                PluginInstances = pluginInstantiationResult.ReturnValue;
+            }
+
+            // print the list of instantiated plugins
+            if (PluginInstances.Count > 0)
+            {
+                logger.Info("Plugin Instances:");
+            }
+
+            foreach (string key in PluginInstances.Keys)
+            {
+                logger.Info(new string(' ', 5) + key + " (" + PluginInstances[key].FQN + ")");
+            }
+
+            logger.Info(PluginInstances.Count + " Plugin" + (PluginInstances.Count > 1 ? "s" : string.Empty) + " instantiated.");
+
+            logger.Checkpoint("Plugins instantiated", xLogger.Vars(PluginInstances), xLogger.Names("PluginInstances"), guid);
+
+            Dependency<IPlatformManager>().Platform.InstantiateConnector("Platform");
+            PluginInstances.Add("Platform", Dependency<IPlatformManager>().Platform.Connector);
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Executed upon shutdown of the Manager.
+        /// </summary>
+        /// <param name="stopType">The nature of the stoppage.</param>
+        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
+        {
+            Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+            Result retVal = new Result();
+
+            // re-initialize/nullify all properties
+            PluginAssemblies = new List<PluginAssembly>();
+            PluginInstances = new Dictionary<string, IPluginInstance>();
+            Plugins = null;
+            PluginArchives = null;
+            InvalidPluginArchives = null;
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private Methods
+
+        #region Private Static Methods
+        
+        /// <summary>
+        /// Instantiates and/or returns the PluginManager instance.
+        /// </summary>
+        /// <remarks>
+        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
+        /// injected when the method is invoked.
+        /// </remarks>
+        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="platformManager">The PlatformManager instance for the application.</param>
+        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
+        /// <returns>The Singleton instance of PluginManager.</returns>
+        private static PluginManager Instantiate(IProgramManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
+        {
+            if (instance == null)
+            {
+                instance = new PluginManager(manager, platformManager, configurationManager);
+            }
+
+            return instance;
+        }
+
+        /// <summary>
+        /// Evaluates the supplied assembly name for correctness and returns an error message if it is incorrect.
+        /// </summary>
+        /// <remarks>
+        /// The expected format of an assembly name is:  "Symbiote.Plugin.[Connector|Service].{PluginName}"
+        /// The third tuple may match any enumerated value in PluginType.
+        /// </remarks>
+        /// <returns>A Result containing the result of the operation.</returns>
+        /// <param name="assemblyName">The AssemblyName to be validated.</param>
+        private static Result ValidatePluginAssemblyName(AssemblyName assemblyName)
+        {
+            logger.EnterMethod(xLogger.Params(assemblyName));
+            logger.Debug("Validating assembly name for '" + assemblyName.FullName + "'...");
+
+            Result retVal = new Result();
+
+            string[] name = assemblyName.Name.Split('.');
+
+            if (name.Length != 4)
+            {
+                retVal.AddError("Invalid assembly name (required: 4 tuples, supplied: " + name.Length + ")");
+            }
+
+            if (name[0] != ProgramManager.GetInstance().ProductName)
+            {
+                retVal.AddError("Invalid application identifier (required: Symbiote, supplied: " + name[0] + ")");
+            }
+
+            if (name[1] != "Plugin")
+            {
+                retVal.AddError("Invalid namespace identifier (required: Plugin, supplied: " + name[1] + ")");
+            }
+
+            if (GetPluginType(assemblyName.Name) == default(PluginType))
+            {
+                retVal.AddError("Invalid plugin type identifier (supplied: " + name[2] + ")");
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Determines whether the supplied assembly is a valid plugin, and if so, returns the plugin type.
+        /// </summary>
+        /// <param name="assembly">The assembly to validate.</param>
+        /// <returns>A Result containing the result of the operation and, if successful, the plugin type.</returns>
+        private static Result<Type> ValidatePluginAssembly(Assembly assembly)
+        {
+            logger.EnterMethod(xLogger.Params(assembly));
+            logger.Debug("Validating plugin assembly '" + assembly.FullName + "'...");
+
+            Result<Type> retVal = new Result<Type>();
+
+            // validate the assembly name
+            Result nameValidationResult = ValidatePluginAssemblyName(assembly.GetName());
+            retVal.Incorporate(nameValidationResult);
+
+            if (nameValidationResult.ResultCode != ResultCode.Failure)
+            {
+                logger.Trace("Name validated; searching for the type that implements IConfigurable<> and either IConnector or IEndpoint...");
+
+                // passed name validation, find an implementation of IConfigurable and either IConnector or IEndpoint
+                foreach (Type t in assembly.GetTypes())
+                {
+                    logger.Trace("Checking type '" + t.Name + "'...");
+
+                    // ensure the type implements IConfigurable<>
+                    if (t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
+                    {
+                        logger.Trace("IConfigurable is implemented.  Looking for either IConnector or IEndpoint...");
+
+                        // ensure it implements either IConnector or IEndpoint
+                        // TODO: refactor this to check IsAssignableFrom(IPluginInstance)) to handle other types of Plugin.
+                        if (t.GetInterfaces().Contains(typeof(IConnector)) || t.GetInterfaces().Contains(typeof(IEndpoint)))
+                        {
+                            retVal.ReturnValue = t;
+                            break;
+                        }
+                        else
+                        {
+                            retVal.AddError("Neither IConnector nor IEndpoint interfaces are implemented; plugin assembly is invalid.");
+                        }
+                    }
+                    else
+                    {
+                        retVal.AddError("Interface IConfigurable is not implemented; plugin assembly is invalid.");
+                    }
+                }
+
+                // if we successfully grabbed a suitable type, clear the errors in the Result and reset the ResultCode.
+                if (retVal.ReturnValue != default(Type))
+                {
+                    retVal.RemoveMessages(MessageType.Error).SetResultCode(ResultCode.Success);
+                }
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Returns an enumeration instance representing the type of the plugin, derived from the third tuple of the plugin name.
+        /// </summary>
+        /// <param name="name">The fully qualified assembly name from which to parse the plugin type.</param>
+        /// <returns>An instance of PluginType corresponding to the parsed type.</returns>
+        private static PluginType GetPluginType(string name)
+        {
+            logger.EnterMethod(xLogger.Params(name));
+            logger.Trace("Attempting to determine Plugin type for '" + name + "'...");
+
+            PluginType retVal;
+
+            if (Enum.TryParse<PluginType>(name.Split('.')[2], out retVal))
+            {
+                logger.Trace("Plugin type: " + retVal);
+            }
+            else
+            {
+                logger.Trace("Invalid PluginType for plugin '" + name + "'");
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Returns the base directory in which the specified Plugin should be installed, based on the type and name of the 
+        /// specified Plugin.
+        /// </summary>
+        /// <param name="plugin">The Plugin for which the directory is to be returned.</param>
+        /// <returns>The directory in which the specified Plugin should be installed.</returns>
+        private static string GetPluginDirectory(Plugin plugin)
+        {
+            if (plugin.PluginType == PluginType.App)
+            {
+                return System.IO.Path.Combine(ProgramManager.GetInstance().GetManager<IPlatformManager>().Directories.Web, plugin.Name);
+            }
+            else
+            {
+                return System.IO.Path.Combine(ProgramManager.GetInstance().GetManager<IPlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
+            }
+        }
+
+        /// <summary>
+        /// Returns true if the supplied Plugin is capable of being loaded, false otherwise.
+        /// </summary>
+        /// <param name="plugin">The Plugin to check.</param>
+        /// <returns>True if the Plugin is capable of being loaded, false otherwise.</returns>
+        /// <seealso cref="loadablePluginTypes"/>
+        private static bool IsPluginLoadable(Plugin plugin)
+        {
+            return loadablePluginTypes.Contains(plugin.PluginType);
+        }
+
+        #region Settings
+
+        /// <summary>
+        /// Retrieves the PluginArchiveConfigurationFileName setting or substitutes "SymbiotePlugin.json" if retrieval fails.
+        /// </summary>
+        /// <returns>The name of the Plugin Archive configuration file.</returns>
+        private static string GetPluginArchiveConfigurationFileName()
+        {
+            return Utility.GetSetting("PluginArchiveConfigurationFileName", "SymbiotePlugin.json");
+        }
+
+        /// <summary>
+        /// Retrieves the PluginArchivePayloadFileName setting or substitutes "Plugin.zip" if retrieval fails.
+        /// </summary>
+        /// <returns>The name of the Plugin payload file contained within a Plugin Archive.</returns>
+        private static string GetPluginArchivePayloadFileName()
+        {
+            return Utility.GetSetting("PluginArchivePayloadFileName", "Plugin.zip");
+        }
+
+        /// <summary>
+        /// Retrieves the PluginArchiveExtension setting or substitutes "*.zip" if retrieval fails.
+        /// </summary>
+        /// <returns>The wildcard mask of the file extension for Plugin Archives.</returns>
+        private static string GetPluginArchiveExtension()
+        {
+            return Utility.GetSetting("PluginArchiveExtension", "*.zip");
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Private Instance Methods
 
         /// <summary>
         /// Loads all valid Plugin Archives in the archive directory into a list of type PluginArchive and returns it.
@@ -415,7 +982,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         private PluginArchiveLoadResult LoadPluginArchives()
         {
-            return LoadPluginArchives(Dependency<PlatformManager>().Directories.Archives, GetPluginArchiveExtension() , Dependency<PlatformManager>().Platform);
+            return LoadPluginArchives(Dependency<IPlatformManager>().Directories.Archives, GetPluginArchiveExtension(), Dependency<IPlatformManager>().Platform);
         }
 
         /// <summary>
@@ -443,7 +1010,7 @@ namespace Symbiote.Core.Plugin
             // iterate over the list of found files
             foreach (string fileName in searchResult.ReturnValue)
             {
-                logger.SubSubHeading(LogLevel.Debug, "Archive: .." + String.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
+                logger.SubSubHeading(LogLevel.Debug, "Archive: .." + string.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
                 logger.Debug("Parsing Archive file '" + fileName + "'...");
 
                 // parse the current plugin archive file
@@ -455,31 +1022,11 @@ namespace Symbiote.Core.Plugin
                     retVal.ValidArchives.Add(parseResult.ReturnValue);
                 }
                 else
+                {
                     retVal.InvalidArchives.Add(new InvalidPluginArchive(System.IO.Path.GetFileName(fileName), parseResult.LastErrorMessage()));
+                }
 
                 parseResult.LogResult(logger.Debug, "ParsePluginArchive");
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Refreshes the lists of valid and invalid Plugin Archives.
-        /// </summary>
-        /// <returns>An instance of PluginArchiveLoadResult.</returns>
-        public PluginArchiveLoadResult ReloadPluginArchives()
-        {
-            Guid guid = logger.EnterMethod(true);
-
-            logger.Info("Reloading Plugin Archives...");
-            PluginArchiveLoadResult retVal = LoadPluginArchives();
-
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                PluginArchives = retVal.ValidArchives;
-                InvalidPluginArchives = retVal.InvalidArchives;
             }
 
             retVal.LogResult(logger);
@@ -494,7 +1041,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>A Result containing the result of the operation and the parsed PluginArchive.</returns>
         private Result<PluginArchive> ParsePluginArchive(string fileName)
         {
-            return ParsePluginArchive(fileName, GetPluginArchiveConfigurationFileName(), GetPluginArchivePayloadFileName(), Dependency<PlatformManager>().Platform);
+            return ParsePluginArchive(fileName, GetPluginArchiveConfigurationFileName(), GetPluginArchivePayloadFileName(), Dependency<IPlatformManager>().Platform);
         }
 
         /// <summary>
@@ -514,8 +1061,6 @@ namespace Symbiote.Core.Plugin
             Result<PluginArchive> retVal = new Result<PluginArchive>();
             retVal.ReturnValue = new PluginArchive(fileName);
 
-
-            //------  -          ------------ - 
             // retrieve the contents of the configuration file and deserialize it to an instance of Plugin
             logger.Trace("Retrieving the configuration file...");
             Result<List<string>> zipFileListResult = platform.ListZipFiles(fileName, configFileName);
@@ -528,10 +1073,11 @@ namespace Symbiote.Core.Plugin
                     logger.Trace("Configuration file found.  Extracting it from the archive...");
 
                     // extract the config file to the temp directory
-                    Result<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, Dependency<PlatformManager>().Directories.Temp);
+                    Result<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, Dependency<IPlatformManager>().Directories.Temp);
                     if (extractConfigFileResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("File extracted successfully.  Attempting to read contents...");
+                        
                         // read the contents of the file
                         Result<string> readConfigFileResult = platform.ReadFile(extractConfigFileResult.ReturnValue);
                         if (readConfigFileResult.ResultCode != ResultCode.Failure)
@@ -548,22 +1094,29 @@ namespace Symbiote.Core.Plugin
                                 logger.Exception(LogLevel.Debug, ex, guid);
                             }
                         }
-                        else retVal.AddError("Failed to read the contents of the extracted file.");
+                        else
+                        {
+                            retVal.AddError("Failed to read the contents of the extracted file.");
+                        }
                     }
-                    else retVal.AddError("Failed to extract the configuration file.");
+                    else
+                    {
+                        retVal.AddError("Failed to extract the configuration file.");
+                    }
                 }
-                else retVal.AddError("The file does not contain a valid plugin configuration file.");
+                else
+                {
+                    retVal.AddError("The file does not contain a valid plugin configuration file.");
+                }
             }
-            else retVal.AddError("Failed to retrieve a list of files from zip file.");
-            //------------------ - -      -------- - 
+            else
+            {
+                retVal.AddError("Failed to retrieve a list of files from zip file.");
+            }
 
-
-            //-------------- - ------
             // clean up the temp directory.  this will fail if the file wasn't extracted but we don't care.
             logger.Trace("Cleaning up the temp directory...");
-            platform.DeleteFile(System.IO.Path.Combine(Dependency<PlatformManager>().Directories.Temp, configFileName));
-            //----------- - -
-
+            platform.DeleteFile(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Temp, configFileName));
 
             // if we've encountered any errors, bail out.
             if (retVal.ResultCode == ResultCode.Failure)
@@ -575,10 +1128,8 @@ namespace Symbiote.Core.Plugin
             logger.Checkpoint("Retrieved configuration file", xLogger.Vars(retVal.ReturnValue.Plugin), xLogger.Names("Plugin"), guid);
 
             // create a place to stash the payload checksum
-            string payloadChecksum = "";
+            string payloadChecksum = string.Empty;
 
-
-            //------------- -------------- - 
             // ensure the plugin contains the Plugin.zip file and calculate its checksum
             logger.Trace("Looking for the Plugin payload file...");
             Result<List<string>> zipPayloadCheckResult = platform.ListZipFiles(fileName, payloadFileName);
@@ -591,7 +1142,7 @@ namespace Symbiote.Core.Plugin
                     logger.Trace("Payload file found.  Attempting to extract...");
 
                     // extract the file to the temp directory
-                    Result<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, Dependency<PlatformManager>().Directories.Temp);
+                    Result<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, Dependency<IPlatformManager>().Directories.Temp);
                     if (extractPayloadResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("Payload file extracted.  Attempting to calculate checksum...");
@@ -603,7 +1154,10 @@ namespace Symbiote.Core.Plugin
                             logger.Trace("Payload checksum: " + payloadChecksumResult.ReturnValue);
                             payloadChecksum = payloadChecksumResult.ReturnValue;
                         }
-                        else retVal.AddError("Failed to compute the checksum of the payload: " + payloadChecksumResult.LastErrorMessage());
+                        else
+                        {
+                            retVal.AddError("Failed to compute the checksum of the payload: " + payloadChecksumResult.LastErrorMessage());
+                        }
 
                         // if the plugin archive contains a Connector or Endpoint, make sure the zip file contains a .dll with the proper name.
                         if ((retVal.ReturnValue.Plugin.PluginType == PluginType.Connector) || (retVal.ReturnValue.Plugin.PluginType == PluginType.Connector))
@@ -612,26 +1166,34 @@ namespace Symbiote.Core.Plugin
 
                             Result<List<string>> zipFileDllResult = platform.ListZipFiles(extractPayloadResult.ReturnValue, "*.dll");
                             if (zipFileDllResult.ResultCode != ResultCode.Failure)
+                            {
                                 if (zipFileDllResult.ReturnValue.Where(d => d == retVal.ReturnValue.Plugin.FQN + ".dll").FirstOrDefault() == default(string))
+                                {
                                     retVal.AddError("The archive does not contain a dll with the expected name (" + retVal.ReturnValue.Plugin.FQN + ".dll)");
+                                }
+                            }
 
                             retVal.Incorporate(zipFileDllResult);
                         }
                     }
-                    else retVal.AddError("Failed to extract the payload from the archive: " + extractPayloadResult.LastErrorMessage());
+                    else
+                    {
+                        retVal.AddError("Failed to extract the payload from the archive: " + extractPayloadResult.LastErrorMessage());
+                    }
                 }
-                else retVal.AddError("The file does not contain a valid payload.");
+                else
+                {
+                    retVal.AddError("The file does not contain a valid payload.");
+                }
             }
-            else retVal.AddError("Failed to retrieve a list of files from zip file: " + zipPayloadCheckResult.LastErrorMessage());
-            //-------------------- - ------------- - ----- - ---------  ---------------------               ---------- - 
+            else
+            {
+                retVal.AddError("Failed to retrieve a list of files from zip file: " + zipPayloadCheckResult.LastErrorMessage());
+            }
 
-
-            //-------------- - ------
             // clean up the temp directory.  this will fail if the file wasn't extracted but we don't care.
             logger.Trace("Cleaning up the temp directory (again)...");
-            platform.DeleteFile(System.IO.Path.Combine(Dependency<PlatformManager>().Directories.Temp, payloadFileName));
-            //------------------- - -
-
+            platform.DeleteFile(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Temp, payloadFileName));
 
             // if we've encountered any errors up to this point, bail out.
             if (retVal.ResultCode == ResultCode.Failure)
@@ -642,37 +1204,72 @@ namespace Symbiote.Core.Plugin
 
             logger.Checkpoint("Validated payload file", guid);
 
-
-            //--------------------- - -          -
             // validate the deserialized Plugin.
             logger.Trace("Validating Plugin contents...");
             Plugin p = retVal.ReturnValue.Plugin;
 
-            if (p.FQN != System.IO.Path.GetFileNameWithoutExtension(fileName)) retVal.AddError("The filename doesn't match the FQN of the plugin.");
+            if (p.FQN != System.IO.Path.GetFileNameWithoutExtension(fileName))
+            {
+                retVal.AddError("The filename doesn't match the FQN of the plugin.");
+            }
 
-            if (p.Name == "") retVal.AddError("The Name field is blank.");
-            if (p.FQN == "") retVal.AddError("The FQN field is blank.");
-            if (p.Version == "") retVal.AddError("The Version field is null or invalid.");
-            if (p.PluginType == default(PluginType)) retVal.AddError("The PluginType field is invalid (expected: Connector, Endpoint or App, actual: " + p.PluginType + ").");
-            if (p.Fingerprint.Length != 64) retVal.AddError("The Fingerprint field is invalid (expected length: 64, actual: " + p.Fingerprint.Length + ").");
+            if (p.Name == string.Empty)
+            {
+                retVal.AddError("The Name field is blank.");
+            }
 
+            if (p.FQN == string.Empty)
+            {
+                retVal.AddError("The FQN field is blank.");
+            }
+
+            if (p.Version == string.Empty)
+            {
+                retVal.AddError("The Version field is null or invalid.");
+            }
+
+            if (p.PluginType == default(PluginType))
+            {
+                retVal.AddError("The PluginType field is invalid (expected: Connector, Endpoint or App, actual: " + p.PluginType + ").");
+            }
+
+            if (p.Fingerprint.Length != 64)
+            {
+                retVal.AddError("The Fingerprint field is invalid (expected length: 64, actual: " + p.Fingerprint.Length + ").");
+            }
+
+            // validate the FQN
             string[] sfqn = p.FQN.Split('.');
-            if (sfqn[0] != Dependency<ProgramManager>().ProductName) retVal.AddError("The FQN field doesn't start with '" + Dependency<ProgramManager>().ProductName + "'.");
-            if (sfqn[1] != "Plugin") retVal.AddError("The second tuple of the FQN isn't 'Plugin'.");
-            if (sfqn[2] != p.PluginType.ToString()) retVal.AddError("The third tuple of the FQN doesn't agree with the PluginType field (FQN: '" + sfqn[2] + "'; PluginType: '" + p.PluginType + "').");
-            if (sfqn[3] != p.Name) retVal.AddError("The final tuple of the FQN doesn't agree with the Name field (Name: '" + p.Name + "'; FQN: '" + sfqn[3] + "').");
-            //----------------- - ---------------------------  --
+            if (sfqn[0] != Dependency<IProgramManager>().ProductName)
+            {
+                retVal.AddError("The FQN field doesn't start with '" + Dependency<IProgramManager>().ProductName + "'.");
+            }
 
+            if (sfqn[1] != "Plugin")
+            {
+                retVal.AddError("The second tuple of the FQN isn't 'Plugin'.");
+            }
+
+            if (sfqn[2] != p.PluginType.ToString())
+            {
+                retVal.AddError("The third tuple of the FQN doesn't agree with the PluginType field (FQN: '" + sfqn[2] + "'; PluginType: '" + p.PluginType + "').");
+            }
+
+            if (sfqn[3] != p.Name)
+            {
+                retVal.AddError("The final tuple of the FQN doesn't agree with the Name field (Name: '" + p.Name + "'; FQN: '" + sfqn[3] + "').");
+            }
+            
             logger.Checkpoint("Validated Plugin json", guid);
 
-            //------------------------------ - -  --------- - 
             // validate the fingerprint.
             logger.Trace("Validating Plugin fingerprint...");
 
             if (!Cryptography.FingerprintValidator.Validate(p.Fingerprint, p.FQN, p.Version, payloadChecksum))
+            {
                 retVal.AddError("The fingerprint is invalid.");
-            //---------- - ------------------            -------------- - 
-
+            }
+            
             logger.Checkpoint("Validated Plugin fingerprint", guid);
 
             retVal.LogResult(logger.Trace);
@@ -681,33 +1278,15 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Asynchronously installs the Plugin contained within the supplied PluginArchive.
-        /// </summary>
-        /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
-        /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        public async Task<Result<Plugin>> InstallPluginAsync(PluginArchive archive)
-        {
-            return await Task.Run(() => InstallPlugin(archive));
-        }
-
-        /// <summary>
-        /// Installs the Plugin contained within the supplied PluginArchive.
-        /// </summary>
-        /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
-        /// <param name="updatePlugin">When true, bypasses checks that prevent</param>
-        /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        public Result<Plugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false)
-        {
-            return InstallPlugin(archive, Plugins, Dependency<PlatformManager>().Platform, updatePlugin);
-        }
-
-        /// <summary>
+        /// <para>
         /// Installs the Plugin contained within the supplied PluginArchive using the supplied IPlatform and adds the installed Plugin to the
         /// supplied PluginManagerConfiguration.
-        /// 
+        /// </para>
+        /// <para>
         /// Prior to installing, the Plugin Archive is re-parsed to ensure it did not changed between the time it was loaded into the PluginArchives
         /// list and when installation was requested.  If the Plugin within the archive is the same as the loaded plugin, installation continues, otherwise
         /// the operation fails and requests that the user refreshes the list.
+        /// </para>
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <param name="plugins">The List of type Plugin to which the installed Plugin should be added.</param>
@@ -721,16 +1300,17 @@ namespace Symbiote.Core.Plugin
             logger.Info("Installing Plugin '" + archive.Plugin.FQN + "' from archive '" + System.IO.Path.GetFileName(archive.FileName) + "'...");
             Result<Plugin> retVal = new Result<Plugin>();
 
-            string fullFileName = System.IO.Path.Combine(Dependency<PlatformManager>().Directories.Archives, archive.FileName);
+            string fullFileName = System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Archives, archive.FileName);
 
-            //-------------------------- -   -  
             // check to see if the app is installed already
             Plugin foundPlugin = FindPlugin(archive.Plugin.FQN);
             if (foundPlugin != default(Plugin))
             {
                 // plugin was found.  If we aren't updating then add an error.
                 if (!updatePlugin)
+                {
                     retVal.AddError("A Plugin with the name '" + archive.Plugin.Name + "' is already installed.");
+                }
                 else
                 {
                     // we are updating.  Make sure the plugins have the same Name, FQN and PluginType.
@@ -738,7 +1318,9 @@ namespace Symbiote.Core.Plugin
                     Plugin p = foundPlugin;
                     Plugin a = archive.Plugin;
                     if ((p.Name != a.Name) || (p.FQN != a.FQN) || (p.PluginType != a.PluginType))
+                    {
                         retVal.AddError("The archive '" + System.IO.Path.GetFileName(archive.FileName) + "' can't be used to update the Plugin '" + foundPlugin.FQN + "'; one or more of the Name, FQN or PluginType fields are different.");
+                    }
                 }
             }
 
@@ -750,17 +1332,16 @@ namespace Symbiote.Core.Plugin
                 logger.ExitMethod(retVal, guid);
                 return retVal;
             }
-            //-------------------------------------  -  -- 
-
-
-            //--------------------- - -------------------- - 
+            
             // re-validate the file; it may have changed between the time it was loaded and when installation was requested.
             logger.Debug("Re-parsing the archive to ensure that it hasn't changed since it was loaded.");
-            Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(Dependency<PlatformManager>().Directories.Archives, archive.FileName));
+            Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Archives, archive.FileName));
             if (parseResult.ResultCode != ResultCode.Failure)
             {
                 if (!parseResult.ReturnValue.Plugin.Equals(archive.Plugin))
+                {
                     retVal.AddError("The archive '" + System.IO.Path.GetFileName(archive.FileName) + "' has changed since it was loaded.  Refresh Plugin Archives and try again.");
+                }
             }
 
             retVal.Incorporate(parseResult);
@@ -774,33 +1355,31 @@ namespace Symbiote.Core.Plugin
             }
 
             logger.Checkpoint("Re-parse succeeded", guid);
-            //---------------------- - - ---- - ---------------------
-
-
-            //------- - -
+            
             // determine the destination folders
             logger.Debug("Determining output directories...");
             string tempDestination;
             string destination;
 
-            tempDestination = System.IO.Path.Combine(Dependency<PlatformManager>().Directories.Temp, archive.Plugin.FQN);
+            tempDestination = System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Temp, archive.Plugin.FQN);
 
             // ..\Web\AppName
             if (archive.Plugin.PluginType == PluginType.App)
-                destination = System.IO.Path.Combine(Dependency<PlatformManager>().Directories.Web, archive.Plugin.Name);
-            // ..\Plugins\(Connector|Endpoint)\AppName
+            {
+                destination = System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Web, archive.Plugin.Name);
+            }
             else
-                destination = System.IO.Path.Combine(Dependency<PlatformManager>().Directories.Plugins, archive.Plugin.PluginType.ToString(), archive.Plugin.Name);
+            {
+                // ..\Plugins\(Connector|Endpoint)\AppName
+                destination = System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Plugins, archive.Plugin.PluginType.ToString(), archive.Plugin.Name);
+            }
 
             logger.Debug("Output folders: Temp: '" + tempDestination + "'; Plugin: '" + destination + "'");
 
             logger.Checkpoint("Destination folders", xLogger.Vars(tempDestination, destination), xLogger.Names("tempDestination", "destination"), guid);
-            //---------------- - --------------------------------- -   - - -   -  
-
-
-            //--------------------- - ----------------  -- 
+            
             // extract the archive; first to the temp directory, then extract the payload to the plugin destination and copy the configuration file
-            logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(Dependency<PlatformManager>().Directories.Root, "") + "'...");
+            logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(Dependency<IPlatformManager>().Directories.Root, string.Empty) + "'...");
 
             Result extractResult;
             Result payloadExtractResult;
@@ -864,10 +1443,14 @@ namespace Symbiote.Core.Plugin
                                         }
                                     }
                                     else
+                                    {
                                         retVal.AddError("Error calculating checksum for Plugin fingerprint; unable to find the plugin assembly in the destination directory.");
+                                    }
                                 }
                                 else
+                                {
                                     retVal.AddError("Failed to calculate checksum for the plugin assembly; unable to list the files in the destination directory.");
+                                }
 
                                 retVal.Incorporate(findDllResult);
                             }
@@ -876,47 +1459,23 @@ namespace Symbiote.Core.Plugin
                         retVal.Incorporate(payloadExtractResult);
                     }
                     else
+                    {
                         retVal.AddError("The payload archive is missing from the extraction directory.");
+                    }
                 }
+
                 retVal.Incorporate(extractResult);
             }
 
             logger.Checkpoint("Installation complete", guid);
-            //----------- - -----------  - ---   
 
-
-            //------------ - -
             // cleanup the temp directory
             logger.Debug("Cleaning up the temporary directory...");
             platform.DeleteDirectory(tempDestination);
-            //------- - -
-
-
+            
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
             return retVal;
-        }
-
-        /// <summary>
-        /// Asynchronously uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the default
-        /// PluginManagerConfiguration.
-        /// </summary>
-        /// <param name="plugin">The Plugin to uninstall.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<Result> UninstallPluginAsync(Plugin plugin)
-        {
-            return await Task.Run(() => UninstallPlugin(plugin));
-        }
-
-        /// <summary>
-        /// Uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the default 
-        /// PluginManagerConfiguration.
-        /// </summary>
-        /// <param name="plugin">The Plugin to uninstall.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result UninstallPlugin(Plugin plugin)
-        {
-            return UninstallPlugin(plugin, Plugins, Dependency<PlatformManager>().Platform);
         }
 
         /// <summary>
@@ -933,12 +1492,15 @@ namespace Symbiote.Core.Plugin
             logger.Checkpoint(xLogger.Vars(plugin), xLogger.Names("plugin"), guid);
 
             if (plugin == default(Plugin))
+            {
                 return new Result().AddError("The specified Plugin is invalid.");
+            }
 
             logger.Info("Uninstalling Plugin '" + plugin.FQN + "'...");
             Result retVal = new Result();
-            
+
             Plugin foundPlugin = FindPlugin(plugin.FQN);
+
             // ensure the plugin is installed
             if (foundPlugin != default(Plugin))
             {
@@ -968,82 +1530,13 @@ namespace Symbiote.Core.Plugin
                 }
             }
             else
-                retVal.AddError("The specified Plugin '" + plugin.FQN + "' is not installed.");
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-        
-        /// <summary>
-        /// Asynchronously reinstalls the specified Plugin by uninstalling, then installing from the original archive.
-        /// </summary>
-        /// <param name="plugin">The Plugin to reinstall.</param>
-        /// <returns>A Result containing the result of hte operation.</returns>
-        public async Task<Result> ReinstallPluginAsync(Plugin plugin)
-        {
-            return await Task.Run(() => ReinstallPlugin(plugin));
-        }
-
-        /// <summary>
-        /// Reinstalls the specified Plugin by uninstalling, then installing from the original archive.
-        /// </summary>
-        /// <param name="plugin">The Plugin to reinstall.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result ReinstallPlugin(Plugin plugin)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(plugin), true);
-
-            logger.Info("Reinstalling Plugin '" + plugin.FQN + "'...");
-            Result retVal = new Result();
-
-            logger.Debug("Attempting to locate the Plugin Archive for the supplied Plugin...");
-            PluginArchive foundArchive = PluginArchives.Where(p => p.Plugin.FQN == plugin.FQN).FirstOrDefault();
-            if (foundArchive == default(PluginArchive))
-                retVal.AddError("Unable to locate the Plugin Archive for the supplied Plugin.  The Plugin can not be reinstalled.");
-            else
             {
-                logger.Debug("Uninstalling the Plugin...");
-                retVal.Incorporate(UninstallPlugin(plugin));
-
-                logger.Debug("Reinstalling the Plugin...");
-                if (retVal.ResultCode != ResultCode.Failure)
-                    retVal.Incorporate(InstallPlugin(foundArchive));
+                retVal.AddError("The specified Plugin '" + plugin.FQN + "' is not installed.");
             }
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
             return retVal;
-        }
-
-        /// <summary>
-        /// Asynchronously Updates the Plugin contained within the specified PluginArchive.
-        /// </summary>
-        /// <param name="archive">The PluginArchive to use for the update.</param>
-        /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        public async Task<Result<Plugin>> UpdatePluginAsync(PluginArchive archive)
-        {
-            return await Task.Run(() => UpdatePlugin(archive));
-        }
-
-        /// <summary>
-        /// Updates the Plugin contained withing the specified PluginArchive.
-        /// </summary>
-        /// <param name="archive">The PluginArchive to use for the update.</param>
-        /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        public Result<Plugin> UpdatePlugin(PluginArchive archive)
-        {
-            return InstallPlugin(archive, true);
-        }
-
-        /// <summary>
-        /// Searches the Plugins list for a Plugin with an FQN matching the supplied FQN and returns it if found.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Plugin to find.</param>
-        /// <returns>The Plugin matching the supplied FQN, or the default Plugin if not found.</returns>
-        public Plugin FindPlugin(string fqn)
-        {
-            return FindPlugin(fqn, Plugins);
         }
 
         /// <summary>
@@ -1061,10 +1554,6 @@ namespace Symbiote.Core.Plugin
             logger.ExitMethod(retVal);
             return retVal;
         }
-
-        #endregion
-
-        #region Plugin Assembly Management
 
         /// <summary>
         /// Loads the Plugin Assemblies specified in the InstalledPlugins list of the Plugin Manager configuration.
@@ -1091,14 +1580,12 @@ namespace Symbiote.Core.Plugin
             // discard any plugins that aren't loadable (e.g. apps)
             plugins = plugins.Where(p => IsPluginLoadable(p)).ToList();
 
-
-            //--------- -   -
             // load the assemblies
             foreach (Plugin plugin in plugins)
             {
                 string assemblyFileName = System.IO.Path.Combine(GetPluginDirectory(plugin), plugin.FQN + ".dll");
 
-                logger.SubSubHeading(LogLevel.Debug, "Assembly: .." + String.Join(".", System.IO.Path.GetFileName(assemblyFileName).Split('.').TakeLast(2).ToArray()));
+                logger.SubSubHeading(LogLevel.Debug, "Assembly: .." + string.Join(".", System.IO.Path.GetFileName(assemblyFileName).Split('.').TakeLast(2).ToArray()));
 
                 // load the assembly
                 Result<PluginAssembly> loadResult = LoadPluginAssembly(plugin);
@@ -1114,22 +1601,10 @@ namespace Symbiote.Core.Plugin
                     retVal.AddWarning("Failed to load Plugin Assembly '" + System.IO.Path.GetFileName(assemblyFileName) + ": " + loadResult.LastErrorMessage());
                 }
             }
-            //---------------------------- - -       - - - - 
-
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
             return retVal;
-        }
-
-        /// <summary>
-        /// Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the PluginAssemblies list.
-        /// </summary>
-        /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
-        /// <returns>A Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
-        public Result<PluginAssembly> LoadPluginAssembly(Plugin plugin)
-        {
-            return LoadPluginAssembly(plugin, PluginAssemblies);
         }
 
         /// <summary>
@@ -1147,79 +1622,76 @@ namespace Symbiote.Core.Plugin
             Assembly assembly;
 
             if (pluginAssemblies.Exists(p => p.FQN == plugin.FQN))
+            {
                 return retVal.AddError("The Plugin Assembly for Plugin '" + plugin.FQN + "' has already been loaded.");
+            }
 
             string assemblyFileName = System.IO.Path.Combine(GetPluginDirectory(plugin), plugin.FQN + ".dll");
 
-            //------------------- - 
             // attempt to load the assembly and add it to the internal list of plugins
             try
             {
-                //------------------ - -    -  --------------------- - 
                 // validate the assembly fingerprint
-                Result<string> checksumResult = Dependency<PlatformManager>().Platform.ComputeFileChecksum(assemblyFileName);
+                Result<string> checksumResult = Dependency<IPlatformManager>().Platform.ComputeFileChecksum(assemblyFileName);
                 if (checksumResult.ResultCode != ResultCode.Failure)
                 {
                     string computedFingerprint = Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.ReturnValue);
 
                     computedFingerprint = plugin.Fingerprint;
 
-
                     if (computedFingerprint != plugin.Fingerprint)
+                    {
                         throw new Exception("Error validating plugin fingerprint.  Computed: " + computedFingerprint + "; Expected: " + plugin.Fingerprint);
+                    }
                     else
+                    {
                         logger.Info("Plugin Assembly fingerprint validated successfully.  Loading...");
+                    }
                 }
                 else
+                {
                     throw new Exception("Failed to compute the checksum of the assembly file '" + assemblyFileName + "'");
+                }
 
                 logger.Checkpoint("Fingerprint validated");
-                //---------------- - ------------      --
 
-
-                //----------- - -
                 // load the assembly 
                 assembly = Assembly.LoadFrom(assemblyFileName);
 
                 logger.Checkpoint("Assembly loaded");
                 logger.Trace("Loaded assembly.  Validating...");
-                //--------------------------- -
 
-
-                //------------- - -------------
                 // validate the assembly
                 Result<Type> validationResult = ValidatePluginAssembly(assembly);
 
                 if (validationResult.ResultCode == ResultCode.Failure)
+                {
                     throw new Exception("Error validating plugin assembly: " + validationResult.LastErrorMessage());
+                }
                 else
+                {
                     logger.Trace("Plugin type '" + validationResult.ReturnValue.Name + "' was found in assembly '" + assembly.GetName().Name);
+                }
 
                 logger.Checkpoint("Assembly validated");
-                //-------------- - -    - - - - - -
 
-
-                //------------ - -    --  
                 // create a new PluginAssembly instance
                 retVal.ReturnValue = new PluginAssembly(
                                                     assembly.GetName().Name.Split('.').TakeLast(1).FirstOrDefault(),
                                                     assembly.GetName().Name,
                                                     assembly.GetName().Version.ToString(),
                                                     GetPluginType(assembly.GetName().Name),
-                                                    "",
+                                                    string.Empty,
                                                     validationResult.ReturnValue,
-                                                    assembly
-                                                );
-                //-------------- - ---------------
+                                                    assembly);
 
-
-                //- -  ---------------- -
                 // register the plugin type
                 // as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
-                Result registerResult = Dependency<ConfigurationManager>().RegisterType(validationResult.ReturnValue);
+                Result registerResult = Dependency<IConfigurationManager>().RegisterType(validationResult.ReturnValue);
                 if (registerResult.ResultCode == ResultCode.Failure)
+                {
                     throw new Exception("Failed to register the assembly type with the Configuration Manager.");
-                //----- -
+                }
             }
             catch (ReflectionTypeLoadException ex)
             {
@@ -1230,33 +1702,25 @@ namespace Symbiote.Core.Plugin
                 retVal.AddError("Failed to load assembly from plugin file '" + assemblyFileName + "': " + ex.Message);
 
                 foreach (Exception le in ex.LoaderExceptions)
+                {
                     retVal.AddError("Loader Exception: " + le.Message);
+                }
             }
             catch (Exception ex)
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError("Failed to load assembly from plugin file '" + assemblyFileName + "': " + ex.Message);
             }
-            //--------------------------  - 
-
 
             // if the assembly loaded without errors, add it to the list of loaded assemblies.
             if (retVal.ResultCode != ResultCode.Failure)
+            {
                 pluginAssemblies.Add(retVal.ReturnValue);
+            }
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
             return retVal;
-        }
-
-        /// <summary>
-        /// Finds and returns the PluginAssembly in the PluginAssemblies list whose FQN matches the specified FQN.
-        /// </summary>
-        /// <param name="fqn">The FQN of the desired PluginAssembly.</param>
-        /// <returns>The PluginAssembly instance whose FQN matches the specified FQN, or the default PluginAssembly if not found.</returns>
-        public PluginAssembly FindPluginAssembly(string fqn)
-        {
-            return FindPluginAssembly(fqn, PluginAssemblies);
         }
 
         /// <summary>
@@ -1275,18 +1739,14 @@ namespace Symbiote.Core.Plugin
             return retVal;
         }
 
-        #endregion
-
-        #region Plugin Instance Management
-
         /// <summary>
-        /// Iterates over the configured list of Plugin Instances, retreives the matching PluginAssembly from the list of 
+        /// Iterates over the configured list of Plugin Instances, retrieves the matching PluginAssembly from the list of 
         /// loaded PluginAssemblies and instantiates each instance
         /// </summary>
         /// <returns>A Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
         private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins()
         {
-            return InstantiatePlugins(Configuration.Instances, PluginAssemblies, Dependency<ProgramManager>());
+            return InstantiatePlugins(Configuration.Instances, PluginAssemblies, Dependency<IProgramManager>());
         }
 
         /// <summary>
@@ -1319,7 +1779,9 @@ namespace Symbiote.Core.Plugin
                 // locate the PluginAssembly matching the instance
                 PluginAssembly assembly = FindPluginAssembly(instance.AssemblyName);
                 if (assembly == default(PluginAssembly))
+                {
                     retVal.AddWarning("Plugin assembly '" + instance.AssemblyName + "' not found in the list of loaded assemblies.");
+                }
                 else
                 {
                     // create an instance of xLogger for the new instance
@@ -1346,293 +1808,7 @@ namespace Symbiote.Core.Plugin
             return retVal;
         }
 
-        /// <summary>
-        /// Creates and returns an instance of the specified plugin type with the specified name
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        ///     The instanceName is propagated through the plugin instance and any internal reference (such as a ConnectorItem).  This name
-        ///     should match references to the plugin, either through fully qualified addressing or configuration.
-        /// </para>
-        /// </remarks>
-        /// <param name="instanceManager">The ProgramManager instance to be passed to the Plugin instance.</param>
-        /// <param name="instanceName">The desired internal name of the instance</param>
-        /// <param name="instanceLogger">The logger for the plugin instance.</param>
-        /// <typeparam name="T">The Type of the Plugin instance to create.</typeparam>
-        /// <returns>A Result containing the result of the operation and the created Plugin instance.</returns>
-        public Result<IPluginInstance> InstantiatePlugin<T>(ProgramManager instanceManager, string instanceName, xLogger instanceLogger)
-        {
-            logger.EnterMethod(xLogger.Params(instanceName));
-            logger.Debug("Creating plugin instance '" + instanceName + "' of Type '" + typeof(T).Name + "'...");
-
-            Result<IPluginInstance> retVal = new Result<IPluginInstance>();
-
-            try
-            {
-                // check to see if the instance name has already been used
-                if (FindPluginInstance(instanceName) == default(IPluginInstance))
-                {
-                    logger.Trace("Creating instance of plugin type '" + typeof(T).ToString() + "' with instance name '" + instanceName + "'");
-                    retVal.ReturnValue = (IPluginInstance)Activator.CreateInstance(typeof(T), instanceManager, instanceName, instanceLogger);
-                }
-                else
-                    retVal.AddError("A plugin with InstanceName '" + instanceName + "' has already been instantiated.");
-            }
-            catch (Exception ex)
-            {
-                logger.Exception(LogLevel.Error, ex);
-                retVal.AddError("Exception caught while creating plugin instance '" + instanceName + "': " + ex.Message);
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Given an instance name string, return the matching instance of IPluginInstance.
-        /// </summary>
-        /// <param name="instanceName">The name of the instance to find.</param>
-        /// <param name="pluginType">The Type of instance to find.</param>
-        /// <returns>The instance of IPluginInstance matching the requested InstanceName.</returns>
-        public IPluginInstance FindPluginInstance(string instanceName, PluginType pluginType = PluginType.Connector)
-        {
-            //return PluginInstances.Where(p => p.PluginType == pluginType).Where(p => p.InstanceName == instanceName).FirstOrDefault();
-            if (PluginInstances.ContainsKey(instanceName))
-                return PluginInstances[instanceName];
-            else return null;
-        }
-
         #endregion
-
-        /// <summary>
-        /// Attempts to resolve the supplied plugin item Fully Qualified Name to an instance of Item contained in a Connector plugin.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the instance to find.</param>
-        /// <returns>The found Item.</returns>
-        public Item FindPluginItem(string fqn)
-        {
-            logger.Trace("Attempting to find Connector Item '" + fqn + "'...");
-
-            Item retVal = default(Item);
-
-            IConnector originPlugin = (IConnector)FindPluginInstance(fqn.Split('.')[0]);
-
-            if (originPlugin != default(IConnector))
-            {
-                try
-                {
-                    logger.Trace("Origin Plugin is '" + originPlugin.ToString() + "'.. Performing lookup..");
-                    retVal = originPlugin.Find(fqn);
-                }
-                catch (Exception ex)
-                {
-                    logger.Trace("Exception thrown from FindPluginItem(): " + ex);
-                }
-            }
-            else
-                logger.Trace("Origin plugin '" + fqn.Split('.')[0] + "' not found.");
-
-
-            logger.Trace((retVal == default(Item) ? "Unable to resolve Item." : "Resolved Item: " + retVal.ToJson()));
-            return retVal;
-        }
-
-        #endregion
-
-        #region Static Methods
-
-        #region IConfigurable<T> Implementation
-
-        /// <summary>
-        /// Returns the ConfigurationDefinition for the Type.
-        /// </summary>
-        /// <returns>The ConfigurationDefinition for the Type.</returns>
-        public static ConfigurationDefinition GetConfigurationDefinition()
-        {
-            ConfigurationDefinition retVal = new ConfigurationDefinition();
-            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
-            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
-            retVal.Model = typeof(PluginManagerConfiguration);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Returns the default instance of the configuration Model for the Type.
-        /// </summary>
-        /// <returns>The default instance of the configuration Model for the Type.</returns>
-        public static PluginManagerConfiguration GetDefaultConfiguration()
-        {
-            PluginManagerConfiguration retVal = new PluginManagerConfiguration();
-            retVal.Instances = new List<PluginManagerConfigurationPluginInstance>();
-
-            PluginManagerConfigurationPluginInstance sim = new PluginManagerConfigurationPluginInstance();
-            sim.InstanceName = "Simulation";
-            sim.AssemblyName = "Symbiote.Plugin.Connector.Simulation";
-
-            retVal.Instances.Add(sim);
-            return retVal;
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Evaluates the supplied assembly name for correctness and returns an error message if it is incorrect.
-        /// </summary>
-        /// <remarks>
-        /// The expected format of an assembly name is:  "Symbiote.Plugin.[Connector|Service].{PluginName}"
-        /// The third tuple may match any enumerated value in PluginType.
-        /// </remarks>
-        /// <param name="assemblyName">The AssemblyName to be validated.</param>
-        private static Result ValidatePluginAssemblyName(AssemblyName assemblyName)
-        {
-            logger.EnterMethod(xLogger.Params(assemblyName));
-            logger.Debug("Validating assembly name for '" + assemblyName.FullName + "'...");
-
-            Result retVal = new Result();
-
-            string[] name = assemblyName.Name.Split('.');
-
-            if (name.Length != 4)
-                retVal.AddError("Invalid assembly name (required: 4 tuples, supplied: " + name.Length + ")");
-            if (name[0] != "Symbiote")
-                retVal.AddError("Invalid application identifier (required: Symbiote, supplied: " + name[0] + ")");
-            if (name[1] != "Plugin")
-                retVal.AddError("Invalid namespace identifier (required: Plugin, supplied: " + name[1] + ")");
-            if (GetPluginType(assemblyName.Name) == default(PluginType))
-                retVal.AddError("Invalid plugin type identifier (supplied: " + name[2] + ")");
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Determines whether the supplied assembly is a valid plugin, and if so, returns the plugin type.
-        /// </summary>
-        /// <param name="assembly">The assembly to validate.</param>
-        /// <returns>A Result containing the result of the operation and, if successful, the plugin type.</returns>
-        private static Result<Type> ValidatePluginAssembly(Assembly assembly)
-        {
-            logger.EnterMethod(xLogger.Params(assembly));
-            logger.Debug("Validating plugin assembly '" + assembly.FullName + "'...");
-
-            Result<Type> retVal = new Result<Type>();
-
-            // validate the assembly name
-            Result nameValidationResult = ValidatePluginAssemblyName(assembly.GetName());
-            retVal.Incorporate(nameValidationResult);
-
-            if (nameValidationResult.ResultCode != ResultCode.Failure)
-            {
-
-                logger.Trace("Name validated; searching for the type that implements IConfigurable<> and either IConnector or IEndpoint...");
-                // passed name validation, find an implementation of IConfigurable and either IConnector or IEndpoint
-                foreach (Type t in assembly.GetTypes())
-                {
-                    logger.Trace("Checking type '" + t.Name + "'...");
-                    // ensure the type implements IConfigurable<>
-                    if (t.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
-                    {
-                        logger.Trace("IConfigurable is implemented.  Looking for either IConnector or IEndpoint...");
-                        // ensure it implements either IConnector or IEndpoint
-                        // TODO: refactor this to check IsAssignableFrom(IPluginInstance)) to handle other types of Plugin.
-                        if ((t.GetInterfaces().Contains(typeof(IConnector))) || (t.GetInterfaces().Contains(typeof(IEndpoint))))
-                        {
-                            retVal.ReturnValue = t;
-                            break;
-                        }
-                        else
-                            retVal.AddError("Neither IConnector nor IEndpoint interfaces are implemented; plugin assembly is invalid.");
-                    }
-                    else
-                        retVal.AddError("Interface IConfigurable is not implemented; plugin assembly is invalid.");
-                }
-
-                // if we successfully grabbed a suitable type, clear the errors in the Result and reset the ResultCode.
-                if (retVal.ReturnValue != default(Type))
-                    retVal.RemoveMessages(MessageType.Error).SetResultCode(ResultCode.Success);
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Returns an enumeration instance representing the type of the plugin, derived from the third tuple of the plugin name.
-        /// </summary>
-        /// <param name="name">The fully qualified assembly name from which to parse the plugin type.</param>
-        /// <returns>An instance of PluginType corresponding to the parsed type.</returns>
-        private static PluginType GetPluginType(string name)
-        {
-            logger.EnterMethod(xLogger.Params(name));
-            logger.Trace("Attempting to determine Plugin type for '" + name + "'...");
-
-            PluginType retVal;
-
-            if (Enum.TryParse<PluginType>(name.Split('.')[2], out retVal))
-                logger.Trace("Plugin type: " + retVal);
-            else
-                logger.Trace("Invalid PluginType for plugin '" + name + "'");
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Returns the base directory in which the specified Plugin should be installed, based on the type and name of the 
-        /// specified Plugin.
-        /// </summary>
-        /// <param name="plugin">The Plugin for which the directory is to be returned.</param>
-        /// <returns>The directory in which the specified Plugin should be installed.</returns>
-        private static string GetPluginDirectory(Plugin plugin)
-        {
-            if (plugin.PluginType == PluginType.App)
-                return System.IO.Path.Combine(ProgramManager.GetInstance().GetManager<PlatformManager>().Directories.Web, plugin.Name);
-            else
-                return System.IO.Path.Combine(ProgramManager.GetInstance().GetManager<PlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
-        }
-
-        /// <summary>
-        /// Returns true if the supplied Plugin is capable of being loaded, false otherwise.
-        /// </summary>
-        /// <param name="plugin">The Plugin to check.</param>
-        /// <returns>True if the Plugin is capable of being loaded, false otherwise.</returns>
-        /// <seealso cref="loadablePluginTypes"/>
-        private static bool IsPluginLoadable(Plugin plugin)
-        {
-            return loadablePluginTypes.Contains(plugin.PluginType);
-        }
-
-        #region Settings
-
-        /// <summary>
-        /// Retrieves the PluginArchiveConfigurationFileName setting or substitutes "SymbiotePlugin.json" if retrieval fails.
-        /// </summary>
-        /// <returns>The name of the Plugin Archive configuration file.</returns>
-        private static string GetPluginArchiveConfigurationFileName()
-        {
-            return Utility.GetSetting("PluginArchiveConfigurationFileName", "SymbiotePlugin.json");
-        }
-
-        /// <summary>
-        /// Retrieves the PluginArchivePayloadFileName setting or substitutes "Plugin.zip" if retrieval fails.
-        /// </summary>
-        /// <returns>The name of the Plugin payload file contained within a Plugin Archive.</returns>
-        private static string GetPluginArchivePayloadFileName()
-        {
-            return Utility.GetSetting("PluginArchivePayloadFileName", "Plugin.zip");
-        }
-
-        /// <summary>
-        /// Retrieves the PluginArchiveExtension setting or substitutes "*.zip" if retrieval fails.
-        /// </summary>
-        /// <returns>The wildcard mask of the file extension for Plugin Archives.</returns>
-        private static string GetPluginArchiveExtension()
-        {
-            return Utility.GetSetting("PluginArchiveExtension", "*.zip");
-        }
 
         #endregion
 
