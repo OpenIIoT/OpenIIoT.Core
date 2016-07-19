@@ -824,12 +824,18 @@ namespace Symbiote.Plugin.Connector.Example
                 // load the list of added Items
                 AddedItems = Configuration.AddedItems;
 
-                // create all of the Items
-                foreach (string key in AddedItems.Keys)
-                    retVal.Incorporate(AddItem(key, AddedItems[key]));
+                if (AddedItems != default(Dictionary<string, string>))
+                {
+                    // create all of the Items
+                    foreach (string key in AddedItems.Keys)
+                    {
+                        retVal.Incorporate(AddItem(key, AddedItems[key]));
+                    }
+                }
             }
             catch (Exception ex)
             {
+                logger.Exception(ex);
                 retVal.AddError("Error configuring the Connector '" + InstanceName + "': " + ex.Message);
             }
 

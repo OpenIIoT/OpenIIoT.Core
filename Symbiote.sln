@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Core", "Symbiote.Core\Symbiote.Core.csproj", "{899D0A77-77E8-4BCF-848E-2167C8CC036F}"
 EndProject
@@ -18,8 +18,6 @@ EndProject
 Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Symbiote.Documentation", "Symbiote.Documentation\Symbiote.Documentation.shfbproj", "{9A28DBD7-EBF3-453E-B6AA-E6D183F47A75}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Repositories", "Repositories", "{52E21C20-075B-4B53-843D-00179084A969}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Cryptography", "Symbiote.Cryptography\Symbiote.Cryptography.csproj", "{85436076-1E12-4089-9CE1-6F9EFE2CCE8E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Example", "Plugins\Connectors\Symbiote.Plugin.Connector.Example\Symbiote.Plugin.Connector.Example.csproj", "{7BEF95DB-C014-46D2-9D84-7B3DA66E2608}"
 EndProject
@@ -42,10 +40,6 @@ Global
 		{9A28DBD7-EBF3-453E-B6AA-E6D183F47A75}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{9A28DBD7-EBF3-453E-B6AA-E6D183F47A75}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A28DBD7-EBF3-453E-B6AA-E6D183F47A75}.Release|Any CPU.Build.0 = Release|Any CPU
-		{85436076-1E12-4089-9CE1-6F9EFE2CCE8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{85436076-1E12-4089-9CE1-6F9EFE2CCE8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{85436076-1E12-4089-9CE1-6F9EFE2CCE8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{85436076-1E12-4089-9CE1-6F9EFE2CCE8E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7BEF95DB-C014-46D2-9D84-7B3DA66E2608}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{7BEF95DB-C014-46D2-9D84-7B3DA66E2608}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7BEF95DB-C014-46D2-9D84-7B3DA66E2608}.Release|Any CPU.ActiveCfg = Release|Any CPU
