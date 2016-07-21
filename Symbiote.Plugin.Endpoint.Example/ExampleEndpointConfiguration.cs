@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
 
-namespace Symbiote.Core.Plugin.Endpoint.Example
+namespace Symbiote.Plugin.Endpoint.Example
 {
     /// <summary>
     /// The ExampleEndpointConfiguration class is an example of what a configuration/model class for an Endpoint might look like.

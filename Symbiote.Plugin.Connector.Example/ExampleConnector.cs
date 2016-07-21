@@ -254,25 +254,28 @@ namespace Symbiote.Plugin.Connector.Example
 
             // log the entry of the method
             logger.EnterMethod(xLogger.Params(new xLogger.ExcludedParam(), instanceName, new xLogger.ExcludedParam()));
-            logger.Info("Initializing Plugin " + FQN + "." + instanceName + "'...");
 
             // set up metadata
             // The name of the assembly should generally be the same as the Connector Name.
-            Name = System.Reflection.Assembly.GetEntryAssembly().GetName().Name;
+            Name = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
             // The FQN should generally correspond to the namespace of the Connector class
             // note that the code below references the first Type in the assembly; this may need
             // to be adjusted depending on the composition of the Connector.
-            FQN = System.Reflection.Assembly.GetEntryAssembly().GetTypes()[0].Namespace;
+            FQN = System.Reflection.Assembly.GetExecutingAssembly().GetTypes()[0].Namespace;
 
             // The version should generally match the assembly version.
-            Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            Version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
             // The PluginType will always be PluginType.Connector.
             PluginType = PluginType.Connector;
 
             // Set the initial State
             State = State.Stopped;
+
+            logger.Checkpoint(xLogger.Vars(this), "Connector");
+
+            logger.Info("Initializing Plugin " + FQN + "." + instanceName + "'...");
 
             // end of boilerplate
             //-------------------   --- -- ----------------------------------------------------  --  -  -

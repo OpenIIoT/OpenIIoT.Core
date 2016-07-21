@@ -1,8 +1,11 @@
 ﻿using System;
 using Symbiote.Core.Configuration;
 using System.Linq;
+using Symbiote.Core;
+using Symbiote.Core.Plugin;
+using Symbiote.Core.Plugin.Endpoint;
 
-namespace Symbiote.Core.Plugin.Endpoint.Example
+namespace Symbiote.Plugin.Endpoint.Example
 {
     /// <summary>
     /// This class is an example of an Endpoint.

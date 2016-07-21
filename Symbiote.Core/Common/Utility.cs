@@ -399,7 +399,7 @@ namespace Symbiote.Core
                 prefix += levels[l] ? " │  " : "    ";
             }
            
-            logger.Info(@"      █" + prefix + (last ? (indent == 0 ? "  ■ " : " └─ ") : " ├─ ") + root.FQN);
+            logger.Info(@"      █" + prefix + (last ? (indent == 0 ? "  ■ " : " └─╴") : " ├─╴") + root.FQN);
 
             // print each of the children of this Item
             for (int i = 0; i < root.Children.Count; i++)

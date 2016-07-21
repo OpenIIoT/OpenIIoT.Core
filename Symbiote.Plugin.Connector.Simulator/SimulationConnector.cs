@@ -6,8 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Timers;
-using Symbiote.Core.Model;
 using System.Threading.Tasks;
+using NLog;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {
