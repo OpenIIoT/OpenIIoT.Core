@@ -193,7 +193,8 @@
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="Service\IoT\MQTT\MQTTBroker.cs" />
+    <Compile Include="Plugin\Repository\RepositoryManager.cs" />
+    <Compile Include="Scripting\ScriptManager.cs" />
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Common\RealtimeLogger.cs" />

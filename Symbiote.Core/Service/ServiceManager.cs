@@ -117,10 +117,6 @@ namespace Symbiote.Core.Service
                 logger.Trace("Registering Web Services...");
                 retVal.ReturnValue.Add("Web Services", typeof(Web.WebService));
                 configurationManager.RegisterType(typeof(Web.WebService));
-
-                logger.Trace("Registering MQTT Broker...");
-                retVal.ReturnValue.Add("MQTT Broker", typeof(IoT.MQTT.MQTTBroker));
-                configurationManager.RegisterType(typeof(Web.WebService));
             }
             catch (Exception ex)
             {
