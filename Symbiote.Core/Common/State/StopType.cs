@@ -38,21 +38,34 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using System;
+
 namespace Symbiote.Core
 {
     /// <summary>
     /// Enumeration of the circumstances under which a Stateful component can stop.
     /// </summary>
+    [Flags]
     public enum StopType
     {
         /// <summary>
         /// A normal stop.
         /// </summary>
-        Normal,
+        Stop = 1,
+
+        /// <summary>
+        /// A restart.
+        /// </summary>
+        Restart = 2,
+
+        /// <summary>
+        /// A stoppage due to system shutdown.
+        /// </summary>
+        Shutdown = 4,
 
         /// <summary>
         /// An abnormal stop.
         /// </summary>
-        Abnormal
+        Exception = 8
     }
 }

@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NLog;
+using Symbiote.Core.Configuration;
 
 namespace Symbiote.Core
 {
@@ -309,7 +310,7 @@ namespace Symbiote.Core
         /// <param name="manager">The IManager instance to stop.</param>
         /// <param name="stopType">The type of stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        internal Result StopManager(IManager manager, StopType stopType = StopType.Normal)
+        internal Result StopManager(IManager manager, StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager, stopType), true);
 
@@ -357,9 +358,8 @@ namespace Symbiote.Core
         /// Executed upon shutdown of the Manager.  Stops all application managers.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
-        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
@@ -703,6 +703,26 @@ namespace Symbiote.Core
                 managerInstances.Add(manager);
                 managerDependencies.Add(typeof(T), dependencies);
                 manager.StateChanged += ManagerStateChanged;
+
+                // register the manager with the configuration manager
+                // first, ensure the manager implements IConfigurable.  
+                if (manager.GetType().GetInterfaces().Where(i => i.IsGenericType).Any(i => i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
+                {
+                    logger.Trace("Attempting to register the Manager with the Configuration Manager...");
+
+                    // if the manager implements IConfigurable, ensure the Configuration Manager has been registered.
+                    if (IsRegistered<IConfigurationManager>())
+                    {
+                        // register the type of the manager.  this method will throw an exception if it fails as it is imperative that each
+                        // manager impementing IConfigurable is registered.
+                        IConfigurationManager configManager = GetManager<IConfigurationManager>();
+                        configManager.RegisterType(manager.GetType(), true);
+                    }
+                    else
+                    {
+                        throw new Exception("The manager '" + manager.GetType().Name + "' cannot be registered with the Configuration Manager because the Configuration Manager is not yet registered.");
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -828,7 +848,7 @@ namespace Symbiote.Core
         /// </remarks>
         /// <param name="stopType">The type of stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        private Result StopManagers(StopType stopType = StopType.Normal)
+        private Result StopManagers(StopType stopType = StopType.Stop)
         {
             logger.EnterMethod();
 
@@ -855,11 +875,12 @@ namespace Symbiote.Core
 
             // iterate over the Manager instance list in reverse order, stopping each manager.
             // skip the ProgramManager as it will stop when this process is complete.
-            for (int i = managerInstances.Count(); i <= 0; i--)
+            for (int i = managerInstances.Count() - 1; i >= 0; i--)
             {
+                logger.SubHeading(LogLevel.Debug, managerInstances[i].GetType().Name);
                 if (managerInstances[i] != this)
                 {
-                    retVal.Incorporate(StopManager(managerInstances[i]));
+                    retVal.Incorporate(StopManager(managerInstances[i], StopType.Shutdown));
                 }
             }
 

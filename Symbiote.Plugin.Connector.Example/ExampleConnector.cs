@@ -380,12 +380,12 @@ namespace Symbiote.Plugin.Connector.Example
         /// Stops, then Starts the Connector.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart(StopType stopType = StopType.Normal)
+        public Result Restart(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
 
             // short and sweet.  This should work in most instances.
-            Result retVal = Start().Incorporate(Stop(stopType));
+            Result retVal = Start().Incorporate(Stop(stopType | StopType.Restart));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -406,7 +406,7 @@ namespace Symbiote.Plugin.Connector.Example
         /// </remarks>
         /// <remarks>Any changes to the State property should fire the <see cref="StateChanged"/> event.</remarks>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
+        public Result Stop(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
 
@@ -419,7 +419,7 @@ namespace Symbiote.Plugin.Connector.Example
             {
                 timer.Stop();
 
-                if (stopType == StopType.Normal)
+                if (!stopType.HasFlag(StopType.Exception))
                     SaveConfiguration();
             }
             catch (Exception ex)

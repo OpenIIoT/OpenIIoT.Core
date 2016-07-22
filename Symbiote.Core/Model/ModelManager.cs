@@ -164,18 +164,20 @@ namespace Symbiote.Core.Model
             retVal.Incorporate(attachResult);
             //---- - ------------  - 
 
+            #endregion
+
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
-        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            if (stopType == StopType.Normal)
+            if (!stopType.HasFlag(StopType.Exception))
             {
                 retVal.Incorporate(SaveModel());
             }
@@ -479,6 +481,7 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
         public Result<List<ModelManagerConfigurationItem>> SaveModel()
         {
+            logger.EnterMethod();
             logger.Info("Saving Model...");
 
             if (!IsInState(State.Running, State.Stopping))
@@ -498,6 +501,7 @@ namespace Symbiote.Core.Model
             }
 
             retVal.LogResult(logger);
+            logger.ExitMethod();
             return retVal;
         }
 
@@ -1000,6 +1004,4 @@ namespace Symbiote.Core.Model
 
         #endregion
     }
-
-    #endregion
 }

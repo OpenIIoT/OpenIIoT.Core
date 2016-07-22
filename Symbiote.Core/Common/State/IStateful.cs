@@ -85,15 +85,14 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Restart(StopType stopType = StopType.Normal);
+        Result Restart(StopType stopType = StopType.Stop);
 
         /// <summary>
         /// Stops the stateful object.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
-        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Stop(StopType stopType = StopType.Normal, bool restartPending = false);
+        Result Stop(StopType stopType = StopType.Stop);
 
         #endregion
     }

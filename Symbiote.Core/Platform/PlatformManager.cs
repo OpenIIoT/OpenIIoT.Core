@@ -206,7 +206,7 @@ namespace Symbiote.Core.Platform
             return retVal;
         }
 
-        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");

@@ -193,9 +193,9 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result Restart(StopType stopType = StopType.Normal)
+        public virtual Result Restart(StopType stopType = StopType.Stop)
         {
-            Guid guid = logger.EnterMethod(true);
+            Guid guid = logger.EnterMethod(xLogger.Params(stopType), true);
             logger.Info("Restarting the " + ManagerName + "...");
             Result retVal = new Result();
 
@@ -204,7 +204,7 @@ namespace Symbiote.Core
                 return retVal.AddError("The Manager can not be restarted when it is in the " + State + " state.");
             }
 
-            retVal.Incorporate(Start().Incorporate(Stop(StopType.Normal, true)));
+            retVal.Incorporate(Start().Incorporate(Stop(stopType | StopType.Restart)));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
@@ -215,11 +215,10 @@ namespace Symbiote.Core
         /// Stops the Configuration manager.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
-        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
+        public virtual Result Stop(StopType stopType = StopType.Stop)
         {
-            Guid guid = logger.EnterMethod(true);
+            Guid guid = logger.EnterMethod(xLogger.Params(stopType), true);
             logger.Info("Stopping the " + ManagerName + "...");
             Result retVal = new Result();
 
@@ -228,15 +227,15 @@ namespace Symbiote.Core
                 return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
             }
 
-            ChangeState(State.Stopping);
+            ChangeState(State.Stopping, stopType);
 
             // invoke the manager-specific shutdown routine
-            retVal.Incorporate(Shutdown(stopType, restartPending));
+            retVal.Incorporate(Shutdown(stopType));
 
             // if the restartPending flag is set, start the restart timer
             // this timer will continuously attempt to restart the Manager until all dependencies
             // are satisfied, after which point it will start.
-            if (restartPending)
+            if (stopType.HasFlag(StopType.Restart))
             {
                 logger.Info("The " + ManagerName + " will continue to attempt to restart.");
                 restartTimer.Elapsed += RestartTimerElapsed;
@@ -245,11 +244,11 @@ namespace Symbiote.Core
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                ChangeState(State.Stopped, stopType, restartPending);
+                ChangeState(State.Stopped, stopType);
             }
             else
             {
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
+                ChangeState(State.Faulted, "Error stopping Manager: " + retVal.LastErrorMessage(), StopType.Exception);
             }
 
             retVal.LogResult(logger);
@@ -277,9 +276,8 @@ namespace Symbiote.Core
         /// Implements the Manager-specific shutdown procedure.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
-        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected abstract Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false);
+        protected abstract Result Shutdown(StopType stopType = StopType.Stop);
 
         /// <summary>
         /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
@@ -287,17 +285,7 @@ namespace Symbiote.Core
         /// <param name="state">The State to which the State property is to be changed.</param>
         protected virtual void ChangeState(State state)
         {
-            ChangeState(state, string.Empty, StopType.Normal);
-        }
-
-        /// <summary>
-        /// Changes the <see cref="State"/> of the Manager to the specified state and fires the StateChanged event.
-        /// </summary>
-        /// <param name="state">The State to which the State property is to be changed.</param>
-        /// <param name="message">The optional message describing the nature or reason for the change.</param>
-        protected virtual void ChangeState(State state, string message = "")
-        {
-            ChangeState(state, message, StopType.Normal, false);
+            ChangeState(state, string.Empty, StopType.Stop);
         }
 
         /// <summary>
@@ -305,10 +293,9 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="state">The State to which the State property is to be changed.</param>
         /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
-        /// <param name="restartPending">True if the Manager is being stopped pending a restart, false otherwise.</param>
-        protected virtual void ChangeState(State state, StopType stopType, bool restartPending = false)
+        protected virtual void ChangeState(State state, StopType stopType = StopType.Stop)
         {
-            ChangeState(state, string.Empty, stopType, restartPending);
+            ChangeState(state, string.Empty, stopType);
         }
 
         /// <summary>
@@ -317,24 +304,31 @@ namespace Symbiote.Core
         /// <param name="state">The State to which the State property is to be changed.</param>
         /// <param name="message">The optional message describing the nature or reason for the change.</param>
         /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
-        /// <param name="restartPending">True if the Manager is being stopped pending a restart, false otherwise.</param>
-        protected virtual void ChangeState(State state, string message = "", StopType stopType = StopType.Normal, bool restartPending = false)
+        protected virtual void ChangeState(State state, string message = "", StopType stopType = StopType.Stop)
         {
-            logger.EnterMethod(xLogger.Params(state, message, stopType, restartPending));
+            logger.EnterMethod(xLogger.Params(state, message, stopType));
 
             State previousState = State;
 
             State = state;
 
             // if the new State is State.Faulted, ensure StopType is Abnormal
-            if (State == State.Faulted)
+            if (State == State.Faulted && !stopType.HasFlag(StopType.Exception))
             {
-                stopType = StopType.Abnormal;
+                // if the Restart flag was passed in, ensure it remains
+                if (stopType.HasFlag(StopType.Restart))
+                {
+                    stopType = StopType.Exception | StopType.Restart;
+                }
+                else
+                {
+                    stopType = StopType.Exception;
+                }               
             }
 
             if (StateChanged != null)
             {
-                StateChanged(this, new StateChangedEventArgs(State, previousState, message, stopType, restartPending));
+                StateChanged(this, new StateChangedEventArgs(State, previousState, message, stopType));
             }
 
             logger.ExitMethod();
@@ -459,17 +453,31 @@ namespace Symbiote.Core
                     logger.Info("\t" + (e.Message.Length > 0 ? e.Message : "[no message provided]"));
                     logger.Info("The " + ManagerName + " must now stop, and will attempt to restart periodically until the dependency starts again.");
 
-                    Stop(StopType.Abnormal, e.RestartPending);
+                    // ensure the manager is stopped with the correct flags, regardless of the flags 
+                    // specified in the event args.
+                    if (e.StopType.HasFlag(StopType.Restart))
+                    {
+                        Stop(StopType.Exception | StopType.Restart);
+                    }
+                    else
+                    {
+                        Stop(StopType.Exception);
+                    }
                 }
                 else if (e.State == State.Stopped)
                 {
-                    string msg = "The dependency '" + sender.GetType().Name + "' has stopped with StopType of " + e.StopType +
-                        (e.RestartPending ? ", and a restart is pending" : string.Empty) +
-                        ".  The " + ManagerName + " must now stop" + (e.RestartPending ? " and will start when the dependency starts again." : ".");
+                    // if the state changed to stopped, stop this manager, unless the StopType is Shutdown, in which case
+                    // we don't do anything so as not to disrupt the shutdown order.
+                    if (!e.StopType.HasFlag(StopType.Shutdown))
+                    {
+                        string msg = "The dependency '" + sender.GetType().Name + "' has stopped with StopType of " + e.StopType +
+                            (e.StopType.HasFlag(StopType.Restart) ? ", and a restart is pending" : string.Empty) +
+                            ".  The " + ManagerName + " must now stop" + (e.StopType.HasFlag(StopType.Restart) ? " and will start when the dependency starts again." : ".");
 
-                    logger.Info(msg);
+                        logger.Info(msg);
 
-                    Stop(e.StopType, e.RestartPending);
+                        Stop(e.StopType);
+                    }
                 }
             }
 

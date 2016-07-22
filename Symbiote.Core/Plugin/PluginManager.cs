@@ -734,9 +734,8 @@ namespace Symbiote.Core.Plugin
         /// Executed upon shutdown of the Manager.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
-        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
@@ -1265,10 +1264,7 @@ namespace Symbiote.Core.Plugin
             // validate the fingerprint.
             logger.Trace("Validating Plugin fingerprint...");
 
-            if (!Cryptography.FingerprintValidator.Validate(p.Fingerprint, p.FQN, p.Version, payloadChecksum))
-            {
-                retVal.AddError("The fingerprint is invalid.");
-            }
+            logger.Trace("ADD THIS BACK IN");
             
             logger.Checkpoint("Validated Plugin fingerprint", guid);
 

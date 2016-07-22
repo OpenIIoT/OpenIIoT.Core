@@ -57,6 +57,21 @@ namespace Symbiote.Core
         /// </summary>
         private static ProgramManager manager;
 
+        /// <summary>
+        /// The list of Managers for the application.
+        /// </summary>
+        /// <remarks>
+        ///     Each Manager must be listed in the order in which they are to be instantiated and started.  The order
+        ///     will be reversed when the application stops.
+        /// </remarks>
+        private static Type[] managers = new Type[] {
+                        typeof(PlatformManager),
+                        typeof(ConfigurationManager),
+                        typeof(PluginManager),
+                        typeof(ModelManager),
+                        typeof(ServiceManager)
+                    };
+
         #endregion
 
         #region Static Methods
@@ -146,16 +161,7 @@ namespace Symbiote.Core
 
                 // invoke the Instance() method on ProgramManager to instantiate it.
                 // provide a Type array containing each of the application Managers in the order in which they are to be instantiated/started.
-                manager = ProgramManager.Instantiate(
-                    new Type[] {
-                        typeof(PlatformManager),
-                        typeof(ConfigurationManager),
-                        typeof(PluginManager),
-                        typeof(ModelManager),
-                        typeof(ServiceManager)
-                    },
-                    safeMode
-                );
+                manager = ProgramManager.Instantiate(managers, safeMode);
 
                 logger.Debug("The Program Manager was instantiated successfully.");
 
@@ -232,11 +238,9 @@ namespace Symbiote.Core
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
                 //------------------------------------------------------ -  -         -   - ------  - -         -  - - --
 
-
                 Item symItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName);
                 if (symItem == default(Item))
                     symItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName)).ReturnValue;
-
 
                 //----------------------------- - -       --
                 // show 'em what they've won!
@@ -245,13 +249,7 @@ namespace Symbiote.Core
                 Utility.PrintLogoFooter(logger);
                 //-------------------------------- --------- - -      -              -
 
-                manager.StartManager(manager.GetManager<ServiceManager>());
-
-                //manager.PluginManager.StartPlugins();
-
                 logger.Info(manager.ProductName + " is running.");
-
-                //manager.GetManager<PluginManager>().Stop(StopType.Abnormal, true);
 
                 Console.ReadLine();
             }
@@ -281,11 +279,12 @@ namespace Symbiote.Core
         public static void Stop()
         {
             logger.EnterMethod();
-            logger.Info(manager.ProductName + " is stopping.  Saving configuration...");
+            logger.Heading(LogLevel.Debug, "Shutdown");
+            logger.Info(manager.ProductName + " is stopping...");
 
             try
             {
-                manager.Stop();
+                manager.Stop(StopType.Shutdown);
                 logger.Info(manager.ProductName + " stopped.");
             }
             catch (Exception ex)

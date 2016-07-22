@@ -153,18 +153,18 @@ namespace Symbiote.Plugin.Endpoint.Example
             return retVal;
         }
 
-        public Result Restart(StopType stopType = StopType.Normal)
+        public Result Restart(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
 
-            Result retVal = Start().Incorporate(Stop());
+            Result retVal = Start().Incorporate(Stop(stopType | StopType.Restart));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
-        public Result Stop(StopType stopType = StopType.Normal, bool restartPending = false)
+        public Result Stop(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
 

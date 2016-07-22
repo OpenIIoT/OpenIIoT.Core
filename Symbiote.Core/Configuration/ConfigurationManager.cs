@@ -135,16 +135,16 @@ namespace Symbiote.Core.Configuration
             base.logger = logger;
             logger.EnterMethod();
 
-            this.ManagerName = "Configuration Manager";
+            ManagerName = "Configuration Manager";
 
             // register dependencies
-            this.RegisterDependency<ProgramManager>(manager);
-            this.RegisterDependency<PlatformManager>(platformManager);
+            RegisterDependency<ProgramManager>(manager);
+            RegisterDependency<PlatformManager>(platformManager);
 
-            this.RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
-            this.ConfigurationFileName = GetConfigurationFileName();
+            RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
+            ConfigurationFileName = GetConfigurationFileName();
 
-            this.ChangeState(State.Initialized);
+            ChangeState(State.Initialized);
 
             logger.ExitMethod();
         }
@@ -263,7 +263,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
         public Result<bool> IsConfigured(Type type, string instanceName = "")
         {
-            return this.IsConfigured(type, this.Configuration, instanceName);
+            return IsConfigured(type, Configuration, instanceName);
         }
         
         /// <summary>
@@ -276,7 +276,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, string instanceName = "")
         {
-            return this.AddInstanceConfiguration<T>(type, instanceConfiguration, this.Configuration, instanceName);
+            return AddInstanceConfiguration<T>(type, instanceConfiguration, Configuration, instanceName);
         }
         
         /// <summary>
@@ -290,7 +290,7 @@ namespace Symbiote.Core.Configuration
         /// for the calling class containing the retrieved configuration.</returns>
         public Result<T> GetInstanceConfiguration<T>(Type type, string instanceName = "")
         {
-            return this.GetInstanceConfiguration<T>(type, this.Configuration, instanceName);
+            return GetInstanceConfiguration<T>(type, Configuration, instanceName);
         }
 
         /// <summary>
@@ -302,7 +302,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "")
         {
-            return this.UpdateInstanceConfiguration(type, instanceConfiguration, this.Configuration, instanceName);
+            return UpdateInstanceConfiguration(type, instanceConfiguration, Configuration, instanceName);
         }
 
         /// <summary>
@@ -313,7 +313,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result RemoveInstanceConfiguration(Type type, string instanceName = "")
         {
-            return this.RemoveInstanceConfiguration(type, this.Configuration, instanceName);
+            return RemoveInstanceConfiguration(type, Configuration, instanceName);
         }
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
         {
-            return this.SaveConfiguration(this.Configuration, this.ConfigurationFileName);
+            return SaveConfiguration(Configuration, ConfigurationFileName);
         }
 
         /// <summary>
@@ -331,7 +331,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result ValidateConfiguration()
         {
-            return this.ValidateConfiguration(this.Configuration);
+            return ValidateConfiguration(Configuration);
         }
 
         /// <summary>
@@ -396,7 +396,7 @@ namespace Symbiote.Core.Configuration
             Result<bool> retVal = new Result<bool>();
 
             // the type is registered if it exists within the RegisteredTypes dictionary
-            retVal.ReturnValue = this.RegisteredTypes.ContainsKey(type.FullName);
+            retVal.ReturnValue = RegisteredTypes.ContainsKey(type.FullName);
 
             logger.ExitMethod(retVal);
             return retVal;
@@ -417,7 +417,7 @@ namespace Symbiote.Core.Configuration
             Result retVal = new Result();
 
             // ensure the provided Type is configurable
-            Result<Type> checkResult = this.IsConfigurable(type);
+            Result<Type> checkResult = IsConfigurable(type);
 
             if (checkResult.ResultCode == ResultCode.Failure)
             {
@@ -435,7 +435,7 @@ namespace Symbiote.Core.Configuration
                     }
                     else
                     {
-                        retVal = this.RegisterType(type, typedef, this.RegisteredTypes);
+                        retVal = RegisterType(type, typedef, RegisteredTypes);
                     }
                 }
                 catch (Exception ex)
@@ -453,7 +453,7 @@ namespace Symbiote.Core.Configuration
                 retVal.LogResult(logger.Debug);
             }
 
-            if (throwExceptionOnFailure)
+            if (throwExceptionOnFailure && retVal.ResultCode == ResultCode.Failure)
             {
                 throw new Exception("Failed to register the type '" + type.Name + "' for configuration.");
             }
@@ -487,10 +487,10 @@ namespace Symbiote.Core.Configuration
             Result retVal = new Result();
 
             // check whether the configuration file exists and if it doesn't, build it from scratch.
-            if (!Dependency<PlatformManager>().Platform.FileExists(this.ConfigurationFileName))
+            if (!Dependency<PlatformManager>().Platform.FileExists(ConfigurationFileName))
             {
-                logger.Info("The configuration file '" + this.ConfigurationFileName + "' could not be found.  Rebuilding...");
-                Result<Dictionary<string, Dictionary<string, object>>> buildResult = this.BuildNewConfiguration();
+                logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
+                Result<Dictionary<string, Dictionary<string, object>>> buildResult = BuildNewConfiguration();
 
                 if (buildResult.ResultCode != ResultCode.Failure)
                 {
@@ -498,14 +498,14 @@ namespace Symbiote.Core.Configuration
                     buildResult.LogResult(logger, "BuildNewConfiguration");
 
                     // try to save the new configuration to file
-                    logger.Info("Saving the new configuration to '" + this.ConfigurationFileName + "'...");
-                    Result saveResult = this.SaveConfiguration(buildResult.ReturnValue);
+                    logger.Info("Saving the new configuration to '" + ConfigurationFileName + "'...");
+                    Result saveResult = SaveConfiguration(buildResult.ReturnValue);
 
                     if (saveResult.ResultCode != ResultCode.Failure)
                     {
                         // the file saved properly.  print the result and a final confirmation.
                         saveResult.LogResult(logger, "SaveConfiguration");
-                        logger.Info("Saved the new configuration to '" + this.ConfigurationFileName + "'.");
+                        logger.Info("Saved the new configuration to '" + ConfigurationFileName + "'.");
                     }
                     else
                     {
@@ -521,7 +521,7 @@ namespace Symbiote.Core.Configuration
             logger.Checkpoint("Configuration file validated/generated", guid);
 
             // load the configuration.
-            Result<Dictionary<string, Dictionary<string, object>>> loadResult = this.LoadConfiguration();
+            Result<Dictionary<string, Dictionary<string, object>>> loadResult = LoadConfiguration();
 
             if (loadResult.ResultCode == ResultCode.Failure)
             {
@@ -533,7 +533,7 @@ namespace Symbiote.Core.Configuration
             logger.Checkpoint("Configuration loaded for validation", guid);
             
             // validate the configuration.
-            Result validationResult = this.ValidateConfiguration(this.Configuration);
+            Result validationResult = ValidateConfiguration(Configuration);
 
             if (validationResult.ResultCode == ResultCode.Failure)
             {
@@ -547,7 +547,7 @@ namespace Symbiote.Core.Configuration
             // attach the configuration
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                this.Configuration = loadResult.ReturnValue;
+                Configuration = loadResult.ReturnValue;
             }
 
             retVal.LogResult(logger.Debug);
@@ -560,21 +560,20 @@ namespace Symbiote.Core.Configuration
         /// Executed upon shutdown of the Manager. 
         /// </para>
         /// <para>
-        /// If the specified <see cref="StopType"/> is <see cref="StopType.Normal"/>, saves the configuration to disk.
+        /// If the specified <see cref="StopType"/> is not <see cref="StopType.Exception"/>, saves the configuration to disk.
         /// </para>
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
-        /// <param name="restartPending">True if the program intends to later restart the stopped component.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Normal, bool restartPending = false)
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            if (stopType == StopType.Normal)
+            if (!stopType.HasFlag(StopType.Exception))
             {
-                this.SaveConfiguration();
+                SaveConfiguration();
             }
 
             retVal.LogResult(logger.Debug);
@@ -621,7 +620,7 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation and the instance of Configuration containing the loaded configuration.</returns>
         private Result<Dictionary<string, Dictionary<string, object>>> LoadConfiguration()
         {
-            return this.LoadConfiguration(this.ConfigurationFileName);
+            return LoadConfiguration(ConfigurationFileName);
         }
 
         /// <summary>
@@ -666,8 +665,8 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         private Result SaveConfiguration(Dictionary<string, Dictionary<string, object>> configuration)
         {
-            logger.Info("Saving specified configuration to '" + this.ConfigurationFileName + "'...");
-            Result retVal = this.SaveConfiguration(configuration, this.ConfigurationFileName);
+            logger.Info("Saving specified configuration to '" + ConfigurationFileName + "'...");
+            Result retVal = SaveConfiguration(configuration, ConfigurationFileName);
             retVal.LogResult(logger);
             return retVal;
         }
@@ -816,19 +815,19 @@ namespace Symbiote.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         private Result<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
         {
-            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
+            logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
 
             Result<T> retVal = new Result<T>();
 
-            if (this.IsConfigurable(type).ResultCode == ResultCode.Failure)
+            if (IsConfigurable(type).ResultCode == ResultCode.Failure)
             {
                 retVal.AddError("The type '" + type.Name + "' is not configurable.");
             }
-            else if (!this.IsRegistered(type).ReturnValue)
+            else if (!IsRegistered(type).ReturnValue)
             {
                 retVal.AddError("The type '" + type.Name + "' is configurable but has not been registered.");
             }
-            else if (!this.IsConfigured(type, instanceName).ReturnValue)
+            else if (!IsConfigured(type, instanceName).ReturnValue)
             {
                 // ensure the configuration doesn't already exist
                 logger.Trace("Inserting configuration into the Configuration dictionary...");
@@ -871,7 +870,7 @@ namespace Symbiote.Core.Configuration
             logger.Debug("Updating configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
             Result retVal = new Result();
 
-            if (this.IsConfigured(type, instanceName).ReturnValue)
+            if (IsConfigured(type, instanceName).ReturnValue)
             {
                 configuration[type.FullName][instanceName] = instanceConfiguration;
             }
@@ -899,7 +898,7 @@ namespace Symbiote.Core.Configuration
             logger.Debug("Removing configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
             Result retVal = new Result();
 
-            if (this.IsConfigured(type, instanceName).ReturnValue)
+            if (IsConfigured(type, instanceName).ReturnValue)
             {
                 configuration[type.FullName].Remove(instanceName);
             }
@@ -930,7 +929,7 @@ namespace Symbiote.Core.Configuration
             Result<T> retVal = new Result<T>();
 
             // ensure the specified type and instance is configured
-            if (this.IsConfigured(type, instanceName).ReturnValue)
+            if (IsConfigured(type, instanceName).ReturnValue)
             {
                 try
                 {
