@@ -32,28 +32,18 @@ namespace Symbiote.Core
         #region Properties
 
         /// <summary>
-        /// Indicates whether the program is in Safe Mode.  Safe Mode is a sort of fault tolerant mode designed
-        /// to allow the application to run under conditions that would otherwise raise fatal errors.
-        /// </summary>
-        bool SafeMode { get; }
-
-        /// <summary>
-        /// The name of the product, retrieved from AssemblyInfo.cs.
+        /// Gets the name of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
         string ProductName { get; }
 
         /// <summary>
-        /// The version of the product, retrieved from AssemblyInfo.cs.
+        /// Gets the version of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
         Version ProductVersion { get; }
 
         /// <summary>
-        /// The name of the application instance.
+        /// Gets the name of the application instance.
         /// </summary>
-        /// <remarks>
-        ///     If the "InstanceName" setting is missing from the application settings, the value of the 
-        ///     ProductName property is substituted.
-        /// </remarks>
         string InstanceName { get; }
 
         #endregion

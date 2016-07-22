@@ -9,11 +9,29 @@
       █     ███        ▀███████ ██    ██ ▀▀██ ███▄  ▀███████ ▀████████  ██  ██  ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
       █     ███          ██  ██ ██    ██   ██    ██   ██  ██   ██   ██  ██  ██  ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
       █    ▄████▀        ██  ██  ██████    ██████▀    ██  ██   ██   █▀   █  ██  █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
-      █   
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
+      ▄  
+      █  Represents the program and is responsible for managing the various subsystem Managers.
       █  
-      █  The ProgramManager acts as a Service Locator and Dependency Injector for the application.
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █  The GNU Affero General Public License (GNU AGPL)
+      █  
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █  
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █  
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █  
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
       █  
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
                                                                                                    ██ 
@@ -30,7 +48,7 @@ using Symbiote.Core.Configuration;
 namespace Symbiote.Core
 {
     /// <summary>
-    /// The ProgramManager acts as a Service Locator and Dependency Injector for the application.
+    /// Represents the program and is responsible for managing the various subsystem Managers.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -62,28 +80,19 @@ namespace Symbiote.Core
         #region Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ProgramManager"/> class with the specified Manager Types and 
-        ///     optionally creates the instance with Safe Mode enabled.
+        /// Initializes a new instance of the <see cref="ProgramManager"/> class with the specified Manager Types.
         /// </summary>
         /// <param name="managerTypes">The array of Manager Types for the application.</param>
-        /// <param name="safeMode">True if the ProgramManager is being started in Safe Mode, false otherwise.</param>
-        private ProgramManager(Type[] managerTypes, bool safeMode = false)
+        private ProgramManager(Type[] managerTypes)
         {
             base.logger = logger;
-            Guid guid = logger.EnterMethod(xLogger.Params(managerTypes, safeMode), true);
+            Guid guid = logger.EnterMethod(xLogger.Params(managerTypes), true);
 
             // initialize properties
             ManagerName = "Program Manager";
             ManagerTypes = managerTypes.ToList();
             ManagerInstances = new List<IManager>();
             ManagerDependencies = new Dictionary<Type, List<Type>>();
-
-            // configure the SafeMode option
-            SafeMode = safeMode;
-            if (safeMode)
-            {
-                logger.Info("Safe Mode enabled.  The program is now running in a limited fault tolerant mode.");
-            }
 
             // register the ProgramManager
             RegisterManager<ProgramManager>(this);
@@ -115,12 +124,6 @@ namespace Symbiote.Core
         #endregion
 
         #region IProgramManager Properties
-
-        /// <summary>
-        ///     Gets a value indicating whether the program is in Safe Mode.  Safe Mode is a sort of fault tolerant mode designed
-        ///     to allow the application to run under conditions that would otherwise raise fatal errors.
-        /// </summary>
-        public bool SafeMode { get; private set; }
 
         /// <summary>
         /// Gets the name of the product, retrieved from AssemblyInfo.cs.
@@ -251,13 +254,12 @@ namespace Symbiote.Core
         /// Returns the singleton instance of the ProgramManager.  Creates an instance if null.
         /// </summary>
         /// <param name="managers">The array of Manager Types for the application.</param>
-        /// <param name="safeMode">True if the ProgramManager is being started in Safe Mode, false otherwise.</param>
         /// <returns>The singleton instance of the ProgramManager</returns>
-        internal static ProgramManager Instantiate(Type[] managers, bool safeMode = false)
+        internal static ProgramManager Instantiate(Type[] managers)
         {
             if (instance == null)
             {
-                instance = new ProgramManager(managers, safeMode);
+                instance = new ProgramManager(managers);
             }
 
             return instance;
