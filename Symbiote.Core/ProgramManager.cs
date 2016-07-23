@@ -95,7 +95,7 @@ namespace Symbiote.Core
             ManagerDependencies = new Dictionary<Type, List<Type>>();
 
             // register the ProgramManager
-            RegisterManager<ProgramManager>(this);
+            RegisterManager<IProgramManager>(this);
             
             // create an instance of each Manager Type in the ManagerTypes list
             logger.Debug("Instantiating Managers...");
@@ -110,6 +110,8 @@ namespace Symbiote.Core
         #endregion
 
         #region Properties
+
+        #region Public Properties
 
         #region IStateful Properties
 
@@ -164,6 +166,10 @@ namespace Symbiote.Core
 
         #endregion
 
+        #endregion
+
+        #region Private Properties
+
         /// <summary>
         /// Gets or sets the list of application Manager Types.
         /// </summary>
@@ -178,6 +184,8 @@ namespace Symbiote.Core
         /// Gets or sets a dictionary containing a list of dependencies for each application Manager.
         /// </summary>
         private Dictionary<Type, List<Type>> ManagerDependencies { get; set; }
+
+        #endregion
 
         #endregion
 
@@ -204,6 +212,20 @@ namespace Symbiote.Core
 
         #region Public Instance Methods
 
+        #region IStateful Implementation
+
+        //// See the Manager class for the IStateful implementation for this class.
+
+        #endregion
+
+        #region IManager Implementation
+
+        //// See the Manager class for the IManager implementation for this class.
+
+        #endregion
+
+        #region IProgramManager Implementation
+
         /// <summary>
         /// Returns the Manager from the list of Managers matching the specified Type.
         /// </summary>
@@ -223,6 +245,8 @@ namespace Symbiote.Core
         {
             return IsRegistered<T>(ManagerInstances);
         }
+
+        #endregion
 
         #endregion
 
@@ -549,7 +573,7 @@ namespace Symbiote.Core
             List<Type> retVal = new List<Type>();
 
             // the ProgramManager has no dependencies (that we need to track).
-            if (typeof(T) == GetType())
+            if (typeof(T) == typeof(IProgramManager))
             {
                 return retVal;
             }

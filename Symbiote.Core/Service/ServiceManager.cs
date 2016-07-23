@@ -37,8 +37,8 @@ namespace Symbiote.Core.Service
 
             ManagerName = "Service Manager";
 
-            RegisterDependency<ProgramManager>(manager);
-            RegisterDependency<ConfigurationManager>(configurationManager);
+            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IConfigurationManager>(configurationManager);
 
             ChangeState(State.Initialized);
 
@@ -101,12 +101,12 @@ namespace Symbiote.Core.Service
         private Result<Dictionary<string, Type>> RegisterServices()
         {
             logger.Debug("Registering Service types...");
-            Result<Dictionary<string, Type>> retVal = RegisterServices(Dependency<ConfigurationManager>());
+            Result<Dictionary<string, Type>> retVal = RegisterServices(Dependency<IConfigurationManager>());
             retVal.LogResult(logger.Debug);
             return retVal;
         }
 
-        private Result<Dictionary<string, Type>> RegisterServices(ConfigurationManager configurationManager)
+        private Result<Dictionary<string, Type>> RegisterServices(IConfigurationManager configurationManager)
         {
             logger.Trace("Registering Service types...");
             Result<Dictionary<string, Type>> retVal = new Result<Dictionary<string, Type>>();
@@ -145,7 +145,7 @@ namespace Symbiote.Core.Service
                 foreach (string serviceType in serviceTypes.Keys)
                 {
                     logger.Trace("Instantiating service '" + serviceType + "'...");
-                    IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { Dependency<ProgramManager>() });
+                    IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { Dependency<IProgramManager>() });
 
                     if (serviceInstance != default(IService))
                         retVal.ReturnValue.Add(serviceType, serviceInstance);

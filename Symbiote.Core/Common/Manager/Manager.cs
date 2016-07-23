@@ -44,15 +44,16 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Timers;
 using NLog;
+using Symbiote.Core.Event;
 
 namespace Symbiote.Core
 {
     /// <summary>
     /// The abstract base class from which all Managers inherit.
     /// </summary>
-    public abstract class Manager : IStateful, IManager
+    public abstract class Manager : IStateful, IEventProvider, IManager
     {
-        #region Variables
+        #region Fields
 
         /// <summary>
         /// The Logger for this class.
@@ -79,6 +80,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Occurs when the State property changes.
         /// </summary>
+        [Event(Description = "Occurs when the State property changes.")]
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
         #endregion
@@ -87,12 +89,29 @@ namespace Symbiote.Core
 
         #region Properties
 
+        #region Public Properties
+
         #region IStateful Properties
 
         /// <summary>
         /// Gets the current State of the stateful object.
         /// </summary>
         public State State { get; private set; }
+
+        #endregion
+
+        #region IEventProvider Properties
+
+        /// <summary>
+        /// Gets the name of the instance for use with the Event subsystem.
+        /// </summary>
+        public string EventProviderName
+        {
+            get
+            {
+                return GetType().Name;
+            }
+        }
 
         #endregion
 
@@ -104,6 +123,10 @@ namespace Symbiote.Core
         public string ManagerName { get; protected set; }
 
         #endregion
+
+        #endregion
+
+        #region Private Properties
 
         /// <summary>
         /// Gets or sets the dictionary of IManagers upon which this Manager depends, keyed on Type name.
@@ -128,6 +151,8 @@ namespace Symbiote.Core
                 dependencies = value;
             }
         }
+
+        #endregion
 
         #endregion
 

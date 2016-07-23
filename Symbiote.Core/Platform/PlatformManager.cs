@@ -102,7 +102,7 @@ namespace Symbiote.Core.Platform
             ManagerName = "Platform Manager";
 
             // register dependencies
-            RegisterDependency<ProgramManager>(manager);
+            RegisterDependency<IProgramManager>(manager);
 
             ChangeState(State.Initialized);
 

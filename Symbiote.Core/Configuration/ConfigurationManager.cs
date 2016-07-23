@@ -138,10 +138,10 @@ namespace Symbiote.Core.Configuration
             ManagerName = "Configuration Manager";
 
             // register dependencies
-            RegisterDependency<ProgramManager>(manager);
-            RegisterDependency<PlatformManager>(platformManager);
+            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IPlatformManager>(platformManager);
 
-            RegisteredTypes = new Dictionary<string, ConfigurationDefinition>();
+            RegisteredTypes = new Dictionary<Type, ConfigurationDefinition>();
             ConfigurationFileName = GetConfigurationFileName();
 
             ChangeState(State.Initialized);
@@ -166,7 +166,7 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// Gets a dictionary containing all registered configurable types and their ConfigurationDefinitions.
         /// </summary>
-        public Dictionary<string, ConfigurationDefinition> RegisteredTypes { get; private set; }
+        public Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get; private set; }
 
         #endregion
 
@@ -396,7 +396,7 @@ namespace Symbiote.Core.Configuration
             Result<bool> retVal = new Result<bool>();
 
             // the type is registered if it exists within the RegisteredTypes dictionary
-            retVal.ReturnValue = RegisteredTypes.ContainsKey(type.FullName);
+            retVal.ReturnValue = RegisteredTypes.ContainsKey(type);
 
             logger.ExitMethod(retVal);
             return retVal;
@@ -487,7 +487,7 @@ namespace Symbiote.Core.Configuration
             Result retVal = new Result();
 
             // check whether the configuration file exists and if it doesn't, build it from scratch.
-            if (!Dependency<PlatformManager>().Platform.FileExists(ConfigurationFileName))
+            if (!Dependency<IPlatformManager>().Platform.FileExists(ConfigurationFileName))
             {
                 logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
                 Result<Dictionary<string, Dictionary<string, object>>> buildResult = BuildNewConfiguration();
@@ -640,7 +640,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 // read the entirety of the configuration file into configFile
-                configFile = Dependency<PlatformManager>().Platform.ReadFile(fileName).ReturnValue;
+                configFile = Dependency<IPlatformManager>().Platform.ReadFile(fileName).ReturnValue;
                 logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
                 // attempt to deserialize the contents of the file to an object of type ApplicationConfiguration
@@ -687,7 +687,7 @@ namespace Symbiote.Core.Configuration
             try
             {
                 logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-                Dependency<PlatformManager>().Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
+                Dependency<IPlatformManager>().Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
             }
             catch (Exception ex)
             {
@@ -741,7 +741,7 @@ namespace Symbiote.Core.Configuration
         /// <param name="definition">The ConfigurationDefinition with which to register the Type.</param>
         /// <param name="registeredTypes">The Dictionary of registered types.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        private Result RegisterType(Type type, ConfigurationDefinition definition, Dictionary<string, ConfigurationDefinition> registeredTypes)
+        private Result RegisterType(Type type, ConfigurationDefinition definition, Dictionary<Type, ConfigurationDefinition> registeredTypes)
         {
             logger.EnterMethod();
             logger.Trace("Registering type '" + type.Name + "'...");
@@ -749,11 +749,11 @@ namespace Symbiote.Core.Configuration
             Result retVal = new Result();
 
             // check to ensure that the type hasn't already been registered
-            if (!registeredTypes.ContainsKey(type.FullName))
+            if (!registeredTypes.ContainsKey(type))
             {
                 try
                 {
-                    registeredTypes.Add(type.FullName, definition);
+                    registeredTypes.Add(type, definition);
                     logger.Debug("Registered type '" + type.Name + "' for configuration.");
                 }
                 catch (Exception ex)

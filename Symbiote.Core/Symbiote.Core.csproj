@@ -166,6 +166,11 @@
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
     <Compile Include="Common\xLogger.cs" />
+    <Compile Include="Event\EventAttribute.cs" />
+    <Compile Include="Event\EventManager.cs" />
+    <Compile Include="Event\EventManagerConfiguration.cs" />
+    <Compile Include="Event\IEventProvider.cs" />
+    <Compile Include="Event\IEventManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
@@ -244,6 +249,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

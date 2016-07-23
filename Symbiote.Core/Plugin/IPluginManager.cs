@@ -178,7 +178,7 @@ namespace Symbiote.Core.Plugin
         /// <param name="instanceLogger">The logger for the plugin instance.</param>
         /// <typeparam name="T">The Type of the Plugin instance to create.</typeparam>
         /// <returns>A Result containing the result of the operation and the created Plugin instance.</returns>
-        Result<IPluginInstance> InstantiatePlugin<T>(ProgramManager instanceManager, string instanceName, xLogger instanceLogger);
+        Result<IPluginInstance> InstantiatePlugin<T>(IProgramManager instanceManager, string instanceName, xLogger instanceLogger);
 
         /// <summary>
         /// Given an instance name string, return the matching instance of IPluginInstance.

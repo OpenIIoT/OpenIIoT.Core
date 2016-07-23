@@ -63,7 +63,7 @@ namespace Symbiote.Core.Configuration
         /// <summary>
         /// Gets a dictionary containing all registered configurable types and their ConfigurationDefinitions.
         /// </summary>
-        Dictionary<string, ConfigurationDefinition> RegisteredTypes { get; }
+        Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get; }
 
         #endregion
 

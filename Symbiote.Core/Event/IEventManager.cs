@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
       █   
-      █    ▄█     ▄▄▄▄███▄▄▄▄                                                             
-      █   ███   ▄██▀▀▀███▀▀▀██▄                                                           
-      █   ███▌  ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
-      █   ███▌  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
-      █   ███▌  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
-      █   ███   ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
-      █   ███   ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
-      █   █▀     ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
+      █    ▄█     ▄████████                                         ▄▄▄▄███▄▄▄▄                                                             
+      █   ███    ███    ███                                       ▄██▀▀▀███▀▀▀██▄                                                           
+      █   ███▌   ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██     ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
+      █   ███▌  ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
+      █   ███▌ ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
+      █   ███    ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██     ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
+      █   ███    ███    ███  █▄  ▄█    ██   █  ██   ██     ██     ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
+      █   █▀     ██████████   ▀██▀     ███████  █   █     ▄██▀     ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      █  
-      █  Defines the interface for Managers.
+      ▄  
+      █  Defines the interface for the Event Manager.
       █  
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
       █  The GNU Affero General Public License (GNU AGPL)
@@ -38,21 +38,38 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
-using Symbiote.Core.Event;
+using System;
+using System.Collections.Generic;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.Event
 {
     /// <summary>
-    /// Defines the interface for Managers.
+    /// Defines the interface for the Event Manager.
     /// </summary>
-    public interface IManager : IStateful, IEventProvider
+    public interface IEventManager : IStateful, IManager
     {
         #region Properties
 
         /// <summary>
-        /// Gets the name of the Manager.
+        /// Gets the Dictionary, keyed on Type, of registered Event Provider instances.
         /// </summary>
-        string ManagerName { get; }
+        Dictionary<Type, List<string>> RegisteredProviders { get; }
+
+        /// <summary>
+        /// Gets the Dictionary, keyed on Type, of registered Events.
+        /// </summary>
+        Dictionary<Type, List<KeyValuePair<string, string>>> RegisteredEvents { get; }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Registers the specified object with the Event Manager.
+        /// </summary>
+        /// <param name="registrant">The object to register.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result RegisterProvider(object registrant);
 
         #endregion
     }

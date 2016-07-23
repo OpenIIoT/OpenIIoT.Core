@@ -87,9 +87,9 @@ namespace Symbiote.Core.Model
 
             ManagerName = "Model Manager";
 
-            RegisterDependency<ProgramManager>(manager);
-            RegisterDependency<ConfigurationManager>(configurationManager);
-            RegisterDependency<PluginManager>(pluginManager);
+            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IConfigurationManager>(configurationManager);
+            RegisterDependency<IPluginManager>(pluginManager);
 
             ChangeState(State.Initialized);
         }
@@ -142,7 +142,7 @@ namespace Symbiote.Core.Model
 
             //--  -  -- ---------------  -
             // Build the model
-            ModelBuildResult modelBuildResult = BuildModel(Dependency<ProgramManager>().InstanceName, Configuration.Items);
+            ModelBuildResult modelBuildResult = BuildModel(Dependency<IProgramManager>().InstanceName, Configuration.Items);
 
             if (modelBuildResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to build the model: " + modelBuildResult.LastErrorMessage());
@@ -200,7 +200,7 @@ namespace Symbiote.Core.Model
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            Result<ModelManagerConfiguration> fetchResult = Dependency<ConfigurationManager>().GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
+            Result<ModelManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.  
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -212,7 +212,7 @@ namespace Symbiote.Core.Model
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<ModelManagerConfiguration> createResult = Dependency<ConfigurationManager>().AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<ModelManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -230,7 +230,7 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
         /// </summary>
-        /// <param name="configuration">The configuration with which the Model Manager should be configured.</param>
+        /// <param name="configuration">The configuration with which the Manager should be configured.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result Configure(ModelManagerConfiguration configuration)
         {
@@ -260,7 +260,7 @@ namespace Symbiote.Core.Model
             logger.EnterMethod();
             Result retVal = new Result();
 
-            retVal.Incorporate(Dependency<ConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(Dependency<IConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
@@ -280,7 +280,7 @@ namespace Symbiote.Core.Model
             if (!IsInState(State.Running, State.Starting))
                 return (ModelBuildResult)new Result().AddError("The current operation is invalid in the current state (it is currently in the " + State + " state).");
 
-            return BuildModel(Dependency<ProgramManager>().InstanceName, Configuration.Items);
+            return BuildModel(Dependency<IProgramManager>().InstanceName, Configuration.Items);
         }
 
         /// <summary>
@@ -513,7 +513,7 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
         private Result<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, Result<List<ModelManagerConfigurationItem>> configuration)
         {
-            configuration.ReturnValue.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<ProgramManager>().InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
+            configuration.ReturnValue.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<IProgramManager>().InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
 
             foreach (Item mi in itemRoot.Children)
             {
@@ -550,7 +550,7 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the added Item.</returns>
         private Result<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
-            if (Dependency<ProgramManager>().State != State.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
+            if (Dependency<IProgramManager>().State != State.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
             else logger.Debug("Adding item '" + item.FQN + "' to the model...");
 
             Result<Item> retVal = new Result<Item>();
@@ -608,7 +608,7 @@ namespace Symbiote.Core.Model
                 }
             }
 
-            if (Dependency<ProgramManager>().State != State.Starting) retVal.LogResult(logger);
+            if (Dependency<IProgramManager>().State != State.Starting) retVal.LogResult(logger);
             else retVal.LogResult(logger.Debug);
 
             return retVal;
@@ -862,7 +862,7 @@ namespace Symbiote.Core.Model
             Result<Item> retVal = new Result<Item>();
             if ((item == null) || (parentItem == null)) return retVal;
                
-            if (Dependency<ProgramManager>().State != State.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
+            if (Dependency<IProgramManager>().State != State.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
             else logger.Debug("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
       
             try
@@ -899,7 +899,7 @@ namespace Symbiote.Core.Model
                 retVal.ReturnValue = default(Item);
             }
 
-            if (Dependency<ProgramManager>().State != State.Starting) retVal.LogResult(logger);
+            if (Dependency<IProgramManager>().State != State.Starting) retVal.LogResult(logger);
             else retVal.LogResult(logger.Debug);
 
             return retVal;

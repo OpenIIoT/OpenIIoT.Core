@@ -49,6 +49,7 @@ using Symbiote.Core.Model;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Service;
+using Symbiote.Core.Event;
 
 namespace Symbiote.Core
 {
@@ -85,6 +86,7 @@ namespace Symbiote.Core
         {
             typeof(PlatformManager),
             typeof(ConfigurationManager),
+            typeof(EventManager),
             typeof(PluginManager),
             typeof(ModelManager),
             typeof(ServiceManager)

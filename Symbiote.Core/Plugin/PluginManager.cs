@@ -509,7 +509,7 @@ namespace Symbiote.Core.Plugin
         /// <param name="instanceLogger">The logger for the plugin instance.</param>
         /// <typeparam name="T">The Type of the Plugin instance to create.</typeparam>
         /// <returns>A Result containing the result of the operation and the created Plugin instance.</returns>
-        public Result<IPluginInstance> InstantiatePlugin<T>(ProgramManager instanceManager, string instanceName, xLogger instanceLogger)
+        public Result<IPluginInstance> InstantiatePlugin<T>(IProgramManager instanceManager, string instanceName, xLogger instanceLogger)
         {
             logger.EnterMethod(xLogger.Params(instanceName));
             logger.Debug("Creating plugin instance '" + instanceName + "' of Type '" + typeof(T).Name + "'...");
@@ -1751,7 +1751,7 @@ namespace Symbiote.Core.Plugin
         ///     xLogger with the Fully Qualified Name of the instance.
         /// </summary>
         /// <remarks>
-        ///     The <see cref="InstantiatePlugin{T}(ProgramManager, string, xLogger)"/> method is invoked via reflection so that the type parameter for
+        ///     The <see cref="InstantiatePlugin{T}(IProgramManager, string, xLogger)"/> method is invoked via reflection so that the type parameter for
         ///     the method can be specified dynamically.
         /// </remarks>
         /// <param name="configuredInstances">The List of type PluginManagerConfigurationPluginInstance containing the list of Plugin instances to create.</param>
