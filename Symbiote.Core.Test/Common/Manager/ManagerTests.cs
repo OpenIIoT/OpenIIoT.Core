@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Plugin.Repository
+namespace Symbiote.Core.Test.Common.Manager
 {
-    class RepositoryManager
+    class ManagerTests
     {
     }
 }

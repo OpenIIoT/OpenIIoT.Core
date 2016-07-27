@@ -205,7 +205,7 @@ namespace Symbiote.Core
             }
             else
             {
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
+                ChangeState(State.Faulted, retVal.GetLastError());
             }
 
             retVal.LogResult(logger);
@@ -273,7 +273,7 @@ namespace Symbiote.Core
             }
             else
             {
-                ChangeState(State.Faulted, "Error stopping Manager: " + retVal.LastErrorMessage(), StopType.Exception);
+                ChangeState(State.Faulted, "Error stopping Manager: " + retVal.GetLastError(), StopType.Exception);
             }
 
             retVal.LogResult(logger);
@@ -452,7 +452,7 @@ namespace Symbiote.Core
                 }
                 else
                 {
-                    logger.Debug("Failed to restart " + ManagerName + ": " + startResult.LastErrorMessage());
+                    logger.Debug("Failed to restart " + ManagerName + ": " + startResult.GetLastError());
                 }
             }
 

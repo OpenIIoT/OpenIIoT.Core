@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Core", "Symbiote.Core\Symbiote.Core.csproj", "{899D0A77-77E8-4BCF-848E-2167C8CC036F}"
 EndProject
@@ -12,6 +12,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Simulation", "Symbiote.Plugin.Connector.Simulator\Symbiote.Plugin.Connector.Simulation.csproj", "{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Endpoint.Example", "Symbiote.Plugin.Endpoint.Example\Symbiote.Plugin.Endpoint.Example.csproj", "{5DA85DD0-B058-459F-AE89-EFE972CB7E34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Core.Test", "Symbiote.Core.Test\Symbiote.Core.Test.csproj", "{E98779CA-1108-4B80-AD81-40594CCCED82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Example.Tests", "Symbiote.Plugin.Connector.Example.Tests\Symbiote.Plugin.Connector.Example.Tests.csproj", "{1A93454D-540B-4357-8100-E77A02CDCC1D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Simulation.Tests", "Symbiote.Plugin.Connector.Simulation.Tests\Symbiote.Plugin.Connector.Simulation.Tests.csproj", "{369CC5F3-1176-4CD4-9F03-8759610C1C01}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Endpoint.Example.Tests", "Symbiote.Plugin.Endpoint.Example.Tests\Symbiote.Plugin.Endpoint.Example.Tests.csproj", "{3F0BDA04-E090-4B0A-99B3-6F7D42DEDCCA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,6 +46,22 @@ Global
 		{5DA85DD0-B058-459F-AE89-EFE972CB7E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5DA85DD0-B058-459F-AE89-EFE972CB7E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5DA85DD0-B058-459F-AE89-EFE972CB7E34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E98779CA-1108-4B80-AD81-40594CCCED82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E98779CA-1108-4B80-AD81-40594CCCED82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E98779CA-1108-4B80-AD81-40594CCCED82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E98779CA-1108-4B80-AD81-40594CCCED82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A93454D-540B-4357-8100-E77A02CDCC1D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A93454D-540B-4357-8100-E77A02CDCC1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A93454D-540B-4357-8100-E77A02CDCC1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A93454D-540B-4357-8100-E77A02CDCC1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{369CC5F3-1176-4CD4-9F03-8759610C1C01}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{369CC5F3-1176-4CD4-9F03-8759610C1C01}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{369CC5F3-1176-4CD4-9F03-8759610C1C01}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{369CC5F3-1176-4CD4-9F03-8759610C1C01}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F0BDA04-E090-4B0A-99B3-6F7D42DEDCCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F0BDA04-E090-4B0A-99B3-6F7D42DEDCCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F0BDA04-E090-4B0A-99B3-6F7D42DEDCCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F0BDA04-E090-4B0A-99B3-6F7D42DEDCCA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -65,6 +65,13 @@ namespace Symbiote.Core.Event
         #region Methods
 
         /// <summary>
+        /// Registers each object within the supplied list which implements the IEventProvider interface.
+        /// </summary>
+        /// <param name="registrants">The list of objects to register.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result RegisterProviders(List<object> registrants);
+
+        /// <summary>
         /// Registers the specified object with the Event Manager.
         /// </summary>
         /// <param name="registrant">The object to register.</param>

@@ -131,7 +131,7 @@ namespace Symbiote.Core.Model
             Result configureResult = Configure();
 
             if (configureResult.ResultCode == ResultCode.Failure)
-                throw new Exception("Failed to configure the Model Manager: " + configureResult.LastErrorMessage());
+                throw new Exception("Failed to configure the Model Manager: " + configureResult.GetLastError());
 
             retVal.Incorporate(configureResult);
             //--------------------------------  -
@@ -145,7 +145,7 @@ namespace Symbiote.Core.Model
             ModelBuildResult modelBuildResult = BuildModel(Dependency<IProgramManager>().InstanceName, Configuration.Items);
 
             if (modelBuildResult.ResultCode == ResultCode.Failure)
-                throw new Exception("Failed to build the model: " + modelBuildResult.LastErrorMessage());
+                throw new Exception("Failed to build the model: " + modelBuildResult.GetLastError());
 
             retVal.Incorporate(modelBuildResult);
             //--- - ------------
@@ -159,7 +159,7 @@ namespace Symbiote.Core.Model
             Result attachResult = AttachModel(modelBuildResult);
 
             if (attachResult.ResultCode == ResultCode.Failure)
-                throw new Exception("Failed to attach the model to the Model Manager: " + attachResult.LastErrorMessage());
+                throw new Exception("Failed to attach the model to the Model Manager: " + attachResult.GetLastError());
 
             retVal.Incorporate(attachResult);
             //---- - ------------  - 
@@ -400,7 +400,7 @@ namespace Symbiote.Core.Model
                     }
                     else
                     {
-                        result.AddWarning("Failed to add item '" + newItem.FQN + "' to the Model: " + addResult.LastErrorMessage());
+                        result.AddWarning("Failed to add item '" + newItem.FQN + "' to the Model: " + addResult.GetLastError());
                     } 
 
                 }

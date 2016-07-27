@@ -104,6 +104,13 @@ namespace Symbiote.Core.Configuration
         Result<bool> IsRegistered(Type type);
 
         /// <summary>
+        /// Registers each Type within the supplied list which implements the IConfigurable interface.
+        /// </summary>
+        /// <param name="types">The list of Types to register.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result RegisterTypes(List<Type> types);
+
+        /// <summary>
         /// Registers the supplied Type with the Configuration Manager.
         /// </summary>
         /// <remarks>When called during application startup, throwExceptionOnFailure should be set to true.</remarks>

@@ -146,7 +146,7 @@ namespace Symbiote.Plugin.Endpoint.Example
             if (retVal.ResultCode != ResultCode.Failure)
                 ChangeState(State.Running);
             else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
+                ChangeState(State.Faulted, retVal.GetLastError());
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);

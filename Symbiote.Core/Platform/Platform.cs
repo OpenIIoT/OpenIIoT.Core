@@ -425,7 +425,7 @@ namespace Symbiote.Core.Platform
                     logger.Trace("Attempting to clear destination directory '" + destination + "'...");
                     Result clearResult = ClearDirectory(destination);
                     if (clearResult.ResultCode != ResultCode.Success)
-                        throw new Exception("Error clearing destination directory: " + clearResult.LastErrorMessage());
+                        throw new Exception("Error clearing destination directory: " + clearResult.GetLastError());
                 }
 
                 logger.Trace("Extracting file...");

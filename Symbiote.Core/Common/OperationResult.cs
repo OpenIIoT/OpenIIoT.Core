@@ -125,8 +125,8 @@ namespace Symbiote.Core
         /// <param name="text">The content of the message.</param>
         public Message(MessageType type = MessageType.Info, string text = "")
         {
-            this.Type = type;
-            this.Text = text;
+            Type = type;
+            Text = text;
         }
 
         #endregion
@@ -157,7 +157,7 @@ namespace Symbiote.Core
         /// <returns>The formatted message string.</returns>
         public override string ToString()
         {
-            return "[" + this.Type.ToString().ToUpper() + "] " + this.Text;
+            return "[" + Type.ToString().ToUpper() + "] " + Text;
         }
 
         #endregion
@@ -220,8 +220,8 @@ namespace Symbiote.Core
         /// </example>
         public Result(ResultCode initialResultCode = ResultCode.Success)
         {
-            this.ResultCode = initialResultCode;
-            this.Messages = new List<Message>();
+            ResultCode = initialResultCode;
+            Messages = new List<Message>();
         }
 
         #endregion
@@ -289,7 +289,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result AddInfo(string message)
         {
-            this.Messages.Add(new Message(MessageType.Info, message));
+            Messages.Add(new Message(MessageType.Info, message));
             return this;
         }
 
@@ -309,8 +309,8 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result AddWarning(string message)
         {
-            this.Messages.Add(new Message(MessageType.Warning, message));
-            this.ResultCode = ResultCode.Warning;
+            Messages.Add(new Message(MessageType.Warning, message));
+            ResultCode = ResultCode.Warning;
             return this;
         }
 
@@ -330,8 +330,8 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result AddError(string message)
         {
-            this.Messages.Add(new Message(MessageType.Error, message));
-            this.ResultCode = ResultCode.Failure;
+            Messages.Add(new Message(MessageType.Error, message));
+            ResultCode = ResultCode.Failure;
             return this;
         }
 
@@ -358,11 +358,11 @@ namespace Symbiote.Core
         {
             if (messageType == MessageType.Any)
             {
-                this.Messages.Clear();
+                Messages.Clear();
             }
             else
             {
-                this.Messages.RemoveAll(m => m.Type == messageType);
+                Messages.RemoveAll(m => m.Type == messageType);
             }
 
             return this;
@@ -382,7 +382,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result SetResultCode(ResultCode resultCode = ResultCode.Success)
         {
-            this.ResultCode = resultCode;
+            ResultCode = resultCode;
             return this;
         }
 
@@ -422,7 +422,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result LogResult(NLog.Logger logger, [CallerMemberName]string caller = "")
         {
-            return this.LogResult(logger.Info, logger.Warn, logger.Error, caller);
+            return LogResult(logger.Info, logger.Warn, logger.Error, caller);
         }
 
         /// <summary>
@@ -455,7 +455,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result LogResult(Action<string> action, [CallerMemberName]string caller = "")
         {
-            return this.LogResult(action, action, action, caller);
+            return LogResult(action, action, action, caller);
         }
 
         /// <summary>
@@ -493,27 +493,27 @@ namespace Symbiote.Core
         public virtual Result LogResult(Action<string> successAction, Action<string> warningAction, Action<string> failureAction, [CallerMemberName]string caller = "")
         {
             // the operation suceeded, with or without warnings
-            if (this.ResultCode != ResultCode.Failure)
+            if (ResultCode != ResultCode.Failure)
             {
-                this.Log(successAction, "The operation '" + caller + "' completed successfully.");
+                Log(successAction, "The operation '" + caller + "' completed successfully.");
 
                 // if any informational messages were generated, print them to the logger
-                if (this.Messages.Where(m => m.Type == MessageType.Info).Count() > 0)
+                if (Messages.Where(m => m.Type == MessageType.Info).Count() > 0)
                 {
-                    this.LogAllMessages(successAction, MessageType.Info, "The following informational messages were generated during the operation:");
+                    LogAllMessages(successAction, MessageType.Info, "The following informational messages were generated during the operation:");
                 }
 
                 // if any warnings were generated, print them to the logger
-                if (this.ResultCode == ResultCode.Warning)
+                if (ResultCode == ResultCode.Warning)
                 {
-                    this.LogAllMessages(warningAction, MessageType.Warning, "The following warnings were generated during the operation:");
+                    LogAllMessages(warningAction, MessageType.Warning, "The following warnings were generated during the operation:");
                 }
             }
             else
             {
                 // the operation failed
-                this.Log(failureAction, "The operation '" + caller + "' failed.");
-                this.LogAllMessages(failureAction, MessageType.Error, "The following messages were generated during the operation:");
+                Log(failureAction, "The operation '" + caller + "' failed.");
+                LogAllMessages(failureAction, MessageType.Error, "The following messages were generated during the operation:");
             }
 
             return this;
@@ -544,7 +544,7 @@ namespace Symbiote.Core
         /// </example>
         public virtual Result LogAllMessages(Action<string> action, string header = "", string footer = "")
         {
-            return this.LogAllMessages(action, MessageType.Any, header, footer);
+            return LogAllMessages(action, MessageType.Any, header, footer);
         }
 
         /// <summary>
@@ -576,25 +576,25 @@ namespace Symbiote.Core
         {
             if (header != string.Empty)
             {
-                this.Log(action, header);
+                Log(action, header);
             }
 
-            List<Message> messagesToLog = this.Messages;
+            List<Message> messagesToLog = Messages;
 
             // if a MessageType other than Any was specified, filter the list of messages
             if (messageType != MessageType.Any)
             {
-                messagesToLog = this.Messages.Where(m => m.Type == messageType).ToList();
+                messagesToLog = Messages.Where(m => m.Type == messageType).ToList();
             }
 
             foreach (Message message in messagesToLog)
             {
-                this.Log(action, new string(' ', 5) + message.Text);
+                Log(action, new string(' ', 5) + message.Text);
             }
 
             if (footer != string.Empty)
             {
-                this.Log(action, footer);
+                Log(action, footer);
             }
 
             return this;
@@ -616,9 +616,9 @@ namespace Symbiote.Core
         /// Console.WriteLine(retVal.LastInfoMessage());
         /// </code>
         /// </example>
-        public virtual string LastInfoMessage()
+        public virtual string GetLastInfo()
         {
-            return this.Messages.Where(m => m.Type == MessageType.Info).LastOrDefault().Text ?? string.Empty;
+            return Messages.Where(m => m.Type == MessageType.Info).LastOrDefault().Text ?? string.Empty;
         }
 
         /// <summary>
@@ -637,9 +637,9 @@ namespace Symbiote.Core
         /// Console.WriteLine(retVal.LastWarningMessage());
         /// </code>
         /// </example>
-        public virtual string LastWarningMessage()
+        public virtual string GetLastWarning()
         {
-            return this.Messages.Where(m => m.Type == MessageType.Warning).LastOrDefault().Text ?? string.Empty;
+            return Messages.Where(m => m.Type == MessageType.Warning).LastOrDefault().Text ?? string.Empty;
         }
 
         /// <summary>
@@ -655,12 +655,12 @@ namespace Symbiote.Core
         /// retVal.AddError("This is an error");
         /// 
         /// // print the last error
-        /// Console.WriteLine(retVal.LastErrorMessage());
+        /// Console.WriteLine(retVal.GetLastError());
         /// </code>
         /// </example>
-        public virtual string LastErrorMessage()
+        public virtual string GetLastError()
         {
-            return this.Messages.Where(m => m.Type == MessageType.Error).LastOrDefault().Text ?? string.Empty;
+            return Messages.Where(m => m.Type == MessageType.Error).LastOrDefault().Text ?? string.Empty;
         }
 
         /// <summary>
@@ -695,7 +695,7 @@ namespace Symbiote.Core
         {
             foreach (Message message in result.Messages)
             {
-                this.Messages.Add(message);
+                Messages.Add(message);
             }
 
             // if the value of this Result's ResultCode is less than the provided Result, 
@@ -704,7 +704,7 @@ namespace Symbiote.Core
             // unknown < success < warning < failure
             if (ResultCode.CompareTo(result.ResultCode) < 0)
             {
-                this.ResultCode = result.ResultCode;
+                ResultCode = result.ResultCode;
             }
 
             return this;
@@ -788,7 +788,7 @@ namespace Symbiote.Core
         /// </summary>
         public Result() : base()
         {
-            this.ReturnValue = default(T);
+            ReturnValue = default(T);
         }
 
         #endregion
@@ -1125,7 +1125,7 @@ namespace Symbiote.Core
         /// </example>
         public Result<T> SetReturnValue(T returnValue)
         {
-            this.ReturnValue = returnValue;
+            ReturnValue = returnValue;
             return this;
         }
 

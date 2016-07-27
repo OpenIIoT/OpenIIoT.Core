@@ -247,7 +247,7 @@ namespace Symbiote.Core
 
                 if (managerStartResult.ResultCode == ResultCode.Failure)
                 {
-                    throw new Exception("The Program Manager failed to start: " + managerStartResult.LastErrorMessage());
+                    throw new Exception("The Program Manager failed to start: " + managerStartResult.GetLastError());
                 }
 
                 logger.Info("Program Manager started.");

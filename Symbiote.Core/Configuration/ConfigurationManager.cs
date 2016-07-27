@@ -403,6 +403,34 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
+        /// Registers each Type within the supplied list which implements the IConfigurable interface.
+        /// </summary>
+        /// <param name="types">The list of Types to register.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result RegisterTypes(List<Type> types)
+        {
+            logger.EnterMethod(xLogger.Params(types));
+            logger.Debug("Attempting to register " + types.Count() + " types...");
+            Result retVal = new Result();
+
+            foreach (Type type in types)
+            {
+                if (type.GetInterfaces().Where(i => i.IsGenericType).Any(i => i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
+                {
+                    retVal.Incorporate(RegisterType(type));
+                }
+                else
+                {
+                    logger.Trace("The Type '" + type.Name + "' does not implement IConfigurable and was not registered.");
+                }
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
         /// Registers the supplied Type with the Configuration Manager.
         /// </summary>
         /// <remarks>When called during application startup, throwExceptionOnFailure should be set to true.</remarks>
@@ -412,7 +440,6 @@ namespace Symbiote.Core.Configuration
         public Result RegisterType(Type type, bool throwExceptionOnFailure = false)
         {
             logger.EnterMethod(xLogger.Params(type, throwExceptionOnFailure));
-
             logger.Debug("Registering type '" + type.Name + "'...");
             Result retVal = new Result();
 
@@ -458,6 +485,7 @@ namespace Symbiote.Core.Configuration
                 throw new Exception("Failed to register the type '" + type.Name + "' for configuration.");
             }
 
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -509,12 +537,12 @@ namespace Symbiote.Core.Configuration
                     }
                     else
                     {
-                        throw new Exception("Failed to save the new configuration: " + saveResult.LastErrorMessage());
+                        throw new Exception("Failed to save the new configuration: " + saveResult.GetLastError());
                     }
                 }
                 else
                 {
-                    throw new Exception("The configuration file was missing and the application failed to build a replacement: " + buildResult.LastErrorMessage());
+                    throw new Exception("The configuration file was missing and the application failed to build a replacement: " + buildResult.GetLastError());
                 }
             }
 
@@ -525,7 +553,7 @@ namespace Symbiote.Core.Configuration
 
             if (loadResult.ResultCode == ResultCode.Failure)
             {
-                throw new Exception("Failed to load the configuration: " + loadResult.LastErrorMessage());
+                throw new Exception("Failed to load the configuration: " + loadResult.GetLastError());
             }
 
             retVal.Incorporate(loadResult);
@@ -537,7 +565,7 @@ namespace Symbiote.Core.Configuration
 
             if (validationResult.ResultCode == ResultCode.Failure)
             {
-                throw new Exception("The loaded configuration is invalid: " + validationResult.LastErrorMessage());
+                throw new Exception("The loaded configuration is invalid: " + validationResult.GetLastError());
             }
 
             retVal.Incorporate(validationResult);

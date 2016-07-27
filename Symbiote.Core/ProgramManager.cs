@@ -44,6 +44,7 @@ using System.Linq;
 using System.Reflection;
 using NLog;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Event;
 
 namespace Symbiote.Core
 {
@@ -98,9 +99,35 @@ namespace Symbiote.Core
             RegisterManager<IProgramManager>(this);
             
             // create an instance of each Manager Type in the ManagerTypes list
-            logger.Debug("Instantiating Managers...");
+            logger.Info("Instantiating Managers...");
             InstantiateManagers();
-            logger.Debug("Managers instantiated successfully.");
+            logger.Info("Managers instantiated successfully.");
+
+            // register Managers with the Configuration Manager
+            logger.Info("Registering Managers with the Configuration Manager...");
+            Result configurationResult = GetManager<IConfigurationManager>().RegisterTypes(ManagerTypes);
+
+            if (configurationResult.ResultCode == ResultCode.Failure)
+            {
+                throw new Exception("Failed to register one or more Managers with the Configuration Manager: " + configurationResult.GetLastError());
+            }
+            else
+            {
+                logger.Info("Successfully registered Managers with the Configuration Manager.");
+            }
+
+            // register Managers with the Event Manager
+            logger.Info("Registering Managers with the Event Manager...");
+            Result eventResult = GetManager<IEventManager>().RegisterProviders(ManagerInstances.ConvertAll<object>(o => (object)o));
+
+            if (eventResult.ResultCode == ResultCode.Failure)
+            {
+                throw new Exception("Failed to register one or more Managers with the Event Manager: " + eventResult.GetLastError());
+            }
+            else
+            {
+                logger.Info("Successfully registered Managers with the Event Manager.");
+            }
 
             ChangeState(State.Initialized);
 
@@ -184,6 +211,16 @@ namespace Symbiote.Core
         /// Gets or sets a dictionary containing a list of dependencies for each application Manager.
         /// </summary>
         private Dictionary<Type, List<Type>> ManagerDependencies { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of objects for which registration with the Event Manager has been deferred.
+        /// </summary>
+        private List<object> DeferredEventProviderRegistrants { get; set; }
+
+        /// <summary>
+        /// Gets or sets a list of Types for which registration with the Configuration Manager has been deferred.
+        /// </summary>
+        private List<Type> DeferredConfigurationRegistrants { get; set; }
 
         #endregion
 
@@ -322,7 +359,7 @@ namespace Symbiote.Core
             }
             else
             {
-                logger.Debug("Failed to start " + manager.GetType().Name + ": " + retVal.LastErrorMessage());
+                logger.Debug("Failed to start " + manager.GetType().Name + ": " + retVal.GetLastError());
             }
 
             retVal.LogResult(logger.Debug);
@@ -346,7 +383,7 @@ namespace Symbiote.Core
 
             if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.AddError("Failed to stop " + manager.GetType().Name + "." + retVal.LastErrorMessage());
+                retVal.AddError("Failed to stop " + manager.GetType().Name + "." + retVal.GetLastError());
             }
 
             retVal.LogResult(logger);
@@ -447,7 +484,7 @@ namespace Symbiote.Core
             // iterate over the list
             foreach (Type managerType in managerTypes)
             {
-                logger.Separator(LogLevel.Debug);
+                logger.SubHeading(LogLevel.Debug, managerType.Name);
                 logger.Debug("Instantiating '" + managerType.Name + "'...");
 
                 // find the InstantiateManager() method so that we can invoke it via reflection
@@ -729,26 +766,6 @@ namespace Symbiote.Core
                 managerInstances.Add(manager);
                 managerDependencies.Add(typeof(T), dependencies);
                 manager.StateChanged += ManagerStateChanged;
-
-                // register the manager with the configuration manager
-                // first, ensure the manager implements IConfigurable.  
-                if (manager.GetType().GetInterfaces().Where(i => i.IsGenericType).Any(i => i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
-                {
-                    logger.Trace("Attempting to register the Manager with the Configuration Manager...");
-
-                    // if the manager implements IConfigurable, ensure the Configuration Manager has been registered.
-                    if (IsRegistered<IConfigurationManager>())
-                    {
-                        // register the type of the manager.  this method will throw an exception if it fails as it is imperative that each
-                        // manager impementing IConfigurable is registered.
-                        IConfigurationManager configManager = GetManager<IConfigurationManager>();
-                        configManager.RegisterType(manager.GetType(), true);
-                    }
-                    else
-                    {
-                        throw new Exception("The manager '" + manager.GetType().Name + "' cannot be registered with the Configuration Manager because the Configuration Manager is not yet registered.");
-                    }
-                }
             }
             catch (Exception ex)
             {

@@ -302,7 +302,7 @@ namespace Symbiote.Plugin.Connector.Example
             {
                 State = State.Faulted;
 
-                string message = "Failed to configure " + PluginType + " '" + FQN + "." + instanceName + "': " + configureResult.LastErrorMessage();
+                string message = "Failed to configure " + PluginType + " '" + FQN + "." + instanceName + "': " + configureResult.GetLastError();
                 logger.Error(message);
                 throw new Exception(message);
             }
@@ -369,7 +369,7 @@ namespace Symbiote.Plugin.Connector.Example
             if (retVal.ResultCode != ResultCode.Failure)
                 ChangeState(State.Running);
             else
-                ChangeState(State.Faulted, retVal.LastErrorMessage());
+                ChangeState(State.Faulted, retVal.GetLastError());
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);

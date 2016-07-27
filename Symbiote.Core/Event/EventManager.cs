@@ -91,9 +91,6 @@ namespace Symbiote.Core.Event
             RegisteredProviders = new Dictionary<Type, List<string>>();
             RegisteredEvents = new Dictionary<Type, List<KeyValuePair<string, string>>>();
 
-            RegisterProvider(manager);
-            RegisterProvider(configurationManager);
-
             ChangeState(State.Initialized);
 
             logger.ExitMethod();
@@ -288,6 +285,34 @@ namespace Symbiote.Core.Event
         #region IEventManager Implementation
 
         /// <summary>
+        /// Registers each object within the supplied list which implements the IEventProvider interface.
+        /// </summary>
+        /// <param name="registrants">The list of objects to register.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result RegisterProviders(List<object> registrants)
+        {
+            logger.EnterMethod();
+            logger.Debug("Attempting to register " + registrants.Count() + "' objects...");
+            Result retVal = new Result();
+
+            foreach (object registrant in registrants)
+            {
+                if (registrant is IEventProvider)
+                {
+                    retVal.Incorporate(RegisterProvider(registrant));
+                }
+                else
+                {
+                    logger.Debug("The object of Type '" + registrant.GetType() + "' does not implement IEventProvider and was not registered.");
+                }
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
         /// Registers the specified object with the Event Manager.
         /// </summary>
         /// <param name="registrant">The object to register.</param>
@@ -465,7 +490,8 @@ namespace Symbiote.Core.Event
                 }
                 else
                 {
-                    logger.Trace("Unable to fetch description.");
+                    logger.Trace("Event attribute was not attached to the event '" + eventInfo.Name + "; skipping registration.");
+                    continue;
                 }
 
                 logger.Debug("Processing event '" + eventInfo.Name + "' with description '" + description + "'...");

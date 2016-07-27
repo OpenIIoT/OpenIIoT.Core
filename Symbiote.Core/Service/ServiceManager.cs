@@ -75,10 +75,10 @@ namespace Symbiote.Core.Service
                     retVal = StartServices();
                 }
                 else
-                    retVal.AddError("Failed to instantiate Services. " + retVal.LastErrorMessage());
+                    retVal.AddError("Failed to instantiate Services. " + retVal.GetLastError());
             }
             else
-                retVal.AddError("Failed to register Service types. " + retVal.LastErrorMessage());
+                retVal.AddError("Failed to register Service types. " + retVal.GetLastError());
 
             retVal.Incorporate(registerResult);
 

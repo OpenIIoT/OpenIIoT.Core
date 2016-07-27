@@ -626,7 +626,7 @@ namespace Symbiote.Core.Plugin
             Result configureResult = Configure();
             if (configureResult.ResultCode == ResultCode.Failure)
             {
-                throw new Exception("Failed to start the Plugin Manager: " + configureResult.LastErrorMessage());
+                throw new Exception("Failed to start the Plugin Manager: " + configureResult.GetLastError());
             }
 
             retVal.Incorporate(configureResult);
@@ -1022,7 +1022,7 @@ namespace Symbiote.Core.Plugin
                 }
                 else
                 {
-                    retVal.InvalidArchives.Add(new InvalidPluginArchive(System.IO.Path.GetFileName(fileName), parseResult.LastErrorMessage()));
+                    retVal.InvalidArchives.Add(new InvalidPluginArchive(System.IO.Path.GetFileName(fileName), parseResult.GetLastError()));
                 }
 
                 parseResult.LogResult(logger.Debug, "ParsePluginArchive");
@@ -1155,7 +1155,7 @@ namespace Symbiote.Core.Plugin
                         }
                         else
                         {
-                            retVal.AddError("Failed to compute the checksum of the payload: " + payloadChecksumResult.LastErrorMessage());
+                            retVal.AddError("Failed to compute the checksum of the payload: " + payloadChecksumResult.GetLastError());
                         }
 
                         // if the plugin archive contains a Connector or Endpoint, make sure the zip file contains a .dll with the proper name.
@@ -1177,7 +1177,7 @@ namespace Symbiote.Core.Plugin
                     }
                     else
                     {
-                        retVal.AddError("Failed to extract the payload from the archive: " + extractPayloadResult.LastErrorMessage());
+                        retVal.AddError("Failed to extract the payload from the archive: " + extractPayloadResult.GetLastError());
                     }
                 }
                 else
@@ -1187,7 +1187,7 @@ namespace Symbiote.Core.Plugin
             }
             else
             {
-                retVal.AddError("Failed to retrieve a list of files from zip file: " + zipPayloadCheckResult.LastErrorMessage());
+                retVal.AddError("Failed to retrieve a list of files from zip file: " + zipPayloadCheckResult.GetLastError());
             }
 
             // clean up the temp directory.  this will fail if the file wasn't extracted but we don't care.
@@ -1594,7 +1594,7 @@ namespace Symbiote.Core.Plugin
                 else
                 {
                     logger.Debug("Failed to load Plugin Assembly '" + assemblyFileName + "'...");
-                    retVal.AddWarning("Failed to load Plugin Assembly '" + System.IO.Path.GetFileName(assemblyFileName) + ": " + loadResult.LastErrorMessage());
+                    retVal.AddWarning("Failed to load Plugin Assembly '" + System.IO.Path.GetFileName(assemblyFileName) + ": " + loadResult.GetLastError());
                 }
             }
 
@@ -1662,7 +1662,7 @@ namespace Symbiote.Core.Plugin
 
                 if (validationResult.ResultCode == ResultCode.Failure)
                 {
-                    throw new Exception("Error validating plugin assembly: " + validationResult.LastErrorMessage());
+                    throw new Exception("Error validating plugin assembly: " + validationResult.GetLastError());
                 }
                 else
                 {
