@@ -45,11 +45,11 @@ using System.ServiceProcess;
 using System.Text.RegularExpressions;
 using NLog;
 using Symbiote.Core.Configuration;
+using Symbiote.Core.Event;
 using Symbiote.Core.Model;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Service;
-using Symbiote.Core.Event;
 
 namespace Symbiote.Core
 {
@@ -152,56 +152,75 @@ namespace Symbiote.Core
 
             try
             {
+                //----------------------- - --------- -  - 
                 // process the command line arguments used to start the application
                 logger.Debug("Program started with " + (args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments."));
 
                 if (args.Length > 0)
                 {
-                    // check to see if logger arguments were supplied
-                    string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel:)((?i)trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
-                    if (logarg != default(string))
+                    try
                     {
-                        // reconfigure the logger based on the command line arguments.
-                        // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
-                        // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
-                        logger.Info("Reconfiguring logger to log level '" + logarg.Split(':')[1] + "'...");
-                        Utility.SetLoggingLevel(logarg.Split(':')[1]);
-                        logger.Info("Successfully reconfigured logger.");
+                        // check to see if logger arguments were supplied
+                        string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel:)((?i)trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
+                        if (logarg != default(string))
+                        {
+                            // reconfigure the logger based on the command line arguments.
+                            // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
+                            // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
+                            logger.Info("Reconfiguring logger to log level '" + logarg.Split(':')[1] + "'...");
+                            Utility.SetLoggingLevel(logarg.Split(':')[1]);
+                            logger.Info("Successfully reconfigured logger.");
+                        }
+
+                        // check to see if service install/uninstall arguments were supplied
+                        string servicearg = args.Where(a => Regex.IsMatch(a, "^(?i)(-(un)?install-service)$")).FirstOrDefault();
+                        if (servicearg != default(string))
+                        {
+                            string action = servicearg.Split('-')[1];
+                            logger.Info("Attempting to " + action + " Windows Service...");
+
+                            if (Utility.ModifyService(action))
+                            {
+                                logger.Info("Successfully " + action + "ed Windows Service.");
+                            }
+                            else
+                            {
+                                logger.Error("Failed to " + action + " Windows Service.");
+                            }
+
+                            // if we do anything with the service, do it then quit.  don't start the application if either argument was used.
+                            Console.WriteLine("Press any key to continue...");
+                            Console.ReadLine();
+                            return;
+                        }
                     }
-
-                    // check to see if service install/uninstall arguments were supplied
-                    string servicearg = args.Where(a => Regex.IsMatch(a, "^(?i)(-(un)?install-service)$")).FirstOrDefault();
-                    if (servicearg != default(string))
+                    catch (Exception ex)
                     {
-                        string action = servicearg.Split('-')[1];
-                        logger.Info("Attempting to " + action + " Windows Service...");
-
-                        if (Utility.ModifyService(action))
-                        {
-                            logger.Info("Successfully " + action + "ed Windows Service.");
-                        }
-                        else
-                        {
-                            logger.Error("Failed to " + action + " Windows Service.");
-                        }
-
-                        // if we do anything with the service, do it then quit.  don't start the application if either argument was used.
-                        Console.WriteLine("Press any key to continue...");
-                        Console.ReadLine();
-                        return;
+                        logger.Exception(ex);
+                        throw new ProgramArgumentException("Error parsing command line arguments.  See the inner exception for details.", ex);
                     }
                 }
 
+                //---------- - - -    ------------------------  -          -
                 // instantiate the Program Manager.
                 // the Program Manager acts as a Service Locator for the application; all of the various IManager instances specified in
                 // the list of managers are instantiated (but not started) within the constructor of ProgramManager.
                 logger.Heading(LogLevel.Debug, "Initialization");
                 logger.Debug("Instantiating the Program Manager...");
 
-                manager = ProgramManager.Instantiate(managers);
+                try
+                {
+                    manager = ProgramManager.Instantiate(managers);
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(ex);
+                    throw new ProgramInitializationException("Error instantiating the Program Manager.  See the inner exception for details.", ex);
+                }
 
                 logger.Debug("The Program Manager was instantiated successfully.");
 
+                //-------------- -   ---------------------------------------
                 // determine whether the application is being run as a Windows service or as a console application and start accordingly.
                 // it is possible to run Windows services on unix using mono-service, however this functionality is currently TBD.
                 if ((PlatformManager.GetPlatformType() == PlatformType.Windows) && (!Environment.UserInteractive))
@@ -218,7 +237,7 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Fatal("The application failed to initialize.");
+                logger.Fatal("The application encountered a fatal error.");
                 logger.Exception(LogLevel.Fatal, ex);
             }
             finally
@@ -247,7 +266,7 @@ namespace Symbiote.Core
 
                 if (managerStartResult.ResultCode == ResultCode.Failure)
                 {
-                    throw new Exception("The Program Manager failed to start: " + managerStartResult.GetLastError());
+                    throw new ProgramStartException("The Program Manager failed to start: " + managerStartResult.GetLastError());
                 }
 
                 logger.Info("Program Manager started.");
@@ -259,17 +278,10 @@ namespace Symbiote.Core
 
                 Console.ReadLine();
             }
-            catch (TargetInvocationException ex)
-            {
-                logger.Fatal(ex, "Unable to start the web server.  Is " + manager.ProductName + " running under an account with administrative privilege?");
-            }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Fatal, ex);
-                if (!Environment.UserInteractive)
-                {
-                    throw;
-                }
+                logger.Exception(ex);
+                throw new ProgramStartException("Error starting the application.  See the inner exception for details.", ex);
             }
             finally
             {
@@ -298,7 +310,8 @@ namespace Symbiote.Core
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Error, ex);
+                logger.Exception(ex);
+                throw new ProgramStopException("Error stopping the application.  See the inner exception for details.", ex);
             }
             finally
             {
@@ -321,36 +334,46 @@ namespace Symbiote.Core
         {
             Guid guid = logger.EnterMethod(true);
 
-            // attach the Platform connector items to the model
-            // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
-            logger.Info("Detatching potentially stale Platform items...");
-            manager.GetManager<ModelManager>().RemoveItem(manager.GetManager<ModelManager>().FindItem(manager.InstanceName + ".System.Platform"));
-
-            logger.Info("Attaching new Platform items...");
-
-            // find or create the parent for the Platform items
-            Item systemItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName + ".System");
-            if (systemItem == default(Item))
+            try
             {
-                systemItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName + ".System")).ReturnValue;
+                // attach the Platform connector items to the model
+                // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
+                logger.Info("Detatching potentially stale Platform items...");
+                manager.GetManager<ModelManager>().RemoveItem(manager.GetManager<ModelManager>().FindItem(manager.InstanceName + ".System.Platform"));
+
+                logger.Info("Attaching new Platform items...");
+
+                // find or create the parent for the Platform items
+                Item systemItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName + ".System");
+                if (systemItem == default(Item))
+                {
+                    systemItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName + ".System")).ReturnValue;
+                }
+
+                // attach the Platform items to Symbiote.System
+                manager.GetManager<ModelManager>().AttachItem(manager.GetManager<PlatformManager>().Platform.Connector.Browse(), systemItem);
+                logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
+
+                Item symItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName);
+                if (symItem == default(Item))
+                {
+                    symItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName)).ReturnValue;
+                }
+
+                // show 'em what they've won!
+                Utility.PrintLogo(logger);
+                Utility.PrintModel(logger, manager.GetManager<ModelManager>().Model, 0, null, true);
+                Utility.PrintLogoFooter(logger);
             }
-
-            // attach the Platform items to Symbiote.System
-            manager.GetManager<ModelManager>().AttachItem(manager.GetManager<PlatformManager>().Platform.Connector.Browse(), systemItem);
-            logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
-
-            Item symItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName);
-            if (symItem == default(Item))
+            catch (Exception ex)
             {
-                symItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName)).ReturnValue;
+                logger.Exception(ex);
+                throw new ProgramStartupRoutineException("Error encountered during the startup routine.  See the inner exception for details.", ex);
             }
-
-            // show 'em what they've won!
-            Utility.PrintLogo(logger);
-            Utility.PrintModel(logger, manager.GetManager<ModelManager>().Model, 0, null, true);
-            Utility.PrintLogoFooter(logger);
-
-            logger.ExitMethod(guid);
+            finally
+            {
+                logger.ExitMethod(guid);
+            }
         }
 
         /// <summary>
@@ -359,7 +382,20 @@ namespace Symbiote.Core
         private static void Shutdown()
         {
             Guid guid = logger.EnterMethod(true);
-            logger.ExitMethod(guid);
+
+            try
+            {
+                // maybe later!?
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex);
+                throw new ProgramShutdownRoutineException("Error encountered during the shutdown routine.  See the inner exception for details.", ex);
+            }
+            finally
+            {
+                logger.ExitMethod(guid);
+            }
         }
 
         #endregion

@@ -192,6 +192,7 @@
     <Compile Include="Plugin\PluginType.cs" />
     <Compile Include="Plugin\PluginTypeManager.cs" />
     <Compile Include="IProgramManager.cs" />
+    <Compile Include="ProgramExceptions.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
