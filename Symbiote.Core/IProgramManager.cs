@@ -40,6 +40,7 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
 
 namespace Symbiote.Core
 {
@@ -75,13 +76,6 @@ namespace Symbiote.Core
         /// <typeparam name="T">The Type of the Manager to return.</typeparam>
         /// <returns>The requested Manager.</returns>
         T GetManager<T>() where T : IManager;
-
-        /// <summary>
-        /// Returns true if the specified Manager Type is registered, false otherwise.
-        /// </summary>
-        /// <typeparam name="T">The Manager Type to check.</typeparam>
-        /// <returns>True if the specified Manager Type is registered, false otherwise.</returns>
-        bool IsRegistered<T>() where T : IManager;
 
         #endregion
     }

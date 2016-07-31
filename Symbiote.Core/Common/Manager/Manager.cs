@@ -292,6 +292,24 @@ namespace Symbiote.Core
         #region Protected Instance Methods
 
         /// <summary>
+        /// Implements the Manager-specific post-instantiation procedure.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        ///     This method is invoked by the ProgramManager following the instantiation of all program Managers.  The list of IManager
+        ///     instances created during the instantiation is provided, however this Manager must only use that list to set up indirect 
+        ///     references; for instance, the Configuration Manager will iterate over this list to register all Managers implementing IConfigurable.
+        /// </para>
+        /// <para>
+        ///     This Manager must not register dependencies using the instances in the specified list; if direct dependencies exist they are
+        ///     to be specified in the Manager's constructor and Instantiate() method.
+        /// </para>
+        /// </remarks>
+        /// <param name="managerInstances"></param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected abstract Result Setup(List<IManager> managerInstances);
+
+        /// <summary>
         /// Implements the Manager-specific startup procedure.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>

@@ -499,6 +499,32 @@ namespace Symbiote.Core.Configuration
         #region Protected Instance Methods
 
         /// <summary>
+        /// Executed upon instantiation of all program Managers.  Registers all IManagers in the specified list implementing IConfigurable.
+        /// </summary>
+        /// <param name="managerInstances"></param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Setup(List<IManager> managerInstances)
+        {
+            logger.EnterMethod();
+            logger.Debug("Performing Setup for '" + GetType().Name + "'...");
+            Result retVal = new Result();
+
+            if (managerInstances == default(List<IManager>) || managerInstances.Count() == 0)
+            {
+                return retVal.AddError("A null or empty list of Managers was provided; Setup cannot be performed.");
+            }
+
+            List<Type> managerTypes = managerInstances.Select(m => m.GetType()).ToList();
+
+            logger.Info("Registering Managers with the Configuration Manager...");
+            retVal.Incorporate(RegisterTypes(managerTypes));
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
         /// <para>
         /// Executed upon startup of the Manager. 
         /// </para>

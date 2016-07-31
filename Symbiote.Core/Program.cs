@@ -142,12 +142,17 @@ namespace Symbiote.Core
         ///     The "-(un)install-service" argument is used to install or uninstall the Windows service.  If either of these arguments is used, the application
         ///     performs the requested command and stops.  Re-run the application omitting the argument to start normally.
         /// </para>
+        /// <para>
+        ///     Any additional arguments will be discarded; the application does not check for, nor does it react to, arguments other than those listed above.
+        /// </para>
         /// </remarks>
         /// <param name="args">Command line arguments.</param>
+        /// <exception cref="ProgramArgumentException">Thrown when an error is encountered while parsing and applying command line arguments.</exception>
+        /// <exception cref="ProgramInitializationException">Thrown when an error is encountered while initializing the program.</exception>
         internal static void Main(string[] args)
         {
-            logger.Heading(LogLevel.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
             logger.EnterMethod(xLogger.Params((object)args));
+            logger.Heading(LogLevel.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
             logger.Info("Initializing application...");
 
             try
@@ -203,7 +208,7 @@ namespace Symbiote.Core
 
                 //---------- - - -    ------------------------  -          -
                 // instantiate the Program Manager.
-                // the Program Manager acts as a Service Locator for the application; all of the various IManager instances specified in
+                // the Program Manager acts as a Service Locator and Dependency Injector for the application; all of the various IManager instances specified in
                 // the list of managers are instantiated (but not started) within the constructor of ProgramManager.
                 logger.Heading(LogLevel.Debug, "Initialization");
                 logger.Debug("Instantiating the Program Manager...");
@@ -250,6 +255,7 @@ namespace Symbiote.Core
         /// Entry point for the application logic.
         /// </summary>
         /// <param name="args">Command line arguments.</param>
+        /// <exception cref="ProgramStartException">Thrown when an exception is encountered while starting the application.</exception>
         internal static void Start(string[] args)
         {
             logger.EnterMethod(xLogger.Params((object)args));
@@ -261,8 +267,9 @@ namespace Symbiote.Core
             {
                 // start the program manager.
                 logger.SubHeading(LogLevel.Debug, "Program Manager");
-                logger.Info("Invoking the Program Manager Start routine...");
-                Result managerStartResult = manager.StartManager(manager);
+                logger.Info("Starting the Program Manager...");
+
+                Result managerStartResult = manager.Start();
 
                 if (managerStartResult.ResultCode == ResultCode.Failure)
                 {
@@ -292,18 +299,27 @@ namespace Symbiote.Core
         /// <summary>
         /// Exit point for the application logic.
         /// </summary>
+        /// <exception cref="ProgramStopException">Thrown when an exception is encountered while stopping the application.</exception>
         internal static void Stop()
         {
             logger.EnterMethod();
-            logger.Heading(LogLevel.Debug, "Shutdown");
-            logger.Info(manager.ProductName + " is stopping...");
 
             try
             {
-                manager.Stop(StopType.Shutdown);
-                logger.Info("Program Manager stopped.");
+                // stop the program manager.
+                logger.Heading(LogLevel.Debug, "Shutdown");
+                logger.Info(manager.ProductName + " is stopping...");
 
+                Result managerStopResult = manager.Stop(StopType.Shutdown);
+
+                if (managerStopResult.ResultCode == ResultCode.Failure)
+                {
+                    throw new ProgramStopException("The Program Manager failed to stop: " + managerStopResult.GetLastError());
+                }
+
+                logger.Info("Program Manager stopped.");
                 logger.Info("Performing shutdown tasks...");
+
                 Shutdown();
 
                 logger.Info(manager.ProductName + " stopped.");
@@ -330,6 +346,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Miscellaneous startup tasks.
         /// </summary>
+        /// <exception cref="ProgramStartupRoutineException">Thrown when an exception is encountered while performing the program startup routine.</exception>
         private static void Startup()
         {
             Guid guid = logger.EnterMethod(true);
@@ -379,6 +396,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Miscellaneous shutdown tasks.
         /// </summary>
+        /// <exception cref="ProgramShutdownRoutineException">Thrown when an exception is encountered while performing the program shutdown routine.</exception>
         private static void Shutdown()
         {
             Guid guid = logger.EnterMethod(true);

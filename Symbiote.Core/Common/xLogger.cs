@@ -53,14 +53,13 @@
                                                                                                ▀█▄ ██ ▄█▀                       
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
-
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using NLog;
@@ -69,22 +68,25 @@ namespace Symbiote.Core
 {
     /// <summary>
     /// <para>
-    /// xLogger is an extension of NLog.Logger that provides additional functionality for tracing the entry and exit, arbitrary
-    /// checkpoints, exceptions and stack traces within methods.
+    ///     xLogger is an extension of NLog.Logger that provides additional functionality for tracing the entry and exit, arbitrary
+    ///     checkpoints, exceptions and stack traces within methods.
     /// </para>
-    /// Additional methods allow for greater readability within log files, such as the ability to style entry/exit/exception logs,
-    /// three tiers of large-font headings, separators and styled and un-styled multiline log messages.
+    /// <para>
+    ///     Additional methods allow for greater readability within log files, such as the ability to style entry/exit/exception logs,
+    ///     three tiers of large-font headings, separators and styled and un-styled multiline log messages.
+    /// </para>
     /// </summary>
     /// <example>
     /// <code>
+    /// <![CDATA[
     /// // create an instance of xLogger for the current class using the NLog LogManager
     /// private xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
     /// 
     /// // create a generic instance
     /// private xLogger logger = (xLogger)LogManager.GetLogger("generic logger name", typeof(xLogger));
+    /// ]]>
     /// </code>
     /// </example>
-    [SuppressMessage("StyleCop.CSharp.NamingRules", "SA1300:ElementMustBeginWithUpperCaseLetter", Justification = "Reviewed.")]
     public class xLogger : Logger
     {
         #region Fields
@@ -92,12 +94,12 @@ namespace Symbiote.Core
         /// <summary>
         /// Generic prefix to append to the beginning of the other prefixes
         /// </summary>
-        private static readonly string Prefix = " │ ";
+        private static readonly string Prefix = "│ ";
 
         /// <summary>
         /// String to log prior to any text block.  If no header is desired, specify a blank string.
         /// </summary>
-        private static readonly string Header = " ┌─────────── ─ ───────────────────────── ─────────────────────────────────────────────────────────────────── ─────── ─    ─     ─";
+        private static readonly string Header = "┌─────────── ─ ───────────────────────── ─────────────────────────────────────────────────────────────────── ─────── ─    ─     ─";
 
         /// <summary>
         /// String to append to the beginning of the method entry message.
@@ -148,12 +150,12 @@ namespace Symbiote.Core
         /// <summary>
         /// String to log following any text block.  If no footer is desired, specify a blank string.
         /// </summary>
-        private static readonly string Footer = " └──────────────────── ───────────────────────────────  ─  ─          ─ ─ ─    ─   ─";
+        private static readonly string Footer = "└──────────────────── ───────────────────────────────  ─  ─          ─ ─ ─    ─   ─";
 
         /// <summary>
         /// String to log when LogSeparator() is invoked.
         /// </summary>
-        private static readonly string InnerSeparator = " ├──────────────────────── ─       ──  ─";
+        private static readonly string InnerSeparator = "├──────────────────────── ─       ──  ─";
 
         /// <summary>
         /// String to log when the Separator() method is invoked.
@@ -190,10 +192,14 @@ namespace Symbiote.Core
         /// </summary>
         private static readonly int AutoPruneAge = 300;
 
+        #region Locks
+
         /// <summary>
         /// Lock to use to ensure thread safety with respect to the PersistedMethods list.
         /// </summary>
         private object persistedMethodListLock = new object();
+
+        #endregion
 
         #endregion
 
@@ -204,7 +210,7 @@ namespace Symbiote.Core
         /// </summary>
         public xLogger()
         {
-            this.PersistedMethods = new List<Tuple<Guid, DateTime>>();
+            PersistedMethods = new List<Tuple<Guid, DateTime>>();
         }
 
         #endregion
@@ -212,7 +218,7 @@ namespace Symbiote.Core
         #region Properties
 
         /// <summary>
-        /// Gets list of Tuples containing a Guid and DateTime corresponding to methods logged with the persistence option.
+        /// Gets a list of Tuples containing a Guid and DateTime corresponding to methods logged with the persistence option.
         /// </summary>
         public List<Tuple<Guid, DateTime>> PersistedMethods { get; private set; }
 
@@ -231,14 +237,14 @@ namespace Symbiote.Core
         /// <remarks>
         /// <para>
         ///     This is a shorthand method that eliminates the need to explicitly define an object array when using the 
-        ///     <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method. This is necessary because the current C# 
-        ///     specification doesn't allow for the <see langword="params"/> keyword and optional implicit parameters in the same method 
+        ///     <see cref="EnterMethod(object[], bool, string, string, int)"/> method.  This is necessary because the current C# 
+        ///     specification doesn't allow for the <see langword="params"/> keyword and optional implicit parameters in the same method
         ///     signature due to ambiguity.
         /// </para>
         /// <para>
         ///     Note that if any of the parameters is an array it must be cast to type object when being passed into the method.  This is due to the fact that
-        ///     arrays of any type are also an object and are presented ambiguously to this method because of the <see langword="params"/> keyword and 
-        ///     type of object[].
+        ///     arrays of any type are also an object and are presented ambiguously to this method because of the <see langword="params"/> 
+        ///     keyword and type of object[].
         /// </para>
         /// </remarks>
         /// <param name="parameters">A dynamic object array of method parameters.</param>
@@ -246,6 +252,7 @@ namespace Symbiote.Core
         /// <seealso cref="EnterMethod(object[], bool, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // Enter() invocation with one parameter
         /// logger.EnterMethod(xLogger.Params(parameterOne));
         /// 
@@ -257,6 +264,7 @@ namespace Symbiote.Core
         /// 
         /// // Enter() invocation with a parameter list containing an array
         /// logger.EnterMethod(xLogger.Params(parameterOne, parameterTwo, (object)arrayParameterThree));
+        /// ]]>
         /// </code>
         /// </example>
         public static object[] Params(params object[] parameters)
@@ -266,11 +274,8 @@ namespace Symbiote.Core
 
         /// <summary>
         ///     Returns the object array specified in the type parameter list for a <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
-        ///     method call.
+        ///     method call.  Effectively an overload for <see cref="Params(object[])"/>, provided for naming consistency with usage.
         /// </summary>
-        /// <remarks>
-        /// Effectively an overload for <see cref="Params(object[])"/>, provided for naming consistency with usage.
-        /// </remarks>
         /// <param name="typeParameters">A dynamic Type array containing the type parameters for a method.</param>
         /// <returns>The provided object array.</returns>
         /// <seealso cref="Params(object[])"/>
@@ -296,12 +301,9 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Returns the object array specified in the variable list for a 
-        ///     <see cref="Checkpoint(string, object[], string[], string, string, int)"/> method call.  
+        ///     Returns the object array specified in the variable list for a <see cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
+        ///     method call.  Effectively an overload for <see cref="Params(object[])"/>, provided for naming consistency with usage.
         /// </summary>
-        /// <remarks>
-        /// Effectively an overload for <see cref="Params(object[])"/>, provided for naming consistency with usage.
-        /// </remarks>
         /// <param name="variables">A dynamic object array of variables.</param>
         /// <returns>The provided object array.</returns>
         /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
@@ -309,12 +311,14 @@ namespace Symbiote.Core
         /// <seealso cref="Params(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // Checkpoint() invocation with three variables
         /// int one = 1;
         /// int two = 2;
         /// string varThree = "three";
         /// 
         /// logger.Checkpoint(xLogger.Vars(one, two, three));
+        /// ]]>
         /// </code>
         /// </example>
         public static object[] Vars(params object[] variables)
@@ -323,12 +327,11 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Returns the string array specified in the variable name list for a <see cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
+        ///     Returns the string array specified in the variable name list for a <see cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/> 
         ///     or <see cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/> method call.
         /// </summary>
         /// <remarks>
-        ///     When used in conjunction with Checkpoint() or Exception(), ensure the order and number of the supplied names matches that of the 
-        ///     related object array.
+        ///     Ensure the order and number of the supplied names matches that of the related object array.
         /// </remarks>
         /// <param name="names">A dynamic string array of variable names.</param>
         /// <returns>The provided string array.</returns>
@@ -336,12 +339,14 @@ namespace Symbiote.Core
         /// <seealso cref="Params(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // Checkpoint() invocation with three variables
         /// int one = 1;
         /// int two = 2;
         /// string varThree = "three";
         /// 
         /// logger.Checkpoint(xLogger.Vars(one, two, three), xLogger.Names("one", "two", "varThree"));
+        /// ]]>
         /// </code>
         /// </example>
         public static string[] Names(params string[] names)
@@ -357,54 +362,59 @@ namespace Symbiote.Core
         /// Prunes the PersistedMethods list of any tuples older than the specified age in seconds.
         /// </summary>
         /// <remarks>
-        /// <para>
-        /// Should be called on a regular interval (minutes or perhaps hours) to keep things tidy.
-        /// </para>
-        /// <para>
-        /// If doing so, be mindful of long running methods (Main(), for instance) and be aware that persistence will be deleted if used.
-        /// </para>
+        ///     Should be called on a regular interval (minutes or perhaps hours) to keep things tidy.
+        ///     If doing so, be mindful of long running methods (Main(), for instance) and be aware that persistence will be deleted if used.
         /// </remarks>
         /// <param name="age">The age in seconds after which persisted methods will be pruned.</param>
+        /// <returns>The number of records pruned.</returns>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // prune persisted methods older than 5 minutes (300 seconds)
         /// MethodLogger.PrunePersistedMethods(300);
+        /// ]]>
         /// </code>
         /// </example>
-        public void PrunePersistedMethods(int age)
+        public int PrunePersistedMethods(int age)
         {
             // retrieve a list of aged tuples
-            List<Tuple<Guid, DateTime>> pruneList = this.PersistedMethods.Where(m => (DateTime.UtcNow - m.Item2).Seconds > age).ToList();
+            List<Tuple<Guid, DateTime>> pruneList = PersistedMethods.Where(m => (DateTime.UtcNow - m.Item2).Seconds >= age).ToList();
 
             if (pruneList.Count > 0)
             {
                 // remove everything in the list
                 foreach (Tuple<Guid, DateTime> tuple in pruneList)
                 {
-                    this.PersistedMethods.Remove(tuple);
+                    PersistedMethods.Remove(tuple);
                 }
+
+                LogManager.GetCurrentClassLogger().Trace("Pruned {0} methods with age in excess of {1} seconds from the PersistedMethods list.", pruneList.Count, age);
             }
+
+            return pruneList.Count;
         }
 
         /// <summary>
-        /// Splits the supplied string into a string array by newline characters, then prints each element of the string array as a new 
-        /// log message with the logging function specified in action.
+        ///     Splits the supplied string into a string array by newline characters, then prints each element of the string array as a new 
+        ///     log message with the logging function specified in action.
         /// </summary>
         /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to split and log.</param>
         /// <seealso cref="Multiline(NLog.LogLevel, string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // create a string with newline characters
         /// string s = "Hello \r\n World!"
         /// 
         /// // invoke the method
         /// logger.Multiline(LogLevel.Info, s);
+        /// ]]>
         /// </code>
         /// </example>
         public void Multiline(LogLevel level, string message)
         {
-            this.Multiline(level, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
+            Multiline(level, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
         }
 
         /// <summary>
@@ -414,24 +424,26 @@ namespace Symbiote.Core
         /// <param name="message">The message to log.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // create a string array
         /// string[] s = new string[] { "line 1", "line 2", "line 3" };
         /// 
         /// // invoke the method
         /// logger.Multiline(LogLevel.Info, s);
+        /// ]]>
         /// </code>
         /// </example>
         public void Multiline(LogLevel level, string[] message)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return;
             }
 
             foreach (string line in message)
             {
-                this.Log(level, line);
+                Log(level, line);
             }
         }
 
@@ -442,16 +454,18 @@ namespace Symbiote.Core
         /// <param name="message">The message to wrap and log.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // create a string array
         /// string[] s = new string[] { "hello", "world", "!!!!" };
         /// 
         /// // invoke the method
         /// logger.MultilineWrapped(LogLevel.Info, s);
+        /// ]]>
         /// </code>
         /// </example>
         public void MultilineWrapped(LogLevel level, string message)
         {
-            this.MultilineWrapped(level, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
+            MultilineWrapped(level, message.Replace("\n\r", "\n").Replace("\r\n", "\n").Split('\n'));
         }
 
         /// <summary>
@@ -461,17 +475,19 @@ namespace Symbiote.Core
         /// <param name="message">The message to wrap and log.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // create a string array
         /// string[] s = new string[] { "hello", "world", "!!!!" };
         /// 
         /// // invoke the method
         /// logger.MultilineWrapped(LogLevel.Info, s);
+        /// ]]>
         /// </code>
         /// </example>
         public void MultilineWrapped(LogLevel level, string[] message)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return;
             }
@@ -491,7 +507,7 @@ namespace Symbiote.Core
             wrappedMessage.Add(Footer);
 
             // log
-            this.Multiline(level, wrappedMessage.ToArray());
+            Multiline(level, wrappedMessage.ToArray());
         }
 
         /// <summary>
@@ -500,39 +516,44 @@ namespace Symbiote.Core
         /// <param name="level">The logging level to which to log the message.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log the separator using the Info logging level
         /// logger.Separator(LogLevel.Info);
+        /// ]]>
         /// </code>
         /// </example>
         public void Separator(LogLevel level)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return;
             }
 
-            this.LogOuterSeparator(level);
+            LogOuterSeparator(level);
         }
 
         /// <summary>
-        /// Logs the supplied message converted to large sized text using BigFont and with the logging function specified in action.
+        /// Logs the supplied message converted to large sized text using <see cref="BigFont"/> and with the logging function specified in action.
         /// </summary>
         /// <remarks>
-        /// Dependent upon the BigFont class (BigFont.cs)
+        ///     Dependent upon the <see cref="BigFont"/> class (BigFont.cs)
+        ///     <see href="https://github.com/jpdillingham/BigFont"/>
         /// </remarks>
         /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to convert and log.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log a heading using the Debug logging level
         /// logger.Heading(LogLevel.Debug, "Hello World");
+        /// ]]>
         /// </code>
         /// </example>
         public void Heading(LogLevel level, string message)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return;
             }
@@ -547,71 +568,66 @@ namespace Symbiote.Core
             styledHeading.Add(OuterSeparator);
 
             // wrap and log 
-            this.MultilineWrapped(level, styledHeading.ToArray());
+            MultilineWrapped(level, styledHeading.ToArray());
         }
 
         /// <summary>
-        /// Logs the supplied message converted to medium sized text using BigFont and with the logging function specified in action.
+        /// Logs the supplied message converted to medium sized text using <see cref="BigFont"/> and with the logging function specified in action.
         /// </summary>
         /// <remarks>
-        /// Dependent upon the BigFont class (BigFont.cs)
+        ///     Dependent upon the <see cref="BigFont"/> class (BigFont.cs)
+        ///     <see href="https://github.com/jpdillingham/BigFont"/>
         /// </remarks>
         /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to convert and log.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log a subheading using the Info logging level
         /// logger.SubHeading(LogLevel.Info, "This is a subheading!");
+        /// ]]>
         /// </code>
         /// </example>
         public void SubHeading(LogLevel level, string message)
         {
-            this.MultilineWrapped(level, BigFont.Generate(message, BigFont.FontSize.Medium));
+            MultilineWrapped(level, BigFont.Generate(message, BigFont.FontSize.Medium));
         }
 
         /// <summary>
-        /// Logs the supplied message converted to small text using BigFont and with the logging function specified in action.
+        /// Logs the supplied message converted to small text using <see cref="BigFont"/> and with the logging function specified in action.
         /// </summary>
         /// <remarks>
-        /// Dependent upon the BigFont class (BigFont.cs)
+        ///     Dependent upon the <see cref="BigFont"/> class (BigFont.cs)
+        ///     <see href="https://github.com/jpdillingham/BigFont"/>
         /// </remarks>
         /// <param name="level">The logging level to which to log the message.</param>
         /// <param name="message">The message to convert and log.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log a sub-subheading using the Trace logging level
         /// logger.SubSubHeading(LogLevel.Trace, "This is a sub-subheading!");
+        /// ]]>
         /// </code>
         /// </example>
         public void SubSubHeading(LogLevel level, string message)
         {
-            this.MultilineWrapped(level, BigFont.Generate(message, BigFont.FontSize.Small));
+            MultilineWrapped(level, BigFont.Generate(message, BigFont.FontSize.Small));
         }
 
         #region EnterMethod
 
         /// <summary>
-        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
-        /// and attempts to log the parameters passed in.  
+        /// Logs a message indicating the entrance of execution flow into a method.
         /// </summary>
-        /// <remakrs>
-        /// <para>
-        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
-        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
-        /// of parameters and values to work properly.
-        /// </para>
-        /// <para>
-        /// The Params() method should be used when invoking this method to pass the method parameters as it is shorthand for creating
-        /// an object array explicitly.
-        /// </para>
-        /// </remakrs>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <returns>The Guid for the persisted method.</returns>
-        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
+        /// <seealso cref="EnterMethod(object[], bool, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // simplest example with no persistence and no parameters
         /// public void MyMethod()
         /// {
@@ -621,28 +637,18 @@ namespace Symbiote.Core
         ///     
         ///     logger.ExitMethod();
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public Guid EnterMethod([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return this.EnterMethod(null, null, false, caller, filePath, lineNumber);
+            return EnterMethod(null, null, false, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
-        /// and attempts to log the parameters passed in.  
+        ///     Logs a message indicating the entrance of execution flow into a method
+        ///     and logs the Type parameters passed in.  
         /// </summary>
-        /// <remakrs>
-        /// <para>
-        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
-        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
-        /// of parameters and values to work properly.
-        /// </para>
-        /// <para>
-        /// The <see cref="Params(object[])"/> method should be used when invoking this method to pass the method parameters as it is shorthand for creating
-        /// an object array explicitly.
-        /// </para>
-        /// </remakrs>
         /// <param name="typeParameters">A Type array containing the type parameters provided with the logged method.  Use the <see cref="TypeParams(Type[])"/> method to build this.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
@@ -666,32 +672,23 @@ namespace Symbiote.Core
         /// </example>
         public Guid EnterMethod(Type[] typeParameters, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return this.EnterMethod(typeParameters, null, false, caller, filePath, lineNumber);
+            return EnterMethod(typeParameters, null, false, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
-        /// and attempts to log the parameters passed in.  
+        ///     Logs a message indicating the entrance of execution flow into a method
+        ///     and logs the parameters passed in.  
         /// </summary>
-        /// <remakrs>
-        /// <para>
-        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
-        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
-        /// of parameters and values to work properly.
-        /// </para>
-        /// <para>
-        /// The <see cref="Params(object[])"/> method should be used when invoking this method to pass the method parameters as it is shorthand for creating
-        /// an object array explicitly.
-        /// </para>
-        /// </remakrs>
-        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the <see cref="Params(object[])"/> method to build this.</param>
+        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use <see cref="Params(object[])"/> to build this.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <returns>The Guid for the persisted method.</returns>
-        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
+        /// <seealso cref="EnterMethod(object[], bool, string, string, int)"/>
+        /// <seealso cref="Params(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log the method entry and parameters
         /// public void MyMethod(int one, int two)
         /// {
@@ -701,28 +698,48 @@ namespace Symbiote.Core
         ///     
         ///     logger.ExitMethod();
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public Guid EnterMethod(object[] parameters, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return this.EnterMethod(null, parameters, false, caller, filePath, lineNumber);
+            return EnterMethod(null, parameters, false, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
-        /// and attempts to log the parameters passed in.  
+        ///     Logs a message indicating the entrance of execution flow into a method
+        ///     and persists the entry timestamp for later retrieval.
         /// </summary>
-        /// <remakrs>
-        /// <para>
-        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
-        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
-        /// of parameters and values to work properly.
-        /// </para>
-        /// <para>
-        /// The <see cref="Params(object[])"/> method should be used when invoking this method to pass the method parameters as it is shorthand for creating
-        /// an object array explicitly.
-        /// </para>
-        /// </remakrs>
+        /// <param name="persist">If true, persists the method's Guid internally with a timestamp.</param>
+        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
+        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
+        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
+        /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="EnterMethod(object[], bool, string, string, int)"/>
+        /// <example>
+        /// <code>
+        /// <![CDATA[
+        /// // log the method entry with persistence and no parameters
+        /// public void MyMethod()
+        /// {
+        ///     Guid persistedGuid = logger.EnterMethod(true);
+        ///     
+        ///     // method body
+        ///     
+        ///     logger.ExitMethod(persistedGuid);
+        /// }
+        /// ]]>
+        /// </code>
+        /// </example>
+        public Guid EnterMethod(bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
+        {
+            return EnterMethod(null, null, persist, caller, filePath, lineNumber);
+        }
+
+        /// <summary>
+        ///     Logs a message indicating the entrance of execution flow into a method
+        ///     and logs the Type parameters and parameters passed in.
+        /// </summary>
         /// <param name="typeParameters">A Type array containing the type parameters provided with the logged method.  Use the <see cref="TypeParams(Type[])"/> method to build this.</param>
         /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the <see cref="Params(object[])"/> method to build this.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -747,71 +764,15 @@ namespace Symbiote.Core
         /// </example>
         public Guid EnterMethod(Type[] typeParameters, object[] parameters, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return this.EnterMethod(typeParameters, parameters, false, caller, filePath, lineNumber);
+            return EnterMethod(typeParameters, parameters, false, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
-        /// and attempts to log the parameters passed in.  
+        ///     Logs a message indicating the entrance of execution flow into a method,
+        ///     logs the Type parameters passed in and persists the entry timestamp for later retrieval. 
         /// </summary>
-        /// <remakrs>
-        /// <para>
-        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
-        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
-        /// of parameters and values to work properly.
-        /// </para>
-        /// <para>
-        /// The <see cref="Params(object[])"/> method should be used when invoking this method to pass the method parameters as it is shorthand for creating
-        /// an object array explicitly.
-        /// </para>
-        /// </remakrs>
-        /// <param name="persist">
-        /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
-        /// when invoking the Exit() method or a memory leak will occur.
-        /// </param>
-        /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
-        /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
-        /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
-        /// <returns>The Guid for the persisted method.</returns>
-        /// <seealso cref="EnterMethod(Type[], object[], bool, string, string, int)"/>
-        /// <example>
-        /// <code>
-        /// // log the method entry with persistence and no parameters
-        /// public void MyMethod()
-        /// {
-        ///     Guid persistedGuid = logger.EnterMethod(true);
-        ///     
-        ///     // method body
-        ///     
-        ///     logger.ExitMethod(persistedGuid);
-        /// }
-        /// </code>
-        /// </example>
-        public Guid EnterMethod(bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
-        {
-            return this.EnterMethod(null, null, persist, caller, filePath, lineNumber);
-        }
-
-        /// <summary>
-        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
-        /// and attempts to log the parameters passed in.  
-        /// </summary>
-        /// <remakrs>
-        /// <para>
-        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
-        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
-        /// of parameters and values to work properly.
-        /// </para>
-        /// <para>
-        /// The <see cref="Params(object[])"/> method should be used when invoking this method to pass the method parameters as it is shorthand for creating
-        /// an object array explicitly.
-        /// </para>
-        /// </remakrs>
         /// <param name="typeParameters">A Type array containing the type parameters provided with the logged method.  Use the <see cref="TypeParams(Type[])"/> method to build this.</param>
-        /// <param name="persist">
-        ///     If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
-        ///     when invoking the <see cref="ExitMethod(object, Guid, string, string, int)"/> method or a memory leak will occur.
-        /// </param>
+        /// <param name="persist">If true, persists the method's Guid internally with a timestamp.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -834,29 +795,15 @@ namespace Symbiote.Core
         /// </example>
         public Guid EnterMethod(Type[] typeParameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return this.EnterMethod(typeParameters, null, persist, caller, filePath, lineNumber);
+            return EnterMethod(typeParameters, null, persist, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
-        /// and attempts to log the parameters passed in.  
+        ///     Logs a message indicating the entrance of execution flow into a method,
+        ///     logs the parameters passed in and persists the entry timestamp for later retrieval.  
         /// </summary>
-        /// <remakrs>
-        /// <para>
-        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
-        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
-        /// of parameters and values to work properly.
-        /// </para>
-        /// <para>
-        /// The <see cref="Params(object[])"/> method should be used when invoking this method to pass the method parameters as it is shorthand for creating
-        /// an object array explicitly.
-        /// </para>
-        /// </remakrs>
         /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the <see cref="Params(object[])"/> method to build this.</param>
-        /// <param name="persist">
-        /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
-        /// when invoking the Exit() method or a memory leak will occur.
-        /// </param>
+        /// <param name="persist">If true, persists the method's Guid internally with a timestamp.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -864,6 +811,7 @@ namespace Symbiote.Core
         /// <seealso cref="Params(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log the method entry with persistence and parameters
         /// public void MyMethod(int one, int two)
         /// {
@@ -873,46 +821,45 @@ namespace Symbiote.Core
         ///     
         ///     logger.ExitMethod(persistedGuid);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public Guid EnterMethod(object[] parameters, bool persist, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            return this.EnterMethod(null, parameters, persist, caller, filePath, lineNumber);
+            return EnterMethod(null, parameters, persist, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the entrance of execution flow into a method (depending on the placement of this method call)
-        /// and attempts to log the parameters passed in.  
+        ///     Logs a message indicating the entrance of execution flow into a method,
+        ///     logs the Type parameters and parameters passed in, and persists the entry timestamp for later retrieval.
         /// </summary>
-        /// <remakrs>
+        /// <remarks>
         /// <para>
-        /// The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
-        /// parameters passed into this method.  It is important for the order and number of these parameters to match for the display
-        /// of parameters and values to work properly.
+        ///     The parameters for the calling method are retrieved via the call stack and reflection and are then compared to the list of 
+        ///     parameters passed into this method.  It is important for the order and number of these parameters to match for the display
+        ///     of parameters and values to work properly.
         /// </para>
         /// <para>
-        /// The <see cref="Params(object[])"/> method should be used when invoking this method to pass the method parameters as it is shorthand for creating
-        /// an object array explicitly.
+        ///     The <see cref="Params(object[])"/>method should be used when invoking this method to pass the method parameters as it is shorthand for creating
+        ///     an object array explicitly.
         /// </para>
-        /// </remakrs>
+        /// </remarks>
         /// <param name="typeParameters">A Type array containing the type parameters provided with the logged method.  Use the <see cref="TypeParams(Type[])"/> method to build this.</param>
-        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use the <see cref="Params(object[])"/> method to build this.</param>
-        /// <param name="persist">
-        /// If true, persists the method's Guid internally with a timestamp. Entries using persistence need to provide the Guid string returned
-        /// when invoking the Exit() method or a memory leak will occur.
-        /// </param>
+        /// <param name="parameters">An object array containing the parameters passed into the logged method.  Use <see cref="Params(object[])"/> to build this.</param>
+        /// <param name="persist">If true, persists the method's Guid internally with a timestamp.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <returns>The Guid for the persisted method.</returns>
+        /// <seealso cref="EnterMethod(object[], bool, string, string, int)"/>
         /// <seealso cref="Params(object[])"/>
         /// <example>
         /// <code>
         /// <![CDATA[
-        /// // log the method entry with persistence, parameters and type parameters
-        /// public void MyMethod<T1, T2>(int one, int two)
+        /// // log the method entry with persistence and parameters
+        /// public void MyMethod(int one, int two)
         /// {
-        ///     Guid persistedGuid = logger.EnterMethod(xLogger.TypeParams(typeof(T1), typeof(T2)), xLogger.Params(one, two), true);
+        ///     Guid persistedGuid = logger.EnterMethod(xLogger.Params(one, two), true);
         ///     
         ///     // method body
         ///     
@@ -930,7 +877,7 @@ namespace Symbiote.Core
             MethodBase method = GetCallingStackFrame().GetMethod();
 
             // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return default(Guid);
             }
@@ -943,9 +890,9 @@ namespace Symbiote.Core
                 methodGuid = Guid.NewGuid();
 
                 // lock the PersistedMethods list to ensure thread safety.
-                lock (this.persistedMethodListLock)
+                lock (persistedMethodListLock)
                 {
-                    this.PersistedMethods.Add(new Tuple<Guid, DateTime>(methodGuid, DateTime.UtcNow));
+                    PersistedMethods.Add(new Tuple<Guid, DateTime>(methodGuid, DateTime.UtcNow));
                 }
             }
             else
@@ -953,22 +900,23 @@ namespace Symbiote.Core
                 methodGuid = default(Guid);
             }
 
-            // log the header
-            this.LogHeader(level);
+            LogHeader(level);
 
-            string msg = EnterPrefix + "Entering " + (method.IsConstructor ? "constructor" : "method") +
-                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" +
-                (persist ? ", persisting with Guid: " + methodGuid : string.Empty);
+            // build and log the method signature line
+            StringBuilder signature = new StringBuilder();
 
-            // log the method signature
-            this.Log(level, msg);
+            signature.Append(EnterPrefix + "Entering " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method"));
+            signature.Append(": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
+            signature.Append(persist ? ", persisting with Guid: " + methodGuid : string.Empty);
+
+            Log(level, signature);
 
             // if type parameters were supplied, log them
             if (typeParameters != null)
             {
                 for (int t = 0; t < typeParameters.Length; t++)
                 {
-                    this.Log(level, (t == typeParameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "T" + (t + 1) + ": " + typeParameters[t].ToString());
+                    Log(level, (t == typeParameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "T" + (t + 1) + ": " + typeParameters[t].ToString());
                 }
             }
 
@@ -980,11 +928,11 @@ namespace Symbiote.Core
                 // vs the method signature ordering, so just bail out.
                 try
                 {
-                    ParameterInfo[] parameterInfo = method.GetParameters();
+                    ParameterInfo[] parameterInfo = GetCallingStackFrame().GetMethod().GetParameters();
 
                     if (parameterInfo.Length != parameters.Length)
                     {
-                        this.Log(level, FinalLinePrefix + "[Parameter count mismatch]");
+                        Log(level, FinalLinePrefix + "[Parameter count mismatch]");
                     }
                     else
                     {
@@ -995,18 +943,18 @@ namespace Symbiote.Core
                             // gracefully handle nulls
                             if (parameters[p] == null)
                             {
-                                this.Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": null");
+                                Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": null");
                             }
                             else if (parameters[p].GetType() == typeof(ExcludedParam))
                             {
                                 // check to see if the param was excluded intentionally
-                                this.Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": <parameter intentionally excluded>");
+                                Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": <parameter intentionally excluded>");
                             }
                             else if (!parameterInfo[p].ParameterType.IsAssignableFrom(parameters[p].GetType()))
                             {
                                 // check to ensure the type of the supplied parameter in position p is the same
                                 // as the type in the method signature parameter list
-                                this.Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
+                                Log(level, (p == parameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "[Parameter type mismatch; expected: " + parameterInfo[p].ParameterType.Name + ", actual: " + parameters[p].GetType().Name + "]");
                             }
                             else
                             {
@@ -1015,7 +963,7 @@ namespace Symbiote.Core
 
                                 for (int pl = 0; pl < lines.Count; pl++)
                                 {
-                                    this.Log(level, ((p == parameters.Length - 1) && (pl == lines.Count - 1) ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": " + lines[pl]);
+                                    Log(level, ((p == parameters.Length - 1) && (pl == lines.Count - 1) ? FinalLinePrefix : LinePrefix) + parameterInfo[p].Name + ": " + lines[pl]);
                                 }
                             }
                         }
@@ -1024,12 +972,11 @@ namespace Symbiote.Core
                 catch (Exception ex)
                 {
                     // swallow any errors we might encounter; this isn't important enough to stop the application.
-                    this.Log(level, LinePrefix + "[Error: " + ex.Message + "]");
+                    Log(level, LinePrefix + "[Error: " + ex.Message + "]");
                 }
             }
 
-            // log the footer.
-            this.LogFooter(level);
+            LogFooter(level);
 
             return methodGuid;
         }
@@ -1039,7 +986,7 @@ namespace Symbiote.Core
         #region ExitMethod
 
         /// <summary>
-        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
+        /// Logs a message indicating the exit of execution flow from a method.
         /// </summary>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
@@ -1047,6 +994,7 @@ namespace Symbiote.Core
         /// <seealso cref="ExitMethod(object, Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // simplest example with no persistence and no return value
         /// public void MyMethod()
         /// {
@@ -1056,15 +1004,17 @@ namespace Symbiote.Core
         ///     
         ///     logger.ExitMethod();
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void ExitMethod([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.ExitMethod(new UnspecifiedReturnValue(), default(Guid), caller, filePath, lineNumber);
+            ExitMethod(new UnspecifiedReturnValue(), default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
+        ///     Logs a message indicating the exit of execution flow from a method
+        ///     and logs the return value.
         /// </summary>
         /// <param name="returnValue">The return value of the method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -1073,6 +1023,7 @@ namespace Symbiote.Core
         /// <seealso cref="ExitMethod(object, Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log the method exit with no persistence and with a return value
         /// public void MyMethod()
         /// {
@@ -1084,15 +1035,17 @@ namespace Symbiote.Core
         ///     logger.ExitMethod(returnValue);
         ///     return returnValue;
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void ExitMethod(object returnValue, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.ExitMethod(returnValue, default(Guid), caller, filePath, lineNumber);
+            ExitMethod(returnValue, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
+        ///     Logs a message indicating the exit of execution flow from a method
+        ///     and logs the execution time.
         /// </summary>
         /// <param name="guid">The Guid assigned by the corresponding Enter() method invocation.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -1101,6 +1054,7 @@ namespace Symbiote.Core
         /// <seealso cref="ExitMethod(object, Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log the method exit with persistence and no return value
         /// public void MyMethod()
         /// {
@@ -1110,15 +1064,17 @@ namespace Symbiote.Core
         ///     
         ///     logger.ExitMethod(persistedGuid);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void ExitMethod(Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.ExitMethod(new UnspecifiedReturnValue(), guid, caller, filePath, lineNumber);
+            ExitMethod(new UnspecifiedReturnValue(), guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating the exit of execution flow from a method (depending on the placement of this method call)
+        ///     Logs a message indicating the exit of execution flow from a method
+        ///     and logs the return value and execution time.
         /// </summary>
         /// <param name="returnValue">The return value of the method.</param>
         /// <param name="guid">The Guid returned by the Enter() method.</param>
@@ -1127,6 +1083,7 @@ namespace Symbiote.Core
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log the method exit with persistence and a return value
         /// public bool ExamplePersistedMethod(int one, int two)
         /// {
@@ -1138,6 +1095,7 @@ namespace Symbiote.Core
         ///     logger.ExitMethod(returnValue, persistedGuid);
         ///     return returnValue;
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void ExitMethod(object returnValue, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
@@ -1146,48 +1104,49 @@ namespace Symbiote.Core
             LogLevel level = LogLevel.Trace;
 
             // check to see if tracing is enabled.  if not, bail out immediately to avoild wasting processor time.
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return;
             }
 
             // log the header
-            this.LogHeader(level);
+            LogHeader(level);
 
-            string msg = ExitPrefix + "Exiting " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") +
-                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" +
-                (guid != default(Guid) ? ", Guid: " + guid : string.Empty);
+            // build and log the method signature
+            StringBuilder signature = new StringBuilder();
+            signature.Append(ExitPrefix + "Exiting " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method"));
+            signature.Append(": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
+            signature.Append(guid != default(Guid) ? ", Guid: " + guid : string.Empty);
 
-            // log the method signature
-            this.Log(level, msg);
+            Log(level, signature);
 
             // if returnValue is null, log a simple message and move on.  we do this to differentiate a null returnValue 
             // from a method invocation that didn't supply anything for returnValue
             if (returnValue == null)
             {
-                this.Log(level, LinePrefix + "return: null");
+                Log(level, FinalLinePrefix + "return: null");
             }
             else if (returnValue.GetType() != typeof(UnspecifiedReturnValue))
             {
                 // if returnValue isn't null compare the provided returnValue Type to our internal type UnspecifiedReturnValue.
                 // this should only evaluate to true if an instance of UnspecifiedReturnValue is passed in from an overload.
-                this.LogVariables(level, Vars(returnValue), Names("return"));
+                LogVariables(level, Vars(returnValue), Names("return"));
             }
 
             // if a Guid was provided, locate it in the PersistedMethods list, log the duration
             // and remove it from the list
             if (guid != default(Guid))
             {
-                this.LogExecutionDuration(level, "Method execution duration: ", guid, true);
+                LogExecutionDuration(level, "Method execution duration: ", guid, true);
             }
 
             // log the footer.
-            this.LogFooter(level);
+            LogFooter(level);
 
             // prune the PersistedMethods list if automatic pruning is enabled.
             if (AutoPruneEnabled)
             {
-                this.PrunePersistedMethods(AutoPruneAge);
+                PrunePersistedMethods(AutoPruneAge);
             }
         }
 
@@ -1204,38 +1163,42 @@ namespace Symbiote.Core
         /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log a basic checkpoint
         /// logger.Checkpoint();
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(null, null, null, default(Guid), caller, filePath, lineNumber);
+            Checkpoint(null, null, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution follow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// Logs a named message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
         /// </summary>
         /// <remarks>
         ///     This overload is provided as a workaround to disambiguate <see cref="Checkpoint(string, string, int)"/> 
-        ///     and <see cref="Checkpoint(string, string, string, int)"/>
+        ///     and <see cref="Checkpoint(string, string, string, int)"/>.
         /// </remarks>
         /// <param name="name">The checkpoint name.</param>
         /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log a named checkpoint
         /// logger.Checkpoint("My named checkpoint");
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(string name)
         {
             StackFrame sf = GetCallingStackFrame();
-            this.Checkpoint(name, null, null, default(Guid), sf.GetMethod().Name, sf.GetFileName(), sf.GetFileLineNumber());
+            Checkpoint(name, null, null, default(Guid), sf.GetMethod().Name, sf.GetFileName(), sf.GetFileLineNumber());
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        /// Logs a named message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
         /// </summary>
         /// <param name="name">The checkpoint name.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -1244,64 +1207,73 @@ namespace Symbiote.Core
         /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log a named checkpoint
         /// logger.Checkpoint("My named checkpoint");
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(string name, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(name, null, null, default(Guid), caller, filePath, lineNumber);
+            Checkpoint(name, null, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the current execution time since the corresponding <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
-        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method.</param>
+        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(bool, string, string, int)"/> method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod with persistence and store the guid
         /// Guid guid = logger.EnterMethod(true);
         /// 
         /// // log a persistent checkpoint using the stored guid
         /// logger.Checkpoint(guid);
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(null, null, null, guid, caller, filePath, lineNumber);
+            Checkpoint(null, null, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a named message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the current execution time since the corresponding <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="name">The checkpoint name.</param>
-        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method.</param>
+        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(bool, string, string, int)"/> method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <seealso cref="Checkpoint(string, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod with persistence and store the guid
         /// Guid guid = logger.EnterMethod(true);
         /// 
         /// // log a named, persistent checkpoint using the stored guid
         /// logger.Checkpoint("My named checkpoint", guid);
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(string name, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(name, null, null, guid, caller, filePath, lineNumber);
+            Checkpoint(name, null, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the specified list of varibles.
         /// </summary>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1309,24 +1281,27 @@ namespace Symbiote.Core
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // declare some variables
         /// int one = 1;
         /// int two = 2;
         /// 
         /// // log a checkpoint with unnamed variables
         /// logger.Checkpoint(xLogger.Vars(one, two));
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(null, variables, null, default(Guid), caller, filePath, lineNumber);
+            Checkpoint(null, variables, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a named message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the specified list of varibles.
         /// </summary>
         /// <param name="name">The checkpoint name.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1334,24 +1309,27 @@ namespace Symbiote.Core
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // declare some variables
         /// int one = 1;
         /// int two = 2;
         /// 
         /// // log a named checkpoint with unnamed variables
         /// logger.Checkpoint("My named checkpoint", xLogger.Vars(one, two));
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(string name, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(name, variables, null, default(Guid), caller, filePath, lineNumber);
+            Checkpoint(name, variables, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the specified list of varibles and the current execution time since the corresponding <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
-        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
+        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(bool, string, string, int)"/> method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1359,6 +1337,7 @@ namespace Symbiote.Core
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod with persistence and store the guid
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1368,19 +1347,21 @@ namespace Symbiote.Core
         /// 
         /// // log a persistent checkpoint with unnamed variables
         /// logger.Checkpoint(xLogger.Vars(one, two), guid);
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(null, variables, null, guid, caller, filePath, lineNumber);
+            Checkpoint(null, variables, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a named message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the specified list of varibles and the current execution time since the corresponding <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="name">The checkpoint name.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
-        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
+        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(bool, string, string, int)"/> method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1388,6 +1369,7 @@ namespace Symbiote.Core
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod with persistence and store the guid
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1397,17 +1379,19 @@ namespace Symbiote.Core
         /// 
         /// // log a named, persistent checkpoint with unnamed variables
         /// logger.Checkpoint("My named checkpoint", xLogger.Vars(one, two), guid);
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(string name, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(name, variables, null, guid, caller, filePath, lineNumber);
+            Checkpoint(name, variables, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the specified list of varibles with the specified list of variable names.
         /// </summary>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
@@ -1417,24 +1401,27 @@ namespace Symbiote.Core
         /// <seealso cref="Names(string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // declare some variables
         /// int one = 1;
         /// int two = 2;
         /// 
         /// // log a checkpoint with named variables
         /// logger.Checkpoint(xLogger.Vars(one, two), xLogger.Names("one", "two"));
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(null, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+            Checkpoint(null, variables, variableNames, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a named message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the specified list of varibles with the specified list of variable names.
         /// </summary>
         /// <param name="name">The checkpoint name.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
@@ -1444,25 +1431,29 @@ namespace Symbiote.Core
         /// <seealso cref="Names(string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // declare some variables
         /// int one = 1;
         /// int two = 2;
         /// 
         /// // log a named checkpoint with named variables
         /// logger.Checkpoint("My named checkpoint", xLogger.Vars(one, two), xLogger.Names("one", "two"));
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(string name, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(name, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+            Checkpoint(name, variables, variableNames, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the specified list of varibles with the specified list of variable names, and the current execution time since the corresponding 
+        ///     <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
-        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(bool, string, string, int)"/> method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1471,6 +1462,7 @@ namespace Symbiote.Core
         /// <seealso cref="Names(string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod with persistence and store the guid
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1480,20 +1472,23 @@ namespace Symbiote.Core
         /// 
         /// // log a persistent checkpoint with named variables
         /// logger.Checkpoint(xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Checkpoint(null, variables, variableNames, guid, caller, filePath, lineNumber);
+            Checkpoint(null, variables, variableNames, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs a message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time.
+        ///     Logs a named message indicating that the execution flow of a method has reached an arbitrary checkpoint defined at design-time, and logs
+        ///     the specified list of varibles with the specified list of variable names, and the current execution time since the corresponding 
+        ///     <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="name">The checkpoint name.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
-        /// <param name="guid">The Guid returned by the Enter() method.</param>
+        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(bool, string, string, int)"/> method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1501,6 +1496,7 @@ namespace Symbiote.Core
         /// <seealso cref="Names(string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod with persistence and store the guid
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1510,6 +1506,7 @@ namespace Symbiote.Core
         /// 
         /// // log a named, persistent checkpoint with named variables
         /// logger.Checkpoint("My named checkpoint", xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
+        /// ]]>
         /// </code>
         /// </example>
         public void Checkpoint(string name, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
@@ -1518,36 +1515,38 @@ namespace Symbiote.Core
             LogLevel level = LogLevel.Trace;
 
             // if tracing isn't enabled, bail immediately
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return;
             }
 
             // log the checkpoint header
-            this.LogHeader(level);
+            LogHeader(level);
 
-            string msg = CheckpointPrefix + "Checkpoint " + (name != null ? "'" + name + "' " : string.Empty) +
-                "reached in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") +
-                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" +
-                (guid != default(Guid) ? ", Guid: " + guid : string.Empty);
+            // build and log the method signature
+            StringBuilder signature = new StringBuilder();
 
-            // log the method signature
-            this.Trace(msg);
+            signature.Append(CheckpointPrefix + "Checkpoint " + (name != null ? "'" + name + "' " : string.Empty));
+            signature.Append("reached in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method"));
+            signature.Append(": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
+            signature.Append(guid != default(Guid) ? ", Guid: " + guid : string.Empty);
+
+            Trace(signature);
 
             // ensure variables have been supplied before continuing
             if (variables != null)
             {
-                this.LogVariables(level, variables, variableNames);
+                LogVariables(level, variables, variableNames);
             }
 
             // if persistence is enabled, print the execution duration 
             if (guid != default(Guid))
             {
-                this.LogExecutionDuration(level, "Current execution duration: ", guid);
+                LogExecutionDuration(level, "Current execution duration: ", guid);
             }
 
             // log the footer
-            this.LogFooter(level);
+            LogFooter(level);
         }
 
         #endregion
@@ -1564,6 +1563,7 @@ namespace Symbiote.Core
         /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // catch an exception
         /// try
         /// {
@@ -1574,15 +1574,16 @@ namespace Symbiote.Core
         ///     // log the exception using the default (Error) logging level
         ///     logger.Exception(ex);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(LogLevel.Error, exception, null, null, default(Guid), caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, null, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        /// Logs Exception details to the specified logging level.
         /// </summary>
         /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
@@ -1592,6 +1593,7 @@ namespace Symbiote.Core
         /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // catch an exception
         /// try
         /// {
@@ -1602,24 +1604,26 @@ namespace Symbiote.Core
         ///     // log the exception using the Debug logging level
         ///     logger.Exception(LogLevel.Debug, ex);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(LogLevel level, Exception exception, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(level, exception, null, null, default(Guid), caller, filePath, lineNumber);
+            Exception(level, exception, null, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        /// Logs Exception details and the current execution time since the corresponding <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod using persistence
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1633,25 +1637,27 @@ namespace Symbiote.Core
         ///     // log the exception with persistence using the default (Error) logging level
         ///     logger.Exception(ex, guid);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(LogLevel.Error, exception, null, null, guid, caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, null, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        /// Logs Exception details to the specified logging level along with the current execution time since the corresponding <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <seealso cref="Exception(NLog.LogLevel, System.Exception, object[], string[], Guid, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod using persistence
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1665,18 +1671,19 @@ namespace Symbiote.Core
         ///     // log the exception with persistence using the Trace logging level
         ///     logger.Exception(LogLevel.Trace, ex, guid);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(LogLevel level, Exception exception, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(level, exception, null, null, guid, caller, filePath, lineNumber);
+            Exception(level, exception, null, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        /// Logs Exception details and the specified list of variables.
         /// </summary>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1684,6 +1691,7 @@ namespace Symbiote.Core
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // declare some variables
         /// string one = "one";
         /// string two = "two";
@@ -1698,19 +1706,20 @@ namespace Symbiote.Core
         ///     // log the exception with unnamed variables using the default (Error) logging level
         ///     logger.Exception(ex, xLogger.Vars(one, two));
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(LogLevel.Error, exception, variables, null, default(Guid), caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, variables, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        /// Logs Exception details and the specified list of variables to the specified logging level.
         /// </summary>
         /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1718,6 +1727,7 @@ namespace Symbiote.Core
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // declare some variables
         /// string one = "one";
         /// string two = "two";
@@ -1732,19 +1742,21 @@ namespace Symbiote.Core
         ///     // log the exception with unnamed variables using the Info logging level
         ///     logger.Exception(LogLevel.Info, ex, xLogger.Vars(one, two));
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(LogLevel level, Exception exception, object[] variables, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(level, exception, variables, null, default(Guid), caller, filePath, lineNumber);
+            Exception(level, exception, variables, null, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        ///     Logs Exception details and the specified list of variables along with the current execution time since the corresponding 
+        ///     <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
-        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1752,6 +1764,7 @@ namespace Symbiote.Core
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod using persistence
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1769,20 +1782,22 @@ namespace Symbiote.Core
         ///     // log the exception with unnamed variables and using persistence using the default (Error) logging level
         ///     logger.Exception(ex, xLogger.Vars(one, two), guid);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(Exception exception, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(LogLevel.Error, exception, variables, null, guid, caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, variables, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        ///     Logs Exception details and the specified list of variables to the specified logging level along with the current execution time since the corresponding 
+        ///     <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
-        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1790,6 +1805,7 @@ namespace Symbiote.Core
         /// <seealso cref="Vars(object[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod using persistence
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1807,18 +1823,19 @@ namespace Symbiote.Core
         ///     // log the exception with unnamed variables and using persistence using the Debug logging level
         ///     logger.Exception(LogLevel.Debug, ex, xLogger.Vars(one, two), guid);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(LogLevel level, Exception exception, object[] variables, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(level, exception, variables, null, guid, caller, filePath, lineNumber);
+            Exception(level, exception, variables, null, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        /// Logs Exception details and the specified list of variables and variable names.
         /// </summary>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
@@ -1828,6 +1845,7 @@ namespace Symbiote.Core
         /// <seealso cref="Names(string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // declare some variables
         /// string one = "one";
         /// string two = "two";
@@ -1842,19 +1860,20 @@ namespace Symbiote.Core
         ///     // log the exception with named variables using the default (Error) logging level
         ///     logger.Exception(ex, xLogger.Vars(one, two), xLogger.Names("one", "two"));
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(LogLevel.Error, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        /// Logs Exception details and the specified list of variables and variable names to the specified logging level.
         /// </summary>
         /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
@@ -1864,6 +1883,7 @@ namespace Symbiote.Core
         /// <seealso cref="Names(string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // declare some variables
         /// string one = "one";
         /// string two = "two";
@@ -1878,20 +1898,22 @@ namespace Symbiote.Core
         ///     // log the exception with named variables using the Trace logging level
         ///     logger.Exception(LogLevel.Trace, ex, xLogger.Vars(one, two), xLogger.Names("one", "two"));
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(LogLevel level, Exception exception, object[] variables, string[] variableNames, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(level, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
+            Exception(level, exception, variables, variableNames, default(Guid), caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        ///     Logs Exception details and the specified list of variables and variable names along with the current execution time since the corresponding 
+        ///     <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
-        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1900,6 +1922,7 @@ namespace Symbiote.Core
         /// <seealso cref="Names(string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod using persistence
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1917,21 +1940,23 @@ namespace Symbiote.Core
         ///     // log the exception with named variables and using persistence using the default (Error) logging level
         ///     logger.Exception(ex, xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.Exception(LogLevel.Error, exception, variables, variableNames, guid, caller, filePath, lineNumber);
+            Exception(LogLevel.Error, exception, variables, variableNames, guid, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs Exception details.
+        ///     Logs Exception details and the specified list of variables and variable names to the specified logging level along with the current execution time since the corresponding 
+        ///     <see cref="EnterMethod(bool, string, string, int)"/> method was called.
         /// </summary>
         /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="exception">The Exception to log.</param>
-        /// <param name="variables">A list of variables to be logged.  Use the <see cref="Vars(object[])"/> method to build this.</param>
+        /// <param name="variables">A list of variables to be logged.</param>
         /// <param name="variableNames">A string array of variable names to be logged along with the supplied variables.  The number and order should match the variable array.</param>
-        /// <param name="guid">The Guid returned by the <see cref="EnterMethod(Type[], object[], bool, string, string, int)"/> method.</param>
+        /// <param name="guid">The Guid returned by the Enter() method.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
         /// <param name="filePath">An implicit parameter which evaluates to the filename from which the calling method was executed.</param>
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
@@ -1939,6 +1964,7 @@ namespace Symbiote.Core
         /// <seealso cref="Names(string[])"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // invoke EnterMethod using persistence
         /// Guid guid = logger.EnterMethod(true);
         /// 
@@ -1956,54 +1982,57 @@ namespace Symbiote.Core
         ///     // log the exception with named variables and using persistence using the Debug logging level
         ///     logger.Exception(LogLevel.Debug, ex, xLogger.Vars(one, two), xLogger.Names("one", "two"), guid);
         /// }
+        /// ]]>
         /// </code>
         /// </example>
         public void Exception(LogLevel level, Exception exception, object[] variables, string[] variableNames, Guid guid, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return;
             }
 
             // log the header
-            this.LogHeader(level, ExceptionHeaderPrefix);
+            LogHeader(level, ExceptionHeaderPrefix);
 
-            string msg = ExceptionLinePrefix + ExceptionPrefix + "Exception '" + exception.GetType().Name +
-                "' caught in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method") +
-                ": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")" +
-                (guid != default(Guid) ? ", Guid: " + guid : string.Empty) + ":";
+            // build and log the method signature
+            StringBuilder signature = new StringBuilder();
 
-            // log the method signature
-            this.Log(level, msg);
+            signature.Append(ExceptionLinePrefix + ExceptionPrefix + "Exception '" + exception.GetType().Name);
+            signature.Append("' caught in " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method"));
+            signature.Append(": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
+            signature.Append(guid != default(Guid) ? ", Guid: " + guid : string.Empty);
+
+            Log(level, signature);
 
             // log the message
-            this.Log(level, ExceptionLinePrefix + FinalLinePrefix + "\"" + exception.Message + "\"");
+            Log(level, ExceptionLinePrefix + FinalLinePrefix + "\"" + exception.Message + "\"");
 
-            this.LogInnerSeparator(level, ExceptionLinePrefix);
+            LogInnerSeparator(level, ExceptionLinePrefix);
 
             // log the stack trace from the invocation point followed by a separator
-            this.LogStackTrace(level, ExceptionLinePrefix);
-            this.LogInnerSeparator(level, ExceptionLinePrefix);
+            LogStackTrace(level, ExceptionLinePrefix);
+            LogInnerSeparator(level, ExceptionLinePrefix);
 
             // log the exception 
-            this.LogVariables(level, Params(exception), Names("ex"), ExceptionLinePrefix);
+            LogVariables(level, Params(exception), Names("ex"), ExceptionLinePrefix);
 
             // if a variable list was supplied, log it 
             if (variables != null)
             {
-                this.LogInnerSeparator(level, ExceptionLinePrefix);
-                this.LogVariables(level, variables, variableNames);
+                LogInnerSeparator(level, ExceptionLinePrefix);
+                LogVariables(level, variables, variableNames);
             }
 
             // if persistence is used, log the current execution duration
             if (guid != default(Guid))
             {
-                this.LogExecutionDuration(level, "Current execution duration: ", guid, false, ExceptionLinePrefix);
+                LogExecutionDuration(level, "Current execution duration: ", guid, false, ExceptionLinePrefix);
             }
 
             // log the footer
-            this.LogFooter(level, ExceptionFooterPrefix);
+            LogFooter(level, ExceptionFooterPrefix);
         }
 
         #endregion
@@ -2019,17 +2048,19 @@ namespace Symbiote.Core
         /// <seealso cref="StackTrace(NLog.LogLevel, string, string, int)"/>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log the stack trace using the default (Trace) logging level
         /// logger.StackTrace();
+        /// ]]>
         /// </code>
         /// </example>
         public void StackTrace([CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
-            this.StackTrace(LogLevel.Trace, caller, filePath, lineNumber);
+            StackTrace(LogLevel.Trace, caller, filePath, lineNumber);
         }
 
         /// <summary>
-        /// Logs the current execution stack.
+        /// Logs the current execution stack to the specified logging level.
         /// </summary>
         /// <param name="level">The logging level to which to log the exception.</param>
         /// <param name="caller">An implicit parameter which evaluates to the name of the method that called this method.</param>
@@ -2037,27 +2068,29 @@ namespace Symbiote.Core
         /// <param name="lineNumber">An implicit parameter which evaluates to the line number containing this method call.</param>
         /// <example>
         /// <code>
+        /// <![CDATA[
         /// // log the stack trace using the Debug logging level
         /// logger.StackTrace(logger.Debug);
+        /// ]]>
         /// </code>
         /// </example>
         public void StackTrace(LogLevel level, [CallerMemberName]string caller = "", [CallerFilePath]string filePath = "", [CallerLineNumber]int lineNumber = 0)
         {
             // if the logging level isn't enabled, bail immediately to save processing time
-            if (!this.IsEnabled(level))
+            if (!IsEnabled(level))
             {
                 return;
             }
 
             // log the header
-            this.LogHeader(level);
-            this.Log(level, StackTracePrefix + "Stack Trace from method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
+            LogHeader(level);
+            Log(level, StackTracePrefix + "Stack Trace from method: " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
 
             // log the stack trace followed by a separator
-            this.LogStackTrace(level);
+            LogStackTrace(level);
 
             // log the footer
-            this.LogFooter(level);
+            LogFooter(level);
         }
 
         #endregion
@@ -2069,6 +2102,7 @@ namespace Symbiote.Core
         #region Private Methods
 
         #region Private Static Methods
+
         /// <summary>
         /// Returns an inverted excerpt of the current stack trace, omitting methods above Main() and those originating within this class.
         /// </summary>
@@ -2127,18 +2161,13 @@ namespace Symbiote.Core
             // try to serialize the provided object.  swallow any errors.
             try
             {
-                // serialize the object using the indented format and
-                // convert enumerated values to their respective strings
-                string json = JsonConvert.SerializeObject(
-                    obj,
-                    Formatting.Indented,
-                    new JsonSerializerSettings()
-                    {
-                        // serialize enumerations using the value string
-                        Converters = new List<JsonConverter> { new StringEnumConverter() }, 
-                        ReferenceLoopHandling = ReferenceLoopHandling.Ignore, // handle reference loops without throwing errors
-                        NullValueHandling = NullValueHandling.Include // include null values
-                    });
+                // serialize the object using the indented format and convert enumerated values to their respective strings
+                JsonSerializerSettings settings = new JsonSerializerSettings();
+                settings.Converters = new List<JsonConverter> { new StringEnumConverter() };
+                settings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                settings.NullValueHandling = NullValueHandling.Include;
+
+                string json = JsonConvert.SerializeObject(obj, Formatting.Indented, settings);
 
                 // split by \n after replacing \r\n with just \n.  if we don't do this extra lines are added to logs in some editors.
                 retVal = json.Replace("\r\n", "\n").Split('\n').ToList();
@@ -2280,7 +2309,7 @@ namespace Symbiote.Core
         {
             if (Header.Length > 0)
             {
-                this.Multiline(level, prefix + Header);
+                Multiline(level, prefix + Header);
             }
         }
 
@@ -2293,7 +2322,7 @@ namespace Symbiote.Core
         {
             if (Footer.Length > 0)
             {
-                this.Multiline(level, prefix + Footer);
+                Multiline(level, prefix + Footer);
             }
         }
 
@@ -2306,7 +2335,7 @@ namespace Symbiote.Core
         {
             if (InnerSeparator.Length > 0)
             {
-                this.Multiline(level, prefix + InnerSeparator);
+                Multiline(level, prefix + InnerSeparator);
             }
         }
 
@@ -2317,14 +2346,14 @@ namespace Symbiote.Core
         /// <param name="prefix">The optional prefix string.</param>
         private void LogOuterSeparator(LogLevel level, string prefix = "")
         {
-            this.LogHeader(level, prefix);
+            LogHeader(level, prefix);
 
             if (OuterSeparator.Length > 0)
             {
-                this.Multiline(level, prefix + Prefix + OuterSeparator);
+                Multiline(level, prefix + Prefix + OuterSeparator);
             }
 
-            this.LogFooter(level, prefix);
+            LogFooter(level, prefix);
         }
 
         /// <summary>
@@ -2343,7 +2372,7 @@ namespace Symbiote.Core
             {
                 if (variableNames.Length != variables.Length)
                 {
-                    this.Log(level, prefix + LinePrefix + "[Variable name/variable count mismatch; variables: " + variables.Length + ", names: " + variableNames.Length + "]");
+                    Log(level, prefix + LinePrefix + "[Variable name/variable count mismatch; variables: " + variables.Length + ", names: " + variableNames.Length + "]");
                 }
                 else
                 {
@@ -2361,7 +2390,7 @@ namespace Symbiote.Core
 
                 for (int l = 0; l < lines.Count(); l++)
                 {
-                    this.Log(level, prefix + ((v == variables.Length - 1) && (l == lines.Count() - 1) ? FinalLinePrefix : LinePrefix) + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + lines[l]);
+                    Log(level, prefix + ((v == variables.Length - 1) && (l == lines.Count() - 1) ? FinalLinePrefix : LinePrefix) + (useVariableNames ? variableNames[v] : "[" + v + "]") + ": " + lines[l]);
                 }
             }
         }
@@ -2377,27 +2406,27 @@ namespace Symbiote.Core
         private void LogExecutionDuration(LogLevel level, string message, Guid guid, bool remove = false, string prefix = "")
         {
             // try to fetch the matching tuple
-            Tuple<Guid, DateTime> tuple = this.PersistedMethods.Where(m => m.Item1 == guid).FirstOrDefault();
+            Tuple<Guid, DateTime> tuple = PersistedMethods.Where(m => m.Item1 == guid).FirstOrDefault();
 
             // make sure we found a match
             if (tuple != default(Tuple<Guid, DateTime>))
             {
-                this.Log(level, prefix + InnerSeparator);
-                this.Log(level, prefix + ExecutionDurationPrefix + message + (DateTime.UtcNow - tuple.Item2).TotalMilliseconds.ToString() + "ms");
+                Log(level, prefix + InnerSeparator);
+                Log(level, prefix + ExecutionDurationPrefix + message + (DateTime.UtcNow - tuple.Item2).TotalMilliseconds.ToString() + "ms");
 
                 // if the remove option is used, remove the tuple from the list of persisted methods after logging.
                 if (remove)
                 {
                     // lock the persisted method list to ensure thread safety
-                    lock (this.persistedMethodListLock)
+                    lock (persistedMethodListLock)
                     {
-                        this.PersistedMethods.Remove(tuple);
+                        PersistedMethods.Remove(tuple);
                     }
                 }
             }
             else
             {
-                this.Trace(prefix + LinePrefix + "[Persisted Guid not found]");
+                Trace(prefix + LinePrefix + "[Persisted Guid not found]");
             }
         }
 
@@ -2415,7 +2444,7 @@ namespace Symbiote.Core
             {
                 // indent the current frame appropriately
                 string spaces = new string(' ', lineIndent * Indent);
-                this.Log(level, prefix + LinePrefixVariable.Replace("$", spaces) + GetMethodSignature(frame.GetMethod()));
+                Log(level, prefix + LinePrefixVariable.Replace("$", spaces) + GetMethodSignature(frame.GetMethod()));
                 lineIndent++;
             }
         }
@@ -2426,8 +2455,10 @@ namespace Symbiote.Core
 
         #endregion
 
-        #region Nested Classes
+        #region Classes
 
+        #region Public Classes 
+        
         /// <summary>
         /// Type used to differentiate a null parameter value and one which is intentionally excluded from a 
         /// method entry log.
@@ -2436,13 +2467,19 @@ namespace Symbiote.Core
         {
         }
 
+        #endregion
+
+        #region Private Classes
+
         /// <summary>
         /// Internal type used to differentiate a null return value from an unspecified return value.
         /// </summary>
         private class UnspecifiedReturnValue
         {
         }
-        
+
+        #endregion
+
         #endregion
     }
 }

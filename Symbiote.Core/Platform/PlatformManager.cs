@@ -23,6 +23,7 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using System;
+using System.Collections.Generic;
 using NLog;
 
 namespace Symbiote.Core.Platform
@@ -130,6 +131,16 @@ namespace Symbiote.Core.Platform
         #endregion
 
         #region Instance Methods
+
+        /// <summary>
+        /// Executed upon instantiation of all program Managers.  Not implemented.
+        /// </summary>
+        /// <param name="managerInstances"></param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Setup(List<IManager> managerInstances)
+        {
+            return new Result();
+        }
 
         protected override Result Startup()
         {

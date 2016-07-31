@@ -333,6 +333,31 @@ namespace Symbiote.Core.Event
         #region Protected Instance Methods
 
         /// <summary>
+        /// Executed upon instantiation of all program Managers.  Registers all IManagers in the specified list implementing IEventProvider.
+        /// </summary>
+        /// <param name="managerInstances"></param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Setup(List<IManager> managerInstances)
+        {
+            logger.EnterMethod();
+            logger.Debug("Performing Setup for '" + GetType().Name + "'...");
+            Result retVal = new Result();
+
+            if (managerInstances == default(List<IManager>) || managerInstances.Count() == 0)
+            {
+                return retVal.AddError("A null or empty list of Managers was provided; Setup cannot be performed.");
+            }
+
+            // register Managers with the Event Manager
+            logger.Info("Registering Managers with the Event Manager...");
+            retVal.Incorporate(RegisterProviders(managerInstances.ConvertAll<object>(o => (object)o)));
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
         /// Executed upon startup of the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -407,7 +432,7 @@ namespace Symbiote.Core.Event
         /// <returns>A Result containing the result of the operation.</returns>
         private Result RegisterProvider(object registrant, Dictionary<Type, List<string>> registeredProviders, Dictionary<Type, List<KeyValuePair<string, string>>> registeredEvents)
         {
-            logger.EnterMethod(xLogger.Params(registrant.GetType()));
+            logger.EnterMethod(xLogger.Params(registrant.GetType(), new xLogger.ExcludedParam(), new xLogger.ExcludedParam()));
             logger.Debug("Registering object of Type '" + registrant.GetType().Name + "...");
             Result retVal = new Result();
 
