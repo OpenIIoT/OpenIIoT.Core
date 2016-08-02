@@ -47,7 +47,7 @@ namespace Symbiote.Core
     /// <summary>
     /// Defines the interface for the Program Manager.
     /// </summary>
-    public interface IProgramManager : IManager
+    public interface IApplicationManager : IManager
     {
         #region Properties
 

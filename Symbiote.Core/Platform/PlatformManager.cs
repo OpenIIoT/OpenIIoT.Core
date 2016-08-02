@@ -94,8 +94,8 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// Private constructor, only called by Instance()
         /// </summary>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
-        private PlatformManager(IProgramManager manager)
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
+        private PlatformManager(IApplicationManager manager)
         {
             base.logger = logger;
             Guid guid = logger.EnterMethod();
@@ -103,7 +103,7 @@ namespace Symbiote.Core.Platform
             ManagerName = "Platform Manager";
 
             // register dependencies
-            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IApplicationManager>(manager);
 
             ChangeState(State.Initialized);
 
@@ -114,13 +114,13 @@ namespace Symbiote.Core.Platform
         /// Instantiates and/or returns the PlatformManager instance.
         /// </summary>
         /// <remarks>
-        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
         /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
         /// injected when the method is invoked.
         /// </remarks>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <returns>The Singleton instance of PlatformManager.</returns>
-        private static PlatformManager Instantiate(IProgramManager manager)
+        private static PlatformManager Instantiate(IApplicationManager manager)
         {
             if (instance == null)
                 instance = new PlatformManager(manager);

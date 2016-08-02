@@ -26,9 +26,9 @@ namespace Symbiote.Core.Service.Web.API
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private ProgramManager manager = ProgramManager.GetInstance();
+        private ApplicationManager manager = ApplicationManager.GetInstance();
 
         /// <summary>
         /// The default serialization properties for an AppArchive.

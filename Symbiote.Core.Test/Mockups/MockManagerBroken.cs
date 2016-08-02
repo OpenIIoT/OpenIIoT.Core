@@ -10,15 +10,15 @@ namespace Symbiote.Core.Test.Mockups
     {
         private static MockManagerBroken instance;
 
-        private MockManagerBroken(IProgramManager manager)
+        private MockManagerBroken(IApplicationManager manager)
         {
             ManagerName = "Mock Manager";
-            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IApplicationManager>(manager);
 
             ChangeState(State.Initialized);
         }
 
-        public static MockManagerBroken Instantiate(IProgramManager manager)
+        public static MockManagerBroken Instantiate(IApplicationManager manager)
         {
             if (instance == null)
             {

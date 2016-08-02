@@ -17,9 +17,9 @@ namespace Symbiote.Core.Service.Web.API
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private static ProgramManager manager = ProgramManager.GetInstance();
+        private static ApplicationManager manager = ApplicationManager.GetInstance();
 
         private static Item model = manager.GetManager<ModelManager>().Model;
 

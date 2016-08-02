@@ -86,17 +86,17 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Initializes a new instance of the <see cref="PluginManager"/> class.  
         /// </summary>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
-        private PluginManager(IProgramManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
+        private PluginManager(IApplicationManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
         {
             base.logger = logger;
             logger.EnterMethod();
 
             ManagerName = "Plugin Manager";
 
-            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
             RegisterDependency<IConfigurationManager>(configurationManager);
 
@@ -504,12 +504,12 @@ namespace Symbiote.Core.Plugin
         ///     should match references to the plugin, either through fully qualified addressing or configuration.
         /// </para>
         /// </remarks>
-        /// <param name="instanceManager">The ProgramManager instance to be passed to the Plugin instance.</param>
+        /// <param name="instanceManager">The ApplicationManager instance to be passed to the Plugin instance.</param>
         /// <param name="instanceName">The desired internal name of the instance</param>
         /// <param name="instanceLogger">The logger for the plugin instance.</param>
         /// <typeparam name="T">The Type of the Plugin instance to create.</typeparam>
         /// <returns>A Result containing the result of the operation and the created Plugin instance.</returns>
-        public Result<IPluginInstance> InstantiatePlugin<T>(IProgramManager instanceManager, string instanceName, xLogger instanceLogger)
+        public Result<IPluginInstance> InstantiatePlugin<T>(IApplicationManager instanceManager, string instanceName, xLogger instanceLogger)
         {
             logger.EnterMethod(xLogger.Params(instanceName));
             logger.Debug("Creating plugin instance '" + instanceName + "' of Type '" + typeof(T).Name + "'...");
@@ -775,15 +775,15 @@ namespace Symbiote.Core.Plugin
         /// Instantiates and/or returns the PluginManager instance.
         /// </summary>
         /// <remarks>
-        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
         /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
         /// injected when the method is invoked.
         /// </remarks>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
         /// <returns>The Singleton instance of PluginManager.</returns>
-        private static PluginManager Instantiate(IProgramManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
+        private static PluginManager Instantiate(IApplicationManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
         {
             if (instance == null)
             {
@@ -816,7 +816,7 @@ namespace Symbiote.Core.Plugin
                 retVal.AddError("Invalid assembly name (required: 4 tuples, supplied: " + name.Length + ")");
             }
 
-            if (name[0] != ProgramManager.GetInstance().ProductName)
+            if (name[0] != ApplicationManager.GetInstance().ProductName)
             {
                 retVal.AddError("Invalid application identifier (required: Symbiote, supplied: " + name[0] + ")");
             }
@@ -931,11 +931,11 @@ namespace Symbiote.Core.Plugin
         {
             if (plugin.PluginType == PluginType.App)
             {
-                return System.IO.Path.Combine(ProgramManager.GetInstance().GetManager<IPlatformManager>().Directories.Web, plugin.Name);
+                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Directories.Web, plugin.Name);
             }
             else
             {
-                return System.IO.Path.Combine(ProgramManager.GetInstance().GetManager<IPlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
+                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
             }
         }
 
@@ -1249,9 +1249,9 @@ namespace Symbiote.Core.Plugin
 
             // validate the FQN
             string[] sfqn = p.FQN.Split('.');
-            if (sfqn[0] != Dependency<IProgramManager>().ProductName)
+            if (sfqn[0] != Dependency<IApplicationManager>().ProductName)
             {
-                retVal.AddError("The FQN field doesn't start with '" + Dependency<IProgramManager>().ProductName + "'.");
+                retVal.AddError("The FQN field doesn't start with '" + Dependency<IApplicationManager>().ProductName + "'.");
             }
 
             if (sfqn[1] != "Plugin")
@@ -1752,7 +1752,7 @@ namespace Symbiote.Core.Plugin
         /// <returns>A Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
         private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins()
         {
-            return InstantiatePlugins(Configuration.Instances, PluginAssemblies, Dependency<IProgramManager>());
+            return InstantiatePlugins(Configuration.Instances, PluginAssemblies, Dependency<IApplicationManager>());
         }
 
         /// <summary>
@@ -1761,14 +1761,14 @@ namespace Symbiote.Core.Plugin
         ///     xLogger with the Fully Qualified Name of the instance.
         /// </summary>
         /// <remarks>
-        ///     The <see cref="InstantiatePlugin{T}(IProgramManager, string, xLogger)"/> method is invoked via reflection so that the type parameter for
+        ///     The <see cref="InstantiatePlugin{T}(IApplicationManager, string, xLogger)"/> method is invoked via reflection so that the type parameter for
         ///     the method can be specified dynamically.
         /// </remarks>
         /// <param name="configuredInstances">The List of type PluginManagerConfigurationPluginInstance containing the list of Plugin instances to create.</param>
         /// <param name="assemblies">The List of type PluginAssembly containing the assemblies to which the supplied instances should be matched</param>
-        /// <param name="instanceManager">The ProgramManager instance to be passed to Plugin instances.</param>
+        /// <param name="instanceManager">The ApplicationManager instance to be passed to Plugin instances.</param>
         /// <returns>A Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
-        private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins(List<PluginManagerConfigurationPluginInstance> configuredInstances, List<PluginAssembly> assemblies, IProgramManager instanceManager)
+        private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins(List<PluginManagerConfigurationPluginInstance> configuredInstances, List<PluginAssembly> assemblies, IApplicationManager instanceManager)
         {
             logger.EnterMethod(xLogger.Params(configuredInstances, assemblies));
             logger.Info("Creating Plugin Instances...");

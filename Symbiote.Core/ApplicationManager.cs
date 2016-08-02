@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       ▄  
-      █  Represents the program and is responsible for managing the various subsystem Managers.
+      █  Represents the Application and is responsible for managing the various subsystem Managers.
       █  
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
       █  The GNU Affero General Public License (GNU AGPL)
@@ -43,13 +43,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NLog;
-using Symbiote.Core.Configuration;
-using Symbiote.Core.Event;
 
 namespace Symbiote.Core
 {
     /// <summary>
-    /// Represents the program and is responsible for managing the various subsystem Managers.
+    /// Represents the Application and is responsible for managing the various subsystem Managers.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -58,11 +56,11 @@ namespace Symbiote.Core
     ///     retrieved from the Service Locator.
     /// </para>
     /// <para>
-    ///     If dependency injection isn't feasible the ProgramManager instance can be retrieved using the <see cref="GetInstance()"/> method, and the individual
+    ///     If dependency injection isn't feasible the ApplicationManager instance can be retrieved using the <see cref="GetInstance()"/> method, and the individual
     ///     Managers can be retrieved using <see cref="GetManager{T}()"/>.
     /// </para>
     /// </remarks>
-    public class ProgramManager : Manager, IStateful, IManager, IProgramManager
+    public class ApplicationManager : Manager, IStateful, IManager, IApplicationManager
     {
         #region Fields
 
@@ -72,20 +70,20 @@ namespace Symbiote.Core
         private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The Singleton instance of ProgramManager.
+        /// The Singleton instance of ApplicationManager.
         /// </summary>
-        private static ProgramManager instance;
+        private static ApplicationManager instance;
 
         #endregion
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ProgramManager"/> class with the specified Manager Types.
+        /// Initializes a new instance of the <see cref="ApplicationManager"/> class with the specified Manager Types.
         /// </summary>
         /// <param name="managerTypes">The array of Manager Types for the application.</param>
-        /// <exception cref="ManagerTypeListException">Thrown when the type list argument for the ProgramManager constructor is malformed.</exception>
-        private ProgramManager(Type[] managerTypes)
+        /// <exception cref="ManagerTypeListException">Thrown when the type list argument for the ApplicationManager constructor is malformed.</exception>
+        private ApplicationManager(Type[] managerTypes)
         {
             // force the parent logger to this instance due to the way GetCurrentClassLogger works
             base.logger = logger;
@@ -106,13 +104,13 @@ namespace Symbiote.Core
             }
 
             // initialize properties
-            ManagerName = "Program Manager";
+            ManagerName = "Application Manager";
             ManagerTypes = managerTypes.ToList();
             ManagerInstances = new List<IManager>();
             ManagerDependencies = new Dictionary<Type, List<Type>>();
 
-            // register the ProgramManager
-            RegisterManager<IProgramManager>(this);
+            // register the ApplicationManager
+            RegisterManager<IApplicationManager>(this);
             
             // create an instance of each Manager Type in the ManagerTypes list
             logger.Info("Instantiating Managers...");
@@ -153,7 +151,7 @@ namespace Symbiote.Core
 
         #endregion
 
-        #region IProgramManager Properties
+        #region IApplicationManager Properties
 
         /// <summary>
         /// Gets the name of the product, retrieved from AssemblyInfo.cs.
@@ -237,33 +235,33 @@ namespace Symbiote.Core
         #endregion
 
         /// <summary>
-        /// Returns the singleton instance of the ProgramManager.  Creates an instance if null.
+        /// Returns the singleton instance of the ApplicationManager.  Creates an instance if null.
         /// </summary>
         /// <param name="managers">The array of Manager Types for the application.</param>
-        /// <returns>The singleton instance of the ProgramManager</returns>
-        public static ProgramManager Instantiate(Type[] managers)
+        /// <returns>The singleton instance of the ApplicationManager</returns>
+        public static ApplicationManager Instantiate(Type[] managers)
         {
             if (instance == null)
             {
-                instance = new ProgramManager(managers);
+                instance = new ApplicationManager(managers);
             }
 
             return instance;
         }
 
         /// <summary>
-        /// Returns the Singleton instance of ProgramManager
+        /// Returns the Singleton instance of ApplicationManager
         /// </summary>
         /// <remarks>
         /// Use only in situations where dependency injection is not feasible.
         /// </remarks>
-        /// <returns>The Singleton instance of ProgramManager</returns>
+        /// <returns>The Singleton instance of ApplicationManager</returns>
         /// <exception cref="ManagerNotInitializedException">Thrown when a Manager instance is requested but the Manager has not yet been initialized.</exception>
-        public static ProgramManager GetInstance()
+        public static ApplicationManager GetInstance()
         {
             if (instance == null)
             {
-                throw new ManagerNotInitializedException("Failed to retrieve the ProgramManager instance; it has not yet been instantiated.");
+                throw new ManagerNotInitializedException("Failed to retrieve the ApplicationManager instance; it has not yet been instantiated.");
             }
 
             return instance;
@@ -285,7 +283,7 @@ namespace Symbiote.Core
 
         #endregion
 
-        #region IProgramManager Implementation
+        #region IApplicationManager Implementation
 
         /// <summary>
         /// Returns the Manager from the list of Managers matching the specified Type.
@@ -368,7 +366,6 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="sender">The Manager which fired the event.</param>
         /// <param name="e">The EventArgs for the event.</param>
-        /// <exception cref="MissingMethodException">Thrown if the method 'GetManagerDependentTypes()' can not be found.</exception>"
         private void ManagerStateChanged(object sender, StateChangedEventArgs e)
         {
             logger.Info("Manager '" + sender.GetType().Name + "' state changed from '" + e.PreviousState + "' to '" + e.State + "'." + (e.Message != string.Empty ? "(" + e.Message + ")" : string.Empty));
@@ -495,8 +492,8 @@ namespace Symbiote.Core
 
             List<Type> retVal = new List<Type>();
 
-            // the ProgramManager has no dependencies (that we need to track).
-            if (typeof(T) == typeof(IProgramManager))
+            // the ApplicationManager has no dependencies (that we need to track).
+            if (typeof(T) == typeof(IApplicationManager))
             {
                 return retVal;
             }
@@ -553,7 +550,7 @@ namespace Symbiote.Core
                 MethodInfo getManagerGeneric;
 
                 // retrieve dependencies for the specified Manager
-                // any instance of IManager needs to have at least one dependency (ProgramManager).  If we get a null or empty list something is wrong.
+                // any instance of IManager needs to have at least one dependency (ApplicationManager).  If we get a null or empty list something is wrong.
                 List<Type> dependencies = GetManagerDependencies<T>();
                 if ((dependencies == default(List<Type>)) || (dependencies.Count() == 0))
                 {
@@ -769,31 +766,31 @@ namespace Symbiote.Core
             return (T)manager;
         }
 
-        /// <summary>
-        /// Returns a list of Manager Types for which the specified dependency dictionary contains an entry for the specified Manager Type.
-        /// </summary>
-        /// <typeparam name="T">The Manager Type for which the dependent Types are to be returned.</typeparam>
-        /// <returns>The list of Manager Types for which the ManagerDependencies dictionary contains an entry for the specified Manager Type.</returns>
-        private List<Type> GetManagerDependentTypes<T>() where T : IManager
-        {
-            List<Type> retVal = new List<Type>();
+        ///// <summary>
+        ///// Returns a list of Manager Types for which the specified dependency dictionary contains an entry for the specified Manager Type.
+        ///// </summary>
+        ///// <typeparam name="T">The Manager Type for which the dependent Types are to be returned.</typeparam>
+        ///// <returns>The list of Manager Types for which the ManagerDependencies dictionary contains an entry for the specified Manager Type.</returns>
+        //private List<Type> GetManagerDependentTypes<T>() where T : IManager
+        //{
+        //    List<Type> retVal = new List<Type>();
 
-            foreach (Type key in ManagerDependencies.Keys)
-            {
-                if (ManagerDependencies[key].Where(t => t.IsAssignableFrom(typeof(T))).Count() > 0)
-                {
-                    retVal.Add(key);
-                }
-            }
+        //    foreach (Type key in ManagerDependencies.Keys)
+        //    {
+        //        if (ManagerDependencies[key].Where(t => t.IsAssignableFrom(typeof(T))).Count() > 0)
+        //        {
+        //            retVal.Add(key);
+        //        }
+        //    }
 
-            return retVal;
-        }
+        //    return retVal;
+        //}
 
         /// <summary>
         /// Starts each Manager contained within the specified list of Manager instances.
         /// </summary>
         /// <remarks>
-        /// Does not Start the ProgramManager instance.
+        /// Does not Start the ApplicationManager instance.
         /// </remarks>
         /// <returns>A Result containing the result of the operation.</returns>
         private Result StartManagers()
@@ -805,7 +802,7 @@ namespace Symbiote.Core
             Result retVal = new Result();
 
             // iterate over the Manager instance list and start each manager.
-            // skip the ProgramManager as it has already been started.
+            // skip the ApplicationManager as it has already been started.
             foreach (IManager manager in ManagerInstances)
             {
                 if (manager != this)
@@ -829,7 +826,7 @@ namespace Symbiote.Core
         /// Stops each of the <see cref="IManager"/> instances in the specified Manager instance list.
         /// </summary>
         /// <remarks>
-        /// Does not Stop the ProgramManager instance.
+        /// Does not Stop the ApplicationManager instance.
         /// </remarks>
         /// <param name="stopType">The type of stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -840,7 +837,7 @@ namespace Symbiote.Core
             Result retVal = new Result();
 
             // iterate over the Manager instance list in reverse order, stopping each manager.
-            // skip the ProgramManager as it will stop when this process is complete.
+            // skip the ApplicationManager as it will stop when this process is complete.
             for (int i = ManagerInstances.Count() - 1; i >= 0; i--)
             {
                 logger.SubHeading(LogLevel.Debug, ManagerInstances[i].GetType().Name);

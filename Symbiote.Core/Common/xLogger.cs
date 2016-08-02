@@ -905,7 +905,7 @@ namespace Symbiote.Core
             // build and log the method signature line
             StringBuilder signature = new StringBuilder();
 
-            signature.Append(EnterPrefix + "Entering " + (GetCallingStackFrame().GetMethod().IsConstructor ? "constructor" : "method"));
+            signature.Append(EnterPrefix + "Entering " + (method.IsConstructor ? "constructor" : "method"));
             signature.Append(": " + GetMethodSignature() + " (" + System.IO.Path.GetFileName(filePath) + ":line " + lineNumber + ")");
             signature.Append(persist ? ", persisting with Guid: " + methodGuid : string.Empty);
 
@@ -914,9 +914,20 @@ namespace Symbiote.Core
             // if type parameters were supplied, log them
             if (typeParameters != null)
             {
-                for (int t = 0; t < typeParameters.Length; t++)
+                var types = method.GetGenericArguments();
+
+                // check to see if the array lengths match.  if not, log a mismatch message.
+                if (types.Length != typeParameters.Length)
                 {
-                    Log(level, (t == typeParameters.Length - 1 ? FinalLinePrefix : LinePrefix) + "T" + (t + 1) + ": " + typeParameters[t].ToString());
+                    Log(level, LinePrefix + "[Type Parameter count mismatch]");
+                }
+                else
+                {
+                    // if the lengths match, log each name/value pair.
+                    for (int t = 0; t < types.Length; t++)
+                    {
+                        Log(level, (t == typeParameters.Length - 1 && parameters != null && parameters.Length == 0 ? FinalLinePrefix : LinePrefix) + types[t].Name + ": " + typeParameters[t].ToString());
+                    }
                 }
             }
 
@@ -928,7 +939,7 @@ namespace Symbiote.Core
                 // vs the method signature ordering, so just bail out.
                 try
                 {
-                    ParameterInfo[] parameterInfo = GetCallingStackFrame().GetMethod().GetParameters();
+                    ParameterInfo[] parameterInfo = method.GetParameters();
 
                     if (parameterInfo.Length != parameters.Length)
                     {

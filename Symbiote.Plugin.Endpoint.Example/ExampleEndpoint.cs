@@ -27,9 +27,9 @@ namespace Symbiote.Plugin.Endpoint.Example
         private xLogger logger;
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private ApplicationManager manager;
 
         #endregion
 
@@ -104,7 +104,7 @@ namespace Symbiote.Plugin.Endpoint.Example
 
         #region Constructors
 
-        public ExampleEndpoint(ProgramManager manager, string instanceName, xLogger logger)
+        public ExampleEndpoint(ApplicationManager manager, string instanceName, xLogger logger)
         {
             this.manager = manager;
             InstanceName = instanceName;

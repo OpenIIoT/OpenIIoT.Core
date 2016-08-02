@@ -16,9 +16,9 @@ namespace Symbiote.Core.Plugin
         private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private ApplicationManager manager;
 
         #endregion
 
@@ -60,9 +60,9 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// The default constructor.
         /// </summary>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="configuredInstances">A list of Plugin Instances from the Plugin Manager configuration which match this Plugin Type.</param>
-        public PluginTypeManager(ProgramManager manager, List<PluginManagerConfigurationPluginInstance> configuredInstances)
+        public PluginTypeManager(ApplicationManager manager, List<PluginManagerConfigurationPluginInstance> configuredInstances)
         {
             this.manager = manager;
             ConfiguredInstances = configuredInstances;

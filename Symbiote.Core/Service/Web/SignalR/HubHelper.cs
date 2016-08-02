@@ -18,9 +18,9 @@ namespace Symbiote.Core.Service.Web.SignalR
         #region Variables
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private ApplicationManager manager;
 
         /// <summary>
         /// The Logger for this class.
@@ -46,11 +46,11 @@ namespace Symbiote.Core.Service.Web.SignalR
         #region Constructors
 
         /// <summary>
-        /// The default constructor.  Creates a new instance of HubManager to manage the supplied hub with the supplied ProgramManager.
+        /// The default constructor.  Creates a new instance of HubManager to manage the supplied hub with the supplied ApplicationManager.
         /// </summary>
-        /// <param name="manager">The ProgramManager for the application.</param>
+        /// <param name="manager">The ApplicationManager for the application.</param>
         /// <param name="hub">The hub to be managed by the HubManager.</param>
-        public HubHelper(ProgramManager manager, IHub hub)
+        public HubHelper(ApplicationManager manager, IHub hub)
         {
             this.manager = manager;
             Hub = hub;

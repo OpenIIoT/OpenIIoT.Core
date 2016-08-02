@@ -72,12 +72,12 @@ namespace Symbiote.Core.Event
         /// Initializes a new instance of the EventManager class.
         /// </summary>
         /// <remarks>
-        ///     This constructor is marked private and is intended to be called from the <see cref="Instantiate(IProgramManager, IConfigurationManager)"/>
+        ///     This constructor is marked private and is intended to be called from the <see cref="Instantiate(IApplicationManager, IConfigurationManager)"/>
         ///     method exclusively in order to implement the Singleton design pattern.
         /// </remarks>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
-        private EventManager(IProgramManager manager, IConfigurationManager configurationManager)
+        private EventManager(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             base.logger = logger;
             logger.EnterMethod();
@@ -85,7 +85,7 @@ namespace Symbiote.Core.Event
             ManagerName = "Event Manager";
 
             // register dependencies
-            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
 
             RegisteredProviders = new Dictionary<Type, List<string>>();
@@ -388,14 +388,14 @@ namespace Symbiote.Core.Event
         /// Instantiates and/or returns the EventManager instance.
         /// </summary>
         /// <remarks>
-        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
         /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
         /// injected when the method is invoked.
         /// </remarks>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
         /// <returns>The Singleton instance of the EventManager.</returns>
-        private static EventManager Instantiate(IProgramManager manager, IConfigurationManager configurationManager)
+        private static EventManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             if (instance == null)
             {

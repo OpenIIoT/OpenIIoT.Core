@@ -65,7 +65,7 @@ namespace Symbiote.Core.Model
         #region Instance Methods
 
         /// <summary>
-        /// Builds a Model using the Model Configuration stored within the ProgramManager and returns a ModelBuildResult containing the result.
+        /// Builds a Model using the Model Configuration stored within the ApplicationManager and returns a ModelBuildResult containing the result.
         /// </summary>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         ModelBuildResult BuildModel();

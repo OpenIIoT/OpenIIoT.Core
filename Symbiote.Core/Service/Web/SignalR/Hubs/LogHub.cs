@@ -16,9 +16,9 @@ namespace Symbiote.Core.Service.Web.SignalR
         #region Variables
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private ProgramManager manager = ProgramManager.GetInstance();
+        private ApplicationManager manager = ApplicationManager.GetInstance();
 
         /// <summary>
         /// The Logger for this class.
@@ -35,7 +35,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         #region Constructors
 
         /// <summary>
-        /// Constructs a new instance of the hub with the supplied ProgramManager.
+        /// Constructs a new instance of the hub with the supplied ApplicationManager.
         /// </summary>
         public LogHub()
         {

@@ -56,9 +56,9 @@ namespace Symbiote.Core
         #region Fields
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private static ProgramManager manager = ProgramManager.GetInstance();
+        private static ApplicationManager manager = ApplicationManager.GetInstance();
 
         #endregion
 

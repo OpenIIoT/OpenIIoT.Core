@@ -50,6 +50,7 @@ using Symbiote.Core.Model;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Service;
+using Symbiote.Core.Plugin.Connector;
 
 namespace Symbiote.Core
 {
@@ -66,9 +67,9 @@ namespace Symbiote.Core
         private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private static ProgramManager manager;
+        private static IApplicationManager applicationManager;
 
         /// <summary>
         /// The list of Managers for the application.
@@ -147,8 +148,8 @@ namespace Symbiote.Core
         /// </para>
         /// </remarks>
         /// <param name="args">Command line arguments.</param>
-        /// <exception cref="ProgramArgumentException">Thrown when an error is encountered while parsing and applying command line arguments.</exception>
-        /// <exception cref="ProgramInitializationException">Thrown when an error is encountered while initializing the program.</exception>
+        /// <exception cref="ApplicationArgumentException">Thrown when an error is encountered while parsing and applying command line arguments.</exception>
+        /// <exception cref="ApplicationInitializationException">Thrown when an error is encountered while initializing the program.</exception>
         internal static void Main(string[] args)
         {
             logger.EnterMethod(xLogger.Params((object)args));
@@ -159,7 +160,7 @@ namespace Symbiote.Core
             {
                 //----------------------- - --------- -  - 
                 // process the command line arguments used to start the application
-                logger.Debug("Program started with " + (args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments."));
+                logger.Debug($"Program started with {(args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments.")}");
 
                 if (args.Length > 0)
                 {
@@ -172,7 +173,7 @@ namespace Symbiote.Core
                             // reconfigure the logger based on the command line arguments.
                             // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
                             // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
-                            logger.Info("Reconfiguring logger to log level '" + logarg.Split(':')[1] + "'...");
+                            logger.Info($"Reconfiguring logger to log level '{logarg.Split(':')[1]}'...");
                             Utility.SetLoggingLevel(logarg.Split(':')[1]);
                             logger.Info("Successfully reconfigured logger.");
                         }
@@ -182,15 +183,15 @@ namespace Symbiote.Core
                         if (servicearg != default(string))
                         {
                             string action = servicearg.Split('-')[1];
-                            logger.Info("Attempting to " + action + " Windows Service...");
+                            logger.Info($"Attempting to {action} Windows Service...");
 
                             if (Utility.ModifyService(action))
                             {
-                                logger.Info("Successfully " + action + "ed Windows Service.");
+                                logger.Info($"Successfully {action}ed Windows Service.");
                             }
                             else
                             {
-                                logger.Error("Failed to " + action + " Windows Service.");
+                                logger.Error($"Failed to {action} Windows Service.");
                             }
 
                             // if we do anything with the service, do it then quit.  don't start the application if either argument was used.
@@ -202,25 +203,25 @@ namespace Symbiote.Core
                     catch (Exception ex)
                     {
                         logger.Exception(ex);
-                        throw new ProgramArgumentException("Error parsing command line arguments.  See the inner exception for details.", ex);
+                        throw new ApplicationArgumentException("Error parsing command line arguments.  See the inner exception for details.", ex);
                     }
                 }
 
                 //---------- - - -    ------------------------  -          -
                 // instantiate the Program Manager.
                 // the Program Manager acts as a Service Locator and Dependency Injector for the application; all of the various IManager instances specified in
-                // the list of managers are instantiated (but not started) within the constructor of ProgramManager.
+                // the list of managers are instantiated (but not started) within the constructor of ApplicationManager.
                 logger.Heading(LogLevel.Debug, "Initialization");
-                logger.Debug("Instantiating the Program Manager...");
+                logger.Debug("Instantiating the Application Manager...");
 
                 try
                 {
-                    manager = ProgramManager.Instantiate(managers);
+                    applicationManager = ApplicationManager.Instantiate(managers);
                 }
                 catch (Exception ex)
                 {
                     logger.Exception(ex);
-                    throw new ProgramInitializationException("Error instantiating the Program Manager.  See the inner exception for details.", ex);
+                    throw new ApplicationInitializationException("Error instantiating the Program Manager.  See the inner exception for details.", ex);
                 }
 
                 logger.Debug("The Program Manager was instantiated successfully.");
@@ -255,7 +256,7 @@ namespace Symbiote.Core
         /// Entry point for the application logic.
         /// </summary>
         /// <param name="args">Command line arguments.</param>
-        /// <exception cref="ProgramStartException">Thrown when an exception is encountered while starting the application.</exception>
+        /// <exception cref="ApplicationStartException">Thrown when an exception is encountered while starting the application.</exception>
         internal static void Start(string[] args)
         {
             logger.EnterMethod(xLogger.Params((object)args));
@@ -266,29 +267,29 @@ namespace Symbiote.Core
             try
             {
                 // start the program manager.
-                logger.SubHeading(LogLevel.Debug, "Program Manager");
-                logger.Info("Starting the Program Manager...");
+                logger.SubHeading(LogLevel.Debug, applicationManager.ManagerName);
+                logger.Info($"Starting the {applicationManager.ManagerName}...");
 
-                Result managerStartResult = manager.Start();
+                Result managerStartResult = applicationManager.Start();
 
                 if (managerStartResult.ResultCode == ResultCode.Failure)
                 {
-                    throw new ProgramStartException("The Program Manager failed to start: " + managerStartResult.GetLastError());
+                    throw new ApplicationStartException($"The {applicationManager.ManagerName} failed to start: {managerStartResult.GetLastError()}");
                 }
 
-                logger.Info("Program Manager started.");
+                logger.Info($"{applicationManager.ManagerName} started.");
                 logger.Info("Performing startup tasks...");
 
                 Startup();
                 
-                logger.Info(manager.ProductName + " is running.");
+                logger.Info($"{applicationManager.ProductName} is running.");
 
                 Console.ReadLine();
             }
             catch (Exception ex)
             {
                 logger.Exception(ex);
-                throw new ProgramStartException("Error starting the application.  See the inner exception for details.", ex);
+                throw new ApplicationStartException("Error starting the application.  See the inner exception for details.", ex);
             }
             finally
             {
@@ -299,7 +300,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Exit point for the application logic.
         /// </summary>
-        /// <exception cref="ProgramStopException">Thrown when an exception is encountered while stopping the application.</exception>
+        /// <exception cref="ApplicationStopException">Thrown when an exception is encountered while stopping the application.</exception>
         internal static void Stop()
         {
             logger.EnterMethod();
@@ -308,26 +309,26 @@ namespace Symbiote.Core
             {
                 // stop the program manager.
                 logger.Heading(LogLevel.Debug, "Shutdown");
-                logger.Info(manager.ProductName + " is stopping...");
+                logger.Info($"{applicationManager.ProductName} is stopping...");
 
-                Result managerStopResult = manager.Stop(StopType.Shutdown);
+                Result managerStopResult = applicationManager.Stop(StopType.Shutdown);
 
                 if (managerStopResult.ResultCode == ResultCode.Failure)
                 {
-                    throw new ProgramStopException("The Program Manager failed to stop: " + managerStopResult.GetLastError());
+                    throw new ApplicationStopException($"The Program Manager failed to stop: {managerStopResult.GetLastError()}");
                 }
 
-                logger.Info("Program Manager stopped.");
+                logger.Info($"{applicationManager.ManagerName} stopped.");
                 logger.Info("Performing shutdown tasks...");
 
                 Shutdown();
 
-                logger.Info(manager.ProductName + " stopped.");
+                logger.Info($"{applicationManager.ProductName} stopped.");
             }
             catch (Exception ex)
             {
                 logger.Exception(ex);
-                throw new ProgramStopException("Error stopping the application.  See the inner exception for details.", ex);
+                throw new ApplicationStopException("Error stopping the application.  See the inner exception for details.", ex);
             }
             finally
             {
@@ -346,7 +347,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Miscellaneous startup tasks.
         /// </summary>
-        /// <exception cref="ProgramStartupRoutineException">Thrown when an exception is encountered while performing the program startup routine.</exception>
+        /// <exception cref="ApplicationStartupRoutineException">Thrown when an exception is encountered while performing the program startup routine.</exception>
         private static void Startup()
         {
             Guid guid = logger.EnterMethod(true);
@@ -356,36 +357,46 @@ namespace Symbiote.Core
                 // attach the Platform connector items to the model
                 // detatch anything in "Symbiote.System.Platform" that was loaded from the config file
                 logger.Info("Detatching potentially stale Platform items...");
-                manager.GetManager<ModelManager>().RemoveItem(manager.GetManager<ModelManager>().FindItem(manager.InstanceName + ".System.Platform"));
+                applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
 
                 logger.Info("Attaching new Platform items...");
 
                 // find or create the parent for the Platform items
-                Item systemItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName + ".System");
+                Item systemItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName + ".System");
                 if (systemItem == default(Item))
                 {
-                    systemItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName + ".System")).ReturnValue;
+                    systemItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName + ".System")).ReturnValue;
                 }
 
                 // attach the Platform items to Symbiote.System
-                manager.GetManager<ModelManager>().AttachItem(manager.GetManager<PlatformManager>().Platform.Connector.Browse(), systemItem);
+                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.Connector.Browse(), systemItem);
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
 
-                Item symItem = manager.GetManager<ModelManager>().FindItem(manager.InstanceName);
+                // find the root item, or create it if it doesnt exist for some reason
+                Item symItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName);
                 if (symItem == default(Item))
                 {
-                    symItem = manager.GetManager<ModelManager>().AddItem(new Item(manager.InstanceName)).ReturnValue;
+                    symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
                 }
+
+                // attach all of the simulation items to the model
+                applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
+
+                // subscribe to the datetime item
+                Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                subscribe.LogResult(logger.Info);
+
+                applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
 
                 // show 'em what they've won!
                 Utility.PrintLogo(logger);
-                Utility.PrintModel(logger, manager.GetManager<ModelManager>().Model, 0, null, true);
+                Utility.PrintModel(logger, applicationManager.GetManager<IModelManager>().Model, 0, null, true);
                 Utility.PrintLogoFooter(logger);
             }
             catch (Exception ex)
             {
                 logger.Exception(ex);
-                throw new ProgramStartupRoutineException("Error encountered during the startup routine.  See the inner exception for details.", ex);
+                throw new ApplicationStartupRoutineException("Error encountered during the startup routine.  See the inner exception for details.", ex);
             }
             finally
             {
@@ -396,7 +407,7 @@ namespace Symbiote.Core
         /// <summary>
         /// Miscellaneous shutdown tasks.
         /// </summary>
-        /// <exception cref="ProgramShutdownRoutineException">Thrown when an exception is encountered while performing the program shutdown routine.</exception>
+        /// <exception cref="ApplicationShutdownRoutineException">Thrown when an exception is encountered while performing the program shutdown routine.</exception>
         private static void Shutdown()
         {
             Guid guid = logger.EnterMethod(true);
@@ -408,7 +419,7 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Exception(ex);
-                throw new ProgramShutdownRoutineException("Error encountered during the shutdown routine.  See the inner exception for details.", ex);
+                throw new ApplicationShutdownRoutineException("Error encountered during the shutdown routine.  See the inner exception for details.", ex);
             }
             finally
             {

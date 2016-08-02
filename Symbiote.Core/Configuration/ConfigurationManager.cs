@@ -125,12 +125,12 @@ namespace Symbiote.Core.Configuration
         /// Initializes a new instance of the <see cref="ConfigurationManager"/> class.
         /// </summary>
         /// <remarks>
-        ///     This constructor is marked private and is intended to be called from the <see cref="Instantiate(IProgramManager, IPlatformManager)"/>
+        ///     This constructor is marked private and is intended to be called from the <see cref="Instantiate(IApplicationManager, IPlatformManager)"/>
         ///     method exclusively in order to implement the Singleton design pattern.
         /// </remarks>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
-        private ConfigurationManager(IProgramManager manager, IPlatformManager platformManager)
+        private ConfigurationManager(IApplicationManager manager, IPlatformManager platformManager)
         {
             base.logger = logger;
             logger.EnterMethod();
@@ -138,7 +138,7 @@ namespace Symbiote.Core.Configuration
             ManagerName = "Configuration Manager";
 
             // register dependencies
-            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
 
             RegisteredTypes = new Dictionary<Type, ConfigurationDefinition>();
@@ -647,14 +647,14 @@ namespace Symbiote.Core.Configuration
         /// Instantiates and/or returns the ConfigurationManager instance.
         /// </summary>
         /// <remarks>
-        /// Invoked via reflection from ProgramManager.  The parameters are used to build an array of IManager parameters which are then passed
+        /// Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
         /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
         /// injected when the method is invoked.
         /// </remarks>
-        /// <param name="manager">The ProgramManager instance for the application.</param>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
         /// <returns>The Singleton instance of the ConfigurationManager.</returns>
-        private static ConfigurationManager Instantiate(IProgramManager manager, IPlatformManager platformManager)
+        private static ConfigurationManager Instantiate(IApplicationManager manager, IPlatformManager platformManager)
         {
             if (instance == null)
             {

@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       ▄  
-      █  Unit tests for the ProgramManager class.
+      █  Unit tests for the ApplicationManager class.
       █  
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
       █  The GNU Affero General Public License (GNU AGPL)
@@ -54,113 +54,113 @@ using Xunit;
 namespace Symbiote.Core.Test
 {
     /// <summary>
-    /// Tests <see cref="ProgramManager.GetInstance()"/> without having first instantiated the Manager.
+    /// Tests <see cref="ApplicationManager.GetInstance()"/> without having first instantiated the Manager.
     /// </summary>
     /// <remarks>
     /// Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ProgramManagerGetInstanceTest
+    public class ApplicationManagerGetInstanceTest
     {
         [Fact]
         public void TestGetInstance()
         {
-            Assert.Throws<ManagerNotInitializedException>(() => ProgramManager.GetInstance());
+            Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
         }
     }
 
     /// <summary>
-    /// Tests <see cref="ProgramManager.GetInstance()"/> after first invoking <see cref="ProgramManager.Instantiate(Type[])"/>.
+    /// Tests <see cref="ApplicationManager.GetInstance()"/> after first invoking <see cref="ApplicationManager.Instantiate(Type[])"/>.
     /// </summary>
     /// <remarks>
     /// Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ProgramManagerInstantiateAndGetInstanceTest
+    public class ApplicationManagerInstantiateAndGetInstanceTest
     {
         [Fact]
         public void TestInstantiateAndGetInstance()
         {
-            ProgramManager manager1 = ProgramManager.Instantiate(new Type[] { typeof(MockManager) });
-            ProgramManager manager2 = ProgramManager.GetInstance();
+            ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            ApplicationManager manager2 = ApplicationManager.GetInstance();
 
             Assert.Equal(manager1, manager2);
         }
     }
 
     /// <summary>
-    /// Tests successive invocations of <see cref="ProgramManager.Instantiate(Type[])"/>.
+    /// Tests successive invocations of <see cref="ApplicationManager.Instantiate(Type[])"/>.
     /// </summary>
     /// <remarks>
     /// Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ProgramManagerInstantiateTwiceTest
+    public class ApplicationManagerInstantiateTwiceTest
     {
         [Fact]
         public void TestInstantiateTwice()
         {
-            ProgramManager manager1 = ProgramManager.Instantiate(new Type[] { typeof(MockManager) });
-            ProgramManager manager2 = ProgramManager.Instantiate(new Type[] { typeof(MockManager) });
+            ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            ApplicationManager manager2 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Assert.Equal(manager1, manager2);
         }
     }
 
     /// <summary>
-    /// Unit tests for the ProgramManager class.
+    /// Unit tests for the ApplicationManager class.
     /// </summary>
-    public class ProgramManagerTests
+    public class ApplicationManagerTests
     {
         [Fact]
         public void TestGetInstanceBeforeInstantiation()
         {
-            Assert.Throws<ManagerNotInitializedException>(() => ProgramManager.GetInstance());
+            Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
         }
 
         /// <summary>
-        /// Tests instantiation of the ProgramManager with a null Type array.
+        /// Tests instantiation of the ApplicationManager with a null Type array.
         /// </summary>
         [Fact]
         public void TestInstantiateWithNull()
         {
-            Assert.Throws<ManagerTypeListException>(() => ProgramManager.Instantiate(null));
+            Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(null));
         }
 
         /// <summary>
-        /// Tests instantiation of the ProgramManager with an empty Type array.
+        /// Tests instantiation of the ApplicationManager with an empty Type array.
         /// </summary>
         [Fact]
         public void TestInstantiateWithEmpty()
         {
-            Assert.Throws<ManagerTypeListException>(() => ProgramManager.Instantiate(new Type[] { }));
+            Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { }));
         }
 
         /// <summary>
-        /// Tests instantiation of the ProgramManager with a Type array containing a Type not implementing IManager.
+        /// Tests instantiation of the ApplicationManager with a Type array containing a Type not implementing IManager.
         /// </summary>
         [Fact]
         public void TestInstantiateWithNonIManager()
         {
-            Assert.Throws<ManagerTypeListException>(() => ProgramManager.Instantiate(new Type[] { typeof(int) }));
+            Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { typeof(int) }));
         }
 
         /// <summary>
-        ///     Tests instantiation of the ProgramManager with a Type array containing an instance of IManager with the 
+        ///     Tests instantiation of the ApplicationManager with a Type array containing an instance of IManager with the 
         ///     Setup() method returning a null Result/
         /// </summary>
         [Fact]
         public void TestInstantiateWithBrokenSetupMethod()
         {
-            Assert.Throws<ManagerSetupException>(() => ProgramManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
+            Assert.Throws<ManagerSetupException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
         }
 
         /// <summary>
-        /// Tests instantiation of the ProgramManager with a Type array containing a valid, functioning IManager instance.
+        /// Tests instantiation of the ApplicationManager with a Type array containing a valid, functioning IManager instance.
         /// </summary>
         [Fact]
         public void TestInstantiateWithValidIManager()
         {
-            ProgramManager manager = ProgramManager.Instantiate(new Type[] { typeof(MockManager) });
+            ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
-            Assert.IsType<ProgramManager>(manager);
+            Assert.IsType<ApplicationManager>(manager);
             Assert.NotNull(manager);
         }
     }

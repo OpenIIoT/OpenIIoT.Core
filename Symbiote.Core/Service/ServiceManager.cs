@@ -30,14 +30,14 @@ namespace Symbiote.Core.Service
 
         #region Constructors
 
-        private ServiceManager(IProgramManager manager, IConfigurationManager configurationManager)
+        private ServiceManager(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             base.logger = logger;
             logger.EnterMethod();
 
             ManagerName = "Service Manager";
 
-            RegisterDependency<IProgramManager>(manager);
+            RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
 
             ChangeState(State.Initialized);
@@ -46,7 +46,7 @@ namespace Symbiote.Core.Service
             ServiceTypes = new Dictionary<string, Type>();
         }
 
-        private static ServiceManager Instantiate(IProgramManager manager, IConfigurationManager configurationManager)
+        private static ServiceManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             if (instance == null)
                 instance = new ServiceManager(manager, configurationManager);
@@ -155,7 +155,7 @@ namespace Symbiote.Core.Service
                 foreach (string serviceType in serviceTypes.Keys)
                 {
                     logger.Trace("Instantiating service '" + serviceType + "'...");
-                    IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { Dependency<IProgramManager>() });
+                    IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { Dependency<IApplicationManager>() });
 
                     if (serviceInstance != default(IService))
                         retVal.ReturnValue.Add(serviceType, serviceInstance);

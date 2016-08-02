@@ -106,7 +106,7 @@ namespace Symbiote.Plugin.Connector.Simulation
 
         #region Constructors
 
-        public SimulationConnector(ProgramManager manager, string instanceName, xLogger logger)
+        public SimulationConnector(ApplicationManager manager, string instanceName, xLogger logger)
         {
             InstanceName = instanceName;
             this.logger = logger;
@@ -194,7 +194,7 @@ namespace Symbiote.Plugin.Connector.Simulation
             // which will cascade the value through the model
             foreach (Item key in Subscriptions.Keys)
             {
-                if (key.FQN == InstanceName + ".DateTime.Time") key.Write(DateTime.Now);
+                if (key.FQN == InstanceName + ".DateTime.Time") key.Write(DateTime.Now.ToString("HH:mm:ss.fff"));
                 if (key.FQN == InstanceName + ".Process.Ramp") key.Write(counter);
             }
         }
@@ -327,7 +327,7 @@ namespace Symbiote.Plugin.Connector.Simulation
                     retVal.ReturnValue = val % 2;
                     return retVal;
                 case "Time":
-                    retVal.ReturnValue = DateTime.Now.ToString("HH:mm:ss");
+                    retVal.ReturnValue = DateTime.Now.ToString("HH:mm:ss.fff");
                     return retVal;
                 case "Date":
                     retVal.ReturnValue = DateTime.Now.ToString("MM/dd/yyyy");

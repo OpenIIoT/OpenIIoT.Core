@@ -173,12 +173,12 @@ namespace Symbiote.Core.Plugin
         ///     The instanceName is propagated through the plugin instance and any internal reference (such as a ConnectorItem).  This name
         ///     should match references to the plugin, either through fully qualified addressing or configuration.
         /// </remarks>
-        /// <param name="instanceManager">The ProgramManager instance to be passed to the Plugin instance.</param>
+        /// <param name="instanceManager">The ApplicationManager instance to be passed to the Plugin instance.</param>
         /// <param name="instanceName">The desired internal name of the instance</param>
         /// <param name="instanceLogger">The logger for the plugin instance.</param>
         /// <typeparam name="T">The Type of the Plugin instance to create.</typeparam>
         /// <returns>A Result containing the result of the operation and the created Plugin instance.</returns>
-        Result<IPluginInstance> InstantiatePlugin<T>(IProgramManager instanceManager, string instanceName, xLogger instanceLogger);
+        Result<IPluginInstance> InstantiatePlugin<T>(IApplicationManager instanceManager, string instanceName, xLogger instanceLogger);
 
         /// <summary>
         /// Given an instance name string, return the matching instance of IPluginInstance.

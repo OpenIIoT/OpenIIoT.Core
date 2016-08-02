@@ -12,7 +12,7 @@ namespace Symbiote.Core.Service.Web
 {
     public class OwinStartup
     {
-        private ProgramManager manager = ProgramManager.GetInstance();
+        private ApplicationManager manager = ApplicationManager.GetInstance();
 
         private WebServiceConfiguration WebServiceConfiguration { get; set; }
 

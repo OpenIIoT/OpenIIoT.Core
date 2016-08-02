@@ -98,7 +98,7 @@ namespace Symbiote.Plugin.Connector.Example
     ///     application configuration.  For a full explanation, see the <see cref="IConfigurable{T}"/> and <see cref="ConfigurationManager"/> documentation.
     /// </para>
     /// <para>
-    ///     Each Plugin instance is provided with two references upon instantiation; the global instance of <see cref="ProgramManager"/>, which serves as a 
+    ///     Each Plugin instance is provided with two references upon instantiation; the global instance of <see cref="ApplicationManager"/>, which serves as a 
     ///     Service Locator for the various parts of the application, and a new instance of <see cref="xLogger"/>.  The majority of methods within the 
     ///     Connector should make use of the <see cref="xLogger.EnterMethod(object[], bool, string, string, int)"/> and 
     ///     <see cref="xLogger.ExitMethod(object, Guid, string, string, int)"/> methods at a minimum.  This is required to maintain the logging strategy
@@ -115,9 +115,9 @@ namespace Symbiote.Plugin.Connector.Example
         private xLogger logger;
 
         /// <summary>
-        /// The ProgramManager for the application.
+        /// The ApplicationManager for the application.
         /// </summary>
-        private ProgramManager manager;
+        private ApplicationManager manager;
 
         /// <summary>
         /// The root node for the item tree.
@@ -242,7 +242,7 @@ namespace Symbiote.Plugin.Connector.Example
         /// The default constructor.
         /// </summary>
         /// <param name="instanceName">The name of the instance, provided by the Plugin Manager.</param>
-        public ExampleConnector(ProgramManager manager, string instanceName, xLogger logger)
+        public ExampleConnector(ApplicationManager manager, string instanceName, xLogger logger)
         {
             //------ ----------------------  --------------------------------------   -   -     -  -         ---- -
             // boilerplate code; this should appear in the majority of Connectors

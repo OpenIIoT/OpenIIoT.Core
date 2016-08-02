@@ -296,7 +296,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        ///     This method is invoked by the ProgramManager following the instantiation of all program Managers.  The list of IManager
+        ///     This method is invoked by the ApplicationManager following the instantiation of all program Managers.  The list of IManager
         ///     instances created during the instantiation is provided, however this Manager must only use that list to set up indirect 
         ///     references; for instance, the Configuration Manager will iterate over this list to register all Managers implementing IConfigurable.
         /// </para>

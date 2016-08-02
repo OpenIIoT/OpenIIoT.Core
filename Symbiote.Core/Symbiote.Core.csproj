@@ -191,8 +191,8 @@
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
     <Compile Include="Plugin\PluginType.cs" />
     <Compile Include="Plugin\PluginTypeManager.cs" />
-    <Compile Include="IProgramManager.cs" />
-    <Compile Include="ProgramExceptions.cs" />
+    <Compile Include="IApplicationManager.cs" />
+    <Compile Include="ApplicationExceptions.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -215,7 +215,7 @@
     <Compile Include="Platform\UNIX\UNIXPlatformConnector.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\Windows\WindowsPlatformConnector.cs" />
-    <Compile Include="ProgramManager.cs" />
+    <Compile Include="ApplicationManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Platform\IPlatform.cs" />
     <Compile Include="Platform\PlatformManager.cs" />

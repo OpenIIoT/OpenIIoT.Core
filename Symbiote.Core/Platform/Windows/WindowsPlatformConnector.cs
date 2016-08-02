@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace Symbiote.Core.Platform.Windows
 {
-    public class WindowsPlatformConnector : IConnector
+    public class WindowsPlatformConnector : IConnector, IReadable
     {
         private ConnectorItem itemRoot;
         private PerformanceCounter cpuUsed;
@@ -169,6 +169,11 @@ namespace Symbiote.Core.Platform.Windows
                 default:
                     return retVal.AddError("Unable to find Item '" + item + "'.");
             }
+        }
+
+        public async Task<Result<object>> ReadAsync(Item item)
+        {
+            return await Task.Run(() => Read(item));
         }
 
         public Result Write(string fqn, object value)

@@ -21,6 +21,7 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using Newtonsoft.Json;
+using NLog;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 
@@ -45,6 +46,8 @@ namespace Symbiote.Core.Plugin.Connector
     /// </remarks>
     public class ConnectorItem : Item
     {
+        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+
         #region Properties
 
         /// <summary>
@@ -145,7 +148,9 @@ namespace Symbiote.Core.Plugin.Connector
         public override object ReadFromSource()
         {
             if (Connector is IReadable)
-                return ((IReadable)Connector).Read(this);
+            {
+                return ((IReadable)Connector).Read(this).ReturnValue;
+            }
             else
                 return null;
         }

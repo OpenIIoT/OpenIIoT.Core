@@ -14,7 +14,7 @@ namespace Symbiote.Core.Service.Web
 {
     public class WebService : IService, IConfigurable<WebServiceConfiguration>
     {
-        private ProgramManager manager;
+        private ApplicationManager manager;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static WebService instance;
         private static IDisposable server;
@@ -40,14 +40,14 @@ namespace Symbiote.Core.Service.Web
         public Dictionary<string, Hub> Hubs { get; private set; }
         public Dictionary<string, ApiController> ApiControllers { get; private set; }
 
-        private WebService(ProgramManager manager)
+        private WebService(ApplicationManager manager)
         {
             this.manager = manager;
             Hubs = new Dictionary<string, Hub>();
             ApiControllers = new Dictionary<string, ApiController>();
         }
 
-        public static WebService Instance(ProgramManager manager)
+        public static WebService Instance(ApplicationManager manager)
         {
             if (instance == null)
                 instance = new WebService(manager);
