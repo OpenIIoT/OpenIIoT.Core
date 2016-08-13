@@ -337,7 +337,7 @@ namespace Symbiote.Core
             logger.Info(@"      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ ");
             logger.Info(@"      █   ");
 
-            foreach (string s in BigFont.Generate("Symbiote", BigFont.Font.Graffiti, BigFont.FontSize.Large))
+            foreach (string s in BigFont.BigFont.Generate("Symbiote", BigFont.BigFont.Font.Graffiti, BigFont.BigFont.FontSize.Large))
             {
                 logger.Info(@"      █  " + s);
             }
