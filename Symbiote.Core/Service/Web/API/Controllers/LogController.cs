@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using NLog;
+using NLog.RealtimeLogger;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;

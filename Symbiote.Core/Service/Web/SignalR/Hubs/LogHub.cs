@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System.Threading.Tasks;
 using System;
 using System.Linq;
+using NLog.RealtimeLogger;
 
 namespace Symbiote.Core.Service.Web.SignalR
 {
@@ -44,7 +45,7 @@ namespace Symbiote.Core.Service.Web.SignalR
             if (hubManager == default(HubHelper))
             {
                 hubManager = new HubHelper(manager, this);
-                RealtimeLogger.LogArrived += hubManager.OnChange;
+                RealtimeLogger.LogAppended += hubManager.OnChange;
             }
         }
 

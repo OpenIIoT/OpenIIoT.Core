@@ -45,6 +45,7 @@ using System.Reflection;
 using Newtonsoft.Json;
 using NLog;
 using Symbiote.Core.Platform;
+using NLog.xLogger;
 
 namespace Symbiote.Core.Configuration
 {

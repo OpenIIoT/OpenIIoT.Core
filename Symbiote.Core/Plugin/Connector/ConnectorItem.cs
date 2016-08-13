@@ -22,6 +22,7 @@
                                                                                                    ▀▀                            */
 using Newtonsoft.Json;
 using NLog;
+using NLog.xLogger;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 

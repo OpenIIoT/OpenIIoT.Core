@@ -31,6 +31,7 @@ using System.Linq;
 using System.Timers;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
+using NLog.xLogger;
 
 namespace Symbiote.Plugin.Connector.Example
 {

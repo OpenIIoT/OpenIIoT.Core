@@ -43,6 +43,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NLog;
+using NLog.xLogger;
 
 namespace Symbiote.Core
 {

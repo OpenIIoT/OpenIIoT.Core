@@ -5,6 +5,7 @@ using System.Linq;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
 using Newtonsoft.Json;
+using NLog.xLogger;
 
 namespace Symbiote.Core.Model
 {

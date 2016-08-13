@@ -4,6 +4,7 @@ using System.Linq;
 using Symbiote.Core;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Plugin.Endpoint;
+using NLog.xLogger;
 
 namespace Symbiote.Plugin.Endpoint.Example
 {

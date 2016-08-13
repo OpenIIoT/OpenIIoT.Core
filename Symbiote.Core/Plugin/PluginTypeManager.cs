@@ -1,4 +1,5 @@
 ﻿using NLog;
+using NLog.xLogger;
 using System;
 using System.Collections.Generic;
 using System.Linq;

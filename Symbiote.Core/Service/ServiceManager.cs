@@ -9,6 +9,7 @@ using Microsoft.AspNet.SignalR;
 using System.Web.Http;
 using Newtonsoft.Json;
 using Symbiote.Core.Configuration;
+using NLog.xLogger;
 
 namespace Symbiote.Core.Service
 {

@@ -13,7 +13,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Endpoint.Example", "Symbiote.Plugin.Endpoint.Example\Symbiote.Plugin.Endpoint.Example.csproj", "{5DA85DD0-B058-459F-AE89-EFE972CB7E34}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Core.Test", "Symbiote.Core.Test\Symbiote.Core.Test.csproj", "{E98779CA-1108-4B80-AD81-40594CCCED82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Core.Test", "Symbiote.Core.Tests\Symbiote.Core.Tests.csproj", "{E98779CA-1108-4B80-AD81-40594CCCED82}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Example.Tests", "Symbiote.Plugin.Connector.Example.Tests\Symbiote.Plugin.Connector.Example.Tests.csproj", "{1A93454D-540B-4357-8100-E77A02CDCC1D}"
 EndProject

@@ -44,6 +44,7 @@ using System.Linq;
 using System.Reflection;
 using NLog;
 using Symbiote.Core.Configuration;
+using NLog.xLogger;
 
 namespace Symbiote.Core.Event
 {

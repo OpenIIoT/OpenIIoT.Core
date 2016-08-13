@@ -41,6 +41,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Symbiote.Core.Configuration;
+using NLog.xLogger;
 
 namespace Symbiote.Core.Plugin
 {
