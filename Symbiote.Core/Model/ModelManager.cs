@@ -6,6 +6,7 @@ using Symbiote.Core.Configuration;
 using Symbiote.Core.Plugin;
 using Newtonsoft.Json;
 using NLog.xLogger;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Model
 {

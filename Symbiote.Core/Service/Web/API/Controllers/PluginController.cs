@@ -10,6 +10,7 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Service.Web.API
 {

@@ -43,6 +43,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using Symbiote.Core.Model;
+using Utility.BigFont;
 
 namespace Symbiote.Core
 {
@@ -337,7 +338,7 @@ namespace Symbiote.Core
             logger.Info(@"      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ ");
             logger.Info(@"      █   ");
 
-            foreach (string s in BigFont.BigFont.Generate("Symbiote", BigFont.BigFont.Font.Graffiti, BigFont.BigFont.FontSize.Large))
+            foreach (string s in BigFontGenerator.Generate("Symbiote", Font.Graffiti, FontSize.Large))
             {
                 logger.Info(@"      █  " + s);
             }

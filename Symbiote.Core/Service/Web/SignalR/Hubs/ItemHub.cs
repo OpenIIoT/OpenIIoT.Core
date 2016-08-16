@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System;
 using System.Linq;
 using Symbiote.Core.Model;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Service.Web.SignalR
 {

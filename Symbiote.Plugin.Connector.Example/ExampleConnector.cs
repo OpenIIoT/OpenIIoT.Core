@@ -32,6 +32,7 @@ using System.Timers;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 using NLog.xLogger;
+using Utility.OperationResult;
 
 namespace Symbiote.Plugin.Connector.Example
 {

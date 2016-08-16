@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Model
 {

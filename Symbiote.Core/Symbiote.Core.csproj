@@ -52,10 +52,6 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BigFont, Version=1.0.0.2, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BigFont.1.0.0.2\lib\BigFont.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.SignalR.Core.2.2.0\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
       <Private>True</Private>
@@ -113,7 +109,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog.xLogger, Version=0.9.2.19, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.xLogger.0.9.2.19\lib\NLog.xLogger.dll</HintPath>
+      <HintPath>..\packages\NLog.xLogger.0.9.2.21\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -160,6 +156,14 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="Utility.BigFont, Version=2.0.0.6, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Utility.BigFont.2.0.0.6\lib\Utility.BigFont.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Utility.OperationResult, Version=0.9.0.4, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Utility.OperationResult.0.9.0.5\lib\Utility.OperationResult.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
       <HintPath>..\packages\WebActivatorEx.2.0\lib\net40\WebActivatorEx.dll</HintPath>
       <Private>True</Private>
@@ -234,7 +238,6 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Common\Utility.cs" />
-    <Compile Include="Common\OperationResult.cs" />
     <Compile Include="Service\Web\API\ApiOperationResult.cs" />
     <Compile Include="Service\Web\API\Controllers\PluginController.cs" />
     <Compile Include="Service\Web\API\Controllers\BrowseController.cs" />

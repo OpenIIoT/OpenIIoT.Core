@@ -42,6 +42,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
+using Utility.OperationResult;
 
 namespace Symbiote.Core
 {

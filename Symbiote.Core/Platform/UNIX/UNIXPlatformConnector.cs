@@ -7,6 +7,7 @@ using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 using System.Linq;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Platform.UNIX
 {

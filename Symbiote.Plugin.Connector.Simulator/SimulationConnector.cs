@@ -9,6 +9,7 @@ using System.Timers;
 using System.Threading.Tasks;
 using NLog;
 using NLog.xLogger;
+using Utility.OperationResult;
 
 namespace Symbiote.Plugin.Connector.Simulation
 {

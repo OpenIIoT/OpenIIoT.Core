@@ -25,6 +25,7 @@ using NLog;
 using NLog.xLogger;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Plugin.Connector
 {

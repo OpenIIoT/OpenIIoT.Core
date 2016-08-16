@@ -7,6 +7,7 @@ using Symbiote.Core.Configuration;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 using System.Linq;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Platform.Windows
 {

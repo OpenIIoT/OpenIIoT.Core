@@ -39,6 +39,7 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using System;
+using Utility.OperationResult;
 
 namespace Symbiote.Core
 {

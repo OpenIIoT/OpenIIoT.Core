@@ -49,6 +49,7 @@ using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin.Connector;
 using Symbiote.Core.Plugin.Endpoint;
 using NLog.xLogger;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Plugin
 {

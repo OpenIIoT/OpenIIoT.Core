@@ -22,6 +22,7 @@
                                                                                                    ▀▀                            */
 using Symbiote.Core.Model;
 using System.Collections.Generic;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Plugin.Connector
 {

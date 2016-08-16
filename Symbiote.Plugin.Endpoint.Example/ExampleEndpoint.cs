@@ -5,6 +5,7 @@ using Symbiote.Core;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Plugin.Endpoint;
 using NLog.xLogger;
+using Utility.OperationResult;
 
 namespace Symbiote.Plugin.Endpoint.Example
 {

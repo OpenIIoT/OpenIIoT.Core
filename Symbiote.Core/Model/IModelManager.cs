@@ -40,6 +40,7 @@
                                                                                                    ▀▀                            */
 using System.Collections.Generic;
 using Symbiote.Core.Configuration;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Model
 {

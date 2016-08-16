@@ -1,4 +1,6 @@
-﻿namespace Symbiote.Core.Plugin.Endpoint
+﻿using Utility.OperationResult;
+
+namespace Symbiote.Core.Plugin.Endpoint
 {
     public interface IEndpoint : IPluginInstance
     {

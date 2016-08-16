@@ -38,6 +38,8 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using Utility.OperationResult;
+
 namespace Symbiote.Core.Configuration
 {
     /// <summary>
