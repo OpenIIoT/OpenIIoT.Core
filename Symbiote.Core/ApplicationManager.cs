@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
       █   
-      █      ▄███████▄                                                                ▄▄▄▄███▄▄▄▄                                                             
-      █     ███    ███                                                              ▄██▀▀▀███▀▀▀██▄                                                           
-      █     ███    ███    █████  ██████     ▄████▄     █████   ▄█████     ▄▄██▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
-      █     ███    ███   ██  ██ ██    ██   ██    ▀    ██  ██   ██   ██  ▄█▀▀██▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
-      █   ▀█████████▀   ▄██▄▄█▀ ██    ██  ▄██        ▄██▄▄█▀   ██   ██  ██  ██  ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
-      █     ███        ▀███████ ██    ██ ▀▀██ ███▄  ▀███████ ▀████████  ██  ██  ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
-      █     ███          ██  ██ ██    ██   ██    ██   ██  ██   ██   ██  ██  ██  ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
-      █    ▄████▀        ██  ██  ██████    ██████▀    ██  ██   ██   █▀   █  ██  █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
+      █     ▄████████                                                                                        ▄▄▄▄███▄▄▄▄                                                             
+      █     ███    ███                                                                                     ▄██▀▀▀███▀▀▀██▄                                                           
+      █     ███    ███    █████▄    █████▄  █        █   ▄██████   ▄█████      ██     █   ██████  ██▄▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
+      █     ███    ███   ██   ██   ██   ██ ██       ██  ██    ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
+      █   ▀███████████   ██   ██   ██   ██ ██       ██▌ ██    ▀    ██   ██     ██  ▀ ██▌ ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
+      █     ███    ███ ▀██████▀  ▀██████▀  ██       ██  ██    ▄  ▀████████     ██    ██  ██    ██ ██   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
+      █     ███    ███   ██        ██      ██▌    ▄ ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
+      █     ███    █▀   ▄███▀     ▄███▀    ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
@@ -67,12 +67,12 @@ namespace Symbiote.Core
         #region Fields
 
         /// <summary>
-        /// The Logger for this class.
+        ///     The Logger for this class.
         /// </summary>
         private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The Singleton instance of ApplicationManager.
+        ///     The Singleton instance of ApplicationManager.
         /// </summary>
         private static ApplicationManager instance;
 
@@ -81,7 +81,7 @@ namespace Symbiote.Core
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ApplicationManager"/> class with the specified Manager Types.
+        ///     Initializes a new instance of the <see cref="ApplicationManager"/> class with the specified Manager Types.
         /// </summary>
         /// <param name="managerTypes">The array of Manager Types for the application.</param>
         /// <exception cref="ManagerTypeListException">Thrown when the type list argument for the ApplicationManager constructor is malformed.</exception>
@@ -99,6 +99,7 @@ namespace Symbiote.Core
             }
             else
             {
+                // ensure all types implement IManager.
                 if (managerTypes.Where(t => t.GetInterfaces().Contains(typeof(IManager))).Count() != managerTypes.Count())
                 {
                     throw new ManagerTypeListException("Each Type in the supplied list of Types must implement the IManager interface.");
@@ -156,7 +157,7 @@ namespace Symbiote.Core
         #region IApplicationManager Properties
 
         /// <summary>
-        /// Gets the name of the product, retrieved from AssemblyInfo.cs.
+        ///     Gets the name of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
         public string ProductName
         {
@@ -167,7 +168,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Gets the version of the product, retrieved from AssemblyInfo.cs.
+        ///     Gets the version of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
         public Version ProductVersion
         {
@@ -178,7 +179,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Gets the name of the application instance.
+        ///     Gets the name of the application instance, retrieved from the application's settings file.
         /// </summary>
         /// <remarks>
         ///     If the "InstanceName" setting is missing from the application settings, the value of the 
@@ -199,17 +200,17 @@ namespace Symbiote.Core
         #region Private Properties
 
         /// <summary>
-        /// Gets or sets the list of application Manager Types.
+        ///     Gets or sets the list of application Manager Types.
         /// </summary>
         private List<Type> ManagerTypes { get; set; }
 
         /// <summary>
-        /// Gets or sets the list of application Manager instances.
+        ///     Gets or sets the list of application Manager instances.
         /// </summary>
         private List<IManager> ManagerInstances { get; set; }
 
         /// <summary>
-        /// Gets or sets a dictionary containing a list of dependencies for each application Manager.
+        ///     Gets or sets a dictionary containing a list of dependencies for each application Manager.
         /// </summary>
         private Dictionary<Type, List<Type>> ManagerDependencies { get; set; }
 
@@ -226,7 +227,7 @@ namespace Symbiote.Core
         #region Settings
 
         /// <summary>
-        /// Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retrieved.
+        ///     Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retrieved.
         /// </summary>
         /// <returns>The name of the program instance.</returns>
         public static string GetInstanceName()
@@ -237,7 +238,7 @@ namespace Symbiote.Core
         #endregion
 
         /// <summary>
-        /// Returns the singleton instance of the ApplicationManager.  Creates an instance if null.
+        ///     Returns the singleton instance of the ApplicationManager.  Creates an instance if null.
         /// </summary>
         /// <param name="managers">The array of Manager Types for the application.</param>
         /// <returns>The singleton instance of the ApplicationManager</returns>
@@ -252,10 +253,10 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Returns the Singleton instance of ApplicationManager
+        ///     Returns the Singleton instance of ApplicationManager
         /// </summary>
         /// <remarks>
-        /// Use only in situations where dependency injection is not feasible.
+        ///     Use only in situations where dependency injection is not feasible.
         /// </remarks>
         /// <returns>The Singleton instance of ApplicationManager</returns>
         /// <exception cref="ManagerNotInitializedException">Thrown when a Manager instance is requested but the Manager has not yet been initialized.</exception>
@@ -288,7 +289,7 @@ namespace Symbiote.Core
         #region IApplicationManager Implementation
 
         /// <summary>
-        /// Returns the Manager from the list of Managers matching the specified Type.
+        ///     Returns the Manager from the list of Managers matching the specified Type.
         /// </summary>
         /// <typeparam name="T">The Type of the Manager to return.</typeparam>
         /// <returns>The requested Manager.</returns>
@@ -308,7 +309,7 @@ namespace Symbiote.Core
         #region Protected Instance Methods
 
         /// <summary>
-        /// Executed upon instantiation of all program Managers.  Not implemented.
+        ///     Executed upon instantiation of all program Managers.  Not implemented in this class.
         /// </summary>
         /// <param name="managerInstances"></param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -318,7 +319,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Executed upon startup of the Manager.  Starts all application managers.
+        ///     Executed upon startup of the Manager.  Starts all application managers.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         protected override Result Startup()

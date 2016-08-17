@@ -44,37 +44,56 @@ using System.Reflection;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
 using NLog;
+using NLog.xLogger;
 using Symbiote.Core.Configuration;
 using Symbiote.Core.Event;
 using Symbiote.Core.Model;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.Service;
 using Symbiote.Core.Plugin.Connector;
-using NLog.xLogger;
+using Symbiote.Core.Service;
 using Utility.OperationResult;
 
 namespace Symbiote.Core
 {
     /// <summary>
-    /// The main application class.
+    /// <para>
+    ///     The main application class.
+    /// </para>
+    /// <para>
+    ///     <see cref="Main(string[])"/> first processes command line arguments, reconfiguring the logger to the specified level and, if the -uninstall-service
+    ///     or -install-service arguments are specified, either installs or uninstalls the Windows Service for the application.  Next, the <see cref="ApplicationManager"/> 
+    ///     is instantiated.  Lastly, the application is started in either interactive or service mode, depending on how the application was started.
+    /// </para>
+    /// <para>
+    ///     The application logic begins in <see cref="Start(string[])"/>, where the Application Manager is started, then the <see cref="Startup"/> method is invoked to
+    ///     execute miscellaneous post-startup tasks that weren't appropriate at a component level.  Following the execution of <see cref="Startup"/>, <see cref="Console.ReadLine"/>  
+    ///     is invoked to run the application in perpetuity.
+    /// </para>
+    /// <para>
+    ///     When the application is stopped, either by the enter key being pressed or by the service being stopped, the <see cref="Stop()"/> method is invoked, which invokes
+    ///     <see cref="Shutdown()"/> to execute miscellaneous pre-stop tasks, then the <see cref="ApplicationManager"/> is stopped, which stops all managers and the application.
+    /// </para>
+    /// <para>
+    ///     The field <see cref="managers"/> contains a list of the Manager Types for the application in the order in which they are to be instantiated and started.
+    /// </para>
     /// </summary>
     public class Program
     {
         #region Fields
 
         /// <summary>
-        /// The main logger for the application.
+        ///     The main logger for the application.
         /// </summary>
         private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The ApplicationManager for the application.
+        ///     The ApplicationManager for the application.
         /// </summary>
         private static IApplicationManager applicationManager;
 
         /// <summary>
-        /// The list of Managers for the application.
+        ///     The list of Managers for the application.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -104,7 +123,7 @@ namespace Symbiote.Core
         #region Internal Static Methods
 
         /// <summary>
-        /// Main entry point for the application.
+        ///     Main entry point for the application.
         /// </summary>
         /// <remarks>
         /// <para>
@@ -210,9 +229,7 @@ namespace Symbiote.Core
                 }
 
                 //---------- - - -    ------------------------  -          -
-                // instantiate the Program Manager.
-                // the Program Manager acts as a Service Locator and Dependency Injector for the application; all of the various IManager instances specified in
-                // the list of managers are instantiated (but not started) within the constructor of ApplicationManager.
+                // instantiate the Application Manager.
                 logger.Heading(LogLevel.Debug, "Initialization");
                 logger.Debug("Instantiating the Application Manager...");
 
@@ -255,13 +272,13 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Entry point for the application logic.
+        ///     Entry point for the application logic.
         /// </summary>
         /// <param name="args">Command line arguments.</param>
         /// <exception cref="ApplicationStartException">Thrown when an exception is encountered while starting the application.</exception>
         internal static void Start(string[] args)
         {
-            logger.EnterMethod(xLogger.Params((object)args));
+            logger.EnterMethod(xLogger.Params((object)args), true);
             logger.Heading(LogLevel.Debug, "Startup");
 
             // this is the main try/catch for the application logic.  If an unhandled exception is thrown
@@ -295,7 +312,7 @@ namespace Symbiote.Core
             }
             finally
             {
-                logger.ExitMethod();
+                logger.ExitMethod(true);
             }
         }
 
@@ -305,13 +322,16 @@ namespace Symbiote.Core
         /// <exception cref="ApplicationStopException">Thrown when an exception is encountered while stopping the application.</exception>
         internal static void Stop()
         {
-            logger.EnterMethod();
+            Guid guid = logger.EnterMethod(true);
 
             try
             {
                 // stop the program manager.
                 logger.Heading(LogLevel.Debug, "Shutdown");
                 logger.Info($"{applicationManager.ProductName} is stopping...");
+                logger.Info("Performing shutdown tasks...");
+
+                Shutdown();
 
                 Result managerStopResult = applicationManager.Stop(StopType.Shutdown);
 
@@ -321,10 +341,6 @@ namespace Symbiote.Core
                 }
 
                 logger.Info($"{applicationManager.ManagerName} stopped.");
-                logger.Info("Performing shutdown tasks...");
-
-                Shutdown();
-
                 logger.Info($"{applicationManager.ProductName} stopped.");
             }
             catch (Exception ex)
@@ -334,7 +350,7 @@ namespace Symbiote.Core
             }
             finally
             {
-                logger.ExitMethod();
+                logger.ExitMethod(true);
             }
         }
 
@@ -347,7 +363,7 @@ namespace Symbiote.Core
         #region Private Static Methods
 
         /// <summary>
-        /// Miscellaneous startup tasks.
+        ///     Performs miscellaneous startup tasks.
         /// </summary>
         /// <exception cref="ApplicationStartupRoutineException">Thrown when an exception is encountered while performing the program startup routine.</exception>
         private static void Startup()
@@ -407,7 +423,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Miscellaneous shutdown tasks.
+        ///     Performs miscellaneous shutdown tasks.
         /// </summary>
         /// <exception cref="ApplicationShutdownRoutineException">Thrown when an exception is encountered while performing the program shutdown routine.</exception>
         private static void Shutdown()

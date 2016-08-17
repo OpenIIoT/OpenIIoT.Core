@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Test.Common.State
+namespace Symbiote.Core.Tests.Common.State
 {
     class StateTests
     {

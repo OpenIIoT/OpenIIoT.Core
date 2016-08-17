@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utility.OperationResult;
 
-namespace Symbiote.Core.Test.Mockups
+namespace Symbiote.Core.Tests.Mockups
 {
     public class MockManagerBroken : Manager, IStateful, IManager
     {

@@ -43,12 +43,19 @@ using System.ServiceProcess;
 namespace Symbiote.Core
 {
     /// <summary>
-    /// The Windows Service class for the application.
+    /// <para>
+    ///     The Windows Service class for the application.
+    /// </para>
+    /// <para>
+    ///     This class provides two methods, <see cref="OnStart(string[])"/>, and <see cref="OnStop()"/>.  These
+    ///     methods are invoked by the Windows service manager to start and stop the service application.  These 
+    ///     methods invoke <see cref="Program.Start(string[])"/> and <see cref="Program.Stop()"/>, respectively.
+    /// </para>
     /// </summary>
     partial class WindowsService : ServiceBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="WindowsService"/> class.
+        ///     Initializes a new instance of the <see cref="WindowsService"/> class.
         /// </summary>
         public WindowsService()
         {
@@ -56,7 +63,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Invoked when the service is started.
+        ///     Invoked when the service is started.
         /// </summary>
         /// <param name="args"></param>
         protected override void OnStart(string[] args)
@@ -68,7 +75,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Invoked when the service is stopped.
+        ///     Invoked when the service is stopped.
         /// </summary>
         protected override void OnStop()
         {

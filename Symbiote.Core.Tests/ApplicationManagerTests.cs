@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
       █   
-      █      ▄███████▄                                                                ▄▄▄▄███▄▄▄▄                                                             
-      █     ███    ███                                                              ▄██▀▀▀███▀▀▀██▄                                                           
-      █     ███    ███    █████  ██████     ▄████▄     █████   ▄█████     ▄▄██▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
-      █     ███    ███   ██  ██ ██    ██   ██    ▀    ██  ██   ██   ██  ▄█▀▀██▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
-      █   ▀█████████▀   ▄██▄▄█▀ ██    ██  ▄██        ▄██▄▄█▀   ██   ██  ██  ██  ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
-      █     ███        ▀███████ ██    ██ ▀▀██ ███▄  ▀███████ ▀████████  ██  ██  ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
-      █     ███          ██  ██ ██    ██   ██    ██   ██  ██   ██   ██  ██  ██  ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
-      █    ▄████▀        ██  ██  ██████    ██████▀    ██  ██   ██   █▀   █  ██  █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
+      █     ▄████████                                                                                        ▄▄▄▄███▄▄▄▄                                                             
+      █     ███    ███                                                                                     ▄██▀▀▀███▀▀▀██▄                                                           
+      █     ███    ███    █████▄    █████▄  █        █   ▄██████   ▄█████      ██     █   ██████  ██▄▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
+      █     ███    ███   ██   ██   ██   ██ ██       ██  ██    ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
+      █   ▀███████████   ██   ██   ██   ██ ██       ██▌ ██    ▀    ██   ██     ██  ▀ ██▌ ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
+      █     ███    ███ ▀██████▀  ▀██████▀  ██       ██  ██    ▄  ▀████████     ██    ██  ██    ██ ██   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
+      █     ███    ███   ██        ██      ██▌    ▄ ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
+      █     ███    █▀   ▄███▀     ▄███▀    ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
       █   
       █       ███                                           
       █   ▀█████████▄                                       
@@ -47,17 +47,17 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
-using Symbiote.Core.Test.Mockups;
+using Symbiote.Core.Tests.Mockups;
 using System;
 using Xunit;
 
-namespace Symbiote.Core.Test
+namespace Symbiote.Core.Tests
 {
     /// <summary>
-    /// Tests <see cref="ApplicationManager.GetInstance()"/> without having first instantiated the Manager.
+    ///     Tests <see cref="ApplicationManager.GetInstance()"/> without having first instantiated the Manager.
     /// </summary>
     /// <remarks>
-    /// Presented in a distinct class to enforce execution order.
+    ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
     public class ApplicationManagerGetInstanceTest
     {
@@ -69,10 +69,10 @@ namespace Symbiote.Core.Test
     }
 
     /// <summary>
-    /// Tests <see cref="ApplicationManager.GetInstance()"/> after first invoking <see cref="ApplicationManager.Instantiate(Type[])"/>.
+    ///     Tests <see cref="ApplicationManager.GetInstance()"/> after first invoking <see cref="ApplicationManager.Instantiate(Type[])"/>.
     /// </summary>
     /// <remarks>
-    /// Presented in a distinct class to enforce execution order.
+    ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
     public class ApplicationManagerInstantiateAndGetInstanceTest
     {
@@ -87,10 +87,10 @@ namespace Symbiote.Core.Test
     }
 
     /// <summary>
-    /// Tests successive invocations of <see cref="ApplicationManager.Instantiate(Type[])"/>.
+    ///     Tests successive invocations of <see cref="ApplicationManager.Instantiate(Type[])"/>.
     /// </summary>
     /// <remarks>
-    /// Presented in a distinct class to enforce execution order.
+    ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
     public class ApplicationManagerInstantiateTwiceTest
     {
@@ -105,7 +105,7 @@ namespace Symbiote.Core.Test
     }
 
     /// <summary>
-    /// Unit tests for the ApplicationManager class.
+    ///     Unit tests for the ApplicationManager class.
     /// </summary>
     public class ApplicationManagerTests
     {
@@ -116,7 +116,7 @@ namespace Symbiote.Core.Test
         }
 
         /// <summary>
-        /// Tests instantiation of the ApplicationManager with a null Type array.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a null Type array.
         /// </summary>
         [Fact]
         public void TestInstantiateWithNull()
@@ -125,7 +125,7 @@ namespace Symbiote.Core.Test
         }
 
         /// <summary>
-        /// Tests instantiation of the ApplicationManager with an empty Type array.
+        /// Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
         /// </summary>
         [Fact]
         public void TestInstantiateWithEmpty()
@@ -134,7 +134,7 @@ namespace Symbiote.Core.Test
         }
 
         /// <summary>
-        /// Tests instantiation of the ApplicationManager with a Type array containing a Type not implementing IManager.
+        /// Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
         /// </summary>
         [Fact]
         public void TestInstantiateWithNonIManager()
@@ -143,8 +143,8 @@ namespace Symbiote.Core.Test
         }
 
         /// <summary>
-        ///     Tests instantiation of the ApplicationManager with a Type array containing an instance of IManager with the 
-        ///     Setup() method returning a null Result/
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing an instance of IManager with the 
+        ///     Setup() method returning a null Result.
         /// </summary>
         [Fact]
         public void TestInstantiateWithBrokenSetupMethod()
@@ -153,7 +153,7 @@ namespace Symbiote.Core.Test
         }
 
         /// <summary>
-        /// Tests instantiation of the ApplicationManager with a Type array containing a valid, functioning IManager instance.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a valid, functioning IManager instance.
         /// </summary>
         [Fact]
         public void TestInstantiateWithValidIManager()

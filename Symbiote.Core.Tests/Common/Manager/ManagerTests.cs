@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Symbiote.Core.Test.Common.Manager
+namespace Symbiote.Core.Tests.Common.Manager
 {
     class ManagerTests
     {
