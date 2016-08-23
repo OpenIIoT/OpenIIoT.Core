@@ -9,7 +9,7 @@ Project("{7CF6DF6D-3B04-46F8-A40B-537D21BCA0B4}") = "Symbiote.Documentation", "S
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Example", "Symbiote.Plugin.Connector.Example\Symbiote.Plugin.Connector.Example.csproj", "{7BEF95DB-C014-46D2-9D84-7B3DA66E2608}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Simulation", "Symbiote.Plugin.Connector.Simulator\Symbiote.Plugin.Connector.Simulation.csproj", "{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Connector.Simulation", "Symbiote.Plugin.Connector.Simulation\Symbiote.Plugin.Connector.Simulation.csproj", "{F9F78672-5688-46E0-99F5-BC75CB3BBEE0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Plugin.Endpoint.Example", "Symbiote.Plugin.Endpoint.Example\Symbiote.Plugin.Endpoint.Example.csproj", "{5DA85DD0-B058-459F-AE89-EFE972CB7E34}"
 EndProject

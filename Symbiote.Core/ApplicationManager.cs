@@ -45,11 +45,12 @@ using System.Reflection;
 using NLog;
 using NLog.xLogger;
 using Utility.OperationResult;
+using Symbiote.Core.Event;
 
 namespace Symbiote.Core
 {
     /// <summary>
-    /// Represents the Application and is responsible for managing the various subsystem Managers.
+    ///     Represents the Application and is responsible for managing the various subsystem Managers.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -62,7 +63,7 @@ namespace Symbiote.Core
     ///     Managers can be retrieved using <see cref="GetManager{T}()"/>.
     /// </para>
     /// </remarks>
-    public class ApplicationManager : Manager, IStateful, IManager, IApplicationManager
+    public class ApplicationManager : Manager, IDisposable, IStateful, IEventProvider, IManager, IApplicationManager
     {
         #region Fields
 
@@ -145,6 +146,12 @@ namespace Symbiote.Core
         #region IStateful Properties
 
         //// See the Manager class for the IStateful properties for this class.
+
+        #endregion
+
+        #region IEventProvider Properties
+
+        //// See the Manager class for the IEventProvider properties for this class.
 
         #endregion
 
@@ -307,16 +314,6 @@ namespace Symbiote.Core
         #region Protected Methods
 
         #region Protected Instance Methods
-
-        /// <summary>
-        ///     Executed upon instantiation of all program Managers.  Not implemented in this class.
-        /// </summary>
-        /// <param name="managerInstances"></param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Setup(List<IManager> managerInstances)
-        {
-            return new Result();
-        }
 
         /// <summary>
         ///     Executed upon startup of the Manager.  Starts all application managers.
@@ -769,31 +766,11 @@ namespace Symbiote.Core
             return (T)manager;
         }
 
-        ///// <summary>
-        ///// Returns a list of Manager Types for which the specified dependency dictionary contains an entry for the specified Manager Type.
-        ///// </summary>
-        ///// <typeparam name="T">The Manager Type for which the dependent Types are to be returned.</typeparam>
-        ///// <returns>The list of Manager Types for which the ManagerDependencies dictionary contains an entry for the specified Manager Type.</returns>
-        //private List<Type> GetManagerDependentTypes<T>() where T : IManager
-        //{
-        //    List<Type> retVal = new List<Type>();
-
-        //    foreach (Type key in ManagerDependencies.Keys)
-        //    {
-        //        if (ManagerDependencies[key].Where(t => t.IsAssignableFrom(typeof(T))).Count() > 0)
-        //        {
-        //            retVal.Add(key);
-        //        }
-        //    }
-
-        //    return retVal;
-        //}
-
         /// <summary>
-        /// Starts each Manager contained within the specified list of Manager instances.
+        ///     Starts each Manager contained within the specified list of Manager instances.
         /// </summary>
         /// <remarks>
-        /// Does not Start the ApplicationManager instance.
+        ///     Does not Start the ApplicationManager instance.
         /// </remarks>
         /// <returns>A Result containing the result of the operation.</returns>
         private Result StartManagers()

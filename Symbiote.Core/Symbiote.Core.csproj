@@ -37,7 +37,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
     <DocumentationFile>bin\Debug\Documentation.XML</DocumentationFile>
   </PropertyGroup>
@@ -173,6 +173,7 @@
     <Compile Include="Common\Item\IItem.cs" />
     <Compile Include="Common\Manager\IManager.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
+    <Compile Include="Common\Manager\ManagerExceptions.cs" />
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\IStateful.cs" />

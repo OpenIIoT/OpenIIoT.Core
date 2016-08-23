@@ -56,6 +56,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur at the program level.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ApplicationException : Exception
     {
         /// <summary>
@@ -87,6 +88,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur while parsing and applying command line arguments.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ApplicationArgumentException : ApplicationException
     {
         /// <summary>
@@ -118,6 +120,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur while initializing the Application.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ApplicationInitializationException : ApplicationException
     {
         /// <summary>
@@ -149,6 +152,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur while starting the Application.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ApplicationStartException : ApplicationException
     {
         /// <summary>
@@ -180,6 +184,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur while stopping the Application.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ApplicationStopException : ApplicationException
     {
         /// <summary>
@@ -211,6 +216,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur while performing the Application startup routine.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ApplicationStartupRoutineException : ApplicationException
     {
         /// <summary>
@@ -242,6 +248,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur while performing the Application shutdown routine.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ApplicationShutdownRoutineException : ApplicationException
     {
         /// <summary>
@@ -273,6 +280,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur within the ApplicationManager class.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ApplicationManagerException : Exception
     {
         /// <summary>
@@ -301,9 +309,10 @@ namespace Symbiote.Core
     }
 
     /// <summary>
-    ///     Represents errors that occur Represents errors that occur when the type list argument for the ApplicationManager constructor is malformed.
+    ///     Represents errors that occur when the type list argument for the ApplicationManager constructor is malformed.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ManagerTypeListException : ApplicationManagerException
     {
         /// <summary>
@@ -332,9 +341,10 @@ namespace Symbiote.Core
     }
 
     /// <summary>
-    ///     Represents errors that occur Represents errors that occur when the instantiation of a Manager returns an abnormal result.
+    ///     Represents errors that occur when the instantiation of a Manager returns an abnormal result.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ManagerInstantiationException : ApplicationManagerException
     {
         /// <summary>
@@ -363,9 +373,10 @@ namespace Symbiote.Core
     }
 
     /// <summary>
-    ///     Represents errors that occur Represents errors that occur when the setup of a Manager returns an abnormal result.
+    ///     Represents errors that occur when the setup of a Manager returns an abnormal result.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ManagerSetupException : ApplicationManagerException
     {
         /// <summary>
@@ -394,9 +405,10 @@ namespace Symbiote.Core
     }
 
     /// <summary>
-    ///     Represents errors that occur Represents errors that occur when a Manager instance is requested but the Manager has not yet been initialized.
+    ///     Represents errors that occur when a Manager instance is requested but the Manager has not yet been initialized.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
     public class ManagerNotInitializedException : ApplicationManagerException
     {
         /// <summary>
