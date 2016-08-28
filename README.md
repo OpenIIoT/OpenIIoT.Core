@@ -1,6 +1,4 @@
-[![Symbiote Logo](http://symbiote.io/images/symbiote.png = 48x48)
-
-# Symbiote
+<h1><img src="http://symbiote.io/images/symbiote.png" width=36 height=36/>Symbiote</h1>
 
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/jpdillingham/Symbiote/blob/master/LICENSE)
 
