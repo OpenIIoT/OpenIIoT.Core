@@ -77,7 +77,7 @@ namespace Symbiote.Core.Model
             {
                 rightSide = (ModelManagerConfigurationItem)obj;
             }
-            catch (InvalidCastException ex)
+            catch
             {
                 return false;
             }

@@ -229,7 +229,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Restarts the Maanager.
+        ///     Restarts the Manager.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>

@@ -51,12 +51,12 @@ namespace Symbiote.Core
         #region Properties
 
         /// <summary>
-        ///     Gets the name of the product, retrieved from AssemblyInfo.cs.
+        ///     Gets the name of the product; retrieved from AssemblyInfo.cs.
         /// </summary>
         string ProductName { get; }
 
         /// <summary>
-        ///     Gets the version of the product, retrieved from AssemblyInfo.cs.
+        ///     Gets the version of the product; retrieved from AssemblyInfo.cs.
         /// </summary>
         Version ProductVersion { get; }
 
