@@ -44,8 +44,8 @@ using System.Linq;
 using System.Reflection;
 using NLog;
 using NLog.xLogger;
-using Utility.OperationResult;
 using Symbiote.Core.Event;
+using Utility.OperationResult;
 
 namespace Symbiote.Core
 {
@@ -54,16 +54,12 @@ namespace Symbiote.Core
     /// </summary>
     /// <remarks>
     /// <para>
-    ///     This class is a Singleton, however the static method which invokes the private constructor is itself private and is invoked via reflection.  This is 
-    ///     by design so that Plugins and scripts are not easily capable of invoking the method; the preference is that dependencies are injected rather than 
-    ///     retrieved from the Service Locator.
-    /// </para>
-    /// <para>
-    ///     If dependency injection isn't feasible the ApplicationManager instance can be retrieved using the <see cref="GetInstance()"/> method, and the individual
-    ///     Managers can be retrieved using <see cref="GetManager{T}()"/>.
+    ///     This class is a singleton and is therefore restricted to one instance for the application.  External classes may invoke the <see cref="Instantiate(Type[])"/> 
+    ///     method to retrieve the instance, however they should not.  If the instance is required in a static class or method, or anywhere else where dependency injection
+    ///     is not available, the <see cref="GetInstance()"/> method should be used to retrieve the instance.
     /// </para>
     /// </remarks>
-    public class ApplicationManager : Manager, IDisposable, IStateful, IEventProvider, IManager, IApplicationManager
+    public class ApplicationManager : Manager, IStateful, IEventProvider, IManager, IApplicationManager
     {
         #region Fields
 

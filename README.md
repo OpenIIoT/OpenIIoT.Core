@@ -4,7 +4,7 @@
 
 ## About
 
-Symbiote is a cross-platform (via Mono) application manager written in C#.  The code in this repository is a work in progress and has not yet reached an Alpha version.
+Symbiote is a cross-platform (via Mono) application platform written in C#.  The code in this repository is a work in progress and has not yet reached an Alpha version.
 
 Constructive feedback/criticism is greatly appreciated but contributions to this repository will not be accepted at this time.  
 
