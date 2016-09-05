@@ -50,10 +50,12 @@ Each section must be enclosed in a code region corresponding to the section cont
 The following rules must be followed:
 
 * No public fields (use properties).
+* No underscore prefix for private fields.
 * No interfaces within classes (use a separate file).
 * No structs (create a class).
+* No using the "var" keyword (explicitly define all variable types).
 
-### General Rules
+### Firm Guidelines
 
 The following rules should be followed, with few exceptions:
 
@@ -61,7 +63,7 @@ The following rules should be followed, with few exceptions:
 * Avoid enumerations within classes (preference is a separate file).
 * Avoid nested classes (preference is a separate file).
 
-### Composition
+## Composition
 
 Classes must explicitly list all interfaces implemented, even if those interfaces are implemented by inherited classes.  Interfaces must be listed in order of "lowest" to "highest" with respect
 to the postion in the inheritance heirarchy of the implementing class.  Interfaces implemented at the same level may appear in any order.
@@ -72,4 +74,25 @@ one of the following examples, depending on whether it is a property or method:
 
 ```//// See the <implementing> class for the I<interface> <properties|implementation> for this class.```
 
+## Exceptions
 
+Only exceptions which should stop the application may be thrown explicitly.  Thrown exceptions should attempt to use a framework defined exception type at the site of the exception, if one is applicable.  If not, custom
+exceptions must be created and stored in a single file named ```<namespace|subject>Exceptions.cs``` where the containing namespace or subject of the exceptions is contained within the name.  For example, exceptions relating to the application Model
+must store all model related exceptions in ```ModelExceptions.cs```.
+
+All exception classes must be contained within the file.  Suppress StyleCop rule SA1402 to eliminate warnings.  The first exception class must extend ```Exception``` and must match the filename; e.g. the first exception class
+within ```ModelExceptions.cs``` would be ```ModelException```.  All further exceptions must extend this class.
+
+Where possible, exceptions should be re-thrown as inner exceptions at each level back to Main().  For example, if an exception is generated while loading the configuration file during startup, the exception heirarchy might look like the following:
+
+* ApplicationStartException
+..* ConfigurationManagerStartException
+....* ConfigurationLoadException
+......* JsonSerializationException
+
+Each level of the exception hierarchy should describe the general task that was being carried out when the exception was thrown; e.g. exceptions thrown while loading the configuration file should, at the level above the exception site,
+re-throw the lower exception as a ```ConfigurationLoadException``` with the initial exception as an inner exception.
+
+This strategy should aid in debugging and support as the application scales.
+
+## Operation Results
