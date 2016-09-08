@@ -1,18 +1,11 @@
 # Style Rules
-## File Header
-
-All files must contain the standard file header at the top of the file.  The file header must:
-
-* Match the general style of the ```Program.cs``` file header.
-* Contain the name of the class/interface, generated with the BigFont tool using Graffiti font and size large for uppercase characters and medium for lower.
-* Contain a brief summary of the class or interface.  This must match the first paragraph of the summary tag for the xml documentation for the class or interface.
-* Contain the GNU AGPL v3 license introduction.
-
 ## Namespaces
 
 The root namespace of the application must remain ```Symbiote.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
 folder of the same name.  All namespaces are to be in Pascal Case.  Conversely, all project folders must contain code with a namespace corresponding 
 to the folder name.  The only exception is the ```Common``` folder in which miscellanous files within the ```Symbiote.Core``` namespace are stored.
+
+Plugin namespaces must begin with ```Symbiote.Plugin```.  Currently the third tuple of the namespace must match the plugin type, e.g. ```Symbiote.Plugin.Connector```, however this is subject to change.  The final tuple must match the plugin name, however, regardless of the presense of the plugin type.
 
 ## StyleCop
 
@@ -23,6 +16,15 @@ project should be copied to projects to ensure consistency.  The default StyleCo
 * SA1200: UsingDirectivesMustBePlacedWithinNamespace (conflicts with the management (adds, sorting) functionality of Visual Studio)
 * SA1101: PrefixLocalCallsWithThis (ridiculous rule in most cases, feel free to use the prefix to disambiguate where appropriate)
 * SA1126: PrefixCallsCorrectly (deprecated and impossible to satisfy in some cases)
+
+## File Header
+
+All files must contain the standard file header at the top of the file.  The file header must:
+
+* Match the general style of the ```Program.cs``` file header.
+* Contain the name of the class/interface, generated with the BigFont tool using Graffiti font and size large for uppercase characters and medium for lower.
+* Contain a brief summary of the class or interface.  This must match the first paragraph of the summary tag for the xml documentation for the class or interface.
+* Contain the GNU AGPL v3 license introduction.
 
 ## XML Documentation
 
