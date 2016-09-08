@@ -45,7 +45,9 @@ Any non-trivial method which has been specifically designed or otherwise known t
 
 The contents of classes and interfaces must be organized according to StyleCop rules, which are described [here](http://stackoverflow.com/questions/150479/order-of-items-in-classes-fields-properties-constructors-methods/310967#310967).
 
-Each section must be enclosed in a code region corresponding to the section contents, in Pascal Case, with spaces between words.  E.g. "Public Static Methods".
+Each section must be enclosed in a code region corresponding to the section contents, in Pascal Case, with spaces between words.  E.g. "Public Static Methods".  The Event Handlers region must be used to identify event handlers.  All event handlers must be implemented as private instance methods.
+
+Interface implementations are subject to additional rules; see the Composition section below.
 
 ### Concrete Rules
 
