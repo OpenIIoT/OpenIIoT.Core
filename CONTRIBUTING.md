@@ -1,4 +1,4 @@
-# Style Rules
+# Coding Standards and Styling Rules and Guidelines
 ## Namespaces
 
 The root namespace of the application must remain ```Symbiote.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
@@ -102,3 +102,7 @@ re-throw the lower exception as a ```ConfigurationLoadException``` with the init
 This strategy should aid in debugging and support as the application scales.
 
 ## Operation Results
+
+Methods which need to return status information or errors, other than fatal exceptions, must have a return type of [Operation Result](https://github.com/jpdillingham/OperationResult).  Methods returning values must use the generic variant ```Result<T>```.
+
+The usage of this class allows the application to gracefully handle recoverable errors without the expense of exceptions, and eliminates the need for sentinal values in return types.
