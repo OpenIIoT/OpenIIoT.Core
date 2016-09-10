@@ -89,10 +89,10 @@ within ```ModelExceptions.cs``` would be ```ModelException```.  All further exce
 
 Where possible, exceptions should be re-thrown as inner exceptions at each level back to Main().  For example, if an exception is generated while loading the configuration file during startup, the exception heirarchy might look like the following:
 
-* ApplicationStartException
-..* ConfigurationManagerStartException
-....* ConfigurationLoadException
-......* JsonSerializationException
+ApplicationStartException
+ ? ConfigurationManagerStartException
+    ? ConfigurationLoadException
+	   ? JsonSerializationException
 
 Each level of the exception hierarchy should describe the general task that was being carried out when the exception was thrown; e.g. exceptions thrown while loading the configuration file should, at the level above the exception site,
 re-throw the lower exception as a ```ConfigurationLoadException``` with the initial exception as an inner exception.
