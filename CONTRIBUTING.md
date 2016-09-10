@@ -1,5 +1,7 @@
-# Coding Standards and Styling Rules and Guidelines
-## Namespaces
+# Project Rules and Guidelines
+
+## Coding Standards and Styling Rules and Guidelines
+### Namespaces
 
 The root namespace of the application must remain ```Symbiote.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
 folder of the same name.  All namespaces are to be in Pascal Case.  Conversely, all project folders must contain code with a namespace corresponding 
@@ -7,7 +9,7 @@ to the folder name.  The only exception is the ```Common``` folder in which misc
 
 Plugin namespaces must begin with ```Symbiote.Plugin```.  Currently the third tuple of the namespace must match the plugin type, e.g. ```Symbiote.Plugin.Connector```, however this is subject to change.  The final tuple must match the plugin name, however, regardless of the presense of the plugin type.
 
-## StyleCop
+### StyleCop
 
 StyleCop must be used to ensure compliance with generally accepted code formatting and organizational standards.  The ```Settings.StyleCop``` file from the ```Symbiote.Core```
 project should be copied to projects to ensure consistency.  The default StyleCop rules are used with the following exceptions:
@@ -17,7 +19,7 @@ project should be copied to projects to ensure consistency.  The default StyleCo
 * SA1101: PrefixLocalCallsWithThis (ridiculous rule in most cases, feel free to use the prefix to disambiguate where appropriate)
 * SA1126: PrefixCallsCorrectly (deprecated and impossible to satisfy in some cases)
 
-## File Header
+### File Header
 
 All files must contain the standard file header at the top of the file.  The file header must:
 
@@ -26,7 +28,7 @@ All files must contain the standard file header at the top of the file.  The fil
 * Contain a brief summary of the class or interface.  This must match the first paragraph of the summary tag for the xml documentation for the class or interface.
 * Contain the GNU AGPL v3 license introduction.
 
-## XML Documentation
+### XML Documentation
 
 XML documentation must be provided for all code elements.  
 
@@ -41,7 +43,7 @@ Non-trivial code and classes must be documented verbosely and should include rat
 
 Any non-trivial method which has been specifically designed or otherwise known to be thread safe must use the ```<threadsafety>``` tag.  Any method lacking this tag is assumed to be thread un-safe.
 
-## General Code Standards
+### General Code Standards
 
 The contents of classes and interfaces must be organized according to StyleCop rules, which are described [here](http://stackoverflow.com/questions/150479/order-of-items-in-classes-fields-properties-constructors-methods/310967#310967).
 
@@ -49,7 +51,7 @@ Each section must be enclosed in a code region corresponding to the section cont
 
 Interface implementations are subject to additional rules; see the Composition section below.
 
-### Concrete Rules
+#### Concrete Rules
 
 The following rules must be followed:
 
@@ -59,7 +61,7 @@ The following rules must be followed:
 * No structs (create a class).
 * No using the "var" keyword (explicitly define all variable types).
 
-### Firm Guidelines
+#### Firm Guidelines
 
 The following rules should be followed, with few exceptions:
 
@@ -67,7 +69,7 @@ The following rules should be followed, with few exceptions:
 * Avoid enumerations within classes (preference is a separate file).
 * Avoid nested classes (preference is a separate file).
 
-## Composition
+### Composition
 
 Classes must explicitly list all interfaces implemented, even if those interfaces are implemented by inherited classes.  Interfaces must be listed in order of "lowest" to "highest" with respect
 to the postion in the inheritance heirarchy of the implementing class.  Interfaces implemented at the same level may appear in any order.
@@ -78,7 +80,7 @@ one of the following examples, depending on whether it is a property or method:
 
 ```//// See the <implementing> class for the I<interface> <properties|implementation> for this class.```
 
-## Exceptions
+### Exceptions
 
 Only exceptions which should stop the application may be thrown explicitly.  Thrown exceptions should attempt to use a framework defined exception type at the site of the exception, if one is applicable.  If not, custom
 exceptions must be created and stored in a single file named ```<namespace|subject>Exceptions.cs``` where the containing namespace or subject of the exceptions is contained within the name.  For example, exceptions relating to the application Model
@@ -101,7 +103,7 @@ re-throw the lower exception as a ```ConfigurationLoadException``` with the init
 
 This strategy should aid in debugging and support as the application scales.
 
-## Operation Results
+### Operation Results
 
 Methods which need to return status information or errors, other than fatal exceptions, must have a return type of [Operation Result](https://github.com/jpdillingham/OperationResult).  Methods returning values must use the generic variant ```Result<T>```.
 
