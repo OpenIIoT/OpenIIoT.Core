@@ -1,6 +1,6 @@
 # Project Rules and Guidelines
 
-## Coding Standards and Styling Rules and Guidelines
+## Coding Standards and Styling
 ### Namespaces
 
 The root namespace of the application must remain ```Symbiote.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
