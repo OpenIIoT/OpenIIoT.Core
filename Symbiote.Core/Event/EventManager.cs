@@ -46,6 +46,7 @@ using NLog;
 using Symbiote.Core.Configuration;
 using NLog.xLogger;
 using Utility.OperationResult;
+using System.Collections.Immutable;
 
 namespace Symbiote.Core.Event
 {
@@ -335,28 +336,25 @@ namespace Symbiote.Core.Event
         #region Protected Instance Methods
 
         /// <summary>
-        /// Executed upon instantiation of all program Managers.  Registers all IManagers in the specified list implementing IEventProvider.
+        /// <para>
+        ///     Executed upon instantiation of all program Managers.  
+        /// </para>
+        /// <para>
+        ///     Registers all IManagers in the specified list implementing IEventProvider.
+        /// </para>
         /// </summary>
-        /// <param name="managerInstances"></param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Setup(List<IManager> managerInstances)
+        protected override void Setup()
         {
             logger.EnterMethod();
             logger.Debug("Performing Setup for '" + GetType().Name + "'...");
-            Result retVal = new Result();
 
-            if (managerInstances == default(List<IManager>) || managerInstances.Count() == 0)
-            {
-                return retVal.AddError("A null or empty list of Managers was provided; Setup cannot be performed.");
-            }
+            ImmutableList<IManager> managerInstances = Dependency<IApplicationManager>().GetManagers();
 
             // register Managers with the Event Manager
             logger.Info("Registering Managers with the Event Manager...");
-            retVal.Incorporate(RegisterProviders(managerInstances.ConvertAll<object>(o => (object)o)));
+            RegisterProviders(managerInstances.ToList().ConvertAll<object>(o => (object)o));
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal);
-            return retVal;
+            logger.ExitMethod();
         }
 
         /// <summary>

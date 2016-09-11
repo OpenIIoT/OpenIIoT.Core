@@ -120,16 +120,6 @@ namespace Symbiote.Core.Model
 
         #region Instance Methods
 
-        /// <summary>
-        /// Executed upon instantiation of all program Managers.  Not implemented.
-        /// </summary>
-        /// <param name="managerInstances"></param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Setup(List<IManager> managerInstances)
-        {
-            return new Result();
-        }
-
         protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);

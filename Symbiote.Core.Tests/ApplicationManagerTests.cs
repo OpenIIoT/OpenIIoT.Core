@@ -105,6 +105,25 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
+    ///     Tests invocation of <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a broken <see cref="Manager.Setup"/> method.
+    /// </summary>
+    /// <remarks>
+    ///     Presented in a distinct class to enforce execution order.
+    /// </remarks>
+    public class ApplicationManagerBrokenSetupTest
+    {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing an instance of IManager with the 
+        ///     Setup() method returning a null Result.
+        /// </summary>
+        [Fact]
+        public void TestInstantiateWithBrokenSetupMethod()
+        {
+            Assert.Throws<ManagerSetupException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
+        }
+    }
+
+    /// <summary>
     ///     Unit tests for the ApplicationManager class.
     /// </summary>
     public class ApplicationManagerTests
@@ -140,16 +159,6 @@ namespace Symbiote.Core.Tests
         public void TestInstantiateWithNonIManager()
         {
             Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { typeof(int) }));
-        }
-
-        /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing an instance of IManager with the 
-        ///     Setup() method returning a null Result.
-        /// </summary>
-        [Fact]
-        public void TestInstantiateWithBrokenSetupMethod()
-        {
-            Assert.Throws<ManagerSetupException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
         }
 
         /// <summary>

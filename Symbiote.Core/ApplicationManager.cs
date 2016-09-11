@@ -40,6 +40,7 @@
                                                                                                    ▀▀                            */
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Reflection;
 using NLog;
@@ -82,6 +83,8 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="managerTypes">The array of Manager Types for the application.</param>
         /// <exception cref="ManagerTypeListException">Thrown when the type list argument for the ApplicationManager constructor is malformed.</exception>
+        /// <exception cref="ManagerInstantiationException">Thrown when an error is encountered while instantiating the specified Managers.</exception>
+        /// <exception cref="ManagerSetupException">Thrown when an error is encountered while performing setup of the instantiated Managers.</exception> 
         private ApplicationManager(Type[] managerTypes)
         {
             // force the parent logger to this instance due to the way GetCurrentClassLogger works
@@ -89,44 +92,28 @@ namespace Symbiote.Core
 
             Guid guid = logger.EnterMethod(xLogger.Params((object)managerTypes), true);
 
-            // validate input.  ensure the list of types is not empty and that all types implement IManager.
-            if (managerTypes == default(Type[]) || managerTypes.Count() == 0)
-            {
-                throw new ManagerTypeListException("The supplied list of Types must contain at least one Type.");
-            }
-            else
-            {
-                // ensure all types implement IManager.
-                if (managerTypes.Where(t => t.GetInterfaces().Contains(typeof(IManager))).Count() != managerTypes.Count())
-                {
-                    throw new ManagerTypeListException("Each Type in the supplied list of Types must implement the IManager interface.");
-                }
-            }
-
             // initialize properties
             ManagerName = "Application Manager";
             ManagerTypes = managerTypes.ToList();
             ManagerInstances = new List<IManager>();
             ManagerDependencies = new Dictionary<Type, List<Type>>();
 
-            // register the ApplicationManager
+            // register the ApplicationManager with itself
             RegisterManager<IApplicationManager>(this);
             
             // create an instance of each Manager Type in the ManagerTypes list
             logger.Info("Instantiating Managers...");
-            InstantiateManagers();
+
+            InstantiateManagers(); // throws ManagerInstantiationException
+
             logger.Info("Managers instantiated successfully.");
+
+            // invoke the setup method for each manager
             logger.Info("Performing Manager Setup...");
 
-            foreach (IManager manager in ManagerInstances)
-            {
-                Result setupResult = SetupManager(manager);
+            SetupManagers(); // throws ManagerSetupException
 
-                if (setupResult.ResultCode == ResultCode.Failure)
-                {
-                    throw new ManagerSetupException("Error setting up one or more Managers: " + setupResult.GetLastError());
-                }
-            }
+            logger.Info("Managers setup successfully.");
 
             ChangeState(State.Initialized);
 
@@ -247,6 +234,20 @@ namespace Symbiote.Core
         /// <returns>The singleton instance of the ApplicationManager</returns>
         public static ApplicationManager Instantiate(Type[] managers)
         {
+            // validate input.  ensure the list of types is not empty and that all types implement IManager.
+            if (managers == default(Type[]) || managers.Count() == 0)
+            {
+                throw new ManagerTypeListException("The supplied list of Types must contain at least one Type.");
+            }
+            else
+            {
+                // ensure all types implement IManager.
+                if (managers.Where(t => t.GetInterfaces().Contains(typeof(IManager))).Count() != managers.Count())
+                {
+                    throw new ManagerTypeListException("Each Type in the supplied list of Types must implement the IManager interface.");
+                }
+            }
+
             if (instance == null)
             {
                 instance = new ApplicationManager(managers);
@@ -299,6 +300,15 @@ namespace Symbiote.Core
         public T GetManager<T>() where T : IManager
         {
             return ManagerInstances.OfType<T>().FirstOrDefault();
+        }
+
+        /// <summary>
+        ///     Returns an immutable list of Managers.
+        /// </summary>
+        /// <returns>The immutable list of Managers.</returns>
+        public ImmutableList<IManager> GetManagers()
+        {
+            return ManagerInstances.ToImmutableList();
         }
 
         #endregion
@@ -370,232 +380,9 @@ namespace Symbiote.Core
         #endregion
 
         /// <summary>
-        /// Starts the specified IManager instance
+        ///     Iterates over the list of <see cref="IManager"/> Types and instantiates each in the order in which they are represented in the list.
         /// </summary>
-        /// <param name="manager">The IManager instance to start.</param>
-        /// <returns>A Result containing the result of the operation and the specified IManager instance.</returns>
-        private Result<IManager> StartManager(IManager manager)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
-            logger.Debug("Starting " + manager.GetType().Name + "...");
-            Result<IManager> retVal = new Result<IManager>();
-
-            // invoke the Start() method on the specified manager
-            Result startResult = manager.Start();
-
-            // if the manager fails to start, throw an exception and halt the program
-            if (startResult.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError("Failed to start Manager '" + manager.GetType().Name + "'.");
-            }
-
-            retVal.ReturnValue = manager;
-            retVal.Incorporate(startResult);
-
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                logger.Debug("Successfully started " + manager.GetType().Name + ".");
-            }
-            else
-            {
-                logger.Debug("Failed to start " + manager.GetType().Name + ": " + retVal.GetLastError());
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Stops the specified IManager instance.
-        /// </summary>
-        /// <param name="manager">The IManager instance to stop.</param>
-        /// <param name="stopType">The type of stoppage.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result StopManager(IManager manager, StopType stopType = StopType.Stop)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(manager, stopType), true);
-
-            logger.Debug("Stopping " + manager.GetType().Name + "...");
-
-            Result retVal = manager.Stop(stopType);
-
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError("Failed to stop " + manager.GetType().Name + "." + retVal.GetLastError());
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Invokes the Setup method on the specified instance of IManager.
-        /// </summary>
-        /// <param name="manager">The IManager instance for which to invoke Setup().</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        /// <exception cref="MissingMethodException">Thrown when the 'Setup' method within the specified IManager instance can not be found.</exception>
-        /// <exception cref="ManagerSetupException">Thrown when the 'Setup' method within the specified IManager returns an empty Result.</exception>
-        private Result SetupManager(IManager manager)
-        {
-            logger.EnterMethod();
-            logger.Debug("Performing Setup on Manager '" + manager.GetType() + "'...");
-
-            MethodInfo method = manager.GetType().GetMethod("Setup", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            if (method == default(MethodInfo))
-            {
-                throw new MissingMethodException("Unable to find method 'Setup()' in Type '" + manager.GetType() + "'.");
-            }
-
-            Result retVal = (Result)method.Invoke(manager, new[] { ManagerInstances });
-
-            if (retVal == default(Result))
-            {
-                throw new ManagerSetupException("The 'Setup()' method invocation for '" + manager.GetType() + "' returned no result.");
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Returns true if the specified Manager Type is registered, false otherwise.
-        /// </summary>
-        /// <typeparam name="T">The Manager Type to check.</typeparam>
-        /// <returns>True if the specified Manager Type is registered, false otherwise.</returns>
-        private bool IsRegistered<T>() where T : IManager
-        {
-            return ManagerInstances.OfType<T>().Count() > 0;
-        }
-
-        /// <summary>
-        /// Retrieves the list of <see cref="Type"/>s corresponding to the Managers on which the specified Manager Type depends.
-        /// </summary>
-        /// <remarks>
-        ///     Uses reflection to retrieve the parameters for the constructor of the specified Type.  To dictate dependencies for a 
-        ///     Manager, simply declare the dependent Types as parameters on the 
-        /// </remarks>
-        /// <typeparam name="T">The Type of the Manager for which the dependencies are to be returned.</typeparam>
-        /// <returns>A List of dependency Types.</returns>
-        /// <exception cref="Exception">Thrown when an exception is caught while retrieving the Instantiate() parameters for the specified Type.</exception>
-        private List<Type> GetManagerDependencies<T>() where T : IManager
-        {
-            logger.EnterMethod(xLogger.TypeParams(typeof(T)));
-            logger.Trace("Retrieving dependencies for '" + typeof(T).Name + "'...");
-
-            List<Type> retVal = new List<Type>();
-
-            // the ApplicationManager has no dependencies (that we need to track).
-            if (typeof(T) == typeof(IApplicationManager))
-            {
-                return retVal;
-            }
-
-            try
-            {
-                // retrieve the list of parameters for the Instantiate() method of the specified Manager Type and add the type of each
-                // to the return value list
-                ParameterInfo[] parameters = typeof(T).GetMethod("Instantiate", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static).GetParameters();
-
-                foreach (ParameterInfo p in parameters)
-                {
-                    retVal.Add(p.ParameterType);
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Exception(ex);
-                throw new Exception("Failed to retrieve dependencies for '" + typeof(T).Name + "': " + ex.Message, ex);
-            }
-
-            logger.Trace("Retrieved " + retVal.Count() + " dependenc" + (retVal.Count() == 1 ? "y" : "ies") + ".");
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        /// Returns a list of IManager instances corresponding to the Manager Types upon which the specified Manager is dependent.
-        /// </summary>
-        /// <typeparam name="T">The Manager Type for which the dependencies are to be resolved.</typeparam>
-        /// <returns>A list of IManager instances corresponding to the Manager Types upon which the specified Manager is dependent.</returns>
-        /// <exception cref="MissingMethodException">Thrown when the 'GetManager()' method can not be found.</exception>
-        /// <exception cref="Exception">Thrown when the 'GetManagerDependencies()' method returns a null or empty list.</exception>
-        /// <exception cref="Exception">Thrown when the invocation of the 'GetManager{T}()' method fails.  See inner exception for details.</exception>
-        /// <exception cref="Exception">Thrown when the invocation of the 'GetManager{T}()' method returns a null instance of IManager.</exception>
-        /// <exception cref="Exception">Thrown when an exception is caught while resolving the dependencies for the specified Manager Type.</exception>
-        private List<IManager> ResolveManagerDependencies<T>() where T : IManager
-        {
-            logger.EnterMethod(xLogger.TypeParams(typeof(T)));
-            logger.Trace("Resolving dependencies for '" + typeof(T).Name + "'...");
-
-            List<IManager> retVal = new List<IManager>();
-
-            try
-            {
-                // find the GetManager() method and check to ensure it was found
-                MethodInfo getManager = GetType().GetMethod("GetManager", BindingFlags.Public | BindingFlags.Instance);
-                if (getManager == default(MethodInfo))
-                {
-                    throw new MissingMethodException("Method 'GetManager' was not found in class '" + GetType().Name + "'.");
-                }
-
-                MethodInfo getManagerGeneric;
-
-                // retrieve dependencies for the specified Manager
-                // any instance of IManager needs to have at least one dependency (ApplicationManager).  If we get a null or empty list something is wrong.
-                List<Type> dependencies = GetManagerDependencies<T>();
-                if ((dependencies == default(List<Type>)) || (dependencies.Count() == 0))
-                {
-                    throw new Exception("Failed to retrieve dependencies for '" + typeof(T).Name + "'.  Method 'GetManagerDependencies()' returned a null or empty List.");
-                }
-
-                // iterate over the dependencies
-                foreach (Type t in dependencies)
-                {
-                    logger.Trace("Attempting to resolve dependency '" + t.Name + "'...");
-
-                    IManager manager;
-
-                    getManagerGeneric = getManager.MakeGenericMethod(t);
-
-                    try
-                    {
-                        manager = (IManager)getManagerGeneric.Invoke(this, new object[] { });
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception("Invocation of method 'GetManager<T>' failed: " + ex.Message, ex);
-                    }
-
-                    if ((IManager)manager == default(IManager))
-                    {
-                        throw new Exception("Invocation of method 'GetManager<T>' returned a null instance of IManager.");
-                    }
-
-                    logger.Trace("Successfully resolved depencency '" + t.Name + "'.");
-                    retVal.Add(manager);
-                }
-            }
-            catch (Exception ex)
-            {
-                logger.Exception(ex);
-                throw new Exception("Failed to resolve dependencies for '" + typeof(T).Name + "': " + ex.Message, ex);
-            }
-
-            logger.Trace("Resolved " + retVal.Count() + " dependenc" + (retVal.Count() == 1 ? "y" : "ies" + "."));
-
-            logger.ExitMethod(retVal.Select(d => d.GetType()));
-            return retVal;
-        }
-
-        /// <summary>
-        /// Iterates over the list of Manager Types and instantiates each in the order in which they are represented in the list.
-        /// </summary>
-        /// <exception cref="MissingMethodException">Thrown when the 'InstantiateManager()' or 'RegisterManager()' methods can not be found.</exception>
+        /// <exception cref="MissingMethodException">Thrown when a reflected method can not be found.</exception>
         /// <exception cref="ManagerInstantiationException">Thrown when the instantiation of a Manager returns an abnormal result.</exception>
         private void InstantiateManagers()
         {
@@ -647,15 +434,12 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Creates and returns an instance of the specified Manager Type.
+        ///     Creates and returns an instance of the specified <see cref="IManager"/> Type.
         /// </summary>
         /// <typeparam name="T">The Type of the Manager to instantiate.</typeparam>
         /// <returns>The instantiated IManager.</returns>
-        /// <exception cref="MissingMethodException">Thrown when the 'Instantiate()' or 'ResolveManagerDependencies()' methods of the specified Manager Type can not be found.</exception>
-        /// <exception cref="Exception">Thrown when the application fails to resolve dependencies for the specified Manager Type.</exception>
-        /// <exception cref="Exception">Thrown when the 'Instantiate()' method of the specified Manager Type returns a null value.</exception>
-        /// <exception cref="Exception">Thrown when the object returned by 'Instantiate()' does not implement the IManager interface.</exception>
-        /// <exception cref="Exception">Thrown when the instantiation fails.  See inner exception for details.</exception>
+        /// <exception cref="MissingMethodException">Thrown when a reflected method can not be found.</exception>
+        /// <exception cref="ManagerInstantiationException">Thrown when an error is encountered while instantiating the specified Manager Type.</exception>
         private T InstantiateManager<T>() where T : IManager
         {
             logger.EnterMethod(xLogger.TypeParams(typeof(T)));
@@ -685,7 +469,7 @@ namespace Symbiote.Core
                 List<IManager> resolvedDependencies = (List<IManager>)genericResolveMethod.Invoke(this, new object[] { });
                 if (resolvedDependencies == default(List<IManager>))
                 {
-                    throw new Exception("Failed to resolve Manager dependencies for '" + typeof(T) + "'.");
+                    throw new ManagerInstantiationException("Failed to resolve Manager dependencies for '" + typeof(T) + "'.");
                 }
 
                 // invoke the Instantiate() method and pass the resolved dependencies from the step above.
@@ -693,11 +477,11 @@ namespace Symbiote.Core
                 instance = (T)method.Invoke(null, resolvedDependencies.ToArray());
                 if (instance == null)
                 {
-                    throw new Exception("Instantiate() method invocation from '" + typeof(T).Name + "' returned no result.");
+                    throw new ManagerInstantiationException("Instantiate() method invocation from '" + typeof(T).Name + "' returned no result.");
                 }
                 else if (!(instance is IManager))
                 {
-                    throw new Exception("The instance returned by Instantiate() method invocation from '" + typeof(T).Name + "' does not implement the IManager interface.");
+                    throw new ManagerInstantiationException("The instance returned by Instantiate() method invocation from '" + typeof(T).Name + "' does not implement the IManager interface.");
                 }
 
                 logger.Trace("Successfully instantiated '" + instance.GetType().Name + "'.");
@@ -705,7 +489,7 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Exception(ex);
-                throw new Exception("Failed to instantiate Manager '" + typeof(T).Name + "': " + ex.Message, ex);
+                throw new ManagerInstantiationException("Error instantiating Manager '" + typeof(T).Name + "'.  See inner exception for details.", ex);
             }
 
             logger.ExitMethod();
@@ -713,57 +497,65 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Adds the specified Manager to the Manager list and subscribes to its StateChanged event.
+        ///     Iterates over the list of <see cref="IManager"/> instances and invokes the <see cref="Manager.Setup"/> method on each.
         /// </summary>
-        /// <typeparam name="T">The Type of the specified Manager.</typeparam>
-        /// <param name="manager">The Manager to register.</param>
-        /// <returns>The registered Manager.</returns>
-        /// <exception cref="Exception">Thrown if the specified Manager has already been registered.</exception>
-        /// <exception cref="Exception">Thrown if the dependency list retrieved for the Manager is empty.</exception>
-        /// <exception cref="Exception">Thrown if the registration fails.</exception>
-        private T RegisterManager<T>(IManager manager) where T : IManager
+        /// <exception cref="ManagerSetupException">Thrown when an error is encountered during the setup operation.</exception>
+        private void SetupManagers()
         {
-            logger.EnterMethod(xLogger.TypeParams(typeof(T)), xLogger.Params(manager));
-            logger.Trace("Registering Manager '" + manager.GetType().Name + "'...");
+            logger.EnterMethod();
+            logger.Trace("Setting Managers up...");
+            logger.Heading(LogLevel.Debug, "Setup");
 
-            // ensure the specified Manager hasn't already been registered.  There can only be one of each Type
-            // in the Manager list.
-            if (IsRegistered<T>())
+            try
             {
-                throw new Exception("The Manager '" + manager.GetType().Name + "' is already registered.");
+                // iterate over the list of Manager instances
+                foreach (IManager manager in ManagerInstances)
+                {
+                    logger.SubHeading(LogLevel.Debug, manager.ManagerName);
+                    SetupManager(manager);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ManagerSetupException("Error encountered while performing Manager setup.  See inner exception for details.", ex);
+            }
+
+            logger.ExitMethod();
+        }
+
+        /// <summary>
+        ///     Invokes the <see cref="Manager.Setup"/> method on the specified instance of <see cref="IManager"/>.
+        /// </summary>
+        /// <param name="manager">The IManager instance for which to invoke Setup().</param>
+        /// <exception cref="MissingMethodException">Thrown when the 'Setup' method within the specified IManager instance can not be found.</exception>
+        /// <exception cref="ManagerSetupException">Thrown when the 'Setup' method invocation throws an exception.</exception>
+        private void SetupManager(IManager manager)
+        {
+            logger.EnterMethod();
+            logger.Debug("Performing Setup for Manager '" + manager.GetType() + "'...");
+
+            MethodInfo method = manager.GetType().GetMethod("Setup", BindingFlags.Instance | BindingFlags.NonPublic);
+
+            if (method == default(MethodInfo))
+            {
+                throw new MissingMethodException("Unable to find method 'Setup()' in Type '" + manager.GetType() + "'.");
             }
 
             try
             {
-                // retrieve the dependencies for the Manager
-                List<Type> dependencies = GetManagerDependencies<T>();
-
-                if (dependencies == default(List<Type>))
-                {
-                    throw new Exception("The dependency list for the Manager '" + manager.GetType().Name + "' is empty; all Managers must have at least one dependency.");
-                }
-
-                logger.Trace("Registering Manager with " + dependencies.Count() + " dependencies...");
-
-                // add the specified Manager to the list and attach an event handler to its StateChanged event
-                ManagerInstances.Add(manager);
-                ManagerDependencies.Add(typeof(T), dependencies);
-                manager.StateChanged += ManagerStateChanged;
+                method.Invoke(manager, null);
             }
             catch (Exception ex)
             {
-                logger.Exception(ex);
-                throw new Exception("Failed to register Manager '" + manager.GetType().Name + "': " + ex.Message, ex);
+                throw new ManagerSetupException("Error setting Manager '" + manager.GetType() + "' up.  See inner exception for details.", ex);
             }
 
-            logger.Trace("Successfully registered Manager '" + manager.GetType().Name + "'.");
-
+            logger.Debug("Setup performed successfully.");
             logger.ExitMethod();
-            return (T)manager;
         }
 
         /// <summary>
-        ///     Starts each Manager contained within the specified list of Manager instances.
+        ///     Starts each <see cref="IManager"/>  contained within the specified list of Manager instances.
         /// </summary>
         /// <remarks>
         ///     Does not Start the ApplicationManager instance.
@@ -772,9 +564,7 @@ namespace Symbiote.Core
         private Result StartManagers()
         {
             Guid guid = logger.EnterMethod(true);
-
             logger.Debug("Starting Managers...");
-
             Result retVal = new Result();
 
             // iterate over the Manager instance list and start each manager.
@@ -799,10 +589,47 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Stops each of the <see cref="IManager"/> instances in the specified Manager instance list.
+        ///     Starts the specified <see cref="IManager"/> instance
+        /// </summary>
+        /// <param name="manager">The IManager instance to start.</param>
+        /// <returns>A Result containing the result of the operation and the specified IManager instance.</returns>
+        private Result<IManager> StartManager(IManager manager)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
+            logger.Debug("Starting " + manager.GetType().Name + "...");
+            Result<IManager> retVal = new Result<IManager>();
+
+            // invoke the Start() method on the specified manager
+            Result startResult = manager.Start();
+
+            // if the manager fails to start, throw an exception and halt the program
+            if (startResult.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("Failed to start Manager '" + manager.GetType().Name + "'.");
+            }
+
+            retVal.ReturnValue = manager;
+            retVal.Incorporate(startResult);
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                logger.Debug("Successfully started " + manager.GetType().Name + ".");
+            }
+            else
+            {
+                logger.Debug("Failed to start " + manager.GetType().Name + ": " + retVal.GetLastError());
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Stops each of the <see cref="IManager"/> instances in the specified Manager instance list.
         /// </summary>
         /// <remarks>
-        /// Does not Stop the ApplicationManager instance.
+        ///     Does not Stop the ApplicationManager instance.
         /// </remarks>
         /// <param name="stopType">The type of stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -825,6 +652,210 @@ namespace Symbiote.Core
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        /// Stops the specified IManager instance.
+        /// </summary>
+        /// <param name="manager">The IManager instance to stop.</param>
+        /// <param name="stopType">The type of stoppage.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result StopManager(IManager manager, StopType stopType = StopType.Stop)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(manager, stopType), true);
+            logger.Debug("Stopping " + manager.GetType().Name + "...");
+
+            Result retVal = manager.Stop(stopType);
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("Failed to stop " + manager.GetType().Name + "." + retVal.GetLastError());
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Adds the specified <see cref="IManager"/> to the Manager list and subscribes to its <see cref="Manager.StateChanged"/> event.
+        /// </summary>
+        /// <typeparam name="T">The Type of the specified Manager.</typeparam>
+        /// <param name="manager">The Manager to register.</param>
+        /// <returns>The registered Manager.</returns>
+        /// <exception cref="ManagerRegistrationException">Thrown when an error is encountered during registration.</exception>
+        private T RegisterManager<T>(IManager manager) where T : IManager
+        {
+            logger.EnterMethod(xLogger.TypeParams(typeof(T)), xLogger.Params(manager));
+            logger.Trace("Registering Manager '" + manager.GetType().Name + "'...");
+
+            // ensure the specified Manager hasn't already been registered.  There can only be one of each Type
+            // in the Manager list.
+            if (IsRegistered<T>())
+            {
+                throw new ManagerRegistrationException("The Manager '" + manager.GetType().Name + "' is already registered.");
+            }
+
+            try
+            {
+                // retrieve the dependencies for the Manager
+                List<Type> dependencies = GetManagerDependencies<T>();
+
+                if (dependencies == default(List<Type>))
+                {
+                    throw new ManagerRegistrationException("The dependency list for the Manager '" + manager.GetType().Name + "' is empty; all Managers must have at least one dependency.");
+                }
+
+                logger.Trace("Registering Manager with " + dependencies.Count() + " dependencies...");
+
+                // add the specified Manager to the list and attach an event handler to its StateChanged event
+                ManagerInstances.Add(manager);
+                ManagerDependencies.Add(typeof(T), dependencies);
+                manager.StateChanged += ManagerStateChanged;
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex);
+                throw new ManagerRegistrationException("Failed to register Manager '" + manager.GetType().Name + "': " + ex.Message, ex);
+            }
+
+            logger.Trace("Successfully registered Manager '" + manager.GetType().Name + "'.");
+
+            logger.ExitMethod();
+            return (T)manager;
+        }
+        
+        /// <summary>
+        ///     Searches the list of registered <see cref="IManager"/> instances for the specified instance and returns a value indicating
+        ///     whether it was found.
+        /// </summary>
+        /// <typeparam name="T">The Manager Type to check.</typeparam>
+        /// <returns>A value indicating whether the specified Manager has been registered.</returns>
+        private bool IsRegistered<T>() where T : IManager
+        {
+            return ManagerInstances.OfType<T>().Count() > 0;
+        }
+
+        /// <summary>
+        ///     Retrieves the list of <see cref="Type"/>s corresponding to the <see cref="IManager"/> Types on which the specified Manager Type depends.
+        /// </summary>
+        /// <remarks>
+        ///     Uses reflection to retrieve the parameters for the private Instantiate() method of the specified Type.
+        /// </remarks>
+        /// <typeparam name="T">The Type of the Manager for which the dependencies are to be returned.</typeparam>
+        /// <returns>A List of dependency Types.</returns>
+        /// <exception cref="MissingMethodException">Thrown when the Instantaite() method is not found within the specified Type.</exception>
+        /// <exception cref="ManagerDependencyException">Thrown when an exception is caught while retrieving the dependencies for the specified Type.</exception>
+        private List<Type> GetManagerDependencies<T>() where T : IManager
+        {
+            logger.EnterMethod(xLogger.TypeParams(typeof(T)));
+            logger.Trace("Retrieving dependencies for '" + typeof(T).Name + "'...");
+            List<Type> retVal = new List<Type>();
+
+            // the ApplicationManager has no dependencies (that we need to track).
+            if (typeof(T) == typeof(IApplicationManager))
+            {
+                return retVal;
+            }
+
+            try
+            {
+                // retrieve the list of parameters for the Instantiate() method of the specified Manager Type and add the type of each to the return value list
+                // start by fetching the method.  throw an exception if it is not found.
+                MethodInfo method = typeof(T).GetMethod("Instantiate", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+
+                if (method == default(MethodInfo))
+                {
+                    throw new MissingMethodException("Unable to find the Instantiate() method in Type '" + typeof(T).Name + "'.");
+                }
+
+                // fetch the parameters. throw an exception if there isn't at least one (each Manager depends on ApplicationManager at a minimum.)
+                ParameterInfo[] parameters = method.GetParameters();
+
+                if (parameters.Length == 0)
+                {
+                    throw new ManagerDependencyException("The Instantiate method of the '" + typeof(T).Name + "' manager contains no dependencies.");
+                }
+
+                foreach (ParameterInfo p in parameters)
+                {
+                    retVal.Add(p.ParameterType);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex);
+                throw new ManagerDependencyException("Error retrieving dependencies for '" + typeof(T).Name + "'.  See inner exception for details.", ex);
+            }
+
+            logger.Trace("Retrieved " + retVal.Count() + " dependenc" + (retVal.Count() == 1 ? "y" : "ies") + ".");
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Returns a list of IManager instances corresponding to the Manager Types upon which the specified Manager is dependent.
+        /// </summary>
+        /// <typeparam name="T">The Manager Type for which the dependencies are to be resolved.</typeparam>
+        /// <returns>A list of IManager instances corresponding to the Manager Types upon which the specified Manager is dependent.</returns>
+        /// <exception cref="MissingMethodException">Thrown when the 'GetManager()' method can not be found.</exception>
+        /// <exception cref="ManagerDependencyException">Thrown when an exception is caught while resolving the dependencies for the specified Manager Type.</exception>
+        private List<IManager> ResolveManagerDependencies<T>() where T : IManager
+        {
+            logger.EnterMethod(xLogger.TypeParams(typeof(T)));
+            logger.Trace("Resolving dependencies for '" + typeof(T).Name + "'...");
+            List<IManager> retVal = new List<IManager>();
+
+            try
+            {
+                // find the GetManager() method and check to ensure it was found
+                MethodInfo getManager = GetType().GetMethod("GetManager", BindingFlags.Public | BindingFlags.Instance);
+                if (getManager == default(MethodInfo))
+                {
+                    throw new MissingMethodException("Method 'GetManager' was not found in class '" + GetType().Name + "'.");
+                }
+
+                MethodInfo getManagerGeneric;
+
+                // retrieve dependencies for the specified Manager
+                // any instance of IManager needs to have at least one dependency (ApplicationManager).  If we get a null or empty list something is wrong.
+                List<Type> dependencies = GetManagerDependencies<T>();
+                if ((dependencies == default(List<Type>)) || (dependencies.Count() == 0))
+                {
+                    throw new ManagerDependencyException("Failed to retrieve dependencies for '" + typeof(T).Name + "'.  Method 'GetManagerDependencies()' returned a null or empty List.");
+                }
+
+                // iterate over the dependencies
+                foreach (Type t in dependencies)
+                {
+                    logger.Trace("Attempting to resolve dependency '" + t.Name + "'...");
+
+                    IManager manager;
+
+                    getManagerGeneric = getManager.MakeGenericMethod(t);
+
+                    manager = (IManager)getManagerGeneric.Invoke(this, new object[] { });
+
+                    if ((IManager)manager == default(IManager))
+                    {
+                        throw new ManagerDependencyException("Invocation of method 'GetManager<T>' returned a null instance of IManager.");
+                    }
+
+                    logger.Trace("Successfully resolved depencency '" + t.Name + "'.");
+                    retVal.Add(manager);
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(ex);
+                throw new ManagerDependencyException("Error resolving dependencies for '" + typeof(T).Name + "'.  See inner exception for details.", ex);
+            }
+
+            logger.Trace("Resolved " + retVal.Count() + " dependenc" + (retVal.Count() == 1 ? "y" : "ies" + "."));
+
+            logger.ExitMethod(retVal.Select(d => d.GetType()));
             return retVal;
         }
 

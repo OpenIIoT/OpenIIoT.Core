@@ -29,9 +29,9 @@ namespace Symbiote.Core.Tests.Mockups
             return instance;
         }
 
-        protected override Result Setup(List<IManager> managerInstances)
+        protected override void Setup()
         {
-            return new Result();
+            return;
         }
 
         protected override Result Startup()

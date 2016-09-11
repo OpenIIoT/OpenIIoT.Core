@@ -40,6 +40,7 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Immutable;
 
 namespace Symbiote.Core
 {
@@ -75,6 +76,12 @@ namespace Symbiote.Core
         /// <typeparam name="T">The Type of the Manager to return.</typeparam>
         /// <returns>The requested Manager.</returns>
         T GetManager<T>() where T : IManager;
+
+        /// <summary>
+        ///     Returns an immutable list of Managers.
+        /// </summary>
+        /// <returns>The immutable list of Managers.</returns>
+        ImmutableList<IManager> GetManagers();
 
         #endregion
     }

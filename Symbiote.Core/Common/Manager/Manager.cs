@@ -324,20 +324,12 @@ namespace Symbiote.Core
         /// </summary>
         /// <remarks>
         /// <para>
-        ///     This method is invoked by the ApplicationManager following the instantiation of all program Managers.  The list of IManager
-        ///     instances created during the instantiation is provided, however this Manager must only use that list to set up indirect 
-        ///     references; for instance, the Configuration Manager will iterate over this list to register all Managers implementing IConfigurable.
-        /// </para>
-        /// <para>
-        ///     This Manager must not register dependencies using the instances in the specified list; if direct dependencies exist they are
-        ///     to be specified in the Manager's constructor and Instantiate() method.
+        ///     This method is invoked by the ApplicationManager following the instantiation of all program Managers.
         /// </para>
         /// </remarks>
-        /// <param name="managerInstances">The list of IManager instances handled by the <see cref="ApplicationManager"/>.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        protected virtual Result Setup(List<IManager> managerInstances)
+        /// <exception cref="ManagerSetupException">Thrown when an error is encountered during setup.</exception>
+        protected virtual void Setup()
         {
-            return new Result();
         }
 
         /// <summary>
