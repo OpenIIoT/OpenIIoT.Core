@@ -51,15 +51,41 @@ using Utility.OperationResult;
 namespace Symbiote.Core
 {
     /// <summary>
+    /// <para>
     ///     Represents the Application and is responsible for managing the various subsystem Managers.
-    /// </summary>
-    /// <remarks>
+    /// </para>
     /// <para>
     ///     This class is a singleton and is therefore restricted to one instance for the application.  External classes may invoke the <see cref="Instantiate(Type[])"/> 
     ///     method to retrieve the instance, however they should not.  If the instance is required in a static class or method, or anywhere else where dependency injection
     ///     is not available, the <see cref="GetInstance()"/> method should be used to retrieve the instance.
     /// </para>
-    /// </remarks>
+    /// <para>
+    ///     The <see cref="Instantiate(Type[])"/> method, and thusly the class constructor, accepts an array of <see cref="Type"/>s corresponding to each <see cref="IManager"/> 
+    ///     instance to be created.  The Application Manager maintains an internal list of these Types, the instances created (one each), and a dictionary containing the dependencies
+    ///     of each Type.
+    /// </para>
+    /// <para>
+    ///     Upon instantiation, the Application Manager invokes <see cref="InstantiateManagers"/> method, which iterates over the list of Types and creates an instance of each using the
+    ///     <see cref="InstantiateManager{T}"/> method, then registers the new instance with <see cref="RegisterManager{T}(IManager)"/>.  If all dependencies for a Manager have not yet been
+    ///     instantiated when the dependent Manager is instantiated an exception will be thrown; the order in which the Manager Types appear in the Type list provided to the <see cref="Instantiate(Type[])"/> 
+    ///     method must reflect the inter-Manager dependencies.  The RegisterManager method adds the Manager instance to the linternal list and creates an entry in the dependency dictionary for the Type.
+    /// </para>
+    /// <para>
+    ///     After all Managers have been instantiated, the list of created instances is iterated over and the <see cref="Manager.Setup"/> method is invoked on each.  This method allows Managers which are dependent
+    ///     upon other Managers to initialize those dependencies.  Examples include the <see cref="Configuration.ConfigurationManager"/>, which iterates over the list of Manager instances and registers Managers
+    ///     which implement <see cref="Configuration.IConfigurable{T}"/>, and the <see cref="Event.EventManager"/>, which does the same for implementations of <see cref="Event.IEventProvider"/>.
+    /// </para>
+    /// <para>
+    ///     The methods <see cref="GetManager{T}"/> and <see cref="GetManagers"/> are provided to allow Managers to retrieve other Managers contained within the application.  <see cref="GetManager{T}"/> is 
+    ///     primarily provided to allow static methods to access a particular manager.  This is the only valid usage; instance methods should use the dependency injection system.  <see cref="GetManagers"/> 
+    ///     provides an immutable list of Manager instances which allows for the functionality described above for <see cref="Manager.Setup"/>.  This is necessary so that Managers may access other Managers 
+    ///     which are not explicitly defined as dependencies.  Again, this is the only valid usage of the method.
+    /// </para>
+    /// <para>
+    ///     As with other instances of <see cref="IManager"/>, the <see cref="Startup"/> and <see cref="Shutdown(StopType)"/> methods are invoked upon the invocation of <see cref="Manager.Start"/> and
+    ///     <see cref="Manager.Stop(StopType)"/>.  The Application Manager uses these methods to start and stop Manager instances.
+    /// </para>
+    /// </summary>
     public class ApplicationManager : Manager, IStateful, IEventProvider, IManager, IApplicationManager
     {
         #region Fields
@@ -222,7 +248,7 @@ namespace Symbiote.Core
         /// <returns>The name of the program instance.</returns>
         public static string GetInstanceName()
         {
-            return Utility.GetSetting("InstanceName", "Symbiote");
+            return Utility.GetSetting("InstanceName", Assembly.GetExecutingAssembly().GetName().Name);
         }
 
         #endregion
@@ -340,7 +366,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Executed upon shutdown of the Manager.  Stops all application managers.
+        ///     Executed upon shutdown of the Manager.  Stops all application managers.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -368,7 +394,7 @@ namespace Symbiote.Core
         #region Event Handlers
 
         /// <summary>
-        /// Event handler for the StateChanged event of registered Managers.
+        ///     Event handler for the StateChanged event of registered Managers.
         /// </summary>
         /// <param name="sender">The Manager which fired the event.</param>
         /// <param name="e">The EventArgs for the event.</param>
@@ -656,7 +682,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Stops the specified IManager instance.
+        ///     Stops the specified IManager instance.
         /// </summary>
         /// <param name="manager">The IManager instance to stop.</param>
         /// <param name="stopType">The type of stoppage.</param>
@@ -745,7 +771,7 @@ namespace Symbiote.Core
         /// </remarks>
         /// <typeparam name="T">The Type of the Manager for which the dependencies are to be returned.</typeparam>
         /// <returns>A List of dependency Types.</returns>
-        /// <exception cref="MissingMethodException">Thrown when the Instantaite() method is not found within the specified Type.</exception>
+        /// <exception cref="MissingMethodException">Thrown when the Instantiate() method is not found within the specified Type.</exception>
         /// <exception cref="ManagerDependencyException">Thrown when an exception is caught while retrieving the dependencies for the specified Type.</exception>
         private List<Type> GetManagerDependencies<T>() where T : IManager
         {

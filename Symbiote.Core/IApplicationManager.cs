@@ -45,7 +45,7 @@ using System.Collections.Immutable;
 namespace Symbiote.Core
 {
     /// <summary>
-    ///     Defines the interface for the Program Manager.
+    ///     Defines the interface for the Application Manager.
     /// </summary>
     public interface IApplicationManager : IManager
     {
@@ -78,9 +78,9 @@ namespace Symbiote.Core
         T GetManager<T>() where T : IManager;
 
         /// <summary>
-        ///     Returns an immutable list of Managers.
+        ///     Returns an immutable list of Manager instances.
         /// </summary>
-        /// <returns>The immutable list of Managers.</returns>
+        /// <returns>The immutable list of Manager instances.</returns>
         ImmutableList<IManager> GetManagers();
 
         #endregion
