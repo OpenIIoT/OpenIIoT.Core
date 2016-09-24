@@ -43,6 +43,8 @@ Non-trivial code and classes must be documented verbosely and should include rat
 
 Any non-trivial method which has been specifically designed or otherwise known to be thread safe must use the ```<threadsafety>``` tag.  Any method lacking this tag is assumed to be thread un-safe.
 
+Trivial or "utility" code must implement XML documentation in order to satisfy StyleCop, however the inclusion of rationale and the level of verbosity is at the author's discretion.
+
 ### General Code Standards
 
 The contents of classes and interfaces must be organized according to StyleCop rules, which are described [here](http://stackoverflow.com/questions/150479/order-of-items-in-classes-fields-properties-constructors-methods/310967#310967).
@@ -71,14 +73,8 @@ The following rules should be followed, with few exceptions:
 
 ### Composition
 
-Classes must explicitly list all interfaces implemented, even if those interfaces are implemented by inherited classes.  Interfaces must be listed in order of "lowest" to "highest" with respect
-to the postion in the inheritance heirarchy of the implementing class.  Interfaces implemented at the same level may appear in any order.
-
 The ```Public Properties``` and ```Public Instance Methods``` code regions must contain code regions for each interface implementation, in the order in which they are specified in the class signature.
-These regions must be named ```I<interface> Properties``` and ```I<interface> Implementation```, respectively.  If an interface is implemented in an inherited class, these regions must contain a comment matching
-one of the following examples, depending on whether it is a property or method:
-
-```//// See the <implementing> class for the I<interface> <properties|implementation> for this class.```
+These regions must be named ```I<interface> Properties``` and ```I<interface> Implementation```, respectively.  
 
 ### Exceptions
 

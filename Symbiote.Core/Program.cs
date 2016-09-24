@@ -179,56 +179,19 @@ namespace Symbiote.Core
 
             try
             {
-                //----------------------- - --------- -  - 
                 // process the command line arguments used to start the application
                 logger.Debug($"Program started with {(args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments.")}");
 
-                if (args.Length > 0)
+                // process the argument array.  if the method returns true, the application should exit.  this should only happen when an argument
+                // is used to cause the application to perform a maintenance task, such as installing or uninstalling the Windows service.
+                if (ProcessArguments(args))
                 {
-                    try
-                    {
-                        // check to see if logger arguments were supplied
-                        string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel:)((?i)trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
-                        if (logarg != default(string))
-                        {
-                            // reconfigure the logger based on the command line arguments.
-                            // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
-                            // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
-                            logger.Info($"Reconfiguring logger to log level '{logarg.Split(':')[1]}'...");
-                            Utility.SetLoggingLevel(logarg.Split(':')[1]);
-                            logger.Info("Successfully reconfigured logger.");
-                        }
-
-                        // check to see if service install/uninstall arguments were supplied
-                        string servicearg = args.Where(a => Regex.IsMatch(a, "^(?i)(-(un)?install-service)$")).FirstOrDefault();
-                        if (servicearg != default(string))
-                        {
-                            string action = servicearg.Split('-')[1];
-                            logger.Info($"Attempting to {action} Windows Service...");
-
-                            if (Utility.ModifyService(action))
-                            {
-                                logger.Info($"Successfully {action}ed Windows Service.");
-                            }
-                            else
-                            {
-                                logger.Error($"Failed to {action} Windows Service.");
-                            }
-
-                            // if we do anything with the service, do it then quit.  don't start the application if either argument was used.
-                            Console.WriteLine("Press any key to continue...");
-                            Console.ReadLine();
-                            return;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Exception(ex);
-                        throw new ApplicationArgumentException("Error parsing command line arguments.  See the inner exception for details.", ex);
-                    }
+                    // if we do anything with the service, do it then quit.  don't start the application if either argument was used.
+                    Console.WriteLine("Press any key to continue...");
+                    Console.ReadLine();
+                    return;
                 }
 
-                //---------- - - -    ------------------------  -          -
                 // instantiate the Application Manager.
                 logger.Heading(LogLevel.Debug, "Initialization");
                 logger.Debug("Instantiating the Application Manager...");
@@ -245,7 +208,6 @@ namespace Symbiote.Core
 
                 logger.Debug("The Program Manager was instantiated successfully.");
 
-                //-------------- -   ---------------------------------------
                 // determine whether the application is being run as a Windows service or as a console application and start accordingly.
                 // it is possible to run Windows services on unix using mono-service, however this functionality is currently TBD.
                 if ((PlatformManager.GetPlatformType() == PlatformType.Windows) && (!Environment.UserInteractive))
@@ -361,6 +323,68 @@ namespace Symbiote.Core
         #region Private Methods
 
         #region Private Static Methods
+
+        /// <summary>
+        ///     Processes the command-line arguments passed to the application and performs the desired action(s).
+        /// </summary>
+        /// <param name="args">The arguments passed to the application on startup.</param>
+        /// <returns>A value indicating whether the application should halt after processing.</returns>
+        private static bool ProcessArguments(string[] args)
+        {
+            logger.EnterMethod(xLogger.Params(args));
+            logger.Debug("Processing program arguments...");
+
+            bool retVal = false;
+
+            if (args.Length > 0)
+            {
+                try
+                {
+                    // check to see if logger arguments were supplied
+                    string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel:)((?i)trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
+                    if (logarg != default(string))
+                    {
+                        // reconfigure the logger based on the command line arguments.
+                        // valid values are "fatal" "error" "warn" "info" "debug" and "trace"
+                        // supplying any value will disable logging for any level beneath that level, from left to right as positioned above
+                        logger.Info($"Reconfiguring logger to log level '{logarg.Split(':')[1]}'...");
+                        Utility.SetLoggingLevel(logarg.Split(':')[1]);
+                        logger.Info("Successfully reconfigured logger.");
+                    }
+
+                    // check to see if service install/uninstall arguments were supplied
+                    string servicearg = args.Where(a => Regex.IsMatch(a, "^(?i)(-(un)?install-service)$")).FirstOrDefault();
+                    if (servicearg != default(string))
+                    {
+                        string action = servicearg.Split('-')[1];
+                        logger.Info($"Attempting to {action} Windows Service...");
+
+                        if (Utility.ModifyService(action))
+                        {
+                            logger.Info($"Successfully {action}ed Windows Service.");
+                        }
+                        else
+                        {
+                            logger.Error($"Failed to {action} Windows Service.");
+                        }
+
+                        retVal = true;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(ex);
+                    throw new ApplicationArgumentException("Error parsing command line arguments.  See the inner exception for details.", ex);
+                }
+            }
+            else
+            {
+                logger.Debug("No arguments provided.");
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
 
         /// <summary>
         ///     Performs miscellaneous startup tasks.

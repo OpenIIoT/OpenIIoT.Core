@@ -86,7 +86,7 @@ namespace Symbiote.Core
     ///     <see cref="Manager.Stop(StopType)"/>.  The Application Manager uses these methods to start and stop Manager instances.
     /// </para>
     /// </summary>
-    public class ApplicationManager : Manager, IStateful, IEventProvider, IManager, IApplicationManager
+    public class ApplicationManager : Manager, IApplicationManager
     {
         #region Fields
 
@@ -151,24 +151,6 @@ namespace Symbiote.Core
         #region Properties
 
         #region Public Properties
-
-        #region IStateful Properties
-
-        //// See the Manager class for the IStateful properties for this class.
-
-        #endregion
-
-        #region IEventProvider Properties
-
-        //// See the Manager class for the IEventProvider properties for this class.
-
-        #endregion
-
-        #region IManager Properties
-
-        //// See the Manager class for the IManager properties for this class.
-
-        #endregion
 
         #region IApplicationManager Properties
 
