@@ -54,15 +54,18 @@ using Xunit;
 namespace Symbiote.Core.Tests
 {
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.GetInstance()"/> without having first instantiated the Manager.
+    ///     Tests invocation of <see cref="ApplicationManager.GetInstance"/> prior to initialization. 
     /// </summary>
     /// <remarks>
     ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ApplicationManagerGetInstanceTest
+    public class ApplicationManagerPrematureInstanceTest
     {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.  
+        /// </summary>
         [Fact]
-        public void TestGetInstance()
+        public void TestGetInstanceBeforeInstantiation()
         {
             Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
         }
@@ -118,24 +121,6 @@ namespace Symbiote.Core.Tests
         public void TestInstantiateWithBrokenSetupMethod()
         {
             Assert.Throws<ManagerSetupException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
-        }
-    }
-
-    /// <summary>
-    ///     Tests invocation of <see cref="ApplicationManager.GetInstance"/> prior to initialization. 
-    /// </summary>
-    /// <remarks>
-    ///     Presented in a distinct class to enforce execution order.
-    /// </remarks>
-    public class ApplicationManagerPrematureInstanceTest
-    {
-        /// <summary>
-        ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.  
-        /// </summary>
-        [Fact]
-        public void TestGetInstanceBeforeInstantiation()
-        {
-            Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
         }
     }
 
