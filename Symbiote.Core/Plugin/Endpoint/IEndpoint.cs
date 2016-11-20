@@ -1,4 +1,5 @@
-﻿using Utility.OperationResult;
+﻿using Symbiote.Core.SDK.Plugin;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.Plugin.Endpoint
 {

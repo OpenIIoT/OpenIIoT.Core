@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using Symbiote.Core.Model;
 using Utility.OperationResult;
+using Symbiote.Core.SDK;
 
 namespace Symbiote.Core.Service.Web.SignalR
 {
@@ -116,7 +117,7 @@ namespace Symbiote.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            IItem foundItem = FQNResolver.Resolve(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -147,7 +148,7 @@ namespace Symbiote.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            IItem foundItem = FQNResolver.Resolve(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -179,7 +180,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            IItem foundItem = FQNResolver.Resolve(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -211,7 +212,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            IItem foundItem = FQNResolver.Resolve(castFQN);
 
             if (foundItem != default(Item))
             {

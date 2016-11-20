@@ -2,6 +2,8 @@
 using NLog;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Plugin;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -107,7 +109,7 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public async Task<HttpResponseMessage> InstallPlugin(string fileName)
         {
-            ApiResult<Result<Plugin.Plugin>> retVal = new ApiResult<Result<Plugin.Plugin>>(Request);
+            ApiResult<Result<IPlugin>> retVal = new ApiResult<Result<IPlugin>>(Request);
             retVal.LogRequest(logger.Info);
 
             retVal.ReturnValue = await manager.GetManager<PluginManager>().InstallPluginAsync(manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault());
@@ -124,10 +126,10 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage ListPlugins()
         {
-            ApiResult<List<Plugin.Plugin>> retVal = new ApiResult<List<Plugin.Plugin>>(Request);
+            ApiResult<List<IPlugin>> retVal = new ApiResult<List<IPlugin>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().Configuration.InstalledPlugins;
+            retVal.ReturnValue = manager.GetManager<PluginManager>().Configuration.InstalledPlugins.ToList<IPlugin>();
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut, true));

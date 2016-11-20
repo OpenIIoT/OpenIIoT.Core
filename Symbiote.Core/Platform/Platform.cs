@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Symbiote.Core.Plugin.Connector;
 using NLog.xLogger;
 using Utility.OperationResult;
+using Symbiote.Core.SDK.Plugin.Connector;
 
 namespace Symbiote.Core.Platform
 {

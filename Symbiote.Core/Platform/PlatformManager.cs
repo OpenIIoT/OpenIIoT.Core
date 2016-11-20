@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using NLog;
 using NLog.xLogger;
 using Utility.OperationResult;
+using Symbiote.Core.SDK;
 
 namespace Symbiote.Core.Platform
 {

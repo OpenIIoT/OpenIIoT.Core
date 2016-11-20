@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
-using Symbiote.Core.Configuration;
+using Symbiote.Core.SDK.Configuration;
+using Symbiote.Core.SDK;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 using System.Linq;
 using Utility.OperationResult;
+using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.Core.SDK.Plugin;
 
 namespace Symbiote.Core.Platform.Windows
 {
@@ -24,6 +27,7 @@ namespace Symbiote.Core.Platform.Windows
         public string FQN { get; private set; }
         public string Version { get; private set; }
         public PluginType PluginType { get; private set; }
+        public string Fingerprint { get; private set; }
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
 
@@ -77,6 +81,11 @@ namespace Symbiote.Core.Platform.Windows
             return states.Any(s => s == State);
         }
 
+        public void SetFingerprint(string fingerprint)
+        {
+            Fingerprint = fingerprint;
+        }
+
         public Result Start()
         {
             return new Result();
@@ -92,22 +101,22 @@ namespace Symbiote.Core.Platform.Windows
             return new Result();
         }
 
-        public Item Find(string fqn)
+        public IItem Find(string fqn)
         {
             return Find(itemRoot, fqn);
         }
 
-        public async Task<Item> FindAsync(string fqn)
+        public async Task<IItem> FindAsync(string fqn)
         {
             return await Task.Run(() => Find(fqn));
         }
 
-        private Item Find(Item root, string fqn)
+        private IItem Find(IItem root, string fqn)
         {
             if (root.FQN == fqn) return root;
 
-            Item found = default(Item);
-            foreach (Item child in root.Children)
+            IItem found = default(Item);
+            foreach (IItem child in root.Children)
             {
                 found = Find(child, fqn);
                 if (found != default(Item)) break;
@@ -115,27 +124,27 @@ namespace Symbiote.Core.Platform.Windows
             return found;
         }
 
-        public Item Browse()
+        public IItem Browse()
         {
             return itemRoot;
         }
 
-        public async Task<Item> BrowseAsync()
+        public async Task<IItem> BrowseAsync()
         {
             return await Task.Run(() => Browse());
         }
 
-        public List<Item> Browse(Item root)
+        public List<IItem> Browse(IItem root)
         {
             return root.Children;
         }
 
-        public async Task<List<Item>> BrowseAsync(Item root)
+        public async Task<List<IItem>> BrowseAsync(IItem root)
         {
             return await Task.Run(() => Browse(root));
         }
 
-        public Result<object> Read(Item item)
+        public Result<object> Read(IItem item)
         {
             Result<object> retVal = new Result<object>();
 
@@ -172,7 +181,7 @@ namespace Symbiote.Core.Platform.Windows
             }
         }
 
-        public async Task<Result<object>> ReadAsync(Item item)
+        public async Task<Result<object>> ReadAsync(IItem item)
         {
             return await Task.Run(() => Read(item));
         }

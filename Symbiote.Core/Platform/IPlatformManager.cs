@@ -20,6 +20,8 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using Symbiote.Core.SDK;
+
 namespace Symbiote.Core.Platform
 {
     /// <summary>

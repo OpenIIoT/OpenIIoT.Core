@@ -124,13 +124,14 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Collections.Immutable, Version=1.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.1.2.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Management" />
@@ -177,43 +178,26 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Item\IItem.cs" />
+    <Compile Include="Common\FQNResolver.cs" />
+    <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
     <Compile Include="Common\Manager\IManager.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Manager\ManagerExceptions.cs" />
-    <Compile Include="Common\State\StopType.cs" />
-    <Compile Include="Common\State\StateChangedEventArgs.cs" />
-    <Compile Include="Common\State\IStateful.cs" />
-    <Compile Include="Common\State\State.cs" />
-    <Compile Include="Configuration\IConfigurationManager.cs" />
-    <Compile Include="Configuration\IConfigurable.cs" />
-    <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
+    <Compile Include="Common\Utility.cs" />
     <Compile Include="Event\EventAttribute.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
-    <Compile Include="Event\IEventProvider.cs" />
-    <Compile Include="Event\IEventManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Plugin\Connector\IExtensible.cs" />
-    <Compile Include="Plugin\Connector\IConnector.cs" />
-    <Compile Include="Plugin\Connector\IReadable.cs" />
-    <Compile Include="Plugin\Connector\ISubscribable.cs" />
-    <Compile Include="Plugin\Connector\IWriteable.cs" />
     <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
-    <Compile Include="Plugin\IPluginInstance.cs" />
-    <Compile Include="Plugin\Plugin.cs" />
-    <Compile Include="Plugin\PluginArchive.cs" />
-    <Compile Include="Plugin\PluginArchiveLoadResult.cs" />
     <Compile Include="Plugin\IPluginManager.cs" />
+    <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
-    <Compile Include="Plugin\PluginType.cs" />
     <Compile Include="Plugin\PluginTypeManager.cs" />
-    <Compile Include="IApplicationManager.cs" />
     <Compile Include="ApplicationExceptions.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
@@ -226,12 +210,6 @@
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
-    <Compile Include="Plugin\IPlugin.cs" />
-    <Compile Include="Plugin\Connector\ConnectorItem.cs" />
-    <Compile Include="Common\FQNResolver.cs" />
-    <Compile Include="Configuration\ConfigurationDefinition.cs" />
-    <Compile Include="Common\ContractResolver.cs" />
-    <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformConnector.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
@@ -245,7 +223,6 @@
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Common\Utility.cs" />
     <Compile Include="Service\Web\API\ApiOperationResult.cs" />
     <Compile Include="Service\Web\API\Controllers\PluginController.cs" />
     <Compile Include="Service\Web\API\Controllers\BrowseController.cs" />
@@ -289,7 +266,15 @@
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Symbiote.Core.SDK\Symbiote.Core.SDK.csproj">
+      <Project>{9c220b49-76ac-4ef5-b385-906ac84d5da2}</Project>
+      <Name>Symbiote.Core.SDK</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Plugin\Connector\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

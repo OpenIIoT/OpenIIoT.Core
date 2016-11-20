@@ -6,6 +6,7 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using NLog;
 using Symbiote.Core.Model;
+using Symbiote.Core.SDK;
 
 namespace Symbiote.Core.Service.Web.API
 {
@@ -13,7 +14,7 @@ namespace Symbiote.Core.Service.Web.API
     {
         private static ApplicationManager manager = ApplicationManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static Item model = manager.GetManager<ModelManager>().Model;
+        private static IItem model = manager.GetManager<ModelManager>().Model;
 
         private static List<string> conciseSerializationProperties = new List<string>(new string[] { "FQN", "Children" });
         private static List<string> verboseSerializationProperties = new List<string>(new string[] { "Parent", "SourceItem", "Guid", "Value" });
@@ -37,7 +38,7 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage Browse(string fqn, string verbosity = "verbose")
         {
-            List<Item> result = new List<Item>();
+            List<IItem> result = new List<IItem>();
             result.Add(FQNResolver.Resolve(fqn));
 
             JsonMediaTypeFormatter formatter;

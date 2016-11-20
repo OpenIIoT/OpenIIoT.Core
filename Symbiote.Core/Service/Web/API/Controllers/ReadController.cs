@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using Symbiote.Core.Model;
+using Symbiote.Core.SDK;
 
 namespace Symbiote.Core.Service.Web.API
 {
@@ -21,13 +22,13 @@ namespace Symbiote.Core.Service.Web.API
         /// </summary>
         private static ApplicationManager manager = ApplicationManager.GetInstance();
 
-        private static Item model = manager.GetManager<ModelManager>().Model;
+        private static IItem model = manager.GetManager<ModelManager>().Model;
 
         [Route("api/read")]
         [HttpGet]
         public HttpResponseMessage Read()
         {
-            List<Item> result = model.Children;
+            List<IItem> result = model.Children;
             return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn, true));
         }
 
@@ -42,14 +43,14 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage Read(string fqn, bool fromSource)
         {
-            ApiResult<List<Item>> retVal = new ApiResult<List<Item>>(Request);
-            retVal.ReturnValue = new List<Item>();
+            ApiResult<List<IItem>> retVal = new ApiResult<List<IItem>>(Request);
+            retVal.ReturnValue = new List<IItem>();
 
             retVal.LogRequest(logger.Info);
 
             fqn = fqn.Replace("%25", "%");
 
-            Item foundItem = FQNResolver.Resolve(fqn);
+            IItem foundItem = FQNResolver.Resolve(fqn);
 
             if (fromSource)
                 foundItem.ReadFromSource();

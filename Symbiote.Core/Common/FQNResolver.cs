@@ -40,6 +40,8 @@
                                                                                                    ▀▀                            */
 using Symbiote.Core.Model;
 using Symbiote.Core.Plugin;
+using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Plugin;
 
 namespace Symbiote.Core
 {
@@ -98,9 +100,9 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="lookupFQN">The Fully Qualified Name of the Item to locate.</param>
         /// <returns>The located item.</returns>
-        public static Item Resolve(string lookupFQN)
+        public static IItem Resolve(string lookupFQN)
         {
-            Item retVal = default(Item);
+            IItem retVal = default(Item);
 
             ItemSource source = GetSource(lookupFQN);
 
@@ -113,13 +115,13 @@ namespace Symbiote.Core
             {
                 // if the origin is the product, the FQN belongs to a Model item. 
                 // use the ModelManager to look it up.
-                retVal = manager.GetManager<ModelManager>().FindItem(lookupFQN);
+                retVal = manager.GetManager<IModelManager>().FindItem(lookupFQN);
             }
             else
             {
                 // if the origin is something other than the product, the FQN belongs to a plugin item.
                 // use the PluginManager to look it up.
-                retVal = manager.GetManager<PluginManager>().FindPluginItem(lookupFQN);
+                retVal = manager.GetManager<IPluginManager>().FindPluginItem(lookupFQN);
             }
 
             return retVal;

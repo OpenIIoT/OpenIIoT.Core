@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Symbiote.Core.SDK.Plugin;
+using System;
 using System.Collections.Generic;
 
 namespace Symbiote.Core.Plugin

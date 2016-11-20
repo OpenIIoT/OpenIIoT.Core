@@ -40,9 +40,11 @@
                                                                                                    ▀▀                            */
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Symbiote.Core.Configuration;
-using NLog.xLogger;
 using Utility.OperationResult;
+using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Configuration;
+using Symbiote.Core.SDK.Plugin;
+using NLog.xLogger;
 
 namespace Symbiote.Core.Plugin
 {
@@ -56,7 +58,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Gets a list of currently loaded plugin assemblies.
         /// </summary>
-        List<PluginAssembly> PluginAssemblies { get; }
+        List<IPluginAssembly> PluginAssemblies { get; }
 
         /// <summary>
         /// Gets a Dictionary of all Plugin Instances, keyed by instance name.
@@ -66,7 +68,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         /// Gets a list of installed plugins.
         /// </summary>
-        List<Plugin> Plugins { get; }
+        List<IPlugin> Plugins { get; }
 
         /// <summary>
         /// Gets a list of all Plugin Archives.
@@ -93,7 +95,7 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        Task<Result<Plugin>> InstallPluginAsync(PluginArchive archive);
+        Task<Result<IPlugin>> InstallPluginAsync(PluginArchive archive);
 
         /// <summary>
         /// Installs the Plugin contained within the supplied PluginArchive.
@@ -101,7 +103,7 @@ namespace Symbiote.Core.Plugin
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <param name="updatePlugin">When true, bypasses checks that prevent</param>
         /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        Result<Plugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false);
+        Result<IPlugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false);
 
         /// <summary>
         /// Asynchronously uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the default
@@ -109,7 +111,7 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="plugin">The Plugin to uninstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Task<Result> UninstallPluginAsync(Plugin plugin);
+        Task<Result> UninstallPluginAsync(IPlugin plugin);
 
         /// <summary>
         /// Uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the default 
@@ -117,56 +119,56 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="plugin">The Plugin to uninstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result UninstallPlugin(Plugin plugin);
+        Result UninstallPlugin(IPlugin plugin);
 
         /// <summary>
         /// Asynchronously reinstalls the specified Plugin by uninstalling, then installing from the original archive.
         /// </summary>
         /// <param name="plugin">The Plugin to reinstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Task<Result> ReinstallPluginAsync(Plugin plugin);
+        Task<Result> ReinstallPluginAsync(IPlugin plugin);
 
         /// <summary>
         /// Reinstalls the specified Plugin by uninstalling, then installing from the original archive.
         /// </summary>
         /// <param name="plugin">The Plugin to reinstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result ReinstallPlugin(Plugin plugin);
+        Result ReinstallPlugin(IPlugin plugin);
 
         /// <summary>
         /// Asynchronously Updates the Plugin contained within the specified PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        Task<Result<Plugin>> UpdatePluginAsync(PluginArchive archive);
+        Task<Result<IPlugin>> UpdatePluginAsync(PluginArchive archive);
 
         /// <summary>
         /// Updates the Plugin contained within the specified PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        Result<Plugin> UpdatePlugin(PluginArchive archive);
+        Result<IPlugin> UpdatePlugin(PluginArchive archive);
 
         /// <summary>
         /// Searches the Plugins list for a Plugin with an FQN matching the supplied FQN and returns it if found.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Plugin to find.</param>
         /// <returns>The Plugin matching the supplied FQN, or the default Plugin if not found.</returns>
-        Plugin FindPlugin(string fqn);
+        IPlugin FindPlugin(string fqn);
 
         /// <summary>
         /// Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the PluginAssemblies list.
         /// </summary>
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
         /// <returns>A Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
-        Result<PluginAssembly> LoadPluginAssembly(Plugin plugin);
+        Result<IPluginAssembly> LoadPluginAssembly(IPlugin plugin);
 
         /// <summary>
         /// Finds and returns the PluginAssembly in the PluginAssemblies list whose FQN matches the specified FQN.
         /// </summary>
         /// <param name="fqn">The FQN of the desired PluginAssembly.</param>
         /// <returns>The PluginAssembly instance whose FQN matches the specified FQN, or the default PluginAssembly if not found.</returns>
-        PluginAssembly FindPluginAssembly(string fqn);
+        IPluginAssembly FindPluginAssembly(string fqn);
 
         /// <summary>
         /// Creates and returns an instance of the specified plugin type with the specified name
@@ -195,7 +197,7 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the instance to find.</param>
         /// <returns>The found Item.</returns>
-        Item FindPluginItem(string fqn);
+        IItem FindPluginItem(string fqn);
 
         #endregion
     }
