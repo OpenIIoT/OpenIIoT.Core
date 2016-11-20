@@ -47,12 +47,12 @@ using NLog;
 using Symbiote.Core.SDK.Configuration;
 using Symbiote.Core.SDK;
 using Symbiote.Core.Platform;
-using Symbiote.Core.Plugin.Connector;
 using Symbiote.Core.Plugin.Endpoint;
 using NLog.xLogger;
 using Utility.OperationResult;
 using Symbiote.Core.SDK.Plugin;
 using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.Core.SDK.Platform;
 
 namespace Symbiote.Core.Plugin
 {
@@ -578,11 +578,11 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the instance to find.</param>
         /// <returns>The found Item.</returns>
-        public IItem FindPluginItem(string fqn)
+        public Item FindPluginItem(string fqn)
         {
             logger.Trace("Attempting to find Connector Item '" + fqn + "'...");
 
-            IItem retVal = default(Item);
+            Item retVal = default(Item);
 
             IConnector originPlugin = (IConnector)FindPluginInstance(fqn.Split('.')[0]);
 

@@ -1,4 +1,5 @@
 ﻿using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Model;
 using System.Collections.Generic;
 using Utility.OperationResult;
 
@@ -20,12 +21,12 @@ namespace Symbiote.Core.Model
         /// <summary>
         /// The Item model created by the build result.
         /// </summary>
-        public IItem Model { get; set; }
+        public Item Model { get; set; }
 
         /// <summary>
         /// The dictionary of model items and FQNs created by the build result.
         /// </summary>
-        public Dictionary<string, IItem> Dictionary { get; set; }
+        public Dictionary<string, Item> Dictionary { get; set; }
 
         /// <summary>
         /// The list of model items that were resolved during the build.
@@ -42,7 +43,7 @@ namespace Symbiote.Core.Model
         /// occurs if the item's SourceFQN is a model item (instead of a plugin item)
         /// and it is at a greater depth in the model than the item itself.
         /// </summary>
-        public List<IItem> DeferredList { get; set; }
+        public List<Item> DeferredList { get; set; }
 
         /// <summary>
         /// The default constructor.
@@ -50,10 +51,10 @@ namespace Symbiote.Core.Model
         public ModelBuildResult() : base()
         {
             Model = new Item();
-            Dictionary = new Dictionary<string, IItem>();
+            Dictionary = new Dictionary<string, Item>();
             ResolvedList = new List<ModelManagerConfigurationItem>();
             UnresolvedList = new List<ModelManagerConfigurationItem>();
-            DeferredList = new List<IItem>();
+            DeferredList = new List<Item>();
         }
     }
 }

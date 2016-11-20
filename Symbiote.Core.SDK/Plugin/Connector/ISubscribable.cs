@@ -53,7 +53,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// <summary>
         /// The <see cref="Dictionary{TKey, TValue}"/> containing the current list of subscribed items and the number of subscribers for each.
         /// </summary>
-        Dictionary<IConnectorItem, int> Subscriptions { get; }
+        Dictionary<ConnectorItem, int> Subscriptions { get; }
 
         /// <summary>
         /// Creates a subscription to the specified ConnectorItem.
@@ -65,7 +65,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// </remarks>
         /// <param name="item">The <see cref="Item"/> to which the subscription should be added.</param>
         /// <returns>An <see cref="Result"/> containing the result of the operation.</returns>
-        Result Subscribe(IConnectorItem item);
+        Result Subscribe(ConnectorItem item);
 
         /// <summary>
         /// Removes a subscription from the specified ConnectorItem.
@@ -76,6 +76,6 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// </remarks>
         /// <param name="item">The <see cref="Item"/> for which the subscription should be removed.</param>
         /// <returns>An <see cref="Result"/> containing the result of the operation.</returns>
-        Result UnSubscribe(IConnectorItem item);
+        Result UnSubscribe(ConnectorItem item);
     }
 }

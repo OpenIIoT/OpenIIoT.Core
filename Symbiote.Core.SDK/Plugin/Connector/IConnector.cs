@@ -64,40 +64,40 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// Returns the root node of the connector's <see cref="Item"/> tree.
         /// </summary>
         /// <returns>The root node of the connector's Item tree.</returns>
-        IItem Browse();
+        Item Browse();
 
         /// <summary>
         /// Asynchronously returns the root node of the connector's <see cref="Item"/> tree.
         /// </summary>
         /// <returns>The root node of the connector's Item tree.</returns>
-        Task<IItem> BrowseAsync();
+        Task<Item> BrowseAsync();
 
         /// <summary>
         /// Returns a list of the children <see cref="Item"/>s for the specified Item within the connector's Item tree.
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        List<IItem> Browse(IItem root);
+        List<Item> Browse(Item root);
 
         /// <summary>
         /// Asynchronously returns a list of the children <see cref="Item"/>s for the specified Item within the connector's Item tree.
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        Task<List<IItem>> BrowseAsync(IItem root);
+        Task<List<Item>> BrowseAsync(Item root);
 
         /// <summary>
         /// Finds and eturns the <see cref="Item"/> matching the specified Fully Qualified Name.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
         /// <returns>The found Item, or the default(Item) if not found.</returns>
-        IItem Find(string fqn);
+        Item Find(string fqn);
 
         /// <summary>
         /// Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
         /// <returns>The found Item, or the default(Item) if not found.</returns>
-        Task<IItem> FindAsync(string fqn);
+        Task<Item> FindAsync(string fqn);
     }
 }

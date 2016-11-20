@@ -3,14 +3,31 @@ using System.Reflection;
 using System;
 using Newtonsoft.Json;
 using Utility.OperationResult;
+using NLog.xLogger;
+using NLog;
+using Symbiote.Core.SDK.Platform;
 
 namespace Symbiote.Core.Platform
 {
     /// <summary>
     /// The ProgramDirectories class encapsulates the filesystem directories needed to run the application.
     /// </summary>
-    public class PlatformDirectories
+    public class PlatformDirectories : IPlatformDirectories
     {
+        #region Fields
+
+        /// <summary>
+        ///     The Logger for this class.
+        /// </summary>
+        private static xLogger logger = xLogManager.GetCurrentClassxLogger();
+
+        /// <summary>
+        ///     The Platform to be used when loading and checking directories.
+        /// </summary>
+        private IPlatform platform;
+
+        #endregion
+
         #region Properties
 
         /// <summary>
@@ -62,8 +79,10 @@ namespace Symbiote.Core.Platform
         /// Creates an instance of ProgramDirectories using the provided dictionary
         /// </summary>
         /// <param name="directories">A dictionary containing the name and directory for each of the program directores.</param>
-        public PlatformDirectories(Dictionary<string, string> directories)
+        public PlatformDirectories(IPlatform platform, Dictionary<string, string> directories)
         {
+            this.platform = platform;
+
             try
             {
                 Root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
@@ -93,8 +112,10 @@ namespace Symbiote.Core.Platform
         /// <returns>A Result containing the result of the operation.</returns>
         public Result CheckDirectories()
         {
+            logger.EnterMethod();
+
             Result retVal = new Result();
-            IPlatform platform = ApplicationManager.GetInstance().GetManager<PlatformManager>().Platform;
+
             Dictionary<string, string> directories = ToDictionary();
 
             foreach (string directory in directories.Keys)
@@ -105,6 +126,8 @@ namespace Symbiote.Core.Platform
                     retVal.AddWarning("The directory '" + directories[directory] + "' was missing and was recreated.");
                 }
             }
+
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -114,12 +137,16 @@ namespace Symbiote.Core.Platform
         /// <returns>A dictionary containing all of the program directories keyed by name.</returns>
         public Dictionary<string, string> ToDictionary()
         {
+            logger.EnterMethod();
+
             Dictionary<string, string> dictionary = new Dictionary<string, string>();
 
             foreach (PropertyInfo p in this.GetType().GetProperties())
             {
                 dictionary.Add(p.Name, (string)p.GetValue(this));
             }
+
+            logger.ExitMethod(dictionary);
             return dictionary;
         }
 
@@ -133,8 +160,10 @@ namespace Symbiote.Core.Platform
         /// </summary>
         /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
         /// <returns>A Result containing the result of the operation along with a ProgramDirectories instance containing the directories.</returns>
-        public static Result<PlatformDirectories> LoadDirectories(string directories)
+        public static Result<PlatformDirectories> LoadDirectories(IPlatform platform, string directories)
         {
+            logger.EnterMethod(xLogger.Params(platform, directories));
+
             Result<PlatformDirectories> retVal = new Result<PlatformDirectories>();
 
             if (directories == "")
@@ -145,14 +174,16 @@ namespace Symbiote.Core.Platform
                 {
                     // hapazardly try to set all of the directories from the deserialized config json.  if anything goes wrong
                     // an exception will be thrown and we'll handle it.
-                    retVal.ReturnValue = new PlatformDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
+                    retVal.ReturnValue = new PlatformDirectories(platform, JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
                 }
                 catch (Exception ex)
                 {
+                    logger.Exception(LogLevel.Debug, ex);
                     retVal.AddError("Exception thrown while deserializing the list of directories from the configuration file: " + ex);
                 }
             }
 
+            logger.ExitMethod(retVal);
             return retVal;
         }
 

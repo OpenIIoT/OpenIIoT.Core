@@ -47,7 +47,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// <param name="item">The Item to write.</param>
         /// <param name="value">The value to write to the <see cref="Item"/>.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Write(IItem item, object value);
+        Result Write(Item item, object value);
 
         /// <summary>
         /// Asynchronously writes the specified value to the specified <see cref="Item"/>.
@@ -55,6 +55,6 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// <param name="item">The Item to write.</param>
         /// <param name="value">The value to write to the <see cref="Item"/>.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Task<Result> WriteAsync(IItem item, object value);
+        Task<Result> WriteAsync(Item item, object value);
     }
 }

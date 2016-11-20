@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
 using Symbiote.Core.SDK.Configuration;
 using Symbiote.Core.SDK;
@@ -101,22 +100,22 @@ namespace Symbiote.Core.Platform.Windows
             return new Result();
         }
 
-        public IItem Find(string fqn)
+        public Item Find(string fqn)
         {
             return Find(itemRoot, fqn);
         }
 
-        public async Task<IItem> FindAsync(string fqn)
+        public async Task<Item> FindAsync(string fqn)
         {
             return await Task.Run(() => Find(fqn));
         }
 
-        private IItem Find(IItem root, string fqn)
+        private Item Find(Item root, string fqn)
         {
             if (root.FQN == fqn) return root;
 
-            IItem found = default(Item);
-            foreach (IItem child in root.Children)
+            Item found = default(Item);
+            foreach (Item child in root.Children)
             {
                 found = Find(child, fqn);
                 if (found != default(Item)) break;
@@ -124,27 +123,27 @@ namespace Symbiote.Core.Platform.Windows
             return found;
         }
 
-        public IItem Browse()
+        public Item Browse()
         {
             return itemRoot;
         }
 
-        public async Task<IItem> BrowseAsync()
+        public async Task<Item> BrowseAsync()
         {
             return await Task.Run(() => Browse());
         }
 
-        public List<IItem> Browse(IItem root)
+        public List<Item> Browse(Item root)
         {
             return root.Children;
         }
 
-        public async Task<List<IItem>> BrowseAsync(IItem root)
+        public async Task<List<Item>> BrowseAsync(Item root)
         {
             return await Task.Run(() => Browse(root));
         }
 
-        public Result<object> Read(IItem item)
+        public Result<object> Read(Item item)
         {
             Result<object> retVal = new Result<object>();
 
@@ -181,7 +180,7 @@ namespace Symbiote.Core.Platform.Windows
             }
         }
 
-        public async Task<Result<object>> ReadAsync(IItem item)
+        public async Task<Result<object>> ReadAsync(Item item)
         {
             return await Task.Run(() => Read(item));
         }

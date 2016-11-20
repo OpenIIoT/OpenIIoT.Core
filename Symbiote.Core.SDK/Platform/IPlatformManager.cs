@@ -22,7 +22,7 @@
                                                                                                    ▀▀                            */
 using Symbiote.Core.SDK;
 
-namespace Symbiote.Core.Platform
+namespace Symbiote.Core.SDK.Platform
 {
     /// <summary>
     /// The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
@@ -37,6 +37,6 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// A Dictionary containing all of the application directories, loaded from the App.config.
         /// </summary>
-        PlatformDirectories Directories { get; }
+        IPlatformDirectories Directories { get; }
     }
 }

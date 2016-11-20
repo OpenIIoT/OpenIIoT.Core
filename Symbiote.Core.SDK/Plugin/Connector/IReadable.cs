@@ -50,13 +50,13 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// </summary>
         /// <param name="item">The Item to read.</param>
         /// <returns>A Result containing the result of the operation and the current value of the Item.</returns>
-        Result<object> Read(IItem item);
+        Result<object> Read(Item item);
 
         /// <summary>
         /// Asyncronously reads and returns the current value of the specified <see cref="Item"/>
         /// </summary>
         /// <param name="item">The Item to read.</param>
         /// <returns>A Result containing the result of the operation and the current value of the Item.</returns>
-        Task<Result<object>> ReadAsync(IItem item);
+        Task<Result<object>> ReadAsync(Item item);
     }
 }

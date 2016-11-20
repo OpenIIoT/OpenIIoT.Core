@@ -197,7 +197,7 @@ namespace Symbiote.Core.Plugin
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the instance to find.</param>
         /// <returns>The found Item.</returns>
-        IItem FindPluginItem(string fqn);
+        Item FindPluginItem(string fqn);
 
         #endregion
     }

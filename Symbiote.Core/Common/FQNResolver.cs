@@ -41,6 +41,7 @@
 using Symbiote.Core.Model;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Model;
 using Symbiote.Core.SDK.Plugin;
 
 namespace Symbiote.Core
@@ -100,9 +101,9 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="lookupFQN">The Fully Qualified Name of the Item to locate.</param>
         /// <returns>The located item.</returns>
-        public static IItem Resolve(string lookupFQN)
+        public static Item Resolve(string lookupFQN)
         {
-            IItem retVal = default(Item);
+            Item retVal = default(Item);
 
             ItemSource source = GetSource(lookupFQN);
 

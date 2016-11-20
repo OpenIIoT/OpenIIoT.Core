@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using NLog.xLogger;
 using Utility.OperationResult;
 using Symbiote.Core.SDK.Plugin;
+using Symbiote.Core.SDK.Model;
 
 namespace Symbiote.Core.Model
 {
@@ -64,13 +65,13 @@ namespace Symbiote.Core.Model
         /// The root Item for the model.
         /// </summary>
         [JsonIgnore]
-        public IItem Model { get; private set; }
+        public Item Model { get; private set; }
 
         /// <summary>
         /// A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
         /// </summary>
         [JsonIgnore]
-        public Dictionary<string, IItem> Dictionary { get; private set; }
+        public Dictionary<string, Item> Dictionary { get; private set; }
 
         #endregion
 
@@ -279,7 +280,7 @@ namespace Symbiote.Core.Model
         /// Builds a Model using the Model Configuration stored within the ApplicationManager and returns a ModelBuildResult containing the result.
         /// </summary>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
-        public ModelBuildResult BuildModel()
+        private ModelBuildResult BuildModel()
         {
             if (!IsInState(State.Running, State.Starting))
                 return (ModelBuildResult)new Result().AddError("The current operation is invalid in the current state (it is currently in the " + State + " state).");
@@ -347,7 +348,7 @@ namespace Symbiote.Core.Model
             // items so that the source can be resolved after the model is built.
 
             // create an IEnumerable containing a list of all the items in the provided itemList at the requested depth
-            IEnumerable<ModelManagerConfigurationItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth);
+            List<ModelManagerConfigurationItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth).ToList();
 
             // iterate through the list of items
             foreach (ModelManagerConfigurationItem item in items)
@@ -381,7 +382,7 @@ namespace Symbiote.Core.Model
                         // resolve.
                         else
                         {
-                            IItem resolvedItem = FQNResolver.Resolve(newItem.SourceFQN);
+                            Item resolvedItem = FQNResolver.Resolve(newItem.SourceFQN);
 
                             if (resolvedItem == default(Item))
                                 result.AddWarning("The Source FQN '" + newItem.SourceFQN + "' for item '" + newItem.FQN + "' could not be found.");
@@ -423,9 +424,9 @@ namespace Symbiote.Core.Model
             // resolve the source FQNs of any deferred items
             else
             {
-                if (result.DeferredList.Count > 0)
+                if (result.DeferredList.Count() > 0)
                 {
-                    logger.Info("Resolving the SourceFQN of " + result.DeferredList.Count + " deferred Item(s)...");
+                    logger.Info("Resolving the SourceFQN of " + result.DeferredList.Count() + " deferred Item(s)...");
 
                     foreach (Item item in result.DeferredList)
                     {
@@ -437,7 +438,7 @@ namespace Symbiote.Core.Model
                             // make sure the model contains the source FQN
                             if (result.Dictionary.ContainsKey(item.SourceFQN))
                             {
-                                ((Item)result.Dictionary[item.FQN]).SourceItem = result.Dictionary[item.SourceFQN];
+                                result.Dictionary[item.FQN].SourceItem = result.Dictionary[item.SourceFQN];
                                 logger.Info("Resolved the SourceFQN of '" + item.FQN + "' to '" + result.Dictionary[item.FQN].SourceItem.FQN + "'.");
                             }
                             else
@@ -457,7 +458,7 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="modelBuildResult">The built model to attach.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result AttachModel(ModelBuildResult modelBuildResult)
+        private Result AttachModel(ModelBuildResult modelBuildResult)
         {
             logger.Info("Attaching Model...");
 
@@ -483,7 +484,7 @@ namespace Symbiote.Core.Model
         /// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
         /// </summary>
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
-        public Result<List<ModelManagerConfigurationItem>> SaveModel()
+        private Result<List<ModelManagerConfigurationItem>> SaveModel()
         {
             logger.EnterMethod();
             logger.Info("Saving Model...");
@@ -515,11 +516,11 @@ namespace Symbiote.Core.Model
         /// <param name="itemRoot">The ModelItem from which to start recursively updating the list.</param>
         /// <param name="configuration">A Result containing the list of ConfigurationModelItems to update.</param>
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
-        private Result<List<ModelManagerConfigurationItem>> SaveModel(IItem itemRoot, Result<List<ModelManagerConfigurationItem>> configuration)
+        private Result<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, Result<List<ModelManagerConfigurationItem>> configuration)
         {
-            configuration.ReturnValue.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<IApplicationManager>().InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
+            configuration.ReturnValue.Add((ModelManagerConfigurationItem)new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<IApplicationManager>().InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
 
-            foreach (IItem mi in itemRoot.Children)
+            foreach (Item mi in itemRoot.Children)
             {
                 SaveModel(mi, configuration);
             }
@@ -536,10 +537,10 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to add.</param>
         /// <returns>A Result containing the added Item.</returns>
-        public Result<IItem> AddItem(IItem item)
+        public Result<Item> AddItem(Item item)
         {
             if (!IsInState(State.Running, State.Starting))
-                return (Result<IItem>)new Result()
+                return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
 
             return AddItem(Model, Dictionary, item);
@@ -552,12 +553,12 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary to which to add the Item.</param>
         /// <param name="item">The Item to add.</param>
         /// <returns>A Result containing the added Item.</returns>
-        private Result<IItem> AddItem(IItem model, Dictionary<string, IItem> dictionary, IItem item)
+        private Result<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
             if (Dependency<IApplicationManager>().State != State.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
             else logger.Debug("Adding item '" + item.FQN + "' to the model...");
 
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
 
             string parentFQN = GetParentFQNFromItemFQN(item.FQN);
 
@@ -582,7 +583,7 @@ namespace Symbiote.Core.Model
             else
             {
                 // ensure the item hasn't been added already.
-                IItem foundItem = FindItem(dictionary, item.FQN);
+                Item foundItem = FindItem(dictionary, item.FQN);
                 if (foundItem != default(Item))
                     retVal.AddError("The item already exists in the dictionary.");
                 else
@@ -624,7 +625,7 @@ namespace Symbiote.Core.Model
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
         /// <returns>The ModelItem from the Model corresponding to the supplied key.</returns>
         /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
-        public IItem FindItem(string fqn)
+        public Item FindItem(string fqn)
         {
             return FindItem(Dictionary, fqn);
         }
@@ -635,7 +636,7 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary from which to retrieve the item.</param>
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
         /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
-        private IItem FindItem(Dictionary<string, IItem> dictionary, string fqn)
+        private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
         {
             if (dictionary.ContainsKey(fqn))
                 return dictionary[fqn];
@@ -649,17 +650,17 @@ namespace Symbiote.Core.Model
         /// <param name="item">The Item to update.</param>
         /// <param name="sourceItem">The SourceItem with which to update the Item.</param>
         /// <returns>A Result containing the result of the operation and the updated Item.</returns>
-        public Result<IItem> UpdateItem(Item item, IItem sourceItem)
+        public Result<Item> UpdateItem(Item item, Item sourceItem)
         {
             logger.Info("Updating Item '" + item.FQN + "'s SourceItem to '" + sourceItem.FQN + "'...");
 
             if (!IsInState(State.Running, State.Starting))
-                return (Result<IItem>)new Result()
+                return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
 
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
 
-            if (sourceItem != default(IItem))
+            if (sourceItem != default(Item))
             {
                 item.SourceItem = sourceItem;
                 item.SourceFQN = sourceItem.FQN;
@@ -678,10 +679,10 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="item">The Item to remove.</param>
         /// <returns>A Result containing the removed Item.</returns>
-        public Result<IItem> RemoveItem(IItem item)
+        public Result<Item> RemoveItem(Item item)
         {
             if (!IsInState(State.Running, State.Starting))
-                return (Result<IItem>)new Result()
+                return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
 
             return RemoveItem(Dictionary, item);
@@ -693,14 +694,14 @@ namespace Symbiote.Core.Model
         /// <param name="dictionary">The Dictionary from which to remove the Item.</param>
         /// <param name="item">The Item to remove.</param>
         /// <returns>A Result containing the removed Item.</returns>
-        private Result<IItem> RemoveItem(Dictionary<string, IItem> dictionary, IItem item)
+        private Result<Item> RemoveItem(Dictionary<string, Item> dictionary, Item item)
         {
             if (item != default(Item))
                 logger.Info("Removing Item '" + item.FQN + "' from the model...");
             else
-                return new Result<IItem>().AddError("The specified Item is null.");
+                return new Result<Item>().AddError("The specified Item is null.");
 
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
             retVal.ReturnValue = item;
 
             try
@@ -723,7 +724,7 @@ namespace Symbiote.Core.Model
 
                     // iterate over the list of matching items and delete them from the dictionary
                     // note that we can't iterate over dictionary itself while we are changing it, hence the temporary list.
-                    foreach (KeyValuePair<string, IItem> child in dictionary.Where(kvp => kvp.Key.StartsWith(item.FQN + ".")))
+                    foreach (KeyValuePair<string, Item> child in dictionary.Where(kvp => kvp.Key.StartsWith(item.FQN + ".")))
                     {
                         fqnsToDelete.Add(child.Key);
                     }
@@ -750,10 +751,10 @@ namespace Symbiote.Core.Model
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the item.</param>
         /// <returns>A Result containing the moved Item.</returns>
-        public Result<IItem> MoveItem(IItem item, string fqn)
+        public Result<Item> MoveItem(Item item, string fqn)
         {
             if (!IsInState(State.Running, State.Starting))
-                return (Result<IItem>)new Result()
+                return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
 
             return MoveItem(Dictionary, item, fqn);
@@ -766,13 +767,13 @@ namespace Symbiote.Core.Model
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the Item.</param>
         /// <returns>A Result containing the moved Item.</returns>
-        private Result<IItem> MoveItem(Dictionary<string, IItem> dictionary, IItem item, string fqn)
+        private Result<Item> MoveItem(Dictionary<string, Item> dictionary, Item item, string fqn)
         {
             logger.Info("Moving Item '" + item.FQN + "' to new FQN '" + fqn + "'...");
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
 
             // find the parent item first to ensure the provided FQN is valid
-            IItem parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
+            Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
 
             if (parent == default(Item))
                 retVal.AddError("The parent item '" + GetParentFQNFromItemFQN(fqn) + "' was not found in the model.");
@@ -799,10 +800,10 @@ namespace Symbiote.Core.Model
         /// <param name="item">The Item to copy.</param>
         /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
         /// <returns>A Result containing the result of the operation and the newly created Item.</returns>
-        public Result<IItem> CopyItem(IItem item, string fqn)
+        public Result<Item> CopyItem(Item item, string fqn)
         {
             if (!IsInState(State.Running, State.Starting))
-                return (Result<IItem>)new Result()
+                return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
 
             return CopyItem(Model, Dictionary, item, fqn);
@@ -816,14 +817,14 @@ namespace Symbiote.Core.Model
         /// <param name="item">The Item to copy.</param>
         /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
         /// <returns>A Result containing the result of the operation and the newly created Item.</returns>
-        private Result<IItem> CopyItem(IItem model, Dictionary<string, IItem> dictionary, IItem item, string fqn)
+        private Result<Item> CopyItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
             if ((item == null) || (fqn == "")) return retVal;
 
             logger.Info("Copying Item '" + item.FQN + "' to FQN '" + fqn + "'...");
 
-            IItem parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
+            Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
 
             if (parent == default(Item))
                 retVal.AddError("The parent item '" + GetParentFQNFromItemFQN(fqn) + "' was not found in the model.");
@@ -839,7 +840,7 @@ namespace Symbiote.Core.Model
                 if (renameResult.ResultCode != ResultCode.Failure)
                 {
                     // add the new item to the model
-                    Result<IItem> addResult = AddItem(model, dictionary, renameResult.ReturnValue);
+                    Result<Item> addResult = AddItem(model, dictionary, renameResult.ReturnValue);
                     retVal.ReturnValue = addResult.ReturnValue;
 
                     retVal.Incorporate(addResult);
@@ -857,13 +858,13 @@ namespace Symbiote.Core.Model
         /// <param name="item">The Item to attach to the Model.</param>
         /// <param name="parentItem">The Item to which the new Item should be attached.</param>
         /// <returns>A Result containing the result of the operation and the attached Item.</returns>
-        public Result<IItem> AttachItem(IItem item, IItem parentItem)
+        public Result<Item> AttachItem(Item item, Item parentItem)
         {
             if (!IsInState(State.Running, State.Starting))
-                return (Result<IItem>)new Result()
+                return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
 
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
             if ((item == null) || (parentItem == null)) return retVal;
                
             if (Dependency<IApplicationManager>().State != State.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
@@ -882,7 +883,7 @@ namespace Symbiote.Core.Model
                 ((Item)retVal.ReturnValue).FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
 
                 // create a temporary list of the items children
-                List<IItem> children = retVal.ReturnValue.Children.Clone<IItem>();
+                IEnumerable<Item> children = retVal.ReturnValue.Children.Clone<Item>();
 
                 // remove the children from the item (you leave my babies!)
                 retVal.ReturnValue.Children.Clear();
@@ -929,7 +930,7 @@ namespace Symbiote.Core.Model
             retVal.ReturnValue.Name = GetItemNameFromItemFQN(fqn);
             retVal.ReturnValue.FQN = fqn;
 
-            List<IItem> childrenToRename = retVal.ReturnValue.Children.Clone();
+            IEnumerable<Item> childrenToRename = retVal.ReturnValue.Children.Clone();
 
             foreach (Item child in childrenToRename)
             {

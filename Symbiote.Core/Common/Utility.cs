@@ -376,7 +376,7 @@ namespace Symbiote.Core
         /// <param name="indent">The current level of indent to apply.</param>
         /// <param name="levels">The list of indentation levels.</param>
         /// <param name="last">True if the specified element is the last in the current chain.</param>
-        public static void PrintModel(Logger logger, IItem root, int indent, List<bool> levels = null, bool last = false)
+        public static void PrintModel(Logger logger, Item root, int indent, List<bool> levels = null, bool last = false)
         {
             // if indent is zero we are starting with the root.  initialize the list and add the first level.
             if (indent == 0)
@@ -406,7 +406,7 @@ namespace Symbiote.Core
             // print each of the children of this Item
             for (int i = 0; i < root.Children.Count; i++)
             {
-                IItem item = root.Children[i];
+                Item item = root.Children[i];
                 PrintModel(logger, item, indent + 1, levels, i == root.Children.Count - 1);
             }
         }

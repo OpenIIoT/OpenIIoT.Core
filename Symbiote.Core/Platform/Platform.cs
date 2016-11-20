@@ -7,10 +7,10 @@ using NLog;
 using System.Text;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
-using Symbiote.Core.Plugin.Connector;
 using NLog.xLogger;
 using Utility.OperationResult;
 using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.Core.SDK.Platform;
 
 namespace Symbiote.Core.Platform
 {

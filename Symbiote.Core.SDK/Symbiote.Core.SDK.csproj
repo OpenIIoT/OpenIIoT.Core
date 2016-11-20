@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\ContractResolver.cs" />
-    <Compile Include="Common\Item\IItem.cs" />
     <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
     <Compile Include="Common\Manager\IManager.cs" />
@@ -77,11 +76,16 @@
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
+    <Compile Include="Event\EventAttribute.cs" />
     <Compile Include="Event\IEventManager.cs" />
     <Compile Include="Event\IEventProvider.cs" />
     <Compile Include="IApplicationManager.cs" />
+    <Compile Include="Model\IModelManager.cs" />
+    <Compile Include="Platform\IPlatform.cs" />
+    <Compile Include="Platform\IPlatformManager.cs" />
+    <Compile Include="Platform\IPlatformDirectories.cs" />
+    <Compile Include="Platform\PlatformType.cs" />
     <Compile Include="Plugin\Connector\ConnectorItem.cs" />
-    <Compile Include="Plugin\Connector\IConnectorItem.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Plugin\Connector\IExtensible.cs" />
     <Compile Include="Plugin\Connector\IReadable.cs" />

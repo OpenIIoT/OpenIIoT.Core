@@ -45,16 +45,16 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Symbiote.Core.Plugin.Connector;
 using Utility.OperationResult;
 using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Plugin.Connector;
 
 namespace Symbiote.Core.SDK
 {
     /// <summary>
     /// Represents a single data entity within the application Model.
     /// </summary>
-    public class Item : ICloneable, IItem
+    public class Item : ICloneable
     {
         #region Fields
 
@@ -140,7 +140,7 @@ namespace Symbiote.Core.SDK
             Guid = Guid.NewGuid();
 
             // instantiate the list of children
-            Children = new List<IItem>();
+            Children = new List<Item>();
 
             // if we are creating the root item, make Parent self-referential.
             if (isRoot)
@@ -171,7 +171,7 @@ namespace Symbiote.Core.SDK
         /// <summary>
         /// Gets the Item's parent Item.
         /// </summary>
-        public IItem Parent { get; private set; }
+        public Item Parent { get; private set; }
 
         /// <summary>
         /// Gets or sets the name of the Item; corresponds to the final tuple of the FQN.
@@ -196,7 +196,7 @@ namespace Symbiote.Core.SDK
         /// <summary>
         /// Gets or sets the Item instance resolved from the SourceFQN.
         /// </summary>
-        public IItem SourceItem { get; set; }
+        public Item SourceItem { get; set; }
 
         /// <summary>
         /// Gets a Guid for the Item, generated when it is instantiated.
@@ -216,7 +216,7 @@ namespace Symbiote.Core.SDK
         /// <summary>
         /// Gets the collection of Items contained within this Item.
         /// </summary>
-        public List<IItem> Children { get; private set; }
+        public List<Item> Children { get; private set; }
 
         #endregion
 
@@ -241,7 +241,7 @@ namespace Symbiote.Core.SDK
             retVal.Name = Name;
             retVal.Path = Path;
             retVal.Parent = Parent;
-            retVal.Children = Children.Clone<IItem>();
+            retVal.Children = Children.Clone<Item>();
             return retVal;
         }
 
@@ -255,9 +255,9 @@ namespace Symbiote.Core.SDK
         /// <param name="parent">The Item to set as the Item's parent.</param>
         /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the current Item.</returns>
-        public virtual Result<IItem> SetParent(IItem parent)
+        public virtual Result<Item> SetParent(Item parent)
         {
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
 
             // update the Path and FQN to match the parent values
             // this is set in the constructor however this code will prevent issues if items are moved.
@@ -280,14 +280,14 @@ namespace Symbiote.Core.SDK
         /// <param name="item">The Item to add.</param>
         /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the added Item.</returns>
-        public virtual Result<IItem> AddChild(IItem item)
+        public virtual Result<Item> AddChild(Item item)
         {
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
            
-            if (item != default(IItem))
+            if (item != default(Item))
             {
                 // set the new child's parent to this before adding it
-                Result<IItem> setResult = item.SetParent(this);
+                Result<Item> setResult = item.SetParent(this);
 
                 // ensure that went ok
                 if (setResult.ResultCode != ResultCode.Failure)
@@ -313,9 +313,9 @@ namespace Symbiote.Core.SDK
         /// <param name="item">The Item to remove.</param>
         /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the removed Item.</returns>
-        public virtual Result<IItem> RemoveChild(IItem item)
+        public virtual Result<Item> RemoveChild(Item item)
         {
-            Result<IItem> retVal = new Result<IItem>();
+            Result<Item> retVal = new Result<Item>();
             System.Diagnostics.Debug.WriteLine("Removing " + item.FQN);
 
             // locate the item
@@ -331,7 +331,7 @@ namespace Symbiote.Core.SDK
                 // lock the Children collection
                 lock (childrenLock)
                 {
-                    List<IItem> childrenToRemove = retVal.ReturnValue.Children.Clone();
+                    IList<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
 
                     // if it was found, recursively remove all children before removing the found Item
                     foreach (Item child in childrenToRemove)

@@ -23,12 +23,10 @@
 using Newtonsoft.Json;
 using NLog;
 using NLog.xLogger;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Plugin.Connector;
 using System.Threading.Tasks;
 using Utility.OperationResult;
 
-namespace Symbiote.Core.Plugin.Connector
+namespace Symbiote.Core.SDK.Plugin.Connector
 {
     /// <summary>
     ///     ConnectorItem is an extension of the <see cref="Item"/> class.  This class represents Items that are provided by <see cref="Connector"/> 
@@ -108,7 +106,7 @@ namespace Symbiote.Core.Plugin.Connector
         public Result<ConnectorItem> SetParent(ConnectorItem parent)
         {
             Result<ConnectorItem> retVal = new Result<ConnectorItem>();
-            Result<IItem> setResult = base.SetParent((Item)parent);
+            Result<Item> setResult = base.SetParent((Item)parent);
 
             retVal.ReturnValue = (ConnectorItem)setResult.ReturnValue;
             retVal.Incorporate(setResult);
@@ -119,7 +117,7 @@ namespace Symbiote.Core.Plugin.Connector
         public Result<ConnectorItem> AddChild(ConnectorItem pluginItem)
         {
             Result<ConnectorItem> retVal = new Result<ConnectorItem>();
-            Result<IItem> addResult = base.AddChild((Item)pluginItem);
+            Result<Item> addResult = base.AddChild((Item)pluginItem);
 
             retVal.ReturnValue = (ConnectorItem)addResult.ReturnValue;
             retVal.Incorporate(addResult);
@@ -129,7 +127,7 @@ namespace Symbiote.Core.Plugin.Connector
         public Result<ConnectorItem> RemoveChild(ConnectorItem pluginItem)
         {
             Result<ConnectorItem> retVal = new Result<ConnectorItem>();
-            Result<IItem> removeResult = base.RemoveChild(pluginItem);
+            Result<Item> removeResult = base.RemoveChild(pluginItem);
 
             retVal.ReturnValue = (ConnectorItem)removeResult.ReturnValue;
             retVal.Incorporate(removeResult);
@@ -211,10 +209,17 @@ namespace Symbiote.Core.Plugin.Connector
 
         public override Result SubscribeToSource()
         {
+            logger.EnterMethod();
+
+            Result retVal = new Result();
+
             if (Connector is ISubscribable)
-                return ((ISubscribable)Connector).Subscribe((IConnectorItem)this);
+                retVal = ((ISubscribable)Connector).Subscribe((ConnectorItem)this);
             else
-                return new Result().AddError("The source Connector is not subscribable");
+                retVal = new Result().AddError("The source Connector is not subscribable");
+
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
         #endregion

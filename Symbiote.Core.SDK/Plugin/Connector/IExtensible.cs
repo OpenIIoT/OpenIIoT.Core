@@ -91,7 +91,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// <param name="fqn">The Fully Qualifed Name of the <see cref="Item"/> to add.</param>
         /// <param name="sourceFQN">The Fully Qualified Source Name of the backing data point or structure.</param>
         /// <returns>A Result containing the result of the operation and the newly created Item.</returns>
-        Result<IItem> AddItem(string fqn, string sourceFQN);
+        Result<Item> AddItem(string fqn, string sourceFQN);
 
         /// <summary>
         /// Removes a user defined <see cref="Item"/> from the Connector Plugin's data structure.

@@ -40,7 +40,7 @@
                                                                                                    ▀▀                            */
 using System;
 
-namespace Symbiote.Core.Event
+namespace Symbiote.Core.SDK.Event
 {
     /// <summary>
     /// Creates the Event attribute for system Events.
