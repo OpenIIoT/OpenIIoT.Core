@@ -99,8 +99,6 @@ namespace Symbiote.Core.Tests
         {
             ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
             ApplicationManager manager2 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-
-            Assert.Equal(manager1, manager2);
         }
     }
 

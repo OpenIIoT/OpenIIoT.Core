@@ -42,7 +42,7 @@
 using Symbiote.Core.SDK;
 using Symbiote.Core.SDK.Event;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.SDK
 {
     /// <summary>
     /// Defines the interface for Managers.

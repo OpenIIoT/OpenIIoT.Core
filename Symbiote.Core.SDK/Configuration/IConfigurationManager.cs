@@ -38,6 +38,8 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Configuration;
 using System;
 using System.Collections.Generic;
 using Utility.OperationResult;
