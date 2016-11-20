@@ -122,16 +122,28 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Unit tests for the ApplicationManager class.
+    ///     Tests invocation of <see cref="ApplicationManager.GetInstance"/> prior to initialization. 
     /// </summary>
-    public class ApplicationManagerTests
+    /// <remarks>
+    ///     Presented in a distinct class to enforce execution order.
+    /// </remarks>
+    public class ApplicationManagerPrematureInstanceTest
     {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.  
+        /// </summary>
         [Fact]
         public void TestGetInstanceBeforeInstantiation()
         {
             Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
         }
+    }
 
+    /// <summary>
+    ///     Unit tests for the ApplicationManager class.
+    /// </summary>
+    public class ApplicationManagerTests
+    {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a null Type array.
         /// </summary>
