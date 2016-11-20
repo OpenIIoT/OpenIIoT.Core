@@ -1,5 +1,6 @@
-<h1><img src="http://symbiote.io/images/symbiote.png" width=36 height=36/>Symbiote</h1>
+<h1><img src="http://symbiote.io/images/symbiote.png" width=32 height=32/>Symbiote</h1>
 
+[![Build status](https://ci.appveyor.com/api/projects/status/d1258j4683ffy87g?svg=true)](https://ci.appveyor.com/project/SymbioteAdmin/symbiote-core)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/jpdillingham/Symbiote/blob/master/LICENSE)
 
 ## About
