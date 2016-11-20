@@ -214,3 +214,6 @@ ModelManifest.xml
 # Documentation
 Documentation/Help/*
 Symbiote.Documentation/Help/*
+
+# OpenCover
+OpenCover/*
