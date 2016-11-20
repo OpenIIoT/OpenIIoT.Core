@@ -1,7 +1,8 @@
-﻿using System;
+﻿using Symbiote.Core.SDK.Model;
+using System;
 using System.Collections.Generic;
 
-namespace Symbiote.Core.Model
+namespace Symbiote.Core.SDK.Model
 {
     /// <summary>
     /// A class representing the configuration items for the Model Manager.

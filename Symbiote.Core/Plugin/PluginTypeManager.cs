@@ -1,5 +1,7 @@
 ﻿using NLog;
 using NLog.xLogger;
+using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Plugin;
 using System;
 using System.Collections.Generic;
 using System.Linq;

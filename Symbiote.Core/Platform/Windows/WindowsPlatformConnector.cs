@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.Plugin.Connector;
 using System.Diagnostics;
-using Symbiote.Core.Configuration;
+using Symbiote.Core.SDK.Configuration;
+using Symbiote.Core.SDK;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 using System.Linq;
 using Utility.OperationResult;
+using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.Core.SDK.Plugin;
 
 namespace Symbiote.Core.Platform.Windows
 {
@@ -24,6 +26,7 @@ namespace Symbiote.Core.Platform.Windows
         public string FQN { get; private set; }
         public string Version { get; private set; }
         public PluginType PluginType { get; private set; }
+        public string Fingerprint { get; private set; }
         public ConfigurationDefinition ConfigurationDefinition { get; private set; }
         public string InstanceName { get; private set; }
 
@@ -75,6 +78,11 @@ namespace Symbiote.Core.Platform.Windows
         public virtual bool IsInState(params State[] states)
         {
             return states.Any(s => s == State);
+        }
+
+        public void SetFingerprint(string fingerprint)
+        {
+            Fingerprint = fingerprint;
         }
 
         public Result Start()

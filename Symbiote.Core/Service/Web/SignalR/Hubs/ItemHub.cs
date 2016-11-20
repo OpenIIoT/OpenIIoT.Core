@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using Symbiote.Core.Model;
 using Utility.OperationResult;
+using Symbiote.Core.SDK;
 
 namespace Symbiote.Core.Service.Web.SignalR
 {

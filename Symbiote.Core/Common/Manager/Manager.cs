@@ -45,8 +45,9 @@ using System.Linq;
 using System.Timers;
 using NLog;
 using NLog.xLogger;
-using Symbiote.Core.Event;
 using Utility.OperationResult;
+using Symbiote.Core.SDK.Event;
+using Symbiote.Core.SDK;
 
 namespace Symbiote.Core
 {
@@ -425,7 +426,7 @@ namespace Symbiote.Core
         /// <typeparam name="T">The Type of Manager to return.</typeparam>
         /// <returns>The resolved instance of the specified Manager Type.</returns>
         /// <exception cref="DependencyNotResolvedException">Thrown if the specified Type is not found in the <see cref="Dependencies"/> dictionary.</exception>
-        protected virtual T Dependency<T>()
+        protected T Dependency<T>()
         {
             if (!Dependencies.ContainsKey(typeof(T)))
             {
@@ -441,7 +442,7 @@ namespace Symbiote.Core
         /// <typeparam name="T">The Type of Manager to add.</typeparam>
         /// <param name="manager">The resolved instance of the specified Manager Type.</param>
         /// <returns>The added IManager instance.</returns>
-        protected virtual T RegisterDependency<T>(IManager manager)
+        protected T RegisterDependency<T>(IManager manager)
         {
             Dependencies.Add(typeof(T), manager);
             manager.StateChanged += DependencyStateChanged;
@@ -455,7 +456,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="states">The list of <see cref="Core.State"/> to which the state of each dependency will be compared.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected virtual Result DependenciesAreAllInState(params State[] states)
+        protected Result DependenciesAreAllInState(params State[] states)
         {
             logger.EnterMethod();
             Result retVal = new Result();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Symbiote.Core.SDK;
+using System.Collections.Generic;
 using System.Net.Http.Formatting;
 
 namespace Symbiote.Core.Service.Web.API

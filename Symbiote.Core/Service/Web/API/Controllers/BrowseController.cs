@@ -6,6 +6,7 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using NLog;
 using Symbiote.Core.Model;
+using Symbiote.Core.SDK;
 
 namespace Symbiote.Core.Service.Web.API
 {

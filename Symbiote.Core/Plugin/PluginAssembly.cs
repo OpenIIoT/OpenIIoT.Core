@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Symbiote.Core.SDK.Plugin;
+using System;
 using System.Reflection;
 
 namespace Symbiote.Core.Plugin
@@ -6,7 +7,7 @@ namespace Symbiote.Core.Plugin
     /// <summary>
     /// The PluginAssembly class represents a plugin for which the assembly file has been loaded.
     /// </summary>
-    public class PluginAssembly : IPlugin
+    public class PluginAssembly : IPlugin, IPluginAssembly
     {
         /// <summary>
         /// The name of the Plugin.
@@ -64,6 +65,11 @@ namespace Symbiote.Core.Plugin
             Fingerprint = fingerprint;
             Type = type;
             Assembly = assembly;
+        }
+
+        public void SetFingerprint(string fingerprint)
+        {
+            Fingerprint = fingerprint;
         }
     }
 }

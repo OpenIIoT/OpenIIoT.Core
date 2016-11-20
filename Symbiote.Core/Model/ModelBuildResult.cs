@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Model;
+using System.Collections.Generic;
 using Utility.OperationResult;
 
 namespace Symbiote.Core.Model

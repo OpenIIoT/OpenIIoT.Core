@@ -1,4 +1,6 @@
-﻿namespace Symbiote.Core.Plugin
+﻿using Symbiote.Core.SDK.Plugin;
+
+namespace Symbiote.Core.Plugin
 {
     /// <summary>
     /// The Plugin class represents Plugins that have been installed but not yet loaded.

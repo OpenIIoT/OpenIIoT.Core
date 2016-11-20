@@ -27,6 +27,8 @@ using System.Collections.Generic;
 using NLog;
 using NLog.xLogger;
 using Utility.OperationResult;
+using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Platform;
 
 namespace Symbiote.Core.Platform
 {
@@ -85,7 +87,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         /// A Dictionary containing all of the application directories, loaded from the App.config.
         /// </summary>
-        public PlatformDirectories Directories { get; private set; }
+        public IPlatformDirectories Directories { get; private set; }
 
         #endregion
 
@@ -171,7 +173,7 @@ namespace Symbiote.Core.Platform
             //  replace the pipe character placeholder with the platform specific directory separator
             directoryList = directoryList.Replace('|', System.IO.Path.DirectorySeparatorChar);
 
-            Result<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(directoryList);
+            Result<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(Platform, directoryList);
 
             if (loadDirectoryResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to load application directory list: " + loadDirectoryResult.GetLastError());

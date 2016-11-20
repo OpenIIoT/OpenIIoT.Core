@@ -2,11 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Symbiote.Core.Configuration;
+using Symbiote.Core.SDK.Configuration;
+using Symbiote.Core.SDK;
 using Symbiote.Core.Plugin;
 using Newtonsoft.Json;
 using NLog.xLogger;
 using Utility.OperationResult;
+using Symbiote.Core.SDK.Plugin;
+using Symbiote.Core.SDK.Model;
 
 namespace Symbiote.Core.Model
 {
@@ -277,7 +280,7 @@ namespace Symbiote.Core.Model
         /// Builds a Model using the Model Configuration stored within the ApplicationManager and returns a ModelBuildResult containing the result.
         /// </summary>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
-        public ModelBuildResult BuildModel()
+        private ModelBuildResult BuildModel()
         {
             if (!IsInState(State.Running, State.Starting))
                 return (ModelBuildResult)new Result().AddError("The current operation is invalid in the current state (it is currently in the " + State + " state).");
@@ -345,7 +348,7 @@ namespace Symbiote.Core.Model
             // items so that the source can be resolved after the model is built.
 
             // create an IEnumerable containing a list of all the items in the provided itemList at the requested depth
-            IEnumerable<ModelManagerConfigurationItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth);
+            List<ModelManagerConfigurationItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth).ToList();
 
             // iterate through the list of items
             foreach (ModelManagerConfigurationItem item in items)
@@ -421,9 +424,9 @@ namespace Symbiote.Core.Model
             // resolve the source FQNs of any deferred items
             else
             {
-                if (result.DeferredList.Count > 0)
+                if (result.DeferredList.Count() > 0)
                 {
-                    logger.Info("Resolving the SourceFQN of " + result.DeferredList.Count + " deferred Item(s)...");
+                    logger.Info("Resolving the SourceFQN of " + result.DeferredList.Count() + " deferred Item(s)...");
 
                     foreach (Item item in result.DeferredList)
                     {
@@ -455,7 +458,7 @@ namespace Symbiote.Core.Model
         /// </summary>
         /// <param name="modelBuildResult">The built model to attach.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result AttachModel(ModelBuildResult modelBuildResult)
+        private Result AttachModel(ModelBuildResult modelBuildResult)
         {
             logger.Info("Attaching Model...");
 
@@ -481,7 +484,7 @@ namespace Symbiote.Core.Model
         /// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
         /// </summary>
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
-        public Result<List<ModelManagerConfigurationItem>> SaveModel()
+        private Result<List<ModelManagerConfigurationItem>> SaveModel()
         {
             logger.EnterMethod();
             logger.Info("Saving Model...");
@@ -515,7 +518,7 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
         private Result<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, Result<List<ModelManagerConfigurationItem>> configuration)
         {
-            configuration.ReturnValue.Add(new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<IApplicationManager>().InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
+            configuration.ReturnValue.Add((ModelManagerConfigurationItem)new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<IApplicationManager>().InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
 
             foreach (Item mi in itemRoot.Children)
             {
@@ -568,9 +571,9 @@ namespace Symbiote.Core.Model
                 {
                     // update the model root item with the details of the supplied item
                     logger.Trace("Setting Model root to a new instance of ModelItem()");
-                    model.Name = item.Name;
-                    model.FQN = item.FQN;
-                    model.Path = item.Path;
+                    ((Item)model).Name = item.Name;
+                    ((Item)model).FQN = item.FQN;
+                    ((Item)model).Path = item.Path;
                     logger.Trace("Adding item to dictionary with key: " + item.FQN);
                     dictionary.Add(model.FQN, model);
 
@@ -873,14 +876,14 @@ namespace Symbiote.Core.Model
                 retVal.ReturnValue = (Item)item.Clone();
 
                 // set the SourceFQN of the new item to the FQN of the original item to create a link
-                retVal.ReturnValue.SourceFQN = retVal.ReturnValue.FQN;
-                retVal.ReturnValue.SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN);
+                ((Item)retVal.ReturnValue).SourceFQN = retVal.ReturnValue.FQN;
+                ((Item)retVal.ReturnValue).SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN);
 
                 // modify the FQN of the cloned item to reflect it's new path
-                retVal.ReturnValue.FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
+                ((Item)retVal.ReturnValue).FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
 
                 // create a temporary list of the items children
-                List<Item> children = retVal.ReturnValue.Children.Clone<Item>();
+                IEnumerable<Item> children = retVal.ReturnValue.Children.Clone<Item>();
 
                 // remove the children from the item (you leave my babies!)
                 retVal.ReturnValue.Children.Clear();
@@ -927,7 +930,7 @@ namespace Symbiote.Core.Model
             retVal.ReturnValue.Name = GetItemNameFromItemFQN(fqn);
             retVal.ReturnValue.FQN = fqn;
 
-            List<Item> childrenToRename = retVal.ReturnValue.Children.Clone();
+            IEnumerable<Item> childrenToRename = retVal.ReturnValue.Children.Clone();
 
             foreach (Item child in childrenToRename)
             {
