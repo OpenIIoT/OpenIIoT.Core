@@ -284,6 +284,25 @@ namespace Symbiote.Core
             return instance;
         }
 
+        public static void Terminate()
+        {
+            if (instance != null)
+            {
+                instance.Dispose();
+            }
+
+            instance = null;
+        }
+
+        /// <summary>
+        ///     Returns a value indicating whether the Singleton instance of ApplicationManager has been initialized.
+        /// </summary>
+        /// <returns>A value indicating whether the Singleton instance of ApplicationManager has been initialized.</returns>
+        public static bool IsInitialized()
+        {
+            return instance != null;
+        }
+
         #endregion
 
         #region Public Instance Methods
@@ -367,6 +386,16 @@ namespace Symbiote.Core
             return retVal;
         }
 
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (disposing)
+            {
+                instance = null;
+            }
+        }
+
         #endregion
 
         #endregion
@@ -392,52 +421,81 @@ namespace Symbiote.Core
         /// <summary>
         ///     Iterates over the list of <see cref="IManager"/> Types and instantiates each in the order in which they are represented in the list.
         /// </summary>
-        /// <exception cref="MissingMethodException">Thrown when a reflected method can not be found.</exception>
-        /// <exception cref="ManagerInstantiationException">Thrown when the instantiation of a Manager returns an abnormal result.</exception>
+        /// <exception cref="ManagerInstantiationException">Thrown when the instantiation or registration of a Manager returns an abnormal result.</exception>
         private void InstantiateManagers()
         {
             logger.EnterMethod();
             logger.Trace("Instantiating Managers...");
 
-            // iterate over the list
+            // iterate over the list of Manager Types specified in the constructor and create and register an instance of each
             foreach (Type managerType in ManagerTypes)
             {
                 logger.SubHeading(LogLevel.Debug, managerType.Name);
+
+                // instantiate the manager
                 logger.Debug("Instantiating '" + managerType.Name + "'...");
+                IManager manager = InvokeInstantiateManager(managerType);
+                logger.Debug("Successfully instantiated '" + manager.GetType().Name + "'.  Registering...");
 
-                // find the InstantiateManager() method so that we can invoke it via reflection
-                MethodInfo instantiateMethod = GetType().GetMethod("InstantiateManager", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (instantiateMethod == default(MethodInfo))
-                {
-                    throw new MissingMethodException("Failed to find the 'InstantiateManager' method within the '" + GetType().Name + "' class.");
-                }
+                // register the manager
+                logger.Debug("Registering '" + managerType.Name + "'...");
+                InvokeRegisterManager(manager);
+                logger.Debug("Successfully registered '" + manager.GetType().Name + "'.");
+            }
 
-                // create a generic method using the current Type and invoke it
-                MethodInfo genericInstantiateMethod = instantiateMethod.MakeGenericMethod(managerType);
-                IManager manager = (IManager)genericInstantiateMethod.Invoke(this, null);
+            logger.ExitMethod();
+        }
 
-                // ensure the resulting IManager is valid
-                if (manager != default(IManager))
-                {
-                    logger.Debug("Successfully instantiated '" + manager.GetType().Name + "'.  Registering...");
+        /// <summary>
+        ///     Invokes <see cref="InstantiateManager{T}"/> with the specified Manager type.
+        /// </summary>
+        /// <param name="managerType">The Type of the Manager to be instantiated.</param>
+        /// <returns>The created Manager instance.</returns>
+        private IManager InvokeInstantiateManager(Type managerType)
+        {
+            logger.EnterMethod(xLogger.Params(managerType));
 
-                    // find the RegisterManager() method and make sure it was found
-                    MethodInfo registerMethod = GetType().GetMethod("RegisterManager", BindingFlags.NonPublic | BindingFlags.Instance, null, CallingConventions.Any, new Type[] { typeof(IManager) }, null);
-                    if (registerMethod == default(MethodInfo))
-                    {
-                        throw new MissingMethodException("Failed to find the 'RegisterManager' method within the '" + GetType().Name + "' class.");
-                    }
+            // find the InstantiateManager() method and create a generic method with the specified Type
+            MethodInfo instantiateMethod = GetType().GetMethod("InstantiateManager", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo genericInstantiateMethod = instantiateMethod.MakeGenericMethod(managerType);
 
-                    // create a generic method using the current Type and invoke it
-                    MethodInfo genericRegisterMethod = registerMethod.MakeGenericMethod(managerType);
-                    genericRegisterMethod.Invoke(this, new object[] { manager });
+            IManager retVal = default(IManager);
 
-                    logger.Debug("Successfully registered '" + manager.GetType().Name + "'.");
-                }
-                else
-                {
-                    throw new ManagerInstantiationException("Instantiation of Manager '" + managerType.Name + "' returned an abnormal response.");
-                }
+            try
+            {
+                retVal = (IManager)genericInstantiateMethod.Invoke(this, null);
+            }
+            catch (TargetInvocationException ex)
+            {
+                logger.Exception(LogLevel.Debug, ex);
+                throw new ManagerInstantiationException("Error instantiating Manager '" + managerType.Name + "'.  See inner exception for details.", ex);
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Invokes <see cref="RegisterManager{T}(IManager)"/> with the specified Manager instance.
+        /// </summary>
+        /// <param name="manager">The Manager instance to register.</param>
+        /// <exception cref="ManagerInstantiationException">Thrown when an exception is encountered when invoking the <see cref="RegisterManager{T}(IManager)"/> method.</exception>
+        private void InvokeRegisterManager(IManager manager)
+        {
+            logger.EnterMethod(xLogger.Params(manager));
+
+            // find the RegisterManager() method and create a generic method with the Type of specified Manager instance.
+            MethodInfo registerMethod = GetType().GetMethod("RegisterManager", BindingFlags.NonPublic | BindingFlags.Instance, null, CallingConventions.Any, new Type[] { typeof(IManager) }, null);
+            MethodInfo genericRegisterMethod = registerMethod.MakeGenericMethod(manager.GetType());
+
+            try
+            {
+                genericRegisterMethod.Invoke(this, new object[] { manager });
+            }
+            catch (TargetInvocationException ex)
+            {
+                logger.Exception(LogLevel.Debug, ex);
+                throw new ManagerInstantiationException("Error registering Manager '" + manager.GetType().Name + "'.  See inner exception for details.", ex);
             }
 
             logger.ExitMethod();
@@ -459,39 +517,21 @@ namespace Symbiote.Core
 
             try
             {
-                // use reflection to locate the static Instantiate() method, then check to make sure it was found.
+                // use reflection to locate the static Instantiate() method in the target class, then check to make sure it was found.
                 MethodInfo method = typeof(T).GetMethod("Instantiate", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
-                if (method == default(MethodInfo))
-                {
-                    throw new MissingMethodException("Method 'Instantiate' not found in class '" + typeof(T).Name + "'.");
-                }
 
-                // use reflection to locate the static ResolveManagerDependencies() method, then check to make sure it was found.
+                // use reflection to locate the static ResolveManagerDependencies() method, create a generic version with the type for the 
+                // manager we are trying to instantiate, then invoke it.
                 MethodInfo resolveMethod = GetType().GetMethod("ResolveManagerDependencies", BindingFlags.NonPublic | BindingFlags.Instance);
-                if (resolveMethod == default(MethodInfo))
-                {
-                    throw new MissingMethodException("Method 'ResolveManagerDependencies' was not found in class '" + GetType().Name + "'.");
-                }
-
-                // make a generic version of ResolveManagerDependencies() using the specified type, then invoke it and
-                // check the result to ensure it is valid.
                 MethodInfo genericResolveMethod = resolveMethod.MakeGenericMethod(typeof(T));
                 List<IManager> resolvedDependencies = (List<IManager>)genericResolveMethod.Invoke(this, new object[] { });
-                if (resolvedDependencies == default(List<IManager>))
-                {
-                    throw new ManagerInstantiationException("Failed to resolve Manager dependencies for '" + typeof(T) + "'.");
-                }
 
                 // invoke the Instantiate() method and pass the resolved dependencies from the step above.
                 // store the result in instance, then check to make sure it is not null and ensure that it implements IManager.
                 instance = (T)method.Invoke(null, resolvedDependencies.ToArray());
-                if (instance == null)
+                if (!(instance is IManager))
                 {
-                    throw new ManagerInstantiationException("Instantiate() method invocation from '" + typeof(T).Name + "' returned no result.");
-                }
-                else if (!(instance is IManager))
-                {
-                    throw new ManagerInstantiationException("The instance returned by Instantiate() method invocation from '" + typeof(T).Name + "' does not implement the IManager interface.");
+                    throw new ManagerInstantiationException("The instance returned by Instantiate() method invocation from '" + typeof(T).Name + "' is invalid.");
                 }
 
                 logger.Trace("Successfully instantiated '" + instance.GetType().Name + "'.");
@@ -545,11 +585,6 @@ namespace Symbiote.Core
             logger.Debug("Performing Setup for Manager '" + manager.GetType() + "'...");
 
             MethodInfo method = manager.GetType().GetMethod("Setup", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            if (method == default(MethodInfo))
-            {
-                throw new MissingMethodException("Unable to find method 'Setup()' in Type '" + manager.GetType() + "'.");
-            }
 
             try
             {
@@ -780,13 +815,8 @@ namespace Symbiote.Core
                     throw new MissingMethodException("Unable to find the Instantiate() method in Type '" + typeof(T).Name + "'.");
                 }
 
-                // fetch the parameters. throw an exception if there isn't at least one (each Manager depends on ApplicationManager at a minimum.)
+                // fetch the parameters abd add them to the return list.
                 ParameterInfo[] parameters = method.GetParameters();
-
-                if (parameters.Length == 0)
-                {
-                    throw new ManagerDependencyException("The Instantiate method of the '" + typeof(T).Name + "' manager contains no dependencies.");
-                }
 
                 foreach (ParameterInfo p in parameters)
                 {
@@ -820,13 +850,8 @@ namespace Symbiote.Core
 
             try
             {
-                // find the GetManager() method and check to ensure it was found
+                // find the GetManager() method
                 MethodInfo getManager = GetType().GetMethod("GetManager", BindingFlags.Public | BindingFlags.Instance);
-                if (getManager == default(MethodInfo))
-                {
-                    throw new MissingMethodException("Method 'GetManager' was not found in class '" + GetType().Name + "'.");
-                }
-
                 MethodInfo getManagerGeneric;
 
                 // retrieve dependencies for the specified Manager
@@ -844,9 +869,15 @@ namespace Symbiote.Core
 
                     IManager manager;
 
-                    getManagerGeneric = getManager.MakeGenericMethod(t);
-
-                    manager = (IManager)getManagerGeneric.Invoke(this, new object[] { });
+                    try
+                    {
+                        getManagerGeneric = getManager.MakeGenericMethod(t);
+                        manager = (IManager)getManagerGeneric.Invoke(this, new object[] { });
+                    }
+                    catch (TargetInvocationException ex)
+                    {
+                        throw new ManagerDependencyException("Failed to resolve dependency '" + t.Name + "'. See inner exception for details.", ex);
+                    }                  
 
                     if ((IManager)manager == default(IManager))
                     {

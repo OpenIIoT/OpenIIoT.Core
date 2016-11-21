@@ -46,6 +46,10 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.3.0\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Utility.OperationResult, Version=0.9.0.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Utility.OperationResult.0.9.0.5\lib\Utility.OperationResult.dll</HintPath>
       <Private>True</Private>
@@ -79,6 +83,11 @@
     <Compile Include="Common\Item\ItemTests.cs" />
     <Compile Include="Common\Manager\ManagerTests.cs" />
     <Compile Include="Common\State\StateTests.cs" />
+    <Compile Include="Mockups\MockManagerDoesntImplementIManager.cs" />
+    <Compile Include="Mockups\MockManagerBadInstantiate.cs" />
+    <Compile Include="Mockups\MockManagerBadDependency.cs" />
+    <Compile Include="Mockups\MockManagerNoInstantiate.cs" />
+    <Compile Include="Mockups\MockManagerNoDependencies.cs" />
     <Compile Include="Mockups\MockManager.cs" />
     <Compile Include="Mockups\MockManagerBroken.cs" />
     <Compile Include="ApplicationManagerTests.cs" />
