@@ -414,7 +414,7 @@ namespace Symbiote.Core.Tests
     /// <summary>
     ///     Unit tests for the ApplicationManager class.
     /// </summary>
-    public class ApplicationManagerTests : IDisposable
+    public class ApplicationManagerTests
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a valid, functioning IManager instance.
@@ -422,6 +422,8 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void TestInstantiateWithValidIManager()
         {
+            ApplicationManager.Terminate();
+
             ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Assert.IsType<ApplicationManager>(manager);
@@ -435,19 +437,10 @@ namespace Symbiote.Core.Tests
             Assert.NotNull(manager.ProductVersion);
             Assert.Equal(manager.InstanceName, ApplicationManager.GetInstanceName());
 
-            ApplicationManager.GetInstance().Start();
-            ApplicationManager.GetInstance().Stop();
-        }
+            manager.Start();
+            manager.Stop();
 
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            if (ApplicationManager.IsInitialized())
-            {
-                ApplicationManager.GetInstance().Dispose();
-            }
+            ApplicationManager.Terminate();
         }
     }
 }
