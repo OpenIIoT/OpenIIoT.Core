@@ -390,12 +390,10 @@ namespace Symbiote.Core
         {
             base.Dispose(disposing);
 
-            if (instance != null)
+            if (disposing)
             {
-                instance.Dispose();
+                instance = null;
             }
-
-            instance = null;
         }
 
         #endregion
