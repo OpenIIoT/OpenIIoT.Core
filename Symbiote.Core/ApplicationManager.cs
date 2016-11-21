@@ -284,6 +284,16 @@ namespace Symbiote.Core
             return instance;
         }
 
+        public static void Terminate()
+        {
+            if (instance != null)
+            {
+                instance.Dispose();
+            }
+
+            instance = null;
+        }
+
         /// <summary>
         ///     Returns a value indicating whether the Singleton instance of ApplicationManager has been initialized.
         /// </summary>
@@ -374,6 +384,18 @@ namespace Symbiote.Core
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
             return retVal;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+
+            if (instance != null)
+            {
+                instance.Dispose();
+            }
+
+            instance = null;
         }
 
         #endregion
