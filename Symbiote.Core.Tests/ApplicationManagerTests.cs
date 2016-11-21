@@ -437,10 +437,19 @@ namespace Symbiote.Core.Tests
             Assert.NotNull(manager.ProductVersion);
             Assert.Equal(manager.InstanceName, ApplicationManager.GetInstanceName());
 
+            ApplicationManager.Terminate();
+        }
+
+        /// <summary>
+        ///     Tests <see cref="Manager.Start()"/> and <see cref="Manager.Stop()"/> 
+        /// </summary>
+        [Fact]
+        public void TestStartStop()
+        {
+            ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+
             manager.Start();
             manager.Stop();
-
-            ApplicationManager.Terminate();
         }
     }
 }
