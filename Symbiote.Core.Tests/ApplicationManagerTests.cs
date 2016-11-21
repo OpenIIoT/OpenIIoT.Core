@@ -61,7 +61,7 @@ namespace Symbiote.Core.Tests
     /// <remarks>
     ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ApplicationManagerInstantiateAndGetInstanceTest
+    public class ApplicationManagerInstantiateAndGetInstanceTest : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.GetInstance()"/> after first invoking <see cref="ApplicationManager.Instantiate(Type[])"/>.
@@ -72,6 +72,17 @@ namespace Symbiote.Core.Tests
             ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
             ApplicationManager manager2 = ApplicationManager.GetInstance();
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
@@ -80,7 +91,7 @@ namespace Symbiote.Core.Tests
     /// <remarks>
     ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ApplicationManagerBadDependency
+    public class ApplicationManagerBadDependency : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
@@ -90,6 +101,17 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerInstantiationException>((() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadDependency) })));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
@@ -98,7 +120,7 @@ namespace Symbiote.Core.Tests
     /// <remarks>
     ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ApplicationManagerBadInstantiate
+    public class ApplicationManagerBadInstantiate : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
@@ -108,6 +130,17 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerInstantiationException>((() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadInstantiate) })));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
@@ -116,7 +149,7 @@ namespace Symbiote.Core.Tests
     /// <remarks>
     ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ApplicationManagerDoesntImplementIManager
+    public class ApplicationManagerDoesntImplementIManager : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
@@ -126,6 +159,17 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerTypeListException>((() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerDoesntImplementIManager) })));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
@@ -134,7 +178,7 @@ namespace Symbiote.Core.Tests
     /// <remarks>
     ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ApplicationManagerInstantiateTwiceTest
+    public class ApplicationManagerInstantiateTwiceTest : IDisposable
     {
         /// <summary>
         ///     Tests successive invocations of <see cref="ApplicationManager.Instantiate(Type[])"/>.
@@ -145,9 +189,20 @@ namespace Symbiote.Core.Tests
             ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
             ApplicationManager manager2 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
-    public class NoInstantiate
+    public class NoInstantiate : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
@@ -157,6 +212,17 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerInstantiationException>((() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoInstantiate) })));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
@@ -165,7 +231,7 @@ namespace Symbiote.Core.Tests
     /// <remarks>
     ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ApplicationManagerBrokenTest
+    public class ApplicationManagerBrokenTest : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing an instance of IManager with the 
@@ -176,12 +242,23 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerSetupException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
     ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
     /// </summary>
-    public class ApplicationManagerNoDependencies
+    public class ApplicationManagerNoDependencies : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
@@ -191,12 +268,23 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoDependencies) }));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
     ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list. 
     /// </summary>
-    public class ApplicationManagerDoubleManagers
+    public class ApplicationManagerDoubleManagers : IDisposable
     {
         /// <summary>
         ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list. 
@@ -206,12 +294,23 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManager), typeof(MockManager) }));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
     ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.  
     /// </summary>
-    public class ApplicationManagerGetInstanceBeforeInstantiation
+    public class ApplicationManagerGetInstanceBeforeInstantiation : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.  
@@ -221,12 +320,23 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
     ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a null Type array.
     /// </summary>
-    public class ApplicationManagerNullInstantiation
+    public class ApplicationManagerNullInstantiation : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a null Type array.
@@ -236,12 +346,23 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(null));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
     /// Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
     /// </summary>
-    public class ApplicationManagerEmptyArray
+    public class ApplicationManagerEmptyArray : IDisposable
     {
         /// <summary>
         /// Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
@@ -251,12 +372,23 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { }));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
     ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
     /// </summary>
-    public class ApplicationManagerBadType
+    public class ApplicationManagerBadType : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
@@ -266,12 +398,23 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { typeof(int) }));
         }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
+        }
     }
 
     /// <summary>
     ///     Unit tests for the ApplicationManager class.
     /// </summary>
-    public class ApplicationManagerTests
+    public class ApplicationManagerTests : IDisposable
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a valid, functioning IManager instance.
@@ -294,6 +437,17 @@ namespace Symbiote.Core.Tests
 
             ApplicationManager.GetInstance().Start();
             ApplicationManager.GetInstance().Stop();
+        }
+
+        /// <summary>
+        ///     Disposes the ApplicationManager.
+        /// </summary>
+        public void Dispose()
+        {
+            if (ApplicationManager.IsInitialized())
+            {
+                ApplicationManager.GetInstance().Dispose();
+            }
         }
     }
 }

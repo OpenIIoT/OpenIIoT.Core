@@ -284,6 +284,15 @@ namespace Symbiote.Core
             return instance;
         }
 
+        /// <summary>
+        ///     Returns a value indicating whether the Singleton instance of ApplicationManager has been initialized.
+        /// </summary>
+        /// <returns>A value indicating whether the Singleton instance of ApplicationManager has been initialized.</returns>
+        public static bool IsInitialized()
+        {
+            return instance != null;
+        }
+
         #endregion
 
         #region Public Instance Methods
