@@ -47,30 +47,14 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+using Symbiote.Core.SDK;
 using Symbiote.Core.Tests.Mockups;
 using System;
+using System.Collections.Immutable;
 using Xunit;
 
 namespace Symbiote.Core.Tests
 {
-    /// <summary>
-    ///     Tests invocation of <see cref="ApplicationManager.GetInstance"/> prior to initialization. 
-    /// </summary>
-    /// <remarks>
-    ///     Presented in a distinct class to enforce execution order.
-    /// </remarks>
-    public class ApplicationManagerPrematureInstanceTest
-    {
-        /// <summary>
-        ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.  
-        /// </summary>
-        [Fact]
-        public void TestGetInstanceBeforeInstantiation()
-        {
-            Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
-        }
-    }
-
     /// <summary>
     ///     Tests <see cref="ApplicationManager.GetInstance()"/> after first invoking <see cref="ApplicationManager.Instantiate(Type[])"/>.
     /// </summary>
@@ -79,13 +63,68 @@ namespace Symbiote.Core.Tests
     /// </remarks>
     public class ApplicationManagerInstantiateAndGetInstanceTest
     {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.GetInstance()"/> after first invoking <see cref="ApplicationManager.Instantiate(Type[])"/>.
+        /// </summary>
         [Fact]
         public void TestInstantiateAndGetInstance()
         {
             ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
             ApplicationManager manager2 = ApplicationManager.GetInstance();
+        }
+    }
 
-            Assert.Equal(manager1, manager2);
+    /// <summary>
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
+    /// </summary>
+    /// <remarks>
+    ///     Presented in a distinct class to enforce execution order.
+    /// </remarks>
+    public class ApplicationManagerBadDependency
+    {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
+        /// </summary>
+        [Fact]
+        public void TestManagerWithBadDepdency()
+        {
+            Assert.Throws<ManagerInstantiationException>((() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadDependency) })));
+        }
+    }
+
+    /// <summary>
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
+    /// </summary>
+    /// <remarks>
+    ///     Presented in a distinct class to enforce execution order.
+    /// </remarks>
+    public class ApplicationManagerBadInstantiate
+    {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
+        /// </summary>
+        [Fact]
+        public void TestManagerWithBadInstantiate()
+        {
+            Assert.Throws<ManagerInstantiationException>((() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadInstantiate) })));
+        }
+    }
+
+    /// <summary>
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a manager that doesn't implement IManager.
+    /// </summary>
+    /// <remarks>
+    ///     Presented in a distinct class to enforce execution order.
+    /// </remarks>
+    public class ApplicationManagerDoesntImplementIManager
+    {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
+        /// </summary>
+        [Fact]
+        public void TestManagerDoesntImplementIManager()
+        {
+            Assert.Throws<ManagerTypeListException>((() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerDoesntImplementIManager) })));
         }
     }
 
@@ -97,11 +136,26 @@ namespace Symbiote.Core.Tests
     /// </remarks>
     public class ApplicationManagerInstantiateTwiceTest
     {
+        /// <summary>
+        ///     Tests successive invocations of <see cref="ApplicationManager.Instantiate(Type[])"/>.
+        /// </summary>
         [Fact]
         public void TestInstantiateTwice()
         {
             ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
             ApplicationManager manager2 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+        }
+    }
+
+    public class NoInstantiate
+    {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
+        /// </summary>
+        [Fact]
+        public void TestManagerWithNoInstantiate()
+        {
+            Assert.Throws<ManagerInstantiationException>((() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoInstantiate) })));
         }
     }
 
@@ -111,7 +165,7 @@ namespace Symbiote.Core.Tests
     /// <remarks>
     ///     Presented in a distinct class to enforce execution order.
     /// </remarks>
-    public class ApplicationManagerBrokenSetupTest
+    public class ApplicationManagerBrokenTest
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing an instance of IManager with the 
@@ -125,9 +179,54 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Unit tests for the ApplicationManager class.
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
     /// </summary>
-    public class ApplicationManagerTests
+    public class ApplicationManagerNoDependencies
+    {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
+        /// </summary>
+        [Fact]
+        public void TestManagerWithNoDependencies()
+        {
+            Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoDependencies) }));
+        }
+    }
+
+    /// <summary>
+    ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list. 
+    /// </summary>
+    public class ApplicationManagerDoubleManagers
+    {
+        /// <summary>
+        ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list. 
+        /// </summary>
+        [Fact]
+        public void TestDoubleManagers()
+        {
+            Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManager), typeof(MockManager) }));
+        }
+    }
+
+    /// <summary>
+    ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.  
+    /// </summary>
+    public class ApplicationManagerGetInstanceBeforeInstantiation
+    {
+        /// <summary>
+        ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.  
+        /// </summary>
+        [Fact]
+        public void TestGetInstanceBeforeInstantiation()
+        {
+            Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
+        }
+    }
+
+    /// <summary>
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a null Type array.
+    /// </summary>
+    public class ApplicationManagerNullInstantiation
     {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a null Type array.
@@ -137,7 +236,13 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(null));
         }
+    }
 
+    /// <summary>
+    /// Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
+    /// </summary>
+    public class ApplicationManagerEmptyArray
+    {
         /// <summary>
         /// Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
         /// </summary>
@@ -146,16 +251,28 @@ namespace Symbiote.Core.Tests
         {
             Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { }));
         }
+    }
 
+    /// <summary>
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
+    /// </summary>
+    public class ApplicationManagerBadType
+    {
         /// <summary>
-        /// Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
         /// </summary>
         [Fact]
         public void TestInstantiateWithNonIManager()
         {
             Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { typeof(int) }));
         }
+    }
 
+    /// <summary>
+    ///     Unit tests for the ApplicationManager class.
+    /// </summary>
+    public class ApplicationManagerTests
+    {
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a valid, functioning IManager instance.
         /// </summary>
@@ -166,6 +283,17 @@ namespace Symbiote.Core.Tests
 
             Assert.IsType<ApplicationManager>(manager);
             Assert.NotNull(manager);
+
+            ImmutableList<IManager> managers = manager.GetManagers();
+        
+            Assert.Equal(managers.Count, 2);
+
+            Assert.NotNull(manager.ProductName);
+            Assert.NotNull(manager.ProductVersion);
+            Assert.Equal(manager.InstanceName, ApplicationManager.GetInstanceName());
+
+            ApplicationManager.GetInstance().Start();
+            ApplicationManager.GetInstance().Stop();
         }
     }
 }
