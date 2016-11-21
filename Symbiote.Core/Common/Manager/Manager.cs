@@ -194,6 +194,7 @@ namespace Symbiote.Core
         ///     Starts the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
+        /// <exception cref="ManagerStartException">Thrown when an exception is encountered during the Start or Startup routines.</exception> 
         public Result Start()
         {
             Guid guid = logger.EnterMethod(true);
@@ -205,15 +206,25 @@ namespace Symbiote.Core
                 return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
             }
 
-            if (!DependenciesAreAllInState(State.Starting, State.Running))
+            retVal.Incorporate(DependenciesAreAllInState(State.Starting, State.Running));
+
+            if (retVal.ResultCode != ResultCode.Success)
             {
                 return retVal.AddError("One or more dependencies is not in the Starting or Running state.");
             }
 
             ChangeState(State.Starting);
+            Console.WriteLine("Start() = " + this.GetHashCode());
 
             // invoke the manager-specific startup routine
-            retVal.Incorporate(Startup());
+            try
+            {
+                retVal.Incorporate(Startup());
+            }
+            catch (Exception ex)
+            {
+                throw new ManagerStartException("Exception encountered while starting Manager '" + GetType().Name + "'.  See inner exception for details.", ex);
+            }
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
@@ -257,6 +268,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
+        /// <exception cref="ManagerStopException">Thrown when an exception is encountered during the Stop or Shutdown routines.</exception>
         public Result Stop(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(stopType), true);
@@ -271,7 +283,14 @@ namespace Symbiote.Core
             ChangeState(State.Stopping, stopType);
 
             // invoke the manager-specific shutdown routine
-            retVal.Incorporate(Shutdown(stopType));
+            try
+            {
+                retVal.Incorporate(Shutdown(stopType));
+            }
+            catch (Exception ex)
+            {
+                throw new ManagerStopException("Exception encountered while stopping Manager '" + GetType().Name + "'.  See inner exception for details.", ex);
+            }
 
             // if the restartPending flag is set, start the restart timer
             // this timer will continuously attempt to restart the Manager until all dependencies
@@ -465,7 +484,8 @@ namespace Symbiote.Core
             {
                 if (!Dependencies[managerType].IsInState(states))
                 {
-                    retVal.AddError("The dependency '" + managerType.GetType().Name + "' has not been started (current state is " + Dependencies[managerType].State + ").");
+                    Console.WriteLine("Dependency check = " + Dependencies[managerType].GetHashCode());
+                    retVal.AddError("The dependency '" + managerType + "' has not been started (current state is " + Dependencies[managerType].State + ").");
                 }
             }
 
