@@ -89,7 +89,7 @@ namespace Symbiote.Core
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [Serializable]
-    public class DependencyNotResolvedException : Exception
+    public class DependencyNotResolvedException : ManagerException
     {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class.
@@ -112,6 +112,70 @@ namespace Symbiote.Core
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
         public DependencyNotResolvedException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+    }
+
+    /// <summary>
+    ///     Represents errors that occur when a Manager fails to start.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
+    public class ManagerStartException : ManagerException
+    {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class.
+        /// </summary>
+        public ManagerStartException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ManagerStartException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        public ManagerStartException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+    }
+
+    /// <summary>
+    ///     Represents errors that occur when a Manager fails to stop.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [Serializable]
+    public class ManagerStopException : ManagerException
+    {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class.
+        /// </summary>
+        public ManagerStopException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ManagerStopException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        public ManagerStopException(string message, Exception innerException) : base(message, innerException)
         {
         }
     }

@@ -284,23 +284,12 @@ namespace Symbiote.Core
             return instance;
         }
 
-        public static void Terminate()
-        {
-            if (instance != null)
-            {
-                instance.Dispose();
-            }
-
-            instance = null;
-        }
-
         /// <summary>
-        ///     Returns a value indicating whether the Singleton instance of ApplicationManager has been initialized.
+        ///     Disposes the Singleton instance of ApplicationManager.
         /// </summary>
-        /// <returns>A value indicating whether the Singleton instance of ApplicationManager has been initialized.</returns>
-        public static bool IsInitialized()
+        new public static void Dispose()
         {
-            return instance != null;
+            instance = null;
         }
 
         #endregion
@@ -384,16 +373,6 @@ namespace Symbiote.Core
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
             return retVal;
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            base.Dispose(disposing);
-
-            if (disposing)
-            {
-                instance = null;
-            }
         }
 
         #endregion
@@ -620,11 +599,6 @@ namespace Symbiote.Core
                 {
                     logger.SubHeading(LogLevel.Debug, manager.GetType().Name);
                     retVal.Incorporate(StartManager(manager));
-
-                    if (retVal.ResultCode == ResultCode.Failure)
-                    {
-                        return retVal.AddError("Failed to start one or more Managers.");
-                    }
                 }
             }
 
@@ -642,28 +616,19 @@ namespace Symbiote.Core
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
             logger.Debug("Starting " + manager.GetType().Name + "...");
+
             Result<IManager> retVal = new Result<IManager>();
 
             // invoke the Start() method on the specified manager
-            Result startResult = manager.Start();
+            retVal.Incorporate(manager.Start());
 
             // if the manager fails to start, throw an exception and halt the program
-            if (startResult.ResultCode == ResultCode.Failure)
+            if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.AddError("Failed to start Manager '" + manager.GetType().Name + "'.");
+                throw new ManagerStartException("Failed to start Manager '" + manager.ManagerName + "': " + retVal.GetLastError());
             }
 
             retVal.ReturnValue = manager;
-            retVal.Incorporate(startResult);
-
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                logger.Debug("Successfully started " + manager.GetType().Name + ".");
-            }
-            else
-            {
-                logger.Debug("Failed to start " + manager.GetType().Name + ": " + retVal.GetLastError());
-            }
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -715,7 +680,7 @@ namespace Symbiote.Core
 
             if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.AddError("Failed to stop " + manager.GetType().Name + "." + retVal.GetLastError());
+                throw new ManagerStopException("Failed to stop Manager '" + manager.ManagerName + "': " + retVal.GetLastError());
             }
 
             retVal.LogResult(logger);
@@ -747,11 +712,6 @@ namespace Symbiote.Core
                 // retrieve the dependencies for the Manager
                 List<Type> dependencies = GetManagerDependencies<T>();
 
-                if (dependencies == default(List<Type>))
-                {
-                    throw new ManagerRegistrationException("The dependency list for the Manager '" + manager.GetType().Name + "' is empty; all Managers must have at least one dependency.");
-                }
-
                 logger.Trace("Registering Manager with " + dependencies.Count() + " dependencies...");
 
                 // add the specified Manager to the list and attach an event handler to its StateChanged event
@@ -762,7 +722,7 @@ namespace Symbiote.Core
             catch (Exception ex)
             {
                 logger.Exception(ex);
-                throw new ManagerRegistrationException("Failed to register Manager '" + manager.GetType().Name + "': " + ex.Message, ex);
+                throw new ManagerRegistrationException("Failed to register Manager '" + manager.GetType().Name + "'.  See the inner exception for details.", ex);
             }
 
             logger.Trace("Successfully registered Manager '" + manager.GetType().Name + "'.");

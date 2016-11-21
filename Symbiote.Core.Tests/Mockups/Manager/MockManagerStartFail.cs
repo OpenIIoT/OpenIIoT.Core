@@ -8,11 +8,11 @@ using Utility.OperationResult;
 
 namespace Symbiote.Core.Tests.Mockups
 {
-    public class MockManager : Manager, IStateful, IManager
+    public class MockManagerStartFail : Manager, IStateful, IManager
     {
-        private static MockManager instance;
+        private static MockManagerStartFail instance;
 
-        private MockManager(IApplicationManager manager)
+        private MockManagerStartFail(IApplicationManager manager)
         {
             ManagerName = "Mock Manager";
             RegisterDependency<IApplicationManager>(manager);
@@ -20,13 +20,11 @@ namespace Symbiote.Core.Tests.Mockups
             ChangeState(State.Initialized);
         }
 
-        public static MockManager Instantiate(IApplicationManager manager)
+        public static MockManagerStartFail Instantiate(IApplicationManager manager)
         {
-            if (instance == null)
-            {
-                instance = new MockManager(manager);
-            }
-
+            // remove the code that makes this a singleton so that test runners can get a fresh
+            // instance each time.
+            instance = new MockManagerStartFail(manager);
             return instance;
         }
 
@@ -37,7 +35,7 @@ namespace Symbiote.Core.Tests.Mockups
 
         protected override Result Startup()
         {
-            return new Result();
+            throw new Exception("");
         }
 
         protected override Result Shutdown(StopType stopType = StopType.Stop)
