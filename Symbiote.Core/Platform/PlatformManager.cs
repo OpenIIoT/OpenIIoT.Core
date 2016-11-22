@@ -124,7 +124,7 @@ namespace Symbiote.Core.Platform
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <returns>The Singleton instance of PlatformManager.</returns>
-        private static PlatformManager Instantiate(IApplicationManager manager)
+        public static PlatformManager Instantiate(IApplicationManager manager)
         {
             if (instance == null)
                 instance = new PlatformManager(manager);

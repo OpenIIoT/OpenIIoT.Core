@@ -53,6 +53,7 @@ using System;
 using System.Collections.Immutable;
 using Xunit;
 using Utility.OperationResult;
+using Symbiote.Core.SDK.Exceptions;
 
 namespace Symbiote.Core.Tests
 {

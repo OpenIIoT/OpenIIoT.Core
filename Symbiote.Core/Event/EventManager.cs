@@ -164,6 +164,27 @@ namespace Symbiote.Core.Event
         #region Public Static Methods
 
         /// <summary>
+        ///     Instantiates and/or returns the EventManager instance.
+        /// </summary>
+        /// <remarks>
+        ///     Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
+        ///     to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
+        ///     injected when the method is invoked.
+        /// </remarks>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
+        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
+        /// <returns>The Singleton instance of the EventManager.</returns>
+        public static EventManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
+        {
+            if (instance == null)
+            {
+                instance = new EventManager(manager, configurationManager);
+            }
+
+            return instance;
+        }
+
+        /// <summary>
         /// Returns the ConfigurationDefinition for the Model Manager.
         /// </summary>
         /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
@@ -383,31 +404,6 @@ namespace Symbiote.Core.Event
         #endregion
 
         #region Private Methods
-
-        #region Private Static Methods
-
-        /// <summary>
-        /// Instantiates and/or returns the EventManager instance.
-        /// </summary>
-        /// <remarks>
-        /// Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
-        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
-        /// injected when the method is invoked.
-        /// </remarks>
-        /// <param name="manager">The ApplicationManager instance for the application.</param>
-        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
-        /// <returns>The Singleton instance of the EventManager.</returns>
-        private static EventManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
-        {
-            if (instance == null)
-            {
-                instance = new EventManager(manager, configurationManager);
-            }
-
-            return instance;
-        }
-
-        #endregion
 
         #region Private Instance Methods
 

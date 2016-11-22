@@ -180,7 +180,6 @@
   <ItemGroup>
     <Compile Include="Common\FQNResolver.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
-    <Compile Include="Common\Manager\ManagerExceptions.cs" />
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
@@ -193,7 +192,6 @@
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
     <Compile Include="Plugin\PluginTypeManager.cs" />
-    <Compile Include="ApplicationExceptions.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>

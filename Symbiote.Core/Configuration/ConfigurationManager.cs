@@ -183,6 +183,27 @@ namespace Symbiote.Core.Configuration
         #region Public Static Methods
 
         /// <summary>
+        ///     Instantiates and/or returns the ConfigurationManager instance.
+        /// </summary>
+        /// <remarks>
+        ///     Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
+        ///     to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
+        ///     injected when the method is invoked.
+        /// </remarks>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
+        /// <param name="platformManager">The PlatformManager instance for the application.</param>
+        /// <returns>The Singleton instance of the ConfigurationManager.</returns>
+        public static ConfigurationManager Instantiate(IApplicationManager manager, IPlatformManager platformManager)
+        {
+            if (instance == null)
+            {
+                instance = new ConfigurationManager(manager, platformManager);
+            }
+
+            return instance;
+        }
+
+        /// <summary>
         /// Returns the fully qualified path to the configuration file including file name and extension.
         /// </summary>
         /// <returns>The fully qualified path, filename and extension of the configuration file.</returns>
@@ -648,31 +669,6 @@ namespace Symbiote.Core.Configuration
         #endregion
 
         #region Private Methods
-
-        #region Private Static Methods
-
-        /// <summary>
-        /// Instantiates and/or returns the ConfigurationManager instance.
-        /// </summary>
-        /// <remarks>
-        /// Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
-        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
-        /// injected when the method is invoked.
-        /// </remarks>
-        /// <param name="manager">The ApplicationManager instance for the application.</param>
-        /// <param name="platformManager">The PlatformManager instance for the application.</param>
-        /// <returns>The Singleton instance of the ConfigurationManager.</returns>
-        private static ConfigurationManager Instantiate(IApplicationManager manager, IPlatformManager platformManager)
-        {
-            if (instance == null)
-            {
-                instance = new ConfigurationManager(manager, platformManager);
-            }
-
-            return instance;
-        }
-
-        #endregion
 
         #region Private Instance Methods
 

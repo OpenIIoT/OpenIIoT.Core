@@ -48,6 +48,7 @@ using NLog.xLogger;
 using Utility.OperationResult;
 using Symbiote.Core.SDK.Event;
 using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Exceptions;
 
 namespace Symbiote.Core
 {
@@ -214,7 +215,6 @@ namespace Symbiote.Core
             }
 
             ChangeState(State.Starting);
-            Console.WriteLine("Start() = " + this.GetHashCode());
 
             // invoke the manager-specific startup routine
             try
@@ -484,7 +484,6 @@ namespace Symbiote.Core
             {
                 if (!Dependencies[managerType].IsInState(states))
                 {
-                    Console.WriteLine("Dependency check = " + Dependencies[managerType].GetHashCode());
                     retVal.AddError("The dependency '" + managerType + "' has not been started (current state is " + Dependencies[managerType].State + ").");
                 }
             }
