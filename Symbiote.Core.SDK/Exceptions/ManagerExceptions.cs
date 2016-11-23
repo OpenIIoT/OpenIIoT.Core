@@ -50,12 +50,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Symbiote.Core
+namespace Symbiote.Core.SDK.Exceptions
 {
     /// <summary>
     ///     Represents errors that occur at the program level.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerException : Exception
     {
@@ -88,6 +89,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur when referenced dependencies can not be resolved.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class DependencyNotResolvedException : ManagerException
     {
@@ -117,9 +119,43 @@ namespace Symbiote.Core
     }
 
     /// <summary>
+    ///     Represents errors that occur when the setup of a Manager returns an abnormal result.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
+    [Serializable]
+    public class ManagerSetupException : ManagerException
+    {
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class.
+        /// </summary>
+        public ManagerSetupException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ManagerSetupException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        public ManagerSetupException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+    }
+
+    /// <summary>
     ///     Represents errors that occur when a Manager fails to start.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerStartException : ManagerException
     {
@@ -152,6 +188,7 @@ namespace Symbiote.Core
     ///     Represents errors that occur when a Manager fails to stop.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerStopException : ManagerException
     {

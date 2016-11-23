@@ -57,6 +57,7 @@ using Symbiote.Core.SDK.Plugin.Connector;
 using Symbiote.Core.SDK.Plugin;
 using Symbiote.Core.SDK.Model;
 using Symbiote.Core.SDK.Platform;
+using Symbiote.Core.SDK.Exceptions;
 
 namespace Symbiote.Core
 {

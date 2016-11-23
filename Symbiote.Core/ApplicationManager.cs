@@ -49,6 +49,7 @@ using Symbiote.Core.SDK.Event;
 using Symbiote.Core.SDK;
 using Symbiote.Core.SDK.Configuration;
 using Utility.OperationResult;
+using Symbiote.Core.SDK.Exceptions;
 
 namespace Symbiote.Core
 {
@@ -829,15 +830,8 @@ namespace Symbiote.Core
 
                     IManager manager;
 
-                    try
-                    {
-                        getManagerGeneric = getManager.MakeGenericMethod(t);
-                        manager = (IManager)getManagerGeneric.Invoke(this, new object[] { });
-                    }
-                    catch (TargetInvocationException ex)
-                    {
-                        throw new ManagerDependencyException("Failed to resolve dependency '" + t.Name + "'. See inner exception for details.", ex);
-                    }                  
+                    getManagerGeneric = getManager.MakeGenericMethod(t);
+                    manager = (IManager)getManagerGeneric.Invoke(this, new object[] { });
 
                     if ((IManager)manager == default(IManager))
                     {

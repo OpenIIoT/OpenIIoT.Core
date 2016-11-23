@@ -50,7 +50,7 @@ namespace Symbiote.Core.Service
             ServiceTypes = new Dictionary<string, Type>();
         }
 
-        private static ServiceManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
+        public static ServiceManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             if (instance == null)
                 instance = new ServiceManager(manager, configurationManager);
