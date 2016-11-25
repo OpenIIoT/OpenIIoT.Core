@@ -80,9 +80,10 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Common\Item\ItemTests.cs" />
-    <Compile Include="Common\Manager\ManagerTests.cs" />
-    <Compile Include="Common\State\StateTests.cs" />
+    <Compile Include="Common\ManagerTests.cs" />
+    <Compile Include="Common\Mockups\ApplicationManagerMockNotStarted.cs" />
+    <Compile Include="Common\Mockups\ApplicationManagerMock.cs" />
+    <Compile Include="Common\Mockups\ManagerMock.cs" />
     <Compile Include="Mockups\Manager\MockManagerStartBadReturn.cs" />
     <Compile Include="Mockups\Manager\MockManagerStopBadReturn.cs" />
     <Compile Include="Mockups\Manager\MockManagerStopFail.cs" />
@@ -107,6 +108,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="packages.config" />
+    <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Symbiote.Core.SDK\Symbiote.Core.SDK.csproj">
