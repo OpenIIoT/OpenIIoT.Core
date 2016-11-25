@@ -13,17 +13,17 @@ namespace Symbiote.Core.Service.Web.API
 {
     public class ConfigurationController : ApiController
     {
-        private static ApplicationManager manager = ApplicationManager.GetInstance();
+        private static IApplicationManager manager = ApplicationManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static Dictionary<string, Dictionary<string, object>> configuration = manager.GetManager<ConfigurationManager>().Configuration;
 
         private static List<string> serializationProperties = new List<string>(new string[] { });
-         
+
         [Route("api/configuration")]
         [HttpGet]
         public HttpResponseMessage GetConfiguration()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration , JsonFormatter(serializationProperties, ContractResolverType.OptOut, true));
+            return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration, JsonFormatter(serializationProperties, ContractResolverType.OptOut, true));
         }
 
         private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
