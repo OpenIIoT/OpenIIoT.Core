@@ -3,11 +3,11 @@ using Utility.OperationResult;
 
 namespace Symbiote.Core.Tests.Common.Mockups
 {
-    public class ManagerMock : Manager
+    public class OtherManagerMock : Manager
     {
-        private static ManagerMock instance;
+        private static OtherManagerMock instance;
 
-        private ManagerMock(IApplicationManager manager)
+        private OtherManagerMock(IApplicationManager manager)
         {
             ManagerName = "Mock Manager";
             RegisterDependency<IApplicationManager>(manager);
@@ -15,11 +15,11 @@ namespace Symbiote.Core.Tests.Common.Mockups
             ChangeState(State.Initialized);
         }
 
-        public static ManagerMock Instantiate(IApplicationManager manager)
+        public static OtherManagerMock Instantiate(IApplicationManager manager)
         {
             // remove the code that makes this a singleton so that test runners can get a fresh
             // instance each time.
-            instance = new ManagerMock(manager);
+            instance = new OtherManagerMock(manager);
             return instance;
         }
 
@@ -31,6 +31,21 @@ namespace Symbiote.Core.Tests.Common.Mockups
         public bool CheckBadDependency()
         {
             return Dependency<IManager>() != null;
+        }
+
+        public void Fault()
+        {
+            ChangeState(State.Faulted);
+        }
+
+        public void FaultWithRestart()
+        {
+            ChangeState(State.Faulted, StopType.Restart);
+        }
+
+        public void Shutdown()
+        {
+            ChangeState(State.Stopped, StopType.Shutdown);
         }
     }
 }

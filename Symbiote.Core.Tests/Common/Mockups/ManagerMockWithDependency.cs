@@ -3,23 +3,24 @@ using Utility.OperationResult;
 
 namespace Symbiote.Core.Tests.Common.Mockups
 {
-    public class ManagerMock : Manager
+    public class ManagerMockWithDependency : Manager
     {
-        private static ManagerMock instance;
+        private static ManagerMockWithDependency instance;
 
-        private ManagerMock(IApplicationManager manager)
+        private ManagerMockWithDependency(IApplicationManager manager, IManager otherManager)
         {
             ManagerName = "Mock Manager";
             RegisterDependency<IApplicationManager>(manager);
+            RegisterDependency<IManager>(otherManager);
 
             ChangeState(State.Initialized);
         }
 
-        public static ManagerMock Instantiate(IApplicationManager manager)
+        public static ManagerMockWithDependency Instantiate(IApplicationManager manager, IManager otherManager)
         {
             // remove the code that makes this a singleton so that test runners can get a fresh
             // instance each time.
-            instance = new ManagerMock(manager);
+            instance = new ManagerMockWithDependency(manager, otherManager);
             return instance;
         }
 

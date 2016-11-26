@@ -79,7 +79,7 @@ namespace Symbiote.Core
         ///     The restart timer, used to automatically restart the Manager following a Stop with
         ///     pending restart.
         /// </summary>
-        private Timer restartTimer = new Timer(1000);
+        private Timer restartTimer = new Timer(500);
 
         #endregion Private Fields
 
@@ -115,6 +115,17 @@ namespace Symbiote.Core
         ///     Gets the current State of the stateful object.
         /// </summary>
         public State State { get; private set; }
+
+        /// <summary>
+        ///     Gets a value indicating whether the stateful object is pending an automatic restart.
+        /// </summary>
+        public bool AutomaticRestartPending
+        {
+            get
+            {
+                return restartTimer.Enabled;
+            }
+        }
 
         #endregion Public Properties
 
@@ -204,7 +215,7 @@ namespace Symbiote.Core
             logger.Info("Starting the " + ManagerName + "...");
             Result retVal = new Result();
 
-            if (!IsInState(State.Initialized, State.Stopped))
+            if (!IsInState(State.Initialized, State.Stopped, State.Faulted))
             {
                 return retVal.AddError("The Manager can not be started when it is in the " + State + " state.");
             }
@@ -256,7 +267,7 @@ namespace Symbiote.Core
             logger.Info("Stopping the " + ManagerName + "...");
             Result retVal = new Result();
 
-            if (!IsInState(State.Running))
+            if (!IsInState(State.Running, State.Faulted))
             {
                 return retVal.AddError("The Manager can not be stopped when it is in the " + State + " state.");
             }
@@ -540,7 +551,6 @@ namespace Symbiote.Core
                             ".  The " + ManagerName + " must now stop" + (e.StopType.HasFlag(StopType.Restart) ? " and will start when the dependency starts again." : ".");
 
                         logger.Info(msg);
-
                         Stop(e.StopType);
                     }
                 }

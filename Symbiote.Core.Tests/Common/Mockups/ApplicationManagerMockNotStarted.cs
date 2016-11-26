@@ -3,7 +3,7 @@ using System;
 using Utility.OperationResult;
 using System.Collections.Immutable;
 
-namespace Symbiote.Core.Tests.Mockups
+namespace Symbiote.Core.Tests.Common.Mockups
 {
     public class ApplicationManagerMockNotStarted : Manager, IApplicationManager
     {

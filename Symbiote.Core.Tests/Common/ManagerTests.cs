@@ -56,8 +56,10 @@ using Symbiote.Core.SDK.Exceptions;
 using Symbiote.Core.Tests.Mockups;
 using Utility.OperationResult;
 using Xunit;
+using Symbiote.Core.Tests.Common.Mockups;
+using System.Threading;
 
-namespace Symbiote.Core.Tests
+namespace Symbiote.Core.Tests.Common
 {
     /// <summary>
     ///     Tests <see cref="Manager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
@@ -167,6 +169,102 @@ namespace Symbiote.Core.Tests
             // try to stop again and assert that the operation fails
             Result stop = test.Stop();
             Assert.Equal(ResultCode.Failure, stop.ResultCode);
+        }
+
+        [Fact]
+        public void DependencyStop()
+        {
+            ApplicationManagerMock a = new ApplicationManagerMock();
+            a.Start();
+
+            OtherManagerMock o = OtherManagerMock.Instantiate(a);
+            o.Start();
+
+            ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(a, o);
+
+            // start the manager and assert that it is running
+            Result start = test.Start();
+            Assert.Equal(State.Running, test.State);
+
+            // stop the other manager (the manager upon which this test manager is dependent) ensure
+            // that this manager stops. restart the other manager and ensure that this manager
+            // remains stopped.
+            o.Stop();
+            Assert.Equal(State.Stopped, o.State);
+            Assert.Equal(State.Stopped, test.State);
+            Assert.Equal(false, test.AutomaticRestartPending);
+
+            o.Start();
+            Assert.Equal(State.Running, o.State);
+            Assert.Equal(State.Stopped, test.State);
+
+            // restart this manager in preparation for the next
+            test.Start();
+            Assert.Equal(State.Running, test.State);
+
+            // stop the other manager with the restart flag
+            o.Stop(StopType.Restart);
+            Assert.Equal(State.Stopped, o.State);
+            Assert.Equal(State.Stopped, test.State);
+            Assert.Equal(true, test.AutomaticRestartPending);
+
+            o.Start();
+            Assert.Equal(State.Running, o.State);
+
+            // wait 1500ms for the manager to restart (the restart timer is set for 500ms)
+            Thread.Sleep(1000);
+
+            // assert that the manager has restarted.
+            Assert.Equal(State.Running, test.State);
+        }
+
+        [Fact]
+        public void DependencyFault()
+        {
+            ApplicationManagerMock a = new ApplicationManagerMock();
+            a.Start();
+
+            OtherManagerMock o = OtherManagerMock.Instantiate(a);
+            o.Start();
+
+            ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(a, o);
+
+            // start the manager and assert that it is running
+            Result start = test.Start();
+            Assert.Equal(State.Running, test.State);
+
+            // start the manager and assert that it is running Result start = test.Start();
+            Assert.Equal(State.Running, test.State);
+
+            // fault the manager upon which the test manager is dependent ensure that this manager
+            //stops.start the other manager and ensure that this manager remains stopped.
+            o.Fault();
+            Assert.Equal(State.Faulted, o.State);
+            Assert.Equal(State.Stopped, test.State);
+            Assert.Equal(false, test.AutomaticRestartPending);
+
+            o.Start();
+            Assert.Equal(State.Running, o.State);
+            Assert.Equal(State.Stopped, test.State);
+
+            // restart this manager in preparation for the next
+            test.Start();
+            Assert.Equal(State.Running, test.State);
+
+            // stop the other manager with the restart flag
+            o.FaultWithRestart();
+            Assert.Equal(State.Faulted, o.State);
+            Assert.Equal(State.Stopped, test.State);
+            Assert.Equal(true, test.AutomaticRestartPending);
+
+            o.Start();
+            Assert.Equal(State.Running, o.State);
+
+            // wait 1500ms for the manager to restart (the restart timer is set for 500ms)
+            Thread.Sleep(1000);
+
+            // assert that the manager has restarted.
+            Assert.Equal(State.Running, test.State);
         }
 
         #endregion Public Methods
