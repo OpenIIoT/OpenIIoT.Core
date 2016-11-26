@@ -11,95 +11,84 @@ using Utility.OperationResult;
 
 namespace Symbiote.Core.Plugin
 {
-    class PluginTypeManager<T> : IStateful
+    internal class PluginTypeManager<T> : IStateful
     {
-        #region Variables
+        #region Private Fields
 
         /// <summary>
-        /// The Logger for this class.
+        ///     The Logger for this class.
         /// </summary>
         private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The ApplicationManager for the application.
+        ///     The ApplicationManager for the application.
         /// </summary>
         private ApplicationManager manager;
 
-        #endregion
+        #endregion Private Fields
 
-        #region Properties
-
-        #region IManager Implementation
+        #region Public Constructors
 
         /// <summary>
-        /// The state of the Manager.
-        /// </summary>
-        public State State { get; private set; }
-
-        #endregion
-
-        /// <summary>
-        /// The list of Plugin Instances from the Plugin Manager Configuration which are managed by this Plugin Type Manager.
-        /// </summary>
-        public List<PluginManagerConfigurationPluginInstance> ConfiguredInstances { get; private set; }
-
-        /// <summary>
-        /// The list of Plugin Instances managed by this Plugin Type Manager.
-        /// </summary>
-        public List<T> Instances { get; private set; }
-
-        #endregion
-
-        #region Events
-
-        #region IManager Events
-
-        public event EventHandler<StateChangedEventArgs> StateChanged;
-
-        #endregion
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// The default constructor.
+        ///     The default constructor.
         /// </summary>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
-        /// <param name="configuredInstances">A list of Plugin Instances from the Plugin Manager configuration which match this Plugin Type.</param>
+        /// <param name="configuredInstances">
+        ///     A list of Plugin Instances from the Plugin Manager configuration which match this
+        ///     Plugin Type.
+        /// </param>
         public PluginTypeManager(ApplicationManager manager, List<PluginManagerConfigurationPluginInstance> configuredInstances)
         {
             this.manager = manager;
             ConfiguredInstances = configuredInstances;
         }
 
-        #endregion
+        #endregion Public Constructors
 
-        #region Instance Methods
+        #region Public Events
 
-        #region IManager Implementation
+        public event EventHandler<StateChangedEventArgs> StateChanged;
+
+        #endregion Public Events
+
+        #region Public Properties
 
         /// <summary>
-        /// Returns true if any of the specified <see cref="State"/>s match the current <see cref="State"/>.
+        ///     The list of Plugin Instances from the Plugin Manager Configuration which are managed
+        ///     by this Plugin Type Manager.
+        /// </summary>
+        public List<PluginManagerConfigurationPluginInstance> ConfiguredInstances { get; private set; }
+
+        /// <summary>
+        ///     The list of Plugin Instances managed by this Plugin Type Manager.
+        /// </summary>
+        public List<T> Instances { get; private set; }
+
+        public bool AutomaticRestartPending { get; }
+
+        /// <summary>
+        ///     The state of the Manager.
+        /// </summary>
+        public State State { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Returns true if any of the specified <see cref="State"/> s match the current <see cref="State"/>.
         /// </summary>
         /// <param name="states">The list of States to check.</param>
-        /// <returns>True if the current State matches any of the specified States, false otherwise.</returns>
+        /// <returns>
+        ///     True if the current State matches any of the specified States, false otherwise.
+        /// </returns>
         public virtual bool IsInState(params State[] states)
         {
             return states.Any(s => s == State);
         }
 
         /// <summary>
-        /// Starts the Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Start()
-        {
-            return new Result();
-        }
-
-        /// <summary>
-        /// Restarts the Manager.
+        ///     Restarts the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result Restart(StopType stopType = StopType.Stop)
@@ -108,7 +97,16 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Stops the Manager.
+        ///     Starts the Manager.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result Start()
+        {
+            return new Result();
+        }
+
+        /// <summary>
+        ///     Stops the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result Stop(StopType stopType = StopType.Stop)
@@ -116,8 +114,6 @@ namespace Symbiote.Core.Plugin
             return new Result();
         }
 
-        #endregion
-
-        #endregion
+        #endregion Public Methods
     }
 }

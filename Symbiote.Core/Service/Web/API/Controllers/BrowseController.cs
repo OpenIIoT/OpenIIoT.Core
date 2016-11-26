@@ -1,24 +1,23 @@
 ﻿using Newtonsoft.Json;
+using NLog;
+using Symbiote.Core.Model;
+using Symbiote.Core.SDK;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
-using NLog;
-using Symbiote.Core.Model;
-using Symbiote.Core.SDK;
 
 namespace Symbiote.Core.Service.Web.API
 {
     public class BrowseController : ApiController
     {
-        private static ApplicationManager manager = ApplicationManager.GetInstance();
+        private static IApplicationManager manager = ApplicationManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static Item model = manager.GetManager<ModelManager>().Model;
 
         private static List<string> conciseSerializationProperties = new List<string>(new string[] { "FQN", "Children" });
         private static List<string> verboseSerializationProperties = new List<string>(new string[] { "Parent", "SourceItem", "Guid", "Value" });
-
 
         [Route("api/browse")]
         [HttpGet]

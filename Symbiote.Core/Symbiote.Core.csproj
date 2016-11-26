@@ -179,7 +179,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\FQNResolver.cs" />
-    <Compile Include="Common\Manager\Manager.cs" />
+    <Compile Include="Common\Manager.cs" />
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
@@ -264,7 +264,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Common\Item\" />
     <Folder Include="Plugin\Connector\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

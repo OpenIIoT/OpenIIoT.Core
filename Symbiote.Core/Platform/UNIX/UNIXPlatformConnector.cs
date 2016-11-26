@@ -31,6 +31,7 @@ namespace Symbiote.Core.Platform.UNIX
         public string InstanceName { get; private set; }
 
         public State State { get; private set; }
+        public bool AutomaticRestartPending { get; }
 
         public string Configuration { get; private set; }
         public bool IsConfigured { get { return true; } }
@@ -41,9 +42,9 @@ namespace Symbiote.Core.Platform.UNIX
 
         public event EventHandler<StateChangedEventArgs> StateChanged;
 
-        #endregion
+        #endregion IManager Events
 
-        #endregion
+        #endregion Events
 
         public UNIXPlatformConnector(string instanceName)
         {
@@ -61,14 +62,15 @@ namespace Symbiote.Core.Platform.UNIX
 
         public void Configure(string configuration)
         {
-
         }
 
         /// <summary>
-        /// Returns true if any of the specified <see cref="State"/>s match the current <see cref="State"/>.
+        ///     Returns true if any of the specified <see cref="State"/> s match the current <see cref="State"/>.
         /// </summary>
         /// <param name="states">The list of States to check.</param>
-        /// <returns>True if the current State matches any of the specified States, false otherwise.</returns>
+        /// <returns>
+        ///     True if the current State matches any of the specified States, false otherwise.
+        /// </returns>
         public virtual bool IsInState(params State[] states)
         {
             return states.Any(s => s == State);
@@ -152,23 +154,29 @@ namespace Symbiote.Core.Platform.UNIX
                     lastCPUIdle = cpuIdle.NextValue();
                     retVal.ReturnValue = lastCPUUsed;
                     return retVal;
+
                 case "CPU.% Idle Time":
                     lastCPUUsed = cpuUsed.NextValue();
                     lastCPUIdle = cpuIdle.NextValue();
                     retVal.ReturnValue = lastCPUIdle;
                     return retVal;
+
                 case "Memory.Total":
                     retVal.ReturnValue = 0;
                     return retVal;
+
                 case "Memory.Available":
                     retVal.ReturnValue = new PerformanceCounter("Memory", "Available Bytes").NextValue();
                     return retVal;
+
                 case "Memory.Cached":
                     retVal.ReturnValue = new PerformanceCounter("Memory", "Cache Bytes").NextValue();
                     return retVal;
+
                 case "Memory.% Used":
                     retVal.ReturnValue = new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
                     return retVal;
+
                 default:
                     return retVal.AddError("Unable to find Item '" + item + "'.");
             }
@@ -189,9 +197,9 @@ namespace Symbiote.Core.Platform.UNIX
             cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Processor Time"));
             cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Idle Time"));
 
-            // prepare variables to use for processor time.  you need two successive values to 
-            // report accurately so rather than sleeping the thread we will just keep track from 
-            // call to call.  the first values will always be zero and that's ok.
+            // prepare variables to use for processor time. you need two successive values to report
+            // accurately so rather than sleeping the thread we will just keep track from call to
+            // call. the first values will always be zero and that's ok.
             lastCPUUsed = 0;
             lastCPUIdle = 0;
 
