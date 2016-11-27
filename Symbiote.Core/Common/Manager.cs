@@ -56,7 +56,7 @@ namespace Symbiote.Core
     /// <summary>
     ///     The abstract base class from which all Managers inherit.
     /// </summary>
-    public abstract class Manager : IDisposable, IStateful, IEventProvider, IManager
+    public abstract class Manager : IManager
     {
         #region Protected Fields
 
@@ -96,6 +96,17 @@ namespace Symbiote.Core
         #region Public Properties
 
         /// <summary>
+        ///     Gets a value indicating whether the stateful object is pending an automatic restart.
+        /// </summary>
+        public bool AutomaticRestartPending
+        {
+            get
+            {
+                return restartTimer.Enabled;
+            }
+        }
+
+        /// <summary>
         ///     Gets the name of the instance for use with the Event subsystem.
         /// </summary>
         public string EventProviderName
@@ -116,24 +127,12 @@ namespace Symbiote.Core
         /// </summary>
         public State State { get; private set; }
 
-        /// <summary>
-        ///     Gets a value indicating whether the stateful object is pending an automatic restart.
-        /// </summary>
-        public bool AutomaticRestartPending
-        {
-            get
-            {
-                return restartTimer.Enabled;
-            }
-        }
-
         #endregion Public Properties
 
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the dictionary of IManagers upon which this Manager depends, keyed on
-        ///     Type name.
+        ///     Gets the dictionary of IManagers upon which this Manager depends, keyed on Type name.
         /// </summary>
         /// <remarks>
         ///     Populated in the constructor of extension classes as injected dependencies are resolved.
@@ -530,7 +529,7 @@ namespace Symbiote.Core
                     logger.Info("The " + ManagerName + " must now stop, and will attempt to restart periodically until the dependency starts again.");
 
                     // ensure the manager is stopped with the correct flags, regardless of the flags
-                    // specified in the event args.
+                    // specified in the event arguments.
                     if (e.StopType.HasFlag(StopType.Restart))
                     {
                         Stop(StopType.Exception | StopType.Restart);
