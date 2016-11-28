@@ -54,7 +54,7 @@ using Utility.OperationResult;
 namespace Symbiote.Core
 {
     /// <summary>
-    ///     The abstract base class from which all Managers inherit.
+    ///     The abstract base class from which all Managers are extended.
     /// </summary>
     /// <remarks>
     ///     <para>
