@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Threading;
 using Symbiote.Core.SDK;
 using Symbiote.Core.SDK.Exceptions;
 using Symbiote.Core.Tests.Common.Mockups;
+using System.Threading;
 using Utility.OperationResult;
 using Xunit;
 
@@ -109,20 +109,6 @@ namespace Symbiote.Core.Tests.Common
             // fault the manager upon which the test manager is dependent ensure that this manager stops.start the other manager
             // and ensure that this manager remains stopped.
             o.Fault();
-            Assert.Equal(State.Faulted, o.State);
-            Assert.Equal(State.Stopped, test.State);
-            Assert.Equal(false, test.AutomaticRestartPending);
-
-            o.Start();
-            Assert.Equal(State.Running, o.State);
-            Assert.Equal(State.Stopped, test.State);
-
-            // restart this manager in preparation for the next
-            test.Start();
-            Assert.Equal(State.Running, test.State);
-
-            // stop the other manager with the restart flag
-            o.FaultWithRestart();
             Assert.Equal(State.Faulted, o.State);
             Assert.Equal(State.Stopped, test.State);
             Assert.Equal(true, test.AutomaticRestartPending);
