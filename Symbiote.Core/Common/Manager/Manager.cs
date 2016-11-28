@@ -39,24 +39,79 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Timers;
 using NLog;
 using NLog.xLogger;
 using Symbiote.Core.SDK;
 using Symbiote.Core.SDK.Event;
 using Symbiote.Core.SDK.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Timers;
 using Utility.OperationResult;
 
 namespace Symbiote.Core
 {
     /// <summary>
-    ///     The abstract base class from which all Managers inherit.
+    ///     The abstract base class from which all Managers are extended.
     /// </summary>
-    public abstract class Manager : IDisposable, IStateful, IEventProvider, IManager
+    /// <remarks>
+    ///     <para>
+    ///         Each implementation of Manager is designed as a Singleton so that only one instance of the manager may be created.
+    ///         This is essential as plugins run in the same AppDomain as the core and the nature of the Manager classes is such
+    ///         that, if more than one were to be created, the potential for undefined behavior is extremely high.
+    ///     </para>
+    ///     <para>
+    ///         To create an instance of a Manager a static method Instantiate() is used, in conjunction with a private constructor
+    ///         and a private field named instance corresponding to the Type of the class. The Instantiate() and class constructor
+    ///         must define a matching parameter list accepting <see cref="IApplicationManager"/> and an interface instance for
+    ///         each Manager upon which the class is dependent. Dependencies are injected automatically when the Manager is
+    ///         instantiated by the <see cref="ApplicationManager"/>. Note that none of these elements are present in the base
+    ///         Manager class as they are specific to each implementation.
+    ///     </para>
+    ///     <para>
+    ///         Within the constructor each Manager must invoke the <see cref="RegisterDependency{T}(IManager)"/> method for each
+    ///         Manager dependency defined in the constructor and Instantiate() signature. This adds the dependency to the internal
+    ///         list and allows the Manager to retrieve it within other parts of the code. This method also binds the
+    ///         <see cref="StateChanged"/> event for each of the dependencies to the
+    ///         <see cref="DependencyStateChanged(object, StateChangedEventArgs)"/> method, allowing the Manager to react to
+    ///         changes in State of any Manager upon which this Manager is dependent.
+    ///     </para>
+    ///     <para>
+    ///         The Manager implements the <see cref="IStateful"/> interface, meaning it has a <see cref="State"/> property
+    ///         indicating the current state of the Manager, <see cref="Start()"/>, <see cref="Stop(StopType)"/>, and
+    ///         <see cref="Restart(StopType)"/> methods used to change the state, and the <see cref="IsInState(State[])"/> method
+    ///         used to determine whether the Manager is in any of the specified states. These methods are public and non-virtual,
+    ///         meaning they cannot be overridden by derived classes. Derived classes may implement their own logic to be executed
+    ///         upon change of state using the <see cref="Startup()"/> and <see cref="Shutdown(StopType)"/> methods.
+    ///     </para>
+    ///     <para>
+    ///         Two additional methods may also be overridden; <see cref="Setup()"/> and <see cref="Teardown()"/>. The Setup()
+    ///         method is invoked by the <see cref="ApplicationManager"/> after all Managers have been instantiated. This method is
+    ///         intended to be used to allow the Manager to set up intra-Manager dependencies which are not capable of being
+    ///         established at instantiation; for instance, the Event Manager uses reflection to collect event providers from the
+    ///         other Managers, and it can't do so when it is instantiated because not all of the other Managers will have been
+    ///         instantiated unless the Event Manager is the last Manager to be instantiated, which can't be guaranteed. The
+    ///         Teardown() method is invoked by the <see cref="Dispose()"/> method. This method should be used to dispose of any
+    ///         objects implementing <see cref="IDisposable"/> that may have been created by the Manager.
+    ///     </para>
+    ///     <para>
+    ///         When the Manager's State is to be changed, the <see cref="ChangeState(State)"/> method must be invoked. This method
+    ///         modifies the value of the <see cref="State"/> property and raises the <see cref="StateChanged"/> event so that
+    ///         dependent Managers and other parts of the application may be notified.
+    ///     </para>
+    ///     <para>
+    ///         If a Manager upon which this Manager is dependent changes state to the <see cref="State.Stopped"/> or
+    ///         <see cref="State.Faulted"/> states, this Manager will stop. If the dependent manager is stopped with the
+    ///         <see cref="StopType.Restart"/> flag, this Manager will stop and begin checking the state of all Managers upon which
+    ///         it is dependent, and will restart itself when all Managers have been restarted. The same is true if state of the
+    ///         stopped dependency is <see cref="State.Faulted"/>; the restart mechanism will be activated regardless of whether
+    ///         the Restart flag is specified. While the restart mechanism is active the <see cref="AutomaticRestartPending"/>
+    ///         property will return true.
+    ///     </para>
+    /// </remarks>
+    public abstract class Manager : IDisposable, IManager
     {
         #region Protected Fields
 
@@ -76,8 +131,7 @@ namespace Symbiote.Core
         private Dictionary<Type, IManager> dependencies;
 
         /// <summary>
-        ///     The restart timer, used to automatically restart the Manager following a Stop with
-        ///     pending restart.
+        ///     The restart timer, used to automatically restart the Manager following a Stop with pending restart.
         /// </summary>
         private Timer restartTimer = new Timer(500);
 
@@ -94,6 +148,17 @@ namespace Symbiote.Core
         #endregion Public Events
 
         #region Public Properties
+
+        /// <summary>
+        ///     Gets a value indicating whether the stateful object is pending an automatic restart.
+        /// </summary>
+        public bool AutomaticRestartPending
+        {
+            get
+            {
+                return restartTimer.Enabled;
+            }
+        }
 
         /// <summary>
         ///     Gets the name of the instance for use with the Event subsystem.
@@ -116,28 +181,14 @@ namespace Symbiote.Core
         /// </summary>
         public State State { get; private set; }
 
-        /// <summary>
-        ///     Gets a value indicating whether the stateful object is pending an automatic restart.
-        /// </summary>
-        public bool AutomaticRestartPending
-        {
-            get
-            {
-                return restartTimer.Enabled;
-            }
-        }
-
         #endregion Public Properties
 
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the dictionary of IManagers upon which this Manager depends, keyed on
-        ///     Type name.
+        ///     Gets the dictionary of IManagers upon which this Manager depends, keyed on Type name.
         /// </summary>
-        /// <remarks>
-        ///     Populated in the constructor of extension classes as injected dependencies are resolved.
-        /// </remarks>
+        /// <remarks>Populated in the constructor of extension classes as injected dependencies are resolved.</remarks>
         private Dictionary<Type, IManager> Dependencies
         {
             get
@@ -165,13 +216,10 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Determines whether any of the specified <see cref="IStateful.State"/> s match the
-        ///     current <see cref="State"/>.
+        ///     Determines whether any of the specified <see cref="IStateful.State"/> s match the current <see cref="State"/>.
         /// </summary>
         /// <param name="states">The list of States to check.</param>
-        /// <returns>
-        ///     A value indicating whether the current State matches any of the specified States.
-        /// </returns>
+        /// <returns>A value indicating whether the current State matches any of the specified States.</returns>
         public bool IsInState(params State[] states)
         {
             return states.Any(s => s == State);
@@ -284,9 +332,8 @@ namespace Symbiote.Core
                 throw new ManagerStopException("Exception encountered while stopping Manager '" + GetType().Name + "'.  See inner exception for details.", ex);
             }
 
-            // if the restartPending flag is set, start the restart timer this timer will
-            // continuously attempt to restart the Manager until all dependencies are satisfied,
-            // after which point it will start.
+            // if the restartPending flag is set, start the restart timer this timer will continuously attempt to restart the
+            // Manager until all dependencies are satisfied, after which point it will start.
             if (stopType.HasFlag(StopType.Restart))
             {
                 logger.Info("The " + ManagerName + " will continue to attempt to restart.");
@@ -313,45 +360,30 @@ namespace Symbiote.Core
         #region Protected Methods
 
         /// <summary>
-        ///     Changes the <see cref="State"/> of the Manager to the specified
-        ///     <see cref="SDK.State"/> and fires the StateChanged event.
+        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="SDK.State"/> and fires the StateChanged event.
         /// </summary>
-        /// <param name="state">
-        ///     The State to which the <see cref="State"/> property is to be changed.
-        /// </param>
+        /// <param name="state">The State to which the <see cref="State"/> property is to be changed.</param>
         protected void ChangeState(State state)
         {
             ChangeState(state, string.Empty, StopType.Stop);
         }
 
         /// <summary>
-        ///     Changes the <see cref="State"/> of the Manager to the specified
-        ///     <see cref="SDK.State"/> and fires the StateChanged event.
+        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="SDK.State"/> and fires the StateChanged event.
         /// </summary>
-        /// <param name="state">
-        ///     The State to which the <see cref="State"/> property is to be changed.
-        /// </param>
-        /// <param name="stopType">
-        ///     The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.
-        /// </param>
+        /// <param name="state">The State to which the <see cref="State"/> property is to be changed.</param>
+        /// <param name="stopType">The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.</param>
         protected void ChangeState(State state, StopType stopType = StopType.Stop)
         {
             ChangeState(state, string.Empty, stopType);
         }
 
         /// <summary>
-        ///     Changes the <see cref="State"/> of the Manager to the specified
-        ///     <see cref="SDK.State"/> and fires the StateChanged event.
+        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="SDK.State"/> and fires the StateChanged event.
         /// </summary>
-        /// <param name="state">
-        ///     The State to which the <see cref="State"/> property is to be changed.
-        /// </param>
-        /// <param name="message">
-        ///     The optional message describing the nature or reason for the change.
-        /// </param>
-        /// <param name="stopType">
-        ///     The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.
-        /// </param>
+        /// <param name="state">The State to which the <see cref="State"/> property is to be changed.</param>
+        /// <param name="message">The optional message describing the nature or reason for the change.</param>
+        /// <param name="stopType">The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.</param>
         protected void ChangeState(State state, string message = "", StopType stopType = StopType.Stop)
         {
             logger.EnterMethod(xLogger.Params(state, message, stopType));
@@ -383,14 +415,11 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Examines the <see cref="State"/> of the <see cref="IManager"/> s contained within the
-        ///     <see cref="Dependencies"/> property to ensure each is in a <see cref="SDK.State"/>
-        ///     contained within the supplied list of <see cref="SDK.State"/> s. If not, an error
-        ///     message is added to the return <see cref="Result"/>.
+        ///     Examines the <see cref="State"/> of the <see cref="IManager"/> s contained within the <see cref="Dependencies"/>
+        ///     property to ensure each is in a <see cref="SDK.State"/> contained within the supplied list of
+        ///     <see cref="SDK.State"/> s. If not, an error message is added to the return <see cref="Result"/>.
         /// </summary>
-        /// <param name="states">
-        ///     The list of <see cref="SDK.State"/> to which the state of each dependency will be compared.
-        /// </param>
+        /// <param name="states">The list of <see cref="SDK.State"/> to which the state of each dependency will be compared.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         protected Result DependenciesAreAllInState(params State[] states)
         {
@@ -411,8 +440,8 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Retrieves the <see cref="IManager"/> instance matching the specified
-        ///     <see cref="Type"/> from the <see cref="Dependencies"/> dictionary.
+        ///     Retrieves the <see cref="IManager"/> instance matching the specified <see cref="Type"/> from the
+        ///     <see cref="Dependencies"/> dictionary.
         /// </summary>
         /// <typeparam name="T">The Type of Manager to return.</typeparam>
         /// <returns>The resolved instance of the specified Manager Type.</returns>
@@ -443,8 +472,8 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Adds the specified <see cref="IManager"/> instance of the specified
-        ///     <see cref="Type"/> to the <see cref="Dependencies"/> dictionary.
+        ///     Adds the specified <see cref="IManager"/> instance of the specified <see cref="Type"/> to the
+        ///     <see cref="Dependencies"/> dictionary.
         /// </summary>
         /// <typeparam name="T">The Type of Manager to add.</typeparam>
         /// <param name="manager">The resolved instance of the specified Manager Type.</param>
@@ -461,13 +490,10 @@ namespace Symbiote.Core
         /// </summary>
         /// <remarks>
         ///     <para>
-        ///         This method is invoked by the ApplicationManager following the instantiation of
-        ///         all program Managers.
+        ///         This method is invoked by the ApplicationManager following the instantiation of all program Managers.
         ///     </para>
         /// </remarks>
-        /// <exception cref="ManagerSetupException">
-        ///     Thrown when an error is encountered during setup.
-        /// </exception>
+        /// <exception cref="ManagerSetupException">Thrown when an error is encountered during setup.</exception>
         protected virtual void Setup()
         {
         }
@@ -475,9 +501,7 @@ namespace Symbiote.Core
         /// <summary>
         ///     Implements the Manager-specific shutdown procedure.
         /// </summary>
-        /// <param name="stopType">
-        ///     The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.
-        /// </param>
+        /// <param name="stopType">The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         protected virtual Result Shutdown(StopType stopType = StopType.Stop)
         {
@@ -498,8 +522,8 @@ namespace Symbiote.Core
         /// </summary>
         /// <remarks>
         ///     <para>
-        ///         This method is invoked by the Dispose() method of the base <see cref="Manager"/>
-        ///         class. Any managed resources within the Manager should be disposed within this method.
+        ///         This method is invoked by the Dispose() method of the base <see cref="Manager"/> class. Any managed resources
+        ///         within the Manager should be disposed within this method.
         ///     </para>
         /// </remarks>
         protected virtual void Teardown()
@@ -529,21 +553,12 @@ namespace Symbiote.Core
                     logger.Info("\t" + (e.Message.Length > 0 ? e.Message : "[no message provided]"));
                     logger.Info("The " + ManagerName + " must now stop, and will attempt to restart periodically until the dependency starts again.");
 
-                    // ensure the manager is stopped with the correct flags, regardless of the flags
-                    // specified in the event args.
-                    if (e.StopType.HasFlag(StopType.Restart))
-                    {
-                        Stop(StopType.Exception | StopType.Restart);
-                    }
-                    else
-                    {
-                        Stop(StopType.Exception);
-                    }
+                    Stop(StopType.Exception | StopType.Restart);
                 }
                 else if (e.State == State.Stopped)
                 {
-                    // if the state changed to stopped, stop this manager, unless the StopType is
-                    // Shutdown, in which case we don't do anything so as not to disrupt the shutdown order.
+                    // if the state changed to stopped, stop this manager, unless the StopType is Shutdown, in which case we don't
+                    // do anything so as not to disrupt the shutdown order.
                     if (!e.StopType.HasFlag(StopType.Shutdown))
                     {
                         string msg = "The dependency '" + sender.GetType().Name + "' has stopped with StopType of " + e.StopType +
@@ -563,8 +578,8 @@ namespace Symbiote.Core
         ///     Occurs when the restart timer's interval elapses.
         /// </summary>
         /// <remarks>
-        ///     The timer starts upon stop of the Manager when the restartPending flag is true and
-        ///     stops upon successful restart of this Manager.
+        ///     The timer starts upon stop of the Manager when the restartPending flag is true and stops upon successful restart of
+        ///     this Manager.
         /// </remarks>
         /// <param name="sender">This Manager.</param>
         /// <param name="e">The EventArgs for the event.</param>
