@@ -106,8 +106,8 @@ namespace Symbiote.Core.Tests.Common
             // start the manager and assert that it is running Result start = test.Start();
             Assert.Equal(State.Running, test.State);
 
-            // fault the manager upon which the test manager is dependent ensure that this manager
-            // stops.start the other manager and ensure that this manager remains stopped.
+            // fault the manager upon which the test manager is dependent ensure that this manager stops.start the other manager
+            // and ensure that this manager remains stopped.
             o.Fault();
             Assert.Equal(State.Faulted, o.State);
             Assert.Equal(State.Stopped, test.State);
@@ -155,9 +155,8 @@ namespace Symbiote.Core.Tests.Common
             Result start = test.Start();
             Assert.Equal(State.Running, test.State);
 
-            // stop the other manager (the manager upon which this test manager is dependent) ensure
-            // that this manager stops. restart the other manager and ensure that this manager
-            // remains stopped.
+            // stop the other manager (the manager upon which this test manager is dependent) ensure that this manager stops.
+            // restart the other manager and ensure that this manager remains stopped.
             o.Stop();
             Assert.Equal(State.Stopped, o.State);
             Assert.Equal(State.Stopped, test.State);

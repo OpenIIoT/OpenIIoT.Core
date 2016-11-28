@@ -80,12 +80,12 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Common\ManagerTests.cs" />
-    <Compile Include="Common\Mockups\ApplicationManagerMockNotStarted.cs" />
-    <Compile Include="Common\Mockups\ApplicationManagerMock.cs" />
-    <Compile Include="Common\Mockups\ManagerMockWithDependency.cs" />
-    <Compile Include="Common\Mockups\OtherManagerMock.cs" />
-    <Compile Include="Common\Mockups\ManagerMock.cs" />
+    <Compile Include="Common\Manager\ManagerTests.cs" />
+    <Compile Include="Common\Manager\Mockups\ApplicationManagerMockNotStarted.cs" />
+    <Compile Include="Common\Manager\Mockups\ApplicationManagerMock.cs" />
+    <Compile Include="Common\Manager\Mockups\ManagerMockWithDependency.cs" />
+    <Compile Include="Common\Manager\Mockups\OtherManagerMock.cs" />
+    <Compile Include="Common\Manager\Mockups\ManagerMock.cs" />
     <Compile Include="Mockups\Manager\MockManagerStartBadReturn.cs" />
     <Compile Include="Mockups\Manager\MockManagerStopBadReturn.cs" />
     <Compile Include="Mockups\Manager\MockManagerStopFail.cs" />

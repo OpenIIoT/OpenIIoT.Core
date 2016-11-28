@@ -57,55 +57,46 @@ namespace Symbiote.Core
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         This class is a Singleton and is therefore restricted to one instance for the
-    ///         application. External classes may invoke the <see cref="Instantiate(Type[])"/> method
-    ///         to retrieve the instance, however they should not. If the instance is required in a
-    ///         static class or method, or anywhere else where dependency injection is not available,
-    ///         the <see cref="GetInstance()"/> method should be used to retrieve the instance.
+    ///         This class is a Singleton and is therefore restricted to one instance for the application. External classes may
+    ///         invoke the <see cref="Instantiate(Type[])"/> method to retrieve the instance, however they should not. If the
+    ///         instance is required in a static class or method, or anywhere else where dependency injection is not available, the
+    ///         <see cref="GetInstance()"/> method should be used to retrieve the instance.
     ///     </para>
     ///     <para>
-    ///         The <see cref="Instantiate(Type[])"/> method, and thusly the class constructor,
-    ///         accepts an array of <see cref="Type"/> s corresponding to each <see cref="IManager"/>
-    ///         instance to be created. The Application Manager maintains an internal list of these
-    ///         Types, the instances of the Types created (one each), and a dictionary containing the
-    ///         dependencies of each Type.
+    ///         The <see cref="Instantiate(Type[])"/> method, and thusly the class constructor, accepts an array of
+    ///         <see cref="Type"/> s corresponding to each <see cref="IManager"/> instance to be created. The Application Manager
+    ///         maintains an internal list of these Types, the instances of the Types created (one each), and a dictionary
+    ///         containing the dependencies of each Type.
     ///     </para>
     ///     <para>
-    ///         Upon instantiation, the Application Manager invokes <see cref="InstantiateManagers"/>
-    ///         method which iterates over the list of Types and creates an instance of each using
-    ///         the <see cref="InstantiateManager{T}"/> method, then registers the new instance with
-    ///         <see cref="RegisterManager{T}(IManager)"/>. If all dependencies for a Manager have
-    ///         not yet been instantiated when the dependent Manager is instantiated an exception
-    ///         will be thrown; the order in which the Manager Types appear in the Type list provided
-    ///         to the <see cref="Instantiate(Type[])"/> method must reflect the inter-Manager
-    ///         dependencies. The RegisterManager method adds the Manager instance to the internal
-    ///         list and creates an entry in the dependency dictionary for the Type.
+    ///         Upon instantiation, the Application Manager invokes <see cref="InstantiateManagers"/> method which iterates over
+    ///         the list of Types and creates an instance of each using the <see cref="InstantiateManager{T}"/> method, then
+    ///         registers the new instance with <see cref="RegisterManager{T}(IManager)"/>. If all dependencies for a Manager have
+    ///         not yet been instantiated when the dependent Manager is instantiated an exception will be thrown; the order in
+    ///         which the Manager Types appear in the Type list provided to the <see cref="Instantiate(Type[])"/> method must
+    ///         reflect the inter-Manager dependencies. The RegisterManager method adds the Manager instance to the internal list
+    ///         and creates an entry in the dependency dictionary for the Type.
     ///     </para>
     ///     <para>
-    ///         After all Managers have been instantiated, the list of created instances is iterated
-    ///         over and the <see cref="Manager.Setup"/> method is invoked on each. This method
-    ///         allows Managers which are dependent upon other Managers to initialize those
-    ///         dependencies. Examples include the <see cref="Configuration.ConfigurationManager"/>,
-    ///         which iterates over the list of Manager instances and registers Managers which
-    ///         implement <see cref="SDK.Configuration.IConfigurable{T}"/>, and the
-    ///         <see cref="Event.EventManager"/>, which does the same for implementations of <see cref="SDK.Event.IEventProvider"/>.
+    ///         After all Managers have been instantiated, the list of created instances is iterated over and the
+    ///         <see cref="Manager.Setup"/> method is invoked on each. This method allows Managers which are dependent upon other
+    ///         Managers to initialize those dependencies. Examples include the <see cref="Configuration.ConfigurationManager"/>,
+    ///         which iterates over the list of Manager instances and registers Managers which implement
+    ///         <see cref="SDK.Configuration.IConfigurable{T}"/>, and the <see cref="Event.EventManager"/>, which does the same for
+    ///         implementations of <see cref="SDK.Event.IEventProvider"/>.
     ///     </para>
     ///     <para>
-    ///         The methods <see cref="GetManager{T}"/> and <see cref="GetManagers"/> are provided to
-    ///         allow Managers to retrieve other Managers contained within the application.
-    ///         <see cref="GetManager{T}"/> is primarily provided to allow static methods to access a
-    ///         particular manager. This is the only valid usage; instance methods should use the
-    ///         dependency injection system. <see cref="GetManagers"/> provides an immutable list of
-    ///         Manager instances which allows for the functionality described above for
-    ///         <see cref="Manager.Setup"/>. This is necessary so that Managers may access other
-    ///         Managers which are not explicitly defined as dependencies. Again, this is the only
-    ///         valid usage of the method.
+    ///         The methods <see cref="GetManager{T}"/> and <see cref="GetManagers"/> are provided to allow Managers to retrieve
+    ///         other Managers contained within the application. <see cref="GetManager{T}"/> is primarily provided to allow static
+    ///         methods to access a particular manager. This is the only valid usage; instance methods should use the dependency
+    ///         injection system. <see cref="GetManagers"/> provides an immutable list of Manager instances which allows for the
+    ///         functionality described above for <see cref="Manager.Setup"/>. This is necessary so that Managers may access other
+    ///         Managers which are not explicitly defined as dependencies. Again, this is the only valid usage of the method.
     ///     </para>
     ///     <para>
-    ///         As with other instances of <see cref="IManager"/>, the <see cref="Startup"/> and
-    ///         <see cref="Shutdown(StopType)"/> methods are invoked upon the invocation of
-    ///         <see cref="Manager.Start"/> and <see cref="Manager.Stop(StopType)"/>. The Application
-    ///         Manager uses these methods to start and stop Manager instances.
+    ///         As with other instances of <see cref="IManager"/>, the <see cref="Startup"/> and <see cref="Shutdown(StopType)"/>
+    ///         methods are invoked upon the invocation of <see cref="Manager.Start"/> and <see cref="Manager.Stop(StopType)"/>.
+    ///         The Application Manager uses these methods to start and stop Manager instances.
     ///     </para>
     /// </remarks>
     public class ApplicationManager : Manager, IApplicationManager
@@ -127,8 +118,7 @@ namespace Symbiote.Core
         #region Private Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationManager"/> class with the
-        ///     specified Manager Types.
+        ///     Initializes a new instance of the <see cref="ApplicationManager"/> class with the specified Manager Types.
         /// </summary>
         /// <param name="managerTypes">The array of Manager Types for the application.</param>
         /// <exception cref="ManagerTypeListException">
@@ -179,8 +169,7 @@ namespace Symbiote.Core
         ///     Gets the name of the application instance, retrieved from the application's settings file.
         /// </summary>
         /// <remarks>
-        ///     If the "InstanceName" setting is missing from the application settings, the value of
-        ///     the ProductName property is substituted.
+        ///     If the "InstanceName" setting is missing from the application settings, the value of the ProductName property is substituted.
         /// </remarks>
         public string InstanceName
         {
@@ -254,8 +243,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Returns the "InstanceName" setting from the app.config file, or the default value if
-        ///     the setting is not retrieved.
+        ///     Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retrieved.
         /// </summary>
         /// <returns>The name of the program instance.</returns>
         public static string GetInstanceName()
@@ -269,8 +257,8 @@ namespace Symbiote.Core
         /// <param name="managers">The array of Manager Types for the application.</param>
         /// <returns>The singleton instance of the ApplicationManager</returns>
         /// <exception cref="ManagerTypeListException">
-        ///     Thrown when the supplied list of Manager Types is empty or if one or more supplied
-        ///     Types do not implement the <see cref="IManager"/> interface.
+        ///     Thrown when the supplied list of Manager Types is empty or if one or more supplied Types do not implement the
+        ///     <see cref="IManager"/> interface.
         /// </exception>
         public static ApplicationManager Instantiate(Type[] managers)
         {
@@ -368,23 +356,19 @@ namespace Symbiote.Core
         #region Private Methods
 
         /// <summary>
-        ///     Retrieves the list of <see cref="Type"/> s corresponding to the
-        ///     <see cref="IManager"/> Types on which the specified Manager Type depends.
+        ///     Retrieves the list of <see cref="Type"/> s corresponding to the <see cref="IManager"/> Types on which the specified
+        ///     Manager Type depends.
         /// </summary>
         /// <remarks>
-        ///     Uses reflection to retrieve the parameters for the private Instantiate() method of
-        ///     the specified Type.
+        ///     Uses reflection to retrieve the parameters for the private Instantiate() method of the specified Type.
         /// </remarks>
-        /// <typeparam name="T">
-        ///     The Type of the Manager for which the dependencies are to be returned.
-        /// </typeparam>
+        /// <typeparam name="T">The Type of the Manager for which the dependencies are to be returned.</typeparam>
         /// <returns>A List of dependency Types.</returns>
         /// <exception cref="MissingMethodException">
         ///     Thrown when the Instantiate() method is not found within the specified Type.
         /// </exception>
         /// <exception cref="ManagerDependencyException">
-        ///     Thrown when an exception is caught while retrieving the dependencies for the
-        ///     specified Type.
+        ///     Thrown when an exception is caught while retrieving the dependencies for the specified Type.
         /// </exception>
         private List<Type> GetManagerDependencies<T>() where T : IManager
         {
@@ -400,9 +384,8 @@ namespace Symbiote.Core
 
             try
             {
-                // retrieve the list of parameters for the Instantiate() method of the specified
-                // Manager Type and add the type of each to the return value list start by fetching
-                // the method. throw an exception if it is not found.
+                // retrieve the list of parameters for the Instantiate() method of the specified Manager Type and add the type of
+                // each to the return value list start by fetching the method. throw an exception if it is not found.
                 MethodInfo method = typeof(T).GetMethod("Instantiate", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
 
                 if (method == default(MethodInfo))
@@ -435,9 +418,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <typeparam name="T">The Type of the Manager to instantiate.</typeparam>
         /// <returns>The instantiated IManager.</returns>
-        /// <exception cref="MissingMethodException">
-        ///     Thrown when a reflected method can not be found.
-        /// </exception>
+        /// <exception cref="MissingMethodException">Thrown when a reflected method can not be found.</exception>
         /// <exception cref="ManagerInstantiationException">
         ///     Thrown when an error is encountered while instantiating the specified Manager Type.
         /// </exception>
@@ -450,20 +431,17 @@ namespace Symbiote.Core
 
             try
             {
-                // use reflection to locate the static Instantiate() method in the target class, then
-                // check to make sure it was found.
+                // use reflection to locate the static Instantiate() method in the target class, then check to make sure it was found.
                 MethodInfo method = typeof(T).GetMethod("Instantiate", BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
 
-                // use reflection to locate the static ResolveManagerDependencies() method, create a
-                // generic version with the type for the manager we are trying to instantiate, then
-                // invoke it.
+                // use reflection to locate the static ResolveManagerDependencies() method, create a generic version with the type
+                // for the manager we are trying to instantiate, then invoke it.
                 MethodInfo resolveMethod = GetType().GetMethod("ResolveManagerDependencies", BindingFlags.NonPublic | BindingFlags.Instance);
                 MethodInfo genericResolveMethod = resolveMethod.MakeGenericMethod(typeof(T));
                 List<IManager> resolvedDependencies = (List<IManager>)genericResolveMethod.Invoke(this, new object[] { });
 
-                // invoke the Instantiate() method and pass the resolved dependencies from the step
-                // above. store the result in instance, then check to make sure it is not null and
-                // ensure that it implements IManager.
+                // invoke the Instantiate() method and pass the resolved dependencies from the step above. store the result in
+                // instance, then check to make sure it is not null and ensure that it implements IManager.
                 instance = (T)method.Invoke(null, resolvedDependencies.ToArray());
                 if (!(instance is IManager))
                 {
@@ -483,8 +461,8 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Iterates over the list of <see cref="IManager"/> Types and instantiates each in the
-        ///     order in which they are represented in the list.
+        ///     Iterates over the list of <see cref="IManager"/> Types and instantiates each in the order in which they are
+        ///     represented in the list.
         /// </summary>
         /// <exception cref="ManagerInstantiationException">
         ///     Thrown when the instantiation or registration of a Manager returns an abnormal result.
@@ -494,8 +472,7 @@ namespace Symbiote.Core
             logger.EnterMethod();
             logger.Trace("Instantiating Managers...");
 
-            // iterate over the list of Manager Types specified in the constructor and create and
-            // register an instance of each
+            // iterate over the list of Manager Types specified in the constructor and create and register an instance of each
             foreach (Type managerType in ManagerTypes)
             {
                 logger.SubHeading(LogLevel.Debug, managerType.Name);
@@ -529,9 +506,8 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Invokes the specified generic method, supplying the optionally specified array of
-        ///     parameters as method parameters. Throws a new <see cref="Exception"/> of the
-        ///     specified Type and with the specified message upon encountering a <see cref="TargetInvocationException"/>.
+        ///     Invokes the specified generic method, supplying the optionally specified array of parameters as method parameters.
+        ///     Throws a new <see cref="Exception"/> of the specified Type and with the specified message upon encountering a <see cref="TargetInvocationException"/>.
         /// </summary>
         /// <param name="method">The generic method to be invoked.</param>
         /// <param name="type">The Type parameter for the generic method.</param>
@@ -539,8 +515,7 @@ namespace Symbiote.Core
         ///     The Type of Exception to throw if a <see cref="TargetInvocationException"/> is encountered.
         /// </param>
         /// <param name="exceptionMessage">
-        ///     The message with which the Exception should be thrown if a
-        ///     <see cref="TargetInvocationException"/> is encountered.
+        ///     The message with which the Exception should be thrown if a <see cref="TargetInvocationException"/> is encountered.
         /// </param>
         /// <param name="parameters">Optional parameters to be included with the method invocation.</param>
         private void InvokeMethod(MethodInfo method, Type type, Type exceptionType, string exceptionMessage, object[] parameters = null)
@@ -560,10 +535,9 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Invokes the specified generic method, supplying the specified Type as the Type
-        ///     parameter and the optionally specified array of parameters as method parameters.
-        ///     Throws a new <see cref="Exception"/> of the specified Type and with the specified
-        ///     message upon encountering a <see cref="TargetInvocationException"/>.
+        ///     Invokes the specified generic method, supplying the specified Type as the Type parameter and the optionally
+        ///     specified array of parameters as method parameters. Throws a new <see cref="Exception"/> of the specified Type and
+        ///     with the specified message upon encountering a <see cref="TargetInvocationException"/>.
         /// </summary>
         /// <typeparam name="T">The Type of the return value of the method invocation.</typeparam>
         /// <param name="method">The generic method to be invoked.</param>
@@ -572,8 +546,7 @@ namespace Symbiote.Core
         ///     The Type of Exception to throw if a <see cref="TargetInvocationException"/> is encountered.
         /// </param>
         /// <param name="exceptionMessage">
-        ///     The message with which the Exception should be thrown if a
-        ///     <see cref="TargetInvocationException"/> is encountered.
+        ///     The message with which the Exception should be thrown if a <see cref="TargetInvocationException"/> is encountered.
         /// </param>
         /// <param name="parameters">Optional parameters to be included with the method invocation.</param>
         /// <returns>The value returned by the method invocation.</returns>
@@ -597,8 +570,8 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Searches the list of registered <see cref="IManager"/> instances for the specified
-        ///     instance and returns a value indicating whether it was found.
+        ///     Searches the list of registered <see cref="IManager"/> instances for the specified instance and returns a value
+        ///     indicating whether it was found.
         /// </summary>
         /// <typeparam name="T">The Manager Type to check.</typeparam>
         /// <returns>A value indicating whether the specified Manager has been registered.</returns>
@@ -624,16 +597,13 @@ namespace Symbiote.Core
         /// <typeparam name="T">The Type of the specified Manager.</typeparam>
         /// <param name="manager">The Manager to register.</param>
         /// <returns>The registered Manager.</returns>
-        /// <exception cref="ManagerRegistrationException">
-        ///     Thrown when an error is encountered during registration.
-        /// </exception>
+        /// <exception cref="ManagerRegistrationException">Thrown when an error is encountered during registration.</exception>
         private T RegisterManager<T>(IManager manager) where T : IManager
         {
             logger.EnterMethod(xLogger.TypeParams(typeof(T)), xLogger.Params(manager));
             logger.Trace("Registering Manager '" + manager.GetType().Name + "'...");
 
-            // ensure the specified Manager hasn't already been registered. There can only be one of
-            // each Type in the Manager list.
+            // ensure the specified Manager hasn't already been registered. There can only be one of each Type in the Manager list.
             if (IsRegistered<T>())
             {
                 throw new ManagerRegistrationException("The Manager '" + manager.GetType().Name + "' is already registered.");
@@ -646,8 +616,7 @@ namespace Symbiote.Core
 
                 logger.Trace("Registering Manager with " + dependencies.Count() + " dependencies...");
 
-                // add the specified Manager to the list and attach an event handler to its
-                // StateChanged event
+                // add the specified Manager to the list and attach an event handler to its StateChanged event
                 ManagerInstances.Add(manager);
                 ManagerDependencies.Add(typeof(T), dependencies);
                 manager.StateChanged += ManagerStateChanged;
@@ -665,17 +634,14 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Returns a list of IManager instances corresponding to the Manager Types upon which
-        ///     the specified Manager is dependent.
+        ///     Returns a list of IManager instances corresponding to the Manager Types upon which the specified Manager is dependent.
         /// </summary>
         /// <typeparam name="T">The Manager Type for which the dependencies are to be resolved.</typeparam>
         /// <returns>
-        ///     A list of IManager instances corresponding to the Manager Types upon which the
-        ///     specified Manager is dependent.
+        ///     A list of IManager instances corresponding to the Manager Types upon which the specified Manager is dependent.
         /// </returns>
         /// <exception cref="ManagerDependencyException">
-        ///     Thrown when an exception is caught while resolving the dependencies for the specified
-        ///     Manager Type.
+        ///     Thrown when an exception is caught while resolving the dependencies for the specified Manager Type.
         /// </exception>
         private List<IManager> ResolveManagerDependencies<T>() where T : IManager
         {
@@ -689,9 +655,8 @@ namespace Symbiote.Core
                 MethodInfo getManager = GetType().GetMethod("GetManager", BindingFlags.Public | BindingFlags.Instance);
                 MethodInfo getManagerGeneric;
 
-                // retrieve dependencies for the specified Manager any instance of IManager needs to
-                // have at least one dependency (ApplicationManager). If we get a null or empty list
-                // something is wrong.
+                // retrieve dependencies for the specified Manager any instance of IManager needs to have at least one dependency
+                // (ApplicationManager). If we get a null or empty list something is wrong.
                 List<Type> dependencies = GetManagerDependencies<T>();
                 if ((dependencies == default(List<Type>)) || (dependencies.Count() == 0))
                 {
@@ -733,9 +698,7 @@ namespace Symbiote.Core
         ///     Invokes the <see cref="Manager.Setup"/> method on the specified instance of <see cref="IManager"/>.
         /// </summary>
         /// <param name="manager">The IManager instance for which to invoke Setup().</param>
-        /// <exception cref="ManagerSetupException">
-        ///     Thrown when the 'Setup' method invocation throws an exception.
-        /// </exception>
+        /// <exception cref="ManagerSetupException">Thrown when the 'Setup' method invocation throws an exception.</exception>
         private void SetupManager(IManager manager)
         {
             logger.EnterMethod();
@@ -757,12 +720,9 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Iterates over the list of <see cref="IManager"/> instances and invokes the
-        ///     <see cref="Manager.Setup"/> method on each.
+        ///     Iterates over the list of <see cref="IManager"/> instances and invokes the <see cref="Manager.Setup"/> method on each.
         /// </summary>
-        /// <exception cref="ManagerSetupException">
-        ///     Thrown when an error is encountered during the setup operation.
-        /// </exception>
+        /// <exception cref="ManagerSetupException">Thrown when an error is encountered during the setup operation.</exception>
         private void SetupManagers()
         {
             logger.EnterMethod();
@@ -790,9 +750,7 @@ namespace Symbiote.Core
         ///     Starts the specified <see cref="IManager"/> instance
         /// </summary>
         /// <param name="manager">The IManager instance to start.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and the specified IManager instance.
-        /// </returns>
+        /// <returns>A Result containing the result of the operation and the specified IManager instance.</returns>
         private Result<IManager> StartManager(IManager manager)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
@@ -827,8 +785,7 @@ namespace Symbiote.Core
             logger.Debug("Starting Managers...");
             Result retVal = new Result();
 
-            // iterate over the Manager instance list and start each manager. skip the
-            // ApplicationManager as it has already been started.
+            // iterate over the Manager instance list and start each manager. skip the ApplicationManager as it has already been started.
             foreach (IManager manager in ManagerInstances)
             {
                 if (manager != this)
@@ -878,8 +835,8 @@ namespace Symbiote.Core
             logger.Debug("Stopping Managers...");
             Result retVal = new Result();
 
-            // iterate over the Manager instance list in reverse order, stopping each manager. skip
-            // the ApplicationManager as it will stop when this process is complete.
+            // iterate over the Manager instance list in reverse order, stopping each manager. skip the ApplicationManager as it
+            // will stop when this process is complete.
             for (int i = ManagerInstances.Count() - 1; i >= 0; i--)
             {
                 logger.SubHeading(LogLevel.Debug, ManagerInstances[i].GetType().Name);

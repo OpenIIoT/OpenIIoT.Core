@@ -39,7 +39,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
 using Symbiote.Core.SDK.Event;
 
 namespace Symbiote.Core.SDK
@@ -47,7 +46,7 @@ namespace Symbiote.Core.SDK
     /// <summary>
     ///     Defines the interface for Managers.
     /// </summary>
-    public interface IManager : IDisposable, IStateful, IEventProvider
+    public interface IManager : IStateful, IEventProvider
     {
         #region Public Properties
 

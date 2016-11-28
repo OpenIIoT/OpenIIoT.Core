@@ -60,8 +60,7 @@ using Xunit;
 namespace Symbiote.Core.Tests
 {
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known
-    ///     bad dependency.
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
     /// </summary>
     /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
@@ -79,8 +78,7 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a
-        ///     known bad dependency.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
         /// </summary>
         [Fact]
         public void ManagerWithBadDepdency()
@@ -92,8 +90,7 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no
-    ///     Instantiate() method.
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
     /// </summary>
     /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
@@ -111,8 +108,7 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no
-        ///     Instantiate() method.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
         /// </summary>
         [Fact]
         public void ManagerWithBadInstantiate()
@@ -125,8 +121,7 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a
-    ///     Type not implementing IManager.
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
     /// </summary>
     /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
@@ -144,8 +139,7 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array
-        ///     containing a Type not implementing IManager.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
         /// </summary>
         [Fact]
         public void InstantiateWithNonIManager()
@@ -157,8 +151,8 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Tests invocation of <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager
-    ///     with a broken <see cref="Manager.Setup"/> method.
+    ///     Tests invocation of <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a broken
+    ///     <see cref="Manager.Setup"/> method.
     /// </summary>
     /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
@@ -176,8 +170,8 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array
-        ///     containing an instance of IManager with the Setup() method returning a null Result.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing an instance of IManager
+        ///     with the Setup() method returning a null Result.
         /// </summary>
         [Fact]
         public void InstantiateWithBrokenSetupMethod()
@@ -189,8 +183,7 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a manager that doesn't
-    ///     implement IManager.
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a manager that doesn't implement IManager.
     /// </summary>
     /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
@@ -208,8 +201,7 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no
-        ///     Instantiate() method.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
         /// </summary>
         [Fact]
         public void ManagerDoesntImplementIManager()
@@ -221,8 +213,7 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in
-    ///     the constructor Type list.
+    ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list.
     /// </summary>
     /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
@@ -240,8 +231,7 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice
-        ///     in the constructor Type list.
+        ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list.
         /// </summary>
         [Fact]
         public void DoubleManagers()
@@ -375,8 +365,7 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no
-    ///     dependencies defined.
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
     /// </summary>
     /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
@@ -394,8 +383,7 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no
-        ///     dependencies defined.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
         /// </summary>
         [Fact]
         public void ManagerWithNoDependencies()
@@ -407,8 +395,7 @@ namespace Symbiote.Core.Tests
     }
 
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no
-    ///     Instantiate() method.
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
     /// </summary>
     /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
@@ -426,8 +413,7 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no
-        ///     Instantiate() method.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
         /// </summary>
         [Fact]
         public void ManagerWithNoInstantiate()
@@ -478,8 +464,7 @@ namespace Symbiote.Core.Tests
         #region Public Methods
 
         /// <summary>
-        ///     Tests <see cref="Manager.Start()"/> with a Manager known to return a failed Result
-        ///     from startup.
+        ///     Tests <see cref="Manager.Start()"/> with a Manager known to return a failed Result from startup.
         /// </summary>
         [Fact]
         public void StartBadReturn()
@@ -526,8 +511,7 @@ namespace Symbiote.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Stop()"/> with a Manager known to return a failed Result
-        ///     from shutdown.
+        ///     Tests <see cref="Manager.Stop()"/> with a Manager known to return a failed Result from shutdown.
         /// </summary>
         [Fact]
         public void StopBadReturn()
@@ -576,8 +560,8 @@ namespace Symbiote.Core.Tests
         #region Public Methods
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array
-        ///     containing a valid, functioning IManager instance.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a valid, functioning
+        ///     IManager instance.
         /// </summary>
         [Fact]
         public void InstantiateWithValidIManager()
