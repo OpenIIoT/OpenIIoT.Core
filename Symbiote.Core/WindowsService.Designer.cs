@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       ▄  
-      █  The Windows Service class for the application.  Designer generated class.
+      █  The Windows Service class for the application.
       █  
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
       █  The GNU Affero General Public License (GNU AGPL)
@@ -50,14 +50,23 @@
 namespace Symbiote.Core
 {
     /// <summary>
-    ///     The Windows Service class for the application.  Designer generated class.
+    ///     The Windows Service class for the application. 
     /// </summary>
+    /// <remarks>
+    ///     Designer generated class.
+    /// </remarks>
     partial class WindowsService
     {
+        #region Private Fields
+
         /// <summary> 
         ///     Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+
+        #endregion Private Fields
+
+        #region Protected Methods
 
         /// <summary>
         /// Clean up any resources being used.
@@ -72,7 +81,9 @@ namespace Symbiote.Core
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+        #endregion Protected Methods
+
+        #region Private Methods
 
         /// <summary> 
         /// Required method for Designer support - do not modify 
@@ -84,6 +95,6 @@ namespace Symbiote.Core
             this.ServiceName = "WindowsService";
         }
 
-        #endregion
+        #endregion Private Methods
     }
 }
