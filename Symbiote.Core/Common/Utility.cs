@@ -1,68 +1,62 @@
 ﻿/*
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-      █   
-      █   ███    █▄                                               
-      █   ███    ███                                              
-      █   ███    ███     ██     █   █        █      ██    ▄█   ▄  
-      █   ███    ███ ▀███████▄ ██  ██       ██  ▀███████▄ ██   █▄ 
-      █   ███    ███     ██  ▀ ██▌ ██       ██▌     ██  ▀ ▀▀▀▀▀██ 
-      █   ███    ███     ██    ██  ██       ██      ██    ▄█   ██ 
-      █   ███    ███     ██    ██  ██▌    ▄ ██      ██    ██   ██ 
-      █   ████████▀     ▄██▀   █   ████▄▄██ █      ▄██▀    █████  
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
- ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      ▄  
+      █   ███    █▄
+      █   ███    ███
+      █   ███    ███     ██     █   █        █      ██    ▄█   ▄
+      █   ███    ███ ▀███████▄ ██  ██       ██  ▀███████▄ ██   █▄
+      █   ███    ███     ██  ▀ ██▌ ██       ██▌     ██  ▀ ▀▀▀▀▀██
+      █   ███    ███     ██    ██  ██       ██      ██    ▄█   ██
+      █   ███    ███     ██    ██  ██▌    ▄ ██      ██    ██   ██
+      █   ████████▀     ▄██▀   █   ████▄▄██ █      ▄██▀    █████
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
       █  Contains miscellaneous static methods.
-      █ 
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
-      █  
+      █
       █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
-      █  
+      █
       █  This program is free software: you can redistribute it and/or modify
       █  it under the terms of the GNU Affero General Public License as published by
       █  the Free Software Foundation, either version 3 of the License, or
       █  (at your option) any later version.
-      █  
+      █
       █  This program is distributed in the hope that it will be useful,
       █  but WITHOUT ANY WARRANTY; without even the implied warranty of
       █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
       █  GNU Affero General Public License for more details.
-      █  
+      █
       █  You should have received a copy of the GNU Affero General Public License
       █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-      █  
-      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
-                                                                                                   ██ 
-                                                                                               ▀█▄ ██ ▄█▀ 
-                                                                                                 ▀████▀   
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
                                                                                                    ▀▀                            */
+
+using NLog;
+using Symbiote.Core.SDK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NLog;
-using Symbiote.Core.Model;
 using Utility.BigFont;
-using Symbiote.Core.SDK;
 
 namespace Symbiote.Core
 {
     /// <summary>
-    /// Contains miscellaneous static methods.
+    ///     Contains miscellaneous static methods.
     /// </summary>
     public static class Utility
     {
-        #region Methods
-
         #region Public Methods
 
-        #region Public Static Methods
-
-        #region Extension Methods
-
         /// <summary>
-        /// Returns a clone of the supplied list.
+        ///     Returns a clone of the supplied list.
         /// </summary>
         /// <typeparam name="T">The list type to clone.</typeparam>
         /// <param name="listToClone">The list from which the clone should be created.</param>
@@ -73,78 +67,7 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Returns a subset of the supplied array.
-        /// </summary>
-        /// <typeparam name="T">The type of the array.</typeparam>
-        /// <param name="data">The array.</param>
-        /// <param name="index">The index at which the sub-array should start.</param>
-        /// <param name="length">The length of the desired sub-array; the number of elements to select.</param>
-        /// <returns>A subset of the supplied array.</returns>
-        public static T[] SubArray<T>(this T[] data, int index, int length)
-        {
-            T[] result = new T[length];
-            Array.Copy(data, index, result, 0, length);
-            return result;
-        }
-        
-        /// <summary>
-        /// Returns the last N elements of the supplied IEnumerable.
-        /// </summary>
-        /// <typeparam name="T">The type of the IEnumerable.</typeparam>
-        /// <param name="source">The IEnumerable.</param>
-        /// <param name="n">The number of elements to take from the end of the collection.</param>
-        /// <returns>An IEnumerable containing the last N elements of the supplied IEnumerable.</returns>
-        public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int n)
-        {
-            return source.Skip(Math.Max(0, source.Count() - n));
-        }
-        
-        /// <summary>
-        /// Returns the specified assembly attribute of the specified assembly.
-        /// </summary>
-        /// <typeparam name="T">The assembly attribute to return.</typeparam>
-        /// <param name="ass">The assembly from which to retrieve the attribute.</param>
-        /// <returns>The retrieved attribute.</returns>
-        public static T GetAssemblyAttribute<T>(this System.Reflection.Assembly ass) where T : Attribute
-        {
-            object[] attributes = ass.GetCustomAttributes(typeof(T), false);
-
-            if (attributes == null || attributes.Length == 0)
-            {
-                return null;
-            }
-
-            return attributes.OfType<T>().SingleOrDefault();
-        }
-
-        #endregion
-
-        #region Miscellaneous
-
-        /// <summary>
-        /// Converts the specified wildcard pattern to a regular expression.
-        /// </summary>
-        /// <param name="pattern">The wildcard pattern to convert.</param>
-        /// <returns>The regular expression resulting from the conversion.</returns>
-        public static string WildcardToRegex(string pattern = "")
-        {
-            return "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
-                              .Replace(@"\*", ".*")
-                              .Replace(@"\?", ".")
-                       + "$";
-        }
-
-        /// <summary>
-        /// Returns a truncated GUID.
-        /// </summary>
-        /// <returns>A truncated GUID.</returns>
-        public static string ShortGuid()
-        {
-            return Guid.NewGuid().ToString().Split('-')[0];
-        }
-
-        /// <summary>
-        /// Computes a cryptographic hash of the provided text using the provided salt.
+        ///     Computes a cryptographic hash of the provided text using the provided salt.
         /// </summary>
         /// <param name="text">The text to hash.</param>
         /// <param name="salt">The salt with which to seed the hash function.</param>
@@ -186,7 +109,68 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Installs or uninstalls the application as a Windows Service, depending on the provided action.
+        ///     Disables the specified logging level within the LogManager.
+        /// </summary>
+        /// <param name="level">The level to disable.</param>
+        public static void DisableLoggingLevel(LogLevel level)
+        {
+            foreach (var rule in LogManager.Configuration.LoggingRules)
+            {
+                rule.DisableLoggingForLevel(level);
+            }
+
+            LogManager.ReconfigExistingLoggers();
+        }
+
+        /// <summary>
+        ///     Returns the specified assembly attribute of the specified assembly.
+        /// </summary>
+        /// <typeparam name="T">The assembly attribute to return.</typeparam>
+        /// <param name="ass">The assembly from which to retrieve the attribute.</param>
+        /// <returns>The retrieved attribute.</returns>
+        public static T GetAssemblyAttribute<T>(this System.Reflection.Assembly ass) where T : Attribute
+        {
+            object[] attributes = ass.GetCustomAttributes(typeof(T), false);
+
+            if (attributes == null || attributes.Length == 0)
+            {
+                return null;
+            }
+
+            return attributes.OfType<T>().SingleOrDefault();
+        }
+
+        /// <summary>
+        ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file.
+        /// </summary>
+        /// <param name="key">The setting to retrieve.</param>
+        /// <returns>The string value of the retrieved setting.</returns>
+        public static string GetSetting(string key)
+        {
+            return System.Configuration.ConfigurationManager.AppSettings[key];
+        }
+
+        /// <summary>
+        ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file. If the setting isn't
+        ///     found, returns the provided defaultSetting and logs a warning.
+        /// </summary>
+        /// <param name="key">The setting to retrieve.</param>
+        /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
+        /// <returns>The string value of the retrieved setting.</returns>
+        public static string GetSetting(string key, string defaultSetting)
+        {
+            string retVal = GetSetting(key);
+            if (retVal == default(string))
+            {
+                NLog.LogManager.GetCurrentClassLogger().Warn("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
+                retVal = defaultSetting;
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Installs or uninstalls the application as a Windows Service, depending on the provided action.
         /// </summary>
         /// <param name="action">The action to perform (uninstall or install).</param>
         /// <returns>True if the installation/uninstallation succeeded, false otherwise.</returns>
@@ -211,12 +195,87 @@ namespace Symbiote.Core
             return true;
         }
 
-        #endregion
+        /// <summary>
+        ///     Prints the logo for the application.
+        /// </summary>
+        /// <param name="logger">The logger to which the logo should be logged.</param>
+        public static void PrintLogo(Logger logger)
+        {
+            logger.Info(string.Empty);
+            logger.Info(@"      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ ");
+            logger.Info(@"      █   ");
 
-        #region Logging
+            foreach (string s in BigFontGenerator.Generate("Symbiote", Font.Graffiti, FontSize.Large))
+            {
+                logger.Info(@"      █  " + s);
+            }
+
+            logger.Info(@"      █");
+            logger.Info(@" ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ ");
+            logger.Info(@" █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ ");
+            logger.Info(@"      ▄  ");
+        }
 
         /// <summary>
-        /// Sets the logging level of the LogManager to the specified level, disabling all lower logging levels.
+        ///     Prints the logo footer for the application.
+        /// </summary>
+        /// <param name="logger">The logger to which the logo should be logged.</param>
+        public static void PrintLogoFooter(Logger logger)
+        {
+            logger.Info(@"      █  ");
+            logger.Info(@"      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ ");
+            logger.Info(@"                                                                                                   ██ ");
+            logger.Info(@"                                                                                               ▀█▄ ██ ▄█▀ ");
+            logger.Info(@"                                                                                                 ▀████▀   ");
+            logger.Info(@"                                                                                                   ▀▀ ");
+            logger.Info(string.Empty);
+        }
+
+        /// <summary>
+        ///     Recursively prints the application Model to the specified logger.
+        /// </summary>
+        /// <param name="logger">The logger to which the Model should be printed.</param>
+        /// <param name="root">The root Item from which the print should begin.</param>
+        /// <param name="indent">The current level of indent to apply.</param>
+        /// <param name="levels">The list of indentation levels.</param>
+        /// <param name="last">True if the specified element is the last in the current chain.</param>
+        public static void PrintModel(Logger logger, Item root, int indent, List<bool> levels = null, bool last = false)
+        {
+            // if indent is zero we are starting with the root. initialize the list and add the first level.
+            if (indent == 0)
+            {
+                levels = new List<bool>();
+            }
+
+            // if indent is greater than the count of items in levels, the tree is deeper than it has been before. add a new level
+            // to the list and initialize it to true.
+            if (indent >= levels.Count)
+            {
+                levels.Add(true);
+            }
+
+            // set the value of the current level according to whether this element is the last in the current chain
+            levels[indent] = !last;
+
+            // build the prefix
+            string prefix = string.Empty;
+            for (int l = 0; l < indent; l++)
+            {
+                prefix += levels[l] ? " │  " : "    ";
+            }
+
+            logger.Info(@"      █" + prefix + (last ? (indent == 0 ? "  ■ " : " └─╴") : " ├─╴") + root.FQN);
+
+            // print each of the children of this Item
+            for (int i = 0; i < root.Children.Count; i++)
+            {
+                Item item = root.Children[i];
+                PrintModel(logger, item, indent + 1, levels, i == root.Children.Count - 1);
+            }
+        }
+
+        /// <summary>
+        ///     Sets the logging level of the LogManager to the specified level, disabling all lower logging levels.
         /// </summary>
         /// <param name="level">The desired logging level.</param>
         public static void SetLoggingLevel(string level)
@@ -252,54 +311,43 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        /// Disables the specified logging level within the LogManager.
+        ///     Returns a truncated GUID.
         /// </summary>
-        /// <param name="level">The level to disable.</param>
-        public static void DisableLoggingLevel(LogLevel level)
+        /// <returns>A truncated GUID.</returns>
+        public static string ShortGuid()
         {
-            foreach (var rule in LogManager.Configuration.LoggingRules)
-            {
-                rule.DisableLoggingForLevel(level);
-            }
-
-            LogManager.ReconfigExistingLoggers();
-        }
-
-        #endregion
-
-        #region Settings
-
-        /// <summary>
-        /// Retrieves the setting corresponding to the specified setting from the app.exe.config file.
-        /// </summary>
-        /// <param name="key">The setting to retrieve.</param>
-        /// <returns>The string value of the retrieved setting.</returns>
-        public static string GetSetting(string key)
-        {
-            return System.Configuration.ConfigurationManager.AppSettings[key];
+            return Guid.NewGuid().ToString().Split('-')[0];
         }
 
         /// <summary>
-        /// Retrieves the setting corresponding to the specified setting from the app.exe.config file.
-        /// If the setting isn't found, returns the provided defaultSetting and logs a warning.
+        ///     Returns a subset of the supplied array.
         /// </summary>
-        /// <param name="key">The setting to retrieve.</param>
-        /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
-        /// <returns>The string value of the retrieved setting.</returns>
-        public static string GetSetting(string key, string defaultSetting)
+        /// <typeparam name="T">The type of the array.</typeparam>
+        /// <param name="data">The array.</param>
+        /// <param name="index">The index at which the sub-array should start.</param>
+        /// <param name="length">The length of the desired sub-array; the number of elements to select.</param>
+        /// <returns>A subset of the supplied array.</returns>
+        public static T[] SubArray<T>(this T[] data, int index, int length)
         {
-            string retVal = GetSetting(key);
-            if (retVal == default(string))
-            {
-                NLog.LogManager.GetCurrentClassLogger().Warn("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
-                retVal = defaultSetting;
-            }
-
-            return retVal;
+            T[] result = new T[length];
+            Array.Copy(data, index, result, 0, length);
+            return result;
         }
 
         /// <summary>
-        /// Updates the setting corresponding to the specified setting within the app.exe.config file with the specified value.
+        ///     Returns the last N elements of the supplied IEnumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of the IEnumerable.</typeparam>
+        /// <param name="source">The IEnumerable.</param>
+        /// <param name="n">The number of elements to take from the end of the collection.</param>
+        /// <returns>An IEnumerable containing the last N elements of the supplied IEnumerable.</returns>
+        public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int n)
+        {
+            return source.Skip(Math.Max(0, source.Count() - n));
+        }
+
+        /// <summary>
+        ///     Updates the setting corresponding to the specified setting within the app.exe.config file with the specified value.
         /// </summary>
         /// <param name="key">The setting to update.</param>
         /// <param name="value">The value to which the setting should be set.</param>
@@ -312,111 +360,19 @@ namespace Symbiote.Core
             System.Configuration.ConfigurationManager.RefreshSection("appSettings");
         }
 
-        #endregion
-
-        #region Display
-
         /// <summary>
-        /// Prints the logo for the application.
+        ///     Converts the specified wildcard pattern to a regular expression.
         /// </summary>
-        /// <param name="logger">The logger to which the logo should be logged.</param>
-        public static void PrintLogo(Logger logger)
+        /// <param name="pattern">The wildcard pattern to convert.</param>
+        /// <returns>The regular expression resulting from the conversion.</returns>
+        public static string WildcardToRegex(string pattern = "")
         {
-            // logger.Info(string.Empty);
-            // logger.Info(@"┏━━━━━━━━━━━━━━ ━━ ━ ━━━━ ━━━━━━━━━━━━━━━━ ━ ━        ━  ━━    ━   ━━━━━━━━━━━  ━ ━ ━━ ━━━━━━ ━━━━━━┓");
-            // logger.Info(@"┃''' '  '                                                                                           ┃");
-            // logger.Info(@"┃''    ▄████████ ▄██   ▄     ▄▄▄▄███▄▄▄▄   ▀█████████▄   ▄█   ▄██████▄      ███        ▄████████    ┃");
-            // logger.Info(@"┃`    ███    ███ ███   ██▄ ▄██▀▀▀███▀▀▀██▄   ███    ███ ███  ███    ███ ▀█████████▄   ███    ███    ┃");
-            // logger.Info(@"┃     ███    █▀  ███▄▄▄███ ███   ███   ███   ███    ███ ███▌ ███    ███    ▀███▀▀██   ███    █▀     ┃");
-            // logger.Info(@"┃     ███        ▀▀▀▀▀▀███ ███   ███   ███  ▄███▄▄▄██▀  ███▌ ███    ███     ███   ▀  ▄███▄▄▄        ┃");
-            // logger.Info(@"┃   ▀███████████ ▄██   ███ ███   ███   ███ ▀▀███▀▀▀██▄  ███▌ ███    ███     ███     ▀▀███▀▀▀        ┃");
-            // logger.Info(@"┃            ███ ███   ███ ███   ███   ███   ███    ██▄ ███  ███    ███     ███       ███    █▄     ┃");
-            // logger.Info(@"┃      ▄█    ███ ███   ███ ███   ███   ███   ███    ███ ███  ███    ███     ███       ███    ███    ┃");
-            // logger.Info(@"┃    ▄████████▀   ▀█████▀   ▀█   ███   █▀  ▄█████████▀  █▀    ▀██████▀     ▄████▀     ██████████   .┃");
-            // logger.Info(@"┃                                                                                           . .  ...┃");
-            // logger.Info(@"┗━━━━━━━━━━━━━ ━ ━━━━━━━━━━ ━ ━           ━  ━━ ━ ━ ━━━━━━━━━━━━━━━━━━━━━ ━ ━ ━━━━━━━━━━━━━━━━  ━ ━━┛");
-            logger.Info(string.Empty);
-            logger.Info(@"      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ ");
-            logger.Info(@"      █   ");
-
-            foreach (string s in BigFontGenerator.Generate("Symbiote", Font.Graffiti, FontSize.Large))
-            {
-                logger.Info(@"      █  " + s);
-            }
-
-            logger.Info(@"      █");
-            logger.Info(@" ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ ");
-            logger.Info(@" █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ ");
-            logger.Info(@"      ▄  ");
+            return "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
+                              .Replace(@"\*", ".*")
+                              .Replace(@"\?", ".")
+                       + "$";
         }
 
-        /// <summary>
-        /// Prints the logo footer for the application.
-        /// </summary>
-        /// <param name="logger">The logger to which the logo should be logged.</param>
-        public static void PrintLogoFooter(Logger logger)
-        {
-            // logger.Info(@"┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
-            // logger.Info(@"┃   ░ ░░░▒▒▒▒▒▒▓▓▓▓▓▓▓▓███████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▒▒▒▒▒▒░░░ ░   ┃");
-            // logger.Info(@"┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
-            logger.Info(@"      █  ");
-            logger.Info(@"      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ ");
-            logger.Info(@"                                                                                                   ██ ");
-            logger.Info(@"                                                                                               ▀█▄ ██ ▄█▀ ");
-            logger.Info(@"                                                                                                 ▀████▀   ");
-            logger.Info(@"                                                                                                   ▀▀ ");
-            logger.Info(string.Empty);
-        }
-
-        /// <summary>
-        /// Recursively prints the application Model to the specified logger.
-        /// </summary>
-        /// <param name="logger">The logger to which the Model should be printed.</param>
-        /// <param name="root">The root Item from which the print should begin.</param>
-        /// <param name="indent">The current level of indent to apply.</param>
-        /// <param name="levels">The list of indentation levels.</param>
-        /// <param name="last">True if the specified element is the last in the current chain.</param>
-        public static void PrintModel(Logger logger, Item root, int indent, List<bool> levels = null, bool last = false)
-        {
-            // if indent is zero we are starting with the root.  initialize the list and add the first level.
-            if (indent == 0)
-            {
-                levels = new List<bool>();
-            }
-            
-            // if indent is greater than the count of items in levels, the tree is deeper than it has been before.
-            // add a new level to the list and initialize it to true.
-            if (indent >= levels.Count)
-            {
-                levels.Add(true);
-            }
-
-            // set the value of the current level according to whether this element is the last in the current chain
-            levels[indent] = !last;
-
-            // build the prefix
-            string prefix = string.Empty;
-            for (int l = 0; l < indent; l++)
-            {
-                prefix += levels[l] ? " │  " : "    ";
-            }
-           
-            logger.Info(@"      █" + prefix + (last ? (indent == 0 ? "  ■ " : " └─╴") : " ├─╴") + root.FQN);
-
-            // print each of the children of this Item
-            for (int i = 0; i < root.Children.Count; i++)
-            {
-                Item item = root.Children[i];
-                PrintModel(logger, item, indent + 1, levels, i == root.Children.Count - 1);
-            }
-        }
-
-        #endregion
-
-        #endregion
-
-        #endregion
-
-        #endregion
+        #endregion Public Methods
     }
 }
