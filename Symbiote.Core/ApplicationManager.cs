@@ -47,7 +47,6 @@ using System.Reflection;
 using NLog;
 using NLog.xLogger;
 using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Exceptions;
 using Utility.OperationResult;
 
 namespace Symbiote.Core

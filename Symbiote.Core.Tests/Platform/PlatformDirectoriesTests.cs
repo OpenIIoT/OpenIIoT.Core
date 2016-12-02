@@ -10,10 +10,19 @@
       █     ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██ ███   ▄███ ██    ██  ██   ██   █  ██    ██     ██    ██    ██   ██  ██ ██    ██   █     ▄  ██
       █    ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █  ████████▀  █     ██  ██   ███████ ██████▀     ▄██▀    ██████    ██  ██ █     ███████  ▄████▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The PlatformDirectories class encapsulates the filesystem directories needed to run the application.
+      █  Unit tests for the PlatformDirectories class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -40,126 +49,106 @@
                                                                                                    ▀▀                            */
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
-using NLog.xLogger;
+using System.Collections.Immutable;
+using System.Diagnostics.CodeAnalysis;
 using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Platform;
+using Symbiote.Core.Tests.Mockups;
+using Utility.OperationResult;
+using Xunit;
+using System.Collections.Generic;
+using Symbiote.Core.Platform;
 
-namespace Symbiote.Core.Platform
+namespace Symbiote.Core.Tests
 {
     /// <summary>
-    ///     The PlatformDirectories class encapsulates the file system directories needed to run the application.
+    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
     /// </summary>
-    public class PlatformDirectories : IPlatformDirectories
+    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
+    [Collection("PlatformDirectories")]
+    public class PlatformDirectoriesTests
     {
-        #region Private Fields
-
         /// <summary>
-        ///     The Logger for this class.
+        ///     Tests <see cref="PlatformDirectories()"/> and all properties.
         /// </summary>
-        private static xLogger logger = xLogManager.GetCurrentClassxLogger();
-
-        #endregion Private Fields
-
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PlatformDirectories"/> class with the specified dictionary.
-        /// </summary>
-        /// <param name="directories">A dictionary containing the name and directory for each of the program directories.</param>
-        /// <exception cref="DirectoryConfigurationException">
-        ///     Thrown when the directory configuration is determined to be malformed.
-        /// </exception>
-        public PlatformDirectories(Dictionary<string, string> directories)
+        [Fact]
+        public void Constructor()
         {
-            logger.EnterMethod(xLogger.Params(xLogger.Exclude(), directories));
+            PlatformDirectories test = new PlatformDirectories(GetTestDirs());
 
-            try
-            {
-                Root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
-                Data = System.IO.Path.Combine(Root, directories["Data"]);
-                Archives = System.IO.Path.Combine(Root, directories["Archives"]);
-                Plugins = System.IO.Path.Combine(Root, directories["Plugins"]);
-                Temp = System.IO.Path.Combine(Root, directories["Temp"]);
-                Persistence = System.IO.Path.Combine(Root, directories["Persistence"]);
-                Web = System.IO.Path.Combine(Root, directories["Web"]);
-                Logs = System.IO.Path.Combine(Root, directories["Logs"]);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                logger.Exception(ex);
-                throw new DirectoryConfigurationException("The directory configuration is missing one or more directories.", ex);
-            }
-
-            logger.ExitMethod();
+            Assert.Equal(FullDir("Data"), test.Data);
+            Assert.Equal(FullDir("Archives"), test.Archives);
+            Assert.Equal(FullDir("Plugins"), test.Plugins);
+            Assert.Equal(FullDir("Temp"), test.Temp);
+            Assert.Equal(FullDir("Persistence"), test.Persistence);
+            Assert.Equal(FullDir("Web"), test.Web);
+            Assert.Equal(FullDir("Logs"), test.Logs);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the archive directory
-        /// </summary>
-        public string Archives { get; private set; }
-
-        /// <summary>
-        ///     Gets the data directory
-        /// </summary>
-        public string Data { get; private set; }
-
-        /// <summary>
-        ///     Gets the log directory
-        /// </summary>
-        public string Logs { get; private set; }
-
-        /// <summary>
-        ///     Gets the persistence directory
-        /// </summary>
-        public string Persistence { get; private set; }
-
-        /// <summary>
-        ///     Gets the plugin directory
-        /// </summary>
-        public string Plugins { get; private set; }
-
-        /// <summary>
-        ///     Gets the root directory; the directory from which the main executable is running.
-        /// </summary>
-        public string Root { get; private set; }
-
-        /// <summary>
-        ///     Gets the temporary directory
-        /// </summary>
-        public string Temp { get; private set; }
-
-        /// <summary>
-        ///     Gets the web directory
-        /// </summary>
-        /// <remarks>Web content is served from this directory; anything placed here will be exposed.</remarks>
-        public string Web { get; private set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Returns a dictionary containing all of the program directories keyed by name.
-        /// </summary>
-        /// <returns>A dictionary containing all of the program directories keyed by name.</returns>
-        public Dictionary<string, string> ToDictionary()
+        [Fact]
+        public void BadConstructor()
         {
-            Dictionary<string, string> dictionary = new Dictionary<string, string>();
-
-            foreach (PropertyInfo p in this.GetType().GetProperties())
-            {
-                dictionary.Add(p.Name, (string)p.GetValue(this));
-            }
-
-            return dictionary;
+            Assert.Throws<DirectoryConfigurationException>(() => new PlatformDirectories(GetBadTestDirs()));
         }
 
-        #endregion Public Methods
+        /// <summary>
+        ///     Tests <see cref="ToDictionary"/> and spot-checks the outcome.
+        /// </summary>
+        [Fact]
+        public void ToDictionary()
+        {
+            PlatformDirectories test = new PlatformDirectories(GetTestDirs());
+
+            Assert.Equal(FullDir("Data"), test.Data);
+            Assert.Equal(FullDir("Archives"), test.Archives);
+            Assert.Equal(FullDir("Plugins"), test.Plugins);
+            Assert.Equal(FullDir("Temp"), test.Temp);
+
+            Dictionary<string, string> dict = test.ToDictionary();
+
+            Assert.Equal(FullDir("Data"), dict["Data"]);
+            Assert.Equal(FullDir("Archives"), dict["Archives"]);
+            Assert.Equal(FullDir("Temp"), dict["Temp"]);
+        }
+
+        /// <summary>
+        ///     Returns the fully qualified path for the specified directory, relative to the application root.
+        /// </summary>
+        /// <param name="dir">The directory to qualify.</param>
+        /// <returns>The fully qualified path for the specified directory, relative to the application root.</returns>
+        private string FullDir(string dir)
+        {
+            string root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
+            return System.IO.Path.Combine(root, dir);
+        }
+
+        /// <summary>
+        ///     Returns a dictionary containing the necessary directory key-value pairs.
+        /// </summary>
+        /// <returns>A dictionary containing the necessary directory key-value pairs.</returns>
+        private Dictionary<string, string> GetTestDirs()
+        {
+            Dictionary<string, string> retVal = new Dictionary<string, string>();
+
+            retVal.Add("Data", "Data");
+            retVal.Add("Archives", "Archives");
+            retVal.Add("Plugins", "Plugins");
+            retVal.Add("Temp", "Temp");
+            retVal.Add("Persistence", "Persistence");
+            retVal.Add("Web", "Web");
+            retVal.Add("Logs", "Logs");
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Returns a dictionary containing an invalid number of directory key-value pairs.
+        /// </summary>
+        /// <returns>A dictionary containing an invalid number of directory key-value pairs.</returns>
+        private Dictionary<string, string> GetBadTestDirs()
+        {
+            Dictionary<string, string> retVal = GetTestDirs();
+            retVal.Remove("Data");
+            return retVal;
+        }
     }
 }
