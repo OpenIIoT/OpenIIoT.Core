@@ -190,6 +190,8 @@
     <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
     <Compile Include="Plugin\IPluginManager.cs" />
     <Compile Include="Plugin\Plugin.cs" />
+    <Compile Include="Plugin\PluginArchive.cs" />
+    <Compile Include="Plugin\PluginArchiveLoadResult.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
     <Compile Include="Plugin\PluginTypeManager.cs" />
     <Compile Include="ProjectInstaller.cs">

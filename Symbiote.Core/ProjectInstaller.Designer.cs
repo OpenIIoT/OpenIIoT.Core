@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
       ▄  
-      █  The Windows Service installer for the application.  Designer generated class.
+      █  The Windows Service installer for the application; allows the Windows Service to be installed and uninstalled from within the application.
       █  
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
       █  The GNU Affero General Public License (GNU AGPL)
@@ -47,17 +47,36 @@
                                                                                                ▀█▄ ██ ▄█▀ 
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
+
 namespace Symbiote.Core
 {
     /// <summary>
-    ///     The Windows Servce installer for the application.  Designer generated class.
+    ///     The Windows Service installer for the application; allows the Windows Service to be installed and uninstalled from
+    ///     within the application.
     /// </summary>
+    /// <remarks>Designer generated class.</remarks>
     partial class ProjectInstaller
     {
+        #region Private Fields
+
         /// <summary>
         ///     Required designer variable.
         /// </summary>
         private System.ComponentModel.IContainer components = null;
+
+        /// <summary>
+        ///     The ServiceInstaller instance.
+        /// </summary>
+        private System.ServiceProcess.ServiceInstaller serviceInstaller;
+
+        /// <summary>
+        ///     The ServiceProcessInstaller instance.
+        /// </summary>
+        private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller;
+
+        #endregion Private Fields
+
+        #region Protected Methods
 
         /// <summary> 
         ///     Clean up any resources being used.
@@ -72,7 +91,9 @@ namespace Symbiote.Core
             base.Dispose(disposing);
         }
 
-        #region Component Designer generated code
+        #endregion Protected Methods
+
+        #region Private Methods
 
         /// <summary>
         ///     Required method for Designer support - do not modify
@@ -104,9 +125,6 @@ namespace Symbiote.Core
 
         }
 
-        #endregion
-
-        private System.ServiceProcess.ServiceProcessInstaller serviceProcessInstaller;
-        private System.ServiceProcess.ServiceInstaller serviceInstaller;
+        #endregion Private Methods
     }
 }

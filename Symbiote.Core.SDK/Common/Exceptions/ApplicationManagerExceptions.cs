@@ -51,7 +51,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Symbiote.Core.SDK.Exceptions
+namespace Symbiote.Core.SDK
 {
     /// <summary>
     ///     Represents errors that occur within the ApplicationManager class.
@@ -79,10 +79,13 @@ namespace Symbiote.Core.SDK.Exceptions
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationManagerException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ApplicationManagerException"/> class with a specified error message
+        ///     and a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
         public ApplicationManagerException(string message, Exception innerException) : base(message, innerException)
         {
         }
@@ -116,10 +119,13 @@ namespace Symbiote.Core.SDK.Exceptions
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerDependencyException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ManagerDependencyException"/> class with a specified error message and
+        ///     a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
         public ManagerDependencyException(string message, Exception innerException) : base(message, innerException)
         {
         }
@@ -153,10 +159,13 @@ namespace Symbiote.Core.SDK.Exceptions
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerInstantiationException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ManagerInstantiationException"/> class with a specified error message
+        ///     and a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
         public ManagerInstantiationException(string message, Exception innerException) : base(message, innerException)
         {
         }
@@ -190,10 +199,13 @@ namespace Symbiote.Core.SDK.Exceptions
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerNotInitializedException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ManagerNotInitializedException"/> class with a specified error message
+        ///     and a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
         public ManagerNotInitializedException(string message, Exception innerException) : base(message, innerException)
         {
         }
@@ -227,10 +239,13 @@ namespace Symbiote.Core.SDK.Exceptions
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerRegistrationException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ManagerRegistrationException"/> class with a specified error message
+        ///     and a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
         public ManagerRegistrationException(string message, Exception innerException) : base(message, innerException)
         {
         }
@@ -264,10 +279,13 @@ namespace Symbiote.Core.SDK.Exceptions
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerTypeListException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ManagerTypeListException"/> class with a specified error message and a
+        ///     reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
         public ManagerTypeListException(string message, Exception innerException) : base(message, innerException)
         {
         }

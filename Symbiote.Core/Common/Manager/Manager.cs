@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The abstract base class from which all Managers inherit.
+      █  The Manager class is the abstract base class from which all Managers inherit.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,22 +39,21 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using NLog;
-using NLog.xLogger;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Event;
-using Symbiote.Core.SDK.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Timers;
+using NLog;
+using NLog.xLogger;
+using Symbiote.Core.SDK;
+using Symbiote.Core.SDK.Event;
 using Utility.OperationResult;
 
 namespace Symbiote.Core
 {
     /// <summary>
-    ///     The abstract base class from which all Managers are extended.
+    ///     The Manager class is the abstract base class from which all Managers inherit.
     /// </summary>
     /// <remarks>
     ///     <para>

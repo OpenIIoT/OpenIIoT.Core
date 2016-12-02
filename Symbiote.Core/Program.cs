@@ -53,7 +53,6 @@ using Symbiote.Core.Model;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Exceptions;
 using Symbiote.Core.SDK.Model;
 using Symbiote.Core.SDK.Platform;
 using Symbiote.Core.SDK.Plugin.Connector;
@@ -67,32 +66,28 @@ namespace Symbiote.Core
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         <see cref="Main(string[])"/> first processes command line arguments, reconfiguring
-    ///         the logger to the specified level and, if the -uninstall-service or -install-service
-    ///         arguments are specified, either installs or uninstalls the Windows Service for the
-    ///         application. If the Windows Service is modified, the application exits following the modification.
+    ///         <see cref="Main(string[])"/> first processes command line arguments, reconfiguring the logger to the specified
+    ///         level and, if the -uninstall-service or -install-service arguments are specified, either installs or uninstalls the
+    ///         Windows Service for the application. If the Windows Service is modified, the application exits following the modification.
     ///     </para>
     ///     <para>
-    ///         Next, the <see cref="ApplicationManager"/> is instantiated. Lastly, the application
-    ///         is started in either interactive or service mode, depending on how the application
-    ///         was started.
+    ///         Next, the <see cref="ApplicationManager"/> is instantiated. Lastly, the application is started in either
+    ///         interactive or service mode, depending on how the application was started.
     ///     </para>
     ///     <para>
-    ///         The application logic begins in <see cref="Start(string[])"/>, where the Application
-    ///         Manager is started, then the <see cref="Startup"/> method is invoked to execute
-    ///         miscellaneous post-startup tasks that weren't appropriate at a component level.
-    ///         Following the execution of <see cref="Startup"/>, <see cref="Console.ReadLine"/> is
-    ///         invoked to run the application in perpetuity.
+    ///         The application logic begins in <see cref="Start(string[])"/>, where the Application Manager is started, then the
+    ///         <see cref="Startup"/> method is invoked to execute miscellaneous post-startup tasks that weren't appropriate at a
+    ///         component level. Following the execution of <see cref="Startup"/>, <see cref="Console.ReadLine"/> is invoked to run
+    ///         the application in perpetuity.
     ///     </para>
     ///     <para>
-    ///         When the application is stopped, either by the enter key being pressed or by the
-    ///         service being stopped, the <see cref="Stop()"/> method is invoked which invokes
-    ///         <see cref="Shutdown()"/> to execute miscellaneous pre-stop tasks, then the
-    ///         <see cref="ApplicationManager"/> is stopped, which stops all managers and the application.
+    ///         When the application is stopped, either by the enter key being pressed or by the service being stopped, the
+    ///         <see cref="Stop()"/> method is invoked which invokes <see cref="Shutdown()"/> to execute miscellaneous pre-stop
+    ///         tasks, then the <see cref="ApplicationManager"/> is stopped, which stops all managers and the application.
     ///     </para>
     ///     <para>
-    ///         The field <see cref="managers"/> contains a list of the Manager Types for the
-    ///         application in the order in which they are to be instantiated and started.
+    ///         The field <see cref="managers"/> contains a list of the Manager Types for the application in the order in which
+    ///         they are to be instantiated and started.
     ///     </para>
     /// </remarks>
     [ExcludeFromCodeCoverage]
@@ -115,12 +110,10 @@ namespace Symbiote.Core
         /// </summary>
         /// <remarks>
         ///     <para>
-        ///         Each Manager must be listed in the order in which they are to be instantiated and
-        ///         started. The order will be reversed when the application stops.
+        ///         Each Manager must be listed in the order in which they are to be instantiated and started. The order will be
+        ///         reversed when the application stops.
         ///     </para>
-        ///     <para>
-        ///         Inter-Manager dependencies must be taken into consideration when determining the order.
-        ///     </para>
+        ///     <para>Inter-Manager dependencies must be taken into consideration when determining the order.</para>
         /// </remarks>
         private static Type[] managers = new Type[]
         {
@@ -141,32 +134,28 @@ namespace Symbiote.Core
         /// </summary>
         /// <remarks>
         ///     <para>
-        ///         Responsible for instantiating the platform and determining whether to start the
-        ///         application as a Windows service or console/interactive application.
+        ///         Responsible for instantiating the platform and determining whether to start the application as a Windows
+        ///         service or console/interactive application.
         ///     </para>
         ///     <para>
-        ///         The "-logLevel:*" argument is used to determine the logging level of the
-        ///         application. Acceptable values are:
+        ///         The "-logLevel:*" argument is used to determine the logging level of the application. Acceptable values are:
         ///         <list type="bullet">
         ///             <item>
         ///                 <term>trace</term>
         ///                 <description>
-        ///                     The lowest logging level. The output for this level is extremely
-        ///                     verbose and only outputs to the log file.
+        ///                     The lowest logging level. The output for this level is extremely verbose and only outputs to the
+        ///                     log file.
         ///                 </description>
         ///             </item>
         ///             <item>
         ///                 <term>debug</term>
         ///                 <description>
-        ///                     Basic debugging information. These messages will appear in the
-        ///                     console if this level is enabled.
+        ///                     Basic debugging information. These messages will appear in the console if this level is enabled.
         ///                 </description>
         ///             </item>
         ///             <item>
         ///                 <term>info</term>
-        ///                 <description>
-        ///                     The default logging level; contains basic status information.
-        ///                 </description>
+        ///                 <description>The default logging level; contains basic status information.</description>
         ///             </item>
         ///             <item>
         ///                 <term>warn</term>
@@ -175,29 +164,25 @@ namespace Symbiote.Core
         ///             <item>
         ///                 <term>error</term>
         ///                 <description>
-        ///                     Contains error messages. Typically errors produced on this level will
-        ///                     not stop the application.
+        ///                     Contains error messages. Typically errors produced on this level will not stop the application.
         ///                 </description>
         ///             </item>
         ///             <item>
         ///                 <term>fatal</term>
-        ///                 <description>
-        ///                     Fatal error messages; these errors stop the application.
-        ///                 </description>
+        ///                 <description>Fatal error messages; these errors stop the application.</description>
         ///             </item>
         ///         </list>
-        ///         Note that the levels are additive; each level contains the messages associated
-        ///         with that level specifically as well as all "higher" (more severe) levels.
+        ///         Note that the levels are additive; each level contains the messages associated with that level specifically as
+        ///         well as all "higher" (more severe) levels.
         ///     </para>
         ///     <para>
-        ///         The "-(un)install-service" argument is used to install or uninstall the Windows
-        ///         service. If either of these arguments is used, the application performs the
-        ///         requested command and stops. Re-run the application omitting the argument to
-        ///         start normally.
+        ///         The "-(un)install-service" argument is used to install or uninstall the Windows service. If either of these
+        ///         arguments is used, the application performs the requested command and stops. Re-run the application omitting
+        ///         the argument to start normally.
         ///     </para>
         ///     <para>
-        ///         Any additional arguments will be discarded; the application does not check for,
-        ///         nor does it react to, arguments other than those listed above.
+        ///         Any additional arguments will be discarded; the application does not check for, nor does it react to, arguments
+        ///         other than those listed above.
         ///     </para>
         /// </remarks>
         /// <param name="args">Command line arguments.</param>
@@ -218,13 +203,12 @@ namespace Symbiote.Core
                 // process the command line arguments used to start the application
                 logger.Debug($"Program started with {(args.Length > 0 ? "arguments: " + string.Join(", ", args) : "no arguments.")}");
 
-                // process the argument array. if the method returns true, the application should
-                // exit. this should only happen when an argument is used to cause the application to
-                // perform a maintenance task, such as installing or uninstalling the Windows service.
+                // process the argument array. if the method returns true, the application should exit. this should only happen
+                // when an argument is used to cause the application to perform a maintenance task, such as installing or
+                // uninstalling the Windows service.
                 if (ProcessArguments(args))
                 {
-                    // if we do anything with the service, do it then quit. don't start the
-                    // application if either argument was used.
+                    // if we do anything with the service, do it then quit. don't start the application if either argument was used.
                     Console.WriteLine("Press any key to continue...");
                     Console.ReadLine();
                     return;
@@ -246,9 +230,9 @@ namespace Symbiote.Core
 
                 logger.Debug("The Program Manager was instantiated successfully.");
 
-                // determine whether the application is being run as a Windows service or as a
-                // console application and start accordingly. it is possible to run Windows services
-                // on UNIX using mono-service, however this functionality is currently TBD.
+                // determine whether the application is being run as a Windows service or as a console application and start
+                // accordingly. it is possible to run Windows services on UNIX using mono-service, however this functionality is
+                // currently TBD.
                 if ((PlatformManager.GetPlatformType() == PlatformType.Windows) && (!Environment.UserInteractive))
                 {
                     logger.Info("Starting the application in service mode...");
@@ -284,9 +268,8 @@ namespace Symbiote.Core
             logger.EnterMethod(xLogger.Params((object)args), true);
             logger.Heading(LogLevel.Debug, "Startup");
 
-            // this is the main try/catch for the application logic. If an unhandled exception is
-            // thrown anywhere in the application it will be caught here and treated as a fatal
-            // error, stopping the application.
+            // this is the main try/catch for the application logic. If an unhandled exception is thrown anywhere in the
+            // application it will be caught here and treated as a fatal error, stopping the application.
             try
             {
                 // start the program manager.
@@ -365,8 +348,7 @@ namespace Symbiote.Core
         #region Private Methods
 
         /// <summary>
-        ///     Processes the command-line arguments passed to the application and performs the
-        ///     desired action(s).
+        ///     Processes the command-line arguments passed to the application and performs the desired action(s).
         /// </summary>
         /// <param name="args">The arguments passed to the application on startup.</param>
         /// <returns>A value indicating whether the application should halt after processing.</returns>
@@ -385,10 +367,9 @@ namespace Symbiote.Core
                     string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel:)((?i)trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
                     if (logarg != default(string))
                     {
-                        // reconfigure the logger based on the command line arguments. valid values
-                        // are "fatal" "error" "warn" "info" "debug" and "trace" supplying any value
-                        // will disable logging for any level beneath that level, from left to right
-                        // as positioned above
+                        // reconfigure the logger based on the command line arguments. valid values are "fatal" "error" "warn"
+                        // "info" "debug" and "trace" supplying any value will disable logging for any level beneath that level,
+                        // from left to right as positioned above
                         logger.Info($"Reconfiguring logger to log level '{logarg.Split(':')[1]}'...");
                         Utility.SetLoggingLevel(logarg.Split(':')[1]);
                         logger.Info("Successfully reconfigured logger.");
@@ -465,8 +446,8 @@ namespace Symbiote.Core
 
             try
             {
-                // attach the Platform connector items to the model detach anything in
-                // "Symbiote.System.Platform" that was loaded from the config file
+                // attach the Platform connector items to the model detach anything in "Symbiote.System.Platform" that was loaded
+                // from the config file
                 logger.Info("Detaching potentially stale Platform items...");
                 applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
 

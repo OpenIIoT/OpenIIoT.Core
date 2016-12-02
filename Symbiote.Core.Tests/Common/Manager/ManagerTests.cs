@@ -49,7 +49,6 @@
                                                                                                    ▀▀                            */
 
 using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Exceptions;
 using Symbiote.Core.Tests.Common.Mockups;
 using System.Threading;
 using Utility.OperationResult;

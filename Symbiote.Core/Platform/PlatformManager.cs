@@ -10,8 +10,8 @@
       █     ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
       █    ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
       █
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       █
       █  The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
       █
@@ -39,6 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Newtonsoft.Json;
 using NLog;
 using NLog.xLogger;
 using Symbiote.Core.SDK;
@@ -180,18 +181,7 @@ namespace Symbiote.Core.Platform
             // fetch the directory list from .exe.config
             string directoryList = GetDirectories();
 
-            // replace the pipe character placeholder with the platform specific directory separator
-            directoryList = directoryList.Replace('|', System.IO.Path.DirectorySeparatorChar);
-
-            Result<PlatformDirectories> loadDirectoryResult = PlatformDirectories.LoadDirectories(Platform, directoryList);
-
-            if (loadDirectoryResult.ResultCode == ResultCode.Failure)
-                throw new Exception("Failed to load application directory list: " + loadDirectoryResult.GetLastError());
-
-            Directories = loadDirectoryResult.ReturnValue;
-            loadDirectoryResult.LogResult(logger.Debug, "LoadDirectories");
-
-            retVal.Incorporate(loadDirectoryResult);
+            Directories = LoadDirectories(directoryList);
 
             logger.Checkpoint("Directory configuration loaded", guid);
             //------------------------------------ - -
@@ -199,7 +189,7 @@ namespace Symbiote.Core.Platform
             //-------------------------- - - -               -
             // Check to ensure all directories exist.  If not, create them.
             logger.Debug("Checking directories...");
-            Result checkResult = Directories.CheckDirectories();
+            Result checkResult = CheckDirectories();
             if (checkResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to verify and/or create one or more required program directory: " + checkResult.GetLastError());
 
@@ -220,6 +210,31 @@ namespace Symbiote.Core.Platform
         #region Private Methods
 
         /// <summary>
+        ///     Check each of the directories in the internal directory list and ensures that they exist.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result CheckDirectories()
+        {
+            logger.EnterMethod();
+
+            Result retVal = new Result();
+
+            Dictionary<string, string> directories = Directories.ToDictionary();
+
+            foreach (string directory in directories.Keys)
+            {
+                if (!Platform.DirectoryExists(directories[directory]))
+                {
+                    Platform.CreateDirectory(directories[directory]);
+                    retVal.AddWarning("The directory '" + directories[directory] + "' was missing and was recreated.");
+                }
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
         ///     Retrieves the "Directories" setting from the app.config file, or the default value if the retrieval fails.
         /// </summary>
         /// <returns>The list of program directories.</returns>
@@ -236,7 +251,44 @@ namespace Symbiote.Core.Platform
                       &quot;Web&quot;:&quot;Web&quot;,
                       &quot;Logs&quot;:&quot;Logs&quot;
                  }"
-            );
+            ).Replace('|', System.IO.Path.DirectorySeparatorChar);
+        }
+
+        /// <summary>
+        ///     De-serializes the provided string to a dictionary containing the program directory names and paths, then creates an
+        ///     instance of ProgramDirectories with it.
+        /// </summary>
+        /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation along with a ProgramDirectories instance containing the directories.
+        /// </returns>
+        private PlatformDirectories LoadDirectories(string directories)
+        {
+            logger.EnterMethod(xLogger.Params(directories));
+            PlatformDirectories retVal = default(PlatformDirectories);
+
+            try
+            {
+                if (directories == string.Empty)
+                {
+                    throw new DirectoryConfigurationException("The supplied directory configuration is empty.");
+                }
+
+                // try to set all of the directories from the deserialized config json. if anything goes wrong an exception will be
+                // thrown and we'll handle it.
+                retVal = new PlatformDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
+            }
+            catch (Exception ex)
+            {
+                logger.Exception(LogLevel.Debug, ex);
+                throw new DirectoryConfigurationException("Exception encountered while parsing the directory configuration.  See inner exception for details.", ex);
+            }
+            finally
+            {
+                logger.ExitMethod(retVal);
+            }
+
+            return retVal;
         }
 
         #endregion Private Methods
