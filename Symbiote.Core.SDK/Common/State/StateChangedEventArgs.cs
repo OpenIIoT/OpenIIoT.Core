@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents the event arguments for the StateChanged event of stateful components.
+      █  Represents the event arguments for the StateChanged event of Stateful components.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -53,22 +53,20 @@ using System;
 namespace Symbiote.Core.SDK
 {
     /// <summary>
-    ///     Represents the event arguments for the StateChanged event of stateful components.
+    ///     Represents the event arguments for the StateChanged event of Stateful components.
     /// </summary>
     public class StateChangedEventArgs : EventArgs
     {
-        #region Constructors
+        #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="StateChangedEventArgs"/> class with the
-        ///     specified state, previousState, stopType and message parameters.
+        ///     Initializes a new instance of the <see cref="StateChangedEventArgs"/> class with the specified state,
+        ///     previousState, stopType and message parameters.
         /// </summary>
         /// <param name="state">The State to which the state changed.</param>
         /// <param name="previousState">The State from which the state changed.</param>
         /// <param name="message">The optional message associated with the event.</param>
-        /// <param name="stopType">
-        ///     The StopType associated with a change to the Stopped or Faulted states.
-        /// </param>
+        /// <param name="stopType">The StopType associated with a change to the Stopped or Faulted states.</param>
         public StateChangedEventArgs(State state, State previousState, string message = "", StopType stopType = StopType.Stop)
         {
             State = state;
@@ -77,19 +75,9 @@ namespace Symbiote.Core.SDK
             StopType = stopType;
         }
 
-        #endregion Constructors
+        #endregion Public Constructors
 
-        #region Properties
-
-        /// <summary>
-        ///     Gets the State to which the state changed.
-        /// </summary>
-        public State State { get; private set; }
-
-        /// <summary>
-        ///     Gets the State from which the state changed.
-        /// </summary>
-        public State PreviousState { get; private set; }
+        #region Public Properties
 
         /// <summary>
         ///     Gets the optional message associated with the event.
@@ -97,10 +85,20 @@ namespace Symbiote.Core.SDK
         public string Message { get; private set; }
 
         /// <summary>
+        ///     Gets the State from which the state changed.
+        /// </summary>
+        public State PreviousState { get; private set; }
+
+        /// <summary>
+        ///     Gets the State to which the state changed.
+        /// </summary>
+        public State State { get; private set; }
+
+        /// <summary>
         ///     Gets the StopType associated with a change to the Stopped or Faulted states.
         /// </summary>
         public StopType StopType { get; private set; }
 
-        #endregion Properties
+        #endregion Public Properties
     }
 }
