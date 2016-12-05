@@ -502,8 +502,9 @@ namespace Symbiote.Core.SDK
             {
                 lock (valueLock)
                 {
+                    object previousValue = Value;
                     Value = value;
-                    OnChange(value);
+                    OnChange(previousValue, Value);
                 }
             }
 
@@ -569,11 +570,11 @@ namespace Symbiote.Core.SDK
         ///     Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
         /// </summary>
         /// <param name="value">The value for the raised event.</param>
-        protected virtual void OnChange(object value)
+        protected virtual void OnChange(object previousValue, object value)
         {
             if (Changed != null)
             {
-                Changed(this, new ItemChangedEventArgs(value));
+                Changed(this, new ItemChangedEventArgs(previousValue, value));
             }
         }
 

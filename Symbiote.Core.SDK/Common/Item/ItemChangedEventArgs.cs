@@ -60,11 +60,12 @@ namespace Symbiote.Core.SDK
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ItemChangedEventArgs"/> class with the specified value.
+        ///     Initializes a new instance of the <see cref="ItemChangedEventArgs"/> class with the specified values.
         /// </summary>
         /// <param name="value">The new value of the Item.</param>
-        public ItemChangedEventArgs(object value) : base()
+        public ItemChangedEventArgs(object previousValue, object value) : base()
         {
+            PreviousValue = previousValue;
             Value = value;
         }
 
@@ -76,6 +77,11 @@ namespace Symbiote.Core.SDK
         ///     Gets the new value of the Item.
         /// </summary>
         public object Value { get; private set; }
+
+        /// <summary>
+        ///     Gets the previous value of the Item.
+        /// </summary>
+        public object PreviousValue { get; private set; }
 
         #endregion Public Properties
     }

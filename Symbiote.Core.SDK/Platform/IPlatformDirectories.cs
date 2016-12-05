@@ -48,15 +48,7 @@ namespace Symbiote.Core.SDK.Platform
     /// </summary>
     public interface IPlatformDirectories
     {
-        /// <summary>
-        ///     The root directory; the directory from which the main executable is running.
-        /// </summary>
-        string Root { get; }
-
-        /// <summary>
-        ///     The data directory
-        /// </summary>
-        string Data { get; }
+        #region Public Properties
 
         /// <summary>
         ///     The archive directory
@@ -64,25 +56,9 @@ namespace Symbiote.Core.SDK.Platform
         string Archives { get; }
 
         /// <summary>
-        ///     The plugin directory
+        ///     The data directory
         /// </summary>
-        string Plugins { get; }
-
-        /// <summary>
-        ///     The temporary directory
-        /// </summary>
-        string Temp { get; }
-
-        /// <summary>
-        ///     The persistence directory
-        /// </summary>
-        string Persistence { get; }
-
-        /// <summary>
-        ///     The web directory
-        /// </summary>
-        /// <remarks>Web content is served from this directory; anything placed here will be exposed.</remarks>
-        string Web { get; }
+        string Data { get; }
 
         /// <summary>
         ///     The log directory
@@ -90,9 +66,41 @@ namespace Symbiote.Core.SDK.Platform
         string Logs { get; }
 
         /// <summary>
+        ///     The persistence directory
+        /// </summary>
+        string Persistence { get; }
+
+        /// <summary>
+        ///     The plugin directory
+        /// </summary>
+        string Plugins { get; }
+
+        /// <summary>
+        ///     The root directory; the directory from which the main executable is running.
+        /// </summary>
+        string Root { get; }
+
+        /// <summary>
+        ///     The temporary directory
+        /// </summary>
+        string Temp { get; }
+
+        /// <summary>
+        ///     The web directory
+        /// </summary>
+        /// <remarks>Web content is served from this directory; anything placed here will be exposed.</remarks>
+        string Web { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
         ///     Returns a dictionary containing all of the program directories keyed by name.
         /// </summary>
         /// <returns>A dictionary containing all of the program directories keyed by name.</returns>
         Dictionary<string, string> ToDictionary();
+
+        #endregion Public Methods
     }
 }

@@ -1,19 +1,28 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄                                                                          ███
-      █     ███    ███                                                                      ▀█████████▄
-      █     ███    ███  █         ▄█████      ██       ▄█████  ██████     █████    ▄▄██▄▄▄     ▀███▀▀██ ▄█   ▄     █████▄    ▄█████
-      █     ███    ███ ██         ██   ██ ▀███████▄   ██   ▀█ ██    ██   ██  ██  ▄█▀▀██▀▀█▄     ███   ▀ ██   █▄   ██   ██   ██   █
-      █   ▀█████████▀  ██         ██   ██     ██  ▀  ▄██▄▄    ██    ██  ▄██▄▄█▀  ██  ██  ██     ███     ▀▀▀▀▀██   ██   ██  ▄██▄▄
-      █     ███        ██       ▀████████     ██    ▀▀██▀▀    ██    ██ ▀███████  ██  ██  ██     ███     ▄█   ██ ▀██████▀  ▀▀██▀▀
-      █     ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██     ███     ██   ██   ██        ██   █
-      █    ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █     ▄████▀    █████   ▄███▀      ███████
+      █    ▄█
+      █   ███
+      █   ███▌     ██       ▄█████    ▄▄██▄▄▄
+      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄
+      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██
+      █   ███      ██    ▀▀██▀▀     ██  ██  ██
+      █   ███      ██      ██   █   ██  ██  ██
+      █   █▀      ▄██▀     ███████   █  ██  █
+      █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Enumeration of the different Platform types.
+      █  Unit tests for the Item class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,26 +48,25 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace Symbiote.Core.SDK.Platform
+using Xunit;
+
+namespace Symbiote.Core.SDK.Tests
 {
     /// <summary>
-    ///     Enumeration of the different Platform types.
+    ///     Unit tests for the Item class.
     /// </summary>
-    public enum PlatformType
+    public class ItemTests
     {
         /// <summary>
-        ///     The default value
+        ///     Tests all constructor overloads.
         /// </summary>
-        Unknown,
-
-        /// <summary>
-        ///     The Windows platform
-        /// </summary>
-        Windows,
-
-        /// <summary>
-        ///     The UNIX platform
-        /// </summary>
-        UNIX
+        [Fact]
+        public void Constructor()
+        {
+            Item item = new Item();
+            item = new Item(string.Empty);
+            item = new Item(string.Empty, false);
+            item = new Item(string.Empty, string.Empty, false);
+        }
     }
 }

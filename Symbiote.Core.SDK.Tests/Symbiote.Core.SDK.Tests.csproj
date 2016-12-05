@@ -69,7 +69,8 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="ItemTests.cs" />
+    <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
+    <Compile Include="Common\Item\ItemTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
