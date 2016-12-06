@@ -87,16 +87,36 @@ namespace Symbiote.Core.SDK.Tests
         [Fact]
         public void Properties()
         {
-            Item item = new Item("Root.Item.Name", "Source");
+            Item item = new Item("Root.Child.Name", "Source");
 
             Assert.Equal(new List<Item>(), item.Children);
-            Assert.Equal("Root.Item.Name", item.FQN);
+            Assert.Equal("Root.Child.Name", item.FQN);
             Assert.Equal(new Guid().ToString().Length, item.Guid.ToString().Length);
             Assert.Equal("Name", item.Name);
-            Assert.Equal("Root.Item", item.Path);
+            Assert.Equal("Root.Child", item.Path);
             Assert.Equal(default(Item), item.Parent);
             Assert.Equal("Source", item.SourceFQN);
             Assert.Equal(default(Item), item.SourceItem);
+            Assert.Equal(true, item.IsOrphaned);
+        }
+
+        [Fact]
+        public void ItemAdoption()
+        {
+            Item root = new Item("Root");
+            Item child = new Item("Orphaned.Item");
+            Item child2 = new Item("Orphaned.Item2");
+
+            Assert.Equal(true, child.IsOrphaned);
+            Assert.Equal("Orphaned", child.Path);
+
+            Assert.Equal(true, child2.IsOrphaned);
+            Assert.Equal("Orphaned", child2.Path);
+
+            root.AddChild(child);
+
+            Assert.Equal("Root", child.Path);
+            Assert.Equal(false, child.IsOrphaned);
         }
     }
 }

@@ -410,17 +410,26 @@ namespace Symbiote.Core.Model
                         }
                     }
 
-                    Result<Item> addResult = AddItem(result.Model, result.Dictionary, newItem);
-
-                    if (addResult.ResultCode != ResultCode.Failure)
+                    if (GetParentFQNFromItemFQN(newItem.FQN) == string.Empty)
                     {
-                        result.UnresolvedList.Remove(item);
-                        result.ResolvedList.Add(item);
-                        logger.Info("Added item '" + newItem.FQN + "' to the Model.");
+                        // the item we are working with has no parent and is therefore the root node of the model.
+                        result.Dictionary.Add(newItem.FQN, newItem);
+                        result.Model = newItem; //SetModelRoot(result.Model, result.Dictionary, newItem).ReturnValue;
                     }
                     else
                     {
-                        result.AddWarning("Failed to add item '" + newItem.FQN + "' to the Model: " + addResult.GetLastError());
+                        Result<Item> addResult = AddItem(result.Model, result.Dictionary, newItem);
+
+                        if (addResult.ResultCode != ResultCode.Failure)
+                        {
+                            result.UnresolvedList.Remove(item);
+                            result.ResolvedList.Add(item);
+                            logger.Info("Added item '" + newItem.FQN + "' to the Model.");
+                        }
+                        else
+                        {
+                            result.AddWarning("Failed to add item '" + newItem.FQN + "' to the Model: " + addResult.GetLastError());
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -576,15 +585,17 @@ namespace Symbiote.Core.Model
             // update the model root item with the details of the supplied item
             logger.Trace("Setting Model root to a new instance of Item()");
 
-            ((Item)model).FQN = item.FQN;
+            logger.Checkpoint("Root item", xLogger.Params(item));
+
+            //model.Clone(item);
+            model = item;
 
             logger.Checkpoint("root set", xLogger.Params(model));
 
-            //((Item)model).Path = item.Path;
             logger.Trace("Adding item to dictionary with key: " + item.FQN);
             dictionary.Add(model.FQN, model);
 
-            retVal.ReturnValue = item;
+            retVal.ReturnValue = model;
 
             logger.ExitMethod(retVal);
             return retVal;
@@ -612,9 +623,9 @@ namespace Symbiote.Core.Model
             // if the parent FQN couldn't be parsed, this is the root node so clone it to the existing ModelItem representing the root.
             if (parentFQN == "")
             {
-                Result<Item> rootSetResult = SetModelRoot(model, dictionary, item);
-                retVal.Incorporate(rootSetResult);
-                retVal.ReturnValue = rootSetResult.ReturnValue;
+                //Result<Item> rootSetResult = SetModelRoot(model, dictionary, item);
+                //retVal.Incorporate(rootSetResult);
+                //retVal.ReturnValue = rootSetResult.ReturnValue;
             }
             else
             {
@@ -914,7 +925,9 @@ namespace Symbiote.Core.Model
                 ((Item)retVal.ReturnValue).SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN);
 
                 // modify the FQN of the cloned item to reflect it's new path
-                ((Item)retVal.ReturnValue).FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
+                //((Item)retVal.ReturnValue).FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
+                //retVal.ReturnValue.SetParent(parentItem);
+                parentItem.AddChild(retVal.ReturnValue);
 
                 // create a temporary list of the items children
                 IEnumerable<Item> children = retVal.ReturnValue.Children.Clone<Item>();
@@ -961,7 +974,8 @@ namespace Symbiote.Core.Model
 
             retVal.ReturnValue = (Item)item.Clone();
 
-            retVal.ReturnValue.FQN = fqn;
+            // TODO: fix this?
+            //retVal.ReturnValue.FQN = fqn;
 
             IEnumerable<Item> childrenToRename = retVal.ReturnValue.Children.Clone();
 

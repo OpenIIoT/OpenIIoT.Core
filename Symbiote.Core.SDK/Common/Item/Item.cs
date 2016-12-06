@@ -162,7 +162,7 @@ namespace Symbiote.Core.SDK
         /// <summary>
         ///     Gets or sets the Fully Qualified Name of the item.
         /// </summary>
-        public string FQN { get; set; }
+        public string FQN { get; private set; }
 
         /// <summary>
         ///     Gets a Guid for the Item, generated when it is instantiated.
@@ -177,6 +177,28 @@ namespace Symbiote.Core.SDK
             get
             {
                 return FQN.Substring(FQN.LastIndexOf('.') + 1);
+            }
+        }
+
+        /// <summary>
+        ///     Gets a value indicating whether the Item's <see cref="Parent"/> property has been set.
+        /// </summary>
+        public bool IsOrphaned
+        {
+            get
+            {
+                return Parent == default(Item);
+            }
+        }
+
+        /// <summary>
+        ///     Gets a value indicating whether the Item's <see cref="Children"/> collection is empty.
+        /// </summary>
+        public bool HasChildren
+        {
+            get
+            {
+                return Children.Count > 0;
             }
         }
 
@@ -261,20 +283,12 @@ namespace Symbiote.Core.SDK
         public virtual object Clone()
         {
             Item retVal = new Item(FQN, SourceFQN, Parent == this);
-            //retVal.Name = Name;
-            //retVal.Path = Path;
             retVal.Parent = Parent;
             retVal.Children = Children.Clone<Item>();
+            retVal.Value = Value;
+            retVal.SourceItem = SourceItem;
+            retVal.Writeable = Writeable;
             return retVal;
-        }
-
-        /// <summary>
-        ///     Returns true if the Item has children, false otherwise.
-        /// </summary>
-        /// <returns>True if the Item has children, false otherwise.</returns>
-        public virtual bool HasChildren()
-        {
-            return Children.Count > 0;
         }
 
         /// <summary>
@@ -304,7 +318,7 @@ namespace Symbiote.Core.SDK
             object retVal;
 
             // recursively call ReadFromSource() on each child below this Item
-            if (HasChildren())
+            if (HasChildren)
             {
                 foreach (Item child in Children)
                 {
@@ -546,7 +560,7 @@ namespace Symbiote.Core.SDK
         /// <param name="parent">The Item to set as the Item's parent.</param>
         /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the current Item.</returns>
-        public virtual Result<Item> SetParent(Item parent)
+        protected virtual Result<Item> SetParent(Item parent)
         {
             Result<Item> retVal = new Result<Item>();
 
