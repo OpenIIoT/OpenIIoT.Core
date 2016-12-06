@@ -124,15 +124,6 @@ namespace Symbiote.Core.SDK
             // generate Name and Path from FQN
             string[] splitFQN = fqn.Split('.');
 
-            // set the name. if it is blank after the split, there was only one tuple in the FQN, so name = fqn
-            Name = splitFQN[splitFQN.Length - 1];
-            if (Name == string.Empty)
-            {
-                Name = FQN;
-            }
-
-            Path = string.Join(".", splitFQN.Take(splitFQN.Length - 1));
-
             // create a unique Guid for this item. useful for debugging.
             Guid = Guid.NewGuid();
 
@@ -143,7 +134,7 @@ namespace Symbiote.Core.SDK
             if (isRoot)
             {
                 FQN = Name;
-                Path = FQN;
+                //Path = FQN;
                 Parent = this;
             }
 
@@ -181,7 +172,13 @@ namespace Symbiote.Core.SDK
         /// <summary>
         ///     Gets or sets the name of the Item; corresponds to the final tuple of the FQN.
         /// </summary>
-        public string Name { get; set; }
+        public string Name
+        {
+            get
+            {
+                return FQN.Substring(FQN.LastIndexOf('.') + 1);
+            }
+        }
 
         /// <summary>
         ///     Gets the Item's parent Item.
@@ -191,7 +188,13 @@ namespace Symbiote.Core.SDK
         /// <summary>
         ///     Gets or sets the path to the Item; corresponds to the FQN less the final tuple (the name).
         /// </summary>
-        public string Path { get; set; }
+        public string Path
+        {
+            get
+            {
+                return FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
+            }
+        }
 
         /// <summary>
         ///     Gets or sets the fully qualified name name of the source item.
@@ -258,8 +261,8 @@ namespace Symbiote.Core.SDK
         public virtual object Clone()
         {
             Item retVal = new Item(FQN, SourceFQN, Parent == this);
-            retVal.Name = Name;
-            retVal.Path = Path;
+            //retVal.Name = Name;
+            //retVal.Path = Path;
             retVal.Parent = Parent;
             retVal.Children = Children.Clone<Item>();
             return retVal;
@@ -379,31 +382,6 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        ///     Sets the Item's parent Item to the supplied Item.
-        /// </summary>
-        /// <param name="parent">The Item to set as the Item's parent.</param>
-        /// <threadsafety instance="true"/>
-        /// <returns>A Result containing the result of the operation and the current Item.</returns>
-        public virtual Result<Item> SetParent(Item parent)
-        {
-            Result<Item> retVal = new Result<Item>();
-
-            // update the Path and FQN to match the parent values this is set in the constructor however this code will prevent
-            // issues if items are moved.
-
-            // lock the Parent property
-            lock (parentLock)
-            {
-                Path = parent.FQN;
-                FQN = Path + '.' + Name;
-                Parent = parent;
-            }
-
-            retVal.ReturnValue = this;
-            return retVal;
-        }
-
-        /// <summary>
         ///     Adds the SourceItemChanged event handler for this Item to the SourceItem's Changed event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -502,7 +480,7 @@ namespace Symbiote.Core.SDK
             {
                 lock (valueLock)
                 {
-                    object previousValue = Value;
+                    var previousValue = Value;
                     Value = value;
                     OnChange(previousValue, Value);
                 }
@@ -560,6 +538,32 @@ namespace Symbiote.Core.SDK
         public virtual async Task<Result> WriteToSourceAsync(object value)
         {
             return await Task.Run(() => SourceItem.WriteToSource(value));
+        }
+
+        /// <summary>
+        ///     Sets the Item's parent Item to the supplied Item.
+        /// </summary>
+        /// <param name="parent">The Item to set as the Item's parent.</param>
+        /// <threadsafety instance="true"/>
+        /// <returns>A Result containing the result of the operation and the current Item.</returns>
+        public virtual Result<Item> SetParent(Item parent)
+        {
+            Result<Item> retVal = new Result<Item>();
+
+            // update the Path and FQN to match the parent values this is set in the constructor however this code will prevent
+            // issues if items are moved.
+
+            // lock the Parent property
+            lock (parentLock)
+            {
+                //Path = parent.FQN;
+                FQN = parent.FQN + (parent.FQN.Length > 0 ? "." : "") + Name;
+
+                Parent = parent;
+            }
+
+            retVal.ReturnValue = this;
+            return retVal;
         }
 
         #endregion Public Methods

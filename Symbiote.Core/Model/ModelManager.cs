@@ -14,73 +14,74 @@ using Symbiote.Core.SDK.Model;
 namespace Symbiote.Core.Model
 {
     /// <summary>
-    /// The Model namespace encapsulates the model for the application.  The model consists of two collections of Items;
-    /// a parent/child tree of Items that implements the composite design pattern, and a dictionary keyed on the FQN of
-    /// Items and containing a reference to the keyed Item.
-    /// 
-    /// The Item composite allows for logical management and retrieval of data from the model, while the dictionary provides
-    /// fast lookups of model items.
+    ///     The Model namespace encapsulates the model for the application. The model consists of two collections of Items; a
+    ///     parent/child tree of Items that implements the composite design pattern, and a dictionary keyed on the FQN of Items and
+    ///     containing a reference to the keyed Item.
+    ///
+    ///     The Item composite allows for logical management and retrieval of data from the model, while the dictionary provides
+    ///     fast lookups of model items.
     /// </summary>
     [System.Runtime.CompilerServices.CompilerGenerated]
-    class NamespaceDoc { }
+    internal class NamespaceDoc
+    { }
 
     /// <summary>
-    /// The ModelManager class manages the Model for the application.
+    ///     The ModelManager class manages the Model for the application.
     /// </summary>
     public class ModelManager : Manager, IStateful, IManager, IConfigurable<ModelManagerConfiguration>, IModelManager
     {
         #region Variables
 
         /// <summary>
-        /// The Logger for this class.
+        ///     The Logger for this class.
         /// </summary>
         new private xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The Singleton instance of ModelManager.
+        ///     The Singleton instance of ModelManager.
         /// </summary>
         private static ModelManager instance;
 
-        #endregion
+        #endregion Variables
 
         #region Properties
 
         #region IConfigurable Properties
 
         /// <summary>
-        /// The ConfigurationDefinition for the Manager.
+        ///     The ConfigurationDefinition for the Manager.
         /// </summary>
         public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
         /// <summary>
-        /// The Configuration for the Manager.
+        ///     The Configuration for the Manager.
         /// </summary>
         public ModelManagerConfiguration Configuration { get; private set; }
 
-        #endregion
+        #endregion IConfigurable Properties
 
         #region IModelManager Properties
 
         /// <summary>
-        /// The root Item for the model.
+        ///     The root Item for the model.
         /// </summary>
         [JsonIgnore]
         public Item Model { get; private set; }
 
         /// <summary>
-        /// A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
+        ///     A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
         /// </summary>
         [JsonIgnore]
         public Dictionary<string, Item> Dictionary { get; private set; }
 
-        #endregion
+        #endregion IModelManager Properties
 
-        #endregion
+        #endregion Properties
 
         #region Constructors
 
         /// <summary>
-        /// Private constructor, only called by Instance()
+        ///     Private constructor, only called by Instance()
         /// </summary>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
@@ -100,12 +101,12 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Instantiates and/or returns the ModelManager instance.
+        ///     Instantiates and/or returns the ModelManager instance.
         /// </summary>
         /// <remarks>
-        /// Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
-        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
-        /// injected when the method is invoked.
+        ///     Invoked via reflection from ApplicationManager. The parameters are used to build an array of IManager parameters
+        ///     which are then passed to this method. To specify additional dependencies simply insert them into the parameter list
+        ///     for the method and they will be injected when the method is invoked.
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
@@ -119,7 +120,7 @@ namespace Symbiote.Core.Model
             return instance;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Instance Methods
 
@@ -141,7 +142,7 @@ namespace Symbiote.Core.Model
             retVal.Incorporate(configureResult);
             //--------------------------------  -
 
-            #endregion
+            #endregion Configuration
 
             #region Model Building
 
@@ -153,9 +154,12 @@ namespace Symbiote.Core.Model
                 throw new Exception("Failed to build the model: " + modelBuildResult.GetLastError());
 
             retVal.Incorporate(modelBuildResult);
+
+            logger.Checkpoint("Model Built", xLogger.Vars(modelBuildResult.Dictionary.Count, modelBuildResult.Model.FQN, modelBuildResult.Model.Children.Count), xLogger.Names("Dictionary Count", "Root FQN", "Root Children Count"));
+
             //--- - ------------
 
-            #endregion
+            #endregion Model Building
 
             #region Model Attaching
 
@@ -167,9 +171,9 @@ namespace Symbiote.Core.Model
                 throw new Exception("Failed to attach the model to the Model Manager: " + attachResult.GetLastError());
 
             retVal.Incorporate(attachResult);
-            //---- - ------------  - 
+            //---- - ------------  -
 
-            #endregion
+            #endregion Model Attaching
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -195,7 +199,8 @@ namespace Symbiote.Core.Model
         #region IConfigurable Implementation
 
         /// <summary>
-        /// Configures the Model Manager using the configuration stored in the Configuration Manager, or, failing that, using the default configuration.
+        ///     Configures the Model Manager using the configuration stored in the Configuration Manager, or, failing that, using
+        ///     the default configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result Configure()
@@ -207,7 +212,7 @@ namespace Symbiote.Core.Model
 
             Result<ModelManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
 
-            // if the fetch succeeded, configure this instance with the result.  
+            // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
             {
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
@@ -233,7 +238,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
+        ///     Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
         /// </summary>
         /// <param name="configuration">The configuration with which the Manager should be configured.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -257,7 +262,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Saves the configuration to the Configuration Manager.
+        ///     Saves the configuration to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
@@ -272,12 +277,13 @@ namespace Symbiote.Core.Model
             return retVal;
         }
 
-        #endregion
+        #endregion IConfigurable Implementation
 
         #region Model Management (Build, Attach and Save)
 
         /// <summary>
-        /// Builds a Model using the Model Configuration stored within the ApplicationManager and returns a ModelBuildResult containing the result.
+        ///     Builds a Model using the Model Configuration stored within the ApplicationManager and returns a ModelBuildResult
+        ///     containing the result.
         /// </summary>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         private ModelBuildResult BuildModel()
@@ -289,13 +295,15 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Builds a Model using the provided list of ConfigurationItems and returns a ModelBuildResult containing the result.
+        ///     Builds a Model using the provided list of ConfigurationItems and returns a ModelBuildResult containing the result.
         /// </summary>
         /// <param name="instanceName">The name of the application instance, to be used as the root node.</param>
         /// <param name="itemList">A list of ConfigurationItems containing Model Items to build.</param>
         /// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
         private ModelBuildResult BuildModel(string instanceName, List<ModelManagerConfigurationItem> itemList)
         {
+            logger.EnterMethod();
+
             logger.Info("Building Model...");
             ModelBuildResult retVal = new ModelBuildResult() { UnresolvedList = itemList.Clone() };
 
@@ -317,35 +325,40 @@ namespace Symbiote.Core.Model
                 }
             }
 
+            logger.ExitMethod();
             return retVal;
         }
 
         /// <summary>
-        /// Accepts a list of Configuration.Items and recursively instantiates items in the Model corresponding to the items in the list.
+        ///     Accepts a list of Configuration.Items and recursively instantiates items in the Model corresponding to the items in
+        ///     the list.
         /// </summary>
         /// <param name="instanceName">The name of the application instance, to be used as the root node.</param>
         /// <param name="itemList">A list of model items from which to build the model.</param>
-        /// <param name="result">An instance of ModelBuildResult, ideally new.  The method will recursively pass it to itself and return it to the calling method when complete.</param>
+        /// <param name="result">
+        ///     An instance of ModelBuildResult, ideally new. The method will recursively pass it to itself and return it to the
+        ///     calling method when complete.
+        /// </param>
         /// <param name="depth">The current depth of recursion. Defaults to 0 if omitted.</param>
         /// <returns>A ModelBuildResult containing the result of the build operation.</returns>
         private ModelBuildResult BuildModel(string instanceName, List<ModelManagerConfigurationItem> itemList, ModelBuildResult result, int depth = 0)
         {
-            // we build the model recursively starting with root items (items with only one tuple in the FQN) and in ascending order
-            // of the number of tuples in the FQN, e.x., "Symbiote.Platform.CPU.% Idle Time" is considered to be at level 4. while
-            // "Symbiote.Platform.CPU" is level 3.
+            // we build the model recursively starting with root items (items with only one tuple in the FQN) and in ascending
+            // order of the number of tuples in the FQN, e.x., "Symbiote.Platform.CPU.% Idle Time" is considered to be at level 4.
+            // while "Symbiote.Platform.CPU" is level 3.
             //
-            // the rationale behind this approach is that if the model is built in a breadth-first fashion there should not be 
-            // any instances where the code attempts to instantiate an item whos parent item has not yet been instantiated (but may later be),
-            // unless the parent item was missing from the provided list or if the code failed to instantiate the parent when it 
-            // was processed.
+            // the rationale behind this approach is that if the model is built in a breadth-first fashion there should not be any
+            // instances where the code attempts to instantiate an item whos parent item has not yet been instantiated (but may
+            // later be), unless the parent item was missing from the provided list or if the code failed to instantiate the parent
+            // when it was processed.
             //
-            // each recursive call of the method adds any unresolved items to the provided resolvedList.  items should be added
-            // to the list if their parent did not exist at the time of the attempted instantiation, or if the item itself failed
-            // to be instantiated.
-            // 
-            // if the SourceFQN for an item is a model item (rather than a plugin item) and if it is at a further depth than
-            // the current item, we want to create the item without resolving the source item and add it to a list of deffered
-            // items so that the source can be resolved after the model is built.
+            // each recursive call of the method adds any unresolved items to the provided resolvedList. items should be added to
+            // the list if their parent did not exist at the time of the attempted instantiation, or if the item itself failed to
+            // be instantiated.
+            //
+            // if the SourceFQN for an item is a model item (rather than a plugin item) and if it is at a further depth than the
+            // current item, we want to create the item without resolving the source item and add it to a list of deffered items so
+            // that the source can be resolved after the model is built.
 
             // create an IEnumerable containing a list of all the items in the provided itemList at the requested depth
             List<ModelManagerConfigurationItem> items = itemList.Where(i => (i.FQN.Split('.').Length - 1) == depth).ToList();
@@ -360,26 +373,28 @@ namespace Symbiote.Core.Model
                     Item newItem;
                     newItem = new Item(instanceName + item.FQN, item.SourceFQN);
 
+                    logger.Checkpoint("Created New Item", xLogger.Vars(newItem), xLogger.Names("newItem"));
+
                     // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
                     // this will be set "officially" when SetParent() is called to bind the item to its parent
                     //newItem.FQN = item.FQN;
 
-                    // resolve the SourceFQN of the new item to an existing item
-                    // ignore items with a blank SourceFQN; add those directly to the model.
+                    // resolve the SourceFQN of the new item to an existing item ignore items with a blank SourceFQN; add those
+                    // directly to the model.
                     if (newItem.SourceFQN != "")
                     {
                         logger.Trace("Attempting to resolve " + newItem.SourceFQN + "...");
 
-                        // determine whether we should defer the resolution of the source item
-                        // if the source of the item is a model item, and that item's depth is greater than this item, defer the resolution
-                        // of the source item until after the model has been fully built.
+                        // determine whether we should defer the resolution of the source item if the source of the item is a model
+                        // item, and that item's depth is greater than this item, defer the resolution of the source item until
+                        // after the model has been fully built.
                         if ((FQNResolver.GetSource(newItem.SourceFQN) == FQNResolver.ItemSource.Model) && (newItem.SourceFQN.Split('.').Length - 1 >= depth))
                         {
                             logger.Info("Deferring the resolution of the SourceFQN for '" + newItem.FQN + "'.");
                             result.DeferredList.Add(newItem);
                         }
-                        // the sourceitem is either not a model item or is at a shallower depth than the current item, so it is safe to 
-                        // resolve.
+                        // the sourceitem is either not a model item or is at a shallower depth than the current item, so it is
+                        // safe to resolve.
                         else
                         {
                             Item resolvedItem = FQNResolver.Resolve(newItem.SourceFQN);
@@ -394,8 +409,8 @@ namespace Symbiote.Core.Model
                             }
                         }
                     }
-                    
-                    Result addResult = AddItem(result.Model, result.Dictionary, newItem);
+
+                    Result<Item> addResult = AddItem(result.Model, result.Dictionary, newItem);
 
                     if (addResult.ResultCode != ResultCode.Failure)
                     {
@@ -406,8 +421,7 @@ namespace Symbiote.Core.Model
                     else
                     {
                         result.AddWarning("Failed to add item '" + newItem.FQN + "' to the Model: " + addResult.GetLastError());
-                    } 
-
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -420,8 +434,7 @@ namespace Symbiote.Core.Model
             // if at least one item was processed at this depth, recursively call this method one level deeper
             if (items.Count() > 0)
                 BuildModel(instanceName, itemList, result, depth + 1);
-            // if nothing was processed at this depth the model is fully built.  
-            // resolve the source FQNs of any deferred items
+            // if nothing was processed at this depth the model is fully built. resolve the source FQNs of any deferred items
             else
             {
                 if (result.DeferredList.Count() > 0)
@@ -454,7 +467,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Assigns the Model and Dictionary contained within the supplied ModelBuildResult to the supplied model and dictionary.
+        ///     Assigns the Model and Dictionary contained within the supplied ModelBuildResult to the supplied model and dictionary.
         /// </summary>
         /// <param name="modelBuildResult">The built model to attach.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -467,7 +480,8 @@ namespace Symbiote.Core.Model
 
             Result retVal = new Result();
 
-            // if the ModelBuildResult that was passed in built successfully, update the Model and Dictionary properties with the contents of the build result
+            // if the ModelBuildResult that was passed in built successfully, update the Model and Dictionary properties with the
+            // contents of the build result
             if (modelBuildResult.ResultCode != ResultCode.Failure)
             {
                 Model = modelBuildResult.Model;
@@ -481,7 +495,8 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
+        ///     Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration. If
+        ///     flushToDisk is true, saves the updated Configuration to disk.
         /// </summary>
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
         private Result<List<ModelManagerConfigurationItem>> SaveModel()
@@ -492,7 +507,6 @@ namespace Symbiote.Core.Model
             if (!IsInState(State.Running, State.Stopping))
                 return (Result<List<ModelManagerConfigurationItem>>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Stopping states (it is currently in the " + State + " state).");
-
 
             Result<List<ModelManagerConfigurationItem>> configuration = new Result<List<ModelManagerConfigurationItem>>();
             configuration.ReturnValue = new List<ModelManagerConfigurationItem>();
@@ -511,7 +525,8 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Updates and returns the provided Result containing the list of ConfigurationModelItems with the recursively listed contents of the provided ModelItem.
+        ///     Updates and returns the provided Result containing the list of ConfigurationModelItems with the recursively listed
+        ///     contents of the provided ModelItem.
         /// </summary>
         /// <param name="itemRoot">The ModelItem from which to start recursively updating the list.</param>
         /// <param name="configuration">A Result containing the list of ConfigurationModelItems to update.</param>
@@ -528,12 +543,12 @@ namespace Symbiote.Core.Model
             return configuration;
         }
 
-        #endregion
+        #endregion Model Management (Build, Attach and Save)
 
         #region Model Item Management (CRUD)
 
         /// <summary>
-        /// Adds an Item to the ModelManager's instance of Model and Dictionary.
+        ///     Adds an Item to the ModelManager's instance of Model and Dictionary.
         /// </summary>
         /// <param name="item">The Item to add.</param>
         /// <returns>A Result containing the added Item.</returns>
@@ -546,8 +561,37 @@ namespace Symbiote.Core.Model
             return AddItem(Model, Dictionary, item);
         }
 
+        private Result<Item> SetModelRoot(Item model, Dictionary<string, Item> dictionary, Item item)
+        {
+            logger.EnterMethod(xLogger.Params(model, item));
+
+            Result<Item> retVal = new Result<Item>();
+
+            // only one root item can be defined.
+            if (model.Name != "")
+            {
+                retVal.AddError("The Model root has already been defined.");
+            }
+
+            // update the model root item with the details of the supplied item
+            logger.Trace("Setting Model root to a new instance of Item()");
+
+            ((Item)model).FQN = item.FQN;
+
+            logger.Checkpoint("root set", xLogger.Params(model));
+
+            //((Item)model).Path = item.Path;
+            logger.Trace("Adding item to dictionary with key: " + item.FQN);
+            dictionary.Add(model.FQN, model);
+
+            retVal.ReturnValue = item;
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
         /// <summary>
-        /// Adds an Item to the given Model and Dictionary.
+        ///     Adds an Item to the given Model and Dictionary.
         /// </summary>
         /// <param name="model">The Model to which to add the Item.</param>
         /// <param name="dictionary">The Dictionary to which to add the Item.</param>
@@ -555,30 +599,22 @@ namespace Symbiote.Core.Model
         /// <returns>A Result containing the added Item.</returns>
         private Result<Item> AddItem(Item model, Dictionary<string, Item> dictionary, Item item)
         {
+            logger.EnterMethod();
+
             if (Dependency<IApplicationManager>().State != State.Starting) logger.Info("Adding item '" + item.FQN + "' to the model...");
             else logger.Debug("Adding item '" + item.FQN + "' to the model...");
 
             Result<Item> retVal = new Result<Item>();
+            retVal.ReturnValue = item;
 
             string parentFQN = GetParentFQNFromItemFQN(item.FQN);
 
             // if the parent FQN couldn't be parsed, this is the root node so clone it to the existing ModelItem representing the root.
             if (parentFQN == "")
             {
-                // only one root item can be defined.  
-                if (model.Name != "") { retVal.AddError("The Model root has already been defined."); }
-                else
-                {
-                    // update the model root item with the details of the supplied item
-                    logger.Trace("Setting Model root to a new instance of ModelItem()");
-                    ((Item)model).Name = item.Name;
-                    ((Item)model).FQN = item.FQN;
-                    ((Item)model).Path = item.Path;
-                    logger.Trace("Adding item to dictionary with key: " + item.FQN);
-                    dictionary.Add(model.FQN, model);
-
-                    retVal.ReturnValue = model;
-                }
+                Result<Item> rootSetResult = SetModelRoot(model, dictionary, item);
+                retVal.Incorporate(rootSetResult);
+                retVal.ReturnValue = rootSetResult.ReturnValue;
             }
             else
             {
@@ -599,8 +635,6 @@ namespace Symbiote.Core.Model
                             dictionary.Add(item.FQN, item);
 
                             retVal.ReturnValue = item;
-
-
                         }
                         catch (Exception ex)
                         {
@@ -615,12 +649,12 @@ namespace Symbiote.Core.Model
 
             if (Dependency<IApplicationManager>().State != State.Starting) retVal.LogResult(logger);
             else retVal.LogResult(logger.Debug);
-
+            logger.ExitMethod();
             return retVal;
         }
 
         /// <summary>
-        /// Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
+        ///     Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
         /// <returns>The ModelItem from the Model corresponding to the supplied key.</returns>
@@ -631,7 +665,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Returns the ModelItem from the supplied Dictionary matching the supplied key.
+        ///     Returns the ModelItem from the supplied Dictionary matching the supplied key.
         /// </summary>
         /// <param name="dictionary">The Dictionary from which to retrieve the item.</param>
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
@@ -640,12 +674,11 @@ namespace Symbiote.Core.Model
         {
             if (dictionary.ContainsKey(fqn))
                 return dictionary[fqn];
-
             else return default(Item);
         }
 
         /// <summary>
-        /// Updates the supplied Item with the supplied Source Item.
+        ///     Updates the supplied Item with the supplied Source Item.
         /// </summary>
         /// <param name="item">The Item to update.</param>
         /// <param name="sourceItem">The SourceItem with which to update the Item.</param>
@@ -675,7 +708,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Removes an Item from the ModelManager's Dictionary and from its parent Item.
+        ///     Removes an Item from the ModelManager's Dictionary and from its parent Item.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
         /// <returns>A Result containing the removed Item.</returns>
@@ -689,7 +722,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Removes an Item from the provided Dictionary and removes it from its parent Item.
+        ///     Removes an Item from the provided Dictionary and removes it from its parent Item.
         /// </summary>
         /// <param name="dictionary">The Dictionary from which to remove the Item.</param>
         /// <param name="item">The Item to remove.</param>
@@ -718,12 +751,12 @@ namespace Symbiote.Core.Model
                     // remove the item itself from the dictionary
                     dictionary.Remove(item.FQN);
 
-                    // remove any children of this item.  find any item in the dictionary with the first part of it's FQN fully matching
-                    // the FQN of the removed item
+                    // remove any children of this item. find any item in the dictionary with the first part of it's FQN fully
+                    // matching the FQN of the removed item
                     List<string> fqnsToDelete = new List<string>();
 
-                    // iterate over the list of matching items and delete them from the dictionary
-                    // note that we can't iterate over dictionary itself while we are changing it, hence the temporary list.
+                    // iterate over the list of matching items and delete them from the dictionary note that we can't iterate over
+                    // dictionary itself while we are changing it, hence the temporary list.
                     foreach (KeyValuePair<string, Item> child in dictionary.Where(kvp => kvp.Key.StartsWith(item.FQN + ".")))
                     {
                         fqnsToDelete.Add(child.Key);
@@ -746,7 +779,8 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Moves the supplied Item from one place in the ModelManager's instances of Model and Dictionary to another based on the supplied FQN.
+        ///     Moves the supplied Item from one place in the ModelManager's instances of Model and Dictionary to another based on
+        ///     the supplied FQN.
         /// </summary>
         /// <param name="item">The Item to move.</param>
         /// <param name="fqn">The Fully Qualified Name representing the new location for the item.</param>
@@ -761,7 +795,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Moves the supplied Item from one place in the supplied Model and Dictionary to another based on the supplied FQN.
+        ///     Moves the supplied Item from one place in the supplied Model and Dictionary to another based on the supplied FQN.
         /// </summary>
         /// <param name="dictionary">The Dictionary containing the supplied Item.</param>
         /// <param name="item">The Item to move.</param>
@@ -795,7 +829,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Creates a copy of the specified Item and stores it at the specified FQN within the default Model and Dictionary.
+        ///     Creates a copy of the specified Item and stores it at the specified FQN within the default Model and Dictionary.
         /// </summary>
         /// <param name="item">The Item to copy.</param>
         /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
@@ -810,7 +844,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Creates a copy of the specified Item and stores it at the specified FQN within the specified Model and Dictionary.
+        ///     Creates a copy of the specified Item and stores it at the specified FQN within the specified Model and Dictionary.
         /// </summary>
         /// <param name="model">The Model in which to copy the Item.</param>
         /// <param name="dictionary">The Dictionary in which to copy the Item.</param>
@@ -852,8 +886,8 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Attaches the provided Item to the supplied Item.  This method should be used only to attach plugin Items
-        /// to the application model.  When adding Items directly, use AddItem.
+        ///     Attaches the provided Item to the supplied Item. This method should be used only to attach plugin Items to the
+        ///     application model. When adding Items directly, use AddItem.
         /// </summary>
         /// <param name="item">The Item to attach to the Model.</param>
         /// <param name="parentItem">The Item to which the new Item should be attached.</param>
@@ -866,10 +900,10 @@ namespace Symbiote.Core.Model
 
             Result<Item> retVal = new Result<Item>();
             if ((item == null) || (parentItem == null)) return retVal;
-               
+
             if (Dependency<IApplicationManager>().State != State.Starting) logger.Info("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
             else logger.Debug("Attaching Item '" + item.FQN + "' to '" + parentItem.FQN + "'...");
-      
+
             try
             {
                 // create a 1:1 clone of the supplied item
@@ -910,12 +944,12 @@ namespace Symbiote.Core.Model
             return retVal;
         }
 
-        #endregion
+        #endregion Model Item Management (CRUD)
 
         /// <summary>
-        /// Renames the provided Item and all child Items "in place" without affecting the model.  
-        /// This method supports the CopyItem and MoveItem methods; if you want to move something in the model
-        /// as well as rename it, use MoveItem.  To be crystal clear, this is not a CRUD operation!
+        ///     Renames the provided Item and all child Items "in place" without affecting the model. This method supports the
+        ///     CopyItem and MoveItem methods; if you want to move something in the model as well as rename it, use MoveItem. To be
+        ///     crystal clear, this is not a CRUD operation!
         /// </summary>
         /// <param name="item">The Item to rename.</param>
         /// <param name="fqn">The new Fully Qualified Name for the Item.</param>
@@ -927,7 +961,6 @@ namespace Symbiote.Core.Model
 
             retVal.ReturnValue = (Item)item.Clone();
 
-            retVal.ReturnValue.Name = GetItemNameFromItemFQN(fqn);
             retVal.ReturnValue.FQN = fqn;
 
             IEnumerable<Item> childrenToRename = retVal.ReturnValue.Children.Clone();
@@ -948,12 +981,12 @@ namespace Symbiote.Core.Model
             return retVal;
         }
 
-        #endregion
+        #endregion Instance Methods
 
         #region Static Methods
 
         /// <summary>
-        /// Returns the ConfigurationDefinition for the Model Manager.
+        ///     Returns the ConfigurationDefinition for the Model Manager.
         /// </summary>
         /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
         public static ConfigurationDefinition GetConfigurationDefinition()
@@ -966,7 +999,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Returns the default Configuration for the Model Manager.
+        ///     Returns the default Configuration for the Model Manager.
         /// </summary>
         /// <returns>The default Configuration for the Model Manager.</returns>
         public static ModelManagerConfiguration GetDefaultConfiguration()
@@ -982,7 +1015,7 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
-        /// Parses and returns an Item path from the given FQN.
+        ///     Parses and returns an Item path from the given FQN.
         /// </summary>
         /// <param name="itemFQN">The FQN from which to parse the path.</param>
         /// <returns>The Item path.</returns>
@@ -994,11 +1027,11 @@ namespace Symbiote.Core.Model
                 return String.Join(".", retObj.Take(retObj.Count() - 1));
 
             // the root item has no path.
-            return "";         
+            return "";
         }
 
         /// <summary>
-        /// Parses and returns an Item name from the given FQN.
+        ///     Parses and returns an Item name from the given FQN.
         /// </summary>
         /// <param name="itemFQN">The FQN from which to parse the name.</param>
         /// <returns>The Item name.</returns>
@@ -1007,6 +1040,6 @@ namespace Symbiote.Core.Model
             return itemFQN.Split('.')[itemFQN.Split('.').Length - 1];
         }
 
-        #endregion
+        #endregion Static Methods
     }
 }

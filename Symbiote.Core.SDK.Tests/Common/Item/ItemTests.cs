@@ -48,6 +48,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 namespace Symbiote.Core.SDK.Tests
@@ -64,9 +66,37 @@ namespace Symbiote.Core.SDK.Tests
         public void Constructor()
         {
             Item item = new Item();
+            Assert.IsType<Item>(item);
+
             item = new Item(string.Empty);
+            Assert.IsType<Item>(item);
+
             item = new Item(string.Empty, false);
+            Assert.IsType<Item>(item);
+
+            item = new Item(string.Empty, string.Empty);
+            Assert.IsType<Item>(item);
+
             item = new Item(string.Empty, string.Empty, false);
+            Assert.IsType<Item>(item);
+        }
+
+        /// <summary>
+        ///     Tests all properties.
+        /// </summary>
+        [Fact]
+        public void Properties()
+        {
+            Item item = new Item("Root.Item.Name", "Source");
+
+            Assert.Equal(new List<Item>(), item.Children);
+            Assert.Equal("Root.Item.Name", item.FQN);
+            Assert.Equal(new Guid().ToString().Length, item.Guid.ToString().Length);
+            Assert.Equal("Name", item.Name);
+            Assert.Equal("Root.Item", item.Path);
+            Assert.Equal(default(Item), item.Parent);
+            Assert.Equal("Source", item.SourceFQN);
+            Assert.Equal(default(Item), item.SourceItem);
         }
     }
 }
