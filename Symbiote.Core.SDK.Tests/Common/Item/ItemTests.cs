@@ -100,23 +100,24 @@ namespace Symbiote.Core.SDK.Tests
             Assert.Equal(true, item.IsOrphaned);
         }
 
+        /// <summary>
+        ///     Tests the functionality of the <see cref="Item.AddChild(Item)"/> method.
+        /// </summary>
         [Fact]
         public void ItemAdoption()
         {
             Item root = new Item("Root");
             Item child = new Item("Orphaned.Item");
-            Item child2 = new Item("Orphaned.Item2");
 
             Assert.Equal(true, child.IsOrphaned);
+            Assert.Equal("Orphaned.Item", child.FQN);
             Assert.Equal("Orphaned", child.Path);
-
-            Assert.Equal(true, child2.IsOrphaned);
-            Assert.Equal("Orphaned", child2.Path);
 
             root.AddChild(child);
 
-            Assert.Equal("Root", child.Path);
             Assert.Equal(false, child.IsOrphaned);
+            Assert.Equal("Root.Item", child.FQN);
+            Assert.Equal("Root", child.Path);
         }
     }
 }

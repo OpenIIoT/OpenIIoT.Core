@@ -170,13 +170,13 @@ namespace Symbiote.Core.SDK
         public Guid Guid { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the name of the Item; corresponds to the final tuple of the FQN.
+        ///     Gets a value indicating whether the Item's <see cref="Children"/> collection is empty.
         /// </summary>
-        public string Name
+        public bool HasChildren
         {
             get
             {
-                return FQN.Substring(FQN.LastIndexOf('.') + 1);
+                return Children.Count > 0;
             }
         }
 
@@ -192,13 +192,13 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        ///     Gets a value indicating whether the Item's <see cref="Children"/> collection is empty.
+        ///     Gets or sets the name of the Item; corresponds to the final tuple of the FQN.
         /// </summary>
-        public bool HasChildren
+        public string Name
         {
             get
             {
-                return Children.Count > 0;
+                return FQN.Substring(FQN.LastIndexOf('.') + 1);
             }
         }
 
@@ -554,6 +554,22 @@ namespace Symbiote.Core.SDK
             return await Task.Run(() => SourceItem.WriteToSource(value));
         }
 
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
+        /// </summary>
+        /// <param name="value">The value for the raised event.</param>
+        protected virtual void OnChange(object previousValue, object value)
+        {
+            if (Changed != null)
+            {
+                Changed(this, new ItemChangedEventArgs(previousValue, value));
+            }
+        }
+
         /// <summary>
         ///     Sets the Item's parent Item to the supplied Item.
         /// </summary>
@@ -578,22 +594,6 @@ namespace Symbiote.Core.SDK
 
             retVal.ReturnValue = this;
             return retVal;
-        }
-
-        #endregion Public Methods
-
-        #region Protected Methods
-
-        /// <summary>
-        ///     Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
-        /// </summary>
-        /// <param name="value">The value for the raised event.</param>
-        protected virtual void OnChange(object previousValue, object value)
-        {
-            if (Changed != null)
-            {
-                Changed(this, new ItemChangedEventArgs(previousValue, value));
-            }
         }
 
         /// <summary>
