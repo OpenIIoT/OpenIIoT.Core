@@ -119,7 +119,7 @@ namespace Symbiote.Core.SDK
             FQN = fqn;
             SourceFQN = sourceFQN;
 
-            Value = string.Empty;
+            Value = default(object);
 
             // generate Name and Path from FQN
             string[] splitFQN = fqn.Split('.');
@@ -552,6 +552,30 @@ namespace Symbiote.Core.SDK
         public virtual async Task<Result> WriteToSourceAsync(object value)
         {
             return await Task.Run(() => SourceItem.WriteToSource(value));
+        }
+
+        /// <summary>
+        ///     Compares the specified object to this Item and returns a value indicating whether the two objects are equal.
+        /// </summary>
+        /// <param name="obj">The object to which this Item is to be compared.</param>
+        /// <returns>A value indicating whether the two objects are equal.</returns>
+        public override bool Equals(object obj)
+        {
+            if (!obj.GetType().Equals(GetType()))
+            {
+                return false;
+            }
+
+            Item item = (Item)obj;
+
+            if (
+                item.FQN == FQN
+                )
+            {
+                return true;
+            }
+
+            return false;
         }
 
         #endregion Public Methods

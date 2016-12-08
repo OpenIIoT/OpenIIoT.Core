@@ -92,12 +92,21 @@ namespace Symbiote.Core.SDK.Tests
             Assert.Equal(new List<Item>(), item.Children);
             Assert.Equal("Root.Child.Name", item.FQN);
             Assert.Equal(new Guid().ToString().Length, item.Guid.ToString().Length);
-            Assert.Equal("Name", item.Name);
-            Assert.Equal("Root.Child", item.Path);
-            Assert.Equal(default(Item), item.Parent);
-            Assert.Equal("Source", item.SourceFQN);
-            Assert.Equal(default(Item), item.SourceItem);
+            Assert.Equal(false, item.HasChildren);
             Assert.Equal(true, item.IsOrphaned);
+            Assert.Equal("Name", item.Name);
+            Assert.Equal(default(Item), item.Parent);
+            Assert.Equal("Root.Child", item.Path);
+            Assert.Equal("Source", item.SourceFQN);
+
+            Assert.Equal(default(Item), item.SourceItem);
+
+            Item newItem = new Item("Source.Item");
+            item.SourceItem = newItem;
+            Assert.Equal(newItem, item.SourceItem);
+
+            Assert.Equal(default(object), item.Value);
+            Assert.Equal(true, item.Writeable);
         }
 
         /// <summary>
@@ -118,6 +127,34 @@ namespace Symbiote.Core.SDK.Tests
             Assert.Equal(false, child.IsOrphaned);
             Assert.Equal("Root.Item", child.FQN);
             Assert.Equal("Root", child.Path);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Clone"/> method.
+        /// </summary>
+        [Fact]
+        public void Clone()
+        {
+            Item original = new Item("Root.Item");
+            Item clone = (Item)original.Clone();
+
+            Assert.True(original.Equals(clone));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Equals"/> method.
+        /// </summary>
+        [Fact]
+        public void Equals()
+        {
+            Item left = new Item("Root.Left");
+            Item right = new Item("Root.Right");
+            Item left2 = new Item("Root.Left");
+            string notItem = "not item";
+
+            Assert.False(left.Equals(notItem));
+            Assert.False(left.Equals(right));
+            Assert.True(left.Equals(left2));
         }
     }
 }
