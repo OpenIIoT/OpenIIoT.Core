@@ -1,43 +1,44 @@
 ﻿/*
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-      █   
-      █    ▄█                                  
-      █   ███                                  
-      █   ███▌     ██       ▄█████    ▄▄██▄▄▄  
-      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ 
-      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ 
-      █   ███      ██    ▀▀██▀▀     ██  ██  ██ 
-      █   ███      ██      ██   █   ██  ██  ██ 
-      █   █▀      ▄██▀     ███████   █  ██  █  
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
- ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      ▄  
+      █    ▄█
+      █   ███
+      █   ███▌     ██       ▄█████    ▄▄██▄▄▄
+      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄
+      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██
+      █   ███      ██    ▀▀██▀▀     ██  ██  ██
+      █   ███      ██      ██   █   ██  ██  ██
+      █   █▀      ▄██▀     ███████   █  ██  █
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
       █  Represents a single data entity within the application Model.
-      █  
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
-      █  
+      █
       █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
-      █  
+      █
       █  This program is free software: you can redistribute it and/or modify
       █  it under the terms of the GNU Affero General Public License as published by
       █  the Free Software Foundation, either version 3 of the License, or
       █  (at your option) any later version.
-      █  
+      █
       █  This program is distributed in the hope that it will be useful,
       █  but WITHOUT ANY WARRANTY; without even the implied warranty of
       █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
       █  GNU Affero General Public License for more details.
-      █  
+      █
       █  You should have received a copy of the GNU Affero General Public License
       █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-      █  
-      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
-                                                                                                   ██ 
-                                                                                               ▀█▄ ██ ▄█▀ 
-                                                                                                 ▀████▀   
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
                                                                                                    ▀▀                            */
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
@@ -45,53 +46,50 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Utility.OperationResult;
 using Symbiote.Core.SDK.Plugin.Connector;
+using Utility.OperationResult;
 
 namespace Symbiote.Core.SDK
 {
     /// <summary>
-    /// Represents a single data entity within the application Model.
+    ///     Represents a single data entity within the application Model.
     /// </summary>
     public class Item : ICloneable
     {
-        #region Fields
-
-        #region Locks
+        #region Protected Fields
 
         /// <summary>
-        /// Lock for the Value property.
+        ///     Lock for the Children property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
-        protected object valueLock = new object();
+        protected object childrenLock = new object();
 
         /// <summary>
-        /// Lock for the Parent property.
+        ///     Lock for the Parent property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected object parentLock = new object();
 
         /// <summary>
-        /// Lock for the Children property.
+        ///     Lock for the Value property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
-        protected object childrenLock = new object();
+        protected object valueLock = new object();
 
-        #endregion
+        #endregion Protected Fields
 
-        #endregion
-        
-        #region Constructors
+        #region Public Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Item"/> class.
+        ///     Initializes a new instance of the <see cref="Item"/> class.
         /// </summary>
         public Item() : this(string.Empty, string.Empty, true)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name to be used as the root of a model.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name to be used as the
+        ///     root of a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
@@ -100,7 +98,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name and type.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name and type.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
@@ -110,32 +108,23 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name and type.  
-        ///     If isRoot is true, marks the Item as the root item in a model.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name and type. If isRoot
+        ///     is true, marks the Item as the root item in a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, string sourceFQN = "", bool isRoot = false) 
+        public Item(string fqn, string sourceFQN = "", bool isRoot = false)
         {
             FQN = fqn;
             SourceFQN = sourceFQN;
 
-            Value = string.Empty;
+            Value = default(object);
 
             // generate Name and Path from FQN
             string[] splitFQN = fqn.Split('.');
 
-            // set the name.  if it is blank after the split, there was only one tuple in the FQN, so name = fqn
-            Name = splitFQN[splitFQN.Length - 1];
-            if (Name == string.Empty)
-            {
-                Name = FQN;
-            }
-
-            Path = string.Join(".", splitFQN.Take(splitFQN.Length - 1));
-
-            // create a unique Guid for this item.  useful for debugging.
+            // create a unique Guid for this item. useful for debugging.
             Guid = Guid.NewGuid();
 
             // instantiate the list of children
@@ -145,136 +134,116 @@ namespace Symbiote.Core.SDK
             if (isRoot)
             {
                 FQN = Name;
-                Path = FQN;
+                //Path = FQN;
                 Parent = this;
             }
 
             Writeable = true;
         }
 
-        #endregion
+        #endregion Public Constructors
 
-        #region Events
+        #region Public Events
 
         /// <summary>
-        /// The Changed event; fires when the value of the item changes.
+        ///     The Changed event; fires when the value of the item changes.
         /// </summary>
         public event EventHandler<ItemChangedEventArgs> Changed;
 
-        #endregion
+        #endregion Public Events
 
-        #region Properties
-
-        #region IItem Properties
+        #region Public Properties
 
         /// <summary>
-        /// Gets the Item's parent Item.
+        ///     Gets the collection of Items contained within this Item.
         /// </summary>
-        public Item Parent { get; private set; }
+        public List<Item> Children { get; private set; }
 
         /// <summary>
-        /// Gets or sets the name of the Item; corresponds to the final tuple of the FQN.
+        ///     Gets or sets the Fully Qualified Name of the item.
         /// </summary>
-        public string Name { get; set; }
+        public string FQN { get; private set; }
 
         /// <summary>
-        /// Gets or sets the Fully Qualified Name of the item.
-        /// </summary>
-        public string FQN { get; set; }
-
-        /// <summary>
-        /// Gets or sets the path to the Item; corresponds to the FQN less the final tuple (the name).
-        /// </summary>
-        public string Path { get; set; }
-
-        /// <summary>
-        /// Gets or sets the fully qualified name name of the source item.
-        /// </summary>
-        public string SourceFQN { get; set; }
-
-        /// <summary>
-        /// Gets or sets the Item instance resolved from the SourceFQN.
-        /// </summary>
-        public Item SourceItem { get; set; }
-
-        /// <summary>
-        /// Gets a Guid for the Item, generated when it is instantiated.
+        ///     Gets a Guid for the Item, generated when it is instantiated.
         /// </summary>
         public Guid Guid { get; private set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the Item's value is writeable.
+        ///     Gets a value indicating whether the Item's <see cref="Children"/> collection is empty.
         /// </summary>
-        public bool Writeable { get; set; }
+        public bool HasChildren
+        {
+            get
+            {
+                return Children.Count > 0;
+            }
+        }
 
         /// <summary>
-        /// Gets or sets the value of the composite item.
+        ///     Gets a value indicating whether the Item's <see cref="Parent"/> property has been set.
+        /// </summary>
+        public bool IsOrphaned
+        {
+            get
+            {
+                return Parent == default(Item);
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the name of the Item; corresponds to the final tuple of the FQN.
+        /// </summary>
+        public string Name
+        {
+            get
+            {
+                return FQN.Substring(FQN.LastIndexOf('.') + 1);
+            }
+        }
+
+        /// <summary>
+        ///     Gets the Item's parent Item.
+        /// </summary>
+        public Item Parent { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets the path to the Item; corresponds to the FQN less the final tuple (the name).
+        /// </summary>
+        public string Path
+        {
+            get
+            {
+                return FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
+            }
+        }
+
+        /// <summary>
+        ///     Gets or sets the fully qualified name name of the source item.
+        /// </summary>
+        public string SourceFQN { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the Item instance resolved from the SourceFQN.
+        /// </summary>
+        public Item SourceItem { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the value of the composite item.
         /// </summary>
         public object Value { get; protected set; }
 
         /// <summary>
-        /// Gets the collection of Items contained within this Item.
+        ///     Gets or sets a value indicating whether the Item's value is writeable.
         /// </summary>
-        public List<Item> Children { get; private set; }
+        public bool Writeable { get; set; }
 
-        #endregion
-
-        #endregion
-
-        #region Methods
+        #endregion Public Properties
 
         #region Public Methods
 
-        #region Public Instance Methods
-
-        #region ICloneable Implementation 
-
         /// <summary>
-        /// Creates and returns a clone of the Item.
-        /// </summary>
-        /// <remarks>We aren't using .MemberWiseClone() because of the GUID.  We need a "deep copy".</remarks>
-        /// <returns>A clone of the Item.</returns>
-        public virtual object Clone()
-        {
-            Item retVal = new Item(FQN, SourceFQN, Parent == this);
-            retVal.Name = Name;
-            retVal.Path = Path;
-            retVal.Parent = Parent;
-            retVal.Children = Children.Clone<Item>();
-            return retVal;
-        }
-
-        #endregion
-
-        #region IItem Implementation
-
-        /// <summary>
-        /// Sets the Item's parent Item to the supplied Item.
-        /// </summary>
-        /// <param name="parent">The Item to set as the Item's parent.</param>
-        /// <threadsafety instance="true"/>
-        /// <returns>A Result containing the result of the operation and the current Item.</returns>
-        public virtual Result<Item> SetParent(Item parent)
-        {
-            Result<Item> retVal = new Result<Item>();
-
-            // update the Path and FQN to match the parent values
-            // this is set in the constructor however this code will prevent issues if items are moved.
-
-            // lock the Parent property
-            lock (parentLock)
-            {
-                Path = parent.FQN;
-                FQN = Path + '.' + Name;
-                Parent = parent;
-            }
-
-            retVal.ReturnValue = this;
-            return retVal;
-        }
-
-        /// <summary>
-        /// Adds the supplied item to this Item's Children collection.
+        ///     Adds the supplied item to this Item's Children collection.
         /// </summary>
         /// <param name="item">The Item to add.</param>
         /// <threadsafety instance="true"/>
@@ -282,7 +251,7 @@ namespace Symbiote.Core.SDK
         public virtual Result<Item> AddChild(Item item)
         {
             Result<Item> retVal = new Result<Item>();
-           
+
             if (item != default(Item))
             {
                 // set the new child's parent to this before adding it
@@ -307,7 +276,84 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Removes the specified child Item from this Item's Children collection.
+        ///     Creates and returns a clone of the Item.
+        /// </summary>
+        /// <remarks>We aren't using .MemberWiseClone() because of the GUID. We need a "deep copy".</remarks>
+        /// <returns>A clone of the Item.</returns>
+        public virtual object Clone()
+        {
+            Item retVal = new Item(FQN, SourceFQN, Parent == this);
+            retVal.Parent = Parent;
+            retVal.Children = Children.Clone<Item>();
+            retVal.Value = Value;
+            retVal.SourceItem = SourceItem;
+            retVal.Writeable = Writeable;
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Returns the value of this Item's Value property.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
+        public virtual object Read()
+        {
+            return Value;
+        }
+
+        /// <summary>
+        ///     Asynchronously returns the value of this Item's Value property.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
+        public virtual async Task<object> ReadAsync()
+        {
+            return await Task.Run(() => Read());
+        }
+
+        /// <summary>
+        ///     Reads this Item's Value from its SourceItem. If this Item has children, ReadFromSource() is also executed on each child.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
+        public virtual object ReadFromSource()
+        {
+            object retVal;
+
+            // recursively call ReadFromSource() on each child below this Item
+            if (HasChildren)
+            {
+                foreach (Item child in Children)
+                {
+                    child.ReadFromSource();
+                }
+            }
+
+            // ensure the SourceItem exists before trying to read it
+            if ((SourceItem != null) && (SourceItem != default(Item)))
+            {
+                retVal = SourceItem.ReadFromSource();
+
+                // check to see if the value read from the source is the same as the Value property. if it isn't, update the Value
+                // property with the latest.
+                if (retVal != Value)
+                {
+                    Write(retVal);
+                }
+            }
+
+            return Read();
+        }
+
+        /// <summary>
+        ///     Asynchronously reads this Item's Value from its SourceItem. If this item has children, ReadFromSource() is also
+        ///     executed on each child.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
+        public virtual async Task<object> ReadFromSourceAsync()
+        {
+            return await Task.Run(() => ReadFromSource());
+        }
+
+        /// <summary>
+        ///     Removes the specified child Item from this Item's Children collection.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
         /// <threadsafety instance="true"/>
@@ -345,84 +391,12 @@ namespace Symbiote.Core.SDK
                     }
                 }
             }
-            
+
             return retVal;
         }
 
         /// <summary>
-        /// Returns true if the Item has children, false otherwise.
-        /// </summary>
-        /// <returns>True if the Item has children, false otherwise.</returns>
-        public virtual bool HasChildren()
-        {
-            return Children.Count > 0;
-        }
-
-        /// <summary>
-        /// Returns the value of this Item's Value property.
-        /// </summary>
-        /// <returns>The retrieved value.</returns>
-        public virtual object Read()
-        {
-            return Value;
-        }
-
-        /// <summary>
-        /// Asynchronously returns the value of this Item's Value property.
-        /// </summary>
-        /// <returns>The retrieved value.</returns>
-        public virtual async Task<object> ReadAsync()
-        {
-            return await Task.Run(() => Read());
-        }
-
-        /// <summary>
-        /// Reads this Item's Value from its SourceItem.  If this Item has children,
-        /// ReadFromSource() is also executed on each child.
-        /// </summary>
-        /// <returns>The retrieved value.</returns>
-        public virtual object ReadFromSource()
-        {
-            object retVal;
-
-            // recursively call ReadFromSource() on each child below this Item
-            if (HasChildren())
-            {
-                foreach (Item child in Children)
-                {
-                    child.ReadFromSource();
-                }
-            }
-
-            // ensure the SourceItem exists before trying to read it
-            if ((SourceItem != null) && (SourceItem != default(Item)))
-            {
-                retVal = SourceItem.ReadFromSource();
-
-                // check to see if the value read from the source is the same
-                // as the Value property.  if it isn't, update the Value property
-                // with the latest. 
-                if (retVal != Value)
-                {
-                    Write(retVal);
-                }
-            }
-
-            return Read();
-        }
-
-        /// <summary>
-        /// Asynchronously reads this Item's Value from its SourceItem.  If this item has children,
-        /// ReadFromSource() is also executed on each child.
-        /// </summary>
-        /// <returns>The retrieved value.</returns>
-        public virtual async Task<object> ReadFromSourceAsync()
-        {
-            return await Task.Run(() => ReadFromSource());
-        }
-
-        /// <summary>
-        /// Adds the SourceItemChanged event handler for this Item to the SourceItem's Changed event.
+        ///     Adds the SourceItemChanged event handler for this Item to the SourceItem's Changed event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result SubscribeToSource()
@@ -455,7 +429,35 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Removes the SourceItemChanged event handler for this Item from the SourceItem's Changed event.
+        ///     Returns the serialization of the Item using the default ContractResolver.
+        /// </summary>
+        /// <returns>The serialization of the Item.</returns>
+        public virtual string ToJson()
+        {
+            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
+        }
+
+        /// <summary>
+        ///     Returns the serialization of the Item using the supplied ContractResolver.
+        /// </summary>
+        /// <param name="contractResolver">The ContractResolver with which the Item is to be serialized.</param>
+        /// <returns>The serialization of the Item.</returns>
+        public virtual string ToJson(DefaultContractResolver contractResolver)
+        {
+            return JsonConvert.SerializeObject(this, new JsonSerializerSettings() { ContractResolver = contractResolver });
+        }
+
+        /// <summary>
+        ///     Returns the string representation of the object.
+        /// </summary>
+        /// <returns>The string representation of the object.</returns>
+        public override string ToString()
+        {
+            return FQN;
+        }
+
+        /// <summary>
+        ///     Removes the SourceItemChanged event handler for this Item from the SourceItem's Changed event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result UnsubscribeFromSource()
@@ -475,10 +477,10 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Writes the provided value to this Item's Value property.
+        ///     Writes the provided value to this Item's Value property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <threadsafety instance="true"/> 
+        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result Write(object value)
         {
@@ -492,8 +494,9 @@ namespace Symbiote.Core.SDK
             {
                 lock (valueLock)
                 {
+                    var previousValue = Value;
                     Value = value;
-                    OnChange(value);
+                    OnChange(previousValue, Value);
                 }
             }
 
@@ -501,7 +504,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Asynchronously writes the provided value to this Item's Value property.
+        ///     Asynchronously writes the provided value to this Item's Value property.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -511,7 +514,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Writes the provided value to this Item's SourceItem.
+        ///     Writes the provided value to this Item's SourceItem.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -542,7 +545,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Asynchronously writes the provided value to this Item's SourceItem.
+        ///     Asynchronously writes the provided value to this Item's SourceItem.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -551,48 +554,50 @@ namespace Symbiote.Core.SDK
             return await Task.Run(() => SourceItem.WriteToSource(value));
         }
 
-        /// <summary>
-        /// Returns the serialization of the Item using the default ContractResolver.
-        /// </summary>
-        /// <returns>The serialization of the Item.</returns>
-        public virtual string ToJson()
-        {
-            return ToJson(new ContractResolver(new List<string>(new string[] { "Parent", "SourceItem", "Children" }), ContractResolverType.OptOut, true));
-        }
-
-        /// <summary>
-        /// Returns the serialization of the Item using the supplied ContractResolver.
-        /// </summary>
-        /// <param name="contractResolver">The ContractResolver with which the Item is to be serialized.</param>
-        /// <returns>The serialization of the Item.</returns>
-        public virtual string ToJson(DefaultContractResolver contractResolver)
-        {
-            return JsonConvert.SerializeObject(this, new JsonSerializerSettings() { ContractResolver = contractResolver });
-        }
-
-        #endregion
-
-        /// <summary>
-        /// Returns the string representation of the object.
-        /// </summary>
-        /// <returns>The string representation of the object.</returns>
-        public override string ToString()
-        {
-            return FQN;
-        }
-
-        #endregion
-
-        #endregion
+        #endregion Public Methods
 
         #region Protected Methods
 
-        #region Protected Instance Methods
-
-        #region Event Handlers
+        /// <summary>
+        ///     Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
+        /// </summary>
+        /// <param name="value">The value for the raised event.</param>
+        protected virtual void OnChange(object previousValue, object value)
+        {
+            if (Changed != null)
+            {
+                Changed(this, new ItemChangedEventArgs(previousValue, value));
+            }
+        }
 
         /// <summary>
-        /// Event Handler for the Changed event belonging to the SourceItem.
+        ///     Sets the Item's parent Item to the supplied Item.
+        /// </summary>
+        /// <param name="parent">The Item to set as the Item's parent.</param>
+        /// <threadsafety instance="true"/>
+        /// <returns>A Result containing the result of the operation and the current Item.</returns>
+        protected virtual Result<Item> SetParent(Item parent)
+        {
+            Result<Item> retVal = new Result<Item>();
+
+            // update the Path and FQN to match the parent values this is set in the constructor however this code will prevent
+            // issues if items are moved.
+
+            // lock the Parent property
+            lock (parentLock)
+            {
+                //Path = parent.FQN;
+                FQN = parent.FQN + (parent.FQN.Length > 0 ? "." : "") + Name;
+
+                Parent = parent;
+            }
+
+            retVal.ReturnValue = this;
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Event Handler for the Changed event belonging to the SourceItem.
         /// </summary>
         /// <param name="sender">The Item that raised the event.</param>
         /// <param name="e">The EventArgs for the event.</param>
@@ -601,24 +606,6 @@ namespace Symbiote.Core.SDK
             Write(e.Value);
         }
 
-        #endregion
-
-        /// <summary>
-        /// Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
-        /// </summary>
-        /// <param name="value">The value for the raised event.</param>
-        protected virtual void OnChange(object value)
-        {
-            if (Changed != null)
-            {
-                Changed(this, new ItemChangedEventArgs(value));
-            }
-        }
-
-        #endregion
-
-        #endregion
-
-        #endregion
+        #endregion Protected Methods
     }
 }

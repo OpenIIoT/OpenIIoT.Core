@@ -446,39 +446,39 @@ namespace Symbiote.Core
 
             try
             {
-                // attach the Platform connector items to the model detach anything in "Symbiote.System.Platform" that was loaded
-                // from the config file
-                logger.Info("Detaching potentially stale Platform items...");
-                applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
+                //// attach the Platform connector items to the model detach anything in "Symbiote.System.Platform" that was loaded
+                //// from the config file
+                //logger.Info("Detaching potentially stale Platform items...");
+                //applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
 
-                logger.Info("Attaching new Platform items...");
+                //logger.Info("Attaching new Platform items...");
 
-                // find or create the parent for the Platform items
-                Item systemItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName + ".System");
-                if (systemItem == default(Item))
-                {
-                    systemItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName + ".System")).ReturnValue;
-                }
+                //// find or create the parent for the Platform items
+                //Item systemItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName + ".System");
+                //if (systemItem == default(Item))
+                //{
+                //    systemItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName + ".System")).ReturnValue;
+                //}
 
-                // attach the Platform items to Symbiote.System
-                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.Connector.Browse(), systemItem);
-                logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
+                //// attach the Platform items to Symbiote.System
+                //applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.Connector.Browse(), systemItem);
+                //logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
 
-                // find the root item, or create it if it doesn't exist for some reason
-                Item symItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName);
-                if (symItem == default(Item))
-                {
-                    symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
-                }
+                //// find the root item, or create it if it doesn't exist for some reason
+                //Item symItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName);
+                //if (symItem == default(Item))
+                //{
+                //    symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
+                //}
 
-                // attach all of the simulation items to the model
-                applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
+                //// attach all of the simulation items to the model
+                //applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
 
-                // subscribe to the datetime item
-                Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
-                subscribe.LogResult(logger.Info);
+                //// subscribe to the datetime item
+                ////Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                ////subscribe.LogResult(logger.Info);
 
-                applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
+                //applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
 
                 // show 'em what they've won!
                 Utility.PrintLogo(logger);

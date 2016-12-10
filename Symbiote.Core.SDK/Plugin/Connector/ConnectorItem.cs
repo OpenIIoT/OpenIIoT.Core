@@ -1,25 +1,26 @@
 ﻿/*
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-      █   
-      █   ▄████████                                                                           ▄█                                  
-      █   ███    ███                                                                         ███                                  
-      █   ███    █▀   ██████  ██▄▄▄▄  ██▄▄▄▄     ▄█████  ▄██████     ██     ██████     █████ ███▌     ██       ▄█████    ▄▄██▄▄▄  
-      █   ███        ██    ██ ██▀▀▀█▄ ██▀▀▀█▄   ██   █  ██    ██ ▀███████▄ ██    ██   ██  ██ ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ 
-      █   ███        ██    ██ ██   ██ ██   ██  ▄██▄▄    ██    ▀      ██  ▀ ██    ██  ▄██▄▄█▀ ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ 
-      █   ███    █▄  ██    ██ ██   ██ ██   ██ ▀▀██▀▀    ██    ▄      ██    ██    ██ ▀███████ ███      ██    ▀▀██▀▀     ██  ██  ██ 
-      █   ███    ███ ██    ██ ██   ██ ██   ██   ██   █  ██    ██     ██    ██    ██   ██  ██ ███      ██      ██   █   ██  ██  ██ 
-      █   ████████▀   ██████   █   █   █   █    ███████ ██████▀     ▄██▀    ██████    ██  ██ █▀      ▄██▀     ███████   █  ██  █  
-      █   
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      █  
-      █  ConnectorItem is an extension of the Item class.  This class represents Items that are provided by Connector Plugins. 
-      █  
-      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
-                                                                                                   ██ 
-                                                                                               ▀█▄ ██ ▄█▀ 
-                                                                                                 ▀████▀   
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █   ▄████████                                                                           ▄█
+      █   ███    ███                                                                         ███
+      █   ███    █▀   ██████  ██▄▄▄▄  ██▄▄▄▄     ▄█████  ▄██████     ██     ██████     █████ ███▌     ██       ▄█████    ▄▄██▄▄▄
+      █   ███        ██    ██ ██▀▀▀█▄ ██▀▀▀█▄   ██   █  ██    ██ ▀███████▄ ██    ██   ██  ██ ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄
+      █   ███        ██    ██ ██   ██ ██   ██  ▄██▄▄    ██    ▀      ██  ▀ ██    ██  ▄██▄▄█▀ ███▌     ██  ▀  ▄██▄▄     ██  ██  ██
+      █   ███    █▄  ██    ██ ██   ██ ██   ██ ▀▀██▀▀    ██    ▄      ██    ██    ██ ▀███████ ███      ██    ▀▀██▀▀     ██  ██  ██
+      █   ███    ███ ██    ██ ██   ██ ██   ██   ██   █  ██    ██     ██    ██    ██   ██  ██ ███      ██      ██   █   ██  ██  ██
+      █   ████████▀   ██████   █   █   █   █    ███████ ██████▀     ▄██▀    ██████    ██  ██ █▀      ▄██▀     ███████   █  ██  █
+      █
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      █
+      █  ConnectorItem is an extension of the Item class.  This class represents Items that are provided by Connector Plugins.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
                                                                                                    ▀▀                            */
+
 using Newtonsoft.Json;
 using NLog;
 using NLog.xLogger;
@@ -29,21 +30,25 @@ using Utility.OperationResult;
 namespace Symbiote.Core.SDK.Plugin.Connector
 {
     /// <summary>
-    ///     ConnectorItem is an extension of the <see cref="Item"/> class.  This class represents Items that are provided by <see cref="Connector"/> 
-    ///     <see cref="Plugin"/>s.
+    ///     ConnectorItem is an extension of the <see cref="Item"/> class. This class represents Items that are provided by
+    ///     <see cref="Connector"/><see cref="Plugin"/> s.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// The primary differences between this class and the base Item are:
-    /// <list>
-    ///     <item>The ConnectorItem stores no values.  Furthermore it does not implement persistence.</item>
-    ///     <item>The ConnectorItem reads and writes directly to the parent Connector Plugin using the Fully Qualified Name of the item.</item>
-    ///     <item>
-    ///         The ConnectorItem is written via Write() only from the parent Connector Plugin.  This in turn fires the OnChange event, 
-    ///         which updates any subscribed Model Items.  Model items wishing to write to this item must use WriteToSource().
-    ///     </item>
-    /// </list>
-    /// </para>
+    ///     <para>
+    ///         The primary differences between this class and the base Item are:
+    ///         <list>
+    ///             <item>The ConnectorItem stores no values. Furthermore it does not implement persistence.</item>
+    ///             <item>
+    ///                 The ConnectorItem reads and writes directly to the parent Connector Plugin using the Fully Qualified Name
+    ///                 of the item.
+    ///             </item>
+    ///             <item>
+    ///                 The ConnectorItem is written via Write() only from the parent Connector Plugin. This in turn fires the
+    ///                 OnChange event, which updates any subscribed Model Items. Model items wishing to write to this item must
+    ///                 use WriteToSource().
+    ///             </item>
+    ///         </list>
+    ///     </para>
     /// </remarks>
     public class ConnectorItem : Item
     {
@@ -52,22 +57,22 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         #region Properties
 
         /// <summary>
-        /// The <see cref="IConnector"/> instance to which this <see cref="Item"/> belongs.
+        ///     The <see cref="IConnector"/> instance to which this <see cref="Item"/> belongs.
         /// </summary>
         [JsonIgnore]
         public IConnector Connector { get; private set; }
 
-        #endregion
+        #endregion Properties
 
         #region Constructors
 
         /// <summary>
-        /// An empty constructor used for instantiating the root node of a model.
+        ///     An empty constructor used for instantiating the root node of a model.
         /// </summary>
         public ConnectorItem() : base("", "", true) { }
 
         /// <summary>
-        /// Creates an instance of an <see cref="Item"/> with the given Fully Qualified Name to be used as the root of a model.
+        ///     Creates an instance of an <see cref="Item"/> with the given Fully Qualified Name to be used as the root of a model.
         /// </summary>
         /// <param name="connector">The instance of <see cref="IConnector"/> hosting this <see cref="Item"/>.</param>
         /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> to create.</param>
@@ -75,7 +80,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         public ConnectorItem(IConnector connector, string fqn, bool isRoot) : this(connector, fqn, "", isRoot) { }
 
         /// <summary>
-        /// Creates an instance of an <see cref="Item"/> with the given Fully Qualified Name and Source Fully Qualified Name.
+        ///     Creates an instance of an <see cref="Item"/> with the given Fully Qualified Name and Source Fully Qualified Name.
         /// </summary>
         /// <param name="connector">The instance of <see cref="IConnector"/> hosting this <see cref="Item"/>.</param>
         /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> to create.</param>
@@ -83,7 +88,8 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         public ConnectorItem(IConnector connector, string fqn, string sourceFQN) : this(connector, fqn, sourceFQN, false) { }
 
         /// <summary>
-        /// Creates an instance of an Item with the given Fully Qualified Name and type.  If isRoot is true, marks the Item as the root item in a model.
+        ///     Creates an instance of an Item with the given Fully Qualified Name and type. If isRoot is true, marks the Item as
+        ///     the root item in a model.
         /// </summary>
         /// <param name="connector">The instance of <see cref="IConnector"/> hosting this <see cref="Item"/>.</param>
         /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> create.</param>
@@ -94,12 +100,12 @@ namespace Symbiote.Core.SDK.Plugin.Connector
             Connector = connector;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Instance Methods
 
         /// <summary>
-        /// Sets this <see cref="Item"/>'s parent Item to the specified Item.
+        ///     Sets this <see cref="Item"/>'s parent Item to the specified Item.
         /// </summary>
         /// <param name="parent">The <see cref="Item"/> to which this Item's Parent property is to be set.</param>
         /// <returns>An <see cref="Result{T}"/> containing the result of the operation and this <see cref="Item"/>.</returns>
@@ -112,7 +118,6 @@ namespace Symbiote.Core.SDK.Plugin.Connector
             retVal.Incorporate(setResult);
             return retVal;
         }
-
 
         public Result<ConnectorItem> AddChild(ConnectorItem pluginItem)
         {
@@ -162,8 +167,8 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         }
 
         /// <summary>
-        /// Called by the parent Connector plugin to update the value of the ConnectorItem.
-        /// Updates the internal value of the ConnectorItem and fires the Change event to notify any subscribed Items of the update.
+        ///     Called by the parent Connector plugin to update the value of the ConnectorItem. Updates the internal value of the
+        ///     ConnectorItem and fires the Change event to notify any subscribed Items of the update.
         /// </summary>
         /// <remarks>Should never be called by anything other than the parent Connector plugin.</remarks>
         /// <param name="value">The value with which to update the ConnectorItem.</param>
@@ -172,8 +177,9 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         {
             lock (valueLock)
             {
+                var previousValue = Value;
                 Value = value;
-                base.OnChange(value);
+                base.OnChange(previousValue, Value);
             }
             return new Result();
         }
@@ -184,9 +190,12 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         }
 
         /// <summary>
-        /// Called by Items using this ConnectorItem as a source, passes updated values to the Connector plugin for writing to the source of the item.
+        ///     Called by Items using this ConnectorItem as a source, passes updated values to the Connector plugin for writing to
+        ///     the source of the item.
         /// </summary>
-        /// <remarks>Any and all writes to ConnectorItems (other than by the Connector plugin) should be performed with WriteToSource.</remarks>
+        /// <remarks>
+        ///     Any and all writes to ConnectorItems (other than by the Connector plugin) should be performed with WriteToSource.
+        /// </remarks>
         /// <param name="value">The value with which to update the ConnectorItem.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public override Result WriteToSource(object value)
@@ -222,8 +231,8 @@ namespace Symbiote.Core.SDK.Plugin.Connector
             return retVal;
         }
 
-        #endregion
+        #endregion Overridden Methods
 
-        #endregion
+        #endregion Instance Methods
     }
 }

@@ -51,52 +51,18 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.Core.SDK.Platform
 {
     /// <summary>
-    ///     Represents errors that occur within the Platform namespace.
+    ///     Represents errors that occur while loading the application's directory configuration.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class PlatformException : Exception
+    public class DirectoryConfigurationException : PlatformException
     {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PlatformException"/> class.
-        /// </summary>
-        public PlatformException() : base()
-        {
-        }
+        #region Public Constructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PlatformException"/> class with a specified error message.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public PlatformException(string message) : base(message)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PlatformException"/> class with a specified error message and a
-        ///     reference to the inner exception that is the cause of this exception.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">
-        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
-        /// </param>
-        public PlatformException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-    }
-
-    /// <summary>
-    ///     Represents errors that occur at the program level.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    [ExcludeFromCodeCoverage]
-    [Serializable]
-    public class DirectoryConfigurationException : Exception
-    {
         /// <summary>
         ///     Initializes a new instance of the <see cref="DirectoryConfigurationException"/> class.
         /// </summary>
@@ -123,5 +89,47 @@ namespace Symbiote.Core.SDK
         public DirectoryConfigurationException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        #endregion Public Constructors
+    }
+
+    /// <summary>
+    ///     Represents errors that occur within the Platform namespace.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
+    [Serializable]
+    public class PlatformException : Exception
+    {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PlatformException"/> class.
+        /// </summary>
+        public PlatformException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PlatformException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public PlatformException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PlatformException"/> class with a specified error message and a
+        ///     reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
+        public PlatformException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        #endregion Public Constructors
     }
 }

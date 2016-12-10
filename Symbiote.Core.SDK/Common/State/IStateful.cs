@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for Stateful components.
+      █  Defines the interface for Stateful objects.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -49,45 +49,37 @@ namespace Symbiote.Core.SDK
     /// </summary>
     public interface IStateful
     {
-        #region Events
+        #region Public Events
 
         /// <summary>
         ///     Occurs when the State property changes.
         /// </summary>
         event EventHandler<StateChangedEventArgs> StateChanged;
 
-        #endregion Events
+        #endregion Public Events
 
-        #region Properties
-
-        /// <summary>
-        ///     Gets the current State of the stateful object.
-        /// </summary>
-        State State { get; }
+        #region Public Properties
 
         /// <summary>
         ///     Gets a value indicating whether the stateful object is pending an automatic restart.
         /// </summary>
         bool AutomaticRestartPending { get; }
 
-        #endregion Properties
+        /// <summary>
+        ///     Gets the current State of the stateful object.
+        /// </summary>
+        State State { get; }
 
-        #region Methods
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Returns true if any of the specified <see cref="State"/> s match the current <see cref="State"/>.
         /// </summary>
         /// <param name="states">The list of States to check.</param>
-        /// <returns>
-        ///     True if the current State matches any of the specified States, false otherwise.
-        /// </returns>
+        /// <returns>True if the current State matches any of the specified States, false otherwise.</returns>
         bool IsInState(params State[] states);
-
-        /// <summary>
-        ///     Starts the stateful object.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result Start();
 
         /// <summary>
         ///     Restarts the stateful object.
@@ -97,12 +89,18 @@ namespace Symbiote.Core.SDK
         Result Restart(StopType stopType = StopType.Stop);
 
         /// <summary>
+        ///     Starts the stateful object.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result Start();
+
+        /// <summary>
         ///     Stops the stateful object.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Result Stop(StopType stopType = StopType.Stop);
 
-        #endregion Methods
+        #endregion Public Methods
     }
 }

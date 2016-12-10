@@ -54,42 +54,6 @@ using System.Diagnostics.CodeAnalysis;
 namespace Symbiote.Core.SDK
 {
     /// <summary>
-    ///     Represents errors that occur at the program level.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    [ExcludeFromCodeCoverage]
-    [Serializable]
-    public class ManagerException : Exception
-    {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerException"/> class.
-        /// </summary>
-        public ManagerException() : base()
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerException"/> class with a specified error message.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public ManagerException(string message) : base(message)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerException"/> class with a specified error message and a
-        ///     reference to the inner exception that is the cause of this exception.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">
-        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
-        /// </param>
-        public ManagerException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-    }
-
-    /// <summary>
     ///     Represents errors that occur when referenced dependencies can not be resolved.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
@@ -97,6 +61,8 @@ namespace Symbiote.Core.SDK
     [Serializable]
     public class DependencyNotResolvedException : ManagerException
     {
+        #region Public Constructors
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class.
         /// </summary>
@@ -123,6 +89,48 @@ namespace Symbiote.Core.SDK
         public DependencyNotResolvedException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        #endregion Public Constructors
+    }
+
+    /// <summary>
+    ///     Represents errors that occur at the program level.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
+    [Serializable]
+    public class ManagerException : Exception
+    {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerException"/> class.
+        /// </summary>
+        public ManagerException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ManagerException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerException"/> class with a specified error message and a
+        ///     reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
+        public ManagerException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        #endregion Public Constructors
     }
 
     /// <summary>
@@ -133,6 +141,8 @@ namespace Symbiote.Core.SDK
     [Serializable]
     public class ManagerSetupException : ManagerException
     {
+        #region Public Constructors
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class.
         /// </summary>
@@ -159,6 +169,8 @@ namespace Symbiote.Core.SDK
         public ManagerSetupException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        #endregion Public Constructors
     }
 
     /// <summary>
@@ -169,6 +181,8 @@ namespace Symbiote.Core.SDK
     [Serializable]
     public class ManagerStartException : ManagerException
     {
+        #region Public Constructors
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="ManagerStartException"/> class.
         /// </summary>
@@ -195,6 +209,8 @@ namespace Symbiote.Core.SDK
         public ManagerStartException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        #endregion Public Constructors
     }
 
     /// <summary>
@@ -205,6 +221,8 @@ namespace Symbiote.Core.SDK
     [Serializable]
     public class ManagerStopException : ManagerException
     {
+        #region Public Constructors
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="ManagerStartException"/> class.
         /// </summary>
@@ -231,5 +249,7 @@ namespace Symbiote.Core.SDK
         public ManagerStopException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        #endregion Public Constructors
     }
 }

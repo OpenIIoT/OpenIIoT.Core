@@ -61,6 +61,8 @@ namespace Symbiote.Core.SDK
     [Serializable]
     public class ApplicationArgumentException : ApplicationException
     {
+        #region Public Constructors
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationArgumentException"/> class.
         /// </summary>
@@ -87,6 +89,8 @@ namespace Symbiote.Core.SDK
         public ApplicationArgumentException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        #endregion Public Constructors
     }
 
     /// <summary>
@@ -97,6 +101,8 @@ namespace Symbiote.Core.SDK
     [Serializable]
     public class ApplicationInitializationException : ApplicationException
     {
+        #region Public Constructors
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationInitializationException"/> class.
         /// </summary>
@@ -123,114 +129,8 @@ namespace Symbiote.Core.SDK
         public ApplicationInitializationException(string message, Exception innerException) : base(message, innerException)
         {
         }
-    }
 
-    /// <summary>
-    ///     Represents errors that occur while starting the Application.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    [ExcludeFromCodeCoverage]
-    [Serializable]
-    public class ApplicationStartException : ApplicationException
-    {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class.
-        /// </summary>
-        public ApplicationStartException() : base()
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class with a specified error message.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public ApplicationStartException(string message) : base(message)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class with a specified error message and
-        ///     a reference to the inner exception that is the cause of this exception.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">
-        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
-        /// </param>
-        public ApplicationStartException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-    }
-
-    /// <summary>
-    ///     Represents errors that occur while stopping the Application.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    [ExcludeFromCodeCoverage]
-    [Serializable]
-    public class ApplicationStopException : ApplicationException
-    {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class.
-        /// </summary>
-        public ApplicationStopException() : base()
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class with a specified error message.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public ApplicationStopException(string message) : base(message)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class with a specified error message and a
-        ///     reference to the inner exception that is the cause of this exception.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">
-        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
-        /// </param>
-        public ApplicationStopException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-    }
-
-    /// <summary>
-    ///     Represents errors that occur while performing the Application startup routine.
-    /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    [ExcludeFromCodeCoverage]
-    [Serializable]
-    public class ApplicationStartupRoutineException : ApplicationException
-    {
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class.
-        /// </summary>
-        public ApplicationStartupRoutineException() : base()
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class with a specified error message.
-        /// </summary>
-        /// <param name="message">The message that describes the error.</param>
-        public ApplicationStartupRoutineException(string message) : base(message)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class with a specified error
-        ///     message and a reference to the inner exception that is the cause of this exception.
-        /// </summary>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">
-        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
-        /// </param>
-        public ApplicationStartupRoutineException(string message, Exception innerException) : base(message, innerException)
-        {
-        }
+        #endregion Public Constructors
     }
 
     /// <summary>
@@ -241,6 +141,8 @@ namespace Symbiote.Core.SDK
     [Serializable]
     public class ApplicationShutdownRoutineException : ApplicationException
     {
+        #region Public Constructors
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationShutdownRoutineException"/> class.
         /// </summary>
@@ -267,5 +169,127 @@ namespace Symbiote.Core.SDK
         public ApplicationShutdownRoutineException(string message, Exception innerException) : base(message, innerException)
         {
         }
+
+        #endregion Public Constructors
+    }
+
+    /// <summary>
+    ///     Represents errors that occur while starting the Application.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
+    [Serializable]
+    public class ApplicationStartException : ApplicationException
+    {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class.
+        /// </summary>
+        public ApplicationStartException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ApplicationStartException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class with a specified error message and
+        ///     a reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
+        public ApplicationStartException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        #endregion Public Constructors
+    }
+
+    /// <summary>
+    ///     Represents errors that occur while performing the Application startup routine.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
+    [Serializable]
+    public class ApplicationStartupRoutineException : ApplicationException
+    {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class.
+        /// </summary>
+        public ApplicationStartupRoutineException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ApplicationStartupRoutineException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class with a specified error
+        ///     message and a reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
+        public ApplicationStartupRoutineException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        #endregion Public Constructors
+    }
+
+    /// <summary>
+    ///     Represents errors that occur while stopping the Application.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
+    [Serializable]
+    public class ApplicationStopException : ApplicationException
+    {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class.
+        /// </summary>
+        public ApplicationStopException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ApplicationStopException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class with a specified error message and a
+        ///     reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
+        public ApplicationStopException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        #endregion Public Constructors
     }
 }
