@@ -50,6 +50,7 @@
 
 using System;
 using System.Collections.Generic;
+using Utility.OperationResult;
 using Xunit;
 
 namespace Symbiote.Core.SDK.Tests
@@ -130,7 +131,7 @@ namespace Symbiote.Core.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Clone"/> method.
+        ///     Tests the <see cref="Item.Clone"/> method.
         /// </summary>
         [Fact]
         public void Clone()
@@ -138,23 +139,61 @@ namespace Symbiote.Core.SDK.Tests
             Item original = new Item("Root.Item");
             Item clone = (Item)original.Clone();
 
-            Assert.True(original.Equals(clone));
+            Assert.Equal(original.FQN, clone.FQN);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Equals"/> method.
+        ///     Tests the <see cref="Item.Write(object)"/> and <see cref="Item.WriteAsync(object)"/> methods.
         /// </summary>
         [Fact]
-        public void Equals()
+        public async void Write()
         {
-            Item left = new Item("Root.Left");
-            Item right = new Item("Root.Right");
-            Item left2 = new Item("Root.Left");
-            string notItem = "not item";
+            Item item = new Item("Root.Item");
 
-            Assert.False(left.Equals(notItem));
-            Assert.False(left.Equals(right));
-            Assert.True(left.Equals(left2));
+            Assert.Equal(true, item.Writeable);
+
+            item.Write("test");
+
+            Assert.Equal("test", item.Value);
+
+            await item.WriteAsync("test two");
+
+            Assert.Equal("test two", item.Value);
+
+            item.Writeable = false;
+            Assert.Equal(false, item.Writeable);
+
+            Result writeResult = item.Write("new value");
+
+            Assert.Equal(ResultCode.Failure, writeResult.ResultCode);
+            Assert.Equal("test two", item.Value);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Item.Read"/> and <see cref="Item.ReadAsync"/> methods.
+        /// </summary>
+        [Fact]
+        public async void Read()
+        {
+            Item item = new Item("Root.Item");
+            item.Write("Value!");
+
+            Assert.Equal("Value!", item.Value);
+            Assert.Equal("Value!", item.Read());
+
+            object value = await item.ReadAsync();
+
+            Assert.Equal("Value!", value);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Item.ToString"/> method.
+        /// </summary>
+        [Fact]
+        public void ToString()
+        {
+            Item item = new Item("Root.Node.Child");
+            Assert.Equal("Root.Node.Child", item.ToString());
         }
     }
 }
