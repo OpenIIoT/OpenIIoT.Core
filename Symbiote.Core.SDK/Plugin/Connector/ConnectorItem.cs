@@ -69,7 +69,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// <summary>
         ///     An empty constructor used for instantiating the root node of a model.
         /// </summary>
-        public ConnectorItem() : base("", "", true) { }
+        public ConnectorItem() : base("", default(ConnectorItem), "", true) { }
 
         /// <summary>
         ///     Creates an instance of an <see cref="Item"/> with the given Fully Qualified Name to be used as the root of a model.
@@ -77,7 +77,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// <param name="connector">The instance of <see cref="IConnector"/> hosting this <see cref="Item"/>.</param>
         /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public ConnectorItem(IConnector connector, string fqn, bool isRoot) : this(connector, fqn, "", isRoot) { }
+        public ConnectorItem(IConnector connector, string fqn, bool isRoot) : this(connector, fqn, default(ConnectorItem), "", isRoot) { }
 
         /// <summary>
         ///     Creates an instance of an <see cref="Item"/> with the given Fully Qualified Name and Source Fully Qualified Name.
@@ -85,7 +85,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// <param name="connector">The instance of <see cref="IConnector"/> hosting this <see cref="Item"/>.</param>
         /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> to create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
-        public ConnectorItem(IConnector connector, string fqn, string sourceFQN) : this(connector, fqn, sourceFQN, false) { }
+        public ConnectorItem(IConnector connector, string fqn, string sourceFQN) : this(connector, fqn, default(ConnectorItem), sourceFQN, false) { }
 
         /// <summary>
         ///     Creates an instance of an Item with the given Fully Qualified Name and type. If isRoot is true, marks the Item as
@@ -95,7 +95,7 @@ namespace Symbiote.Core.SDK.Plugin.Connector
         /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public ConnectorItem(IConnector connector, string fqn, string sourceFQN = "", bool isRoot = false) : base(fqn, sourceFQN)
+        public ConnectorItem(IConnector connector, string fqn, ConnectorItem sourceItem = default(ConnectorItem), string sourceFQN = "", bool isRoot = false) : base(fqn, sourceFQN)
         {
             Connector = connector;
         }

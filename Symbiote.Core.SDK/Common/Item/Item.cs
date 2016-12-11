@@ -83,41 +83,59 @@ namespace Symbiote.Core.SDK
         /// <summary>
         ///     Initializes a new instance of the <see cref="Item"/> class.
         /// </summary>
-        public Item() : this(string.Empty, string.Empty, true)
+        public Item() : this(string.Empty, default(Item), string.Empty, true)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name to be used as the
-        ///     root of a model.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name to be used as
+        ///     the root of a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, bool isRoot) : this(fqn, string.Empty, isRoot)
+        public Item(string fqn, bool isRoot) : this(fqn, default(Item), string.Empty, isRoot)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name and type.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name and type.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <remarks>This constructor is used for deserialization.</remarks>
-        public Item(string fqn, string sourceFQN) : this(fqn, sourceFQN, false)
+        public Item(string fqn, string sourceFQN) : this(fqn, default(Item), sourceFQN, false)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the given Fully Qualified Name and type. If isRoot
-        ///     is true, marks the Item as the root item in a model.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name and source Item.
+        /// </summary>
+        /// <param name="fqn"></param>
+        /// <param name="sourceItem"></param>
+        public Item(string fqn, Item sourceItem) : this(fqn, sourceItem, sourceItem?.FQN, false)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name and type. If
+        ///     isRoot is true, marks the Item as the root item in a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, string sourceFQN = "", bool isRoot = false)
+        public Item(string fqn, Item sourceItem = default(Item), string sourceFQN = "", bool isRoot = false)
         {
             FQN = fqn;
-            SourceFQN = sourceFQN;
+
+            if (sourceItem != default(Item))
+            {
+                SourceItem = sourceItem;
+                SourceFQN = sourceItem.FQN;
+            }
+            else
+            {
+                SourceFQN = sourceFQN;
+            }
 
             Value = default(object);
 
@@ -282,7 +300,7 @@ namespace Symbiote.Core.SDK
         /// <returns>A clone of the Item.</returns>
         public virtual object Clone()
         {
-            Item retVal = new Item(FQN, SourceFQN, Parent == this);
+            Item retVal = new Item(FQN, SourceItem, SourceFQN, Parent == this);
             retVal.Parent = Parent;
             retVal.Children = Children.Clone<Item>();
             retVal.Value = Value;
@@ -522,23 +540,21 @@ namespace Symbiote.Core.SDK
         {
             Result retVal = new Result();
 
-            if (!SourceItem.Writeable)
+            if ((SourceItem != default(Item)) && (SourceItem != null))
             {
-                retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is not writeable.");
-            }
-            else if ((SourceItem == null) || (SourceItem == default(Item)))
-            {
-                retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is null.");
-            }
-            else
-            {
-                Result writeResult = SourceItem.WriteToSource(value);
-                if (writeResult.ResultCode != ResultCode.Failure)
+                if (!SourceItem.Writeable)
                 {
-                    Write(value);
+                    retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is not writeable.");
                 }
+                else
+                {
+                    retVal.Incorporate(SourceItem.WriteToSource(value));
+                }
+            }
 
-                retVal.Incorporate(writeResult);
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                Write(value);
             }
 
             return retVal;
@@ -587,7 +603,7 @@ namespace Symbiote.Core.SDK
             lock (parentLock)
             {
                 //Path = parent.FQN;
-                FQN = parent.FQN + (parent.FQN.Length > 0 ? "." : "") + Name;
+                FQN = (this != parent ? parent.FQN + "." : "") + Name;
 
                 Parent = parent;
             }
