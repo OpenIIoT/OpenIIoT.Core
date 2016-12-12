@@ -166,7 +166,7 @@ namespace Symbiote.Core.SDK
         /// <summary>
         ///     The Changed event; fires when the value of the item changes.
         /// </summary>
-        public event EventHandler<ItemChangedEventArgs> Changed;
+        public virtual event EventHandler<ItemChangedEventArgs> Changed;
 
         #endregion Public Events
 
@@ -403,14 +403,18 @@ namespace Symbiote.Core.SDK
                     }
 
                     // remove the item itself
-                    if (!Children.Remove(retVal.ReturnValue))
-                    {
-                        retVal.AddError("Failed to remove the item '" + item.FQN + "' from '" + FQN + "'.");
-                    }
+                    Children.Remove(retVal.ReturnValue);
                 }
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        ///     Notifies this <see cref="Item"/> that the number of subscribers has changed.
+        /// </summary>
+        public virtual void SubscriptionsChanged()
+        {
         }
 
         /// <summary>
@@ -421,26 +425,14 @@ namespace Symbiote.Core.SDK
         {
             Result retVal = new Result();
 
-            try
+            if (SourceItem != default(Item) && (SourceItem != null))
             {
                 SourceItem.Changed += SourceItemChanged;
-
-                // if we are subscribing to a ConnectorItem, subscribe the source item to it's connector's ItemChanged event.
-                if (SourceItem is ConnectorItem)
-                {
-                    Result sourceSubscription = ((ConnectorItem)SourceItem).SubscribeToSource();
-
-                    if (sourceSubscription.ResultCode == ResultCode.Failure)
-                    {
-                        retVal.AddWarning("Failed to subscribe SourceItem to it's Connector source.");
-                    }
-
-                    retVal.Incorporate(sourceSubscription);
-                }
+                SourceItem.SubscriptionsChanged();
             }
-            catch (Exception ex)
+            else
             {
-                retVal.AddError("Exception caught while subscribing '" + FQN + "' to source item '" + SourceItem.FQN + "': " + ex.Message);
+                retVal.AddError("Unable to subscribe to the source item; it has not been set.");
             }
 
             return retVal;
@@ -482,13 +474,14 @@ namespace Symbiote.Core.SDK
         {
             Result retVal = new Result();
 
-            try
+            if ((SourceItem != default(Item)) && (SourceItem != null))
             {
                 SourceItem.Changed -= SourceItemChanged;
+                SourceItem.SubscriptionsChanged();
             }
-            catch (Exception ex)
+            else
             {
-                retVal.AddError("Exception caught while unsubscribing '" + FQN + "' from source item '" + SourceItem.FQN + "': " + ex.Message);
+                retVal.AddError("Unable to unsubscribe from the source item; it has not been set.");
             }
 
             return retVal;

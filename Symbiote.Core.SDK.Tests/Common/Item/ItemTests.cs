@@ -276,6 +276,8 @@ namespace Symbiote.Core.SDK.Tests
         {
             Item item = new Item("Root");
             Item child = new Item("Root.Child");
+            Item childsChild = new Item("Root.Child.Child");
+            child.AddChild(childsChild);
 
             // add the child and ensure the operation was successful and that it returns the child item
             Result<Item> addResult = item.AddChild(child);
@@ -293,6 +295,45 @@ namespace Symbiote.Core.SDK.Tests
             Result<Item> badRemoveResult = item.RemoveChild(new Item("Root.New"));
 
             Assert.Equal(ResultCode.Failure, badRemoveResult.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Item.SubscribeToSource"/> and <see cref="Item.UnsubscribeFromSource"/> methods.
+        /// </summary>
+        [Fact]
+        public void Subscription()
+        {
+            Item sourceItem = new Item("Root.SourceItem");
+            sourceItem.Write("initial value");
+
+            Item item = new Item("Root.Item", sourceItem);
+
+            // subscribe the item to it's source item and assert that it succeeded
+            Result subscribeResult = item.SubscribeToSource();
+            Assert.Equal(ResultCode.Success, subscribeResult.ResultCode);
+
+            // write a value to the source item and assert that the item's value updates.
+            sourceItem.Write("new value");
+            Assert.Equal("new value", sourceItem.Value);
+            Assert.Equal("new value", item.Value);
+
+            // unsubscribe the item from it's source item and assert that it succeeded
+            Result unsubscribeResult = item.UnsubscribeFromSource();
+            Assert.Equal(ResultCode.Success, unsubscribeResult.ResultCode);
+
+            // write a value to the source item and assert that the item's value doesn't update.
+            sourceItem.Write("final value");
+            Assert.Equal("final value", sourceItem.Value);
+            Assert.NotEqual("final value", item.Value);
+
+            // test the subscribe/unsubscribe methods with an item for which the source item has not been set
+            Item lastItem = new Item("Root.LastItem");
+
+            Result lastItemSub = lastItem.SubscribeToSource();
+            Assert.Equal(ResultCode.Failure, lastItemSub.ResultCode);
+
+            Result lastItemUnSub = lastItem.UnsubscribeFromSource();
+            Assert.Equal(ResultCode.Failure, lastItemUnSub.ResultCode);
         }
     }
 }

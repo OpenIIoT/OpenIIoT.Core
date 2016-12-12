@@ -24,6 +24,7 @@
 using Newtonsoft.Json;
 using NLog;
 using NLog.xLogger;
+using System;
 using System.Threading.Tasks;
 using Utility.OperationResult;
 
@@ -230,6 +231,23 @@ namespace Symbiote.Core.SDK.Plugin.Connector
             logger.ExitMethod(retVal);
             return retVal;
         }
+
+        public override void SubscriptionsChanged()
+        {
+            if (Changed != null)
+            {
+                SubscribeToSource();
+            }
+            else
+            {
+                UnsubscribeFromSource();
+            }
+        }
+
+        /// <summary>
+        ///     The Changed event; fires when the value of the item changes.
+        /// </summary>
+        public override event EventHandler<ItemChangedEventArgs> Changed;
 
         #endregion Overridden Methods
 
