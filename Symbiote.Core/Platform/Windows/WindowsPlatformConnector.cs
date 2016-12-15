@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using Symbiote.Core.Plugin;
 using System.Diagnostics;
-using Symbiote.Core.SDK.Configuration;
-using Symbiote.Core.SDK;
+using Symbiote.SDK.Configuration;
+using Symbiote.SDK;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 using System.Linq;
 using Utility.OperationResult;
-using Symbiote.Core.SDK.Plugin.Connector;
-using Symbiote.Core.SDK.Plugin;
+using Symbiote.SDK.Plugin.Connector;
+using Symbiote.SDK.Plugin;
 
 namespace Symbiote.Core.Platform.Windows
 {

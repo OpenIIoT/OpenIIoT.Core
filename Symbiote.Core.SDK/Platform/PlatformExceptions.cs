@@ -51,7 +51,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Symbiote.Core.SDK.Platform
+namespace Symbiote.SDK.Platform
 {
     /// <summary>
     ///     Represents errors that occur while loading the application's directory configuration.

@@ -44,15 +44,15 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NLog;
-using Symbiote.Core.SDK.Configuration;
-using Symbiote.Core.SDK;
+using Symbiote.SDK.Configuration;
+using Symbiote.SDK;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin.Endpoint;
 using NLog.xLogger;
 using Utility.OperationResult;
-using Symbiote.Core.SDK.Plugin;
-using Symbiote.Core.SDK.Plugin.Connector;
-using Symbiote.Core.SDK.Platform;
+using Symbiote.SDK.Plugin;
+using Symbiote.SDK.Plugin.Connector;
+using Symbiote.SDK.Platform;
 
 namespace Symbiote.Core.Plugin
 {

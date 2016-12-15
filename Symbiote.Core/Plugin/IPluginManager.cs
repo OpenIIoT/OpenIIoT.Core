@@ -40,9 +40,9 @@
                                                                                                    ▀▀                            */
 
 using NLog.xLogger;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Configuration;
-using Symbiote.Core.SDK.Plugin;
+using Symbiote.SDK;
+using Symbiote.SDK.Configuration;
+using Symbiote.SDK.Plugin;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Utility.OperationResult;

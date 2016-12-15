@@ -39,7 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace Symbiote.Core.SDK.Platform
+namespace Symbiote.SDK.Platform
 {
     /// <summary>
     ///     Enumeration of the different Platform types.

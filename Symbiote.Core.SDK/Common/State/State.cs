@@ -39,7 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Enumeration of the different component states.

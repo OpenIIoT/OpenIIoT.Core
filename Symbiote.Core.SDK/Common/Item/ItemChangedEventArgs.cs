@@ -50,7 +50,7 @@
 
 using System;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Represents the event arguments for Item Changed events.

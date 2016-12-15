@@ -41,7 +41,7 @@
 
 using System;
 
-namespace Symbiote.Core.SDK.Configuration
+namespace Symbiote.SDK.Configuration
 {
     /// <summary>
     ///     Establishes a common object to represent the configuration details for various application items.

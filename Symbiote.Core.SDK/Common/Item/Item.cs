@@ -46,10 +46,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Represents a single data entity within the application Model.

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using NLog;
 using NLog.RealtimeLogger;
-using Symbiote.Core.SDK;
+using Symbiote.SDK;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;

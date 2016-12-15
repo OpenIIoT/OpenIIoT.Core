@@ -1,4 +1,4 @@
-﻿using Symbiote.Core.SDK;
+﻿using Symbiote.SDK;
 using System.Collections.Generic;
 using System.Net.Http.Formatting;
 

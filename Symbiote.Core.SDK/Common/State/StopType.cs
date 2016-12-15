@@ -41,7 +41,7 @@
 
 using System;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Enumeration of the circumstances under which a Stateful component can stop.

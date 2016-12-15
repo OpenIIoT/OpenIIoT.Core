@@ -1,4 +1,4 @@
-﻿using Symbiote.Core.SDK;
+﻿using Symbiote.SDK;
 using System;
 using Utility.OperationResult;
 using System.Collections.Immutable;

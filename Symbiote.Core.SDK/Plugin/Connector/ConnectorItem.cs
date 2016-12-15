@@ -28,7 +28,7 @@ using System;
 using System.Threading.Tasks;
 using Utility.OperationResult;
 
-namespace Symbiote.Core.SDK.Plugin.Connector
+namespace Symbiote.SDK.Plugin.Connector
 {
     /// <summary>
     ///     ConnectorItem is an extension of the <see cref="Item"/> class. This class represents Items that are provided by

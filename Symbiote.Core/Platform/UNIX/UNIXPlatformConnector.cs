@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Symbiote.Core.SDK.Configuration;
-using Symbiote.Core.SDK;
+using Symbiote.SDK.Configuration;
+using Symbiote.SDK;
 using Symbiote.Core.Plugin;
 using Symbiote.Core.Model;
 using System.Threading.Tasks;
 using System.Linq;
 using Utility.OperationResult;
-using Symbiote.Core.SDK.Plugin;
-using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.SDK.Plugin;
+using Symbiote.SDK.Plugin.Connector;
 
 namespace Symbiote.Core.Platform.UNIX
 {

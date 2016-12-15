@@ -1,54 +1,55 @@
 ﻿/*
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-      █   
-      █   ███    █▄                                               
-      █   ███    ███                                              
-      █   ███    ███     ██     █   █        █      ██    ▄█   ▄  
-      █   ███    ███ ▀███████▄ ██  ██       ██  ▀███████▄ ██   █▄ 
-      █   ███    ███     ██  ▀ ██▌ ██       ██▌     ██  ▀ ▀▀▀▀▀██ 
-      █   ███    ███     ██    ██  ██       ██      ██    ▄█   ██ 
-      █   ███    ███     ██    ██  ██▌    ▄ ██      ██    ██   ██ 
-      █   ████████▀     ▄██▀   █   ████▄▄██ █      ▄██▀    █████  
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
- ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      ▄  
+      █   ███    █▄
+      █   ███    ███
+      █   ███    ███     ██     █   █        █      ██    ▄█   ▄
+      █   ███    ███ ▀███████▄ ██  ██       ██  ▀███████▄ ██   █▄
+      █   ███    ███     ██  ▀ ██▌ ██       ██▌     ██  ▀ ▀▀▀▀▀██
+      █   ███    ███     ██    ██  ██       ██      ██    ▄█   ██
+      █   ███    ███     ██    ██  ██▌    ▄ ██      ██    ██   ██
+      █   ████████▀     ▄██▀   █   ████▄▄██ █      ▄██▀    █████
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
       █  Contains miscellaneous static methods.
-      █ 
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
-      █  
+      █
       █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
-      █  
+      █
       █  This program is free software: you can redistribute it and/or modify
       █  it under the terms of the GNU Affero General Public License as published by
       █  the Free Software Foundation, either version 3 of the License, or
       █  (at your option) any later version.
-      █  
+      █
       █  This program is distributed in the hope that it will be useful,
       █  but WITHOUT ANY WARRANTY; without even the implied warranty of
       █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
       █  GNU Affero General Public License for more details.
-      █  
+      █
       █  You should have received a copy of the GNU Affero General Public License
       █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-      █  
-      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
-                                                                                                   ██ 
-                                                                                               ▀█▄ ██ ▄█▀ 
-                                                                                                 ▀████▀   
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
                                                                                                    ▀▀                            */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using Utility.BigFont;
-using Symbiote.Core.SDK;
+using Symbiote.SDK;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
-    /// Contains miscellaneous static methods.
+    ///     Contains miscellaneous static methods.
     /// </summary>
     public static class Utility
     {
@@ -61,7 +62,7 @@ namespace Symbiote.Core.SDK
         #region Extension Methods
 
         /// <summary>
-        /// Returns a clone of the supplied list.
+        ///     Returns a clone of the supplied list.
         /// </summary>
         /// <typeparam name="T">The list type to clone.</typeparam>
         /// <param name="listToClone">The list from which the clone should be created.</param>
@@ -72,7 +73,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Returns a subset of the supplied array.
+        ///     Returns a subset of the supplied array.
         /// </summary>
         /// <typeparam name="T">The type of the array.</typeparam>
         /// <param name="data">The array.</param>
@@ -85,9 +86,9 @@ namespace Symbiote.Core.SDK
             Array.Copy(data, index, result, 0, length);
             return result;
         }
-        
+
         /// <summary>
-        /// Returns the last N elements of the supplied IEnumerable.
+        ///     Returns the last N elements of the supplied IEnumerable.
         /// </summary>
         /// <typeparam name="T">The type of the IEnumerable.</typeparam>
         /// <param name="source">The IEnumerable.</param>
@@ -97,9 +98,9 @@ namespace Symbiote.Core.SDK
         {
             return source.Skip(Math.Max(0, source.Count() - n));
         }
-        
+
         /// <summary>
-        /// Returns the specified assembly attribute of the specified assembly.
+        ///     Returns the specified assembly attribute of the specified assembly.
         /// </summary>
         /// <typeparam name="T">The assembly attribute to return.</typeparam>
         /// <param name="ass">The assembly from which to retrieve the attribute.</param>
@@ -116,12 +117,12 @@ namespace Symbiote.Core.SDK
             return attributes.OfType<T>().SingleOrDefault();
         }
 
-        #endregion
+        #endregion Extension Methods
 
         #region Miscellaneous
 
         /// <summary>
-        /// Converts the specified wildcard pattern to a regular expression.
+        ///     Converts the specified wildcard pattern to a regular expression.
         /// </summary>
         /// <param name="pattern">The wildcard pattern to convert.</param>
         /// <returns>The regular expression resulting from the conversion.</returns>
@@ -134,7 +135,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Returns a truncated GUID.
+        ///     Returns a truncated GUID.
         /// </summary>
         /// <returns>A truncated GUID.</returns>
         public static string ShortGuid()
@@ -143,7 +144,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Computes a cryptographic hash of the provided text using the provided salt.
+        ///     Computes a cryptographic hash of the provided text using the provided salt.
         /// </summary>
         /// <param name="text">The text to hash.</param>
         /// <param name="salt">The salt with which to seed the hash function.</param>
@@ -184,12 +185,12 @@ namespace Symbiote.Core.SDK
             return builtString.ToString();
         }
 
-        #endregion
+        #endregion Miscellaneous
 
         #region Logging
 
         /// <summary>
-        /// Sets the logging level of the LogManager to the specified level, disabling all lower logging levels.
+        ///     Sets the logging level of the LogManager to the specified level, disabling all lower logging levels.
         /// </summary>
         /// <param name="level">The desired logging level.</param>
         public static void SetLoggingLevel(string level)
@@ -225,7 +226,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Disables the specified logging level within the LogManager.
+        ///     Disables the specified logging level within the LogManager.
         /// </summary>
         /// <param name="level">The level to disable.</param>
         public static void DisableLoggingLevel(LogLevel level)
@@ -238,29 +239,25 @@ namespace Symbiote.Core.SDK
             LogManager.ReconfigExistingLoggers();
         }
 
-        #endregion
+        #endregion Logging
 
         #region Display
 
         /// <summary>
-        /// Prints the logo for the application.
+        ///     Prints the logo for the application.
         /// </summary>
         /// <param name="logger">The logger to which the logo should be logged.</param>
         public static void PrintLogo(Logger logger)
         {
-            // logger.Info(string.Empty);
-            // logger.Info(@"┏━━━━━━━━━━━━━━ ━━ ━ ━━━━ ━━━━━━━━━━━━━━━━ ━ ━        ━  ━━    ━   ━━━━━━━━━━━  ━ ━ ━━ ━━━━━━ ━━━━━━┓");
-            // logger.Info(@"┃''' '  '                                                                                           ┃");
-            // logger.Info(@"┃''    ▄████████ ▄██   ▄     ▄▄▄▄███▄▄▄▄   ▀█████████▄   ▄█   ▄██████▄      ███        ▄████████    ┃");
-            // logger.Info(@"┃`    ███    ███ ███   ██▄ ▄██▀▀▀███▀▀▀██▄   ███    ███ ███  ███    ███ ▀█████████▄   ███    ███    ┃");
-            // logger.Info(@"┃     ███    █▀  ███▄▄▄███ ███   ███   ███   ███    ███ ███▌ ███    ███    ▀███▀▀██   ███    █▀     ┃");
-            // logger.Info(@"┃     ███        ▀▀▀▀▀▀███ ███   ███   ███  ▄███▄▄▄██▀  ███▌ ███    ███     ███   ▀  ▄███▄▄▄        ┃");
-            // logger.Info(@"┃   ▀███████████ ▄██   ███ ███   ███   ███ ▀▀███▀▀▀██▄  ███▌ ███    ███     ███     ▀▀███▀▀▀        ┃");
-            // logger.Info(@"┃            ███ ███   ███ ███   ███   ███   ███    ██▄ ███  ███    ███     ███       ███    █▄     ┃");
-            // logger.Info(@"┃      ▄█    ███ ███   ███ ███   ███   ███   ███    ███ ███  ███    ███     ███       ███    ███    ┃");
-            // logger.Info(@"┃    ▄████████▀   ▀█████▀   ▀█   ███   █▀  ▄█████████▀  █▀    ▀██████▀     ▄████▀     ██████████   .┃");
-            // logger.Info(@"┃                                                                                           . .  ...┃");
-            // logger.Info(@"┗━━━━━━━━━━━━━ ━ ━━━━━━━━━━ ━ ━           ━  ━━ ━ ━ ━━━━━━━━━━━━━━━━━━━━━ ━ ━ ━━━━━━━━━━━━━━━━  ━ ━━┛");
+            // logger.Info(string.Empty); logger.Info(@"┏━━━━━━━━━━━━━━ ━━ ━ ━━━━ ━━━━━━━━━━━━━━━━ ━ ━ ━ ━━ ━ ━━━━━━━━━━━ ━ ━ ━━
+            // ━━━━━━ ━━━━━━┓"); logger.Info(@"┃''' ' ' ┃"); logger.Info(@"┃'' ▄████████ ▄██ ▄ ▄▄▄▄███▄▄▄▄ ▀█████████▄ ▄█ ▄██████▄
+            // ███ ▄████████ ┃"); logger.Info(@"┃` ███ ███ ███ ██▄ ▄██▀▀▀███▀▀▀██▄ ███ ███ ███ ███ ███ ▀█████████▄ ███ ███ ┃");
+            // logger.Info(@"┃ ███ █▀ ███▄▄▄███ ███ ███ ███ ███ ███ ███▌ ███ ███ ▀███▀▀██ ███ █▀ ┃"); logger.Info(@"┃ ███ ▀▀▀▀▀▀███
+            // ███ ███ ███ ▄███▄▄▄██▀ ███▌ ███ ███ ███ ▀ ▄███▄▄▄ ┃"); logger.Info(@"┃ ▀███████████ ▄██ ███ ███ ███ ███ ▀▀███▀▀▀██▄
+            // ███▌ ███ ███ ███ ▀▀███▀▀▀ ┃"); logger.Info(@"┃ ███ ███ ███ ███ ███ ███ ███ ██▄ ███ ███ ███ ███ ███ █▄ ┃");
+            // logger.Info(@"┃ ▄█ ███ ███ ███ ███ ███ ███ ███ ███ ███ ███ ███ ███ ███ ███ ┃"); logger.Info(@"┃ ▄████████▀ ▀█████▀
+            // ▀█ ███ █▀ ▄█████████▀ █▀ ▀██████▀ ▄████▀ ██████████ .┃"); logger.Info(@"┃ . . ...┃"); logger.Info(@"┗━━━━━━━━━━━━━ ━
+            // ━━━━━━━━━━ ━ ━ ━ ━━ ━ ━ ━━━━━━━━━━━━━━━━━━━━━ ━ ━ ━━━━━━━━━━━━━━━━ ━ ━━┛");
             logger.Info(string.Empty);
             logger.Info(@"      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ ");
             logger.Info(@"      █   ");
@@ -277,14 +274,13 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Prints the logo footer for the application.
+        ///     Prints the logo footer for the application.
         /// </summary>
         /// <param name="logger">The logger to which the logo should be logged.</param>
         public static void PrintLogoFooter(Logger logger)
         {
             // logger.Info(@"┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓");
-            // logger.Info(@"┃   ░ ░░░▒▒▒▒▒▒▓▓▓▓▓▓▓▓███████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▒▒▒▒▒▒░░░ ░   ┃");
-            // logger.Info(@"┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
+            // logger.Info(@"┃ ░ ░░░▒▒▒▒▒▒▓▓▓▓▓▓▓▓███████████████████████████████████████████████████████▓▓▓▓▓▓▓▓▒▒▒▒▒▒░░░ ░ ┃"); logger.Info(@"┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛");
             logger.Info(@"      █  ");
             logger.Info(@"      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ ");
             logger.Info(@"                                                                                                   ██ ");
@@ -295,7 +291,7 @@ namespace Symbiote.Core.SDK
         }
 
         /// <summary>
-        /// Recursively prints the application Model to the specified logger.
+        ///     Recursively prints the application Model to the specified logger.
         /// </summary>
         /// <param name="logger">The logger to which the Model should be printed.</param>
         /// <param name="root">The root Item from which the print should begin.</param>
@@ -304,14 +300,14 @@ namespace Symbiote.Core.SDK
         /// <param name="last">True if the specified element is the last in the current chain.</param>
         public static void PrintModel(Logger logger, Item root, int indent, List<bool> levels = null, bool last = false)
         {
-            // if indent is zero we are starting with the root.  initialize the list and add the first level.
+            // if indent is zero we are starting with the root. initialize the list and add the first level.
             if (indent == 0)
             {
                 levels = new List<bool>();
             }
-            
-            // if indent is greater than the count of items in levels, the tree is deeper than it has been before.
-            // add a new level to the list and initialize it to true.
+
+            // if indent is greater than the count of items in levels, the tree is deeper than it has been before. add a new level
+            // to the list and initialize it to true.
             if (indent >= levels.Count)
             {
                 levels.Add(true);
@@ -326,7 +322,7 @@ namespace Symbiote.Core.SDK
             {
                 prefix += levels[l] ? " │  " : "    ";
             }
-           
+
             logger.Info(@"      █" + prefix + (last ? (indent == 0 ? "  ■ " : " └─╴") : " ├─╴") + root.FQN);
 
             // print each of the children of this Item
@@ -337,12 +333,12 @@ namespace Symbiote.Core.SDK
             }
         }
 
-        #endregion
+        #endregion Display
 
-        #endregion
+        #endregion Public Static Methods
 
-        #endregion
+        #endregion Public Methods
 
-        #endregion
+        #endregion Methods
     }
 }

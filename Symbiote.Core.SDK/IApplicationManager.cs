@@ -42,7 +42,7 @@
 using System;
 using System.Collections.Immutable;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Defines the interface for the Application Manager.

@@ -53,7 +53,7 @@ using System.Collections.Generic;
 using Utility.OperationResult;
 using Xunit;
 
-namespace Symbiote.Core.SDK.Tests
+namespace Symbiote.SDK.Tests
 {
     /// <summary>
     ///     Unit tests for the Item class.

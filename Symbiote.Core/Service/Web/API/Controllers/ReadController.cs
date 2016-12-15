@@ -6,7 +6,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using Symbiote.Core.Model;
-using Symbiote.Core.SDK;
+using Symbiote.SDK;
 
 namespace Symbiote.Core.Service.Web.API
 {

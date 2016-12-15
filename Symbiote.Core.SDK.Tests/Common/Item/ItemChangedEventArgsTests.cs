@@ -59,7 +59,7 @@
 
 using Xunit;
 
-namespace Symbiote.Core.SDK.Tests
+namespace Symbiote.SDK.Tests
 {
     /// <summary>
     ///     Unit tests for the ItemChangedEventArgs class.

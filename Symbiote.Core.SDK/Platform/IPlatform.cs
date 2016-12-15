@@ -41,9 +41,9 @@
 
 using System.Collections.Generic;
 using Utility.OperationResult;
-using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.SDK.Plugin.Connector;
 
-namespace Symbiote.Core.SDK.Platform
+namespace Symbiote.SDK.Platform
 {
     /// <summary>
     ///     Defines the interface for Platform objects.

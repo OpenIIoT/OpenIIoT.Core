@@ -42,7 +42,7 @@
 using System;
 using Utility.OperationResult;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Defines the interface for Stateful components.

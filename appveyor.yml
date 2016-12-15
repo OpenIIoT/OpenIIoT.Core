@@ -5,7 +5,7 @@ build:
   project: Symbiote.Core.sln
   verbosity: minimal
 test_script:
-- .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"C:\projects\symbiote-core\Symbiote.Core.Tests\bin\Debug\Symbiote.Core.Tests.dll C:\projects\symbiote-core\Symbiote.Core.SDK.Tests\bin\Debug\Symbiote.Core.SDK.Tests.dll -noshadow -appveyor" -returntargetcode -filter:"+[*]* -[*.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\Symbiote.Core_coverage.xml
+- .\packages\OpenCover.4.6.519\tools\OpenCover.Console.exe -register:user -target:"%xunit20%\xunit.console.x86.exe" -targetargs:"C:\projects\symbiote-core\Symbiote.Core.Tests\bin\Debug\Symbiote.Core.Tests.dll C:\projects\symbiote-core\Symbiote.SDK.Tests\bin\Debug\Symbiote.SDK.Tests.dll -noshadow -appveyor" -returntargetcode -filter:"+[*]* -[*.Tests]*" -excludebyattribute:*.ExcludeFromCodeCoverage* -hideskipped:All -output:.\Symbiote.Core_coverage.xml
 - "SET PATH=C:\\Python34;C:\\Python34\\Scripts;%PATH%"
 - pip install codecov
 - codecov -f "Symbiote.Core_coverage.xml"

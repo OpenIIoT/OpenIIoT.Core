@@ -1,4 +1,4 @@
-﻿using Symbiote.Core.SDK;
+﻿using Symbiote.SDK;
 using Utility.OperationResult;
 
 namespace Symbiote.Core.Tests.Mockups

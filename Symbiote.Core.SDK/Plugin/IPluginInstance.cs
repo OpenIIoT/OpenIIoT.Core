@@ -1,20 +1,19 @@
-﻿using Symbiote.Core.SDK;
+﻿using Symbiote.SDK;
 
-namespace Symbiote.Core.SDK.Plugin
+namespace Symbiote.SDK.Plugin
 {
     /// <summary>
-    /// Defines the interface for PluginInstance objects.
+    ///     Defines the interface for PluginInstance objects.
     /// </summary>
     public interface IPluginInstance : IPlugin, IStateful
     {
         #region Properties
 
         /// <summary>
-        /// The name of the PluginInstance.  This is the unique name by which the PluginManager
-        /// persists the PluginInstance.
+        ///     The name of the PluginInstance. This is the unique name by which the PluginManager persists the PluginInstance.
         /// </summary>
         string InstanceName { get; }
 
-        #endregion
+        #endregion Properties
     }
 }

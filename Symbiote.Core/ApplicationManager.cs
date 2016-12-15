@@ -46,7 +46,7 @@ using System.Linq;
 using System.Reflection;
 using NLog;
 using NLog.xLogger;
-using Symbiote.Core.SDK;
+using Symbiote.SDK;
 using Utility.OperationResult;
 
 namespace Symbiote.Core

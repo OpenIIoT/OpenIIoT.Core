@@ -1,51 +1,52 @@
 ﻿/*
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-      █   
-      █      ▄████████                                         ▄▄▄▄███▄▄▄▄                                                             
-      █     ███    ███                                       ▄██▀▀▀███▀▀▀██▄                                                           
-      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██     ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
-      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
-      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
-      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██     ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
-      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██     ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
-      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
- ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      ▄  
+      █      ▄████████                                         ▄▄▄▄███▄▄▄▄
+      █     ███    ███                                       ▄██▀▀▀███▀▀▀██▄
+      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██     ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████
+      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██
+      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀
+      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██     ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████
+      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██     ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
+      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
       █  Represents and controls the Event subsystem.
-      █  
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
-      █  
+      █
       █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
-      █  
+      █
       █  This program is free software: you can redistribute it and/or modify
       █  it under the terms of the GNU Affero General Public License as published by
       █  the Free Software Foundation, either version 3 of the License, or
       █  (at your option) any later version.
-      █  
+      █
       █  This program is distributed in the hope that it will be useful,
       █  but WITHOUT ANY WARRANTY; without even the implied warranty of
       █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
       █  GNU Affero General Public License for more details.
-      █  
+      █
       █  You should have received a copy of the GNU Affero General Public License
       █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-      █  
-      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
-                                                                                                   ██ 
-                                                                                               ▀█▄ ██ ▄█▀ 
-                                                                                                 ▀████▀   
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
                                                                                                    ▀▀                            */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NLog;
-using Symbiote.Core.SDK.Configuration;
-using Symbiote.Core.SDK.Event;
-using Symbiote.Core.SDK;
+using Symbiote.SDK.Configuration;
+using Symbiote.SDK.Event;
+using Symbiote.SDK;
 using NLog.xLogger;
 using Utility.OperationResult;
 using System.Collections.Immutable;
@@ -53,32 +54,33 @@ using System.Collections.Immutable;
 namespace Symbiote.Core.Event
 {
     /// <summary>
-    /// Represents and controls the Event subsystem.
+    ///     Represents and controls the Event subsystem.
     /// </summary>
     public sealed class EventManager : Manager, IStateful, IManager, IConfigurable<EventManagerConfiguration>, IEventManager
     {
         #region Fields
 
         /// <summary>
-        /// The Logger for this class.
+        ///     The Logger for this class.
         /// </summary>
         private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The Singleton instance of EventManager.
+        ///     The Singleton instance of EventManager.
         /// </summary>
         private static EventManager instance;
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the EventManager class.
+        ///     Initializes a new instance of the EventManager class.
         /// </summary>
         /// <remarks>
-        ///     This constructor is marked private and is intended to be called from the <see cref="Instantiate(IApplicationManager, IConfigurationManager)"/>
-        ///     method exclusively in order to implement the Singleton design pattern.
+        ///     This constructor is marked private and is intended to be called from the
+        ///     <see cref="Instantiate(IApplicationManager, IConfigurationManager)"/> method exclusively in order to implement the
+        ///     Singleton design pattern.
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
@@ -101,7 +103,7 @@ namespace Symbiote.Core.Event
             logger.ExitMethod();
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Properties
 
@@ -111,18 +113,18 @@ namespace Symbiote.Core.Event
 
         //// See the Manager class for the IStateful properties for this class.
 
-        #endregion
+        #endregion IStateful Properties
 
         #region IManager Properties
 
         //// See the Manager class for the IManager properties for this class.
 
-        #endregion
+        #endregion IManager Properties
 
         #region IConfigurable Properties
 
         /// <summary>
-        /// Gets the ConfigurationDefinition for the Manager.
+        ///     Gets the ConfigurationDefinition for the Manager.
         /// </summary>
         public ConfigurationDefinition ConfigurationDefinition
         {
@@ -133,29 +135,29 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        /// Gets the Configuration for the Manager.
+        ///     Gets the Configuration for the Manager.
         /// </summary>
         public EventManagerConfiguration Configuration { get; private set; }
 
-        #endregion
+        #endregion IConfigurable Properties
 
         #region IEventManager Properties
 
         /// <summary>
-        /// Gets the Dictionary, keyed on Type, of registered Event Provider instances.
+        ///     Gets the Dictionary, keyed on Type, of registered Event Provider instances.
         /// </summary>
         public Dictionary<Type, List<string>> RegisteredProviders { get; private set; }
 
         /// <summary>
-        /// Gets the Dictionary, keyed on Type, of registered Events.
+        ///     Gets the Dictionary, keyed on Type, of registered Events.
         /// </summary>
         public Dictionary<Type, List<KeyValuePair<string, string>>> RegisteredEvents { get; private set; }
 
-        #endregion
+        #endregion IEventManager Properties
 
-        #endregion
+        #endregion Public Properties
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
@@ -167,9 +169,9 @@ namespace Symbiote.Core.Event
         ///     Instantiates and/or returns the EventManager instance.
         /// </summary>
         /// <remarks>
-        ///     Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
-        ///     to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
-        ///     injected when the method is invoked.
+        ///     Invoked via reflection from ApplicationManager. The parameters are used to build an array of IManager parameters
+        ///     which are then passed to this method. To specify additional dependencies simply insert them into the parameter list
+        ///     for the method and they will be injected when the method is invoked.
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
@@ -185,7 +187,7 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        /// Returns the ConfigurationDefinition for the Model Manager.
+        ///     Returns the ConfigurationDefinition for the Model Manager.
         /// </summary>
         /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
         public static ConfigurationDefinition GetConfigurationDefinition()
@@ -198,7 +200,7 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        /// Returns the default Configuration for the Model Manager.
+        ///     Returns the default Configuration for the Model Manager.
         /// </summary>
         /// <returns>The default Configuration for the Model Manager.</returns>
         public static EventManagerConfiguration GetDefaultConfiguration()
@@ -208,7 +210,7 @@ namespace Symbiote.Core.Event
             return retVal;
         }
 
-        #endregion
+        #endregion Public Static Methods
 
         #region Public Instance Methods
 
@@ -216,18 +218,19 @@ namespace Symbiote.Core.Event
 
         //// See the Manager class for the IStateful implementation for this class.
 
-        #endregion
+        #endregion IStateful Implementation
 
         #region IManager Implementation
 
         //// See the Manager class for the IManager implementation for this class.
 
-        #endregion
+        #endregion IManager Implementation
 
         #region IConfigurable Implementation
 
         /// <summary>
-        /// Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the default configuration.
+        ///     Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the
+        ///     default configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result Configure()
@@ -239,7 +242,7 @@ namespace Symbiote.Core.Event
 
             Result<EventManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().GetInstanceConfiguration<EventManagerConfiguration>(this.GetType());
 
-            // if the fetch succeeded, configure this instance with the result.  
+            // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
             {
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
@@ -267,7 +270,7 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        /// Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
+        ///     Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
         /// </summary>
         /// <param name="configuration">The configuration with which the Manager should be configured.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -291,7 +294,7 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        /// Saves the configuration to the Configuration Manager.
+        ///     Saves the configuration to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
@@ -306,12 +309,12 @@ namespace Symbiote.Core.Event
             return retVal;
         }
 
-        #endregion
+        #endregion IConfigurable Implementation
 
         #region IEventManager Implementation
 
         /// <summary>
-        /// Registers each object within the supplied list which implements the IEventProvider interface.
+        ///     Registers each object within the supplied list which implements the IEventProvider interface.
         /// </summary>
         /// <param name="registrants">The list of objects to register.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -339,7 +342,7 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        /// Registers the specified object with the Event Manager.
+        ///     Registers the specified object with the Event Manager.
         /// </summary>
         /// <param name="registrant">The object to register.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -348,23 +351,19 @@ namespace Symbiote.Core.Event
             return RegisterProvider(registrant, RegisteredProviders, RegisteredEvents);
         }
 
-        #endregion
+        #endregion IEventManager Implementation
 
-        #endregion
+        #endregion Public Instance Methods
 
-        #endregion
+        #endregion Public Methods
 
         #region Protected Methods
 
         #region Protected Instance Methods
 
         /// <summary>
-        /// <para>
-        ///     Executed upon instantiation of all program Managers.  
-        /// </para>
-        /// <para>
-        ///     Registers all IManagers in the specified list implementing IEventProvider.
-        /// </para>
+        ///     <para>Executed upon instantiation of all program Managers.</para>
+        ///     <para>Registers all IManagers in the specified list implementing IEventProvider.</para>
         /// </summary>
         protected override void Setup()
         {
@@ -381,7 +380,7 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        /// Executed upon startup of the Manager.
+        ///     Executed upon startup of the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         protected override Result Startup()
@@ -390,7 +389,7 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        /// Executed upon shutdown of the Manager.
+        ///     Executed upon shutdown of the Manager.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -399,9 +398,9 @@ namespace Symbiote.Core.Event
             return new Result();
         }
 
-        #endregion
+        #endregion Protected Instance Methods
 
-        #endregion
+        #endregion Protected Methods
 
         #region Private Methods
 
@@ -410,7 +409,7 @@ namespace Symbiote.Core.Event
         #region Event Handlers
 
         /// <summary>
-        /// Occurs when a monitored Event occurs.
+        ///     Occurs when a monitored Event occurs.
         /// </summary>
         /// <param name="sender">The sender of the event.</param>
         /// <param name="e">The arguments for the event.</param>
@@ -419,10 +418,10 @@ namespace Symbiote.Core.Event
             logger.Info("********************* EVENT RAISED:" + sender.GetType() + ": " + e.ToString());
         }
 
-        #endregion
+        #endregion Event Handlers
 
         /// <summary>
-        /// Registers the specified object with the Event Manager.
+        ///     Registers the specified object with the Event Manager.
         /// </summary>
         /// <param name="registrant">The object to register.</param>
         /// <param name="registeredProviders">The Dictionary, keyed on Type, of registered Event Provider instances.</param>
@@ -465,8 +464,8 @@ namespace Symbiote.Core.Event
             }
             else
             {
-                // if the provider dictionary doesn't contain the Type, add the key and initialize the provider
-                // list with this provider name.
+                // if the provider dictionary doesn't contain the Type, add the key and initialize the provider list with this
+                // provider name.
                 logger.Trace("The Type '" + provider.GetType() + "' hasn't yet been registered.  Adding it to the Dictionary with the instance '" + provider.EventProviderName + "'...");
                 List<string> list = new List<string>();
                 list.Add(provider.EventProviderName);
@@ -474,8 +473,7 @@ namespace Symbiote.Core.Event
                 registeredProviders.Add(provider.GetType(), list);
             }
 
-            // next, add the Type to the event dictionary.
-            // check to make sure it doesn't exist, just in case.  it shouldn't.
+            // next, add the Type to the event dictionary. check to make sure it doesn't exist, just in case. it shouldn't.
             logger.Trace("Checking whether the events for '" + provider.GetType() + "' have been registered...");
             if (!registeredEvents.ContainsKey(provider.GetType()))
             {
@@ -487,15 +485,13 @@ namespace Symbiote.Core.Event
                 logger.Trace("Type '" + provider.GetType() + "' is already registered; no changes made to the event Dictionary.");
             }
 
-            // at this point we have ensured that the type and instance exist in both the provider and event dictionaries.
-            // next we will iterate over the events in the specified Type, attach our generic handler and, if an event is missing
-            // from the registered events dictionary, we will add it.
-            // begin by retrieving a list of events for the specified Type
+            // at this point we have ensured that the type and instance exist in both the provider and event dictionaries. next we
+            // will iterate over the events in the specified Type, attach our generic handler and, if an event is missing from the
+            // registered events dictionary, we will add it. begin by retrieving a list of events for the specified Type
             logger.Trace("Retrieving list of events from the Type '" + provider.GetType() + "'...");
             EventInfo[] events = provider.GetType().GetEvents(BindingFlags.Instance | BindingFlags.Public);
 
-            // iterate over each event.
-            // add the event to the list of registered events for the Type if it doesn't yet exist, then 
+            // iterate over each event. add the event to the list of registered events for the Type if it doesn't yet exist, then
             // attach our generic event handler.
             logger.Debug("The Type '" + provider.GetType().Name + "' contains " + events.Length + " events.  Enumerating...");
             foreach (EventInfo eventInfo in events)
@@ -539,10 +535,10 @@ namespace Symbiote.Core.Event
             return retVal;
         }
 
-        #endregion
+        #endregion Private Instance Methods
 
-        #endregion
+        #endregion Private Methods
 
-        #endregion
+        #endregion Methods
     }
 }

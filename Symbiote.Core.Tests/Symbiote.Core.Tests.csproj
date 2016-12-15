@@ -114,9 +114,9 @@
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Symbiote.Core.SDK\Symbiote.Core.SDK.csproj">
+    <ProjectReference Include="..\Symbiote.Core.SDK\Symbiote.SDK.csproj">
       <Project>{9c220b49-76ac-4ef5-b385-906ac84d5da2}</Project>
-      <Name>Symbiote.Core.SDK</Name>
+      <Name>Symbiote.SDK</Name>
     </ProjectReference>
     <ProjectReference Include="..\Symbiote.Core\Symbiote.Core.csproj">
       <Project>{899D0A77-77E8-4BCF-848E-2167C8CC036F}</Project>

@@ -45,7 +45,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Specifies how the array of properties passed to the constructor of the ContractResolver is to be used.

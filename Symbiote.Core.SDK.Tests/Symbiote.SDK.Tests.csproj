@@ -81,7 +81,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
+    <Compile Include="Common\Item\ItemChangedEventArgsTests.cs" />
     <Compile Include="Common\Item\ItemTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -90,9 +90,9 @@
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Symbiote.Core.SDK\Symbiote.Core.SDK.csproj">
+    <ProjectReference Include="..\Symbiote.Core.SDK\Symbiote.SDK.csproj">
       <Project>{9C220B49-76AC-4EF5-B385-906AC84D5DA2}</Project>
-      <Name>Symbiote.Core.SDK</Name>
+      <Name>Symbiote.SDK</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

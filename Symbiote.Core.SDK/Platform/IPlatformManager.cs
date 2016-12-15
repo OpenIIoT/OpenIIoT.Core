@@ -39,7 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace Symbiote.Core.SDK.Platform
+namespace Symbiote.SDK.Platform
 {
     /// <summary>
     ///     Defines the interface for the Platform Manager.

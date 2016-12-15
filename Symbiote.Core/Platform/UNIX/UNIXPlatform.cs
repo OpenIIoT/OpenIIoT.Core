@@ -24,8 +24,8 @@
                                                                                                  ▀████▀   
                                                                                                    ▀▀                            */
 using System;
-using Symbiote.Core.SDK.Plugin.Connector;
-using Symbiote.Core.SDK.Platform;
+using Symbiote.SDK.Plugin.Connector;
+using Symbiote.SDK.Platform;
 
 namespace Symbiote.Core.Platform.UNIX
 {

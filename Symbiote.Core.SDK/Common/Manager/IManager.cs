@@ -39,9 +39,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Symbiote.Core.SDK.Event;
+using Symbiote.SDK.Event;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Defines the interface for Manager objects.

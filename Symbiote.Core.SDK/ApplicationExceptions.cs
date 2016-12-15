@@ -51,7 +51,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Symbiote.Core.SDK
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Represents errors that occur while parsing and applying command line arguments.

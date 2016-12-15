@@ -41,7 +41,7 @@
 
 using System.Collections.Generic;
 
-namespace Symbiote.Core.SDK.Platform
+namespace Symbiote.SDK.Platform
 {
     /// <summary>
     ///     The ProgramDirectories class encapsulates the filesystem directories needed to run the application.

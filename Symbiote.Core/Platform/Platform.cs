@@ -49,8 +49,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using NLog.xLogger;
-using Symbiote.Core.SDK.Platform;
-using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.SDK.Platform;
+using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
 namespace Symbiote.Core.Platform

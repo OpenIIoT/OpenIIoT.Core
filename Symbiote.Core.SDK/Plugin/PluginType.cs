@@ -1,27 +1,27 @@
-﻿namespace Symbiote.Core.SDK.Plugin
+﻿namespace Symbiote.SDK.Plugin
 {
     /// <summary>
-    /// Enumeration of the different Plugin types.
+    ///     Enumeration of the different Plugin types.
     /// </summary>
     public enum PluginType
     {
         /// <summary>
-        /// The default value
+        ///     The default value
         /// </summary>
         Unknown,
 
         /// <summary>
-        /// The Connector Plugin Type
+        ///     The Connector Plugin Type
         /// </summary>
         Connector,
 
         /// <summary>
-        /// The Endpoint Plugin Type
+        ///     The Endpoint Plugin Type
         /// </summary>
         Endpoint,
 
         /// <summary>
-        /// The App Plugin Type
+        ///     The App Plugin Type
         /// </summary>
         App
     }
