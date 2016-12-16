@@ -89,7 +89,7 @@
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\IPlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Plugin\Connector\ConnectorItem.cs" />
+    <Compile Include="Common\Item\ConnectorItem.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Plugin\Connector\IExtensible.cs" />
     <Compile Include="Plugin\Connector\IReadable.cs" />

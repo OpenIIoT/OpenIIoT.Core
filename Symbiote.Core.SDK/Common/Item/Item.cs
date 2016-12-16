@@ -42,11 +42,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
 namespace Symbiote.SDK
@@ -59,19 +57,19 @@ namespace Symbiote.SDK
         #region Protected Fields
 
         /// <summary>
-        ///     Lock for the Children property.
+        ///     Lock for the <see cref="Item.Children"/> property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected object childrenLock = new object();
 
         /// <summary>
-        ///     Lock for the Parent property.
+        ///     Lock for the <see cref="Item.Parent"/> property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected object parentLock = new object();
 
         /// <summary>
-        ///     Lock for the Value property.
+        ///     Lock for the <see cref="Item.Value"/> property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected object valueLock = new object();
@@ -101,8 +99,7 @@ namespace Symbiote.SDK
         ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name and type.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
-        /// <remarks>This constructor is used for deserialization.</remarks>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
         public Item(string fqn, string sourceFQN) : this(fqn, default(Item), sourceFQN, false)
         {
         }
@@ -110,8 +107,8 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name and source Item.
         /// </summary>
-        /// <param name="fqn"></param>
-        /// <param name="sourceItem"></param>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="sourceItem">The source Item.</param>
         public Item(string fqn, Item sourceItem) : this(fqn, sourceItem, sourceItem?.FQN, false)
         {
         }
@@ -121,8 +118,9 @@ namespace Symbiote.SDK
         ///     isRoot is true, marks the Item as the root item in a model.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
-        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
+        /// <param name="sourceItem">The source Item.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
+        /// <param name="isRoot">True if the Item is to be created as a root model Item, false otherwise.</param>
         public Item(string fqn, Item sourceItem = default(Item), string sourceFQN = "", bool isRoot = false)
         {
             FQN = fqn;
@@ -152,7 +150,6 @@ namespace Symbiote.SDK
             if (isRoot)
             {
                 FQN = Name;
-                //Path = FQN;
                 Parent = this;
             }
 
@@ -164,7 +161,7 @@ namespace Symbiote.SDK
         #region Public Events
 
         /// <summary>
-        ///     The Changed event; fires when the value of the item changes.
+        ///     Fires when the <see cref="Value"/> property of this <see cref="Item"/> changes.
         /// </summary>
         public virtual event EventHandler<ItemChangedEventArgs> Changed;
 
@@ -173,22 +170,23 @@ namespace Symbiote.SDK
         #region Public Properties
 
         /// <summary>
-        ///     Gets the collection of Items contained within this Item.
+        ///     Gets the collection of <see cref="Item"/> s contained within this Item.
         /// </summary>
         public List<Item> Children { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the Fully Qualified Name of the item.
+        ///     Gets the Fully Qualified Name of the item.
         /// </summary>
         public string FQN { get; private set; }
 
         /// <summary>
-        ///     Gets a Guid for the Item, generated when it is instantiated.
+        ///     Gets a <see cref="Guid"/> for the Item.
         /// </summary>
+        /// <remarks>Generated upon instantiation.</remarks>
         public Guid Guid { get; private set; }
 
         /// <summary>
-        ///     Gets a value indicating whether the Item's <see cref="Children"/> collection is empty.
+        ///     Gets a value indicating whether the <see cref="Item"/>'s <see cref="Children"/> collection is empty.
         /// </summary>
         public bool HasChildren
         {
@@ -199,7 +197,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets a value indicating whether the Item's <see cref="Parent"/> property has been set.
+        ///     Gets a value indicating whether the <see cref="Item"/>'s <see cref="Parent"/> property has been set.
         /// </summary>
         public bool IsOrphaned
         {
@@ -210,8 +208,9 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets or sets the name of the Item; corresponds to the final tuple of the FQN.
+        ///     Gets the name of the <see cref="Item"/>.
         /// </summary>
+        /// <remarks>Corresponds to the final tuple of the <see cref="FQN"/> property.</remarks>
         public string Name
         {
             get
@@ -221,13 +220,14 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets the Item's parent Item.
+        ///     Gets the <see cref="Item"/>'s parent Item.
         /// </summary>
         public Item Parent { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the path to the Item; corresponds to the FQN less the final tuple (the name).
+        ///     Gets the path to the <see cref="Item"/>.
         /// </summary>
+        /// <remarks>Corresponds to the value of the <see cref="FQN"/> property, less the final tuple.</remarks>
         public string Path
         {
             get
@@ -237,22 +237,22 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets or sets the fully qualified name name of the source item.
+        ///     Gets or sets the Fully Qualified Name of the source <see cref="Item"/>.
         /// </summary>
         public string SourceFQN { get; set; }
 
         /// <summary>
-        ///     Gets or sets the Item instance resolved from the SourceFQN.
+        ///     Gets or sets the <see cref="Item"/> instance resolved from the <see cref="SourceFQN"/> property.
         /// </summary>
         public Item SourceItem { get; set; }
 
         /// <summary>
-        ///     Gets or sets the value of the composite item.
+        ///     Gets or sets the value of the <see cref="Item"/>.
         /// </summary>
         public object Value { get; protected set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the Item's value is writeable.
+        ///     Gets or sets a value indicating whether the <see cref="Item"/>'s value is capable of being written to.
         /// </summary>
         public bool Writeable { get; set; }
 
@@ -261,11 +261,11 @@ namespace Symbiote.SDK
         #region Public Methods
 
         /// <summary>
-        ///     Adds the supplied item to this Item's Children collection.
+        ///     Adds the supplied <see cref="Item"/> to this Item's <see cref="Item.Children"/> collection.
         /// </summary>
         /// <param name="item">The Item to add.</param>
-        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the added Item.</returns>
+        /// <threadsafety instance="true"/>
         public virtual Result<Item> AddChild(Item item)
         {
             Result<Item> retVal = new Result<Item>();
@@ -294,7 +294,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Creates and returns a clone of the Item.
+        ///     Creates and returns a clone of the <see cref="Item"/>.
         /// </summary>
         /// <remarks>We aren't using .MemberWiseClone() because of the GUID. We need a "deep copy".</remarks>
         /// <returns>A clone of the Item.</returns>
@@ -310,7 +310,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Returns the value of this Item's Value property.
+        ///     Returns the value of this <see cref="Item"/>'s <see cref="Item.Value"/> property.
         /// </summary>
         /// <returns>The retrieved value.</returns>
         public virtual object Read()
@@ -568,8 +568,10 @@ namespace Symbiote.SDK
         #region Protected Methods
 
         /// <summary>
-        ///     Raises the Changed event with a new instance of ItemEventArgs containing the specified value.
+        ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
+        ///     specified value.
         /// </summary>
+        /// <param name="previousValue">The value of the Item prior to the event.</param>
         /// <param name="value">The value for the raised event.</param>
         protected virtual void OnChange(object previousValue, object value)
         {
@@ -595,9 +597,7 @@ namespace Symbiote.SDK
             // lock the Parent property
             lock (parentLock)
             {
-                //Path = parent.FQN;
-                FQN = (this != parent ? parent.FQN + "." : "") + Name;
-
+                FQN = (this != parent ? parent.FQN + "." : string.Empty) + Name;
                 Parent = parent;
             }
 

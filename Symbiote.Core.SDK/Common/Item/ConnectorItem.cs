@@ -10,10 +10,28 @@
       █   ███    ███ ██    ██ ██   ██ ██   ██   ██   █  ██    ██     ██    ██    ██   ██  ██ ███      ██      ██   █   ██  ██  ██
       █   ████████▀   ██████   █   █   █   █    ███████ ██████▀     ▄██▀    ██████    ██  ██ █▀      ▄██▀     ███████   █  ██  █
       █
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █  Represents a single data entity provided by a Connector plugin.
       █
-      █  ConnectorItem is an extension of the Item class.  This class represents Items that are provided by Connector Plugins.
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
       █
       ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
                                                                                                    ██
@@ -21,18 +39,18 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 using NLog;
 using NLog.xLogger;
-using System;
-using System.Threading.Tasks;
+using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
-namespace Symbiote.SDK.Plugin.Connector
+namespace Symbiote.SDK
 {
     /// <summary>
-    ///     ConnectorItem is an extension of the <see cref="Item"/> class. This class represents Items that are provided by
-    ///     <see cref="Connector"/><see cref="Plugin"/> s.
+    ///     Represents a single data entity provided by a Connector plugin.
     /// </summary>
     /// <remarks>
     ///     <para>
@@ -53,40 +71,28 @@ namespace Symbiote.SDK.Plugin.Connector
     /// </remarks>
     public class ConnectorItem : Item
     {
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        #region Properties
+        #region Public Constructors
 
         /// <summary>
-        ///     The <see cref="IConnector"/> instance to which this <see cref="Item"/> belongs.
+        ///     Initializes a new instance of the <see cref="ConnectorItem"/> class with the specified Fully Qualified Name to be
+        ///     used as the root of a model.
         /// </summary>
-        [JsonIgnore]
-        public IConnector Connector { get; private set; }
-
-        #endregion Properties
-
-        #region Constructors
-
-        /// <summary>
-        ///     An empty constructor used for instantiating the root node of a model.
-        /// </summary>
-        public ConnectorItem() : base("", default(ConnectorItem), "", true) { }
-
-        /// <summary>
-        ///     Creates an instance of an <see cref="Item"/> with the given Fully Qualified Name to be used as the root of a model.
-        /// </summary>
-        /// <param name="connector">The instance of <see cref="IConnector"/> hosting this <see cref="Item"/>.</param>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> to create.</param>
+        /// <param name="connector">The Connector to which this Item belongs.</param>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public ConnectorItem(IConnector connector, string fqn, bool isRoot) : this(connector, fqn, default(ConnectorItem), "", isRoot) { }
+        public ConnectorItem(IConnector connector, string fqn, bool isRoot) : this(connector, fqn, string.Empty, isRoot)
+        {
+        }
 
         /// <summary>
-        ///     Creates an instance of an <see cref="Item"/> with the given Fully Qualified Name and Source Fully Qualified Name.
+        ///     Initializes a new instance of the <see cref="ConnectorItem"/> class with the specified Fully Qualified Name and type.
         /// </summary>
-        /// <param name="connector">The instance of <see cref="IConnector"/> hosting this <see cref="Item"/>.</param>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> to create.</param>
-        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
-        public ConnectorItem(IConnector connector, string fqn, string sourceFQN) : this(connector, fqn, default(ConnectorItem), sourceFQN, false) { }
+        /// <param name="connector">The Connector to which this Item belongs.</param>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
+        public ConnectorItem(IConnector connector, string fqn, string sourceFQN) : this(connector, fqn, sourceFQN, false)
+        {
+        }
 
         /// <summary>
         ///     Creates an instance of an Item with the given Fully Qualified Name and type. If isRoot is true, marks the Item as
@@ -96,52 +102,54 @@ namespace Symbiote.SDK.Plugin.Connector
         /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public ConnectorItem(IConnector connector, string fqn, ConnectorItem sourceItem = default(ConnectorItem), string sourceFQN = "", bool isRoot = false) : base(fqn, sourceFQN)
+        public ConnectorItem(IConnector connector, string fqn, string sourceFQN = "", bool isRoot = false) : base(fqn, default(ConnectorItem), sourceFQN, isRoot)
         {
             Connector = connector;
         }
 
-        #endregion Constructors
+        #endregion Public Constructors
 
-        #region Instance Methods
+        #region Public Events
 
         /// <summary>
-        ///     Sets this <see cref="Item"/>'s parent Item to the specified Item.
+        ///     The Changed event; fires when the value of the item changes.
         /// </summary>
-        /// <param name="parent">The <see cref="Item"/> to which this Item's Parent property is to be set.</param>
-        /// <returns>An <see cref="Result{T}"/> containing the result of the operation and this <see cref="Item"/>.</returns>
-        public Result<ConnectorItem> SetParent(ConnectorItem parent)
+        public override event EventHandler<ItemChangedEventArgs> Changed;
+
+        #endregion Public Events
+
+        #region Public Properties
+
+        /// <summary>
+        ///     The <see cref="IConnector"/> instance to which this <see cref="Item"/> belongs.
+        /// </summary>
+        [JsonIgnore]
+        public IConnector Connector { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Adds the supplied <see cref="ConnectorItem"/> to this ConnectorItem's <see cref="Item.Children"/> collection.
+        /// </summary>
+        /// <param name="item">The ConnectorItem to add.</param>
+        /// <returns>A Result containing the result of the operation and the added ConnectorItem.</returns>
+        /// <threadsafety instance="true"/>
+        public Result<ConnectorItem> AddChild(ConnectorItem item)
         {
             Result<ConnectorItem> retVal = new Result<ConnectorItem>();
-            Result<Item> setResult = base.SetParent((Item)parent);
-
-            retVal.ReturnValue = (ConnectorItem)setResult.ReturnValue;
-            retVal.Incorporate(setResult);
-            return retVal;
-        }
-
-        public Result<ConnectorItem> AddChild(ConnectorItem pluginItem)
-        {
-            Result<ConnectorItem> retVal = new Result<ConnectorItem>();
-            Result<Item> addResult = base.AddChild((Item)pluginItem);
+            Result<Item> addResult = base.AddChild((Item)item);
 
             retVal.ReturnValue = (ConnectorItem)addResult.ReturnValue;
             retVal.Incorporate(addResult);
             return retVal;
         }
 
-        public Result<ConnectorItem> RemoveChild(ConnectorItem pluginItem)
-        {
-            Result<ConnectorItem> retVal = new Result<ConnectorItem>();
-            Result<Item> removeResult = base.RemoveChild(pluginItem);
-
-            retVal.ReturnValue = (ConnectorItem)removeResult.ReturnValue;
-            retVal.Incorporate(removeResult);
-            return retVal;
-        }
-
-        #region Overridden Methods
-
+        /// <summary>
+        ///     Returns the value of this <see cref="ConnectorItem"/>'s <see cref="Item.Value"/> property.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
         public override object Read()
         {
             return ReadFromSource();
@@ -165,6 +173,62 @@ namespace Symbiote.SDK.Plugin.Connector
         public override async Task<object> ReadFromSourceAsync()
         {
             return await Task.Run(() => ReadFromSource());
+        }
+
+        public Result<ConnectorItem> RemoveChild(ConnectorItem pluginItem)
+        {
+            Result<ConnectorItem> retVal = new Result<ConnectorItem>();
+            Result<Item> removeResult = base.RemoveChild(pluginItem);
+
+            retVal.ReturnValue = (ConnectorItem)removeResult.ReturnValue;
+            retVal.Incorporate(removeResult);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Sets this <see cref="Item"/>'s parent Item to the specified Item.
+        /// </summary>
+        /// <param name="parent">The <see cref="Item"/> to which this Item's Parent property is to be set.</param>
+        /// <returns>An <see cref="Result{T}"/> containing the result of the operation and this <see cref="Item"/>.</returns>
+        public Result<ConnectorItem> SetParent(ConnectorItem parent)
+        {
+            Result<ConnectorItem> retVal = new Result<ConnectorItem>();
+            Result<Item> setResult = base.SetParent((Item)parent);
+
+            retVal.ReturnValue = (ConnectorItem)setResult.ReturnValue;
+            retVal.Incorporate(setResult);
+            return retVal;
+        }
+
+        public override Result SubscribeToSource()
+        {
+            Result retVal = new Result();
+
+            if (Connector is ISubscribable)
+            {
+                retVal = ((ISubscribable)Connector).Subscribe((ConnectorItem)this);
+            }
+            else
+            {
+                retVal = new Result().AddError("The source Connector is not subscribable");
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Notifies this <see cref="ConnectorItem"/> that the number of subscribers has changed.
+        /// </summary>
+        public override void SubscriptionsChanged()
+        {
+            if (Changed != null)
+            {
+                SubscribeToSource();
+            }
+            else
+            {
+                UnsubscribeFromSource();
+            }
         }
 
         /// <summary>
@@ -217,40 +281,6 @@ namespace Symbiote.SDK.Plugin.Connector
             return await Task.Run(() => WriteToSource(value));
         }
 
-        public override Result SubscribeToSource()
-        {
-            logger.EnterMethod();
-
-            Result retVal = new Result();
-
-            if (Connector is ISubscribable)
-                retVal = ((ISubscribable)Connector).Subscribe((ConnectorItem)this);
-            else
-                retVal = new Result().AddError("The source Connector is not subscribable");
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        public override void SubscriptionsChanged()
-        {
-            if (Changed != null)
-            {
-                SubscribeToSource();
-            }
-            else
-            {
-                UnsubscribeFromSource();
-            }
-        }
-
-        /// <summary>
-        ///     The Changed event; fires when the value of the item changes.
-        /// </summary>
-        public override event EventHandler<ItemChangedEventArgs> Changed;
-
-        #endregion Overridden Methods
-
-        #endregion Instance Methods
+        #endregion Public Methods
     }
 }
