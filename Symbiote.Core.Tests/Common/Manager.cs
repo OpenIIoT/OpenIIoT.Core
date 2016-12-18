@@ -48,12 +48,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Symbiote.SDK;
-using Symbiote.Core.Tests.Common.Mockups;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading;
+using Moq;
+using Symbiote.SDK;
 using Utility.OperationResult;
 using Xunit;
-using Moq;
 
 namespace Symbiote.Core.Tests.Common
 {
@@ -61,10 +61,13 @@ namespace Symbiote.Core.Tests.Common
     ///     Unit tests for the Manager class.
     /// </summary>
     [Collection("Manager")]
-    public class ManagerTests
+    public class Manager
     {
         #region Private Fields
 
+        /// <summary>
+        ///     The shared ApplicationManager mockup.
+        /// </summary>
         private Mock<IApplicationManager> applicationManagerMock;
 
         #endregion Private Fields
@@ -72,9 +75,9 @@ namespace Symbiote.Core.Tests.Common
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerTests"/> class.
+        ///     Initializes a new instance of the <see cref="Manager"/> class.
         /// </summary>
-        public ManagerTests()
+        public Manager()
         {
             applicationManagerMock = new Mock<IApplicationManager>();
             applicationManagerMock.Setup(m => m.State).Returns(State.Running);
@@ -109,7 +112,7 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void DependencyFault()
         {
-            OtherManagerMock o = OtherManagerMock.Instantiate(applicationManagerMock.Object);
+            ManagerMockTwo o = ManagerMockTwo.Instantiate(applicationManagerMock.Object);
             o.Start();
 
             ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(applicationManagerMock.Object, o);
@@ -141,7 +144,7 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void DependencyStop()
         {
-            OtherManagerMock o = OtherManagerMock.Instantiate(applicationManagerMock.Object);
+            ManagerMockTwo o = ManagerMockTwo.Instantiate(applicationManagerMock.Object);
             o.Start();
 
             ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(applicationManagerMock.Object, o);
@@ -182,7 +185,7 @@ namespace Symbiote.Core.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Restart(StopType)"/>.
+        ///     Tests <see cref="Core.Manager.Restart(StopType)"/>.
         /// </summary>
         [Fact]
         public void Restart()
@@ -200,7 +203,7 @@ namespace Symbiote.Core.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Restart(StopType)"/> with the manager in the stopped State.
+        ///     Tests <see cref="Core.Manager.Restart(StopType)"/> with the manager in the stopped State.
         /// </summary>
         [Fact]
         public void RestartNotRunning()
@@ -212,7 +215,7 @@ namespace Symbiote.Core.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Start"/>.
+        ///     Tests <see cref="Core.Manager.Start"/>.
         /// </summary>
         [Fact]
         public void Start()
@@ -229,7 +232,7 @@ namespace Symbiote.Core.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Start"/> with a dependency in the stopped State.
+        ///     Tests <see cref="Core.Manager.Start"/> with a dependency in the stopped State.
         /// </summary>
         [Fact]
         public void StartWithStoppedDependency()
@@ -245,7 +248,7 @@ namespace Symbiote.Core.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Stop(StopType)"/>.
+        ///     Tests <see cref="Core.Manager.Stop(StopType)"/>.
         /// </summary>
         [Fact]
         public void Stop()
@@ -263,6 +266,188 @@ namespace Symbiote.Core.Tests.Common
             // try to stop again and assert that the operation fails
             Result stop = test.Stop();
             Assert.Equal(ResultCode.Failure, stop.ResultCode);
+        }
+
+        #endregion Public Methods
+    }
+
+    /// <summary>
+    ///     Mocks a Manager.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
+    /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class ManagerMock : Core.Manager
+    {
+        #region Private Fields
+
+        /// <summary>
+        ///     The Singleton instance of this class.
+        /// </summary>
+        private static ManagerMock instance;
+
+        #endregion Private Fields
+
+        #region Private Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerMock"/> class.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        private ManagerMock(IApplicationManager manager)
+        {
+            ManagerName = "Mock Manager";
+            RegisterDependency<IApplicationManager>(manager);
+
+            ChangeState(State.Initialized);
+        }
+
+        #endregion Private Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Instantiates and returns the Manager.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        /// <returns>The instantiated Manager.</returns>
+        public static ManagerMock Instantiate(IApplicationManager manager)
+        {
+            // remove the code that makes this a singleton so that test runners can get a fresh instance each time.
+            instance = new ManagerMock(manager);
+            return instance;
+        }
+
+        /// <summary>
+        ///     Simulates the check of an unregistered dependency.
+        /// </summary>
+        /// <returns>A value indicating whether the unregistered dependency was found.</returns>
+        public bool CheckBadDependency()
+        {
+            return Dependency<IManager>() != null;
+        }
+
+        /// <summary>
+        ///     Simulates the check of a registered dependency.
+        /// </summary>
+        /// <returns>A value indicating whether the registered dependency was found.</returns>
+        public bool CheckDependency()
+        {
+            return Dependency<IApplicationManager>() != null;
+        }
+
+        #endregion Public Methods
+    }
+
+    /// <summary>
+    ///     Mocks a Manager.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
+    /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class ManagerMockTwo : Core.Manager
+    {
+        #region Private Fields
+
+        /// <summary>
+        ///     The Singleton instance of this class.
+        /// </summary>
+        private static ManagerMockTwo instance;
+
+        #endregion Private Fields
+
+        #region Private Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerMockTwo"/> class.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        private ManagerMockTwo(IApplicationManager manager)
+        {
+            ManagerName = "Mock Manager";
+            RegisterDependency<IApplicationManager>(manager);
+
+            ChangeState(State.Initialized);
+        }
+
+        #endregion Private Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Instantiates the Manager.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        /// <returns>The Instantiated Manager.</returns>
+        public static ManagerMockTwo Instantiate(IApplicationManager manager)
+        {
+            // remove the code that makes this a singleton so that test runners can get a fresh instance each time.
+            instance = new ManagerMockTwo(manager);
+            return instance;
+        }
+
+        /// <summary>
+        ///     Simulates a fault of the Manager.
+        /// </summary>
+        public void Fault()
+        {
+            ChangeState(State.Faulted, StopType.Stop | StopType.Restart);
+        }
+
+        #endregion Public Methods
+    }
+
+    /// <summary>
+    ///     Mocks a Manager with one dependency in addition to the ApplicationManager.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
+    /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class ManagerMockWithDependency : Core.Manager
+    {
+        #region Private Fields
+
+        /// <summary>
+        ///     The Singleton instance of this class.
+        /// </summary>
+        private static ManagerMockWithDependency instance;
+
+        #endregion Private Fields
+
+        #region Private Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerMockWithDependency"/> class.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        /// <param name="otherManager">A second Manager dependency.</param>
+        private ManagerMockWithDependency(IApplicationManager manager, IManager otherManager)
+        {
+            ManagerName = "Mock Manager";
+            RegisterDependency<IApplicationManager>(manager);
+            RegisterDependency<IManager>(otherManager);
+
+            ChangeState(State.Initialized);
+        }
+
+        #endregion Private Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Instantiates the Manager.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        /// <param name="otherManager">A second Manager dependency.</param>
+        /// <returns>The instantiated Manager.</returns>
+        public static ManagerMockWithDependency Instantiate(IApplicationManager manager, IManager otherManager)
+        {
+            // remove the code that makes this a singleton so that test runners can get a fresh instance each time.
+            instance = new ManagerMockWithDependency(manager, otherManager);
+            return instance;
         }
 
         #endregion Public Methods
