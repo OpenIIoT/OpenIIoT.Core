@@ -7,8 +7,8 @@
     <ProjectGuid>{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Symbiote.Core.SDK.Tests</RootNamespace>
-    <AssemblyName>Symbiote.Core.SDK.Tests</AssemblyName>
+    <RootNamespace>Symbiote.SDK.Tests</RootNamespace>
+    <AssemblyName>Symbiote.SDK.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -98,7 +98,7 @@
     <None Include="Settings.StyleCop" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Symbiote.Core.SDK\Symbiote.SDK.csproj">
+    <ProjectReference Include="..\Symbiote.SDK\Symbiote.SDK.csproj">
       <Project>{9C220B49-76AC-4EF5-B385-906AC84D5DA2}</Project>
       <Name>Symbiote.SDK</Name>
     </ProjectReference>

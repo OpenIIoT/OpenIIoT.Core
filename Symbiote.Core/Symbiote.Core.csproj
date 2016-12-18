@@ -260,7 +260,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Symbiote.Core.SDK\Symbiote.SDK.csproj">
+    <ProjectReference Include="..\Symbiote.SDK\Symbiote.SDK.csproj">
       <Project>{9c220b49-76ac-4ef5-b385-906ac84d5da2}</Project>
       <Name>Symbiote.SDK</Name>
     </ProjectReference>

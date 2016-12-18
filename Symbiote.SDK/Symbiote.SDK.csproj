@@ -7,8 +7,8 @@
     <ProjectGuid>{9C220B49-76AC-4EF5-B385-906AC84D5DA2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Symbiote.Core.SDK</RootNamespace>
-    <AssemblyName>Symbiote.Core.SDK</AssemblyName>
+    <RootNamespace>Symbiote.SDK</RootNamespace>
+    <AssemblyName>Symbiote.SDK</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
