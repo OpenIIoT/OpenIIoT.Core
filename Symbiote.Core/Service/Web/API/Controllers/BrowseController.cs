@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using NLog;
 using Symbiote.Core.Model;
-using Symbiote.Core.SDK;
+using Symbiote.SDK;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;

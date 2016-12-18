@@ -48,11 +48,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Symbiote.Core.SDK;
+using Symbiote.SDK;
 using Symbiote.Core.Tests.Common.Mockups;
 using System.Threading;
 using Utility.OperationResult;
 using Xunit;
+using Moq;
 
 namespace Symbiote.Core.Tests.Common
 {
@@ -62,6 +63,27 @@ namespace Symbiote.Core.Tests.Common
     [Collection("Manager")]
     public class ManagerTests
     {
+        #region Private Fields
+
+        private Mock<IApplicationManager> applicationManagerMock;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerTests"/> class.
+        /// </summary>
+        public ManagerTests()
+        {
+            applicationManagerMock = new Mock<IApplicationManager>();
+            applicationManagerMock.Setup(m => m.State).Returns(State.Running);
+            applicationManagerMock.Setup(m => m.IsInState(new State[] { State.Starting, State.Running })).Returns(true);
+            applicationManagerMock.Setup(m => m.IsInState(new State[] { State.Running })).Returns(true);
+        }
+
+        #endregion Public Constructors
+
         #region Public Methods
 
         /// <summary>
@@ -70,10 +92,7 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void Constructor()
         {
-            ApplicationManagerMock a = new ApplicationManagerMock();
-            a.Start();
-
-            ManagerMock test = ManagerMock.Instantiate(a);
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
             Assert.Equal("Mock Manager", test.ManagerName);
             Assert.Equal(test.GetType().Name, test.EventProviderName);
@@ -90,19 +109,13 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void DependencyFault()
         {
-            ApplicationManagerMock a = new ApplicationManagerMock();
-            a.Start();
-
-            OtherManagerMock o = OtherManagerMock.Instantiate(a);
+            OtherManagerMock o = OtherManagerMock.Instantiate(applicationManagerMock.Object);
             o.Start();
 
-            ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(a, o);
+            ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(applicationManagerMock.Object, o);
 
             // start the manager and assert that it is running
             Result start = test.Start();
-            Assert.Equal(State.Running, test.State);
-
-            // start the manager and assert that it is running Result start = test.Start();
             Assert.Equal(State.Running, test.State);
 
             // fault the manager upon which the test manager is dependent ensure that this manager stops.start the other manager
@@ -128,13 +141,10 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void DependencyStop()
         {
-            ApplicationManagerMock a = new ApplicationManagerMock();
-            a.Start();
-
-            OtherManagerMock o = OtherManagerMock.Instantiate(a);
+            OtherManagerMock o = OtherManagerMock.Instantiate(applicationManagerMock.Object);
             o.Start();
 
-            ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(a, o);
+            ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(applicationManagerMock.Object, o);
 
             // start the manager and assert that it is running
             Result start = test.Start();
@@ -177,10 +187,7 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void Restart()
         {
-            ApplicationManagerMock a = new ApplicationManagerMock();
-            a.Start();
-
-            ManagerMock test = ManagerMock.Instantiate(a);
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
             // start the manager and assert that it is running
             test.Start();
@@ -198,10 +205,7 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void RestartNotRunning()
         {
-            ApplicationManagerMock a = new ApplicationManagerMock();
-            a.Start();
-
-            ManagerMock test = ManagerMock.Instantiate(a);
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
             Result restart = test.Restart();
             Assert.Equal(ResultCode.Failure, restart.ResultCode);
@@ -213,10 +217,7 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void Start()
         {
-            ApplicationManagerMock a = new ApplicationManagerMock();
-            a.Start();
-
-            ManagerMock test = ManagerMock.Instantiate(a);
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
             // start the manager and assert that it is running
             Result start = test.Start();
@@ -233,10 +234,10 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void StartWithStoppedDependency()
         {
-            ApplicationManagerMockNotStarted a = new ApplicationManagerMockNotStarted();
-            a.Start();
+            Mock<IApplicationManager> a = new Mock<IApplicationManager>();
+            a.Setup(m => m.State).Returns(State.Stopped);
 
-            ManagerMock test = ManagerMock.Instantiate(a);
+            ManagerMock test = ManagerMock.Instantiate(a.Object);
 
             // start the manager and assert that it is running
             Result start = test.Start();
@@ -249,10 +250,7 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void Stop()
         {
-            ApplicationManagerMock a = new ApplicationManagerMock();
-            a.Start();
-
-            ManagerMock test = ManagerMock.Instantiate(a);
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
             // start the manager and assert that it is running
             test.Start();

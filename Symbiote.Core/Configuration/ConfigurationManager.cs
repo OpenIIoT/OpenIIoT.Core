@@ -1,43 +1,44 @@
 ﻿/*
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-      █   
-      █   ▄████████                                                                                                         ▄▄▄▄███▄▄▄▄                                                             
-      █   ███    ███                                                                                                      ▄██▀▀▀███▀▀▀██▄                                                           
-      █   ███    █▀   ██████  ██▄▄▄▄     ▄█████  █     ▄████▄  ██   █     █████   ▄█████      ██     █   ██████  ██▄▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
-      █   ███        ██    ██ ██▀▀▀█▄   ██   ▀█ ██    ██    ▀  ██   ██   ██  ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
-      █   ███        ██    ██ ██   ██  ▄██▄▄    ██▌  ▄██       ██   ██  ▄██▄▄█▀   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
-      █   ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████     ██    ██  ██    ██ ██   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
-      █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██     ██    ██  ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
-      █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀    ▄██▀   █    ██████   █   █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
- ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      ▄  
+      █   ▄████████                                                                                                         ▄▄▄▄███▄▄▄▄
+      █   ███    ███                                                                                                      ▄██▀▀▀███▀▀▀██▄
+      █   ███    █▀   ██████  ██▄▄▄▄     ▄█████  █     ▄████▄  ██   █     █████   ▄█████      ██     █   ██████  ██▄▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████
+      █   ███        ██    ██ ██▀▀▀█▄   ██   ▀█ ██    ██    ▀  ██   ██   ██  ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██
+      █   ███        ██    ██ ██   ██  ▄██▄▄    ██▌  ▄██       ██   ██  ▄██▄▄█▀   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀
+      █   ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████     ██    ██  ██    ██ ██   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████
+      █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██     ██    ██  ██    ██ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
+      █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀    ▄██▀   █    ██████   █   █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
       █  The Configuration Manager manages the configuration file for the application and all plugins.
-      █  
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
-      █  
+      █
       █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
-      █  
+      █
       █  This program is free software: you can redistribute it and/or modify
       █  it under the terms of the GNU Affero General Public License as published by
       █  the Free Software Foundation, either version 3 of the License, or
       █  (at your option) any later version.
-      █  
+      █
       █  This program is distributed in the hope that it will be useful,
       █  but WITHOUT ANY WARRANTY; without even the implied warranty of
       █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
       █  GNU Affero General Public License for more details.
-      █  
+      █
       █  You should have received a copy of the GNU Affero General Public License
       █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-      █  
-      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
-                                                                                                   ██ 
-                                                                                               ▀█▄ ██ ▄█▀ 
-                                                                                                 ▀████▀   
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
                                                                                                    ▀▀                            */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -48,91 +49,93 @@ using Symbiote.Core.Platform;
 using NLog.xLogger;
 using Utility.OperationResult;
 using System.Collections.Immutable;
-using Symbiote.Core.SDK.Configuration;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Platform;
+using Symbiote.SDK.Configuration;
+using Symbiote.SDK;
+using Symbiote.SDK.Platform;
 
 namespace Symbiote.Core.Configuration
 {
     /// <summary>
-    /// The Configuration Manager manages the configuration file for the application and all plugins.
+    ///     The Configuration Manager manages the configuration file for the application and all plugins.
     /// </summary>
     /// <remarks>
-    /// <para>
-    /// The Configuration namespace encapsulates the Configuration Manager and the classes and interfaces used by various application
-    /// components to allow the configuration of application level objects.
-    /// </para>
-    /// <para>
-    /// The Configuration file is generated from the json serialization of the Configuration model.  The Configuration model consists of
-    /// a single instance of type Dictionary(Type, Dictionary(string, object)).  This instance creates a nested dictionary keyed on type
-    /// first, then by name.  The resulting key value pair contains the Configuration object for the specified Type and named instance.
-    /// </para>
-    /// <para>
-    /// There are two main types of configuration supported by this scheme; configuration for static objects like the various application
-    /// Managers and Services, and for dynamic objects encompassed by Plugins; namely Endpoints and Connectors.  The key difference is the 
-    /// number of instances of each; static objects will have only one instance while the Plugin objects may have any number.  Static objects 
-    /// do not supply an instance name when using the Configuration Manager, and their configuration is saved within the model with an empty
-    /// string.  Dynamic objects must supply an instance name.
-    /// </para>
-    /// <para>
-    /// The Configuration file maintained by the Configuration Manager is capable of being rebuilt from scratch.  If missing, the Manager
-    /// automatically adds a default, nameless instance of each registered type to the configuration model and flushes it to disk before
-    /// loading it.  This ensures the application can start normally in the event of a deletion.
-    /// </para>
-    /// <para>
-    /// The method IsConfigurable uses reflection to examine the given Type to ensure that:
-    ///     1. it implements IConfigurable
-    ///     2. it contains the static method GetConfigurationDefinition
-    ///     3. it contains the static method GetDefaultConfiguration
-    /// <para>
-    /// </para>
-    /// If all three predicates are true, the Type can be registered with the Configuration Manager and instances of that type can load 
-    /// and save configuration data.
-    /// <para>
-    /// </para>
-    /// Before any Type can use the Configuration Manager, the method RegisterType() must be called and passed the Type of that class.
-    /// This method checks IsConfigurable and if passing, fetches the ConfigurationDefinition for the Type from the static method
-    /// GetConfigurationDefinition and stores the Type and the ConfigurationDefinition in the RegisteredTypes dictionary.
-    /// </para>
-    /// <para>
-    /// The GetInstanceConfiguration(T) method is called by configurable instances to retrieve the saved configuration for the calling
-    /// class and instance.  By default, if the configuration is not found the default configuration is retrieved from the calling class
-    /// and returned to the caller.
-    /// </para>
+    ///     <para>
+    ///         The Configuration namespace encapsulates the Configuration Manager and the classes and interfaces used by various
+    ///         application components to allow the configuration of application level objects.
+    ///     </para>
+    ///     <para>
+    ///         The Configuration file is generated from the json serialization of the Configuration model. The Configuration model
+    ///         consists of a single instance of type Dictionary(Type, Dictionary(string, object)). This instance creates a nested
+    ///         dictionary keyed on type first, then by name. The resulting key value pair contains the Configuration object for
+    ///         the specified Type and named instance.
+    ///     </para>
+    ///     <para>
+    ///         There are two main types of configuration supported by this scheme; configuration for static objects like the
+    ///         various application Managers and Services, and for dynamic objects encompassed by Plugins; namely Endpoints and
+    ///         Connectors. The key difference is the number of instances of each; static objects will have only one instance while
+    ///         the Plugin objects may have any number. Static objects do not supply an instance name when using the Configuration
+    ///         Manager, and their configuration is saved within the model with an empty string. Dynamic objects must supply an
+    ///         instance name.
+    ///     </para>
+    ///     <para>
+    ///         The Configuration file maintained by the Configuration Manager is capable of being rebuilt from scratch. If
+    ///         missing, the Manager automatically adds a default, nameless instance of each registered type to the configuration
+    ///         model and flushes it to disk before loading it. This ensures the application can start normally in the event of a deletion.
+    ///     </para>
+    ///     <para>
+    ///         The method IsConfigurable uses reflection to examine the given Type to ensure that:
+    ///         1. it implements IConfigurable
+    ///         2. it contains the static method GetConfigurationDefinition
+    ///         3. it contains the static method GetDefaultConfiguration
+    ///         <para></para>
+    ///         If all three predicates are true, the Type can be registered with the Configuration Manager and instances of that
+    ///         type can load and save configuration data.
+    ///         <para></para>
+    ///         Before any Type can use the Configuration Manager, the method RegisterType() must be called and passed the Type of
+    ///         that class. This method checks IsConfigurable and if passing, fetches the ConfigurationDefinition for the Type from
+    ///         the static method GetConfigurationDefinition and stores the Type and the ConfigurationDefinition in the
+    ///         RegisteredTypes dictionary.
+    ///     </para>
+    ///     <para>
+    ///         The GetInstanceConfiguration(T) method is called by configurable instances to retrieve the saved configuration for
+    ///         the calling class and instance. By default, if the configuration is not found the default configuration is
+    ///         retrieved from the calling class and returned to the caller.
+    ///     </para>
     /// </remarks>
     public sealed class ConfigurationManager : Manager, IStateful, IManager, IConfigurationManager
     {
         #region Fields
 
         /// <summary>
-        /// The Logger for this class.
+        ///     The Logger for this class.
         /// </summary>
         private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-       
+
         /// <summary>
-        /// The Singleton instance of ConfigurationManager.
+        ///     The Singleton instance of ConfigurationManager.
         /// </summary>
         private static ConfigurationManager instance;
 
         #region Locks
 
         /// <summary>
-        /// Lock for the State property.
+        ///     Lock for the State property.
         /// </summary>
         private object stateLock = new object();
 
-        #endregion
+        #endregion Locks
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ConfigurationManager"/> class.
+        ///     Initializes a new instance of the <see cref="ConfigurationManager"/> class.
         /// </summary>
         /// <remarks>
-        ///     This constructor is marked private and is intended to be called from the <see cref="Instantiate(IApplicationManager, IPlatformManager)"/>
-        ///     method exclusively in order to implement the Singleton design pattern.
+        ///     This constructor is marked private and is intended to be called from the
+        ///     <see cref="Instantiate(IApplicationManager, IPlatformManager)"/> method exclusively in order to implement the
+        ///     Singleton design pattern.
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
@@ -155,26 +158,26 @@ namespace Symbiote.Core.Configuration
             logger.ExitMethod();
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Properties
 
         /// <summary>
-        /// Gets the current configuration.
+        ///     Gets the current configuration.
         /// </summary>
         public Dictionary<string, Dictionary<string, object>> Configuration { get; private set; }
 
         /// <summary>
-        /// Gets the filename of the configuration file.
+        ///     Gets the filename of the configuration file.
         /// </summary>
         public string ConfigurationFileName { get; private set; }
 
         /// <summary>
-        /// Gets a dictionary containing all registered configurable types and their ConfigurationDefinitions.
+        ///     Gets a dictionary containing all registered configurable types and their ConfigurationDefinitions.
         /// </summary>
         public Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get; private set; }
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
@@ -186,9 +189,9 @@ namespace Symbiote.Core.Configuration
         ///     Instantiates and/or returns the ConfigurationManager instance.
         /// </summary>
         /// <remarks>
-        ///     Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
-        ///     to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
-        ///     injected when the method is invoked.
+        ///     Invoked via reflection from ApplicationManager. The parameters are used to build an array of IManager parameters
+        ///     which are then passed to this method. To specify additional dependencies simply insert them into the parameter list
+        ///     for the method and they will be injected when the method is invoked.
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
@@ -204,7 +207,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Returns the fully qualified path to the configuration file including file name and extension.
+        ///     Returns the fully qualified path to the configuration file including file name and extension.
         /// </summary>
         /// <returns>The fully qualified path, filename and extension of the configuration file.</returns>
         public static string GetConfigurationFileName()
@@ -213,7 +216,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Returns the drive on which the configuration file resides
+        ///     Returns the drive on which the configuration file resides
         /// </summary>
         /// <returns>A string representing the drive containing the configuration file</returns>
         public static string GetConfigurationFileDrive()
@@ -222,7 +225,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Sets or updates the configuration file location setting in app.config
+        ///     Sets or updates the configuration file location setting in app.config
         /// </summary>
         /// <param name="fileName">The fully qualified path to the configuration file.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -246,7 +249,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Moves the configuration file to a new location and updates the setting in app.config.
+        ///     Moves the configuration file to a new location and updates the setting in app.config.
         /// </summary>
         /// <param name="newFileName">The fully qualified path to the new file.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -278,12 +281,12 @@ namespace Symbiote.Core.Configuration
             return retVal;
         }
 
-        #endregion
+        #endregion Public Static Methods
 
         #region Public Instance Methods
 
         /// <summary>
-        /// Determines whether the specified instance of the specified type is configured.
+        ///     Determines whether the specified instance of the specified type is configured.
         /// </summary>
         /// <param name="type">The Type of the instance to check.</param>
         /// <param name="instanceName">The name of the instance to check.</param>
@@ -292,9 +295,9 @@ namespace Symbiote.Core.Configuration
         {
             return IsConfigured(type, Configuration, instanceName);
         }
-        
+
         /// <summary>
-        /// Adds the specified configuration to the specified instance of the specified type.
+        ///     Adds the specified configuration to the specified instance of the specified type.
         /// </summary>
         /// <typeparam name="T">The configuration Type.</typeparam>
         /// <param name="type">The Type of the instance to be configured.</param>
@@ -305,23 +308,25 @@ namespace Symbiote.Core.Configuration
         {
             return AddInstanceConfiguration<T>(type, instanceConfiguration, Configuration, instanceName);
         }
-        
+
         /// <summary>
-        /// Retrieves the configuration for the instance matching instanceName of the supplied Type.
-        /// If the configuration can't be found, returns the default configuration for the Type.
+        ///     Retrieves the configuration for the instance matching instanceName of the supplied Type. If the configuration can't
+        ///     be found, returns the default configuration for the Type.
         /// </summary>
         /// <typeparam name="T">The Type matching the Configuration model for the calling class.</typeparam>
         /// <param name="type">The Type of the calling class.</param>
         /// <param name="instanceName">The name of the instance for which to retrieve the configuration.</param>
-        /// <returns>A Result containing the result of the operation and an instance of the Configuration model 
-        /// for the calling class containing the retrieved configuration.</returns>
+        /// <returns>
+        ///     A Result containing the result of the operation and an instance of the Configuration model for the calling class
+        ///     containing the retrieved configuration.
+        /// </returns>
         public Result<T> GetInstanceConfiguration<T>(Type type, string instanceName = "")
         {
             return GetInstanceConfiguration<T>(type, Configuration, instanceName);
         }
 
         /// <summary>
-        /// Saves the specified Configuration model to the Configuration for the specified instance and Type.
+        ///     Saves the specified Configuration model to the Configuration for the specified instance and Type.
         /// </summary>
         /// <param name="type">The Type of the calling class.</param>
         /// <param name="instanceConfiguration">The Configuration model to save.</param>
@@ -333,7 +338,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Removes the specified instance of the specified type from the configuration.
+        ///     Removes the specified instance of the specified type from the configuration.
         /// </summary>
         /// <param name="type">The Type of instance to remove.</param>
         /// <param name="instanceName">The name of the instance to remove from the Type.</param>
@@ -344,7 +349,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Saves the current configuration to the file specified in app.exe.config.
+        ///     Saves the current configuration to the file specified in app.exe.config.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
@@ -353,7 +358,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Validates the current configuration.
+        ///     Validates the current configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result ValidateConfiguration()
@@ -362,9 +367,8 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        ///     Evaluates the provided type regarding whether it can be configured and returns the result.
-        ///     To be configurable, the type must implement IConfigurable and must have static methods GetConfigurationDefinition and 
-        ///     GetDefaultConfiguration.
+        ///     Evaluates the provided type regarding whether it can be configured and returns the result. To be configurable, the
+        ///     type must implement IConfigurable and must have static methods GetConfigurationDefinition and GetDefaultConfiguration.
         /// </summary>
         /// <param name="type">The Type to evaluate.</param>
         /// <returns>A Result containing the result of the operation and the Type of the configuration.</returns>
@@ -399,8 +403,8 @@ namespace Symbiote.Core.Configuration
             }
             else
             {
-                // the Type is configurable.  Determine the generic type parameter used with IConfigurable<T> so that we can return it
-                // first get the IConfigurable<T> Type
+                // the Type is configurable. Determine the generic type parameter used with IConfigurable<T> so that we can return
+                // it first get the IConfigurable<T> Type
                 Type configurable = type.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)).FirstOrDefault();
 
                 // retrieve the first generic argument (there will only be one)
@@ -413,10 +417,13 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Checks to see if the supplied Type is in the RegisteredTypes dictionary.
+        ///     Checks to see if the supplied Type is in the RegisteredTypes dictionary.
         /// </summary>
         /// <param name="type">The Type to check.</param>
-        /// <returns>A Result containing the result of the operation and a boolean indicating whether the specified Type was found in the dictionary.</returns>
+        /// <returns>
+        ///     A Result containing the result of the operation and a boolean indicating whether the specified Type was found in
+        ///     the dictionary.
+        /// </returns>
         public Result<bool> IsRegistered(Type type)
         {
             logger.EnterMethod(xLogger.Params(type));
@@ -430,7 +437,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Registers each Type within the supplied list which implements the IConfigurable interface.
+        ///     Registers each Type within the supplied list which implements the IConfigurable interface.
         /// </summary>
         /// <param name="types">The list of Types to register.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -458,7 +465,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Registers the supplied Type with the Configuration Manager.
+        ///     Registers the supplied Type with the Configuration Manager.
         /// </summary>
         /// <remarks>When called during application startup, throwExceptionOnFailure should be set to true.</remarks>
         /// <param name="type">The Type to register.</param>
@@ -517,21 +524,17 @@ namespace Symbiote.Core.Configuration
             return retVal;
         }
 
-        #endregion
+        #endregion Public Instance Methods
 
-        #endregion
+        #endregion Public Methods
 
         #region Protected Methods
 
         #region Protected Instance Methods
 
         /// <summary>
-        /// <para>
-        ///     Executed upon instantiation of all program Managers.
-        /// </para>
-        /// <para>
-        ///     Registers all IManagers in the specified list implementing IConfigurable.
-        /// </para>
+        ///     <para>Executed upon instantiation of all program Managers.</para>
+        ///     <para>Registers all IManagers in the specified list implementing IConfigurable.</para>
         /// </summary>
         /// <exception cref="Exception">Thrown when an error is encountered during setup.</exception>
         protected override void Setup()
@@ -554,13 +557,11 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// <para>
-        /// Executed upon startup of the Manager. 
-        /// </para>
-        /// <para>
-        ///     Verifies the existence of the configuration file and if missing, builds it using all default options.  Loads the
-        ///     configuration, validates it, and, if valid, attaches it to the <see cref="Configuration"/> property.
-        /// </para>
+        ///     <para>Executed upon startup of the Manager.</para>
+        ///     <para>
+        ///         Verifies the existence of the configuration file and if missing, builds it using all default options. Loads the
+        ///         configuration, validates it, and, if valid, attaches it to the <see cref="Configuration"/> property.
+        ///     </para>
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         protected override Result Startup()
@@ -586,7 +587,7 @@ namespace Symbiote.Core.Configuration
 
                     if (saveResult.ResultCode != ResultCode.Failure)
                     {
-                        // the file saved properly.  print the result and a final confirmation.
+                        // the file saved properly. print the result and a final confirmation.
                         saveResult.LogResult(logger, "SaveConfiguration");
                         logger.Info("Saved the new configuration to '" + ConfigurationFileName + "'.");
                     }
@@ -614,7 +615,7 @@ namespace Symbiote.Core.Configuration
             retVal.Incorporate(loadResult);
 
             logger.Checkpoint("Configuration loaded for validation", guid);
-            
+
             // validate the configuration.
             Result validationResult = ValidateConfiguration(Configuration);
 
@@ -639,12 +640,10 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// <para>
-        /// Executed upon shutdown of the Manager. 
-        /// </para>
-        /// <para>
-        /// If the specified <see cref="StopType"/> is not <see cref="StopType.Exception"/>, saves the configuration to disk.
-        /// </para>
+        ///     <para>Executed upon shutdown of the Manager.</para>
+        ///     <para>
+        ///         If the specified <see cref="StopType"/> is not <see cref="StopType.Exception"/>, saves the configuration to disk.
+        ///     </para>
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -664,25 +663,27 @@ namespace Symbiote.Core.Configuration
             return retVal;
         }
 
-        #endregion
+        #endregion Protected Instance Methods
 
-        #endregion
+        #endregion Protected Methods
 
         #region Private Methods
 
         #region Private Instance Methods
 
         /// <summary>
-        /// Loads the configuration from the file specified in the ConfigurationFileName property.
+        ///     Loads the configuration from the file specified in the ConfigurationFileName property.
         /// </summary>
-        /// <returns>A Result containing the result of the operation and the instance of Configuration containing the loaded configuration.</returns>
+        /// <returns>
+        ///     A Result containing the result of the operation and the instance of Configuration containing the loaded configuration.
+        /// </returns>
         private Result<Dictionary<string, Dictionary<string, object>>> LoadConfiguration()
         {
             return LoadConfiguration(ConfigurationFileName);
         }
 
         /// <summary>
-        /// Reads the given file and attempts to deserialize it to an instance of Configuration.
+        ///     Reads the given file and attempts to deserialize it to an instance of Configuration.
         /// </summary>
         /// <param name="fileName">The file to read and deserialize.</param>
         /// <returns>A Result containing the result of the operation and the Configuration instance created from the file.</returns>
@@ -717,7 +718,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Saves the provided configuration to the file specified in app.exe.config.
+        ///     Saves the provided configuration to the file specified in app.exe.config.
         /// </summary>
         /// <param name="configuration">The Configuration instance to save.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -730,7 +731,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Saves the given configuration to the specified file.
+        ///     Saves the given configuration to the specified file.
         /// </summary>
         /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
         /// <param name="fileName">The file in which to save the configuration.</param>
@@ -758,8 +759,8 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Examines the supplied Configuration for errors and returns the result.  If returning a Warning or Invalid result code,
-        /// includes the validation message in the Message member of the return type.
+        ///     Examines the supplied Configuration for errors and returns the result. If returning a Warning or Invalid result
+        ///     code, includes the validation message in the Message member of the return type.
         /// </summary>
         /// <param name="configuration">The Configuration to validate.</param>
         /// <returns>A Result containing the result of the validation.</returns>
@@ -778,7 +779,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Manually builds an instance of Configuration with default values.
+        ///     Manually builds an instance of Configuration with default values.
         /// </summary>
         /// <returns>A Result containing the default instance of a Configuration.</returns>
         private Result<Dictionary<string, Dictionary<string, object>>> BuildNewConfiguration()
@@ -793,7 +794,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Registers the supplied Type with the Configuration Manager using the supplied ConfigurationDefinition.
+        ///     Registers the supplied Type with the Configuration Manager using the supplied ConfigurationDefinition.
         /// </summary>
         /// <param name="type">The Type to register.</param>
         /// <param name="definition">The ConfigurationDefinition with which to register the Type.</param>
@@ -829,7 +830,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Determines whether the specified instance of the specified type is configured.
+        ///     Determines whether the specified instance of the specified type is configured.
         /// </summary>
         /// <param name="type">The Type of the instance to check.</param>
         /// <param name="configuration">The ApplicationConfiguration to examine.</param>
@@ -863,7 +864,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Adds the specified configuration to the specified instance of the specified type.
+        ///     Adds the specified configuration to the specified instance of the specified type.
         /// </summary>
         /// <typeparam name="T">The configuration Type.</typeparam>
         /// <param name="type">The Type of the instance to be configured.</param>
@@ -889,7 +890,7 @@ namespace Symbiote.Core.Configuration
             {
                 // ensure the configuration doesn't already exist
                 logger.Trace("Inserting configuration into the Configuration dictionary...");
-                
+
                 // if the configuration doesn't contain a section for the type, add it
                 if (!configuration.ContainsKey(type.FullName))
                 {
@@ -914,7 +915,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Saves the specified Configuration model to the Configuration for the specified instance and Type.
+        ///     Saves the specified Configuration model to the Configuration for the specified instance and Type.
         /// </summary>
         /// <param name="type">The Type of the calling class.</param>
         /// <param name="instanceConfiguration">The Configuration model to save.</param>
@@ -943,7 +944,7 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Removes the specified instance of the specified type from the configuration.
+        ///     Removes the specified instance of the specified type from the configuration.
         /// </summary>
         /// <param name="type">The Type of instance to remove.</param>
         /// <param name="configuration">The ApplicationConfiguration from which to remove the configuration.</param>
@@ -971,15 +972,17 @@ namespace Symbiote.Core.Configuration
         }
 
         /// <summary>
-        /// Retrieves the configuration for the instance matching instanceName of the supplied Type.
-        /// If the configuration can't be found, returns the default configuration for the Type.
+        ///     Retrieves the configuration for the instance matching instanceName of the supplied Type. If the configuration can't
+        ///     be found, returns the default configuration for the Type.
         /// </summary>
         /// <typeparam name="T">The Type matching the Configuration model for the calling class.</typeparam>
         /// <param name="type">The Type of the calling class.</param>
         /// <param name="configuration">The ApplicationConfiguration from which to retrieve the configuration.</param>
         /// <param name="instanceName">The name of the instance for which to retrieve the configuration.</param>
-        /// <returns>A Result containing the result of the operation and an instance of the Configuration model 
-        /// for the calling class containing the retrieved configuration.</returns>
+        /// <returns>
+        ///     A Result containing the result of the operation and an instance of the Configuration model for the calling class
+        ///     containing the retrieved configuration.
+        /// </returns>
         private Result<T> GetInstanceConfiguration<T>(Type type, Dictionary<string, Dictionary<string, object>> configuration, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
@@ -991,8 +994,8 @@ namespace Symbiote.Core.Configuration
             {
                 try
                 {
-                    // json.net needs to know the type when it deserializes; we can't cast or convert after the fact.
-                    // the solution is to grab our object, serialize it again, then deserialize it into the required type.
+                    // json.net needs to know the type when it deserializes; we can't cast or convert after the fact. the solution
+                    // is to grab our object, serialize it again, then deserialize it into the required type.
                     var rawObject = configuration[type.FullName][instanceName];
                     var newSerializedObject = JsonConvert.SerializeObject(rawObject);
                     var newDeSerializedObject = JsonConvert.DeserializeObject<T>(newSerializedObject);
@@ -1012,10 +1015,10 @@ namespace Symbiote.Core.Configuration
             return retVal;
         }
 
-        #endregion
+        #endregion Private Instance Methods
 
-        #endregion
+        #endregion Private Methods
 
-        #endregion
+        #endregion Methods
     }
 }

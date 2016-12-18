@@ -51,7 +51,7 @@
 using System;
 using System.Collections.Immutable;
 using System.Diagnostics.CodeAnalysis;
-using Symbiote.Core.SDK;
+using Symbiote.SDK;
 using Symbiote.Core.Tests.Mockups;
 using Utility.OperationResult;
 using Xunit;

@@ -15,9 +15,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Core.SDK", "Symbiote.Core.SDK\Symbiote.Core.SDK.csproj", "{9C220B49-76AC-4EF5-B385-906AC84D5DA2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.SDK", "Symbiote.SDK\Symbiote.SDK.csproj", "{9C220B49-76AC-4EF5-B385-906AC84D5DA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.Core.SDK.Tests", "Symbiote.Core.SDK.Tests\Symbiote.Core.SDK.Tests.csproj", "{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Symbiote.SDK.Tests", "Symbiote.SDK.Tests\Symbiote.SDK.Tests.csproj", "{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

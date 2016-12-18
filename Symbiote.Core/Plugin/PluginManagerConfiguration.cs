@@ -1,4 +1,4 @@
-﻿using Symbiote.Core.SDK.Plugin;
+﻿using Symbiote.SDK.Plugin;
 using System;
 using System.Collections.Generic;
 

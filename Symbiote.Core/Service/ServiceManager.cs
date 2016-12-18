@@ -11,8 +11,8 @@ using Newtonsoft.Json;
 using Symbiote.Core.Configuration;
 using NLog.xLogger;
 using Utility.OperationResult;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Configuration;
+using Symbiote.SDK;
+using Symbiote.SDK.Configuration;
 
 namespace Symbiote.Core.Service
 {

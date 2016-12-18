@@ -2,14 +2,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Symbiote.Core.SDK.Configuration;
-using Symbiote.Core.SDK;
+using Symbiote.SDK.Configuration;
+using Symbiote.SDK;
 using Symbiote.Core.Plugin;
 using Newtonsoft.Json;
 using NLog.xLogger;
 using Utility.OperationResult;
-using Symbiote.Core.SDK.Plugin;
-using Symbiote.Core.SDK.Model;
+using Symbiote.SDK.Plugin;
+using Symbiote.SDK.Model;
 
 namespace Symbiote.Core.Model
 {

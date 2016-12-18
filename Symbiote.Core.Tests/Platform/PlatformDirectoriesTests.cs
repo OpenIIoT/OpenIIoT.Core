@@ -52,7 +52,7 @@ using System;
 using Xunit;
 using System.Collections.Generic;
 using Symbiote.Core.Platform;
-using Symbiote.Core.SDK.Platform;
+using Symbiote.SDK.Platform;
 
 namespace Symbiote.Core.Tests
 {

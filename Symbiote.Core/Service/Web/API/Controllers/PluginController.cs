@@ -2,8 +2,8 @@
 using NLog;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Plugin;
+using Symbiote.SDK;
+using Symbiote.SDK.Plugin;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;

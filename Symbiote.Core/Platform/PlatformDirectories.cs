@@ -43,8 +43,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NLog.xLogger;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Platform;
+using Symbiote.SDK;
+using Symbiote.SDK.Platform;
 
 namespace Symbiote.Core.Platform
 {

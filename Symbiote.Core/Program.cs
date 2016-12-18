@@ -52,10 +52,10 @@ using Symbiote.Core.Event;
 using Symbiote.Core.Model;
 using Symbiote.Core.Platform;
 using Symbiote.Core.Plugin;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Model;
-using Symbiote.Core.SDK.Platform;
-using Symbiote.Core.SDK.Plugin.Connector;
+using Symbiote.SDK;
+using Symbiote.SDK.Model;
+using Symbiote.SDK.Platform;
+using Symbiote.SDK.Plugin.Connector;
 using Symbiote.Core.Service;
 using Utility.OperationResult;
 

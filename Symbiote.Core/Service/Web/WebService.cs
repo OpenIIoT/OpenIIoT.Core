@@ -8,8 +8,8 @@ using Microsoft.Owin.Hosting;
 using Microsoft.AspNet.SignalR;
 using System.Web.Http;
 using Newtonsoft.Json;
-using Symbiote.Core.SDK.Configuration;
-using Symbiote.Core.SDK;
+using Symbiote.SDK.Configuration;
+using Symbiote.SDK;
 using System.Web.Http.Services;
 using Utility.OperationResult;
 

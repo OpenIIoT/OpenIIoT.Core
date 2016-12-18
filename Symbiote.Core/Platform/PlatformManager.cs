@@ -42,8 +42,8 @@
 using Newtonsoft.Json;
 using NLog;
 using NLog.xLogger;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Platform;
+using Symbiote.SDK;
+using Symbiote.SDK.Platform;
 using System;
 using System.Collections.Generic;
 using Utility.OperationResult;

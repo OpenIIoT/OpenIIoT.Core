@@ -40,8 +40,8 @@
                                                                                                    ▀▀                            */
 
 using Symbiote.Core.Plugin;
-using Symbiote.Core.SDK;
-using Symbiote.Core.SDK.Model;
+using Symbiote.SDK;
+using Symbiote.SDK.Model;
 
 namespace Symbiote.Core
 {
