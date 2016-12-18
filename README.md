@@ -1,13 +1,14 @@
 <h1><img src="http://symbiote.io/images/symbiote.png" width=32 height=32/>Symbiote</h1>
 
 [![Build status](https://ci.appveyor.com/api/projects/status/d1258j4683ffy87g?svg=true)](https://ci.appveyor.com/project/SymbioteAdmin/symbiote-core)
-[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/jpdillingham/Symbiote/blob/master/LICENSE)
+[![codecov](https://codecov.io/gh/symbiote/Symbiote.Core/branch/master/graph/badge.svg)](https://codecov.io/gh/symbiote/Symbiote.Core)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/Symbiote/Symbiote.Core/blob/master/LICENSE)
 
 ## About
 
 Symbiote is a cross-platform (via Mono) application platform written in C#.  The code in this repository is a work in progress and has not yet reached an Alpha version.
 
-Constructive feedback/criticism is greatly appreciated but contributions to this repository will not be accepted at this time.  
+Constructive feedback/criticism is greatly appreciated but contributions to this repository will not be accepted at this time.
 
 ## Documentation
 
