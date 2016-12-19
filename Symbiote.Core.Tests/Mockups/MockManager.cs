@@ -3,8 +3,17 @@ using Utility.OperationResult;
 
 namespace Symbiote.Core.Tests.Mockups
 {
-    public class MockManager : Manager, IStateful, IManager
+    /// <summary>
+    ///     Mocks a Manager.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the Type parameter requirement of the
+    ///     ApplicationManager class;
+    /// </remarks>
+    public class MockManager : Manager
     {
+        /// <summary>
+        /// </summary>
         private static MockManager instance;
 
         private MockManager(IApplicationManager manager)
@@ -17,8 +26,7 @@ namespace Symbiote.Core.Tests.Mockups
 
         public static MockManager Instantiate(IApplicationManager manager)
         {
-            // remove the code that makes this a singleton so that test runners can get a fresh
-            // instance each time.
+            // remove the code that makes this a singleton so that test runners can get a fresh instance each time.
             instance = new MockManager(manager);
             return instance;
         }

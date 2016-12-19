@@ -59,52 +59,25 @@ using Xunit;
 
 namespace Symbiote.Core.Tests
 {
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerBadDependency : IDisposable
+    public class ApplicationManager
     {
-        #region Public Methods
-
         /// <summary>
-        ///     Disposes the ApplicationManager.
+        ///     Initializes a new instance of the <see cref="ApplicationManager"/> class.
         /// </summary>
-        public void Dispose()
+        /// <remarks>Terminates any previous instantiation of the ApplicationManager prior to each test.</remarks>
+        public ApplicationManager()
         {
-            ApplicationManager.Terminate();
+            Core.ApplicationManager.Terminate();
         }
 
         /// <summary>
-        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
+        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
         /// </summary>
         [Fact]
         public void ManagerWithBadDepdency()
         {
-            Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadDependency) }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerBadInstantiate : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadDependency) }));
         }
 
         /// <summary>
@@ -113,29 +86,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void ManagerWithBadInstantiate()
         {
-            ApplicationManager.Terminate();
-            Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadInstantiate) }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerBadType : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadInstantiate) }));
         }
 
         /// <summary>
@@ -144,29 +95,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void InstantiateWithNonIManager()
         {
-            Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { typeof(int) }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests invocation of <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a broken
-    ///     <see cref="Manager.Setup"/> method.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerBrokenTest : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerTypeListException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(int) }));
         }
 
         /// <summary>
@@ -176,28 +105,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void InstantiateWithBrokenSetupMethod()
         {
-            Assert.Throws<ManagerSetupException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a manager that doesn't implement IManager.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerDoesntImplementIManager : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerSetupException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
         }
 
         /// <summary>
@@ -206,28 +114,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void ManagerDoesntImplementIManager()
         {
-            Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerDoesntImplementIManager) }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerDoubleManagers : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerTypeListException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerDoesntImplementIManager) }));
         }
 
         /// <summary>
@@ -236,58 +123,16 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void DoubleManagers()
         {
-            Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManager), typeof(MockManager) }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerEmptyArray : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager), typeof(MockManager) }));
         }
 
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
         /// </summary>
         [Fact]
-        public void InstantiateWithEmpty()
+        public void InstantiateWithEmptyArray()
         {
-            Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(new Type[] { }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerGetInstanceBeforeInstantiation : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerTypeListException>(() => Core.ApplicationManager.Instantiate(new Type[] { }));
         }
 
         /// <summary>
@@ -296,28 +141,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void GetInstanceBeforeInstantiation()
         {
-            Assert.Throws<ManagerNotInitializedException>(() => ApplicationManager.GetInstance());
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.GetInstance()"/> after first invoking <see cref="ApplicationManager.Instantiate(Type[])"/>.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerInstantiateAndGetInstanceTest : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerNotInitializedException>(() => Core.ApplicationManager.GetInstance());
         }
 
         /// <summary>
@@ -326,29 +150,10 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void InstantiateAndGetInstance()
         {
-            ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-            ApplicationManager manager2 = ApplicationManager.GetInstance();
-        }
+            Core.ApplicationManager manager1 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            Core.ApplicationManager manager2 = Core.ApplicationManager.GetInstance();
 
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests successive invocations of <see cref="ApplicationManager.Instantiate(Type[])"/>.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerInstantiateTwiceTest : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Equal(manager1, manager2);
         }
 
         /// <summary>
@@ -357,29 +162,8 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void InstantiateTwice()
         {
-            ApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-            ApplicationManager manager2 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerNoDependencies : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Core.ApplicationManager manager1 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            Core.ApplicationManager manager2 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
         }
 
         /// <summary>
@@ -388,28 +172,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void ManagerWithNoDependencies()
         {
-            Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoDependencies) }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerNoInstantiate : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoDependencies) }));
         }
 
         /// <summary>
@@ -418,28 +181,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void ManagerWithNoInstantiate()
         {
-            Assert.Throws<ManagerInstantiationException>(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoInstantiate) }));
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a null Type array.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerNullInstantiation : IDisposable
-    {
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes the ApplicationManager.
-        /// </summary>
-        public void Dispose()
-        {
-            ApplicationManager.Terminate();
+            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoInstantiate) }));
         }
 
         /// <summary>
@@ -448,20 +190,8 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void InstantiateWithNull()
         {
-            Assert.Throws<ManagerTypeListException>(() => ApplicationManager.Instantiate(null));
+            Assert.Throws<ManagerTypeListException>(() => Core.ApplicationManager.Instantiate(null));
         }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Tests <see cref="Manager.Start()"/> and <see cref="Manager.Stop()"/>
-    /// </summary>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerStartStop
-    {
-        #region Public Methods
 
         /// <summary>
         ///     Tests <see cref="Manager.Start()"/> with a Manager known to return a failed Result from startup.
@@ -469,9 +199,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void StartBadReturn()
         {
-            ApplicationManager.Terminate();
-
-            ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartBadReturn) });
+            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartBadReturn) });
 
             Assert.Throws<ManagerStartException>(() => manager.Start());
         }
@@ -482,9 +210,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void StartFail()
         {
-            ApplicationManager.Terminate();
-
-            ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartFail) });
+            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartFail) });
 
             Assert.Throws<ManagerStartException>(() => manager.Start());
         }
@@ -495,9 +221,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void StartStop()
         {
-            ApplicationManager.Terminate();
-
-            ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Result startResult = manager.Start();
 
@@ -516,9 +240,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void StopBadReturn()
         {
-            ApplicationManager.Terminate();
-
-            ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopBadReturn) });
+            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopBadReturn) });
 
             Result startResult = manager.Start();
 
@@ -534,9 +256,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void StopFail()
         {
-            ApplicationManager.Terminate();
-
-            ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopFail) });
+            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopFail) });
 
             Result startResult = manager.Start();
 
@@ -546,19 +266,6 @@ namespace Symbiote.Core.Tests
             Assert.Throws<ManagerStopException>(() => manager.Stop());
         }
 
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Unit tests for the ApplicationManager class.
-    /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
-    [Collection("ApplicationManager")]
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ApplicationManagerTests
-    {
-        #region Public Methods
-
         /// <summary>
         ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a valid, functioning
         ///     IManager instance.
@@ -566,11 +273,9 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void InstantiateWithValidIManager()
         {
-            ApplicationManager.Terminate();
+            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
-            ApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-
-            Assert.IsType<ApplicationManager>(manager);
+            Assert.IsType<Core.ApplicationManager>(manager);
             Assert.NotNull(manager);
 
             ImmutableList<IManager> managers = manager.GetManagers();
@@ -579,9 +284,7 @@ namespace Symbiote.Core.Tests
 
             Assert.NotNull(manager.ProductName);
             Assert.NotNull(manager.ProductVersion);
-            Assert.Equal(manager.InstanceName, ApplicationManager.GetInstanceName());
+            Assert.Equal(manager.InstanceName, Core.ApplicationManager.GetInstanceName());
         }
-
-        #endregion Public Methods
     }
 }
