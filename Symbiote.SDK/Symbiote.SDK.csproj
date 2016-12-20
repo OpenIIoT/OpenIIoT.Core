@@ -64,7 +64,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\ContractResolver.cs" />
+    <Compile Include="Common\Utility\ContractResolver.cs" />
     <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
     <Compile Include="Common\Manager\IManager.cs" />
@@ -72,7 +72,7 @@
     <Compile Include="Common\State\State.cs" />
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\StopType.cs" />
-    <Compile Include="Common\Utility.cs" />
+    <Compile Include="Common\Utility\Utility.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />

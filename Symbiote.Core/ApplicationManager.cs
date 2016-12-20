@@ -442,10 +442,6 @@ namespace Symbiote.Core
                 // invoke the Instantiate() method and pass the resolved dependencies from the step above. store the result in
                 // instance, then check to make sure it is not null and ensure that it implements IManager.
                 instance = (T)method.Invoke(null, resolvedDependencies.ToArray());
-                if (!(instance is IManager))
-                {
-                    throw new ManagerInstantiationException("The instance returned by Instantiate() method invocation from '" + typeof(T).Name + "' is invalid.");
-                }
 
                 logger.Trace("Successfully instantiated '" + instance.GetType().Name + "'.");
             }

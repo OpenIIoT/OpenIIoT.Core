@@ -88,20 +88,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Common\Manager.cs" />
-    <Compile Include="Mockups\MockManagerStartBadReturn.cs" />
-    <Compile Include="Mockups\MockManagerStopBadReturn.cs" />
-    <Compile Include="Mockups\MockManagerStopFail.cs" />
-    <Compile Include="Mockups\MockManagerStartFail.cs" />
-    <Compile Include="Mockups\MockManagerRunning.cs" />
-    <Compile Include="Mockups\MockManagerDoesntImplementIManager.cs" />
-    <Compile Include="Mockups\MockManagerBadInstantiate.cs" />
-    <Compile Include="Mockups\MockManagerBadDependency.cs" />
-    <Compile Include="Mockups\MockManagerNoInstantiate.cs" />
-    <Compile Include="Mockups\MockManagerNoDependencies.cs" />
-    <Compile Include="Mockups\MockManager.cs" />
-    <Compile Include="Mockups\MockManagerBroken.cs" />
-    <Compile Include="Common\ApplicationManager.cs" />
+    <Compile Include="Common\Manager\Manager.cs" />
+    <Compile Include="ApplicationManager.cs" />
     <Compile Include="Platform\PlatformDirectoriesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
