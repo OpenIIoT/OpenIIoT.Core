@@ -5,6 +5,25 @@
 All classes, interfaces, enumerations which need to be accessible to plugins, in addition to exceptions and other trivial classes, must reside in the ```Symbiote.SDK``` project.  Organization of the ```Symbiote.SDK``` project must
 mirror that of the ```Symbiote.Core``` project.
 
+## Testing
+
+All projects containing source code must have an accompanying Unit Test project named ```<project>.Tests``` where the project under test preceeds the final period in the project name.  For example,
+the project ```Symbiote.SDK``` must have a Unit Test project named ```Symbiote.SDK.Tests``` within the same solution.
+
+Test project organization must mirror the project under test, and test classes must mirror the names of the classes being tested.  The file header for the Unit Test class must match that of the class under test followed by
+the word "Test" on a new line under the name of the class.  The verbiage of the class description must be ```Unit tests for the <class> class.```, where ```<class>``` is the name of the class under test.
+
+The [xUnit](https://xunit.github.io/) framework must be used for all unit tests.  Runners for Visual Studio and the Console should also be installed.  
+
+[OpenCover](https://github.com/OpenCover/opencover) is required to support CI via Appveyor as well as the optional but recommended [OpenCover.UI](https://marketplace.visualstudio.com/items?itemName=jamdagni86.OpenCoverUI)
+coverage extension for Visual Studio.
+
+The code coverage target for all classes is *95%* or above, preferably 100%.  Classes failing to reach 95% coverage must be refactored such that the target may be reached.
+
+The [Moq](https://github.com/moq/moq) mocking framework must be used to mock any non-trivial objects required for unit testing, where practical.  If a test must use a concrete mockup, the code for the mockup must be included
+within the file in which it is used.  The rationale explaining why a mocking framework must be included in the remarks section of the XML documentation for the class, and any unit test dependent upon the mockup must state the depencency
+in the remarks section of the XML documentation for that unit test.
+
 ## Coding Standards and Styling
 
 ### Namespaces
@@ -132,25 +151,7 @@ Methods which need to return status information or errors, other than fatal exce
 
 The usage of this class allows the application to gracefully handle recoverable errors without the expense of exceptions, and eliminates the need for sentinal values in return types.
 
-### Testing
 
-All projects containing source code must have an accompanying Unit Test project named ```<project>.Tests``` where the project under test preceeds the final period in the project name.  For example,
-the project ```Symbiote.SDK``` must have a Unit Test project named ```Symbiote.SDK.Tests``` within the same solution.
-
-Test project organization must mirror the project under test, and test classes must mirror the names of the classes being tested.  The file header for the Unit Test class must match that of the class under test followed by
-the word "Test" on a new line under the name of the class.  The verbiage of the class description must be ```Unit tests for the <class> class.```, where ```<class>``` is the name of the class under test.
-
-
-The [xUnit](https://xunit.github.io/) framework must be used for all unit tests.  Runners for Visual Studio and the Console should also be installed.  
-
-[OpenCover](https://github.com/OpenCover/opencover) is required to support CI via Appveyor as well as the optional but recommended [OpenCover.UI](https://marketplace.visualstudio.com/items?itemName=jamdagni86.OpenCoverUI)
-coverage extension for Visual Studio.
-
-The code coverage target for all classes is *95%* or above, preferably 100%.  Classes failing to reach 95% coverage must be refactored such that the target may be reached.
-
-The [Moq](https://github.com/moq/moq) mocking framework must be used to mock any non-trivial objects required for unit testing, where practical.  If a test must use a concrete mockup, the code for the mockup must be included
-within the file in which it is used.  The rationale explaining why a mocking framework must be included in the remarks section of the XML documentation for the class, and any unit test dependent upon the mockup must state the depencency
-in the remarks section of the XML documentation for that unit test.
 
 
 
