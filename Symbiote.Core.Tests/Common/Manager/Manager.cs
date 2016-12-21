@@ -92,6 +92,7 @@ namespace Symbiote.Core.Tests.Common
         /// <summary>
         ///     Tests the class constructor and property accessors.
         /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void Constructor()
         {
@@ -109,6 +110,10 @@ namespace Symbiote.Core.Tests.Common
         /// <summary>
         ///     Tests the behavior of the Manager when a dependency faults.
         /// </summary>
+        /// <remarks>
+        ///     Depends upon the <see cref="ManagerMockTwo"/> and <see cref="ManagerMockWithDependency"/> classes to simulate the
+        ///     behavior under test.
+        /// </remarks>
         [Fact]
         public void DependencyFault()
         {
@@ -141,6 +146,10 @@ namespace Symbiote.Core.Tests.Common
         /// <summary>
         ///     Tests the behavior of the Manager when a dependency stops.
         /// </summary>
+        /// <remarks>
+        ///     Depends upon the <see cref="ManagerMockTwo"/> and <see cref="ManagerMockWithDependency"/> classes to simulate the
+        ///     behavior under test.
+        /// </remarks>
         [Fact]
         public void DependencyStop()
         {
@@ -187,6 +196,7 @@ namespace Symbiote.Core.Tests.Common
         /// <summary>
         ///     Tests <see cref="Core.Manager.Restart(StopType)"/>.
         /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void Restart()
         {
@@ -208,15 +218,17 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void RestartNotRunning()
         {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+            Mock<Core.Manager> mock = new Mock<Core.Manager>();
+            mock.CallBase = true;
 
-            Result restart = test.Restart();
+            Result restart = mock.Object.Restart();
             Assert.Equal(ResultCode.Failure, restart.ResultCode);
         }
 
         /// <summary>
         ///     Tests <see cref="Core.Manager.Start"/>.
         /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void Start()
         {
@@ -234,6 +246,7 @@ namespace Symbiote.Core.Tests.Common
         /// <summary>
         ///     Tests <see cref="Core.Manager.Start"/> with a dependency in the stopped State.
         /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void StartWithStoppedDependency()
         {
@@ -250,6 +263,7 @@ namespace Symbiote.Core.Tests.Common
         /// <summary>
         ///     Tests <see cref="Core.Manager.Stop(StopType)"/>.
         /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void Stop()
         {
