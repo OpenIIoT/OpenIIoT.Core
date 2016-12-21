@@ -11,13 +11,28 @@ Plugin namespaces must begin with ```Symbiote.Plugin```.  Currently the third tu
 
 ### StyleCop
 
-StyleCop must be used to ensure compliance with generally accepted code formatting and organizational standards.  The ```Settings.StyleCop``` file from the ```Symbiote.Core```
-project should be copied to projects to ensure consistency.  The default StyleCop rules are used with the following exceptions:
+[StyleCop](https://github.com/StyleCop) must be used to ensure compliance with generally accepted code formatting and organizational standards.  The [Settings.StyleCop](https://github.com/Symbiote/Symbiote.Settings/blob/master/Settings.StyleCop) 
+file from the [Symbiote.Settings](https://github.com/Symbiote/Symbiote.Settings)
+repository should be copied to projects to ensure consistency.  The default StyleCop rules are used with the following exceptions:
 
 * Documentation Rules\File Headers category (conflicts with my stylistic approach)
 * SA1200: UsingDirectivesMustBePlacedWithinNamespace (conflicts with the management (adds, sorting) functionality of Visual Studio)
 * SA1101: PrefixLocalCallsWithThis (ridiculous rule in most cases, feel free to use the prefix to disambiguate where appropriate)
 * SA1126: PrefixCallsCorrectly (deprecated and impossible to satisfy in some cases)
+
+### CodeMaid
+
+[CodeMaid](http://www.codemaid.net/) must be used to organize and format source files.  The [CodeMaid.config](https://github.com/Symbiote/Symbiote.Settings/blob/master/CodeMaid.config) file from the [Symbiote.Settings](https://github.com/Symbiote/Symbiote.Settings)
+repository should be imported into the CodeMaid Options dialog to ensure consistency.  The default CodeMaid options are used with the following exceptions:
+
+* Insert New Regions: True
+* Regions Include Access Level : True
+* Keep XML Tags Together: True
+* XML Value Indent: 4
+* Format Comments During Cleanup: True
+* Auto Cleanup On File Save: True (this is optional)
+* Sort Using Statements During Cleanup: False (conflicts with StyleCop; sorts alphabetically and moves System.* from the top)
+* Comment Wrap Columns: 130
 
 ### File Header
 
@@ -45,6 +60,11 @@ Any non-trivial method which has been specifically designed or otherwise known t
 
 Trivial or "utility" code must implement XML documentation in order to satisfy StyleCop, however the inclusion of rationale and the level of verbosity is at the author's discretion.
 
+### Organization
+
+All classes, interfaces, enumerations which need to be accessible to plugins, in addition to exceptions and other trivial classes, must reside in the ```Symbiote.SDK``` project.  Organization of the ```Symbiote.SDK``` project must
+mirror that of the ```Symbiote.Core``` project.
+
 ### General Code Standards
 
 The contents of classes and interfaces must be organized according to StyleCop rules, which are described [here](http://stackoverflow.com/questions/150479/order-of-items-in-classes-fields-properties-constructors-methods/310967#310967).
@@ -71,16 +91,22 @@ The following rules should be followed, with few exceptions:
 * Avoid enumerations within classes (preference is a separate file).
 * Avoid nested classes (preference is a separate file).
 
-### Composition
+### Logging
 
-The ```Public Properties``` and ```Public Instance Methods``` code regions must contain code regions for each interface implementation, in the order in which they are specified in the class signature.
-These regions must be named ```I<interface> Properties``` and ```I<interface> Implementation```, respectively.  
+[NLog](http://nlog-project.org/) is used for all logging within the application.  The [NLog.xLogger](https://github.com/jpdillingham/NLog.xLogger) extension is mandatory for the ```Symbiote.Core``` and ```Symbiote.SDK``` projects and preferred
+but not required for all other projects.
+
+Non-trivial methods within the ```Symbiote.Core``` and ```Symbiote.SDK``` projects must use the ```EnterMethod()``` and ```ExitMethod()``` methods from the ```xLogger``` extension.  Exceptions may be made for methods relating to the manipulation
+and reading and writing of the application model and model items.
+
+Log messages and and the logging level at which they are logged are discretionary.  Developers are encouraged to review the messages at the ```Trace```, ```Debug``` and ```Info``` logging levels for overall style and "fit" with
+the whole of the application.  In general, messages logged with the ```Info``` level should be targeted to a semi-technical person.
 
 ### Exceptions
 
 Only exceptions which should stop the application may be thrown explicitly.  Thrown exceptions should attempt to use a framework defined exception type at the site of the exception, if one is applicable.  If not, custom
 exceptions must be created and stored in a single file named ```<namespace|subject>Exceptions.cs``` where the containing namespace or subject of the exceptions is contained within the name.  For example, exceptions relating to the application Model
-must store all model related exceptions in ```ModelExceptions.cs```.
+must store all model related exceptions in ```ModelExceptions.cs```.  Exception classes must be stored in the ```Symbiote.SDK``` project.
 
 All exception classes must be contained within the file.  Suppress StyleCop rule SA1402 to eliminate warnings.  The first exception class must extend ```Exception``` and must match the filename; e.g. the first exception class
 within ```ModelExceptions.cs``` would be ```ModelException```.  All further exceptions must extend this class.
@@ -104,3 +130,27 @@ This strategy should aid in debugging and support as the application scales.
 Methods which need to return status information or errors, other than fatal exceptions, must have a return type of [Operation Result](https://github.com/jpdillingham/OperationResult).  Methods returning values must use the generic variant ```Result<T>```.
 
 The usage of this class allows the application to gracefully handle recoverable errors without the expense of exceptions, and eliminates the need for sentinal values in return types.
+
+### Testing
+
+All projects containing source code must have an accompanying Unit Test project named ```<project>.Tests``` where the project under test preceeds the final period in the project name.  For example,
+the project ```Symbiote.SDK``` must have a Unit Test project named ```Symbiote.SDK.Tests``` within the same solution.
+
+Test project organization must mirror the project under test, and test classes must mirror the names of the classes being tested.  The file header for the Unit Test class must match that of the class under test followed by
+the word "Test" on a new line under the name of the class.  The verbiage of the class description must be ```Unit tests for the <class> class.```, where ```<class>``` is the name of the class under test.
+
+
+The [xUnit](https://xunit.github.io/) framework must be used for all unit tests.  Runners for Visual Studio and the Console should also be installed.  
+
+[OpenCover](https://github.com/OpenCover/opencover) is required to support CI via Appveyor as well as the optional but recommended [OpenCover.UI](https://marketplace.visualstudio.com/items?itemName=jamdagni86.OpenCoverUI)
+coverage extension for Visual Studio.
+
+The code coverage target for all classes is *95%* or above, preferably 100%.  Classes failing to reach 95% coverage must be refactored such that the target may be reached.
+
+The [Moq](https://github.com/moq/moq) mocking framework must be used to mock any non-trivial objects required for unit testing, where practical.  If a test must use a concrete mockup, the code for the mockup must be included
+within the file in which it is used.  The rationale explaining why a mocking framework must be included in the remarks section of the XML documentation for the class, and any unit test dependent upon the mockup must state the depencency
+in the remarks section of the XML documentation for that unit test.
+
+
+
+

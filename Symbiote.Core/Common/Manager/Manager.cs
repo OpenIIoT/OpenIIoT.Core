@@ -487,11 +487,7 @@ namespace Symbiote.Core
         /// <summary>
         ///     Implements the Manager-specific post-instantiation procedure.
         /// </summary>
-        /// <remarks>
-        ///     <para>
-        ///         This method is invoked by the ApplicationManager following the instantiation of all program Managers.
-        ///     </para>
-        /// </remarks>
+        /// <remarks>This method is invoked by the ApplicationManager following the instantiation of all program Managers.</remarks>
         /// <exception cref="ManagerSetupException">Thrown when an error is encountered during setup.</exception>
         protected virtual void Setup()
         {
@@ -520,10 +516,8 @@ namespace Symbiote.Core
         ///     Implements the Manager-specific disposal procedure.
         /// </summary>
         /// <remarks>
-        ///     <para>
-        ///         This method is invoked by the Dispose() method of the base <see cref="Manager"/> class. Any managed resources
-        ///         within the Manager should be disposed within this method.
-        ///     </para>
+        ///     This method is invoked by the Dispose() method of the base <see cref="Manager"/> class. Any managed resources
+        ///     within the Manager should be disposed within this method.
         /// </remarks>
         protected virtual void Teardown()
         {
