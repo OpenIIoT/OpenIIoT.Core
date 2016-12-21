@@ -1,6 +1,12 @@
 # Project Rules and Guidelines
 
+## Project Organization
+
+All classes, interfaces, enumerations which need to be accessible to plugins, in addition to exceptions and other trivial classes, must reside in the ```Symbiote.SDK``` project.  Organization of the ```Symbiote.SDK``` project must
+mirror that of the ```Symbiote.Core``` project.
+
 ## Coding Standards and Styling
+
 ### Namespaces
 
 The root namespace of the application must remain ```Symbiote.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
@@ -59,11 +65,6 @@ Non-trivial code and classes must be documented verbosely and should include rat
 Any non-trivial method which has been specifically designed or otherwise known to be thread safe must use the ```<threadsafety>``` tag.  Any method lacking this tag is assumed to be thread un-safe.
 
 Trivial or "utility" code must implement XML documentation in order to satisfy StyleCop, however the inclusion of rationale and the level of verbosity is at the author's discretion.
-
-### Organization
-
-All classes, interfaces, enumerations which need to be accessible to plugins, in addition to exceptions and other trivial classes, must reside in the ```Symbiote.SDK``` project.  Organization of the ```Symbiote.SDK``` project must
-mirror that of the ```Symbiote.Core``` project.
 
 ### General Code Standards
 
