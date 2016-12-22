@@ -244,9 +244,23 @@ namespace Symbiote.SDK
             {
                 var previousValue = Value;
                 Value = value;
-                base.OnChange(previousValue, Value);
+                OnChange(previousValue, Value);
             }
             return new Result();
+        }
+
+        /// <summary>
+        ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
+        ///     specified value.
+        /// </summary>
+        /// <param name="previousValue">The value of the Item prior to the event.</param>
+        /// <param name="value">The value for the raised event.</param>
+        protected override void OnChange(object previousValue, object value)
+        {
+            if (Changed != null)
+            {
+                Changed(this, new ItemChangedEventArgs(previousValue, value));
+            }
         }
 
         public override async Task<Result> WriteAsync(object value)
