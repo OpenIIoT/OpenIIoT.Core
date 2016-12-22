@@ -46,12 +46,14 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Utility.OperationResult;
+using NLog.xLogger;
 
 namespace Symbiote.SDK
 {
     /// <summary>
     ///     Represents a single data entity within the application Model.
     /// </summary>
+    /// <remarks>The implementation of the <see cref="ICloneable"/> interface for this class returns a shallow copy.</remarks>
     public class Item : ICloneable
     {
         #region Protected Fields
@@ -297,7 +299,7 @@ namespace Symbiote.SDK
         ///     Creates and returns a clone of the <see cref="Item"/>.
         /// </summary>
         /// <remarks>We aren't using .MemberWiseClone() because of the GUID. We need a "deep copy".</remarks>
-        /// <returns>A clone of the Item.</returns>
+        /// <returns>A shallow copy of this Item.</returns>
         public virtual object Clone()
         {
             Item retVal = new Item(FQN, SourceItem, SourceFQN, Parent == this);
@@ -306,6 +308,18 @@ namespace Symbiote.SDK
             retVal.Value = Value;
             retVal.SourceItem = SourceItem;
             retVal.Writeable = Writeable;
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Creates and returns a clone of this <see cref="Item"/> with the specified Fully Qualified Name.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name with which this Item's FQN is to be replaced.</param>
+        /// <returns>A shallow copy of this Item with the FQN substituted for the specified value.</returns>
+        public virtual object CloneAs(string fqn)
+        {
+            Item retVal = (Item)Clone();
+            retVal.FQN = fqn;
             return retVal;
         }
 
