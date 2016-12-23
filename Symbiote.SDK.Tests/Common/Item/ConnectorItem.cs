@@ -212,7 +212,7 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.Write(object)"/> and <see cref="Item.WriteToSourceAsync(object)"/>
+        ///     Tests the <see cref="SDK.ConnectorItem.Write(object)"/> and <see cref="SDK.ConnectorItem.WriteToSourceAsync(object)"/>
         /// </summary>
         [Fact]
         public async void WriteToSource()
@@ -240,60 +240,42 @@ namespace Symbiote.SDK.Tests
             Assert.Equal("write test two", item.Value);
         }
 
-        ///// <summary>
-        /////     Tests the <see cref="Item.AddChild(Item)"/> and <see cref="Item.RemoveChild(Item)"/> methods.
-        ///// </summary>
-        //[Fact]
-        //public void AddRemoveChildren()
-        //{
-        //    Item item = new Item("Root");
-        //    Item child = new Item("Root.Child");
-        //    Item childsChild = new Item("Root.Child.Child");
-        //    child.AddChild(childsChild);
+        /// <summary>
+        ///     Tests the <see cref="SDK.ConnectorItem.AddChild(SDK.ConnectorItem)"/> and
+        ///     <see cref="SDK.ConnectorItem.RemoveChild(SDK.ConnectorItem)"/> methods.
+        /// </summary>
+        [Fact]
+        public void AddRemoveChildren()
+        {
+            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root");
+            SDK.ConnectorItem child = new SDK.ConnectorItem(connectorMock.Object, "Root.Child");
+            SDK.ConnectorItem childsChild = new SDK.ConnectorItem(connectorMock.Object, "Root.Child.Child");
+            child.AddChild(childsChild);
 
-        // // add the child and ensure the operation was successful and that it returns the child item Result<Item> addResult = item.AddChild(child);
+            // add the child and ensure the operation was successful and that it returns the child item
+            Result<SDK.ConnectorItem> addResult = item.AddChild(child);
 
-        // Assert.Equal(ResultCode.Success, addResult.ResultCode); Assert.Equal(child, addResult.ReturnValue);
+            Assert.Equal(ResultCode.Success, addResult.ResultCode);
+            Assert.Equal(child, addResult.ReturnValue);
 
-        // // remove the child and ensure it was successful and that it returns the child item Result<Item> removeResult = item.RemoveChild(child);
+            // remove the child and ensure it was successful and that it returns the child item
+            Result<SDK.ConnectorItem> removeResult = item.RemoveChild(child);
 
-        // Assert.Equal(ResultCode.Success, removeResult.ResultCode); Assert.Equal(child, removeResult.ReturnValue);
+            Assert.Equal(ResultCode.Success, removeResult.ResultCode);
+            Assert.Equal(child, removeResult.ReturnValue);
 
-        // // attempt to remove a non-existent child and ensure that the operation fails Result<Item> badRemoveResult =
-        // item.RemoveChild(new Item("Root.New"));
+            // attempt to remove a non-existent child and ensure that the operation fails
+            Result<SDK.ConnectorItem> badRemoveResult = item.RemoveChild(new SDK.ConnectorItem(connectorMock.Object, "Root.New"));
 
-        //    Assert.Equal(ResultCode.Failure, badRemoveResult.ResultCode);
-        //}
+            Assert.Equal(ResultCode.Failure, badRemoveResult.ResultCode);
+        }
 
-        ///// <summary>
-        /////     Tests the <see cref="Item.SubscribeToSource"/> and <see cref="Item.UnsubscribeFromSource"/> methods.
-        ///// </summary>
-        //[Fact]
-        //public void Subscription()
-        //{
-        //    Item sourceItem = new Item("Root.SourceItem");
-        //    sourceItem.Write("initial value");
-
-        // Item item = new Item("Root.Item", sourceItem);
-
-        // // subscribe the item to it's source item and assert that it succeeded Result subscribeResult =
-        // item.SubscribeToSource(); Assert.Equal(ResultCode.Success, subscribeResult.ResultCode);
-
-        // // write a value to the source item and assert that the item's value updates. sourceItem.Write("new value");
-        // Assert.Equal("new value", sourceItem.Value); Assert.Equal("new value", item.Value);
-
-        // // unsubscribe the item from it's source item and assert that it succeeded Result unsubscribeResult =
-        // item.UnsubscribeFromSource(); Assert.Equal(ResultCode.Success, unsubscribeResult.ResultCode);
-
-        // // write a value to the source item and assert that the item's value doesn't update. sourceItem.Write("final value");
-        // Assert.Equal("final value", sourceItem.Value); Assert.NotEqual("final value", item.Value);
-
-        // // test the subscribe/unsubscribe methods with an item for which the source item has not been set Item lastItem = new Item("Root.LastItem");
-
-        // Result lastItemSub = lastItem.SubscribeToSource(); Assert.Equal(ResultCode.Failure, lastItemSub.ResultCode);
-
-        //    Result lastItemUnSub = lastItem.UnsubscribeFromSource();
-        //    Assert.Equal(ResultCode.Failure, lastItemUnSub.ResultCode);
-        //}
+        /// <summary>
+        ///     Tests the <see cref="Item.SubscribeToSource"/> and <see cref="Item.UnsubscribeFromSource"/> methods.
+        /// </summary>
+        [Fact]
+        public void Subscription()
+        {
+        }
     }
 }

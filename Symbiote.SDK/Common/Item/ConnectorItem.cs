@@ -204,8 +204,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Adds the <see cref="SourceItemChanged(object, ItemChangedEventArgs)"/> event handler to the
-        ///     <see cref="SourceItem"/>'s <see cref="Changed"/> event.
+        ///     Creates a subscription for this Item on the source <see cref="Connector"/>.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public override Result SubscribeToSource()
@@ -215,6 +214,26 @@ namespace Symbiote.SDK
             if (Connector is ISubscribable)
             {
                 retVal = ((ISubscribable)Connector).Subscribe((ConnectorItem)this);
+            }
+            else
+            {
+                retVal = new Result().AddError("The source Connector is not subscribable");
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Removes the subscription for this Item from the source <see cref="Connector"/>.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public override Result UnsubscribeFromSource()
+        {
+            Result retVal = new Result();
+
+            if (Connector is ISubscribable)
+            {
+                retVal = ((ISubscribable)Connector).UnSubscribe((ConnectorItem)this);
             }
             else
             {
