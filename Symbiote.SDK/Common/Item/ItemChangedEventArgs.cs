@@ -49,12 +49,14 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Symbiote.SDK
 {
     /// <summary>
     ///     Represents the event arguments for Item Changed events.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     public class ItemChangedEventArgs : EventArgs
     {
         #region Public Constructors
@@ -62,6 +64,7 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Initializes a new instance of the <see cref="ItemChangedEventArgs"/> class with the specified values.
         /// </summary>
+        /// <param name="previousValue">The previous value of the Item.</param>
         /// <param name="value">The new value of the Item.</param>
         public ItemChangedEventArgs(object previousValue, object value) : base()
         {

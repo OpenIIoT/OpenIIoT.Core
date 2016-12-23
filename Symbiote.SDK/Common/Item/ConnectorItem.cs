@@ -42,8 +42,6 @@
 using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using NLog;
-using NLog.xLogger;
 using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
@@ -77,8 +75,8 @@ namespace Symbiote.SDK
         ///     Initializes a new instance of the <see cref="ConnectorItem"/> class with the specified Fully Qualified Name to be
         ///     used as the root of a model.
         /// </summary>
-        /// <param name="connector">The Connector to which this Item belongs.</param>
-        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="connector">The Connector to which this ConnectorItem belongs.</param>
+        /// <param name="fqn">The Fully Qualified Name of the ConnectorItem to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
         public ConnectorItem(IConnector connector, string fqn, bool isRoot) : this(connector, fqn, string.Empty, isRoot)
         {
@@ -87,21 +85,21 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConnectorItem"/> class with the specified Fully Qualified Name and type.
         /// </summary>
-        /// <param name="connector">The Connector to which this Item belongs.</param>
-        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="connector">The Connector to which this ConnectorItem belongs.</param>
+        /// <param name="fqn">The Fully Qualified Name of the ConnectorItem to create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
         public ConnectorItem(IConnector connector, string fqn, string sourceFQN) : this(connector, fqn, sourceFQN, false)
         {
         }
 
         /// <summary>
-        ///     Creates an instance of an Item with the given Fully Qualified Name and type. If isRoot is true, marks the Item as
-        ///     the root item in a model.
+        ///     Initializes a new instance of the <see cref="ConnectorItem"/> class with the given Fully Qualified Name and type.
+        ///     If isRoot is true, marks the Item as the root item in a model.
         /// </summary>
-        /// <param name="connector">The instance of <see cref="IConnector"/> hosting this <see cref="Item"/>.</param>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="Item"/> create.</param>
-        /// <param name="sourceFQN">The Fully Qualified Name of the source item.</param>
-        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
+        /// <param name="connector">The Connector to which this ConnectorItem belongs.</param>
+        /// <param name="fqn">The Fully Qualified Name of the ConnectorItem to create.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
+        /// <param name="isRoot">True if the ConnectorItem is to be created as a root model item, false otherwise.</param>
         public ConnectorItem(IConnector connector, string fqn, string sourceFQN = "", bool isRoot = false) : base(fqn, default(ConnectorItem), sourceFQN, isRoot)
         {
             Connector = connector;
@@ -112,7 +110,7 @@ namespace Symbiote.SDK
         #region Public Events
 
         /// <summary>
-        ///     The Changed event; fires when the value of the item changes.
+        ///     Fires when the <see cref="Value"/> property changes.
         /// </summary>
         public override event EventHandler<ItemChangedEventArgs> Changed;
 
@@ -121,7 +119,7 @@ namespace Symbiote.SDK
         #region Public Properties
 
         /// <summary>
-        ///     The <see cref="IConnector"/> instance to which this <see cref="Item"/> belongs.
+        ///     Gets the <see cref="IConnector"/> instance to which this ConnectorItem belongs.
         /// </summary>
         [JsonIgnore]
         public IConnector Connector { get; private set; }
@@ -131,7 +129,7 @@ namespace Symbiote.SDK
         #region Public Methods
 
         /// <summary>
-        ///     Adds the supplied <see cref="ConnectorItem"/> to this ConnectorItem's <see cref="Item.Children"/> collection.
+        ///     Adds the supplied <see cref="ConnectorItem"/> to the <see cref="Item.Children"/> collection.
         /// </summary>
         /// <param name="item">The ConnectorItem to add.</param>
         /// <returns>A Result containing the result of the operation and the added ConnectorItem.</returns>
@@ -147,7 +145,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Returns the value of this <see cref="ConnectorItem"/>'s <see cref="Item.Value"/> property.
+        ///     Reads the value of this ConnectorItem from the <see cref="Connector"/>.
         /// </summary>
         /// <returns>The retrieved value.</returns>
         public override object Read()
@@ -155,30 +153,50 @@ namespace Symbiote.SDK
             return ReadFromSource();
         }
 
+        /// <summary>
+        ///     Asynchronously reads the value of this ConnectorItem from the <see cref="Connector"/>.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
         public override async Task<object> ReadAsync()
         {
             return await Task.Run(() => Read());
         }
 
+        /// <summary>
+        ///     Reads the value of this ConnectorItem from the <see cref="Connector"/>.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
         public override object ReadFromSource()
         {
             if (Connector is IReadable)
             {
-                return ((IReadable)Connector).Read(this).ReturnValue;
+                return ((IReadable)Connector).Read(this)?.ReturnValue;
             }
             else
+            {
                 return null;
+            }
         }
 
+        /// <summary>
+        ///     Asynchronously reads the value of this ConnectorItem from the <see cref="Connector"/>.
+        /// </summary>
+        /// <returns>The retrieved value.</returns>
         public override async Task<object> ReadFromSourceAsync()
         {
             return await Task.Run(() => ReadFromSource());
         }
 
-        public Result<ConnectorItem> RemoveChild(ConnectorItem pluginItem)
+        /// <summary>
+        ///     Removes the specified Item from the <see cref="Children"/> collection.
+        /// </summary>
+        /// <param name="item">The Item to remove.</param>
+        /// <threadsafety instance="true"/>
+        /// <returns>A Result containing the result of the operation and the removed Item.</returns>
+        public Result<ConnectorItem> RemoveChild(ConnectorItem item)
         {
             Result<ConnectorItem> retVal = new Result<ConnectorItem>();
-            Result<Item> removeResult = base.RemoveChild(pluginItem);
+            Result<Item> removeResult = base.RemoveChild(item);
 
             retVal.ReturnValue = (ConnectorItem)removeResult.ReturnValue;
             retVal.Incorporate(removeResult);
@@ -186,20 +204,10 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Sets this <see cref="Item"/>'s parent Item to the specified Item.
+        ///     Adds the <see cref="SourceItemChanged(object, ItemChangedEventArgs)"/> event handler to the
+        ///     <see cref="SourceItem"/>'s <see cref="Changed"/> event.
         /// </summary>
-        /// <param name="parent">The <see cref="Item"/> to which this Item's Parent property is to be set.</param>
-        /// <returns>An <see cref="Result{T}"/> containing the result of the operation and this <see cref="Item"/>.</returns>
-        public Result<ConnectorItem> SetParent(ConnectorItem parent)
-        {
-            Result<ConnectorItem> retVal = new Result<ConnectorItem>();
-            Result<Item> setResult = base.SetParent((Item)parent);
-
-            retVal.ReturnValue = (ConnectorItem)setResult.ReturnValue;
-            retVal.Incorporate(setResult);
-            return retVal;
-        }
-
+        /// <returns>A Result containing the result of the operation.</returns>
         public override Result SubscribeToSource()
         {
             Result retVal = new Result();
@@ -217,7 +225,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Notifies this <see cref="ConnectorItem"/> that the number of subscribers has changed.
+        ///     Notifies this ConnectorItem that the number of subscribers has changed.
         /// </summary>
         public override void SubscriptionsChanged()
         {
@@ -232,10 +240,12 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Called by the parent Connector plugin to update the value of the ConnectorItem. Updates the internal value of the
+        ///     Called by the <see cref="Connector"/> to update the <see cref="Value"/> property. Updates the internal value of the
         ///     ConnectorItem and fires the Change event to notify any subscribed Items of the update.
         /// </summary>
-        /// <remarks>Should never be called by anything other than the parent Connector plugin.</remarks>
+        /// <remarks>
+        ///     Should never be called by anything other than the parent Connector plugin or the WriteToSource() method within this class.
+        /// </remarks>
         /// <param name="value">The value with which to update the ConnectorItem.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public override Result Write(object value)
@@ -246,23 +256,19 @@ namespace Symbiote.SDK
                 Value = value;
                 OnChange(previousValue, Value);
             }
+
             return new Result();
         }
 
         /// <summary>
-        ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
-        ///     specified value.
+        ///     Asynchronously called by the <see cref="Connector"/> to update the <see cref="Value"/> property. Updates the
+        ///     internal value of the ConnectorItem and fires the Change event to notify any subscribed Items of the update.
         /// </summary>
-        /// <param name="previousValue">The value of the Item prior to the event.</param>
-        /// <param name="value">The value for the raised event.</param>
-        protected override void OnChange(object previousValue, object value)
-        {
-            if (Changed != null)
-            {
-                Changed(this, new ItemChangedEventArgs(previousValue, value));
-            }
-        }
-
+        /// <remarks>
+        ///     Should never be called by anything other than the parent Connector plugin or the WriteToSource() method within this class.
+        /// </remarks>
+        /// <param name="value">The value with which to update the ConnectorItem.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public override async Task<Result> WriteAsync(object value)
         {
             return await Task.Run(() => Write(value));
@@ -283,18 +289,48 @@ namespace Symbiote.SDK
             {
                 // update the internal value and notify subscribed Items of the update
                 Write(value);
+
                 // write the value to the parent Connector plugin
                 return ((IWriteable)Connector).Write(this, value);
             }
             else
+            {
                 return new Result().AddError("The source Connector is not writeable.");
+            }
         }
 
+        /// <summary>
+        ///     Asynchronously called by Items using this ConnectorItem as a source, passes updated values to the Connector plugin
+        ///     for writing to the source of the item.
+        /// </summary>
+        /// <remarks>
+        ///     Any and all writes to ConnectorItems (other than by the Connector plugin) should be performed with WriteToSource.
+        /// </remarks>
+        /// <param name="value">The value with which to update the ConnectorItem.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public override async Task<Result> WriteToSourceAsync(object value)
         {
             return await Task.Run(() => WriteToSource(value));
         }
 
         #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
+        ///     specified value.
+        /// </summary>
+        /// <param name="previousValue">The value of the Item prior to the event.</param>
+        /// <param name="value">The value for the raised event.</param>
+        protected override void OnChange(object previousValue, object value)
+        {
+            if (Changed != null)
+            {
+                Changed(this, new ItemChangedEventArgs(previousValue, value));
+            }
+        }
+
+        #endregion Protected Methods
     }
 }

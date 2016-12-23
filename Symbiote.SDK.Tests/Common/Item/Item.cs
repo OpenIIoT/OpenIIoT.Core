@@ -58,7 +58,7 @@ namespace Symbiote.SDK.Tests
     /// <summary>
     ///     Unit tests for the Item class.
     /// </summary>
-    public class ItemTests
+    public class Item
     {
         /// <summary>
         ///     Tests all constructor overloads.
@@ -66,20 +66,20 @@ namespace Symbiote.SDK.Tests
         [Fact]
         public void Constructor()
         {
-            Item item = new Item();
-            Assert.IsType<Item>(item);
+            SDK.Item item = new SDK.Item();
+            Assert.IsType<SDK.Item>(item);
 
-            item = new Item(string.Empty);
-            Assert.IsType<Item>(item);
+            item = new SDK.Item(string.Empty);
+            Assert.IsType<SDK.Item>(item);
 
-            item = new Item(string.Empty, false);
-            Assert.IsType<Item>(item);
+            item = new SDK.Item(string.Empty, false);
+            Assert.IsType<SDK.Item>(item);
 
-            item = new Item(string.Empty, string.Empty);
-            Assert.IsType<Item>(item);
+            item = new SDK.Item(string.Empty, string.Empty);
+            Assert.IsType<SDK.Item>(item);
 
-            item = new Item(string.Empty, default(Item), string.Empty, false);
-            Assert.IsType<Item>(item);
+            item = new SDK.Item(string.Empty, default(SDK.Item), string.Empty, false);
+            Assert.IsType<SDK.Item>(item);
         }
 
         /// <summary>
@@ -88,27 +88,27 @@ namespace Symbiote.SDK.Tests
         [Fact]
         public void Properties()
         {
-            Item item = new Item("Root.Child.Name", "Source");
+            SDK.Item item = new SDK.Item("Root.Child.Name", "Source");
 
-            Assert.Equal(new List<Item>(), item.Children);
+            Assert.Equal(new List<SDK.Item>(), item.Children);
             Assert.Equal("Root.Child.Name", item.FQN);
             Assert.Equal(new Guid().ToString().Length, item.Guid.ToString().Length);
             Assert.Equal(false, item.HasChildren);
             Assert.Equal(true, item.IsOrphaned);
             Assert.Equal("Name", item.Name);
-            Assert.Equal(default(Item), item.Parent);
+            Assert.Equal(default(SDK.Item), item.Parent);
             Assert.Equal("Root.Child", item.Path);
             Assert.Equal("Source", item.SourceFQN);
-            Assert.Equal(default(Item), item.SourceItem);
+            Assert.Equal(default(SDK.Item), item.SourceItem);
 
-            Item newItem = new Item("Source.Item");
+            SDK.Item newItem = new SDK.Item("Source.Item");
             item.SourceItem = newItem;
             Assert.Equal(newItem, item.SourceItem);
 
             Assert.Equal(default(object), item.Value);
             Assert.Equal(true, item.Writeable);
 
-            Item rootItem = new Item("Root");
+            SDK.Item rootItem = new SDK.Item("Root");
             Assert.Equal("Root", rootItem.FQN);
 
             // not technically properties but we are testing them here anyway
@@ -118,13 +118,13 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the functionality of the <see cref="Item.AddChild(Item)"/> method.
+        ///     Tests the functionality of the <see cref="SDK.Item.AddChild(SDK.Item)"/> method.
         /// </summary>
         [Fact]
         public void ItemAdoption()
         {
-            Item root = new Item("Root");
-            Item child = new Item("Orphaned.Item");
+            SDK.Item root = new SDK.Item("Root");
+            SDK.Item child = new SDK.Item("Orphaned.Item");
 
             Assert.Equal(true, child.IsOrphaned);
             Assert.Equal("Orphaned.Item", child.FQN);
@@ -138,24 +138,42 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.Clone"/> method.
+        ///     Tests the <see cref="SDK.Item.Clone"/> method.
         /// </summary>
         [Fact]
         public void Clone()
         {
-            Item original = new Item("Root.Item");
-            Item clone = (Item)original.Clone();
+            SDK.Item original = new SDK.Item("Root.Item");
+            SDK.Item clone = (SDK.Item)original.Clone();
 
             Assert.Equal(original.FQN, clone.FQN);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.Write(object)"/> and <see cref="Item.WriteAsync(object)"/> methods.
+        ///     Tests the <see cref="SDK.Item.CloneAs(string)"/> method.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the mutated Item from which this Item is cloned.</param>
+        [Theory]
+        [InlineData("Root.Item.New")]
+        [InlineData("Root")]
+        [InlineData("")]
+        public void CloneAs(string fqn)
+        {
+            SDK.Item original = new SDK.Item("Root.Item");
+            SDK.Item clone = (SDK.Item)original.CloneAs(fqn);
+
+            Assert.Equal(fqn, clone.FQN);
+            Assert.NotNull(clone.Name);
+            Assert.NotNull(clone.Path);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.Write(object)"/> and <see cref="SDK.Item.WriteAsync(object)"/> methods.
         /// </summary>
         [Fact]
         public async void Write()
         {
-            Item item = new Item("Root.Item");
+            SDK.Item item = new SDK.Item("Root.Item");
 
             Assert.Equal(true, item.Writeable);
 
@@ -177,12 +195,12 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.Read"/> and <see cref="Item.ReadAsync"/> methods.
+        ///     Tests the <see cref="SDK.Item.Read"/> and <see cref="SDK.Item.ReadAsync"/> methods.
         /// </summary>
         [Fact]
         public async void Read()
         {
-            Item item = new Item("Root.Item");
+            SDK.Item item = new SDK.Item("Root.Item");
             item.Write("Value!");
 
             Assert.Equal("Value!", item.Value);
@@ -194,18 +212,18 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.ReadFromSource"/> and <see cref="Item.ReadFromSourceAsync"/> methods.
+        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> and <see cref="SDK.Item.ReadFromSourceAsync"/> methods.
         /// </summary>
         [Fact]
         public async void ReadFromSource()
         {
-            Item sourceItem = new Item("Root.SourceItem");
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
             sourceItem.Write("source value");
 
-            Item item = new Item("Root.Item", sourceItem);
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
             item.Write("value");
 
-            Item child = new Item("Root.Item.Child");
+            SDK.Item child = new SDK.Item("Root.Item.Child");
             item.AddChild(child);
 
             // invoke the ReadFromSource method on the item. the method should return the source item's value, and should set the
@@ -228,19 +246,19 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.Write(object)"/> and <see cref="Item.WriteToSourceAsync(object)"/>
+        ///     Tests the <see cref="SDK.Item.Write(object)"/> and <see cref="SDK.Item.WriteToSourceAsync(object)"/>
         /// </summary>
         [Fact]
         public async void WriteToSource()
         {
-            Item sourceItem1 = new Item("Root.SourceItem1");
+            SDK.Item sourceItem1 = new SDK.Item("Root.SourceItem1");
             sourceItem1.Write("source value 1");
 
-            Item sourceItem2 = new Item("Root.SourceItem2");
+            SDK.Item sourceItem2 = new SDK.Item("Root.SourceItem2");
             sourceItem2.Write("source value 2");
             sourceItem2.Writeable = false;
 
-            Item item = new Item("Root.Item");
+            SDK.Item item = new SDK.Item("Root.Item");
 
             // try a write with an unbound source item
             Result badWriteResult = item.WriteToSource("value");
@@ -269,44 +287,44 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.AddChild(Item)"/> and <see cref="Item.RemoveChild(Item)"/> methods.
+        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> and <see cref="SDK.Item.RemoveChild(SDK.Item)"/> methods.
         /// </summary>
         [Fact]
         public void AddRemoveChildren()
         {
-            Item item = new Item("Root");
-            Item child = new Item("Root.Child");
-            Item childsChild = new Item("Root.Child.Child");
+            SDK.Item item = new SDK.Item("Root");
+            SDK.Item child = new SDK.Item("Root.Child");
+            SDK.Item childsChild = new SDK.Item("Root.Child.Child");
             child.AddChild(childsChild);
 
             // add the child and ensure the operation was successful and that it returns the child item
-            Result<Item> addResult = item.AddChild(child);
+            Result<SDK.Item> addResult = item.AddChild(child);
 
             Assert.Equal(ResultCode.Success, addResult.ResultCode);
             Assert.Equal(child, addResult.ReturnValue);
 
             // remove the child and ensure it was successful and that it returns the child item
-            Result<Item> removeResult = item.RemoveChild(child);
+            Result<SDK.Item> removeResult = item.RemoveChild(child);
 
             Assert.Equal(ResultCode.Success, removeResult.ResultCode);
             Assert.Equal(child, removeResult.ReturnValue);
 
             // attempt to remove a non-existent child and ensure that the operation fails
-            Result<Item> badRemoveResult = item.RemoveChild(new Item("Root.New"));
+            Result<SDK.Item> badRemoveResult = item.RemoveChild(new SDK.Item("Root.New"));
 
             Assert.Equal(ResultCode.Failure, badRemoveResult.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.SubscribeToSource"/> and <see cref="Item.UnsubscribeFromSource"/> methods.
+        ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> and <see cref="SDK.Item.UnsubscribeFromSource"/> methods.
         /// </summary>
         [Fact]
         public void Subscription()
         {
-            Item sourceItem = new Item("Root.SourceItem");
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
             sourceItem.Write("initial value");
 
-            Item item = new Item("Root.Item", sourceItem);
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
 
             // subscribe the item to it's source item and assert that it succeeded
             Result subscribeResult = item.SubscribeToSource();
@@ -327,7 +345,7 @@ namespace Symbiote.SDK.Tests
             Assert.NotEqual("final value", item.Value);
 
             // test the subscribe/unsubscribe methods with an item for which the source item has not been set
-            Item lastItem = new Item("Root.LastItem");
+            SDK.Item lastItem = new SDK.Item("Root.LastItem");
 
             Result lastItemSub = lastItem.SubscribeToSource();
             Assert.Equal(ResultCode.Failure, lastItemSub.ResultCode);
