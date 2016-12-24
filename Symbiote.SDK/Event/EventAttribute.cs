@@ -40,12 +40,14 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Symbiote.SDK.Event
 {
     /// <summary>
     ///     Creates the Event attribute for system Events.
     /// </summary>
+    [ExcludeFromCodeCoverage]
     [AttributeUsage(AttributeTargets.Event)]
     public class EventAttribute : Attribute
     {
