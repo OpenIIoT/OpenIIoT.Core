@@ -78,6 +78,11 @@ namespace Symbiote.SDK.Tests
         private Mock<IConnector> writeableConnectorMock;
 
         /// <summary>
+        ///     The shared IConnector mockup which implements ISubscribable.
+        /// </summary>
+        private Mock<IConnector> subscribableConnectorMock;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="ConnectorItem"/> class.
         /// </summary>
         public ConnectorItem()
@@ -89,6 +94,9 @@ namespace Symbiote.SDK.Tests
 
             writeableConnectorMock = new Mock<IConnector>();
             writeableConnectorMock.As<IWriteable>();
+
+            subscribableConnectorMock = new Mock<IConnector>();
+            subscribableConnectorMock.As<ISubscribable>();
         }
 
         /// <summary>
@@ -276,6 +284,64 @@ namespace Symbiote.SDK.Tests
         [Fact]
         public void Subscription()
         {
+            // prepare an item with a source connector which does not implement ISubscribable
+            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root.Item");
+
+            // assert that subscribe/unsubscribe methods result in a failure
+            Assert.Equal(ResultCode.Failure, item.SubscribeToSource().ResultCode);
+            Assert.Equal(ResultCode.Failure, item.UnsubscribeFromSource().ResultCode);
+
+            // prepare an item with a source connector which implements ISubscribable
+            SDK.ConnectorItem subItem = new SDK.ConnectorItem(subscribableConnectorMock.Object, "Root.SubItem");
+
+            // prepare the connector mockup
+            Result result = new Result();
+            subscribableConnectorMock.As<ISubscribable>().Setup(m => m.Subscribe(subItem)).Returns(result);
+            subscribableConnectorMock.As<ISubscribable>().Setup(m => m.UnSubscribe(subItem)).Returns(result);
+
+            Assert.Equal(ResultCode.Success, subItem.SubscribeToSource().ResultCode);
+            Assert.Equal(ResultCode.Success, subItem.UnsubscribeFromSource().ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ConnectorItem.SubscriptionsChanged()"/> method.
+        /// </summary>
+        [Fact]
+        public void SubscriptionsChanged()
+        {
+            // prepare an item
+            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root.Item");
+
+            // invoke the method. no handlers are attached, so item should unsubscribe itself from the source connector.
+            item.SubscriptionsChanged();
+
+            // attach an event handler to the changed event
+            item.Changed += delegate (object sender, ItemChangedEventArgs e) { };
+
+            // invoke the method again. handler is attached, so item should subscribe itself to the source connector.
+            item.SubscriptionsChanged();
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ConnectorItem.Changed"/> event.
+        /// </summary>
+        [Fact]
+        public void Changed()
+        {
+            // prepare an item and write an initial value
+            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root.Item");
+            item.Write("initial");
+
+            // prepare event args and bind a handler to the changed event
+            ItemChangedEventArgs args = default(ItemChangedEventArgs);
+            item.Changed += delegate (object sender, ItemChangedEventArgs e) { args = e; };
+
+            // invoke the write method to fire the event
+            item.Write("test");
+
+            // assert that the previousvalue and value members of the event args are as expected.
+            Assert.Equal("initial", args.PreviousValue);
+            Assert.Equal("test", args.Value);
         }
     }
 }
