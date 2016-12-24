@@ -1,43 +1,44 @@
 ﻿/*
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ 
-      █   
-      █      ▄███████▄                                            ▄▄▄▄███▄▄▄▄                                                             
-      █     ███    ███                                          ▄██▀▀▀███▀▀▀██▄                                                           
-      █     ███    ███  █       ██   █     ▄████▄   █  ██▄▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████ 
-      █     ███    ███ ██       ██   ██   ██    ▀  ██  ██▀▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██ 
-      █   ▀█████████▀  ██       ██   ██  ▄██       ██▌ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀ 
-      █     ███        ██       ██   ██ ▀▀██ ███▄  ██  ██   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████ 
-      █     ███        ██▌    ▄ ██   ██   ██    ██ ██  ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██ 
-      █    ▄████▀      ████▄▄██ ██████    ██████▀  █    █   █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██ 
-      █   
- ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄ 
- █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █ 
-      █  
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █      ▄███████▄                                            ▄▄▄▄███▄▄▄▄
+      █     ███    ███                                          ▄██▀▀▀███▀▀▀██▄
+      █     ███    ███  █       ██   █     ▄████▄   █  ██▄▄▄▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████
+      █     ███    ███ ██       ██   ██   ██    ▀  ██  ██▀▀▀█▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██
+      █   ▀█████████▀  ██       ██   ██  ▄██       ██▌ ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀
+      █     ███        ██       ██   ██ ▀▀██ ███▄  ██  ██   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████
+      █     ███        ██▌    ▄ ██   ██   ██    ██ ██  ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
+      █    ▄████▀      ████▄▄██ ██████    ██████▀  █    █   █    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
+      █
+ ▄ ▄▄ █ ▄▄▄▄▄▄▄▄▄  ▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █ ██ █ █████████  ████ ██████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      █
       █  Represents and manages the Plugin subsystem.
-      █ 
-      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀   
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
       █
       █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
-      █  
+      █
       █  This program is free software: you can redistribute it and/or modify
       █  it under the terms of the GNU Affero General Public License as published by
       █  the Free Software Foundation, either version 3 of the License, or
       █  (at your option) any later version.
-      █  
+      █
       █  This program is distributed in the hope that it will be useful,
       █  but WITHOUT ANY WARRANTY; without even the implied warranty of
       █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
       █  GNU Affero General Public License for more details.
-      █  
+      █
       █  You should have received a copy of the GNU Affero General Public License
       █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-      █  
-      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ 
-                                                                                                   ██ 
-                                                                                               ▀█▄ ██ ▄█▀ 
-                                                                                                 ▀████▀   
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
                                                                                                    ▀▀                            */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,39 +58,39 @@ using Symbiote.SDK.Platform;
 namespace Symbiote.Core.Plugin
 {
     /// <summary>
-    /// Represents and manages the Plugin subsystem.
+    ///     Represents and manages the Plugin subsystem.
     /// </summary>
     public class PluginManager : Manager, IStateful, IManager, IConfigurable<PluginManagerConfiguration>, IPluginManager
     {
         #region Fields
 
         /// <summary>
-        /// The Logger for this class.
+        ///     The Logger for this class.
         /// </summary>
         private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         /// <summary>
-        /// The Singleton instance of PluginManager.
+        ///     The Singleton instance of PluginManager.
         /// </summary>
         private static PluginManager instance;
 
         /// <summary>
-        /// An array of loadable plugin types.
+        ///     An array of loadable plugin types.
         /// </summary>
         /// <seealso cref="IsPluginLoadable(Plugin)"/>
         private static PluginType[] loadablePluginTypes = new PluginType[] { PluginType.Connector, PluginType.Endpoint };
 
         /// <summary>
-        /// Lock object for installation/uninstallation of Plugins.
+        ///     Lock object for installation/uninstallation of Plugins.
         /// </summary>
         private object installationLock = new object();
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PluginManager"/> class.  
+        ///     Initializes a new instance of the <see cref="PluginManager"/> class.
         /// </summary>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
@@ -113,7 +114,7 @@ namespace Symbiote.Core.Plugin
             logger.ExitMethod();
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Properties
 
@@ -121,18 +122,18 @@ namespace Symbiote.Core.Plugin
 
         //// See the Manager class for the IStateful implementation for this class.
 
-        #endregion
+        #endregion IStateful Properties
 
         #region IManager Properties
 
         //// See the Manager class for the IManager implementation for this class.
 
-        #endregion
+        #endregion IManager Properties
 
         #region IConfigurable Properties
 
         /// <summary>
-        /// Gets the ConfigurationDefinition for the Manager.
+        ///     Gets the ConfigurationDefinition for the Manager.
         /// </summary>
         public ConfigurationDefinition ConfigurationDefinition
         {
@@ -143,42 +144,42 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Gets the Configuration for the Manager.
+        ///     Gets the Configuration for the Manager.
         /// </summary>
         public PluginManagerConfiguration Configuration { get; private set; }
 
-        #endregion
+        #endregion IConfigurable Properties
 
         #region IPluginManager Properties
 
         /// <summary>
-        /// Gets a list of currently loaded plugin assemblies.
+        ///     Gets a list of currently loaded plugin assemblies.
         /// </summary>
         public List<IPluginAssembly> PluginAssemblies { get; private set; }
 
         /// <summary>
-        /// Gets a Dictionary of all Plugin Instances, keyed by instance name.
+        ///     Gets a Dictionary of all Plugin Instances, keyed by instance name.
         /// </summary>
         public Dictionary<string, IPluginInstance> PluginInstances { get; private set; }
 
         /// <summary>
-        /// Gets a list of installed plugins.
+        ///     Gets a list of installed plugins.
         /// </summary>
         public List<IPlugin> Plugins { get; private set; }
 
         /// <summary>
-        /// Gets a list of all Plugin Archives.
+        ///     Gets a list of all Plugin Archives.
         /// </summary>
         public List<PluginArchive> PluginArchives { get; private set; }
 
         /// <summary>
-        /// Gets a list of all invalid Plugin Archives.
+        ///     Gets a list of all invalid Plugin Archives.
         /// </summary>
         public List<InvalidPluginArchive> InvalidPluginArchives { get; private set; }
 
-        #endregion
+        #endregion IPluginManager Properties
 
-        #endregion
+        #endregion Properties
 
         #region Methods
 
@@ -189,7 +190,7 @@ namespace Symbiote.Core.Plugin
         #region IConfigurable<T> Implementation
 
         /// <summary>
-        /// Returns the ConfigurationDefinition for the Type.
+        ///     Returns the ConfigurationDefinition for the Type.
         /// </summary>
         /// <returns>The ConfigurationDefinition for the Type.</returns>
         public static ConfigurationDefinition GetConfigurationDefinition()
@@ -202,7 +203,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Returns the default instance of the configuration Model for the Type.
+        ///     Returns the default instance of the configuration Model for the Type.
         /// </summary>
         /// <returns>The default instance of the configuration Model for the Type.</returns>
         public static PluginManagerConfiguration GetDefaultConfiguration()
@@ -218,9 +219,9 @@ namespace Symbiote.Core.Plugin
             return retVal;
         }
 
-        #endregion
+        #endregion IConfigurable<T> Implementation
 
-        #endregion
+        #endregion Public Static Methods
 
         #region Public Instance Methods
 
@@ -228,18 +229,19 @@ namespace Symbiote.Core.Plugin
 
         //// See the Manager class for the IStateful implementation for this class.
 
-        #endregion
+        #endregion IStateful Implementation
 
         #region IManager Implementation
 
         //// See the Manager class for the IManager implementation for this class.
 
-        #endregion
+        #endregion IManager Implementation
 
         #region IConfigurable Implementation
 
         /// <summary>
-        /// Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the default configuration.
+        ///     Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the
+        ///     default configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result Configure()
@@ -249,7 +251,7 @@ namespace Symbiote.Core.Plugin
 
             Result<PluginManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
 
-            // if the fetch succeeded, configure this instance with the result.  
+            // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
             {
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
@@ -277,7 +279,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
+        ///     Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
         /// </summary>
         /// <param name="configuration">The configuration with which the Model Manager should be configured.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -306,7 +308,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Saves the configuration to the Configuration Manager.
+        ///     Saves the configuration to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
@@ -333,14 +335,14 @@ namespace Symbiote.Core.Plugin
             return retVal;
         }
 
-        #endregion
+        #endregion IConfigurable Implementation
 
         #region IPluginManager Implementation
 
         #region Plugin and PluginArchive Management
 
         /// <summary>
-        /// Refreshes the lists of valid and invalid Plugin Archives.
+        ///     Refreshes the lists of valid and invalid Plugin Archives.
         /// </summary>
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         public PluginArchiveLoadResult ReloadPluginArchives()
@@ -362,7 +364,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Asynchronously installs the Plugin contained within the supplied PluginArchive.
+        ///     Asynchronously installs the Plugin contained within the supplied PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
@@ -372,7 +374,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Installs the Plugin contained within the supplied PluginArchive.
+        ///     Installs the Plugin contained within the supplied PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <param name="updatePlugin">When true, bypasses checks that prevent</param>
@@ -383,8 +385,8 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Asynchronously uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the default
-        /// PluginManagerConfiguration.
+        ///     Asynchronously uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes
+        ///     it from the default PluginManagerConfiguration.
         /// </summary>
         /// <param name="plugin">The Plugin to uninstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -394,8 +396,8 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the default 
-        /// PluginManagerConfiguration.
+        ///     Uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the
+        ///     default PluginManagerConfiguration.
         /// </summary>
         /// <param name="plugin">The Plugin to uninstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -405,7 +407,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Asynchronously reinstalls the specified Plugin by uninstalling, then installing from the original archive.
+        ///     Asynchronously reinstalls the specified Plugin by uninstalling, then installing from the original archive.
         /// </summary>
         /// <param name="plugin">The Plugin to reinstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -415,7 +417,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Reinstalls the specified Plugin by uninstalling, then installing from the original archive.
+        ///     Reinstalls the specified Plugin by uninstalling, then installing from the original archive.
         /// </summary>
         /// <param name="plugin">The Plugin to reinstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -450,7 +452,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Asynchronously Updates the Plugin contained within the specified PluginArchive.
+        ///     Asynchronously Updates the Plugin contained within the specified PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
@@ -460,7 +462,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Updates the Plugin contained within the specified PluginArchive.
+        ///     Updates the Plugin contained within the specified PluginArchive.
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
@@ -470,7 +472,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Searches the Plugins list for a Plugin with an FQN matching the supplied FQN and returns it if found.
+        ///     Searches the Plugins list for a Plugin with an FQN matching the supplied FQN and returns it if found.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Plugin to find.</param>
         /// <returns>The Plugin matching the supplied FQN, or the default Plugin if not found.</returns>
@@ -479,12 +481,12 @@ namespace Symbiote.Core.Plugin
             return FindPlugin(fqn, Plugins);
         }
 
-        #endregion
+        #endregion Plugin and PluginArchive Management
 
         #region Plugin Assembly Management
 
         /// <summary>
-        /// Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the PluginAssemblies list.
+        ///     Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the PluginAssemblies list.
         /// </summary>
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
         /// <returns>A Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
@@ -494,27 +496,29 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Finds and returns the PluginAssembly in the PluginAssemblies list whose FQN matches the specified FQN.
+        ///     Finds and returns the PluginAssembly in the PluginAssemblies list whose FQN matches the specified FQN.
         /// </summary>
         /// <param name="fqn">The FQN of the desired PluginAssembly.</param>
-        /// <returns>The PluginAssembly instance whose FQN matches the specified FQN, or the default PluginAssembly if not found.</returns>
+        /// <returns>
+        ///     The PluginAssembly instance whose FQN matches the specified FQN, or the default PluginAssembly if not found.
+        /// </returns>
         public IPluginAssembly FindPluginAssembly(string fqn)
         {
             return FindPluginAssembly(fqn, PluginAssemblies);
         }
 
-        #endregion
+        #endregion Plugin Assembly Management
 
         #region Plugin Instance Management
 
         /// <summary>
-        /// Creates and returns an instance of the specified plugin type with the specified name
+        ///     Creates and returns an instance of the specified plugin type with the specified name
         /// </summary>
         /// <remarks>
-        /// <para>
-        ///     The instanceName is propagated through the plugin instance and any internal reference (such as a ConnectorItem).  This name
-        ///     should match references to the plugin, either through fully qualified addressing or configuration.
-        /// </para>
+        ///     <para>
+        ///         The instanceName is propagated through the plugin instance and any internal reference (such as a
+        ///         ConnectorItem). This name should match references to the plugin, either through fully qualified addressing or configuration.
+        ///     </para>
         /// </remarks>
         /// <param name="instanceManager">The ApplicationManager instance to be passed to the Plugin instance.</param>
         /// <param name="instanceName">The desired internal name of the instance</param>
@@ -553,7 +557,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Given an instance name string, return the matching instance of IPluginInstance.
+        ///     Given an instance name string, return the matching instance of IPluginInstance.
         /// </summary>
         /// <param name="instanceName">The name of the instance to find.</param>
         /// <param name="pluginType">The Type of instance to find.</param>
@@ -571,10 +575,10 @@ namespace Symbiote.Core.Plugin
             }
         }
 
-        #endregion
+        #endregion Plugin Instance Management
 
         /// <summary>
-        /// Attempts to resolve the supplied plugin item Fully Qualified Name to an instance of Item contained in a Connector plugin.
+        ///     Attempts to resolve the supplied plugin item Fully Qualified Name to an instance of Item contained in a Connector plugin.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the instance to find.</param>
         /// <returns>The found Item.</returns>
@@ -607,25 +611,22 @@ namespace Symbiote.Core.Plugin
             return retVal;
         }
 
-        #endregion
+        #endregion IPluginManager Implementation
 
-        #endregion
+        #endregion Public Instance Methods
 
-        #endregion
+        #endregion Public Methods
 
         #region Protected Methods
 
         #region Protected Instance Methods
 
         /// <summary>
-        /// <para>
-        /// Executed upon startup of the Manager.
-        /// </para>
-        /// <para>
-        ///     Configures the Manager using the Configuration Manager, generates a list of the available Plugin Archives,
-        ///     loads installed Plugin Assemblies and registers them for configuration, and instantiates configured Plugin
-        ///     Instances.
-        /// </para>
+        ///     <para>Executed upon startup of the Manager.</para>
+        ///     <para>
+        ///         Configures the Manager using the Configuration Manager, generates a list of the available Plugin Archives,
+        ///         loads installed Plugin Assemblies and registers them for configuration, and instantiates configured Plugin Instances.
+        ///     </para>
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         protected override Result Startup()
@@ -644,7 +645,7 @@ namespace Symbiote.Core.Plugin
             retVal.Incorporate(configureResult);
             logger.Checkpoint("Configured the Plugin Manager", guid);
 
-            // generate a list of valid archive files in the archive directory 
+            // generate a list of valid archive files in the archive directory
             logger.SubSubHeading(LogLevel.Debug, "Archives...");
 
             PluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
@@ -708,7 +709,7 @@ namespace Symbiote.Core.Plugin
             logger.Info(PluginAssemblies.Count + " Plugin " + (PluginAssemblies.Count == 1 ? "Assembly" : "Assemblies") + " loaded.");
 
             logger.Checkpoint("Plugin Assemblies loaded", xLogger.Vars(PluginAssemblies), xLogger.Names("PluginAssemblies"), guid);
-            
+
             // instantiate all of the configured Plugin instances
             logger.SubSubHeading(LogLevel.Debug, "Instances...");
 
@@ -743,7 +744,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Executed upon shutdown of the Manager.
+        ///     Executed upon shutdown of the Manager.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -765,21 +766,21 @@ namespace Symbiote.Core.Plugin
             return retVal;
         }
 
-        #endregion
+        #endregion Protected Instance Methods
 
-        #endregion
+        #endregion Protected Methods
 
         #region Private Methods
 
         #region Private Static Methods
-        
+
         /// <summary>
-        /// Instantiates and/or returns the PluginManager instance.
+        ///     Instantiates and/or returns the PluginManager instance.
         /// </summary>
         /// <remarks>
-        /// Invoked via reflection from ApplicationManager.  The parameters are used to build an array of IManager parameters which are then passed
-        /// to this method.  To specify additional dependencies simply insert them into the parameter list for the method and they will be 
-        /// injected when the method is invoked.
+        ///     Invoked via reflection from ApplicationManager. The parameters are used to build an array of IManager parameters
+        ///     which are then passed to this method. To specify additional dependencies simply insert them into the parameter list
+        ///     for the method and they will be injected when the method is invoked.
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
@@ -796,11 +797,11 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Evaluates the supplied assembly name for correctness and returns an error message if it is incorrect.
+        ///     Evaluates the supplied assembly name for correctness and returns an error message if it is incorrect.
         /// </summary>
         /// <remarks>
-        /// The expected format of an assembly name is:  "Symbiote.Plugin.[Connector|Service].{PluginName}"
-        /// The third tuple may match any enumerated value in PluginType.
+        ///     The expected format of an assembly name is: "Symbiote.Plugin.[Connector|Service].{PluginName}" The third tuple may
+        ///     match any enumerated value in PluginType.
         /// </remarks>
         /// <returns>A Result containing the result of the operation.</returns>
         /// <param name="assemblyName">The AssemblyName to be validated.</param>
@@ -839,7 +840,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Determines whether the supplied assembly is a valid plugin, and if so, returns the plugin type.
+        ///     Determines whether the supplied assembly is a valid plugin, and if so, returns the plugin type.
         /// </summary>
         /// <param name="assembly">The assembly to validate.</param>
         /// <returns>A Result containing the result of the operation and, if successful, the plugin type.</returns>
@@ -899,7 +900,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Returns an enumeration instance representing the type of the plugin, derived from the third tuple of the plugin name.
+        ///     Returns an enumeration instance representing the type of the plugin, derived from the third tuple of the plugin name.
         /// </summary>
         /// <param name="name">The fully qualified assembly name from which to parse the plugin type.</param>
         /// <returns>An instance of PluginType corresponding to the parsed type.</returns>
@@ -924,8 +925,8 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Returns the base directory in which the specified Plugin should be installed, based on the type and name of the 
-        /// specified Plugin.
+        ///     Returns the base directory in which the specified Plugin should be installed, based on the type and name of the
+        ///     specified Plugin.
         /// </summary>
         /// <param name="plugin">The Plugin for which the directory is to be returned.</param>
         /// <returns>The directory in which the specified Plugin should be installed.</returns>
@@ -942,7 +943,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Returns true if the supplied Plugin is capable of being loaded, false otherwise.
+        ///     Returns true if the supplied Plugin is capable of being loaded, false otherwise.
         /// </summary>
         /// <param name="plugin">The Plugin to check.</param>
         /// <returns>True if the Plugin is capable of being loaded, false otherwise.</returns>
@@ -955,7 +956,7 @@ namespace Symbiote.Core.Plugin
         #region Settings
 
         /// <summary>
-        /// Retrieves the PluginArchiveConfigurationFileName setting or substitutes "SymbiotePlugin.json" if retrieval fails.
+        ///     Retrieves the PluginArchiveConfigurationFileName setting or substitutes "SymbiotePlugin.json" if retrieval fails.
         /// </summary>
         /// <returns>The name of the Plugin Archive configuration file.</returns>
         private static string GetPluginArchiveConfigurationFileName()
@@ -964,7 +965,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Retrieves the PluginArchivePayloadFileName setting or substitutes "Plugin.zip" if retrieval fails.
+        ///     Retrieves the PluginArchivePayloadFileName setting or substitutes "Plugin.zip" if retrieval fails.
         /// </summary>
         /// <returns>The name of the Plugin payload file contained within a Plugin Archive.</returns>
         private static string GetPluginArchivePayloadFileName()
@@ -973,7 +974,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Retrieves the PluginArchiveExtension setting or substitutes "*.zip" if retrieval fails.
+        ///     Retrieves the PluginArchiveExtension setting or substitutes "*.zip" if retrieval fails.
         /// </summary>
         /// <returns>The wildcard mask of the file extension for Plugin Archives.</returns>
         private static string GetPluginArchiveExtension()
@@ -981,14 +982,14 @@ namespace Symbiote.Core.Plugin
             return Utility.GetSetting("PluginArchiveExtension", "*.zip");
         }
 
-        #endregion
+        #endregion Settings
 
-        #endregion
+        #endregion Private Static Methods
 
         #region Private Instance Methods
 
         /// <summary>
-        /// Loads all valid Plugin Archives in the archive directory into a list of type PluginArchive and returns it.
+        ///     Loads all valid Plugin Archives in the archive directory into a list of type PluginArchive and returns it.
         /// </summary>
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         private PluginArchiveLoadResult LoadPluginArchives()
@@ -997,8 +998,8 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Loads all valid Plugin Archives matching the supplied searchPattern in the supplied directory using the supplied IPlatform 
-        /// into a list of type PluginArchive and returns it.
+        ///     Loads all valid Plugin Archives matching the supplied searchPattern in the supplied directory using the supplied
+        ///     IPlatform into a list of type PluginArchive and returns it.
         /// </summary>
         /// <param name="directory">The directory to search.</param>
         /// <param name="searchPattern">The file extension of Plugin Archives.</param>
@@ -1046,7 +1047,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Parses a Plugin Archive file into a PluginArchive object and validates it using default parameters.
+        ///     Parses a Plugin Archive file into a PluginArchive object and validates it using default parameters.
         /// </summary>
         /// <param name="fileName">The Plugin Archive file to parse.</param>
         /// <returns>A Result containing the result of the operation and the parsed PluginArchive.</returns>
@@ -1056,11 +1057,13 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Parses a Plugin Archive file into a PluginArchive object and validates it.
+        ///     Parses a Plugin Archive file into a PluginArchive object and validates it.
         /// </summary>
         /// <param name="fileName">The Plugin Archive file to parse.</param>
         /// <param name="configFileName">The name of the Plugin config file expected to be found within the archive.</param>
-        /// <param name="payloadFileName">The name of the file containing the Plugin files expected to be found within the archive.</param>
+        /// <param name="payloadFileName">
+        ///     The name of the file containing the Plugin files expected to be found within the archive.
+        /// </param>
         /// <param name="platform">The IPlatform instance to use to carry out the parse.</param>
         /// <returns>A Result containing the result of the operation and the parsed PluginArchive.</returns>
         private Result<PluginArchive> ParsePluginArchive(string fileName, string configFileName, string payloadFileName, IPlatform platform)
@@ -1088,12 +1091,12 @@ namespace Symbiote.Core.Plugin
                     if (extractConfigFileResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("File extracted successfully.  Attempting to read contents...");
-                        
+
                         // read the contents of the file
                         Result<string> readConfigFileResult = platform.ReadFile(extractConfigFileResult.ReturnValue);
                         if (readConfigFileResult.ResultCode != ResultCode.Failure)
                         {
-                            // the contents of the config file are in readConfigFileResult.ReturnValue.  try to deserialize it..
+                            // the contents of the config file are in readConfigFileResult.ReturnValue. try to deserialize it..
                             try
                             {
                                 logger.Trace("File contents read.  Attempting to deserialize...");
@@ -1125,7 +1128,7 @@ namespace Symbiote.Core.Plugin
                 retVal.AddError("Failed to retrieve a list of files from zip file.");
             }
 
-            // clean up the temp directory.  this will fail if the file wasn't extracted but we don't care.
+            // clean up the temp directory. this will fail if the file wasn't extracted but we don't care.
             logger.Trace("Cleaning up the temp directory...");
             platform.DeleteFile(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Temp, configFileName));
 
@@ -1170,7 +1173,8 @@ namespace Symbiote.Core.Plugin
                             retVal.AddError("Failed to compute the checksum of the payload: " + payloadChecksumResult.GetLastError());
                         }
 
-                        // if the plugin archive contains a Connector or Endpoint, make sure the zip file contains a .dll with the proper name.
+                        // if the plugin archive contains a Connector or Endpoint, make sure the zip file contains a .dll with the
+                        // proper name.
                         if ((retVal.ReturnValue.Plugin.PluginType == PluginType.Connector) || (retVal.ReturnValue.Plugin.PluginType == PluginType.Connector))
                         {
                             logger.Trace("The Plugin contains a binary.  Make sure it exists...");
@@ -1202,7 +1206,7 @@ namespace Symbiote.Core.Plugin
                 retVal.AddError("Failed to retrieve a list of files from zip file: " + zipPayloadCheckResult.GetLastError());
             }
 
-            // clean up the temp directory.  this will fail if the file wasn't extracted but we don't care.
+            // clean up the temp directory. this will fail if the file wasn't extracted but we don't care.
             logger.Trace("Cleaning up the temp directory (again)...");
             platform.DeleteFile(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Temp, payloadFileName));
 
@@ -1270,14 +1274,14 @@ namespace Symbiote.Core.Plugin
             {
                 retVal.AddError("The final tuple of the FQN doesn't agree with the Name field (Name: '" + p.Name + "'; FQN: '" + sfqn[3] + "').");
             }
-            
+
             logger.Checkpoint("Validated Plugin json", guid);
 
             // validate the fingerprint.
             logger.Trace("Validating Plugin fingerprint...");
 
             logger.Trace("ADD THIS BACK IN");
-            
+
             logger.Checkpoint("Validated Plugin fingerprint", guid);
 
             retVal.LogResult(logger.Trace);
@@ -1286,15 +1290,16 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// <para>
-        /// Installs the Plugin contained within the supplied PluginArchive using the supplied IPlatform and adds the installed Plugin to the
-        /// supplied PluginManagerConfiguration.
-        /// </para>
-        /// <para>
-        /// Prior to installing, the Plugin Archive is re-parsed to ensure it did not changed between the time it was loaded into the PluginArchives
-        /// list and when installation was requested.  If the Plugin within the archive is the same as the loaded plugin, installation continues, otherwise
-        /// the operation fails and requests that the user refreshes the list.
-        /// </para>
+        ///     <para>
+        ///         Installs the Plugin contained within the supplied PluginArchive using the supplied IPlatform and adds the
+        ///         installed Plugin to the supplied PluginManagerConfiguration.
+        ///     </para>
+        ///     <para>
+        ///         Prior to installing, the Plugin Archive is re-parsed to ensure it did not changed between the time it was
+        ///         loaded into the PluginArchives list and when installation was requested. If the Plugin within the archive is
+        ///         the same as the loaded plugin, installation continues, otherwise the operation fails and requests that the user
+        ///         refreshes the list.
+        ///     </para>
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <param name="plugins">The List of type Plugin to which the installed Plugin should be added.</param>
@@ -1314,15 +1319,15 @@ namespace Symbiote.Core.Plugin
             IPlugin foundPlugin = FindPlugin(archive.Plugin.FQN);
             if (foundPlugin != default(Plugin))
             {
-                // plugin was found.  If we aren't updating then add an error.
+                // plugin was found. If we aren't updating then add an error.
                 if (!updatePlugin)
                 {
                     retVal.AddError("A Plugin with the name '" + archive.Plugin.Name + "' is already installed.");
                 }
                 else
                 {
-                    // we are updating.  Make sure the plugins have the same Name, FQN and PluginType.
-                    // updated plugins are expected to be different among Version and Fingerprint.
+                    // we are updating. Make sure the plugins have the same Name, FQN and PluginType. updated plugins are expected
+                    // to be different among Version and Fingerprint.
                     IPlugin p = foundPlugin;
                     IPlugin a = archive.Plugin;
                     if ((p.Name != a.Name) || (p.FQN != a.FQN) || (p.PluginType != a.PluginType))
@@ -1340,7 +1345,7 @@ namespace Symbiote.Core.Plugin
                 logger.ExitMethod(retVal, guid);
                 return retVal;
             }
-            
+
             // re-validate the file; it may have changed between the time it was loaded and when installation was requested.
             logger.Debug("Re-parsing the archive to ensure that it hasn't changed since it was loaded.");
             Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Archives, archive.FileName));
@@ -1363,7 +1368,7 @@ namespace Symbiote.Core.Plugin
             }
 
             logger.Checkpoint("Re-parse succeeded", guid);
-            
+
             // determine the destination folders
             logger.Debug("Determining output directories...");
             string tempDestination;
@@ -1385,8 +1390,9 @@ namespace Symbiote.Core.Plugin
             logger.Debug("Output folders: Temp: '" + tempDestination + "'; Plugin: '" + destination + "'");
 
             logger.Checkpoint("Destination folders", xLogger.Vars(tempDestination, destination), xLogger.Names("tempDestination", "destination"), guid);
-            
-            // extract the archive; first to the temp directory, then extract the payload to the plugin destination and copy the configuration file
+
+            // extract the archive; first to the temp directory, then extract the payload to the plugin destination and copy the
+            // configuration file
             logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(Dependency<IPlatformManager>().Directories.Root, string.Empty) + "'...");
 
             Result extractResult;
@@ -1412,12 +1418,12 @@ namespace Symbiote.Core.Plugin
                         {
                             logger.Debug("Payload extracted successfully.");
 
-                            // the payload extracted without any issues.  if the plugin is a binary, calculate the checksum of the dll
-                            // and store it in the Fingerprint field.
+                            // the payload extracted without any issues. if the plugin is a binary, calculate the checksum of the
+                            // dll and store it in the Fingerprint field.
                             if ((archive.Plugin.PluginType == PluginType.Connector) || (archive.Plugin.PluginType == PluginType.Endpoint))
                             {
-                                // locate the plugin assembly among the extracted files.
-                                // a valid assembly is named 'FQN.dll' where FQN is the FQN of the plugin 
+                                // locate the plugin assembly among the extracted files. a valid assembly is named 'FQN.dll' where
+                                // FQN is the FQN of the plugin
                                 logger.Debug("Attempting to locate the extracted assembly...");
                                 Result<List<string>> findDllResult = platform.ListFiles(destination, "*.dll");
                                 if (findDllResult.ResultCode != ResultCode.Failure)
@@ -1427,18 +1433,18 @@ namespace Symbiote.Core.Plugin
 
                                     if (dllFile != default(string))
                                     {
-                                        // the plugin assembly was found.  calculate the fingerprint.
+                                        // the plugin assembly was found. calculate the fingerprint.
                                         logger.Debug("Assembly found.  Calculating checksum for the Plugin fingerprint...");
                                         Result<string> checksumResult = platform.ComputeFileChecksum(dllFile);
                                         if (checksumResult.ResultCode != ResultCode.Failure)
                                         {
                                             logger.Trace("Checksum: " + checksumResult.ReturnValue);
 
-                                            // create the fingerprint.
-                                            // hash the SHA256 of the dll with the FQN and version of the plugin
-                                            // because we've already passed the more rigorous check using the FingerprintValidator, we only need to save
-                                            // the hash of the file that came from the zip to ensure it is not tampered with.
-                                            string hash = Utility.ComputeHash(archive.Plugin.FQN + archive.Plugin.Version + checksumResult.ReturnValue);
+                                            // create the fingerprint. hash the SHA256 of the dll with the FQN and version of the
+                                            // plugin because we've already passed the more rigorous check using the
+                                            // FingerprintValidator, we only need to save the hash of the file that came from the
+                                            // zip to ensure it is not tampered with.
+                                            string hash = SDK.Utility.ComputeHash(archive.Plugin.FQN + archive.Plugin.Version + checksumResult.ReturnValue);
                                             logger.Trace("Hash: " + hash);
 
                                             // set the fingerprint
@@ -1480,15 +1486,15 @@ namespace Symbiote.Core.Plugin
             // cleanup the temp directory
             logger.Debug("Cleaning up the temporary directory...");
             platform.DeleteDirectory(tempDestination);
-            
+
             retVal.LogResult(logger);
             logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
         /// <summary>
-        /// Uninstalls the supplied Plugin by deleting the directory using the supplied IPlatform, then removes it from the supplied
-        /// PluginManagerConfiguration.
+        ///     Uninstalls the supplied Plugin by deleting the directory using the supplied IPlatform, then removes it from the
+        ///     supplied PluginManagerConfiguration.
         /// </summary>
         /// <param name="plugin">The Plugin to uninstall.</param>
         /// <param name="plugins">The List of type Plugin from which the Plugin is to be removed.</param>
@@ -1548,7 +1554,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Searches the specified List of type Plugin for a Plugin with an FQN matching the supplied FQN and returns it if found.
+        ///     Searches the specified List of type Plugin for a Plugin with an FQN matching the supplied FQN and returns it if found.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Plugin to find.</param>
         /// <param name="plugins">The List of type Plugin to search.</param>
@@ -1564,7 +1570,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Loads the Plugin Assemblies specified in the InstalledPlugins list of the Plugin Manager configuration.
+        ///     Loads the Plugin Assemblies specified in the InstalledPlugins list of the Plugin Manager configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
         private Result<List<IPluginAssembly>> LoadPluginAssemblies()
@@ -1573,7 +1579,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Loads the Plugin Assemblies specified in the supplied list of Plugins using the supplied IPlatform instance.
+        ///     Loads the Plugin Assemblies specified in the supplied list of Plugins using the supplied IPlatform instance.
         /// </summary>
         /// <param name="plugins">The list of Plugins from which the Plugin Assemblies should be loaded.</param>
         /// <returns>A Result containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
@@ -1616,7 +1622,7 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the specified list.
+        ///     Loads the Plugin Assembly belonging to the specified Plugin and stores the instance in the specified list.
         /// </summary>
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
         /// <param name="pluginAssemblies">The list of type PluginAssembly to which the new instance should be added.</param>
@@ -1643,7 +1649,7 @@ namespace Symbiote.Core.Plugin
                 Result<string> checksumResult = Dependency<IPlatformManager>().Platform.ComputeFileChecksum(assemblyFileName);
                 if (checksumResult.ResultCode != ResultCode.Failure)
                 {
-                    string computedFingerprint = Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.ReturnValue);
+                    string computedFingerprint = SDK.Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.ReturnValue);
 
                     computedFingerprint = plugin.Fingerprint;
 
@@ -1663,7 +1669,7 @@ namespace Symbiote.Core.Plugin
 
                 logger.Checkpoint("Fingerprint validated");
 
-                // load the assembly 
+                // load the assembly
                 assembly = Assembly.LoadFrom(assemblyFileName);
 
                 logger.Checkpoint("Assembly loaded");
@@ -1693,8 +1699,7 @@ namespace Symbiote.Core.Plugin
                                                     validationResult.ReturnValue,
                                                     assembly);
 
-                // register the plugin type
-                // as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
+                // register the plugin type as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
                 Result registerResult = Dependency<IConfigurationManager>().RegisterType(validationResult.ReturnValue);
                 if (registerResult.ResultCode == ResultCode.Failure)
                 {
@@ -1705,8 +1710,7 @@ namespace Symbiote.Core.Plugin
             {
                 logger.Exception(LogLevel.Debug, ex);
 
-                // a multitude of exceptions can be thrown under the ReflectionTypeLoaderException type
-                // iterate over them
+                // a multitude of exceptions can be thrown under the ReflectionTypeLoaderException type iterate over them
                 retVal.AddError("Failed to load assembly from plugin file '" + assemblyFileName + "': " + ex.Message);
 
                 foreach (Exception le in ex.LoaderExceptions)
@@ -1732,11 +1736,13 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Finds and returns the PluginAssembly in the specified list of type PluginAssembly whose FQN matches the specified FQN.
+        ///     Finds and returns the PluginAssembly in the specified list of type PluginAssembly whose FQN matches the specified FQN.
         /// </summary>
         /// <param name="fqn">The FQN of the desired PluginAssembly.</param>
         /// <param name="assemblies">The List of type PluginAssembly in which to search.</param>
-        /// <returns>The PluginAssembly instance whose FQN matches the specified FQN, or the default PluginAssembly if not found.</returns>
+        /// <returns>
+        ///     The PluginAssembly instance whose FQN matches the specified FQN, or the default PluginAssembly if not found.
+        /// </returns>
         private IPluginAssembly FindPluginAssembly(string fqn, List<IPluginAssembly> assemblies)
         {
             logger.EnterMethod(xLogger.Params(fqn, new xLogger.ExcludedParam()));
@@ -1748,8 +1754,8 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        /// Iterates over the configured list of Plugin Instances, retrieves the matching PluginAssembly from the list of 
-        /// loaded PluginAssemblies and instantiates each instance
+        ///     Iterates over the configured list of Plugin Instances, retrieves the matching PluginAssembly from the list of
+        ///     loaded PluginAssemblies and instantiates each instance
         /// </summary>
         /// <returns>A Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
         private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins()
@@ -1758,16 +1764,20 @@ namespace Symbiote.Core.Plugin
         }
 
         /// <summary>
-        ///     Iterates over the specified List of type <see cref="PluginManagerConfigurationPluginInstance"/>, retrieves the matching PluginAssembly
-        ///     from the supplied List of type PluginAssembly and instantiates each instance, passing the instance name and an instance of 
-        ///     xLogger with the Fully Qualified Name of the instance.
+        ///     Iterates over the specified List of type <see cref="PluginManagerConfigurationPluginInstance"/>, retrieves the
+        ///     matching PluginAssembly from the supplied List of type PluginAssembly and instantiates each instance, passing the
+        ///     instance name and an instance of xLogger with the Fully Qualified Name of the instance.
         /// </summary>
         /// <remarks>
-        ///     The <see cref="InstantiatePlugin{T}(IApplicationManager, string, xLogger)"/> method is invoked via reflection so that the type parameter for
-        ///     the method can be specified dynamically.
+        ///     The <see cref="InstantiatePlugin{T}(IApplicationManager, string, xLogger)"/> method is invoked via reflection so
+        ///     that the type parameter for the method can be specified dynamically.
         /// </remarks>
-        /// <param name="configuredInstances">The List of type PluginManagerConfigurationPluginInstance containing the list of Plugin instances to create.</param>
-        /// <param name="assemblies">The List of type PluginAssembly containing the assemblies to which the supplied instances should be matched</param>
+        /// <param name="configuredInstances">
+        ///     The List of type PluginManagerConfigurationPluginInstance containing the list of Plugin instances to create.
+        /// </param>
+        /// <param name="assemblies">
+        ///     The List of type PluginAssembly containing the assemblies to which the supplied instances should be matched
+        /// </param>
         /// <param name="instanceManager">The ApplicationManager instance to be passed to Plugin instances.</param>
         /// <returns>A Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
         private Result<Dictionary<string, IPluginInstance>> InstantiatePlugins(List<PluginManagerConfigurationPluginInstance> configuredInstances, List<IPluginAssembly> assemblies, IApplicationManager instanceManager)
@@ -1816,10 +1826,10 @@ namespace Symbiote.Core.Plugin
             return retVal;
         }
 
-        #endregion
+        #endregion Private Instance Methods
 
-        #endregion
+        #endregion Private Methods
 
-        #endregion
+        #endregion Methods
     }
 }

@@ -43,7 +43,6 @@ using NLog;
 using Symbiote.SDK;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Utility.BigFont;
 
 namespace Symbiote.Core
@@ -54,59 +53,6 @@ namespace Symbiote.Core
     public static class Utility
     {
         #region Public Methods
-
-        /// <summary>
-        ///     Returns a clone of the supplied list.
-        /// </summary>
-        /// <typeparam name="T">The list type to clone.</typeparam>
-        /// <param name="listToClone">The list from which the clone should be created.</param>
-        /// <returns>A clone of the supplied list.</returns>
-        public static List<T> Clone<T>(this IList<T> listToClone) where T : ICloneable
-        {
-            return listToClone.Select(item => (T)item.Clone()).ToList();
-        }
-
-        /// <summary>
-        ///     Computes a cryptographic hash of the provided text using the provided salt.
-        /// </summary>
-        /// <param name="text">The text to hash.</param>
-        /// <param name="salt">The salt with which to seed the hash function.</param>
-        /// <returns>The computed hash.</returns>
-        public static string ComputeHash(string text, string salt = "")
-        {
-            byte[] binText = System.Text.Encoding.ASCII.GetBytes(text);
-            byte[] binSalt = System.Text.Encoding.ASCII.GetBytes(salt);
-            byte[] binSaltedText;
-
-            if (binSalt.Length > 0)
-            {
-                binSaltedText = new byte[binText.Length + binSalt.Length];
-
-                for (int i = 0; i < binText.Length; i++)
-                {
-                    binSaltedText[i] = binText[i];
-                }
-
-                for (int i = 0; i < binSalt.Length; i++)
-                {
-                    binSaltedText[binText.Length + i] = binSalt[i];
-                }
-            }
-            else
-            {
-                binSaltedText = binText;
-            }
-
-            byte[] checksum = System.Security.Cryptography.SHA256.Create().ComputeHash(binSaltedText);
-
-            System.Text.StringBuilder builtString = new System.Text.StringBuilder();
-            foreach (byte b in checksum)
-            {
-                builtString.Append(b.ToString("x2"));
-            }
-
-            return builtString.ToString();
-        }
 
         /// <summary>
         ///     Disables the specified logging level within the LogManager.
@@ -120,24 +66,6 @@ namespace Symbiote.Core
             }
 
             LogManager.ReconfigExistingLoggers();
-        }
-
-        /// <summary>
-        ///     Returns the specified assembly attribute of the specified assembly.
-        /// </summary>
-        /// <typeparam name="T">The assembly attribute to return.</typeparam>
-        /// <param name="ass">The assembly from which to retrieve the attribute.</param>
-        /// <returns>The retrieved attribute.</returns>
-        public static T GetAssemblyAttribute<T>(this System.Reflection.Assembly ass) where T : Attribute
-        {
-            object[] attributes = ass.GetCustomAttributes(typeof(T), false);
-
-            if (attributes == null || attributes.Length == 0)
-            {
-                return null;
-            }
-
-            return attributes.OfType<T>().SingleOrDefault();
         }
 
         /// <summary>
@@ -311,42 +239,6 @@ namespace Symbiote.Core
         }
 
         /// <summary>
-        ///     Returns a truncated GUID.
-        /// </summary>
-        /// <returns>A truncated GUID.</returns>
-        public static string ShortGuid()
-        {
-            return Guid.NewGuid().ToString().Split('-')[0];
-        }
-
-        /// <summary>
-        ///     Returns a subset of the supplied array.
-        /// </summary>
-        /// <typeparam name="T">The type of the array.</typeparam>
-        /// <param name="data">The array.</param>
-        /// <param name="index">The index at which the sub-array should start.</param>
-        /// <param name="length">The length of the desired sub-array; the number of elements to select.</param>
-        /// <returns>A subset of the supplied array.</returns>
-        public static T[] SubArray<T>(this T[] data, int index, int length)
-        {
-            T[] result = new T[length];
-            Array.Copy(data, index, result, 0, length);
-            return result;
-        }
-
-        /// <summary>
-        ///     Returns the last N elements of the supplied IEnumerable.
-        /// </summary>
-        /// <typeparam name="T">The type of the IEnumerable.</typeparam>
-        /// <param name="source">The IEnumerable.</param>
-        /// <param name="n">The number of elements to take from the end of the collection.</param>
-        /// <returns>An IEnumerable containing the last N elements of the supplied IEnumerable.</returns>
-        public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int n)
-        {
-            return source.Skip(Math.Max(0, source.Count() - n));
-        }
-
-        /// <summary>
         ///     Updates the setting corresponding to the specified setting within the app.exe.config file with the specified value.
         /// </summary>
         /// <param name="key">The setting to update.</param>
@@ -358,19 +250,6 @@ namespace Symbiote.Core
             configuration.Save();
 
             System.Configuration.ConfigurationManager.RefreshSection("appSettings");
-        }
-
-        /// <summary>
-        ///     Converts the specified wildcard pattern to a regular expression.
-        /// </summary>
-        /// <param name="pattern">The wildcard pattern to convert.</param>
-        /// <returns>The regular expression resulting from the conversion.</returns>
-        public static string WildcardToRegex(string pattern = "")
-        {
-            return "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
-                              .Replace(@"\*", ".*")
-                              .Replace(@"\?", ".")
-                       + "$";
         }
 
         #endregion Public Methods

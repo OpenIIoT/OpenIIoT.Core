@@ -522,7 +522,7 @@ namespace Symbiote.SDK
                 {
                     var previousValue = Value;
                     Value = value;
-                    OnChange(previousValue, Value);
+                    OnChange(value, previousValue);
                 }
             }
 
@@ -586,13 +586,13 @@ namespace Symbiote.SDK
         ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
         ///     specified value.
         /// </summary>
-        /// <param name="previousValue">The value of the Item prior to the event.</param>
         /// <param name="value">The value for the raised event.</param>
-        protected virtual void OnChange(object previousValue, object value)
+        /// <param name="previousValue">The value of the Item prior to the event.</param>
+        protected virtual void OnChange(object value, object previousValue)
         {
             if (Changed != null)
             {
-                Changed(this, new ItemChangedEventArgs(previousValue, value));
+                Changed(this, new ItemChangedEventArgs(value, previousValue));
             }
         }
 

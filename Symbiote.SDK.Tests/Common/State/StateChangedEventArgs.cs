@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█                                  ▄████████
-      █   ███                                  ███    ███
-      █   ███▌     ██       ▄█████    ▄▄██▄▄▄  ███    █▀    ██   █      ▄█████  ██▄▄▄▄     ▄████▄     ▄█████ ██████▄
-      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ ███          ██   ██     ██   ██ ██▀▀▀█▄   ██    ▀    ██   █  ██   ▀██
-      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ███         ▄██▄▄▄██▄▄   ██   ██ ██   ██  ▄██        ▄██▄▄    ██    ██
-      █   ███      ██    ▀▀██▀▀     ██  ██  ██ ███    █▄  ▀▀██▀▀▀██▀  ▀████████ ██   ██ ▀▀██ ███▄  ▀▀██▀▀    ██    ██
-      █   ███      ██      ██   █   ██  ██  ██ ███    ███   ██   ██     ██   ██ ██   ██   ██    ██   ██   █  ██   ▄██
-      █   █▀      ▄██▀     ███████   █  ██  █  ████████▀    ██   ██     ██   █▀  █   █    ██████▀    ███████ ██████▀
+      █      ▄████████                                         ▄████████
+      █     ███    ███                                         ███    ███
+      █     ███    █▀      ██      ▄█████      ██       ▄█████ ███    █▀    ██   █      ▄█████  ██▄▄▄▄     ▄████▄     ▄█████ ██████▄
+      █     ███        ▀███████▄   ██   ██ ▀███████▄   ██   █  ███          ██   ██     ██   ██ ██▀▀▀█▄   ██    ▀    ██   █  ██   ▀██
+      █   ▀███████████     ██  ▀   ██   ██     ██  ▀  ▄██▄▄    ███         ▄██▄▄▄██▄▄   ██   ██ ██   ██  ▄██        ▄██▄▄    ██    ██
+      █            ███     ██    ▀████████     ██    ▀▀██▀▀    ███    █▄  ▀▀██▀▀▀██▀  ▀████████ ██   ██ ▀▀██ ███▄  ▀▀██▀▀    ██    ██
+      █      ▄█    ███     ██      ██   ██     ██      ██   █  ███    ███   ██   ██     ██   ██ ██   ██   ██    ██   ██   █  ██   ▄██
+      █    ▄████████▀     ▄██▀     ██   █▀    ▄██▀     ███████ ████████▀    ██   ██     ██   █▀  █   █    ██████▀    ███████ ██████▀
       █
       █      ▄████████                                        ▄████████
       █     ███    ███                                        ███    ███
@@ -19,10 +19,19 @@
       █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
       █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents the event arguments for Item Changed events.
+      █  Unit tests for the StateChangedEventArgs class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,42 +57,47 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
+using Xunit;
 
-namespace Symbiote.SDK
+namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Represents the event arguments for Item Changed events.
+    ///     Unit tests for the StateChangedEventArgs class.
     /// </summary>
-    public class ItemChangedEventArgs : EventArgs
+    public class StateChangedEventArgs
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ItemChangedEventArgs"/> class with the specified values.
+        ///     Tests all constructor overloads.
         /// </summary>
-        /// <param name="value">The new value of the Item.</param>
-        /// <param name="previousValue">The previous value of the Item.</param>
-        public ItemChangedEventArgs(object value, object previousValue) : base()
+        [Fact]
+        public void Constructor()
         {
-            Value = value;
-            PreviousValue = previousValue;
+            SDK.StateChangedEventArgs args;
+
+            args = new SDK.StateChangedEventArgs(State.Initialized, State.Undefined);
+            Assert.IsType<SDK.StateChangedEventArgs>(args);
+
+            args = new SDK.StateChangedEventArgs(State.Initialized, State.Undefined, "message");
+            Assert.IsType<SDK.StateChangedEventArgs>(args);
+
+            args = new SDK.StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
+            Assert.IsType<SDK.StateChangedEventArgs>(args);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
-        ///     Gets the previous value of the Item.
+        ///     Tests all properties.
         /// </summary>
-        public object PreviousValue { get; private set; }
+        [Fact]
+        public void Properties()
+        {
+            SDK.StateChangedEventArgs args = new SDK.StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
 
-        /// <summary>
-        ///     Gets the new value of the Item.
-        /// </summary>
-        public object Value { get; private set; }
+            Assert.Equal(State.Initialized, args.State);
+            Assert.Equal(State.Undefined, args.PreviousState);
+        }
 
-        #endregion Public Properties
+        #endregion Public Methods
     }
 }
