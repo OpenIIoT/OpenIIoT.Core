@@ -48,8 +48,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
 using Moq;
 using Utility.OperationResult;
 using Xunit;
@@ -62,6 +60,8 @@ namespace Symbiote.SDK.Tests
     /// </summary>
     public class ConnectorItem
     {
+        #region Private Fields
+
         /// <summary>
         ///     The shared IConnector mockup.
         /// </summary>
@@ -73,14 +73,18 @@ namespace Symbiote.SDK.Tests
         private Mock<IConnector> readableConnectorMock;
 
         /// <summary>
+        ///     The shared IConnector mockup which implements ISubscribable.
+        /// </summary>
+        private Mock<IConnector> subscribableConnectorMock;
+
+        /// <summary>
         ///     The shared IConnector mockup which implements IWriteable.
         /// </summary>
         private Mock<IConnector> writeableConnectorMock;
 
-        /// <summary>
-        ///     The shared IConnector mockup which implements ISubscribable.
-        /// </summary>
-        private Mock<IConnector> subscribableConnectorMock;
+        #endregion Private Fields
+
+        #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConnectorItem"/> class.
@@ -99,6 +103,62 @@ namespace Symbiote.SDK.Tests
             subscribableConnectorMock.As<ISubscribable>();
         }
 
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ConnectorItem.AddChild(SDK.ConnectorItem)"/> and
+        ///     <see cref="SDK.ConnectorItem.RemoveChild(SDK.ConnectorItem)"/> methods.
+        /// </summary>
+        [Fact]
+        public void AddRemoveChildren()
+        {
+            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root");
+            SDK.ConnectorItem child = new SDK.ConnectorItem(connectorMock.Object, "Root.Child");
+            SDK.ConnectorItem childsChild = new SDK.ConnectorItem(connectorMock.Object, "Root.Child.Child");
+            child.AddChild(childsChild);
+
+            // add the child and ensure the operation was successful and that it returns the child item
+            Result<SDK.ConnectorItem> addResult = item.AddChild(child);
+
+            Assert.Equal(ResultCode.Success, addResult.ResultCode);
+            Assert.Equal(child, addResult.ReturnValue);
+
+            // remove the child and ensure it was successful and that it returns the child item
+            Result<SDK.ConnectorItem> removeResult = item.RemoveChild(child);
+
+            Assert.Equal(ResultCode.Success, removeResult.ResultCode);
+            Assert.Equal(child, removeResult.ReturnValue);
+
+            // attempt to remove a non-existent child and ensure that the operation fails
+            Result<SDK.ConnectorItem> badRemoveResult = item.RemoveChild(new SDK.ConnectorItem(connectorMock.Object, "Root.New"));
+
+            Assert.Equal(ResultCode.Failure, badRemoveResult.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ConnectorItem.Changed"/> event.
+        /// </summary>
+        [Fact]
+        public void Changed()
+        {
+            // prepare an item and write an initial value
+            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root.Item");
+            item.Write("initial");
+
+            // prepare event args and bind a handler to the changed event
+            ItemChangedEventArgs args = default(ItemChangedEventArgs);
+            item.Changed += delegate (object sender, ItemChangedEventArgs e) { args = e; };
+
+            // invoke the write method to fire the event
+            item.Write("test");
+
+            // assert that the previousvalue and value members of the event args are as expected.
+            Assert.Equal("initial", args.PreviousValue);
+            Assert.Equal("test", args.Value);
+        }
+
         /// <summary>
         ///     Tests all constructor overloads.
         /// </summary>
@@ -115,17 +175,6 @@ namespace Symbiote.SDK.Tests
 
             item = new SDK.ConnectorItem(connectorMock.Object, string.Empty, string.Empty, false);
             Assert.IsType<SDK.ConnectorItem>(item);
-        }
-
-        /// <summary>
-        ///     Tests all properties.
-        /// </summary>
-        [Fact]
-        public void Properties()
-        {
-            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root.Child.Name", "Source");
-
-            Assert.Equal(connectorMock.Object, item.Connector);
         }
 
         /// <summary>
@@ -149,18 +198,14 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Item.Write(object)"/> and <see cref="Item.WriteAsync(object)"/> methods.
+        ///     Tests all properties.
         /// </summary>
         [Fact]
-        public async void Write()
+        public void Properties()
         {
-            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root.Item");
+            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root.Child.Name", "Source");
 
-            item.Write("test");
-            Assert.Equal("test", item.Value);
-
-            await item.WriteAsync("test two");
-            Assert.Equal("test two", item.Value);
+            Assert.Equal(connectorMock.Object, item.Connector);
         }
 
         /// <summary>
@@ -220,65 +265,6 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.ConnectorItem.Write(object)"/> and <see cref="SDK.ConnectorItem.WriteToSourceAsync(object)"/>
-        /// </summary>
-        [Fact]
-        public async void WriteToSource()
-        {
-            // test the method with an item from a connector that doesn't implement IWriteable
-            SDK.ConnectorItem nonWriteableItem = new SDK.ConnectorItem(connectorMock.Object, "Root.NonWriteable");
-            Assert.NotEqual(ResultCode.Success, nonWriteableItem.WriteToSource("test").ResultCode);
-
-            // test the method with an item from a connector that implements IWriteable create the item
-            SDK.ConnectorItem item = new SDK.ConnectorItem(writeableConnectorMock.Object, "Root.Item");
-
-            // set up the mock connector
-            writeableConnectorMock.As<IWriteable>().Setup(m => m.Write(item, "write test")).Returns(new Result());
-            writeableConnectorMock.As<IWriteable>().Setup(m => m.Write(item, "write test two")).Returns(new Result());
-
-            // perform the write and assert that it succeeded and assert the changed value
-            Assert.Equal(ResultCode.Success, item.WriteToSource("write test").ResultCode);
-            Assert.Equal("write test", item.Value);
-
-            // invoke the method and await the result
-            Result result = await item.WriteToSourceAsync("write test two");
-
-            // assert
-            Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.Equal("write test two", item.Value);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.ConnectorItem.AddChild(SDK.ConnectorItem)"/> and
-        ///     <see cref="SDK.ConnectorItem.RemoveChild(SDK.ConnectorItem)"/> methods.
-        /// </summary>
-        [Fact]
-        public void AddRemoveChildren()
-        {
-            SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root");
-            SDK.ConnectorItem child = new SDK.ConnectorItem(connectorMock.Object, "Root.Child");
-            SDK.ConnectorItem childsChild = new SDK.ConnectorItem(connectorMock.Object, "Root.Child.Child");
-            child.AddChild(childsChild);
-
-            // add the child and ensure the operation was successful and that it returns the child item
-            Result<SDK.ConnectorItem> addResult = item.AddChild(child);
-
-            Assert.Equal(ResultCode.Success, addResult.ResultCode);
-            Assert.Equal(child, addResult.ReturnValue);
-
-            // remove the child and ensure it was successful and that it returns the child item
-            Result<SDK.ConnectorItem> removeResult = item.RemoveChild(child);
-
-            Assert.Equal(ResultCode.Success, removeResult.ResultCode);
-            Assert.Equal(child, removeResult.ReturnValue);
-
-            // attempt to remove a non-existent child and ensure that the operation fails
-            Result<SDK.ConnectorItem> badRemoveResult = item.RemoveChild(new SDK.ConnectorItem(connectorMock.Object, "Root.New"));
-
-            Assert.Equal(ResultCode.Failure, badRemoveResult.ResultCode);
-        }
-
-        /// <summary>
         ///     Tests the <see cref="Item.SubscribeToSource"/> and <see cref="Item.UnsubscribeFromSource"/> methods.
         /// </summary>
         [Fact]
@@ -323,25 +309,49 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.ConnectorItem.Changed"/> event.
+        ///     Tests the <see cref="Item.Write(object)"/> and <see cref="Item.WriteAsync(object)"/> methods.
         /// </summary>
         [Fact]
-        public void Changed()
+        public async void Write()
         {
-            // prepare an item and write an initial value
             SDK.ConnectorItem item = new SDK.ConnectorItem(connectorMock.Object, "Root.Item");
-            item.Write("initial");
 
-            // prepare event args and bind a handler to the changed event
-            ItemChangedEventArgs args = default(ItemChangedEventArgs);
-            item.Changed += delegate (object sender, ItemChangedEventArgs e) { args = e; };
-
-            // invoke the write method to fire the event
             item.Write("test");
+            Assert.Equal("test", item.Value);
 
-            // assert that the previousvalue and value members of the event args are as expected.
-            Assert.Equal("initial", args.PreviousValue);
-            Assert.Equal("test", args.Value);
+            await item.WriteAsync("test two");
+            Assert.Equal("test two", item.Value);
         }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ConnectorItem.Write(object)"/> and <see cref="SDK.ConnectorItem.WriteToSourceAsync(object)"/>
+        /// </summary>
+        [Fact]
+        public async void WriteToSource()
+        {
+            // test the method with an item from a connector that doesn't implement IWriteable
+            SDK.ConnectorItem nonWriteableItem = new SDK.ConnectorItem(connectorMock.Object, "Root.NonWriteable");
+            Assert.NotEqual(ResultCode.Success, nonWriteableItem.WriteToSource("test").ResultCode);
+
+            // test the method with an item from a connector that implements IWriteable create the item
+            SDK.ConnectorItem item = new SDK.ConnectorItem(writeableConnectorMock.Object, "Root.Item");
+
+            // set up the mock connector
+            writeableConnectorMock.As<IWriteable>().Setup(m => m.Write(item, "write test")).Returns(new Result());
+            writeableConnectorMock.As<IWriteable>().Setup(m => m.Write(item, "write test two")).Returns(new Result());
+
+            // perform the write and assert that it succeeded and assert the changed value
+            Assert.Equal(ResultCode.Success, item.WriteToSource("write test").ResultCode);
+            Assert.Equal("write test", item.Value);
+
+            // invoke the method and await the result
+            Result result = await item.WriteToSourceAsync("write test two");
+
+            // assert
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal("write test two", item.Value);
+        }
+
+        #endregion Public Methods
     }
 }

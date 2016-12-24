@@ -10,10 +10,19 @@
       █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██     ██    ██  ██    ██ ██   ██ ███   ▄███   ██   █    ██      ██  ██   ██ ██      ██    ██  ██    ██ ██   ██
       █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀    ▄██▀   █    ██████   █   █  ████████▀    ███████   ██      █    █   █  █      ▄██▀   █    ██████   █   █
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Establishes a common object to represent the configuration details for various application items.
+      █  Unit tests for the ConfigurationDefinition class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,79 +48,46 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
+using Xunit;
 
-namespace Symbiote.SDK.Configuration
+namespace Symbiote.SDK.Tests.Configuration
 {
     /// <summary>
-    ///     Establishes a common object to represent the configuration details for various application items.
+    ///     Unit tests for the ConfigurationDefinition class.
     /// </summary>
-    /// <remarks>
-    ///     <para>
-    ///         The configuration is comprised of two strings, a form and a schema, and a Type representing the model. The strings
-    ///         are intended to contain json data; the form containing a json representation of an HTML form, and the schema
-    ///         containing a logical schema to be used as the basis of the form.
-    ///     </para>
-    ///     <para>
-    ///         When the configuration is edited (or a new instance created), the form and schema are used to generate an HTML form
-    ///         client side. Angular Schemaform (schemaform.io) is used client-side (alternatives can be used, but this is the
-    ///         primary vector) to generate the form. Schemaform creates a model using the form and schema and the client returns
-    ///         the model to the application.
-    ///     </para>
-    ///     <para>
-    ///         The returned model is deserialized to the Type specified in the Model property and an instance is returned to the
-    ///         owner object.
-    ///     </para>
-    ///     <para>
-    ///         When the owner starts or loads the configuration, the ConfigurationManager retrieves the relevant json from the
-    ///         configuration file and deserializes it to an instance of type Model and returns it. The owner then manipulates the
-    ///         instance and when finished saves it back to the configuration manager, which in turn saves it to the configuration
-    ///         file as serialized json.
-    ///     </para>
-    /// </remarks>
     public class ConfigurationDefinition
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ConfigurationDefinition"/> class.
+        ///     Tests all constructor overloads.
         /// </summary>
-        public ConfigurationDefinition() : this(string.Empty, string.Empty, null)
+        [Fact]
+        public void Constructor()
         {
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition();
+
+            Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
+
+            config = new SDK.Configuration.ConfigurationDefinition("form", "schema", typeof(int));
+
+            Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ConfigurationDefinition"/> class with the supplied form and schema strings.
+        ///     Tests all properties.
         /// </summary>
-        /// <param name="form">A string containing the json representation of an HTML form.</param>
-        /// <param name="schema">A string containing a json representation of the schema to populate using the form.</param>
-        /// <param name="model">A type representing the model to be built from the schema.</param>
-        public ConfigurationDefinition(string form, string schema, Type model)
+        [Fact]
+        public void Properties()
         {
-            this.Form = form;
-            this.Schema = schema;
-            this.Model = model;
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("form", "schema", typeof(int));
+
+            Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
+            Assert.Equal("form", config.Form);
+            Assert.Equal("schema", config.Schema);
+            Assert.Equal(typeof(int), config.Model);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets a string containing a json representation of an HTML configuration form.
-        /// </summary>
-        public string Form { get; set; }
-
-        /// <summary>
-        ///     Gets or sets an object representing the model to be built from the schema.
-        /// </summary>
-        public Type Model { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a string containing a json representation of the schema to populate using the form.
-        /// </summary>
-        public string Schema { get; set; }
-
-        #endregion Public Properties
+        #endregion Public Methods
     }
 }

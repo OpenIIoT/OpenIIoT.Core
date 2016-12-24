@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="Common\Item\ConnectorItem.cs" />
     <Compile Include="Common\Item\Item.cs" />
+    <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
