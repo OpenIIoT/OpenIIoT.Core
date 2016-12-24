@@ -148,8 +148,8 @@ namespace Symbiote.SDK.Tests
             item.Write("initial");
 
             // prepare event args and bind a handler to the changed event
-            ItemChangedEventArgs args = default(ItemChangedEventArgs);
-            item.Changed += delegate (object sender, ItemChangedEventArgs e) { args = e; };
+            SDK.ItemChangedEventArgs args = default(SDK.ItemChangedEventArgs);
+            item.Changed += delegate (object sender, SDK.ItemChangedEventArgs e) { args = e; };
 
             // invoke the write method to fire the event
             item.Write("test");
@@ -302,7 +302,7 @@ namespace Symbiote.SDK.Tests
             item.SubscriptionsChanged();
 
             // attach an event handler to the changed event
-            item.Changed += delegate (object sender, ItemChangedEventArgs e) { };
+            item.Changed += delegate (object sender, SDK.ItemChangedEventArgs e) { };
 
             // invoke the method again. handler is attached, so item should subscribe itself to the source connector.
             item.SubscriptionsChanged();
