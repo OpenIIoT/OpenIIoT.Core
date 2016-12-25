@@ -46,7 +46,6 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Utility.OperationResult;
-using NLog.xLogger;
 
 namespace Symbiote.SDK
 {
@@ -163,7 +162,7 @@ namespace Symbiote.SDK
         #region Public Events
 
         /// <summary>
-        ///     Fires when the <see cref="Value"/> property of this <see cref="Item"/> changes.
+        ///     Fires when the <see cref="Value"/> property changes.
         /// </summary>
         public virtual event EventHandler<ItemChangedEventArgs> Changed;
 
@@ -172,23 +171,23 @@ namespace Symbiote.SDK
         #region Public Properties
 
         /// <summary>
-        ///     Gets the collection of <see cref="Item"/> s contained within this Item.
+        ///     Gets the collection of children <see cref="Item"/> s.
         /// </summary>
         public List<Item> Children { get; private set; }
 
         /// <summary>
-        ///     Gets the Fully Qualified Name of the item.
+        ///     Gets the Fully Qualified Name.
         /// </summary>
         public string FQN { get; private set; }
 
         /// <summary>
-        ///     Gets a <see cref="Guid"/> for the Item.
+        ///     Gets the <see cref="Guid"/>.
         /// </summary>
         /// <remarks>Generated upon instantiation.</remarks>
         public Guid Guid { get; private set; }
 
         /// <summary>
-        ///     Gets a value indicating whether the <see cref="Item"/>'s <see cref="Children"/> collection is empty.
+        ///     Gets a value indicating whether the <see cref="Children"/> collection is empty.
         /// </summary>
         public bool HasChildren
         {
@@ -199,7 +198,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets a value indicating whether the <see cref="Item"/>'s <see cref="Parent"/> property has been set.
+        ///     Gets a value indicating whether the <see cref="Parent"/> property has been set.
         /// </summary>
         public bool IsOrphaned
         {
@@ -210,7 +209,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets the name of the <see cref="Item"/>.
+        ///     Gets the name.
         /// </summary>
         /// <remarks>Corresponds to the final tuple of the <see cref="FQN"/> property.</remarks>
         public string Name
@@ -222,12 +221,12 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets the <see cref="Item"/>'s parent Item.
+        ///     Gets the parent Item.
         /// </summary>
         public Item Parent { get; private set; }
 
         /// <summary>
-        ///     Gets the path to the <see cref="Item"/>.
+        ///     Gets the path.
         /// </summary>
         /// <remarks>Corresponds to the value of the <see cref="FQN"/> property, less the final tuple.</remarks>
         public string Path
@@ -239,22 +238,22 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets or sets the Fully Qualified Name of the source <see cref="Item"/>.
+        ///     Gets or sets the Fully Qualified Name of the source Item.
         /// </summary>
         public string SourceFQN { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="Item"/> instance resolved from the <see cref="SourceFQN"/> property.
+        ///     Gets or sets the Item instance resolved from the <see cref="SourceFQN"/> property.
         /// </summary>
         public Item SourceItem { get; set; }
 
         /// <summary>
-        ///     Gets or sets the value of the <see cref="Item"/>.
+        ///     Gets or sets the value.
         /// </summary>
         public object Value { get; protected set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the <see cref="Item"/>'s value is capable of being written to.
+        ///     Gets or sets a value indicating whether the <see cref="Value"/> property is capable of being written to.
         /// </summary>
         public bool Writeable { get; set; }
 
@@ -263,7 +262,7 @@ namespace Symbiote.SDK
         #region Public Methods
 
         /// <summary>
-        ///     Adds the supplied <see cref="Item"/> to this Item's <see cref="Item.Children"/> collection.
+        ///     Adds the supplied <see cref="Item"/> to the <see cref="Children"/> collection.
         /// </summary>
         /// <param name="item">The Item to add.</param>
         /// <returns>A Result containing the result of the operation and the added Item.</returns>
@@ -277,26 +276,26 @@ namespace Symbiote.SDK
                 // set the new child's parent to this before adding it
                 Result<Item> setResult = item.SetParent(this);
 
-                // ensure that went ok
-                if (setResult.ResultCode != ResultCode.Failure)
+                // lock the Children collection
+                lock (childrenLock)
                 {
-                    // lock the Children collection
-                    lock (childrenLock)
-                    {
-                        // add the new item
-                        Children.Add(setResult.ReturnValue);
-                        retVal.ReturnValue = setResult.ReturnValue;
-                    }
+                    // add the new item
+                    Children.Add(setResult.ReturnValue);
+                    retVal.ReturnValue = setResult.ReturnValue;
                 }
 
                 retVal.Incorporate(setResult);
+            }
+            else
+            {
+                retVal.AddError("Invalid Item; specified Item is null or default.");
             }
 
             return retVal;
         }
 
         /// <summary>
-        ///     Creates and returns a clone of the <see cref="Item"/>.
+        ///     Creates and returns a clone of this Item.
         /// </summary>
         /// <remarks>We aren't using .MemberWiseClone() because of the GUID. We need a "deep copy".</remarks>
         /// <returns>A shallow copy of this Item.</returns>
@@ -312,7 +311,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Creates and returns a clone of this <see cref="Item"/> with the specified Fully Qualified Name.
+        ///     Creates and returns a clone of this Item with the specified Fully Qualified Name.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name with which this Item's FQN is to be replaced.</param>
         /// <returns>A shallow copy of this Item with the FQN substituted for the specified value.</returns>
@@ -324,7 +323,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Returns the value of this <see cref="Item"/>'s <see cref="Item.Value"/> property.
+        ///     Returns the value of the <see cref="Value"/> property.
         /// </summary>
         /// <returns>The retrieved value.</returns>
         public virtual object Read()
@@ -333,7 +332,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Asynchronously returns the value of this Item's Value property.
+        ///     Asynchronously returns the value of the <see cref="Value"/> property.
         /// </summary>
         /// <returns>The retrieved value.</returns>
         public virtual async Task<object> ReadAsync()
@@ -342,7 +341,8 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Reads this Item's Value from its SourceItem. If this Item has children, ReadFromSource() is also executed on each child.
+        ///     Reads this Item's value from its <see cref="SourceItem"/> and updates the <see cref="Value"/> property with the
+        ///     result. If this Item has children, ReadFromSource() is also executed on each child.
         /// </summary>
         /// <returns>The retrieved value.</returns>
         public virtual object ReadFromSource()
@@ -375,8 +375,8 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Asynchronously reads this Item's Value from its SourceItem. If this item has children, ReadFromSource() is also
-        ///     executed on each child.
+        ///     Asynchronously reads the value from the <see cref="SourceItem"/> and updates the <see cref="Value"/> property with
+        ///     the result. If this Item has children, ReadFromSource() is also executed on each child.
         /// </summary>
         /// <returns>The retrieved value.</returns>
         public virtual async Task<object> ReadFromSourceAsync()
@@ -385,7 +385,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Removes the specified child Item from this Item's Children collection.
+        ///     Removes the specified Item from the <see cref="Children"/> collection.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
         /// <threadsafety instance="true"/>
@@ -425,14 +425,15 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Notifies this <see cref="Item"/> that the number of subscribers has changed.
+        ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
         /// </summary>
         public virtual void SubscriptionsChanged()
         {
         }
 
         /// <summary>
-        ///     Adds the SourceItemChanged event handler for this Item to the SourceItem's Changed event.
+        ///     Adds the <see cref="SourceItemChanged(object, ItemChangedEventArgs)"/> event handler to the
+        ///     <see cref="SourceItem"/>'s <see cref="Changed"/> event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result SubscribeToSource()
@@ -453,7 +454,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Returns the serialization of the Item using the default ContractResolver.
+        ///     Returns the serialization of this Item using the default <see cref="ContractResolver"/>.
         /// </summary>
         /// <returns>The serialization of the Item.</returns>
         public virtual string ToJson()
@@ -462,7 +463,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Returns the serialization of the Item using the supplied ContractResolver.
+        ///     Returns the serialization of this Item using the supplied <see cref="ContractResolver"/>.
         /// </summary>
         /// <param name="contractResolver">The ContractResolver with which the Item is to be serialized.</param>
         /// <returns>The serialization of the Item.</returns>
@@ -481,7 +482,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Removes the SourceItemChanged event handler for this Item from the SourceItem's Changed event.
+        ///     Removes the <see cref="SourceItemChanged"/> event handler from the <see cref="SourceItem"/>'s <see cref="Changed"/> event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public virtual Result UnsubscribeFromSource()
@@ -502,7 +503,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Writes the provided value to this Item's Value property.
+        ///     Writes the provided value to the <see cref="Value"/> property.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <threadsafety instance="true"/>
@@ -521,7 +522,7 @@ namespace Symbiote.SDK
                 {
                     var previousValue = Value;
                     Value = value;
-                    OnChange(previousValue, Value);
+                    OnChange(value, previousValue);
                 }
             }
 
@@ -529,7 +530,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Asynchronously writes the provided value to this Item's Value property.
+        ///     Asynchronously writes the provided value to the <see cref="Value"/> property.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -539,7 +540,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Writes the provided value to this Item's SourceItem.
+        ///     Writes the provided value to the <see cref="SourceItem"/>.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -568,7 +569,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Asynchronously writes the provided value to this Item's SourceItem.
+        ///     Asynchronously writes the provided value to the <see cref="SourceItem"/>.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -585,18 +586,18 @@ namespace Symbiote.SDK
         ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
         ///     specified value.
         /// </summary>
-        /// <param name="previousValue">The value of the Item prior to the event.</param>
         /// <param name="value">The value for the raised event.</param>
-        protected virtual void OnChange(object previousValue, object value)
+        /// <param name="previousValue">The value of the Item prior to the event.</param>
+        protected virtual void OnChange(object value, object previousValue)
         {
             if (Changed != null)
             {
-                Changed(this, new ItemChangedEventArgs(previousValue, value));
+                Changed(this, new ItemChangedEventArgs(value, previousValue));
             }
         }
 
         /// <summary>
-        ///     Sets the Item's parent Item to the supplied Item.
+        ///     Sets the parent Item to the supplied Item.
         /// </summary>
         /// <param name="parent">The Item to set as the Item's parent.</param>
         /// <threadsafety instance="true"/>
@@ -604,9 +605,6 @@ namespace Symbiote.SDK
         protected virtual Result<Item> SetParent(Item parent)
         {
             Result<Item> retVal = new Result<Item>();
-
-            // update the Path and FQN to match the parent values this is set in the constructor however this code will prevent
-            // issues if items are moved.
 
             // lock the Parent property
             lock (parentLock)
@@ -620,7 +618,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Event Handler for the Changed event belonging to the SourceItem.
+        ///     Event Handler for the <see cref="Changed"/> event belonging to the SourceItem.
         /// </summary>
         /// <param name="sender">The Item that raised the event.</param>
         /// <param name="e">The EventArgs for the event.</param>

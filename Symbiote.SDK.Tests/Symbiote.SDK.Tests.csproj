@@ -85,8 +85,11 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Common\Item\ItemChangedEventArgsTests.cs" />
-    <Compile Include="Common\Item\ItemTests.cs" />
+    <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
+    <Compile Include="Common\Item\ConnectorItem.cs" />
+    <Compile Include="Common\Item\Item.cs" />
+    <Compile Include="Common\Manager\Manager.cs" />
+    <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

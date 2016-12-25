@@ -71,7 +71,7 @@ namespace Symbiote.SDK.Configuration
     /// </remarks>
     public class ConfigurationDefinition
     {
-        #region Constructors
+        #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConfigurationDefinition"/> class.
@@ -93,9 +93,9 @@ namespace Symbiote.SDK.Configuration
             this.Model = model;
         }
 
-        #endregion Constructors
+        #endregion Public Constructors
 
-        #region Properties
+        #region Public Properties
 
         /// <summary>
         ///     Gets or sets a string containing a json representation of an HTML configuration form.
@@ -103,15 +103,15 @@ namespace Symbiote.SDK.Configuration
         public string Form { get; set; }
 
         /// <summary>
-        ///     Gets or sets a string containing a json representation of the schema to populate using the form.
-        /// </summary>
-        public string Schema { get; set; }
-
-        /// <summary>
         ///     Gets or sets an object representing the model to be built from the schema.
         /// </summary>
         public Type Model { get; set; }
 
-        #endregion Properties
+        /// <summary>
+        ///     Gets or sets a string containing a json representation of the schema to populate using the form.
+        /// </summary>
+        public string Schema { get; set; }
+
+        #endregion Public Properties
     }
 }

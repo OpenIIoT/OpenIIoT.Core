@@ -19,10 +19,19 @@
       █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
       █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents the event arguments for Item Changed events.
+      █  Unit tests for the ItemChangedEventArgs class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,42 +57,42 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
+using Xunit;
 
-namespace Symbiote.SDK
+namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Represents the event arguments for Item Changed events.
+    ///     Unit tests for the ItemChangedEventArgs class.
     /// </summary>
-    public class ItemChangedEventArgs : EventArgs
+    public class ItemChangedEventArgs
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ItemChangedEventArgs"/> class with the specified values.
+        ///     Tests all constructor overloads.
         /// </summary>
-        /// <param name="value">The new value of the Item.</param>
-        /// <param name="previousValue">The previous value of the Item.</param>
-        public ItemChangedEventArgs(object value, object previousValue) : base()
+        [Fact]
+        public void Constructor()
         {
-            Value = value;
-            PreviousValue = previousValue;
+            SDK.ItemChangedEventArgs args;
+
+            args = new SDK.ItemChangedEventArgs("new", "previous");
+
+            Assert.IsType<SDK.ItemChangedEventArgs>(args);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
         /// <summary>
-        ///     Gets the previous value of the Item.
+        ///     Tests all properties.
         /// </summary>
-        public object PreviousValue { get; private set; }
+        [Fact]
+        public void Properties()
+        {
+            SDK.ItemChangedEventArgs args = new SDK.ItemChangedEventArgs("new", "previous");
 
-        /// <summary>
-        ///     Gets the new value of the Item.
-        /// </summary>
-        public object Value { get; private set; }
+            Assert.Equal("previous", args.PreviousValue);
+            Assert.Equal("new", args.Value);
+        }
 
-        #endregion Public Properties
+        #endregion Public Methods
     }
 }

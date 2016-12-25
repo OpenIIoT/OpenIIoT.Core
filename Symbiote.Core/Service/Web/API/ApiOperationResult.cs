@@ -9,63 +9,64 @@ using Utility.OperationResult;
 namespace Symbiote.Core.Service.Web
 {
     /// <summary>
-    /// Encapsulates the result of an API operation. 
+    ///     Encapsulates the result of an API operation.
     /// </summary>
     /// <typeparam name="T">The type of the Result object.</typeparam>
     public class ApiResult<T> : Result<T>
     {
         #region Properties
+
         /// <summary>
-        /// The HttpRequestMessage that originated the API request.
+        ///     The HttpRequestMessage that originated the API request.
         /// </summary>
         public HttpRequestMessage Request { get; private set; }
 
         /// <summary>
-        /// A shortened Guid for the request.  The lifespan of the request is such that a full length Guid is not necessary.
+        ///     A shortened Guid for the request. The lifespan of the request is such that a full length Guid is not necessary.
         /// </summary>
         public string ShortGuid { get; private set; }
 
         /// <summary>
-        /// The route of the original request.
+        ///     The route of the original request.
         /// </summary>
-        public string Route { get { return Request.RequestUri.PathAndQuery;  } }
+        public string Route { get { return Request.RequestUri.PathAndQuery; } }
 
         /// <summary>
-        /// The remote IP address of the original request.
+        ///     The remote IP address of the original request.
         /// </summary>
         public string RemoteIP { get { return Request.GetOwinContext().Request.RemoteIpAddress; } }
 
         /// <summary>
-        /// The HttpStatusCode to return to the requestor.
+        ///     The HttpStatusCode to return to the requestor.
         /// </summary>
         public HttpStatusCode StatusCode { get; set; }
 
         /// <summary>
-        /// The HttpResponseMessage to return to the requestor.
+        ///     The HttpResponseMessage to return to the requestor.
         /// </summary>
         public HttpResponseMessage Response { get; private set; }
 
-        #endregion
+        #endregion Properties
 
         #region Constructors
 
         /// <summary>
-        /// Constructs a new APIResult using the supplied request, a new ShortGuid and with a StatusCode of 200/OK.
+        ///     Constructs a new APIResult using the supplied request, a new ShortGuid and with a StatusCode of 200/OK.
         /// </summary>
         /// <param name="request"></param>
         public ApiResult(HttpRequestMessage request) : base()
         {
             Request = request;
-            ShortGuid = Utility.ShortGuid();
+            ShortGuid = SDK.Utility.ShortGuid();
             StatusCode = HttpStatusCode.OK;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Instance Methods
 
         /// <summary>
-        /// Logs information about the API request to the supplied logger using the supplied log level.
+        ///     Logs information about the API request to the supplied logger using the supplied log level.
         /// </summary>
         /// <param name="logLevel">The logging level to apply to the message.</param>
         public void LogRequest(Action<string> logLevel)
@@ -76,7 +77,8 @@ namespace Symbiote.Core.Service.Web
         }
 
         /// <summary>
-        /// Logs information about the result of the API request to the supplied logger using the supplied log levels for success, warning and failure messages.
+        ///     Logs information about the result of the API request to the supplied logger using the supplied log levels for
+        ///     success, warning and failure messages.
         /// </summary>
         /// <param name="successLogLevel">The logging level to apply to success messages.</param>
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
@@ -103,7 +105,7 @@ namespace Symbiote.Core.Service.Web
         }
 
         /// <summary>
-        /// Generates an HttpResponseMessage using the StatusCode, Result object and the supplied JsonMediaTypeFormatter.
+        ///     Generates an HttpResponseMessage using the StatusCode, Result object and the supplied JsonMediaTypeFormatter.
         /// </summary>
         /// <param name="jsonFormatter">The JsonMediaTypeFormatter instance to use to serialize the response.</param>
         /// <returns>The generated HttpResponseMessage.</returns>

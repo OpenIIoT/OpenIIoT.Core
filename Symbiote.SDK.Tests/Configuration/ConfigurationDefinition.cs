@@ -1,23 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█                                  ▄████████
-      █   ███                                  ███    ███
-      █   ███▌     ██       ▄█████    ▄▄██▄▄▄  ███    █▀    ██   █      ▄█████  ██▄▄▄▄     ▄████▄     ▄█████ ██████▄
-      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ ███          ██   ██     ██   ██ ██▀▀▀█▄   ██    ▀    ██   █  ██   ▀██
-      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ███         ▄██▄▄▄██▄▄   ██   ██ ██   ██  ▄██        ▄██▄▄    ██    ██
-      █   ███      ██    ▀▀██▀▀     ██  ██  ██ ███    █▄  ▀▀██▀▀▀██▀  ▀████████ ██   ██ ▀▀██ ███▄  ▀▀██▀▀    ██    ██
-      █   ███      ██      ██   █   ██  ██  ██ ███    ███   ██   ██     ██   ██ ██   ██   ██    ██   ██   █  ██   ▄██
-      █   █▀      ▄██▀     ███████   █  ██  █  ████████▀    ██   ██     ██   █▀  █   █    ██████▀    ███████ ██████▀
-      █
-      █      ▄████████                                        ▄████████
-      █     ███    ███                                        ███    ███
-      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
-      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
-      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
-      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
-      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
-      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
+      █   ▄████████                                                                                                      ████████▄
+      █   ███    ███                                                                                                     ███   ▀███
+      █   ███    █▀   ██████  ██▄▄▄▄     ▄█████  █     ▄████▄  ██   █     █████   ▄█████      ██     █   ██████  ██▄▄▄▄  ███    ███    ▄█████    ▄█████  █  ██▄▄▄▄   █      ██     █   ██████  ██▄▄▄▄
+      █   ███        ██    ██ ██▀▀▀█▄   ██   ▀█ ██    ██    ▀  ██   ██   ██  ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄ ███    ███   ██   █    ██   ▀█ ██  ██▀▀▀█▄ ██  ▀███████▄ ██  ██    ██ ██▀▀▀█▄
+      █   ███        ██    ██ ██   ██  ▄██▄▄    ██▌  ▄██       ██   ██  ▄██▄▄█▀   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ███    ███  ▄██▄▄     ▄██▄▄    ██▌ ██   ██ ██▌     ██  ▀ ██▌ ██    ██ ██   ██
+      █   ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████     ██    ██  ██    ██ ██   ██ ███    ███ ▀▀██▀▀    ▀▀██▀▀    ██  ██   ██ ██      ██    ██  ██    ██ ██   ██
+      █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██     ██    ██  ██    ██ ██   ██ ███   ▄███   ██   █    ██      ██  ██   ██ ██      ██    ██  ██    ██ ██   ██
+      █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀    ▄██▀   █    ██████   █   █  ████████▀    ███████   ██      █    █   █  █      ▄██▀   █    ██████   █   █
       █
       █       ███
       █   ▀█████████▄
@@ -31,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the ItemChangedEventArgs class.
+      █  Unit tests for the ConfigurationDefinition class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -59,23 +50,44 @@
 
 using Xunit;
 
-namespace Symbiote.SDK.Tests
+namespace Symbiote.SDK.Tests.Configuration
 {
     /// <summary>
-    ///     Unit tests for the ItemChangedEventArgs class.
+    ///     Unit tests for the ConfigurationDefinition class.
     /// </summary>
-    public class ItemChangedEventArgsTests
+    public class ConfigurationDefinition
     {
+        #region Public Methods
+
         /// <summary>
-        ///     Tests the constructor and all properties.
+        ///     Tests all constructor overloads.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            ItemChangedEventArgs args = new ItemChangedEventArgs("one", "two");
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition();
 
-            Assert.Equal("one", args.PreviousValue);
-            Assert.Equal("two", args.Value);
+            Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
+
+            config = new SDK.Configuration.ConfigurationDefinition("form", "schema", typeof(int));
+
+            Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
         }
+
+        /// <summary>
+        ///     Tests all properties.
+        /// </summary>
+        [Fact]
+        public void Properties()
+        {
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("form", "schema", typeof(int));
+
+            Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
+            Assert.Equal("form", config.Form);
+            Assert.Equal("schema", config.Schema);
+            Assert.Equal(typeof(int), config.Model);
+        }
+
+        #endregion Public Methods
     }
 }

@@ -51,11 +51,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Moq;
-using Symbiote.SDK;
 using Utility.OperationResult;
 using Xunit;
 
-namespace Symbiote.Core.Tests.Common
+namespace Symbiote.SDK.Tests.Common
 {
     /// <summary>
     ///     Unit tests for the Manager class.
@@ -218,7 +217,7 @@ namespace Symbiote.Core.Tests.Common
         [Fact]
         public void RestartNotRunning()
         {
-            Mock<Core.Manager> mock = new Mock<Core.Manager>();
+            Mock<SDK.Manager> mock = new Mock<SDK.Manager>();
             mock.CallBase = true;
 
             Result restart = mock.Object.Restart();
@@ -292,7 +291,7 @@ namespace Symbiote.Core.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMock : Core.Manager
+    public class ManagerMock : SDK.Manager
     {
         #region Private Fields
 
@@ -361,7 +360,7 @@ namespace Symbiote.Core.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockTwo : Core.Manager
+    public class ManagerMockTwo : SDK.Manager
     {
         #region Private Fields
 
@@ -420,7 +419,7 @@ namespace Symbiote.Core.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockWithDependency : Core.Manager
+    public class ManagerMockWithDependency : SDK.Manager
     {
         #region Private Fields
 

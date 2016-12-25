@@ -49,6 +49,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using NLog.xLogger;
+using Symbiote.SDK;
 using Symbiote.SDK.Platform;
 using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
@@ -452,7 +453,7 @@ namespace Symbiote.Core.Platform
             retVal.ReturnValue = new List<string>();
 
             logger.Trace("Converting pattern '" + searchPattern + "' to RegEx..");
-            Regex regex = new Regex(Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
+            Regex regex = new Regex(SDK.Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
             logger.Trace("Converted pattern to RegEx '" + regex + "'");
 
             try
