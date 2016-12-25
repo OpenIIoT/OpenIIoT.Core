@@ -49,14 +49,12 @@
                                                                                                    ▀▀                            */
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Symbiote.SDK
 {
     /// <summary>
     ///     Represents the event arguments for the StateChanged event of Stateful components.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     public class StateChangedEventArgs : EventArgs
     {
         #region Public Constructors

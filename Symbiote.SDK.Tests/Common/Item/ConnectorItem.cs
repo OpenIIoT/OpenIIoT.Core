@@ -48,10 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System.Diagnostics.CodeAnalysis;
 using Moq;
+using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 using Xunit;
-using Symbiote.SDK.Plugin.Connector;
 
 namespace Symbiote.SDK.Tests
 {
@@ -140,6 +141,7 @@ namespace Symbiote.SDK.Tests
         /// <summary>
         ///     Tests the <see cref="SDK.ConnectorItem.Changed"/> event.
         /// </summary>
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1008:OpeningParenthesisMustBeSpacedCorrectly", Justification = "Reviewed.")]
         [Fact]
         public void Changed()
         {
@@ -293,6 +295,7 @@ namespace Symbiote.SDK.Tests
         ///     Tests the <see cref="SDK.ConnectorItem.SubscriptionsChanged()"/> method.
         /// </summary>
         [Fact]
+        [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1008:OpeningParenthesisMustBeSpacedCorrectly", Justification = "Reviewed.")]
         public void SubscriptionsChanged()
         {
             // prepare an item

@@ -48,11 +48,12 @@ using Utility.OperationResult;
 namespace Symbiote.SDK
 {
     /// <summary>
-    ///     Represents a single data entity provided by a Connector plugin.
+    ///     Represents a single data entity provided by a Connector Plugin.
     /// </summary>
     /// <remarks>
+    ///     <para>Extends the <see cref="Item"/> class.</para>
     ///     <para>
-    ///         The primary differences between this class and the base Item are:
+    ///         The primary differences between this class and the base <see cref="Item"/> class are:
     ///         <list>
     ///             <item>The ConnectorItem stores no values. Furthermore it does not implement persistence.</item>
     ///             <item>
@@ -224,6 +225,21 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
+        ///     Notifies this ConnectorItem that the number of subscribers has changed.
+        /// </summary>
+        public override void SubscriptionsChanged()
+        {
+            if (Changed != null)
+            {
+                SubscribeToSource();
+            }
+            else
+            {
+                UnsubscribeFromSource();
+            }
+        }
+
+        /// <summary>
         ///     Removes the subscription for this Item from the source <see cref="Connector"/>.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -241,21 +257,6 @@ namespace Symbiote.SDK
             }
 
             return retVal;
-        }
-
-        /// <summary>
-        ///     Notifies this ConnectorItem that the number of subscribers has changed.
-        /// </summary>
-        public override void SubscriptionsChanged()
-        {
-            if (Changed != null)
-            {
-                SubscribeToSource();
-            }
-            else
-            {
-                UnsubscribeFromSource();
-            }
         }
 
         /// <summary>

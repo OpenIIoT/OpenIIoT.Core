@@ -276,19 +276,19 @@ namespace Symbiote.SDK
                 // set the new child's parent to this before adding it
                 Result<Item> setResult = item.SetParent(this);
 
-                // ensure that went ok
-                if (setResult.ResultCode != ResultCode.Failure)
+                // lock the Children collection
+                lock (childrenLock)
                 {
-                    // lock the Children collection
-                    lock (childrenLock)
-                    {
-                        // add the new item
-                        Children.Add(setResult.ReturnValue);
-                        retVal.ReturnValue = setResult.ReturnValue;
-                    }
+                    // add the new item
+                    Children.Add(setResult.ReturnValue);
+                    retVal.ReturnValue = setResult.ReturnValue;
                 }
 
                 retVal.Incorporate(setResult);
+            }
+            else
+            {
+                retVal.AddError("Invalid Item; specified Item is null or default.");
             }
 
             return retVal;
@@ -605,9 +605,6 @@ namespace Symbiote.SDK
         protected virtual Result<Item> SetParent(Item parent)
         {
             Result<Item> retVal = new Result<Item>();
-
-            // update the Path and FQN to match the parent values this is set in the constructor however this code will prevent
-            // issues if items are moved.
 
             // lock the Parent property
             lock (parentLock)
