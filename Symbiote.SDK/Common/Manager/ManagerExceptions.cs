@@ -199,8 +199,8 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class with a specified error message
-        ///     and a reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class with a specified error message and a
+        ///     reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">
@@ -224,14 +224,14 @@ namespace Symbiote.SDK
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class.
+        ///     Initializes a new instance of the <see cref="ManagerStopException"/> class.
         /// </summary>
         public ManagerStopException() : base()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class with a specified error message.
+        ///     Initializes a new instance of the <see cref="ManagerStopException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
         public ManagerStopException(string message) : base(message)
@@ -239,8 +239,8 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class with a specified error message
-        ///     and a reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ManagerStopException"/> class with a specified error message and a
+        ///     reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">
