@@ -202,7 +202,7 @@ namespace Symbiote.SDK.Tests
             // not technically properties but we are testing them here anyway
             Assert.Equal("Root.Child.Name", item.ToString());
             Assert.NotNull(item.ToJson());
-            Assert.NotNull(item.ToJson(new ContractResolver()));
+            Assert.NotNull(item.ToJson(new SDK.ContractResolver()));
         }
 
         /// <summary>

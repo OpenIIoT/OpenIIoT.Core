@@ -56,7 +56,7 @@ using Xunit;
 namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the StateChangedEventArgs class.
+    ///     Unit tests for the Utility class.
     /// </summary>
     public class Utility
     {
