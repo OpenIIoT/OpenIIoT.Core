@@ -56,8 +56,9 @@ using Xunit;
 namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the ContractResolver class.
+    ///     Unit tests for the <see cref="SDK.ContractResolver"/> class.
     /// </summary>
+    [Collection("ContractResolver")]
     public class ContractResolver
     {
         #region Private Fields

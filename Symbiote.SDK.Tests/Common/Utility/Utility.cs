@@ -56,8 +56,9 @@ using Xunit;
 namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the Utility class.
+    ///     Unit tests for the <see cref="SDK.Utility"/> class.
     /// </summary>
+    [Collection("Utility")]
     public class Utility
     {
         #region Public Methods

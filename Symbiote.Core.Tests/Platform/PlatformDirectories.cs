@@ -51,25 +51,23 @@
 using System;
 using Xunit;
 using System.Collections.Generic;
-using Symbiote.Core.Platform;
 using Symbiote.SDK.Platform;
 
 namespace Symbiote.Core.Tests
 {
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
+    ///     Unit tests for the <see cref="Platform.PlatformDirectories"/> class.
     /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("PlatformDirectories")]
-    public class PlatformDirectoriesTests
+    public class PlatformDirectories
     {
         /// <summary>
-        ///     Tests <see cref="PlatformDirectories()"/> and all properties.
+        ///     Tests all constructor overloads.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            PlatformDirectories test = new PlatformDirectories(GetTestDirs());
+            Platform.PlatformDirectories test = new Platform.PlatformDirectories(GetTestDirs());
 
             Assert.Equal(FullDir("Data"), test.Data);
             Assert.Equal(FullDir("Archives"), test.Archives);

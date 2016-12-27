@@ -13,12 +13,16 @@ the project ```Symbiote.SDK``` must have a Unit Test project named ```Symbiote.S
 Test project organization must mirror the project under test, and test classes must mirror the names of the classes being tested.  The file header for the Unit Test class must match that of the class under test followed by
 the word "Test" on a new line under the name of the class.  The verbiage of the class description must be ```Unit tests for the <class> class.```, where ```<class>``` is the name of the class under test.
 
+Unit tests classes must share the name of the class under test, and each class must include the "Collection" attribute, assigning the name of the unit test class as the collection name.  The summary documentation for unit test classes must follow the following pattern, where ```<class name>``` is substituted for the name of the class under test:
+
+```Unit tests for the <see cref="<class name>"> class.```
+
 The [xUnit](https://xunit.github.io/) framework must be used for all unit tests.  Runners for Visual Studio and the Console should also be installed.  
 
 [OpenCover](https://github.com/OpenCover/opencover) is required to support CI via Appveyor as well as the optional but recommended [OpenCover.UI](https://marketplace.visualstudio.com/items?itemName=jamdagni86.OpenCoverUI)
 coverage extension for Visual Studio.
 
-The code coverage target for all classes is *95%* or above, preferably 100%.  Classes failing to reach 95% coverage must be refactored such that the target may be reached.
+The code coverage target for all classes is _95%_ or above, preferably 100%.  Classes failing to reach 95% coverage must be refactored such that the target may be reached.
 
 The [Moq](https://github.com/moq/moq) mocking framework must be used to mock any non-trivial objects required for unit testing, where practical.  If a test must use a concrete mockup, the code for the mockup must be included
 within the file in which it is used.  The rationale explaining why a mocking framework must be included in the remarks section of the XML documentation for the class, and any unit test dependent upon the mockup must state the depencency
