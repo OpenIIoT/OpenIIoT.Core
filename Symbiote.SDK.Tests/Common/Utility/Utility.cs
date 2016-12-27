@@ -10,10 +10,19 @@
       █   ███    ███     ██    ██  ██▌    ▄ ██      ██    ██   ██
       █   ████████▀     ▄██▀   █   ████▄▄██ █      ▄██▀    █████
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Contains miscellaneous static methods.
+      █  Unit tests for the Utility class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -42,116 +51,120 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Xunit;
 
-namespace Symbiote.SDK
+namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Contains miscellaneous static methods.
+    ///     Unit tests for the StateChangedEventArgs class.
     /// </summary>
-    public static class Utility
+    public class Utility
     {
         #region Public Methods
 
         /// <summary>
-        ///     Returns a clone of the supplied list.
+        ///     Tests the <see cref="SDK.Utility.Clone"/> extension method.
         /// </summary>
-        /// <typeparam name="T">The list type to clone.</typeparam>
-        /// <param name="list">The list from which the clone should be created.</param>
-        /// <returns>A clone of the supplied list.</returns>
-        public static List<T> Clone<T>(this IList<T> list) where T : ICloneable
+        [Fact]
+        public void Clone()
         {
-            return list.Select(i => (T)i.Clone()).ToList();
+            List<string> list = new List<string>();
+            list.Add("one");
+            list.Add("two");
+            list.Add("three");
+
+            List<string> clonedList = list.Clone();
+
+            Assert.Equal(list, clonedList);
+            Assert.Equal(list.Count, clonedList.Count);
+            Assert.Equal(list[0], clonedList[0]);
+            Assert.Equal(list[1], clonedList[1]);
+            Assert.Equal(list[2], clonedList[2]);
         }
 
         /// <summary>
-        ///     Computes a cryptographic hash of the provided text using the provided salt.
+        ///     Tests the <see cref="SDK.Utility.ComputeHash(string, string)"/> method.
         /// </summary>
-        /// <param name="text">The text to hash.</param>
-        /// <param name="salt">The salt with which to seed the hash function.</param>
-        /// <returns>The computed hash.</returns>
-        public static string ComputeHash(string text, string salt = "")
+        [Fact]
+        public void ComputeHash()
         {
-            byte[] binText = System.Text.Encoding.ASCII.GetBytes(text);
-            byte[] binSalt = System.Text.Encoding.ASCII.GetBytes(salt);
-            byte[] binSaltedText;
+            string unsaltedResult = "982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1";
+            string saltedResult = "3353e16497ad272fea4382119ff2801e54f0a4cf2057f4e32d00317bda5126c3";
 
-            if (binSalt.Length > 0)
-            {
-                binSaltedText = new byte[binText.Length + binSalt.Length];
+            string unsaltedHash = SDK.Utility.ComputeHash("text");
 
-                for (int i = 0; i < binText.Length; i++)
-                {
-                    binSaltedText[i] = binText[i];
-                }
+            Assert.Equal(64, unsaltedHash.Length);
+            Assert.Equal(unsaltedResult, unsaltedHash);
 
-                for (int i = 0; i < binSalt.Length; i++)
-                {
-                    binSaltedText[binText.Length + i] = binSalt[i];
-                }
-            }
-            else
-            {
-                binSaltedText = binText;
-            }
+            string saltedHash = SDK.Utility.ComputeHash("text", "salt");
 
-            byte[] checksum = System.Security.Cryptography.SHA256.Create().ComputeHash(binSaltedText);
-
-            System.Text.StringBuilder builtString = new System.Text.StringBuilder();
-            foreach (byte b in checksum)
-            {
-                builtString.Append(b.ToString("x2"));
-            }
-
-            return builtString.ToString();
+            Assert.Equal(64, saltedHash.Length);
+            Assert.Equal(saltedResult, saltedHash);
         }
 
         /// <summary>
-        ///     Returns a truncated GUID.
+        ///     Tests the <see cref="SDK.Utility.ShortGuid"/> method.
         /// </summary>
-        /// <returns>A truncated GUID.</returns>
-        public static string ShortGuid()
+        [Fact]
+        public void ShortGuid()
         {
-            return Guid.NewGuid().ToString().Split('-')[0];
+            string guid1 = SDK.Utility.ShortGuid();
+            string guid2 = SDK.Utility.ShortGuid();
+
+            Assert.Equal(8, guid1.Length);
+            Assert.Equal(8, guid2.Length);
+            Assert.NotEqual(guid1, guid2);
         }
 
         /// <summary>
-        ///     Returns a subset of the supplied array.
+        ///     Tests the <see cref="SDK.Utility.SubArray{T}(T[], int, int)"/> extension method.
         /// </summary>
-        /// <typeparam name="T">The type of the array.</typeparam>
-        /// <param name="data">The array.</param>
-        /// <param name="index">The index at which the sub-array should start.</param>
-        /// <param name="length">The length of the desired sub-array; the number of elements to select.</param>
-        /// <returns>A subset of the supplied array.</returns>
-        public static T[] SubArray<T>(this T[] data, int index, int length)
+        [Fact]
+        public void SubArray()
         {
-            T[] result = new T[length];
-            Array.Copy(data, index, result, 0, length);
-            return result;
+            string[] array = new string[] { "one", "two", "three", "four", "five" };
+
+            string[] subArray1 = array.SubArray(0, 2);
+            Assert.Equal(2, subArray1.Length);
+            Assert.Equal("one", subArray1[0]);
+            Assert.Equal("two", subArray1[1]);
+
+            string[] subArray2 = array.SubArray(2, 1);
+            Assert.Equal(1, subArray2.Length);
+            Assert.Equal("three", subArray2[0]);
+
+            Assert.Throws<ArgumentException>(() => array.SubArray(0, 10));
+
+            string[] subArray3 = array.SubArray(0, 5);
+            Assert.Equal(5, subArray3.Length);
+            Assert.Equal("one", subArray3[0]);
+            Assert.Equal("five", subArray3[4]);
         }
 
         /// <summary>
-        ///     Returns the last N elements of the supplied IEnumerable.
+        ///     Tests the <see cref="SDK.Utility.TakeLast{T}(IEnumerable{T}, int)"/> extension method.
         /// </summary>
-        /// <typeparam name="T">The type of the IEnumerable.</typeparam>
-        /// <param name="source">The IEnumerable.</param>
-        /// <param name="n">The number of elements to take from the end of the collection.</param>
-        /// <returns>An IEnumerable containing the last N elements of the supplied IEnumerable.</returns>
-        public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int n)
+        [Fact]
+        public void TakeLast()
         {
-            return source.Skip(Math.Max(0, source.Count() - n));
+            List<string> list = new List<string>(new string[] { "one", "two", "three", "four", "five" });
+
+            List<string> result1 = list.TakeLast(3).ToList();
+            Assert.Equal(3, result1.Count);
+            Assert.Equal("three", result1[0]);
+            Assert.Equal("five", result1[2]);
         }
 
         /// <summary>
-        ///     Converts the specified wildcard pattern to a regular expression.
+        ///     Tests the <see cref="SDK.Utility.WildcardToRegex(string)"/> method.
         /// </summary>
-        /// <param name="pattern">The wildcard pattern to convert.</param>
-        /// <returns>The regular expression resulting from the conversion.</returns>
-        public static string WildcardToRegex(string pattern = "")
+        [Fact]
+        public void WildcardToRegex()
         {
-            return "^" + System.Text.RegularExpressions.Regex.Escape(pattern)
-                              .Replace(@"\*", ".*")
-                              .Replace(@"\?", ".")
-                       + "$";
+            string wildcard = "test*string?";
+            string regex = "^test.*string.$";
+
+            Assert.Equal(regex, SDK.Utility.WildcardToRegex(wildcard));
         }
 
         #endregion Public Methods
