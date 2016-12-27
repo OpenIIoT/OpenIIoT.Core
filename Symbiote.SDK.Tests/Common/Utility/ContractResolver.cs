@@ -48,9 +48,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Symbiote.SDK.Tests
@@ -91,19 +90,45 @@ namespace Symbiote.SDK.Tests
             Assert.IsType<SDK.ContractResolver>(resolver);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method.
+        /// </summary>
+        [Fact]
+        public void Resolve()
+        {
+            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptOut);
+
+            string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
+
+            Assert.Equal("{\"Name\":\"Test Object\",\"Number\":42,\"TrueFalse\":true}", json);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
+        ///     <see cref="SDK.ContractResolverType.OptIn"/> resolver type.
+        /// </summary>
         [Fact]
         public void OptIn()
         {
+            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { "Name" }), ContractResolverType.OptIn);
+
+            string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
+
+            Assert.Equal("{\"Name\":\"Test Object\"}", json);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
+        ///     <see cref="SDK.ContractResolverType.OptOut"/> resolver type.
+        /// </summary>
         [Fact]
         public void OptOut()
         {
-        }
+            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { "Number", "TrueFalse" }), ContractResolverType.OptOut);
 
-        [Fact]
-        public void SecondaryTypes()
-        {
+            string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
+
+            Assert.Equal("{\"Name\":\"Test Object\"}", json);
         }
     }
 
