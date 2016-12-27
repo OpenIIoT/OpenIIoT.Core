@@ -49,6 +49,7 @@
                                                                                                    ▀▀                            */
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -59,10 +60,16 @@ namespace Symbiote.SDK.Tests
     /// </summary>
     public class ContractResolver
     {
+        #region Private Fields
+
         /// <summary>
         ///     The shared mockup object to be used for the serialization tests.
         /// </summary>
         private ContractResolverTestObject mockup;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ContractResolver"/> class.
@@ -71,6 +78,10 @@ namespace Symbiote.SDK.Tests
         {
             mockup = new ContractResolverTestObject();
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         /// <summary>
         ///     Tests all constructor overloads.
@@ -88,19 +99,6 @@ namespace Symbiote.SDK.Tests
 
             resolver = new SDK.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptIn);
             Assert.IsType<SDK.ContractResolver>(resolver);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method.
-        /// </summary>
-        [Fact]
-        public void Resolve()
-        {
-            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptOut);
-
-            string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
-
-            Assert.Equal("{\"Name\":\"Test Object\",\"Number\":42,\"TrueFalse\":true}", json);
         }
 
         /// <summary>
@@ -130,6 +128,21 @@ namespace Symbiote.SDK.Tests
 
             Assert.Equal("{\"Name\":\"Test Object\"}", json);
         }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method.
+        /// </summary>
+        [Fact]
+        public void Resolve()
+        {
+            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptOut);
+
+            string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
+
+            Assert.Equal("{\"Name\":\"Test Object\",\"Number\":42,\"TrueFalse\":true}", json);
+        }
+
+        #endregion Public Methods
     }
 
     /// <summary>
@@ -138,8 +151,25 @@ namespace Symbiote.SDK.Tests
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the complexity in creating a new type.
     /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class ContractResolverTestObject
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ContractResolverTestObject"/> class.
+        /// </summary>
+        public ContractResolverTestObject()
+        {
+            Name = "Test Object";
+            Number = 42;
+            TrueFalse = true;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
         /// <summary>
         ///     Gets or sets the name.
         /// </summary>
@@ -151,18 +181,10 @@ namespace Symbiote.SDK.Tests
         public int Number { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value representing a boolean.
+        ///     Gets or sets a value indicating whether the TrueFalse property is true.
         /// </summary>
         public bool TrueFalse { get; set; }
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ContractResolverTestObject"/> class.
-        /// </summary>
-        public ContractResolverTestObject()
-        {
-            Name = "Test Object";
-            Number = 42;
-            TrueFalse = true;
-        }
+        #endregion Public Properties
     }
 }
