@@ -13,12 +13,12 @@ namespace Symbiote.Core.Service.Web.API
     public class ReadController : ApiController, IApiController
     {
         /// <summary>
-        /// The Logger for this class.
+        ///     The Logger for this class.
         /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        /// The ApplicationManager for the application.
+        ///     The ApplicationManager for the application.
         /// </summary>
         private static ApplicationManager manager = ApplicationManager.GetInstance();
 
@@ -29,7 +29,7 @@ namespace Symbiote.Core.Service.Web.API
         public HttpResponseMessage Read()
         {
             List<Item> result = model.Children;
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn, true));
+            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn));
         }
 
         [Route("api/read/{fqn}")]
@@ -54,14 +54,14 @@ namespace Symbiote.Core.Service.Web.API
 
             if (fromSource)
                 foundItem.ReadFromSource();
-            
+
             retVal.ReturnValue.Add(foundItem);
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn));
         }
 
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 
@@ -70,7 +70,7 @@ namespace Symbiote.Core.Service.Web.API
             retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
             retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType, includeSecondaryTypes);
+            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
             retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             return retVal;

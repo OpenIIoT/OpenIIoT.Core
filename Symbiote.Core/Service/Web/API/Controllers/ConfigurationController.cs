@@ -23,10 +23,10 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage GetConfiguration()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration, JsonFormatter(serializationProperties, ContractResolverType.OptOut, true));
+            return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration, JsonFormatter(serializationProperties, ContractResolverType.OptOut));
         }
 
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 
@@ -35,7 +35,7 @@ namespace Symbiote.Core.Service.Web.API
             retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
             retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType, includeSecondaryTypes);
+            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
             retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             return retVal;

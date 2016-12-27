@@ -48,6 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Moq;
@@ -193,6 +194,27 @@ namespace Symbiote.SDK.Tests.Common
         }
 
         /// <summary>
+        ///     Tests the fault handling of the Manager.
+        /// </summary>
+        [Fact]
+        public void Fault()
+        {
+            ManagerMockTwo test = ManagerMockTwo.Instantiate(applicationManagerMock.Object);
+
+            test.Start();
+            Assert.Equal(State.Running, test.State);
+
+            test.Fault();
+            Assert.Equal(State.Faulted, test.State);
+
+            test.Start();
+            Assert.Equal(State.Running, test.State);
+
+            test.FaultWithRestart();
+            Assert.Equal(State.Faulted, test.State);
+        }
+
+        /// <summary>
         ///     Tests <see cref="Core.Manager.Restart(StopType)"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
@@ -225,6 +247,29 @@ namespace Symbiote.SDK.Tests.Common
         }
 
         /// <summary>
+        ///     Tests the <see cref="SDK.Manager.Shutdown(StopType)"/> method.
+        /// </summary>
+        [Fact]
+        public void Shutdown()
+        {
+            ManagerMockBadShutdown bad = ManagerMockBadShutdown.Instantiate(applicationManagerMock.Object);
+
+            bad.Start();
+            Assert.Equal(State.Running, bad.State);
+
+            Assert.Throws<ManagerStopException>(() => bad.Stop());
+
+            ManagerMockFailingShutdown fail = ManagerMockFailingShutdown.Instantiate(applicationManagerMock.Object);
+
+            fail.Start();
+            Assert.Equal(State.Running, fail.State);
+
+            Result result = fail.Stop();
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
         ///     Tests <see cref="Core.Manager.Start"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
@@ -240,6 +285,23 @@ namespace Symbiote.SDK.Tests.Common
             // try to start again and assert that the operation fails
             Result startAgain = test.Start();
             Assert.Equal(ResultCode.Failure, startAgain.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Manager.Startup"/> method.
+        /// </summary>
+        [Fact]
+        public void Startup()
+        {
+            ManagerMockBadStartup bad = ManagerMockBadStartup.Instantiate(applicationManagerMock.Object);
+
+            Assert.Throws<ManagerStartException>(() => bad.Start());
+
+            ManagerMockFailingStartup fail = ManagerMockFailingStartup.Instantiate(applicationManagerMock.Object);
+
+            Result result = fail.Start();
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(fail.State, State.Faulted);
         }
 
         /// <summary>
@@ -354,6 +416,244 @@ namespace Symbiote.SDK.Tests.Common
     }
 
     /// <summary>
+    ///     Mocks a Manager which throws an exception in the <see cref="SDK.Manager.Shutdown(StopType)"/> method.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Shutdown() method.
+    /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class ManagerMockBadShutdown : SDK.Manager
+    {
+        #region Private Fields
+
+        /// <summary>
+        ///     The Singleton instance of this class.
+        /// </summary>
+        private static ManagerMockBadShutdown instance;
+
+        #endregion Private Fields
+
+        #region Private Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerMockBadShutdown"/> class.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        private ManagerMockBadShutdown(IApplicationManager manager)
+        {
+            ManagerName = "Mock Manager";
+            RegisterDependency<IApplicationManager>(manager);
+
+            ChangeState(State.Initialized);
+        }
+
+        #endregion Private Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Instantiates the Manager.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        /// <returns>The instantiated Manager.</returns>
+        public static ManagerMockBadShutdown Instantiate(IApplicationManager manager)
+        {
+            // remove the code that makes this a singleton so that test runners can get a fresh instance each time.
+            instance = new ManagerMockBadShutdown(manager);
+            return instance;
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Simulates an exception in the shutdown routine.
+        /// </summary>
+        /// <param name="stopType">The nature of the stoppage.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        {
+            throw new Exception("exception");
+        }
+
+        #endregion Protected Methods
+    }
+
+    /// <summary>
+    ///     Mocks a Manager which throws an exception in the <see cref="SDK.Manager.Startup"/> method.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Startup() method.
+    /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class ManagerMockBadStartup : SDK.Manager
+    {
+        #region Private Fields
+
+        /// <summary>
+        ///     The Singleton instance of this class.
+        /// </summary>
+        private static ManagerMockBadStartup instance;
+
+        #endregion Private Fields
+
+        #region Private Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerMockBadStartup"/> class.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        private ManagerMockBadStartup(IApplicationManager manager)
+        {
+            ManagerName = "Mock Manager";
+            RegisterDependency<IApplicationManager>(manager);
+
+            ChangeState(State.Initialized);
+        }
+
+        #endregion Private Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Instantiates the Manager.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        /// <returns>The instantiated Manager.</returns>
+        public static ManagerMockBadStartup Instantiate(IApplicationManager manager)
+        {
+            // remove the code that makes this a singleton so that test runners can get a fresh instance each time.
+            instance = new ManagerMockBadStartup(manager);
+            return instance;
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Simulates an exception in the startup routine.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Startup()
+        {
+            throw new Exception("exception");
+        }
+
+        #endregion Protected Methods
+    }
+
+    /// <summary>
+    ///     Mocks a Manager which returns a failing Result from the <see cref="SDK.Manager.Shutdown(StopType)"/> method.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Shutdown() method.
+    /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class ManagerMockFailingShutdown : SDK.Manager
+    {
+        #region Private Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerMockFailingShutdown"/> class.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        private ManagerMockFailingShutdown(IApplicationManager manager)
+        {
+            ManagerName = "Mock Manager";
+            RegisterDependency<IApplicationManager>(manager);
+
+            ChangeState(State.Initialized);
+        }
+
+        #endregion Private Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Instantiates the Manager.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        /// <returns>The instantiated Manager.</returns>
+        public static ManagerMockFailingShutdown Instantiate(IApplicationManager manager)
+        {
+            // remove the code that makes this a singleton so that test runners can get a fresh instance each time.
+            return new ManagerMockFailingShutdown(manager);
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Simulates an exception in the shutdown routine.
+        /// </summary>
+        /// <param name="stopType">The nature of the stoppage.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        {
+            return new Result(ResultCode.Failure);
+        }
+
+        #endregion Protected Methods
+    }
+
+    /// <summary>
+    ///     Mocks a Manager which returns a failing Result from the <see cref="SDK.Manager.Startup"/> method.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Startup() method.
+    /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class ManagerMockFailingStartup : SDK.Manager
+    {
+        #region Private Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManagerMockFailingStartup"/> class.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        private ManagerMockFailingStartup(IApplicationManager manager)
+        {
+            ManagerName = "Mock Manager";
+            RegisterDependency<IApplicationManager>(manager);
+
+            ChangeState(State.Initialized);
+        }
+
+        #endregion Private Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Instantiates the Manager.
+        /// </summary>
+        /// <param name="manager">The ApplicationManager dependency.</param>
+        /// <returns>The instantiated Manager.</returns>
+        public static ManagerMockFailingStartup Instantiate(IApplicationManager manager)
+        {
+            // remove the code that makes this a singleton so that test runners can get a fresh instance each time.
+            return new ManagerMockFailingStartup(manager);
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Simulates a failing startup routine.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Startup()
+        {
+            return new Result(ResultCode.Failure);
+        }
+
+        #endregion Protected Methods
+    }
+
+    /// <summary>
     ///     Mocks a Manager.
     /// </summary>
     /// <remarks>
@@ -405,6 +705,14 @@ namespace Symbiote.SDK.Tests.Common
         ///     Simulates a fault of the Manager.
         /// </summary>
         public void Fault()
+        {
+            ChangeState(State.Faulted);
+        }
+
+        /// <summary>
+        ///     Simulates a fault of the Manager with a pending restart.
+        /// </summary>
+        public void FaultWithRestart()
         {
             ChangeState(State.Faulted, StopType.Stop | StopType.Restart);
         }

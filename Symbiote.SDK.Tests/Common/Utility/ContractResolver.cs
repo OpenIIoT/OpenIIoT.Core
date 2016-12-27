@@ -10,10 +10,19 @@
       █   ███    ███ ██    ██ ██   ██     ██      ██  ██   ██   ██ ██    ██     ██      ███    ███   ██   █     ▄  ██ ██    ██ ██▌    ▄  █▄  ▄█    ██   █    ██  ██
       █   ████████▀   ██████   █   █     ▄██▀     ██  ██   ██   █▀ ██████▀     ▄██▀     ███    ███   ███████  ▄████▀   ██████  ████▄▄██   ▀██▀     ███████   ██  ██
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents a generic Data Contract Resolver, allowing for a list of ignored properties to be passed in upon construction.
+      █  Unit tests for the ContractResolver class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,121 +48,143 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
+using Xunit;
 
-namespace Symbiote.SDK
+namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Specifies how the array of properties passed to the constructor of the ContractResolver is to be used.
+    ///     Unit tests for the ContractResolver class.
     /// </summary>
-    public enum ContractResolverType
-    {
-        /// <summary>
-        ///     The default type
-        /// </summary>
-        Undefined,
-
-        /// <summary>
-        ///     Resolves the data contract using only the properties in accompanying list of properties
-        /// </summary>
-        OptIn,
-
-        /// <summary>
-        ///     Resolves the data contract using all properties not included in the accompanying list of properties
-        /// </summary>
-        OptOut
-    }
-
-    /// <summary>
-    ///     Represents a generic Data Contract Resolver, allowing for a list of ignored properties to be passed in upon construction.
-    /// </summary>
-    public class ContractResolver : DefaultContractResolver
+    public class ContractResolver
     {
         #region Private Fields
 
         /// <summary>
-        ///     Enumeration representing the type of contract resolver to use; OptIn or OptOut.
+        ///     The shared mockup object to be used for the serialization tests.
         /// </summary>
-        /// <remarks>
-        ///     The OptIn type includes only the properties listed in propertyList while OptOut includes all properties except
-        ///     those listed.
-        /// </remarks>
-        private ContractResolverType contractResolverType;
-
-        /// <summary>
-        ///     The list of properties to either include or exclude, depending on contractResolverType.
-        /// </summary>
-        private List<string> propertyList;
+        private ContractResolverTestObject mockup;
 
         #endregion Private Fields
 
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ContractResolver"/> class with an empty property list, resolver type
-        ///     of OptOut and with includeSecondaryTypes = false. Serializes all un-ignored properties in the given class.
+        ///     Initializes a new instance of the <see cref="ContractResolver"/> class.
         /// </summary>
-        public ContractResolver() : this(new List<string>(), ContractResolverType.OptOut)
+        public ContractResolver()
         {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ContractResolver"/> class with the supplied properties list and the
-        ///     supplied value for includeSecondaryTypes.
-        /// </summary>
-        /// <param name="propertyList">A list of properties to include or exclude from serialization.</param>
-        public ContractResolver(List<string> propertyList) : this(propertyList, ContractResolverType.OptIn)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ContractResolver"/> class with the supplied properties list, resolver
-        ///     type and includeSecondaryTypes value.
-        /// </summary>
-        /// <param name="propertyList">A list of properties to include or exclude from serialization.</param>
-        /// <param name="contractResolverType">
-        ///     The type of contract resolver; determines whether the supplied list will be included or excluded from serialization.
-        /// </param>
-        public ContractResolver(List<string> propertyList, ContractResolverType contractResolverType) : base()
-        {
-            this.propertyList = propertyList;
-            this.contractResolverType = contractResolverType;
+            mockup = new ContractResolverTestObject();
         }
 
         #endregion Public Constructors
 
-        #region Protected Methods
+        #region Public Methods
 
         /// <summary>
-        ///     Creates a list of properties based on the default serialization of the class, removes any properties whose name
-        ///     matches any entry in the list of ignoredProperties, and returns the modified list.
+        ///     Tests all constructor overloads.
         /// </summary>
-        /// <param name="type">The Type of the serialized class.</param>
-        /// <param name="memberSerialization">Specifies the member serialization options for the <see cref="JsonSerializer"/>.</param>
-        /// <returns>A filtered list of properties to serialize.</returns>
-        protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
+        [Fact]
+        public void Constructor()
         {
-            IEnumerable<JsonProperty> baseProperties = base.CreateProperties(type, memberSerialization);
-            IEnumerable<JsonProperty> resolvedProperties = new List<JsonProperty>();
+            SDK.ContractResolver resolver;
 
-            // if the resolver type is OptIn, filter baseProperties of any fields that don't appear in the supplied list of properties
-            if (this.contractResolverType == ContractResolverType.OptIn)
-            {
-                resolvedProperties = baseProperties.Where(p => this.propertyList.Contains(p.PropertyName)).ToList();
-            }
-            else if (this.contractResolverType == ContractResolverType.OptOut)
-            {
-                // if the resolver type is OptOut, filter baseProperties of any fields that appear in the supplied list of properties
-                resolvedProperties = baseProperties.Where(p => !this.propertyList.Contains(p.PropertyName)).ToList();
-            }
+            resolver = new SDK.ContractResolver();
+            Assert.IsType<SDK.ContractResolver>(resolver);
 
-            return resolvedProperties.ToList();
+            resolver = new SDK.ContractResolver(new List<string>(new string[] { }));
+            Assert.IsType<SDK.ContractResolver>(resolver);
+
+            resolver = new SDK.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptIn);
+            Assert.IsType<SDK.ContractResolver>(resolver);
         }
 
-        #endregion Protected Methods
+        /// <summary>
+        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
+        ///     <see cref="SDK.ContractResolverType.OptIn"/> resolver type.
+        /// </summary>
+        [Fact]
+        public void OptIn()
+        {
+            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { "Name" }), ContractResolverType.OptIn);
+
+            string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
+
+            Assert.Equal("{\"Name\":\"Test Object\"}", json);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
+        ///     <see cref="SDK.ContractResolverType.OptOut"/> resolver type.
+        /// </summary>
+        [Fact]
+        public void OptOut()
+        {
+            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { "Number", "TrueFalse" }), ContractResolverType.OptOut);
+
+            string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
+
+            Assert.Equal("{\"Name\":\"Test Object\"}", json);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method.
+        /// </summary>
+        [Fact]
+        public void Resolve()
+        {
+            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptOut);
+
+            string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
+
+            Assert.Equal("{\"Name\":\"Test Object\",\"Number\":42,\"TrueFalse\":true}", json);
+        }
+
+        #endregion Public Methods
+    }
+
+    /// <summary>
+    ///     Represents a test object used for the <see cref="ContractResolver"/> unit tests.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the complexity in creating a new type.
+    /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    public class ContractResolverTestObject
+    {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ContractResolverTestObject"/> class.
+        /// </summary>
+        public ContractResolverTestObject()
+        {
+            Name = "Test Object";
+            Number = 42;
+            TrueFalse = true;
+        }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets the name.
+        /// </summary>
+        public string Name { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the number.
+        /// </summary>
+        public int Number { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the TrueFalse property is true.
+        /// </summary>
+        public bool TrueFalse { get; set; }
+
+        #endregion Public Properties
     }
 }

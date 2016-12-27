@@ -56,7 +56,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="Utility.OperationResult, Version=0.9.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Utility.OperationResult.0.9.0.5\lib\Utility.OperationResult.dll</HintPath>
+      <HintPath>..\packages\Utility.OperationResult.0.9.0.13\lib\Utility.OperationResult.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="xunit.abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=8d05b1bb7a6fdb6c, processorArchitecture=MSIL">
@@ -90,6 +90,8 @@
     <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
+    <Compile Include="Common\Utility\ContractResolver.cs" />
+    <Compile Include="Common\Utility\Utility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

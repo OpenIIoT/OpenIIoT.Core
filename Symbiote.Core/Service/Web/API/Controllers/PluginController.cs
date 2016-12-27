@@ -17,33 +17,33 @@ using Utility.OperationResult;
 namespace Symbiote.Core.Service.Web.API
 {
     /// <summary>
-    /// Handles the API methods for AppArchives.
+    ///     Handles the API methods for AppArchives.
     /// </summary>
     public class PluginController : ApiController, IApiController
     {
         #region Variables
 
         /// <summary>
-        /// The Logger for this class.
+        ///     The Logger for this class.
         /// </summary>
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        /// The ApplicationManager for the application.
+        ///     The ApplicationManager for the application.
         /// </summary>
         private ApplicationManager manager = ApplicationManager.GetInstance();
 
         /// <summary>
-        /// The default serialization properties for an AppArchive.
+        ///     The default serialization properties for an AppArchive.
         /// </summary>
         private static List<string> pluginArchiveSerializationProperties = new List<string>(new string[] { });
 
-        #endregion
+        #endregion Variables
 
         #region Instance Methods
 
         /// <summary>
-        /// Returns the list of available AppArchives.
+        ///     Returns the list of available AppArchives.
         /// </summary>
         /// <returns>The list of available AppArchives.</returns>
         [Route("api/plugin/archive")]
@@ -56,11 +56,11 @@ namespace Symbiote.Core.Service.Web.API
             retVal.ReturnValue = manager.GetManager<PluginManager>().PluginArchives;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut));
         }
 
         /// <summary>
-        /// Reloads the list of PluginArchives from disk and returns the list.
+        ///     Reloads the list of PluginArchives from disk and returns the list.
         /// </summary>
         /// <returns>The reloaded list of available PluginArchives.</returns>
         [Route("api/plugin/archive/reload")]
@@ -76,11 +76,11 @@ namespace Symbiote.Core.Service.Web.API
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut));
         }
 
         /// <summary>
-        /// Returns the PluginArchive from the list of available PluginArchives that matches the supplied filename.
+        ///     Returns the PluginArchive from the list of available PluginArchives that matches the supplied filename.
         /// </summary>
         /// <param name="fileName">The Fully Qualified Name of the PluginArchive to return.</param>
         /// <returns>The matching PluginArchive.</returns>
@@ -97,11 +97,11 @@ namespace Symbiote.Core.Service.Web.API
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
 
         /// <summary>
-        /// Installs the supplied PluginArchive.
+        ///     Installs the supplied PluginArchive.
         /// </summary>
         /// <param name="fileName">The filename of the Plugin Archive to install.</param>
         /// <returns>The App instance resulting from the installation.</returns>
@@ -118,9 +118,8 @@ namespace Symbiote.Core.Service.Web.API
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
-
 
         [Route("api/plugin")]
         [HttpGet]
@@ -132,11 +131,11 @@ namespace Symbiote.Core.Service.Web.API
             retVal.ReturnValue = manager.GetManager<PluginManager>().Configuration.InstalledPlugins.ToList<IPlugin>();
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut));
         }
 
         /// <summary>
-        /// Uninstalls the supplied Plugin.
+        ///     Uninstalls the supplied Plugin.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Plugin to uninstall.</param>
         /// <returns>An ApiResult containing the result of the operation.</returns>
@@ -150,9 +149,8 @@ namespace Symbiote.Core.Service.Web.API
             retVal.ReturnValue = await manager.GetManager<PluginManager>().UninstallPluginAsync(manager.GetManager<PluginManager>().FindPlugin(fqn));
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut, true));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
-
 
         [Route("api/plugin/archive/{fileName}/download")]
         [HttpGet]
@@ -174,13 +172,19 @@ namespace Symbiote.Core.Service.Web.API
         }
 
         /// <summary>
-        /// Returns the JsonMediaTypeFormatter to use with this controller.
+        ///     Returns the JsonMediaTypeFormatter to use with this controller.
         /// </summary>
-        /// <param name="serializationProperties">A list of properties to exclude or include, depending on the ContractResolverType, in the serialized result.</param>
-        /// <param name="contractResolverType">A ContractResolverType representing the desired behavior of serializationProperties, OptIn or OptOut.</param>
-        /// <param name="includeSecondaryTypes">True if secondary types, such as those loaded from Plugins, should be included in the serialization.</param>
+        /// <param name="serializationProperties">
+        ///     A list of properties to exclude or include, depending on the ContractResolverType, in the serialized result.
+        /// </param>
+        /// <param name="contractResolverType">
+        ///     A ContractResolverType representing the desired behavior of serializationProperties, OptIn or OptOut.
+        /// </param>
+        /// <param name="includeSecondaryTypes">
+        ///     True if secondary types, such as those loaded from Plugins, should be included in the serialization.
+        /// </param>
         /// <returns>A configured instance of JsonMediaTypeFormatter</returns>
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType, bool includeSecondaryTypes = false)
+        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 
@@ -189,12 +193,12 @@ namespace Symbiote.Core.Service.Web.API
             retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
             retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType, includeSecondaryTypes);
+            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
             retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             return retVal;
         }
 
-        #endregion
+        #endregion Instance Methods
     }
 }
