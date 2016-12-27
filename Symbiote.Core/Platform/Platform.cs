@@ -49,7 +49,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using NLog.xLogger;
-using Symbiote.SDK;
 using Symbiote.SDK.Platform;
 using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
@@ -110,22 +109,23 @@ namespace Symbiote.Core.Platform
         public virtual Result ClearDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Trace("Attempting to clear the contents of directory '" + directory + "'...");
-
+            logger.Debug("Attempting to clear the contents of directory '" + directory + "'...");
             Result retVal = new Result();
 
             try
             {
                 DirectoryInfo di = new DirectoryInfo(directory);
 
+                // delete all files
                 foreach (FileInfo file in di.GetFiles())
                 {
-                    file.Delete();
+                    DeleteFile(file.FullName);
                 }
 
+                // delete all folders recursively
                 foreach (DirectoryInfo dir in di.GetDirectories())
                 {
-                    dir.Delete(true);
+                    DeleteDirectory(dir.FullName, true);
                 }
             }
             catch (Exception ex)
@@ -134,21 +134,19 @@ namespace Symbiote.Core.Platform
                 logger.Exception(LogLevel.Debug, ex);
             }
 
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal.ResultCode);
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
         /// <summary>
-        ///     Computes the checksum of the specified file.
+        ///     Computes the SHA256 checksum of the specified file.
         /// </summary>
         /// <param name="file">The file for which the checksum is to be computed.</param>
         /// <returns>A Result containing the result of the operation and the computed checksum.</returns>
         public virtual Result<string> ComputeFileChecksum(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Computing checksum for file '" + file + "'...");
-
             Result<string> retVal = new Result<string>();
 
             try
@@ -170,21 +168,19 @@ namespace Symbiote.Core.Platform
                 logger.Exception(LogLevel.Debug, ex);
             }
 
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal.ResultCode);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
         /// <summary>
-        ///     Creates the supplied directory.
+        ///     Creates the specified directory.
         /// </summary>
         /// <param name="directory">The directory to create.</param>
-        /// <returns>A Result containing the result of the operation and the fully qualified path to the directory.</returns>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the created directory.</returns>
         public virtual Result<string> CreateDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Trace("Creating directory '" + directory + "'...");
-
+            logger.Debug("Creating directory '" + directory + "'...");
             Result<string> retVal = new Result<string>();
 
             try
@@ -197,27 +193,29 @@ namespace Symbiote.Core.Platform
                 logger.Exception(LogLevel.Debug, ex);
             }
 
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal.ResultCode);
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
         /// <summary>
-        ///     Deletes the supplied directory.
+        ///     Deletes the specified directory.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
+        /// <param name="recursive">
+        ///     A value indicating whether to recursively delete subdirectories and files contained within the directory.
+        /// </param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result DeleteDirectory(string directory)
+        public virtual Result DeleteDirectory(string directory, bool recursive = true)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Trace("Attempting to delete directory '" + directory + "'...");
-
+            logger.Debug("Attempting to delete directory '" + directory + "'...");
             Result retVal = new Result();
 
             try
             {
                 DirectoryInfo di = new DirectoryInfo(directory);
-                di.Delete(true);
+                di.Delete(recursive);
             }
             catch (Exception ex)
             {
@@ -225,8 +223,8 @@ namespace Symbiote.Core.Platform
                 logger.Exception(LogLevel.Debug, ex);
             }
 
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal.ResultCode);
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -238,8 +236,7 @@ namespace Symbiote.Core.Platform
         public virtual Result DeleteFile(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Deleting file '" + file + "'...");
-
+            logger.Debug("Deleting file '" + file + "'...");
             Result retVal = new Result();
 
             try
@@ -252,8 +249,8 @@ namespace Symbiote.Core.Platform
                 logger.Exception(LogLevel.Debug, ex);
             }
 
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal.ResultCode);
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -261,7 +258,7 @@ namespace Symbiote.Core.Platform
         ///     Returns true if the specified directory exists, false otherwise.
         /// </summary>
         /// <param name="directory">The directory to check.</param>
-        /// <returns>True if the specified directory exists, false otherwise.</returns>
+        /// <returns>A value indicating whether the specified directory exists.</returns>
         public virtual bool DirectoryExists(string directory)
         {
             return Directory.Exists(directory);
@@ -362,7 +359,7 @@ namespace Symbiote.Core.Platform
         ///     Returns true if the specified file exists, false otherwise.
         /// </summary>
         /// <param name="file">The file to check.</param>
-        /// <returns>True if the specified file exists, false otherwise.</returns>
+        /// <returns>A value indicating whether the specified file exists.</returns>
         public virtual bool FileExists(string file)
         {
             return File.Exists(file);
@@ -376,48 +373,44 @@ namespace Symbiote.Core.Platform
         public abstract IConnector InstantiateConnector(string instanceName);
 
         /// <summary>
-        ///     Returns a list of subdirectories within the supplied path.
+        ///     Returns a list of subdirectories within the specified directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <param name="searchPattern">The search pattern to which directory names are compared.</param>
         /// <returns>
         ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
         /// </returns>
-        public virtual Result<List<string>> ListDirectories(string parentDirectory)
+        public virtual Result<List<string>> ListDirectories(string parentDirectory, string searchPattern = "*")
         {
-            logger.EnterMethod(xLogger.Params(parentDirectory));
-            logger.Trace("Listing subdirectories of '" + parentDirectory + "'...");
-
+            logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
             Result<List<string>> retVal = new Result<List<string>>();
             retVal.ReturnValue = new List<string>();
 
             try
             {
-                retVal.ReturnValue = Directory.EnumerateDirectories(parentDirectory).ToList<string>();
+                retVal.ReturnValue = Directory.EnumerateDirectories(parentDirectory, searchPattern, SearchOption.AllDirectories).ToList<string>();
             }
             catch (IOException ex)
             {
-                retVal.AddError("Error listing subdirectories for root path '" + parentDirectory + "': " + ex.Message);
+                retVal.AddError("Error listing subdirectories for root path '" + parentDirectory + "' using search pattern '" + searchPattern + "': " + ex.Message);
                 logger.Exception(LogLevel.Debug, ex);
             }
 
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal.ResultCode);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
         /// <summary>
-        ///     Returns a list of files within the supplied directory matching the supplied searchPattern.
+        ///     Returns a list of files within the specified directory matching the supplied searchPattern.
         /// </summary>
         /// <param name="parentDirectory">The directory to search.</param>
-        /// <param name="searchPattern">The search pattern to match files against.</param>
+        /// <param name="searchPattern">The search pattern to which file names are compared.</param>
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        public virtual Result<List<string>> ListFiles(string parentDirectory, string searchPattern)
+        public virtual Result<List<string>> ListFiles(string parentDirectory, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
-            logger.Trace("Listing files in directory '" + parentDirectory + "' matching searchPattern '" + searchPattern + "'...");
-
             Result<List<string>> retVal = new Result<List<string>>();
             retVal.ReturnValue = new List<string>();
 
@@ -427,12 +420,11 @@ namespace Symbiote.Core.Platform
             }
             catch (IOException ex)
             {
-                retVal.AddError("Error listing files for directory '" + parentDirectory + "' using search pattern '" + searchPattern + " : " + ex);
+                retVal.AddError("Error listing files for directory '" + parentDirectory + "' using search pattern '" + searchPattern + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
             }
 
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal.ResultCode);
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -545,8 +537,8 @@ namespace Symbiote.Core.Platform
         /// <summary>
         ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.
         /// </summary>
-        /// <param name="file">The file to write.</param>
-        /// <param name="contents">The text to write to the file.</param>
+        /// <param name="file">The file to which the specified contents are written.</param>
+        /// <param name="contents">The string containing the content to write.</param>
         /// <returns>The fully qualified name of the written file.</returns>
         public virtual Result<string> WriteFile(string file, string contents)
         {
@@ -558,6 +550,36 @@ namespace Symbiote.Core.Platform
             try
             {
                 File.WriteAllText(file, contents);
+                retVal.ReturnValue = file;
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error writing to file '" + file + "': " + ex);
+                logger.Exception(LogLevel.Debug, ex);
+            }
+
+            retVal.LogResult(logger.Trace);
+            logger.ExitMethod(retVal.ResultCode);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Writes the contents of the specified string array into the specified file. If the destination file already exists
+        ///     it is overwritten.
+        /// </summary>
+        /// <param name="file">The file to which the specified contents are written.</param>
+        /// <param name="contents">The string array containing the content to write.</param>
+        /// <returns>The fully qualified name of the written file.</returns>
+        public virtual Result<string> WriteFileLines(string file, string[] contents)
+        {
+            logger.EnterMethod(xLogger.Params(file, contents));
+            logger.Trace("Writing to file '" + file + "'...");
+
+            Result<string> retVal = new Result<string>();
+
+            try
+            {
+                File.WriteAllLines(file, contents);
                 retVal.ReturnValue = file;
             }
             catch (Exception ex)

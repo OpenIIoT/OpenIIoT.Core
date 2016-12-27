@@ -107,10 +107,10 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void Constructor()
         {
-            Platform.PlatformDirectories test = new Platform.PlatformDirectories(goodDirs);
-            Assert.IsType<Platform.PlatformDirectories>(test);
+            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
+            Assert.IsType<Core.Platform.PlatformDirectories>(test);
 
-            Assert.Throws<DirectoryConfigurationException>(() => new Platform.PlatformDirectories(badDirs));
+            Assert.Throws<DirectoryConfigurationException>(() => new Core.Platform.PlatformDirectories(badDirs));
         }
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void Properties()
         {
-            Platform.PlatformDirectories test = new Platform.PlatformDirectories(goodDirs);
+            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
 
             Assert.Equal(FullDir("Data"), test.Data);
             Assert.Equal(FullDir("Archives"), test.Archives);
@@ -136,7 +136,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void ToDictionary()
         {
-            Platform.PlatformDirectories test = new Platform.PlatformDirectories(goodDirs);
+            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
 
             Assert.Equal(FullDir("Data"), test.Data);
             Assert.Equal(FullDir("Archives"), test.Archives);

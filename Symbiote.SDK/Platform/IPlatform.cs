@@ -96,11 +96,14 @@ namespace Symbiote.SDK.Platform
         Result<string> CreateDirectory(string directory);
 
         /// <summary>
-        ///     Deletes the supplied directory.
+        ///     Deletes the specified directory.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
+        /// <param name="recursive">
+        ///     A value indicating whether to recursively delete subdirectories and files contained within the directory.
+        /// </param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result DeleteDirectory(string directory);
+        Result DeleteDirectory(string directory, bool recursive = true);
 
         /// <summary>
         ///     Deletes the specified file.
@@ -156,23 +159,24 @@ namespace Symbiote.SDK.Platform
         IConnector InstantiateConnector(string instanceName);
 
         /// <summary>
-        ///     Returns a list of subdirectories within the supplied path.
+        ///     Returns a list of subdirectories within the specified directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <param name="searchPattern">The search pattern to which directory names are compared.</param>
         /// <returns>
         ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
         /// </returns>
-        Result<List<string>> ListDirectories(string parentDirectory);
+        Result<List<string>> ListDirectories(string parentDirectory, string searchPattern = "*");
 
         /// <summary>
-        ///     Returns a list of files within the supplied directory matching the supplied searchPattern.
+        ///     Returns a list of files within the specified directory matching the supplied searchPattern.
         /// </summary>
         /// <param name="parentDirectory">The directory to search.</param>
-        /// <param name="searchPattern">The search pattern to match files against.</param>
+        /// <param name="searchPattern">The search pattern to which file names are compared.</param>
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        Result<List<string>> ListFiles(string parentDirectory, string searchPattern);
+        Result<List<string>> ListFiles(string parentDirectory, string searchPattern = "*");
 
         /// <summary>
         ///     Returns a list of files contained within the specified zip file matching the supplied searchPattern.
