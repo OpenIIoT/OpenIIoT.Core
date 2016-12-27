@@ -43,7 +43,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NLog.xLogger;
-using Symbiote.SDK;
 using Symbiote.SDK.Platform;
 
 namespace Symbiote.Core.Platform
@@ -152,7 +151,7 @@ namespace Symbiote.Core.Platform
         {
             Dictionary<string, string> dictionary = new Dictionary<string, string>();
 
-            foreach (PropertyInfo p in this.GetType().GetProperties())
+            foreach (PropertyInfo p in GetType().GetProperties())
             {
                 dictionary.Add(p.Name, (string)p.GetValue(this));
             }

@@ -57,8 +57,9 @@ using Xunit;
 namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the ConnectorItem class.
+    ///     Unit tests for the <see cref="SDK.ConnectorItem"/> class.
     /// </summary>
+    [Collection("ConnectorItem")]
     public class ConnectorItem
     {
         #region Private Fields

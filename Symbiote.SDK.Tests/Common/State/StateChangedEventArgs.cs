@@ -62,8 +62,9 @@ using Xunit;
 namespace Symbiote.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the StateChangedEventArgs class.
+    ///     Unit tests for the <see cref="SDK.StateChangedEventArgs"/> class.
     /// </summary>
+    [Collection("StateChangedEventArgs")]
     public class StateChangedEventArgs
     {
         #region Public Methods

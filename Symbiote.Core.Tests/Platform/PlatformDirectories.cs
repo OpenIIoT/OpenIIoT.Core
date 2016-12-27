@@ -49,27 +49,77 @@
                                                                                                    ▀▀                            */
 
 using System;
-using Xunit;
 using System.Collections.Generic;
-using Symbiote.Core.Platform;
 using Symbiote.SDK.Platform;
+using Xunit;
 
 namespace Symbiote.Core.Tests
 {
     /// <summary>
-    ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
+    ///     Unit tests for the <see cref="Platform.PlatformDirectories"/> class.
     /// </summary>
-    /// <remarks>Presented in a distinct class to enforce execution order.</remarks>
     [Collection("PlatformDirectories")]
-    public class PlatformDirectoriesTests
+    public class PlatformDirectories
     {
+        #region Private Fields
+
         /// <summary>
-        ///     Tests <see cref="PlatformDirectories()"/> and all properties.
+        ///     The shared dictionary containing a "bad" set of directories.
+        /// </summary>
+        private Dictionary<string, string> badDirs;
+
+        /// <summary>
+        ///     The shared dictionary containing a "good" set of directories.
+        /// </summary>
+        private Dictionary<string, string> goodDirs;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PlatformDirectories"/> class.
+        /// </summary>
+        public PlatformDirectories()
+        {
+            goodDirs = new Dictionary<string, string>();
+
+            goodDirs.Add("Data", "Data");
+            goodDirs.Add("Archives", "Archives");
+            goodDirs.Add("Plugins", "Plugins");
+            goodDirs.Add("Temp", "Temp");
+            goodDirs.Add("Persistence", "Persistence");
+            goodDirs.Add("Web", "Web");
+            goodDirs.Add("Logs", "Logs");
+
+            badDirs = new Dictionary<string, string>(goodDirs);
+
+            badDirs.Remove("Data");
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests all constructor overloads.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            PlatformDirectories test = new PlatformDirectories(GetTestDirs());
+            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
+            Assert.IsType<Core.Platform.PlatformDirectories>(test);
+
+            Assert.Throws<DirectoryConfigurationException>(() => new Core.Platform.PlatformDirectories(badDirs));
+        }
+
+        /// <summary>
+        ///     Tests all properties.
+        /// </summary>
+        [Fact]
+        public void Properties()
+        {
+            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
 
             Assert.Equal(FullDir("Data"), test.Data);
             Assert.Equal(FullDir("Archives"), test.Archives);
@@ -80,19 +130,13 @@ namespace Symbiote.Core.Tests
             Assert.Equal(FullDir("Logs"), test.Logs);
         }
 
-        [Fact]
-        public void BadConstructor()
-        {
-            Assert.Throws<DirectoryConfigurationException>(() => new PlatformDirectories(GetBadTestDirs()));
-        }
-
         /// <summary>
         ///     Tests <see cref="ToDictionary"/> and spot-checks the outcome.
         /// </summary>
         [Fact]
         public void ToDictionary()
         {
-            PlatformDirectories test = new PlatformDirectories(GetTestDirs());
+            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
 
             Assert.Equal(FullDir("Data"), test.Data);
             Assert.Equal(FullDir("Archives"), test.Archives);
@@ -106,6 +150,10 @@ namespace Symbiote.Core.Tests
             Assert.Equal(FullDir("Temp"), dict["Temp"]);
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         /// <summary>
         ///     Returns the fully qualified path for the specified directory, relative to the application root.
         /// </summary>
@@ -117,34 +165,6 @@ namespace Symbiote.Core.Tests
             return System.IO.Path.Combine(root, dir);
         }
 
-        /// <summary>
-        ///     Returns a dictionary containing the necessary directory key-value pairs.
-        /// </summary>
-        /// <returns>A dictionary containing the necessary directory key-value pairs.</returns>
-        private Dictionary<string, string> GetTestDirs()
-        {
-            Dictionary<string, string> retVal = new Dictionary<string, string>();
-
-            retVal.Add("Data", "Data");
-            retVal.Add("Archives", "Archives");
-            retVal.Add("Plugins", "Plugins");
-            retVal.Add("Temp", "Temp");
-            retVal.Add("Persistence", "Persistence");
-            retVal.Add("Web", "Web");
-            retVal.Add("Logs", "Logs");
-
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Returns a dictionary containing an invalid number of directory key-value pairs.
-        /// </summary>
-        /// <returns>A dictionary containing an invalid number of directory key-value pairs.</returns>
-        private Dictionary<string, string> GetBadTestDirs()
-        {
-            Dictionary<string, string> retVal = GetTestDirs();
-            retVal.Remove("Data");
-            return retVal;
-        }
+        #endregion Private Methods
     }
 }

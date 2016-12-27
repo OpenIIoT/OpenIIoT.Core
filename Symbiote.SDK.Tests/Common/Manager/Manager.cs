@@ -58,7 +58,7 @@ using Xunit;
 namespace Symbiote.SDK.Tests.Common
 {
     /// <summary>
-    ///     Unit tests for the Manager class.
+    ///     Unit tests for the <see cref="SDK.Manager"/> class.
     /// </summary>
     [Collection("Manager")]
     public class Manager
