@@ -40,8 +40,8 @@
                                                                                                    ▀▀                            */
 
 using System.Collections.Generic;
-using Utility.OperationResult;
 using Symbiote.SDK.Plugin.Connector;
+using Utility.OperationResult;
 
 namespace Symbiote.SDK.Platform
 {
@@ -53,17 +53,17 @@ namespace Symbiote.SDK.Platform
         #region Public Properties
 
         /// <summary>
-        ///     The accompanying Connector Plugin for the Platform.
+        ///     Gets the host Connector Plugin for the Platform.
         /// </summary>
         IConnector Connector { get; }
 
         /// <summary>
-        ///     The Platform Type.
+        ///     Gets the Platform Type.
         /// </summary>
         PlatformType PlatformType { get; }
 
         /// <summary>
-        ///     The Version of the Platform OS.
+        ///     Gets the Version of the Platform OS.
         /// </summary>
         string Version { get; }
 
@@ -94,6 +94,16 @@ namespace Symbiote.SDK.Platform
         /// <param name="directory">The directory to create.</param>
         /// <returns>A Result containing the result of the operation and the fully qualified path to the directory.</returns>
         Result<string> CreateDirectory(string directory);
+
+        /// <summary>
+        ///     Creates the specified zip file from the specified directory.
+        /// </summary>
+        /// <param name="zipFile">The zip file to which the directory is to be compressed.</param>
+        /// <param name="source">The directory from which the zip file is to be created.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the fully qualified filename of the created zip file.
+        /// </returns>
+        Result<string> CreateZip(string zipFile, string source);
 
         /// <summary>
         ///     Deletes the specified directory.
@@ -154,7 +164,7 @@ namespace Symbiote.SDK.Platform
         /// <summary>
         ///     Instantiates the accompanying Connector Plugin with the supplied root path.
         /// </summary>
-        /// <param name="instanceName"></param>
+        /// <param name="instanceName">The name of the Plugin instance.</param>
         /// <returns>The instantiated Connector Plugin.</returns>
         IConnector InstantiateConnector(string instanceName);
 
@@ -186,7 +196,7 @@ namespace Symbiote.SDK.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        Result<List<string>> ListZipFiles(string zipFile, string searchPattern);
+        Result<List<string>> ListZipFiles(string zipFile, string searchPattern = "*");
 
         /// <summary>
         ///     Reads the contents of the specified file into a single string.

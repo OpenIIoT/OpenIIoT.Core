@@ -102,7 +102,7 @@ namespace Symbiote.Core.Platform
         #region Public Methods
 
         /// <summary>
-        ///     Deletes all files and subdirectories within the supplied directory.
+        ///     Deletes all files and subdirectories within the specified directory.
         /// </summary>
         /// <param name="directory">The directory to clear.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -199,6 +199,36 @@ namespace Symbiote.Core.Platform
         }
 
         /// <summary>
+        ///     Creates the specified zip file from the specified directory.
+        /// </summary>
+        /// <param name="zipFile">The zip file to which the directory is to be compressed.</param>
+        /// <param name="source">The directory from which the zip file is to be created.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the fully qualified filename of the created zip file.
+        /// </returns>
+        public virtual Result<string> CreateZip(string zipFile, string source)
+        {
+            logger.EnterMethod(xLogger.Params(zipFile, source));
+            logger.Trace("Creating zip file '" + zipFile + "' from directory '" + source + "'...");
+
+            Result<string> retVal = new Result<string>();
+
+            try
+            {
+                ZipFile.CreateFromDirectory(source, zipFile);
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error creating zip file '" + zipFile + "' from directory '" + source + "': " + ex);
+                logger.Exception(LogLevel.Debug, ex);
+            }
+
+            retVal.LogResult(logger.Trace);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
         ///     Deletes the specified directory.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
@@ -265,7 +295,7 @@ namespace Symbiote.Core.Platform
         }
 
         /// <summary>
-        ///     Extracts the contents of the supplied zip file to the specified destination, clearing the destination first if
+        ///     Extracts the contents of the specified zip file to the specified destination, clearing the destination first if
         ///     clearDestination is true.
         /// </summary>
         /// <param name="zipFile">The zip file to extract.</param>
@@ -313,7 +343,7 @@ namespace Symbiote.Core.Platform
         }
 
         /// <summary>
-        ///     Extracts the supplied file from the supplied zip file to the supplied destination, overwriting the file if
+        ///     Extracts the specified file from the specified zip file to the specified destination, overwriting the file if
         ///     overwrite is true.
         /// </summary>
         /// <param name="zipFile">The zip file from which to extract the file.</param>
@@ -436,7 +466,7 @@ namespace Symbiote.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        public virtual Result<List<string>> ListZipFiles(string zipFile, string searchPattern)
+        public virtual Result<List<string>> ListZipFiles(string zipFile, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(zipFile, searchPattern));
             logger.Trace("Listing files in zip file '" + zipFile + "' matching searchPattern '" + searchPattern + "'...");
