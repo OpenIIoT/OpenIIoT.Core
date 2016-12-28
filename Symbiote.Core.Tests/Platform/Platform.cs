@@ -93,7 +93,6 @@ namespace Symbiote.Core.Tests
         public Platform()
         {
             platformMock = new PlatformMock();
-            platformMock.InstantiateConnector("instanceName");
 
             // set test directory = application directory + a new Guid
             string root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
@@ -832,23 +831,9 @@ namespace Symbiote.Core.Tests
         {
             PlatformType = PlatformType.Unknown;
             Version = "1.0";
+            Connector = new Mock<IConnector>().Object;
         }
 
         #endregion Public Constructors
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Instantiates the accompanying Connector Plugin with the supplied root path.
-        /// </summary>
-        /// <param name="instanceName">The name of the Plugin instance.</param>
-        /// <returns>The instantiated Connector Plugin.</returns>
-        public override IConnector InstantiateConnector(string instanceName)
-        {
-            Connector = new Mock<IConnector>().Object;
-            return Connector;
-        }
-
-        #endregion Public Methods
     }
 }

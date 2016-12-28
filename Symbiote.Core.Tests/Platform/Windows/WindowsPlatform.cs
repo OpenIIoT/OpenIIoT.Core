@@ -10,10 +10,19 @@
       █   ███ ▄█▄ ███ ██  ██   ██ ██   ▄██ ██    ██ ██ ▄█▄ ██    ▄  ██   ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██
       █    ▀███▀███▀  █    █   █  ██████▀   ██████   ███▀███   ▄████▀   ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Extends the Platform class to allow file system I/O abstraction and metrics on Windows platforms.
+      █  Unit tests for the WindowsPlatform class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,28 +48,42 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
 using Symbiote.SDK.Platform;
+using Symbiote.SDK.Plugin.Connector;
+using Xunit;
 
-namespace Symbiote.Core.Platform.Windows
+namespace Symbiote.Core.Tests
 {
     /// <summary>
-    ///     Extends the Platform class to allow file system I/O abstraction and metrics on Windows platforms.
+    ///     Unit tests for the <see cref="Core.Platform.Windows.WindowsPlatform"/> class.
     /// </summary>
-    public class WindowsPlatform : Platform
+    [Collection("WindowsPlatform")]
+    public class WindowsPlatform
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="WindowsPlatform"/> class.
+        ///     Tests all constructor overloads.
         /// </summary>
-        public WindowsPlatform()
+        [Fact]
+        public void Constructor()
         {
-            PlatformType = PlatformType.Windows;
-            Version = Environment.OSVersion.VersionString;
-            Connector = new WindowsPlatformConnector("Platform");
+            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform();
+            Assert.IsAssignableFrom<Core.Platform.Windows.WindowsPlatform>(platform);
         }
 
-        #endregion Public Constructors
+        /// <summary>
+        ///     Tests all properties.
+        /// </summary>
+        [Fact]
+        public void Properties()
+        {
+            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform();
+            Assert.IsAssignableFrom<IConnector>(platform.Connector);
+            Assert.Equal(PlatformType.Windows, platform.PlatformType);
+            Assert.NotNull(platform.Version);
+        }
+
+        #endregion Public Methods
     }
 }

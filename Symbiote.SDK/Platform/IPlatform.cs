@@ -162,13 +162,6 @@ namespace Symbiote.SDK.Platform
         bool FileExists(string file);
 
         /// <summary>
-        ///     Instantiates the accompanying Connector Plugin with the supplied root path.
-        /// </summary>
-        /// <param name="instanceName">The name of the Plugin instance.</param>
-        /// <returns>The instantiated Connector Plugin.</returns>
-        IConnector InstantiateConnector(string instanceName);
-
-        /// <summary>
         ///     Returns a list of subdirectories within the specified directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory to search.</param>

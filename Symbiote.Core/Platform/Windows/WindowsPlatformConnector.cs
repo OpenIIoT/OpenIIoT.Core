@@ -55,7 +55,7 @@ namespace Symbiote.Core.Platform.Windows
             InstanceName = instanceName;
             Name = "WindowsConnector";
             FQN = "Symbiote.Core.Platform.Windows.PlatformConnector";
-            Version = System.Reflection.Assembly.GetEntryAssembly().GetName().Version.ToString();
+            Version = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version.ToString();
             PluginType = PluginType.Connector;
 
             ConfigurationDefinition = new ConfigurationDefinition();
@@ -74,9 +74,7 @@ namespace Symbiote.Core.Platform.Windows
         ///     Returns true if any of the specified <see cref="State"/> s match the current <see cref="State"/>.
         /// </summary>
         /// <param name="states">The list of States to check.</param>
-        /// <returns>
-        ///     True if the current State matches any of the specified States, false otherwise.
-        /// </returns>
+        /// <returns>True if the current State matches any of the specified States, false otherwise.</returns>
         public virtual bool IsInState(params State[] states)
         {
             return states.Any(s => s == State);
@@ -208,9 +206,8 @@ namespace Symbiote.Core.Platform.Windows
             cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Processor Time"));
             cpuRoot.AddChild(new ConnectorItem(this, "CPU.% Idle Time"));
 
-            // prepare variables to use for processor time. you need two successive values to report
-            // accurately so rather than sleeping the thread we will just keep track from call to
-            // call. the first values will always be zero and that's ok.
+            // prepare variables to use for processor time. you need two successive values to report accurately so rather than
+            // sleeping the thread we will just keep track from call to call. the first values will always be zero and that's ok.
             lastCPUUsed = 0;
             lastCPUIdle = 0;
 

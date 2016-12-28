@@ -86,6 +86,8 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ApplicationManager.cs" />
+    <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
+    <Compile Include="Platform\Windows\WindowsPlatform.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
