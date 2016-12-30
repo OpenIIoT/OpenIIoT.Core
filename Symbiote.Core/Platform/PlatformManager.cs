@@ -42,7 +42,9 @@
 using Newtonsoft.Json;
 using NLog;
 using NLog.xLogger;
+using Symbiote.Core.Model;
 using Symbiote.SDK;
+using Symbiote.SDK.Model;
 using Symbiote.SDK.Platform;
 using System;
 using System.Collections.Generic;
@@ -84,6 +86,23 @@ namespace Symbiote.Core.Platform
 
             // register dependencies
             RegisterDependency<IApplicationManager>(manager);
+
+            //-------- --
+            // determine the platform and instantiate it
+            switch (GetPlatformType())
+            {
+                case PlatformType.Windows:
+                    Platform = new Windows.WindowsPlatform();
+                    break;
+
+                case PlatformType.UNIX:
+                    Platform = new UNIX.UNIXPlatform();
+                    break;
+
+                default:
+                    throw new Exception("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
+            }
+            //------------------- - -     -
 
             ChangeState(State.Initialized);
 
@@ -140,6 +159,16 @@ namespace Symbiote.Core.Platform
 
         #region Protected Methods
 
+        protected override void Setup()
+        {
+            IApplicationManager manager = Dependency<IApplicationManager>();
+            IModelManager modelManager = manager.GetManager<IModelManager>();
+
+            modelManager.RegisterItemProvider(Platform.ItemProvider);
+
+            //modelManager.RegisterItemProvider(Platform.ItemProvider);
+        }
+
         protected override Result Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
@@ -156,23 +185,6 @@ namespace Symbiote.Core.Platform
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
-
-            //-------- --
-            // determine the platform and instantiate it
-            switch (GetPlatformType())
-            {
-                case PlatformType.Windows:
-                    Platform = new Windows.WindowsPlatform();
-                    break;
-
-                case PlatformType.UNIX:
-                    Platform = new UNIX.UNIXPlatform();
-                    break;
-
-                default:
-                    throw new Exception("Unable to determine platform.  Environment.OSVersion.Platform: " + Environment.OSVersion.Platform.ToString());
-            }
-            //------------------- - -     -
 
             //-------- - - - -- - -
             // Populate the ProgramDirectories list

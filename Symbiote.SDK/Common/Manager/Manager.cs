@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The abstract base class from which all Managers inherit.
+      █  The abstract base class from which Managers may inherit.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -52,7 +52,7 @@ using Utility.OperationResult;
 namespace Symbiote.SDK
 {
     /// <summary>
-    ///     The abstract base class from which all Managers inherit.
+    ///     The abstract base class from which Managers may inherit.
     /// </summary>
     /// <remarks>
     ///     <para>
@@ -159,15 +159,9 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets the name of the instance for use with the Event subsystem.
+        ///     Gets the Event Provider name.
         /// </summary>
-        public string EventProviderName
-        {
-            get
-            {
-                return GetType().Name;
-            }
-        }
+        public string EventProviderName { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the name of the Manager.
@@ -175,7 +169,7 @@ namespace Symbiote.SDK
         public string ManagerName { get; protected set; }
 
         /// <summary>
-        ///     Gets the current State of the stateful object.
+        ///     Gets the current State of the Stateful object.
         /// </summary>
         public State State { get; private set; }
 

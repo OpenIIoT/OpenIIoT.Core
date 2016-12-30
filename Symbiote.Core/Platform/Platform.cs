@@ -49,8 +49,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using NLog.xLogger;
+using Symbiote.SDK;
 using Symbiote.SDK.Platform;
-using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
 namespace Symbiote.Core.Platform
@@ -58,6 +58,34 @@ namespace Symbiote.Core.Platform
     /// <summary>
     ///     The abstract base class from which all Platforms inherit.
     /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         Derivations of the Platform class are designed to abstract OS-specific file system I/O differences from the rest of
+    ///         the application. When first introduced it was unclear how well Mono handled abstractions in UNIX environments, and
+    ///         it is now known that file system differences are a non-issue.
+    ///     </para>
+    ///     <para>
+    ///         The need for platform-specific code remains outside of file system I/O, most notably in the startup of the
+    ///         application in Windows environments when running as a service, in addition to OS/platform metrics.
+    ///     </para>
+    ///     <para>
+    ///         Each Platform instance contains the <see cref="PlatformType"/> and <see cref="Version"/> properties, which return
+    ///         the platform type; <see cref="PlatformType.Windows"/> or <see cref="PlatformType.UNIX"/>, and the OS-specific
+    ///         version, respectively. The PlatformType property is reference during application startup to determine the run mode
+    ///         while Version is informational.
+    ///     </para>
+    ///     <para>
+    ///         The Platform instance also contains the <see cref="ItemProvider"/> property which contains a reference to the Item
+    ///         Provider class which accompanies the Platform. This <see cref="IItemProvider"/> provides <see cref="Item"/> objects
+    ///         used to report statistics and metrics about the underlying Platform.
+    ///     </para>
+    ///     <para>
+    ///         The methods provided by the Platform class encompass typical file system operations; reading and writing files,
+    ///         creating and deleting directories, and listing files and directories. Additionally, several methods used to
+    ///         manipulate compressed Zip files are included to facilitate the management and deployment of Plugins.
+    ///     </para>
+    ///     <para>This class is expected to continually expand as the needs of the application increase.</para>
+    /// </remarks>
     public abstract class Platform : IPlatform
     {
         #region Private Fields
@@ -83,9 +111,9 @@ namespace Symbiote.Core.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the accompanying Connector Plugin for the Platform.
+        ///     Gets or sets the accompanying Item Provider for the Platform.
         /// </summary>
-        public IConnector Connector { get; protected set; }
+        public IItemProvider ItemProvider { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the Platform Type.
@@ -394,13 +422,6 @@ namespace Symbiote.Core.Platform
         {
             return File.Exists(file);
         }
-
-        /// <summary>
-        ///     Instantiates the accompanying Connector Plugin with the supplied root path.
-        /// </summary>
-        /// <param name="instanceName">The name of the connector instance.</param>
-        /// <returns>The instantiated Connector Plugin.</returns>
-        public abstract IConnector InstantiateConnector(string instanceName);
 
         /// <summary>
         ///     Returns a list of subdirectories within the specified directory.

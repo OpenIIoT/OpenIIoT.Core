@@ -54,10 +54,6 @@ namespace Symbiote.SDK.Plugin.Connector
     ///         by implementing one or more of the following interfaces:
     ///         <list>
     ///             <item>
-    ///                 <see cref="IReadable"/>: Allows the application to read the value of ConnectorItems from the Connector's
-    ///                 data source.
-    ///             </item>
-    ///             <item>
     ///                 <see cref="ISubscribable"/>: Allows the application to subscribe Model Items to ConnectorItems to receive
     ///                 value updates.
     ///             </item>
@@ -68,47 +64,7 @@ namespace Symbiote.SDK.Plugin.Connector
     ///         </list>
     ///     </para>
     /// </remarks>
-    public interface IConnector : IPluginInstance
+    public interface IConnector : IPluginInstance, IItemProvider
     {
-        /// <summary>
-        ///     Returns the root node of the connector's <see cref="Item"/> tree.
-        /// </summary>
-        /// <returns>The root node of the connector's Item tree.</returns>
-        Item Browse();
-
-        /// <summary>
-        ///     Asynchronously returns the root node of the connector's <see cref="Item"/> tree.
-        /// </summary>
-        /// <returns>The root node of the connector's Item tree.</returns>
-        Task<Item> BrowseAsync();
-
-        /// <summary>
-        ///     Returns a list of the children <see cref="Item"/> s for the specified Item within the connector's Item tree.
-        /// </summary>
-        /// <param name="root">The Item for which the children are to be returned.</param>
-        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        List<Item> Browse(Item root);
-
-        /// <summary>
-        ///     Asynchronously returns a list of the children <see cref="Item"/> s for the specified Item within the connector's
-        ///     Item tree.
-        /// </summary>
-        /// <param name="root">The Item for which the children are to be returned.</param>
-        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        Task<List<Item>> BrowseAsync(Item root);
-
-        /// <summary>
-        ///     Finds and eturns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        /// <returns>The found Item, or the default(Item) if not found.</returns>
-        Item Find(string fqn);
-
-        /// <summary>
-        ///     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        /// <returns>The found Item, or the default(Item) if not found.</returns>
-        Task<Item> FindAsync(string fqn);
     }
 }

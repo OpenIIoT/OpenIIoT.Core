@@ -53,7 +53,7 @@ namespace Symbiote.SDK
         #region Public Methods
 
         /// <summary>
-        ///     Returns a clone of the supplied list.
+        ///     Returns a clone of the specified list.
         /// </summary>
         /// <typeparam name="T">The list type to clone.</typeparam>
         /// <param name="list">The list from which the clone should be created.</param>
@@ -103,6 +103,17 @@ namespace Symbiote.SDK
             }
 
             return builtString.ToString();
+        }
+
+        /// <summary>
+        ///     Returns a value indicating whether <see cref="Type"/> of the specified object instance contains the specified <see cref="Attribute"/>.
+        /// </summary>
+        /// <typeparam name="T">The <see cref="Attribute"/> for which to check.</typeparam>
+        /// <param name="instance">The object instance to check.</param>
+        /// <returns>A value indicating whether the specified Type contains the specified Attribute.</returns>
+        public static bool HasCustomAttribute<T>(this object instance) where T : Attribute
+        {
+            return Attribute.GetCustomAttribute(instance.GetType(), typeof(T)) != default(Attribute);
         }
 
         /// <summary>

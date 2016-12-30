@@ -41,8 +41,6 @@
 
 using System.Collections.Generic;
 using Utility.OperationResult;
-using Symbiote.SDK;
-using Symbiote.SDK.Configuration;
 
 namespace Symbiote.SDK.Model
 {
@@ -51,40 +49,21 @@ namespace Symbiote.SDK.Model
     /// </summary>
     public interface IModelManager : IStateful, IManager
     {
-        #region Properties
-
-        /// <summary>
-        ///     The root Item for the model.
-        /// </summary>
-        Item Model { get; }
+        #region Public Properties
 
         /// <summary>
         ///     A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
         /// </summary>
         Dictionary<string, Item> Dictionary { get; }
 
-        #endregion Properties
+        /// <summary>
+        ///     The root Item for the model.
+        /// </summary>
+        Item Model { get; }
 
-        #region Instance Methods
+        #endregion Public Properties
 
-        ///// <summary>
-        ///// Builds a Model using the Model Configuration stored within the ApplicationManager and returns a ModelBuildResult containing the result.
-        ///// </summary>
-        ///// <returns>A new instance of ModelBuildResult containing the results of the build operation.</returns>
-        //IModelBuildResult BuildModel();
-
-        ///// <summary>
-        ///// Assigns the Model and Dictionary contained within the supplied ModelBuildResult to the supplied model and dictionary.
-        ///// </summary>
-        ///// <param name="modelBuildResult">The built model to attach.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Result AttachModel(IModelBuildResult modelBuildResult);
-
-        ///// <summary>
-        ///// Generates a list of ConfigurationModelItems based on the current Model and updates the Configuration.  If flushToDisk is true, saves the updated Configuration to disk.
-        ///// </summary>
-        ///// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
-        //Result<List<IModelManagerConfigurationItem>> SaveModel();
+        #region Public Methods
 
         /// <summary>
         ///     Adds an Item to the ModelManager's instance of Model and Dictionary.
@@ -94,27 +73,37 @@ namespace Symbiote.SDK.Model
         Result<Item> AddItem(Item item);
 
         /// <summary>
+        ///     Attaches the provided Item to the supplied Item. This method should be used only to attach plugin Items to the
+        ///     application model. When adding Items directly, use AddItem.
+        /// </summary>
+        /// <param name="item">The Item to attach to the Model.</param>
+        /// <param name="parentItem">The Item to which the new Item should be attached.</param>
+        /// <returns>A Result containing the result of the operation and the attached Item.</returns>
+        Result<Item> AttachItem(Item item, Item parentItem);
+
+        /// <summary>
+        ///     Creates a copy of the specified Item and stores it at the specified FQN within the default Model and Dictionary.
+        /// </summary>
+        /// <param name="item">The Item to copy.</param>
+        /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
+        /// <returns>A Result containing the result of the operation and the newly created Item.</returns>
+        Result<Item> CopyItem(Item item, string fqn);
+
+        /// <summary>
+        ///     Removes the specified <see cref="IItemProvider"/> from the list of providers stored in the
+        ///     <see cref="ItemProviders"/> property.
+        /// </summary>
+        /// <param name="provider">The Item Provider to remove.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result DeRegisterItemProvider(IItemProvider provider);
+
+        /// <summary>
         ///     Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
         /// <returns>The ModelItem from the Model corresponding to the supplied key.</returns>
         /// <remarks>Retrieves items from the Dictionary instance belonging to the ModelManager instance.</remarks>
         Item FindItem(string fqn);
-
-        /// <summary>
-        ///     Updates the supplied Item with the supplied Source Item.
-        /// </summary>
-        /// <param name="item">The Item to update.</param>
-        /// <param name="sourceItem">The SourceItem with which to update the Item.</param>
-        /// <returns>A Result containing the result of the operation and the updated Item.</returns>
-        Result<Item> UpdateItem(Item item, Item sourceItem);
-
-        /// <summary>
-        ///     Removes an Item from the ModelManager's Dictionary and from its parent Item.
-        /// </summary>
-        /// <param name="item">The Item to remove.</param>
-        /// <returns>A Result containing the removed Item.</returns>
-        Result<Item> RemoveItem(Item item);
 
         /// <summary>
         ///     Moves the supplied Item from one place in the ModelManager's instances of Model and Dictionary to another based on
@@ -126,22 +115,27 @@ namespace Symbiote.SDK.Model
         Result<Item> MoveItem(Item item, string fqn);
 
         /// <summary>
-        ///     Creates a copy of the specified Item and stores it at the specified FQN within the default Model and Dictionary.
+        ///     Adds the specified <see cref="IItemProvider"/> to the list of providers stored in the <see cref="ItemProviders"/> property.
         /// </summary>
-        /// <param name="item">The Item to copy.</param>
-        /// <param name="fqn">The Fully Qualified Name of the destination Item.</param>
-        /// <returns>A Result containing the result of the operation and the newly created Item.</returns>
-        Result<Item> CopyItem(Item item, string fqn);
+        /// <param name="provider">The Item Provider to add.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result RegisterItemProvider(IItemProvider provider);
 
         /// <summary>
-        ///     Attaches the provided Item to the supplied Item. This method should be used only to attach plugin Items to the
-        ///     application model. When adding Items directly, use AddItem.
+        ///     Removes an Item from the ModelManager's Dictionary and from its parent Item.
         /// </summary>
-        /// <param name="item">The Item to attach to the Model.</param>
-        /// <param name="parentItem">The Item to which the new Item should be attached.</param>
-        /// <returns>A Result containing the result of the operation and the attached Item.</returns>
-        Result<Item> AttachItem(Item item, Item parentItem);
+        /// <param name="item">The Item to remove.</param>
+        /// <returns>A Result containing the removed Item.</returns>
+        Result<Item> RemoveItem(Item item);
 
-        #endregion Instance Methods
+        /// <summary>
+        ///     Updates the supplied Item with the supplied Source Item.
+        /// </summary>
+        /// <param name="item">The Item to update.</param>
+        /// <param name="sourceItem">The SourceItem with which to update the Item.</param>
+        /// <returns>A Result containing the result of the operation and the updated Item.</returns>
+        Result<Item> UpdateItem(Item item, Item sourceItem);
+
+        #endregion Public Methods
     }
 }

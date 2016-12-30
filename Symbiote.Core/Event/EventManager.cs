@@ -58,21 +58,21 @@ namespace Symbiote.Core.Event
     /// </summary>
     public sealed class EventManager : Manager, IStateful, IManager, IConfigurable<EventManagerConfiguration>, IEventManager
     {
-        #region Fields
-
-        /// <summary>
-        ///     The Logger for this class.
-        /// </summary>
-        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        #region Private Fields
 
         /// <summary>
         ///     The Singleton instance of EventManager.
         /// </summary>
         private static EventManager instance;
 
-        #endregion Fields
+        /// <summary>
+        ///     The Logger for this class.
+        /// </summary>
+        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
-        #region Constructors
+        #endregion Private Fields
+
+        #region Private Constructors
 
         /// <summary>
         ///     Initializes a new instance of the EventManager class.
@@ -103,25 +103,18 @@ namespace Symbiote.Core.Event
             logger.ExitMethod();
         }
 
-        #endregion Constructors
-
-        #region Properties
-
-        #region Public Properties
-
-        #region IStateful Properties
+        #endregion Private Constructors
 
         //// See the Manager class for the IStateful properties for this class.
 
-        #endregion IStateful Properties
-
-        #region IManager Properties
-
         //// See the Manager class for the IManager properties for this class.
 
-        #endregion IManager Properties
+        #region Public Properties
 
-        #region IConfigurable Properties
+        /// <summary>
+        ///     Gets the Configuration for the Manager.
+        /// </summary>
+        public EventManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
         ///     Gets the ConfigurationDefinition for the Manager.
@@ -135,56 +128,18 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        ///     Gets the Configuration for the Manager.
+        ///     Gets the Dictionary, keyed on Type, of registered Events.
         /// </summary>
-        public EventManagerConfiguration Configuration { get; private set; }
-
-        #endregion IConfigurable Properties
-
-        #region IEventManager Properties
+        public Dictionary<Type, List<KeyValuePair<string, string>>> RegisteredEvents { get; private set; }
 
         /// <summary>
         ///     Gets the Dictionary, keyed on Type, of registered Event Provider instances.
         /// </summary>
         public Dictionary<Type, List<string>> RegisteredProviders { get; private set; }
 
-        /// <summary>
-        ///     Gets the Dictionary, keyed on Type, of registered Events.
-        /// </summary>
-        public Dictionary<Type, List<KeyValuePair<string, string>>> RegisteredEvents { get; private set; }
-
-        #endregion IEventManager Properties
-
         #endregion Public Properties
 
-        #endregion Properties
-
-        #region Methods
-
         #region Public Methods
-
-        #region Public Static Methods
-
-        /// <summary>
-        ///     Instantiates and/or returns the EventManager instance.
-        /// </summary>
-        /// <remarks>
-        ///     Invoked via reflection from ApplicationManager. The parameters are used to build an array of IManager parameters
-        ///     which are then passed to this method. To specify additional dependencies simply insert them into the parameter list
-        ///     for the method and they will be injected when the method is invoked.
-        /// </remarks>
-        /// <param name="manager">The ApplicationManager instance for the application.</param>
-        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
-        /// <returns>The Singleton instance of the EventManager.</returns>
-        public static EventManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
-        {
-            if (instance == null)
-            {
-                instance = new EventManager(manager, configurationManager);
-            }
-
-            return instance;
-        }
 
         /// <summary>
         ///     Returns the ConfigurationDefinition for the Model Manager.
@@ -210,23 +165,30 @@ namespace Symbiote.Core.Event
             return retVal;
         }
 
-        #endregion Public Static Methods
+        /// <summary>
+        ///     Instantiates and/or returns the EventManager instance.
+        /// </summary>
+        /// <remarks>
+        ///     Invoked via reflection from ApplicationManager. The parameters are used to build an array of IManager parameters
+        ///     which are then passed to this method. To specify additional dependencies simply insert them into the parameter list
+        ///     for the method and they will be injected when the method is invoked.
+        /// </remarks>
+        /// <param name="manager">The ApplicationManager instance for the application.</param>
+        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
+        /// <returns>The Singleton instance of the EventManager.</returns>
+        public static EventManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
+        {
+            if (instance == null)
+            {
+                instance = new EventManager(manager, configurationManager);
+            }
 
-        #region Public Instance Methods
-
-        #region IStateful Implementation
+            return instance;
+        }
 
         //// See the Manager class for the IStateful implementation for this class.
 
-        #endregion IStateful Implementation
-
-        #region IManager Implementation
-
         //// See the Manager class for the IManager implementation for this class.
-
-        #endregion IManager Implementation
-
-        #region IConfigurable Implementation
 
         /// <summary>
         ///     Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the
@@ -294,24 +256,14 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        ///     Saves the configuration to the Configuration Manager.
+        ///     Registers the specified object with the Event Manager.
         /// </summary>
+        /// <param name="registrant">The object to register.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
+        public Result RegisterProvider(object registrant)
         {
-            logger.EnterMethod();
-            Result retVal = new Result();
-
-            retVal.Incorporate(Dependency<IConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
+            return RegisterProvider(registrant, RegisteredProviders, RegisteredEvents);
         }
-
-        #endregion IConfigurable Implementation
-
-        #region IEventManager Implementation
 
         /// <summary>
         ///     Registers each object within the supplied list which implements the IEventProvider interface.
@@ -342,24 +294,24 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        ///     Registers the specified object with the Event Manager.
+        ///     Saves the configuration to the Configuration Manager.
         /// </summary>
-        /// <param name="registrant">The object to register.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result RegisterProvider(object registrant)
+        public Result SaveConfiguration()
         {
-            return RegisterProvider(registrant, RegisteredProviders, RegisteredEvents);
+            logger.EnterMethod();
+            Result retVal = new Result();
+
+            retVal.Incorporate(Dependency<IConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
         }
-
-        #endregion IEventManager Implementation
-
-        #endregion Public Instance Methods
 
         #endregion Public Methods
 
         #region Protected Methods
-
-        #region Protected Instance Methods
 
         /// <summary>
         ///     <para>Executed upon instantiation of all program Managers.</para>
@@ -380,15 +332,6 @@ namespace Symbiote.Core.Event
         }
 
         /// <summary>
-        ///     Executed upon startup of the Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
-        {
-            return new Result();
-        }
-
-        /// <summary>
         ///     Executed upon shutdown of the Manager.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
@@ -398,15 +341,18 @@ namespace Symbiote.Core.Event
             return new Result();
         }
 
-        #endregion Protected Instance Methods
+        /// <summary>
+        ///     Executed upon startup of the Manager.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Startup()
+        {
+            return new Result();
+        }
 
         #endregion Protected Methods
 
         #region Private Methods
-
-        #region Private Instance Methods
-
-        #region Event Handlers
 
         /// <summary>
         ///     Occurs when a monitored Event occurs.
@@ -417,8 +363,6 @@ namespace Symbiote.Core.Event
         {
             logger.Info("********************* EVENT RAISED:" + sender.GetType() + ": " + e.ToString());
         }
-
-        #endregion Event Handlers
 
         /// <summary>
         ///     Registers the specified object with the Event Manager.
@@ -535,10 +479,6 @@ namespace Symbiote.Core.Event
             return retVal;
         }
 
-        #endregion Private Instance Methods
-
         #endregion Private Methods
-
-        #endregion Methods
     }
 }

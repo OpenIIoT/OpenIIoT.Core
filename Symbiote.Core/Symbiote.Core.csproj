@@ -204,9 +204,9 @@
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
-    <Compile Include="Platform\UNIX\UNIXPlatformConnector.cs" />
+    <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
-    <Compile Include="Platform\Windows\WindowsPlatformConnector.cs" />
+    <Compile Include="Platform\Windows\WindowsPlatformItemProvider.cs" />
     <Compile Include="ApplicationManager.cs" />
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Platform\PlatformManager.cs" />

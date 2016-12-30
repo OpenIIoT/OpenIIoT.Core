@@ -82,7 +82,17 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Initializes a new instance of the <see cref="Item"/> class.
         /// </summary>
-        public Item() : this(string.Empty, default(Item), string.Empty, true)
+        public Item() : this(string.Empty, default(Item), string.Empty, true, null)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name and the
+        ///     specified Item Provider.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="itemProvider">The Item Provider from which the Item originates.</param>
+        public Item(string fqn, IItemProvider itemProvider) : this(fqn, default(Item), string.Empty, false, itemProvider)
         {
         }
 
@@ -92,7 +102,7 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, bool isRoot) : this(fqn, default(Item), string.Empty, isRoot)
+        public Item(string fqn, bool isRoot) : this(fqn, default(Item), string.Empty, isRoot, default(IItemProvider))
         {
         }
 
@@ -101,7 +111,7 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
-        public Item(string fqn, string sourceFQN) : this(fqn, default(Item), sourceFQN, false)
+        public Item(string fqn, string sourceFQN) : this(fqn, default(Item), sourceFQN, false, default(IItemProvider))
         {
         }
 
@@ -110,7 +120,7 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceItem">The source Item.</param>
-        public Item(string fqn, Item sourceItem) : this(fqn, sourceItem, sourceItem?.FQN, false)
+        public Item(string fqn, Item sourceItem) : this(fqn, sourceItem, sourceItem?.FQN, false, default(IItemProvider))
         {
         }
 
@@ -122,7 +132,8 @@ namespace Symbiote.SDK
         /// <param name="sourceItem">The source Item.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
         /// <param name="isRoot">True if the Item is to be created as a root model Item, false otherwise.</param>
-        public Item(string fqn, Item sourceItem = default(Item), string sourceFQN = "", bool isRoot = false)
+        /// <param name="itemProvider">The Item Provider from which the Item originates.</param>
+        public Item(string fqn, Item sourceItem = default(Item), string sourceFQN = "", bool isRoot = false, IItemProvider itemProvider = default(IItemProvider))
         {
             FQN = fqn;
 
@@ -136,10 +147,12 @@ namespace Symbiote.SDK
                 SourceFQN = sourceFQN;
             }
 
-            Value = default(object);
+            if (itemProvider != default(IItemProvider))
+            {
+                ItemProvider = itemProvider;
+            }
 
-            // generate Name and Path from FQN
-            string[] splitFQN = fqn.Split('.');
+            Value = default(object);
 
             // create a unique Guid for this item. useful for debugging.
             Guid = Guid.NewGuid();
@@ -169,6 +182,11 @@ namespace Symbiote.SDK
         #endregion Public Events
 
         #region Public Properties
+
+        /// <summary>
+        ///     Gets the Item Provider from which the Item originates.
+        /// </summary>
+        public IItemProvider ItemProvider { get; private set; }
 
         /// <summary>
         ///     Gets the collection of children <see cref="Item"/> s.
@@ -365,6 +383,17 @@ namespace Symbiote.SDK
 
                 // check to see if the value read from the source is the same as the Value property. if it isn't, update the Value
                 // property with the latest.
+                if (retVal != Value)
+                {
+                    Write(retVal);
+                }
+            }
+            else if (ItemProvider != default(IItemProvider))
+            {
+                System.Console.WriteLine("Trying to hit provider...");
+                retVal = ItemProvider.Read(this).ReturnValue;
+
+                Console.WriteLine("read value: " + retVal.ToString());
                 if (retVal != Value)
                 {
                     Write(retVal);

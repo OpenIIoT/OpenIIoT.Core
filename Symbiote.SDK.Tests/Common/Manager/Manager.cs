@@ -373,6 +373,8 @@ namespace Symbiote.SDK.Tests.Common
         private ManagerMock(IApplicationManager manager)
         {
             ManagerName = "Mock Manager";
+            EventProviderName = GetType().Name;
+
             RegisterDependency<IApplicationManager>(manager);
 
             ChangeState(State.Initialized);

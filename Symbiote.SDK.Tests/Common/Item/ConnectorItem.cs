@@ -96,7 +96,6 @@ namespace Symbiote.SDK.Tests
             connectorMock = new Mock<IConnector>();
 
             readableConnectorMock = new Mock<IConnector>();
-            readableConnectorMock.As<IReadable>();
 
             writeableConnectorMock = new Mock<IConnector>();
             writeableConnectorMock.As<IWriteable>();
@@ -225,7 +224,7 @@ namespace Symbiote.SDK.Tests
             result.ReturnValue = "readable value";
 
             // set up the readable mock to return the result when we perform the read
-            readableConnectorMock.As<IReadable>().Setup(m => m.Read(readableItem)).Returns(result);
+            readableConnectorMock.Setup(m => m.Read(readableItem)).Returns(result);
 
             // invoke the methods and do assertions
             Assert.Equal("readable value", readableItem.Read());
@@ -260,7 +259,7 @@ namespace Symbiote.SDK.Tests
             result.ReturnValue = "readable value";
 
             // set up the readable mock to return the result when we perform the read
-            readableConnectorMock.As<IReadable>().Setup(m => m.Read(readableItem)).Returns(result);
+            readableConnectorMock.Setup(m => m.Read(readableItem)).Returns(result);
 
             // invoke the read and assert that the values match
             object readableValue = readableItem.ReadFromSource();

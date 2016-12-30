@@ -10,10 +10,19 @@
       █   ███    ███ ███   ███ ███   ▄███     ███▄    ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██
       █   ████████▀   ▀█   █▀  █▀   ████       ███▄  ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Extends the Platform class to allow file system I/O abstraction and metrics on UNIX platforms.
+      █  Unit tests for the UNIXPlatform class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,28 +48,42 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
+using Symbiote.SDK;
 using Symbiote.SDK.Platform;
+using Xunit;
 
-namespace Symbiote.Core.Platform.UNIX
+namespace Symbiote.Core.Tests
 {
     /// <summary>
-    ///     Extends the Platform class to allow file system I/O abstraction on UNIX platforms.
+    ///     Unit tests for the <see cref="Core.Platform.UNIX.UNIXPlatform"/> class.
     /// </summary>
-    public class UNIXPlatform : Platform
+    [Collection("UNIXPlatform")]
+    public class UNIXPlatform
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="UNIXPlatform"/> class.
+        ///     Tests all constructor overloads.
         /// </summary>
-        public UNIXPlatform()
+        [Fact]
+        public void Constructor()
         {
-            PlatformType = PlatformType.UNIX;
-            Version = Environment.OSVersion.VersionString;
-            ItemProvider = new UNIXPlatformItemProvider();
+            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform();
+            Assert.IsAssignableFrom<Core.Platform.UNIX.UNIXPlatform>(platform);
         }
 
-        #endregion Public Constructors
+        /// <summary>
+        ///     Tests all properties.
+        /// </summary>
+        [Fact]
+        public void Properties()
+        {
+            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform();
+            Assert.IsAssignableFrom<IItemProvider>(platform.ItemProvider);
+            Assert.Equal(PlatformType.UNIX, platform.PlatformType);
+            Assert.NotNull(platform.Version);
+        }
+
+        #endregion Public Methods
     }
 }

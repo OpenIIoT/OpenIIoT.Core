@@ -40,7 +40,7 @@
                                                                                                    ▀▀                            */
 
 using System.Collections.Generic;
-using Symbiote.SDK.Plugin.Connector;
+using Symbiote.SDK;
 using Utility.OperationResult;
 
 namespace Symbiote.SDK.Platform
@@ -53,9 +53,9 @@ namespace Symbiote.SDK.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the host Connector Plugin for the Platform.
+        ///     Gets the Item Provider for the Platform.
         /// </summary>
-        IConnector Connector { get; }
+        IItemProvider ItemProvider { get; }
 
         /// <summary>
         ///     Gets the Platform Type.
@@ -160,13 +160,6 @@ namespace Symbiote.SDK.Platform
         /// <param name="file">The file to check.</param>
         /// <returns>True if the specified file exists, false otherwise.</returns>
         bool FileExists(string file);
-
-        /// <summary>
-        ///     Instantiates the accompanying Connector Plugin with the supplied root path.
-        /// </summary>
-        /// <param name="instanceName">The name of the Plugin instance.</param>
-        /// <returns>The instantiated Connector Plugin.</returns>
-        IConnector InstantiateConnector(string instanceName);
 
         /// <summary>
         ///     Returns a list of subdirectories within the specified directory.

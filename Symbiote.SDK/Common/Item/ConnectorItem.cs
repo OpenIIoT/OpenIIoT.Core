@@ -169,14 +169,7 @@ namespace Symbiote.SDK
         /// <returns>The retrieved value.</returns>
         public override object ReadFromSource()
         {
-            if (Connector is IReadable)
-            {
-                return ((IReadable)Connector).Read(this)?.ReturnValue;
-            }
-            else
-            {
-                return null;
-            }
+            return Connector.Read(this)?.ReturnValue;
         }
 
         /// <summary>

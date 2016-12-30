@@ -735,8 +735,8 @@ namespace Symbiote.Core.Plugin
 
             logger.Checkpoint("Plugins instantiated", xLogger.Vars(PluginInstances), xLogger.Names("PluginInstances"), guid);
 
-            Dependency<IPlatformManager>().Platform.InstantiateConnector("Platform");
-            PluginInstances.Add("Platform", Dependency<IPlatformManager>().Platform.Connector);
+            // TODO: replace this with manual registration somewhere.  probably not anywhere in the Plugin namespace.
+            //PluginInstances.Add("Platform", Dependency<IPlatformManager>().Platform.Connector);
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);

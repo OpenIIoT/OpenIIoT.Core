@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█     ▄▄▄▄███▄▄▄▄
-      █   ███   ▄██▀▀▀███▀▀▀██▄
-      █   ███▌  ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████
-      █   ███▌  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██
-      █   ███▌  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀
-      █   ███   ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████
-      █   ███   ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
-      █   █▀     ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
+      █   ▄████████                                                                            ▄████████
+      █   ███    ███                                                                           ███    ███
+      █   ███    █▀   ██████  ██▄▄▄▄  ██▄▄▄▄     ▄█████  ▄██████     ██     ██████     █████   ███    ███     ██        ██       █████  █  ▀██████▄  ██   █      ██       ▄█████
+      █   ███        ██    ██ ██▀▀▀█▄ ██▀▀▀█▄   ██   █  ██    ██ ▀███████▄ ██    ██   ██  ██   ███    ███ ▀███████▄ ▀███████▄   ██  ██ ██    ██   ██ ██   ██ ▀███████▄   ██   █
+      █   ███        ██    ██ ██   ██ ██   ██  ▄██▄▄    ██    ▀      ██  ▀ ██    ██  ▄██▄▄█▀ ▀███████████     ██  ▀     ██  ▀  ▄██▄▄█▀ ██▌  ▄██▄▄█▀  ██   ██     ██  ▀  ▄██▄▄
+      █   ███    █▄  ██    ██ ██   ██ ██   ██ ▀▀██▀▀    ██    ▄      ██    ██    ██ ▀███████   ███    ███     ██        ██    ▀███████ ██  ▀▀██▀▀█▄  ██   ██     ██    ▀▀██▀▀
+      █   ███    ███ ██    ██ ██   ██ ██   ██   ██   █  ██    ██     ██    ██    ██   ██  ██   ███    ███     ██        ██      ██  ██ ██    ██   ██ ██   ██     ██      ██   █
+      █   ████████▀   ██████   █   █   █   █    ███████ ██████▀     ▄██▀    ██████    ██  ██   ███    █▀     ▄██▀      ▄██▀     ██  ██ █   ▄██████▀  ██████     ▄██▀     ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
-      █
-      █  Defines the interface for Manager objects.
+      ▄
+      █  Creates the Connector Attribute used to identify classes implementing the IConnector interface.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,27 +39,21 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Symbiote.SDK.Event;
+using System;
+using System.Diagnostics.CodeAnalysis;
 
-namespace Symbiote.SDK
+namespace Symbiote.SDK.Plugin.Connector
 {
     /// <summary>
-    ///     Defines the interface for Manager objects.
+    ///     Creates the Connector <see cref="Attribute"/> used to identify classes implementing the <see cref="IConnector"/> interface.
     /// </summary>
-    public interface IManager : IStateful, IEventProvider
+    [ExcludeFromCodeCoverage]
+    [AttributeUsage(AttributeTargets.Class)]
+    public class ConnectorAttribute : Attribute
     {
-        #region Public Properties
-
         /// <summary>
-        ///     Gets the name of the Manager.
+        ///     Gets or sets the Connector's ConnectorType.
         /// </summary>
-        string ManagerName { get; }
-
-        /// <summary>
-        ///     Gets a value indicating whether the stateful object is pending an automatic restart.
-        /// </summary>
-        bool AutomaticRestartPending { get; }
-
-        #endregion Public Properties
+        public ConnectorType Type { get; set; }
     }
 }
