@@ -48,7 +48,6 @@ namespace Symbiote.SDK
     /// <summary>
     ///     The abstract base class from which ItemProviders may derive.
     /// </summary>
-    [ItemProvider]
     public abstract class ItemProvider : IItemProvider
     {
         #region Public Properties

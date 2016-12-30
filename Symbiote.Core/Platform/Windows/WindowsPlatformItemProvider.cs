@@ -58,7 +58,6 @@ namespace Symbiote.Core.Platform.Windows
     /// <summary>
     ///     Provides Platform statistics and metrics for the Windows Platform on which the application is run.
     /// </summary>
-    [ItemProvider(ExcludeFromDiscovery = true)]
     public class WindowsPlatformItemProvider : ItemProvider
     {
         #region Private Fields

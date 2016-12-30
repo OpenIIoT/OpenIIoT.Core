@@ -109,7 +109,6 @@ namespace Symbiote.SDK
     ///         property will return true.
     ///     </para>
     /// </remarks>
-    [EventProvider]
     public abstract class Manager : IDisposable, IManager
     {
         #region Protected Fields

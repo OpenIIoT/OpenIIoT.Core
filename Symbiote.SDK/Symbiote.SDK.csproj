@@ -64,7 +64,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Provider\Item\ItemProviderAttribute.cs" />
     <Compile Include="Common\Provider\Item\ItemProvider.cs" />
     <Compile Include="Common\Provider\Item\IItemProvider.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
@@ -80,7 +79,6 @@
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
-    <Compile Include="Event\EventProviderAttribute.cs" />
     <Compile Include="Event\EventAttribute.cs" />
     <Compile Include="Event\IEventManager.cs" />
     <Compile Include="ApplicationExceptions.cs" />

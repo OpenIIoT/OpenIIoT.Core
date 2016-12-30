@@ -326,7 +326,7 @@ namespace Symbiote.Core.Event
 
             foreach (object registrant in registrants)
             {
-                if (registrant is IEventProvider && registrant.HasCustomAttribute<EventProviderAttribute>())
+                if (registrant is IEventProvider)
                 {
                     retVal.Incorporate(RegisterProvider(registrant));
                 }
