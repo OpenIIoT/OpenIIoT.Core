@@ -130,6 +130,8 @@ namespace Symbiote.Core
 
             ItemSource source = GetSource(lookupFQN);
 
+            System.Console.WriteLine("looking up: " + lookupFQN + " source: " + source.ToString());
+
             // if the origin is null, a malformed FQN was provided. return null.
             if (source == ItemSource.Unknown)
             {
@@ -145,6 +147,12 @@ namespace Symbiote.Core
                 // if the origin is something other than the product, the FQN belongs to a plugin item. use the PluginManager to
                 // look it up.
                 retVal = manager.GetManager<IPluginManager>().FindPluginItem(lookupFQN);
+
+                if (retVal == default(Item))
+                {
+                    System.Console.WriteLine("checking model...");
+                    retVal = manager.GetManager<IModelManager>().FindItem(lookupFQN);
+                }
             }
 
             return retVal;

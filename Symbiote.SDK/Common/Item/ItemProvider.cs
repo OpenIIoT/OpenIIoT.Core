@@ -55,7 +55,7 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Gets the Item Provider name.
         /// </summary>
-        public string ItemProviderName { get; private set; }
+        public string ItemProviderName { get; protected set; }
 
         #endregion Public Properties
 

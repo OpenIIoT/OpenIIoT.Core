@@ -1,4 +1,45 @@
-﻿using NLog;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █      ▄▄▄▄███▄▄▄▄                                           ▄▄▄▄███▄▄▄▄
+      █    ▄██▀▀▀███▀▀▀██▄                                       ▄██▀▀▀███▀▀▀██▄
+      █    ███   ███   ███  ██████  ██████▄     ▄█████  █        ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████
+      █    ███   ███   ███ ██    ██ ██   ▀██   ██   █  ██        ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██
+      █    ███   ███   ███ ██    ██ ██    ██  ▄██▄▄    ██        ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀
+      █    ███   ███   ███ ██    ██ ██    ██ ▀▀██▀▀    ██        ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████
+      █    ███   ███   ███ ██    ██ ██   ▄██   ██   █  ██▌    ▄  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
+      █     ▀█   ███   █▀   ██████  ██████▀    ███████ ████▄▄██   ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
+                                                                                                   ▀▀                            */
+
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +49,6 @@ using Symbiote.Core.Plugin;
 using Newtonsoft.Json;
 using NLog.xLogger;
 using Utility.OperationResult;
-using Symbiote.SDK.Plugin;
 using Symbiote.SDK.Model;
 
 namespace Symbiote.Core.Model
@@ -50,6 +90,8 @@ namespace Symbiote.Core.Model
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
             RegisterDependency<IPluginManager>(pluginManager);
+
+            ItemProviders = new List<IItemProvider>();
 
             ChangeState(State.Initialized);
         }
@@ -288,6 +330,30 @@ namespace Symbiote.Core.Model
         }
 
         /// <summary>
+        ///     Removes the specified <see cref="IItemProvider"/> from the list of providers stored in the
+        ///     <see cref="ItemProviders"/> property.
+        /// </summary>
+        /// <param name="provider">The Item Provider to remove.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result DeRegisterItemProvider(IItemProvider provider)
+        {
+            logger.EnterMethod(xLogger.Params(provider));
+            Result retVal = new Result();
+
+            if (!ItemProviders.Contains(provider))
+            {
+                retVal.AddWarning("The specified ItemProvider '" + provider.ItemProviderName + "' has not been registered and therefore cannot be deregistered.");
+            }
+            else
+            {
+                ItemProviders.Remove(provider);
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
         ///     Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the desired ModelItem.</param>
@@ -312,6 +378,29 @@ namespace Symbiote.Core.Model
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
 
             return MoveItem(Dictionary, item, fqn);
+        }
+
+        /// <summary>
+        ///     Adds the specified <see cref="IItemProvider"/> to the list of providers stored in the <see cref="ItemProviders"/> property.
+        /// </summary>
+        /// <param name="provider">The Item Provider to add.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Result RegisterItemProvider(IItemProvider provider)
+        {
+            logger.EnterMethod(xLogger.Params(provider));
+            Result retVal = new Result();
+
+            if (ItemProviders.Contains(provider))
+            {
+                retVal.AddError("The specified ItemProvider '" + provider.ItemProviderName + "' has already been registered.");
+            }
+            else
+            {
+                ItemProviders.Add(provider);
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
         /// <summary>
@@ -836,9 +925,18 @@ namespace Symbiote.Core.Model
         /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
         private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
         {
-            if (dictionary.ContainsKey(fqn))
-                return dictionary[fqn];
-            else return default(Item);
+            IItemProvider provider = ItemProviders.Where(i => i.ItemProviderName == fqn.Split('.')[0]).FirstOrDefault();
+
+            if (provider != default(IItemProvider))
+            {
+                return provider.Find(fqn);
+            }
+            else
+            {
+                if (dictionary.ContainsKey(fqn))
+                    return dictionary[fqn];
+                else return default(Item);
+            }
         }
 
         /// <summary>

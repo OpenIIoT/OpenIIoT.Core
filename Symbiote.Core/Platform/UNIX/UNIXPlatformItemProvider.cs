@@ -94,6 +94,8 @@ namespace Symbiote.Core.Platform.UNIX
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");
 
+            ItemProviderName = "Platform";
+
             InitializeItems();
         }
 
@@ -172,7 +174,7 @@ namespace Symbiote.Core.Platform.UNIX
         private void InitializeItems()
         {
             // instantiate an item root
-            ItemRoot = new Item("Platform");
+            ItemRoot = new Item(ItemProviderName);
 
             // create CPU items
             Item cpuRoot = ItemRoot.AddChild(new Item("CPU")).ReturnValue;
