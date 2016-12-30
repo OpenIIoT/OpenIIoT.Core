@@ -67,6 +67,11 @@
     <Compile Include="Common\Provider\Item\ItemProvider.cs" />
     <Compile Include="Common\Provider\Item\IItemProvider.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
+    <Compile Include="Common\Registry.cs" />
+    <Compile Include="Common\Registry\RegistryOfTT.cs" />
+    <Compile Include="Common\Registry\RegistryOf.cs" />
+    <Compile Include="Common\Registry\IRegistryOfTT.cs" />
+    <Compile Include="Common\Registry\IRegistryOfT.cs" />
     <Compile Include="Common\Utility\ContractResolver.cs" />
     <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgs.cs" />

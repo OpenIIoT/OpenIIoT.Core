@@ -75,6 +75,12 @@ namespace Symbiote.Core.Model
         public Dictionary<string, Item> Dictionary { get; private set; }
 
         /// <summary>
+        ///     Gets the List of registered Item Providers.
+        /// </summary>
+        [JsonIgnore]
+        public List<IItemProvider> ItemProviders { get; private set; }
+
+        /// <summary>
         ///     The root Item for the model.
         /// </summary>
         [JsonIgnore]

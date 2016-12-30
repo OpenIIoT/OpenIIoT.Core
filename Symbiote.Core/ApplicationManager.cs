@@ -570,7 +570,7 @@ namespace Symbiote.Core
         /// </summary>
         /// <typeparam name="T">The Manager Type to check.</typeparam>
         /// <returns>A value indicating whether the specified Manager has been registered.</returns>
-        private bool IsRegistered<T>() where T : IManager
+        private bool IsManagerRegistered<T>() where T : IManager
         {
             return ManagerInstances.OfType<T>().Count() > 0;
         }
@@ -599,7 +599,7 @@ namespace Symbiote.Core
             logger.Trace("Registering Manager '" + manager.GetType().Name + "'...");
 
             // ensure the specified Manager hasn't already been registered. There can only be one of each Type in the Manager list.
-            if (IsRegistered<T>())
+            if (IsManagerRegistered<T>())
             {
                 throw new ManagerRegistrationException("The Manager '" + manager.GetType().Name + "' is already registered.");
             }
