@@ -53,11 +53,6 @@ namespace Symbiote.SDK
     public enum ContractResolverType
     {
         /// <summary>
-        ///     The default type
-        /// </summary>
-        Undefined,
-
-        /// <summary>
         ///     Resolves the data contract using only the properties in accompanying list of properties
         /// </summary>
         OptIn,
@@ -145,7 +140,7 @@ namespace Symbiote.SDK
             {
                 resolvedProperties = baseProperties.Where(p => this.propertyList.Contains(p.PropertyName)).ToList();
             }
-            else if (this.contractResolverType == ContractResolverType.OptOut)
+            else
             {
                 // if the resolver type is OptOut, filter baseProperties of any fields that appear in the supplied list of properties
                 resolvedProperties = baseProperties.Where(p => !this.propertyList.Contains(p.PropertyName)).ToList();

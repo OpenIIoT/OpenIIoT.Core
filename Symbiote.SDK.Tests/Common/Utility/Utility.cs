@@ -48,8 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Moq;
+using Symbiote.SDK.Event;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using Xunit;
 
@@ -168,6 +171,43 @@ namespace Symbiote.SDK.Tests
             Assert.Equal(regex, SDK.Utility.WildcardToRegex(wildcard));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Utility.HasCustomAttribute{T}(object)"/> extension method.
+        /// </summary>
+        [Fact]
+        public void HasAttribute()
+        {
+            AttributeTest hasAttribute = new AttributeTest();
+
+            object noAttribute = new object();
+
+            Assert.False(noAttribute.HasCustomAttribute<AttributeTestAttribute>());
+            Assert.True(hasAttribute.HasCustomAttribute<AttributeTestAttribute>());
+        }
+
         #endregion Public Methods
+    }
+
+    /// <summary>
+    ///     Mocks a class containing the <see cref="AttributeTestAttribute"/> Attribute.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework to mock this class because the underlying code being tested does not
+    ///     detected attributes added at runtime.
+    /// </remarks>
+    [AttributeTest]
+    public class AttributeTest
+    {
+    }
+
+    /// <summary>
+    ///     Creates an attribute for testing.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework to mock this class because the underlying code being tested does not
+    ///     detected attributes added at runtime.
+    /// </remarks>
+    public class AttributeTestAttribute : Attribute
+    {
     }
 }
