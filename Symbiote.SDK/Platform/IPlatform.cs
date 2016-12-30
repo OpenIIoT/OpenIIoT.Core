@@ -40,7 +40,7 @@
                                                                                                    ▀▀                            */
 
 using System.Collections.Generic;
-using Symbiote.SDK.Plugin.Connector;
+using Symbiote.SDK;
 using Utility.OperationResult;
 
 namespace Symbiote.SDK.Platform
@@ -53,9 +53,9 @@ namespace Symbiote.SDK.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the host Connector Plugin for the Platform.
+        ///     Gets the Item Provider for the Platform.
         /// </summary>
-        IConnector Connector { get; }
+        IItemProvider ItemProvider { get; }
 
         /// <summary>
         ///     Gets the Platform Type.

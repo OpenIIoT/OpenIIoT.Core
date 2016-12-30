@@ -58,7 +58,7 @@ namespace Symbiote.Core.Platform.UNIX
         {
             PlatformType = PlatformType.UNIX;
             Version = Environment.OSVersion.VersionString;
-            Connector = new UNIXPlatformConnector("Platform");
+            ItemProvider = new UNIXPlatformItemProvider();
         }
 
         #endregion Public Constructors

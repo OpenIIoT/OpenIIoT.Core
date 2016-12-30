@@ -467,7 +467,7 @@ namespace Symbiote.Core
                 }
 
                 // attach the Platform items to Symbiote.System
-                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.Connector.Browse(), systemItem);
+                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.ItemProvider.Browse(), systemItem);
                 logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
 
                 // find the root item, or create it if it doesn't exist for some reason
@@ -490,6 +490,20 @@ namespace Symbiote.Core
                 subscribe.LogResult(logger.Info);
 
                 applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
+
+                foreach (var drive in System.IO.DriveInfo.GetDrives())
+                {
+                    double freeSpace = drive.TotalFreeSpace;
+                    double totalSpace = drive.TotalSize;
+                    double percentFree = (freeSpace / totalSpace) * 100;
+                    float num = (float)percentFree;
+
+                    Console.WriteLine("Drive:{0} With {1} % free", drive.Name, num);
+                    Console.WriteLine("Space Remaining:{0}", drive.AvailableFreeSpace);
+                    Console.WriteLine("Percent Free Space:{0}", percentFree);
+                    Console.WriteLine("Space used:{0}", drive.TotalSize);
+                    Console.WriteLine("Type: {0}", drive.DriveType);
+                }
             }
             catch (Exception ex)
             {

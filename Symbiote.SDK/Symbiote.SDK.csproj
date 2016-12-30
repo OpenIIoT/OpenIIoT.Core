@@ -64,6 +64,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Provider\Item\ItemProviderAttribute.cs" />
+    <Compile Include="Common\Provider\Item\ItemProvider.cs" />
+    <Compile Include="Common\Provider\Item\IItemProvider.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Utility\ContractResolver.cs" />
     <Compile Include="Common\Item\Item.cs" />
@@ -77,11 +80,12 @@
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
+    <Compile Include="Event\EventProviderAttribute.cs" />
     <Compile Include="Event\EventAttribute.cs" />
     <Compile Include="Event\IEventManager.cs" />
-    <Compile Include="Event\IEventProvider.cs" />
     <Compile Include="ApplicationExceptions.cs" />
     <Compile Include="ApplicationManagerExceptions.cs" />
+    <Compile Include="Event\IEventProvider.cs" />
     <Compile Include="Platform\PlatformExceptions.cs" />
     <Compile Include="Common\Manager\ManagerExceptions.cs" />
     <Compile Include="IApplicationManager.cs" />
@@ -91,6 +95,8 @@
     <Compile Include="Platform\IPlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
     <Compile Include="Common\Item\ConnectorItem.cs" />
+    <Compile Include="Plugin\Connector\ConnectorType.cs" />
+    <Compile Include="Plugin\Connector\ConnectorAttribute.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Plugin\Connector\IExtensible.cs" />
     <Compile Include="Plugin\Connector\IReadable.cs" />

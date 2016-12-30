@@ -61,11 +61,6 @@ namespace Symbiote.SDK
         #region Public Properties
 
         /// <summary>
-        ///     Gets a value indicating whether the stateful object is pending an automatic restart.
-        /// </summary>
-        bool AutomaticRestartPending { get; }
-
-        /// <summary>
         ///     Gets the current State of the stateful object.
         /// </summary>
         State State { get; }

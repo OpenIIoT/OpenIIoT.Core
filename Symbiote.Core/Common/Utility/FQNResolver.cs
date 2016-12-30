@@ -115,6 +115,7 @@ namespace Symbiote.Core
                 retVal = ItemSource.Plugin;
             }
 
+            System.Console.WriteLine("Item source: " + retVal.ToString());
             return retVal;
         }
 

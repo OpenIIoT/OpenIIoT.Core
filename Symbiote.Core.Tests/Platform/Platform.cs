@@ -54,8 +54,8 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Moq;
+using Symbiote.SDK;
 using Symbiote.SDK.Platform;
-using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 using Xunit;
 
@@ -609,7 +609,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void Properties()
         {
-            Assert.IsAssignableFrom<IConnector>(platformMock.Connector);
+            Assert.IsAssignableFrom<IItemProvider>(platformMock.ItemProvider);
             Assert.Equal(PlatformType.Unknown, platformMock.PlatformType);
             Assert.Equal("1.0", platformMock.Version);
         }
@@ -831,7 +831,7 @@ namespace Symbiote.Core.Tests
         {
             PlatformType = PlatformType.Unknown;
             Version = "1.0";
-            Connector = new Mock<IConnector>().Object;
+            ItemProvider = new Mock<IItemProvider>().Object;
         }
 
         #endregion Public Constructors

@@ -44,49 +44,49 @@ using System.Collections.Generic;
 namespace Symbiote.SDK.Platform
 {
     /// <summary>
-    ///     The ProgramDirectories class encapsulates the filesystem directories needed to run the application.
+    ///     The ProgramDirectories class encapsulates the file system directories needed to run the application.
     /// </summary>
     public interface IPlatformDirectories
     {
         #region Public Properties
 
         /// <summary>
-        ///     The archive directory
+        ///     Gets the Archive directory
         /// </summary>
         string Archives { get; }
 
         /// <summary>
-        ///     The data directory
+        ///     Gets the Data directory
         /// </summary>
         string Data { get; }
 
         /// <summary>
-        ///     The log directory
+        ///     Gets the Log directory
         /// </summary>
         string Logs { get; }
 
         /// <summary>
-        ///     The persistence directory
+        ///     Gets the Persistence directory
         /// </summary>
         string Persistence { get; }
 
         /// <summary>
-        ///     The plugin directory
+        ///     Gets the Plugin directory
         /// </summary>
         string Plugins { get; }
 
         /// <summary>
-        ///     The root directory; the directory from which the main executable is running.
+        ///     Gets the Root directory; the directory from which the main executable is running.
         /// </summary>
         string Root { get; }
 
         /// <summary>
-        ///     The temporary directory
+        ///     Gets the Temporary directory
         /// </summary>
         string Temp { get; }
 
         /// <summary>
-        ///     The web directory
+        ///     Gets the Web directory
         /// </summary>
         /// <remarks>Web content is served from this directory; anything placed here will be exposed.</remarks>
         string Web { get; }

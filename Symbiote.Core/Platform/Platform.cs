@@ -49,8 +49,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using NLog.xLogger;
+using Symbiote.SDK;
 using Symbiote.SDK.Platform;
-using Symbiote.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
 namespace Symbiote.Core.Platform
@@ -75,9 +75,9 @@ namespace Symbiote.Core.Platform
     ///         while Version is informational.
     ///     </para>
     ///     <para>
-    ///         The Platform instance also contains the <see cref="Connector"/> property which contains a reference to the
-    ///         Connector Plugin class which accompanies the Platform. This Connector is a Plugin in Type only; Platform Connector
-    ///         Plugins are expected to accompany their associated Platform class within the Core project and not as an external binary.
+    ///         The Platform instance also contains the <see cref="ItemProvider"/> property which contains a reference to the Item
+    ///         Provider class which accompanies the Platform. This <see cref="IItemProvider"/> provides <see cref="Item"/> objects
+    ///         used to report statistics and metrics about the underlying Platform.
     ///     </para>
     ///     <para>
     ///         The methods provided by the Platform class encompass typical file system operations; reading and writing files,
@@ -111,9 +111,9 @@ namespace Symbiote.Core.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the accompanying Connector Plugin for the Platform.
+        ///     Gets or sets the accompanying Item Provider for the Platform.
         /// </summary>
-        public IConnector Connector { get; protected set; }
+        public IItemProvider ItemProvider { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the Platform Type.

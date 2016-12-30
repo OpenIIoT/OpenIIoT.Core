@@ -48,8 +48,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Symbiote.SDK;
 using Symbiote.SDK.Platform;
-using Symbiote.SDK.Plugin.Connector;
 using Xunit;
 
 namespace Symbiote.Core.Tests
@@ -79,7 +79,7 @@ namespace Symbiote.Core.Tests
         public void Properties()
         {
             Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform();
-            Assert.IsAssignableFrom<IConnector>(platform.Connector);
+            Assert.IsAssignableFrom<IItemProvider>(platform.ItemProvider);
             Assert.Equal(PlatformType.Windows, platform.PlatformType);
             Assert.NotNull(platform.Version);
         }
