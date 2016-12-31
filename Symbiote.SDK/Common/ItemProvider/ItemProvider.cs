@@ -51,7 +51,10 @@ namespace Symbiote.SDK
     /// </summary>
     public abstract class ItemProvider : IItemProvider, ISubscribable
     {
-        private static xLogger logger;
+        /// <summary>
+        ///     The Logger for this class.
+        /// </summary>
+        protected xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ItemProvider"/> class.
@@ -59,8 +62,6 @@ namespace Symbiote.SDK
         public ItemProvider(string providerName)
         {
             ItemProviderName = providerName;
-
-            logger = xLogManager.GetxLogger(GetType().Name + ":" + ItemProviderName);
 
             Subscriptions = new Dictionary<Item, List<Action<object>>>();
 
@@ -111,16 +112,24 @@ namespace Symbiote.SDK
         /// <returns>A value indicating whether the operation succeeded.</returns>
         public bool Subscribe(Item item, Action<object> callback)
         {
+            logger.EnterMethod(xLogger.Params(item, callback));
+            logger.Debug("Subscribing to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "'...");
+
             bool retVal = false;
 
             try
             {
                 if (!Subscriptions.ContainsKey(item))
                 {
+                    logger.Debug("The Item '" + item.FQN + "' has been added to the Subscriptions list.");
                     Subscriptions.Add(item, new List<Action<object>>());
                 }
 
+                int count = Subscriptions[item].Count;
+
                 Subscriptions[item].Add(callback);
+
+                logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
 
                 retVal = true;
             }
@@ -129,6 +138,7 @@ namespace Symbiote.SDK
                 logger.Exception(ex);
             }
 
+            logger.ExitMethod(retVal);
             return retVal;
         }
 
@@ -148,20 +158,33 @@ namespace Symbiote.SDK
         /// <returns>A value indicating whether the operation succeeded.</returns>
         public bool UnSubscribe(Item item, Action<object> callback)
         {
+            logger.EnterMethod(xLogger.Params(item, callback));
+            logger.Debug("UnSubscribing from Item '" + item.FQN + "' on Provider '" + ItemProviderName + "'...");
+
             bool retVal = false;
 
             try
             {
                 if (Subscriptions.ContainsKey(item))
                 {
+                    int count = Subscriptions[item].Count;
+
                     Subscriptions[item].Remove(callback);
+
+                    logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
 
                     if (Subscriptions[item].Count == 0)
                     {
                         Subscriptions.Remove(item);
+
+                        logger.Debug("Item '" + item.FQN + "' has no further subscribers and has been removed from the Subscriptions list.");
                     }
 
                     retVal = true;
+                }
+                else
+                {
+                    logger.Debug("Subscription for Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' not found.");
                 }
             }
             catch (Exception ex)
@@ -169,6 +192,7 @@ namespace Symbiote.SDK
                 logger.Exception(ex);
             }
 
+            logger.ExitMethod(retVal);
             return retVal;
         }
 

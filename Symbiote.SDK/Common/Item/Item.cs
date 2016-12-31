@@ -320,6 +320,7 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Gets or sets the value.
         /// </summary>
+        [JsonProperty]
         protected object Value { get; set; }
 
         #endregion Public Properties

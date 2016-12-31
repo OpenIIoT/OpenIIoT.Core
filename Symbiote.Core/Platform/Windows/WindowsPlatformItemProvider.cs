@@ -51,6 +51,8 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Symbiote.SDK;
+using NLog.xLogger;
+using NLog;
 
 namespace Symbiote.Core.Platform.Windows
 {
@@ -90,6 +92,8 @@ namespace Symbiote.Core.Platform.Windows
         /// </summary>
         public WindowsPlatformItemProvider(string itemProviderName) : base(itemProviderName)
         {
+            base.logger = xLogManager.GetxLogger(GetType().Name + ":" + itemProviderName);
+
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");
 
