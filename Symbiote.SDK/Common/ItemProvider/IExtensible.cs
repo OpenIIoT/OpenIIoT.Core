@@ -24,7 +24,7 @@
 using System.Collections.Generic;
 using Utility.OperationResult;
 
-namespace Symbiote.SDK.Plugin.Connector
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Defines the interface for Connector Plugins capable of allowing new ConnectorItems to be added at runtime.

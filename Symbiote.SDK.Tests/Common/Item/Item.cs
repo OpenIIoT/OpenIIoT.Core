@@ -134,16 +134,10 @@ namespace Symbiote.SDK.Tests
             item = new SDK.Item(string.Empty);
             Assert.IsType<SDK.Item>(item);
 
-            item = new SDK.Item(string.Empty, false);
-            Assert.IsType<SDK.Item>(item);
-
             item = new SDK.Item(string.Empty, string.Empty);
             Assert.IsType<SDK.Item>(item);
 
             item = new SDK.Item(string.Empty, new SDK.Item());
-            Assert.IsType<SDK.Item>(item);
-
-            item = new SDK.Item(string.Empty, default(SDK.Item), string.Empty, false);
             Assert.IsType<SDK.Item>(item);
         }
 
@@ -195,7 +189,6 @@ namespace Symbiote.SDK.Tests
             Assert.Equal(newItem, item.SourceItem);
 
             Assert.Equal(default(object), item.Value);
-            Assert.Equal(true, item.Writeable);
 
             SDK.Item rootItem = new SDK.Item("Root");
             Assert.Equal("Root", rootItem.FQN);
@@ -302,20 +295,15 @@ namespace Symbiote.SDK.Tests
         [Fact]
         public async void Write()
         {
-            SDK.Item item = new SDK.Item("Root.Item");
+            SDK.Item writeableItem = new SDK.Item("Root.Item");
+            SDK.Item nonWriteableItem = new SDK.Item("Root.Item2", ItemAccessMode.ReadOnly);
 
-            Assert.Equal(true, item.Writeable);
-
-            item.Write("test");
-
+            writeableItem.Write("test");
             Assert.Equal("test", item.Value);
 
             await item.WriteAsync("test two");
 
             Assert.Equal("test two", item.Value);
-
-            item.Writeable = false;
-            Assert.Equal(false, item.Writeable);
 
             Result writeResult = item.Write("new value");
 
@@ -334,33 +322,32 @@ namespace Symbiote.SDK.Tests
 
             SDK.Item sourceItem2 = new SDK.Item("Root.SourceItem2");
             sourceItem2.Write("source value 2");
-            sourceItem2.Writeable = false;
 
             SDK.Item item = new SDK.Item("Root.Item");
 
             // try a write with an unbound source item
-            Result badWriteResult = item.WriteToSource("value");
+            bool badWriteResult = item.WriteToSource("value");
 
-            Assert.Equal(ResultCode.Success, badWriteResult.ResultCode);
+            Assert.False(badWriteResult);
             Assert.Equal("value", item.Value);
 
             // try a write with an unwriteable source item
             item.SourceItem = sourceItem2;
-            Result badWriteResult2 = item.WriteToSource("value");
+            bool badWriteResult2 = item.WriteToSource("value");
 
-            Assert.Equal(ResultCode.Failure, badWriteResult2.ResultCode);
+            Assert.False(badWriteResult2);
 
             // write a good value
             item.SourceItem = sourceItem1;
-            Result writeResult = item.WriteToSource("value 1");
+            bool writeResult = item.WriteToSource("value 1");
 
-            Assert.Equal(ResultCode.Success, writeResult.ResultCode);
+            Assert.True(writeResult);
             Assert.Equal("value 1", item.SourceItem.Value);
 
             // write a good value asynchronously
-            Result writeResult2 = await item.WriteToSourceAsync("value 2");
+            bool writeResult2 = await item.WriteToSourceAsync("value 2");
 
-            Assert.Equal(ResultCode.Success, writeResult.ResultCode);
+            Assert.True(writeResult);
             Assert.Equal("value 2", item.SourceItem.Value);
         }
 

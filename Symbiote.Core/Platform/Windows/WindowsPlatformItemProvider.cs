@@ -51,7 +51,6 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Symbiote.SDK;
-using Utility.OperationResult;
 
 namespace Symbiote.Core.Platform.Windows
 {
@@ -89,12 +88,10 @@ namespace Symbiote.Core.Platform.Windows
         /// <summary>
         ///     Initializes a new instance of the <see cref="WindowsPlatformItemProvider"/> class.
         /// </summary>
-        public WindowsPlatformItemProvider()
+        public WindowsPlatformItemProvider(string itemProviderName) : base(itemProviderName)
         {
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");
-
-            ItemProviderName = "Platform";
 
             InitializeItems();
         }
@@ -108,10 +105,9 @@ namespace Symbiote.Core.Platform.Windows
         /// </summary>
         /// <param name="item">The Item to read.</param>
         /// <returns>A Result containing the result of the operation and the current value of the Item.</returns>
-        public override Result<object> Read(Item item)
+        public override object Read(Item item)
         {
-            System.Console.WriteLine("Reading item: " + item.FQN);
-            Result<object> retVal = new Result<object>();
+            object retVal = new object();
 
             string[] itemName = item.FQN.Split('.');
 
@@ -125,33 +121,33 @@ namespace Symbiote.Core.Platform.Windows
                 case "Platform.CPU.% Processor Time":
                     lastCPUUsed = cpuUsed.NextValue();
                     lastCPUIdle = cpuIdle.NextValue();
-                    retVal.ReturnValue = lastCPUUsed;
+                    retVal = lastCPUUsed;
                     return retVal;
 
                 case "Platform.CPU.% Idle Time":
                     lastCPUUsed = cpuUsed.NextValue();
                     lastCPUIdle = cpuIdle.NextValue();
-                    retVal.ReturnValue = lastCPUIdle;
+                    retVal = lastCPUIdle;
                     return retVal;
 
                 case "Platform.Memory.Total":
-                    retVal.ReturnValue = 0;
+                    retVal = 0;
                     return retVal;
 
                 case "Platform.Memory.Available":
-                    retVal.ReturnValue = new PerformanceCounter("Memory", "Available Bytes").NextValue();
+                    retVal = new PerformanceCounter("Memory", "Available Bytes").NextValue();
                     return retVal;
 
                 case "Platform.Memory.Cached":
-                    retVal.ReturnValue = new PerformanceCounter("Memory", "Cache Bytes").NextValue();
+                    retVal = new PerformanceCounter("Memory", "Cache Bytes").NextValue();
                     return retVal;
 
                 case "Platform.Memory.% Used":
-                    retVal.ReturnValue = new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
+                    retVal = new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
                     return retVal;
 
                 default:
-                    return retVal.AddError("Unable to find Item '" + item + "'.");
+                    return retVal;
             }
         }
 
@@ -160,7 +156,7 @@ namespace Symbiote.Core.Platform.Windows
         /// </summary>
         /// <param name="item">The Item to read.</param>
         /// <returns>A Result containing the result of the operation and the current value of the Item.</returns>
-        public override async Task<Result<object>> ReadAsync(Item item)
+        public override async Task<object> ReadAsync(Item item)
         {
             return await Task.Run(() => Read(item));
         }

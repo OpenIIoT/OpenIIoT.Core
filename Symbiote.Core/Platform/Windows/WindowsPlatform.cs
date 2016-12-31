@@ -58,7 +58,7 @@ namespace Symbiote.Core.Platform.Windows
         {
             PlatformType = PlatformType.Windows;
             Version = Environment.OSVersion.VersionString;
-            ItemProvider = new WindowsPlatformItemProvider();
+            ItemProvider = new WindowsPlatformItemProvider("Platform");
         }
 
         #endregion Public Constructors

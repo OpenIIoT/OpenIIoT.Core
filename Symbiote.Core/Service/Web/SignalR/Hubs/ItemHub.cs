@@ -155,7 +155,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// </param>
         public void WriteToSource(object[] args)
         {
-            Result retVal;
+            bool retVal;
 
             string castFQN = (string)args[0];
 
@@ -165,7 +165,7 @@ namespace Symbiote.Core.Service.Web.SignalR
             {
                 retVal = foundItem.WriteToSource(args[1]);
 
-                if (retVal.ResultCode != ResultCode.Failure)
+                if (!retVal)
                 {
                     Clients.Caller.writeToSourceSuccess(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "updated item source '" + foundItem.FQN + "' with value '" + args[1] + "'.");
@@ -174,7 +174,6 @@ namespace Symbiote.Core.Service.Web.SignalR
                 {
                     Clients.Caller.writeToSourceError(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "failed to update item source '" + foundItem.FQN + "'.");
-                    retVal.LogAllMessages(logger.Info, "Info", "The following messages were generated during the write:");
                 }
             }
         }

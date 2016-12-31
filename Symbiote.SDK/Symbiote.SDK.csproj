@@ -64,8 +64,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Item\ItemProvider.cs" />
-    <Compile Include="Common\Item\IItemProvider.cs" />
+    <Compile Include="Common\Item\ItemSource.cs" />
+    <Compile Include="Common\Item\ItemAccessMode.cs" />
+    <Compile Include="Common\ItemProvider\ItemProvider.cs" />
+    <Compile Include="Common\ItemProvider\IItemProvider.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Utility\ContractResolver.cs" />
     <Compile Include="Common\Item\Item.cs" />
@@ -92,13 +94,12 @@
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\IPlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Common\Item\ConnectorItem.cs" />
     <Compile Include="Plugin\Connector\ConnectorType.cs" />
     <Compile Include="Plugin\Connector\ConnectorAttribute.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
-    <Compile Include="Plugin\Connector\IExtensible.cs" />
-    <Compile Include="Plugin\Connector\ISubscribable.cs" />
-    <Compile Include="Plugin\Connector\IWriteable.cs" />
+    <Compile Include="Common\ItemProvider\IExtensible.cs" />
+    <Compile Include="Common\ItemProvider\ISubscribable.cs" />
+    <Compile Include="Common\ItemProvider\IWriteable.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\IPluginInstance.cs" />
     <Compile Include="Plugin\IPluginAssembly.cs" />

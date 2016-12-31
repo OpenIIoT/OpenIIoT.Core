@@ -154,7 +154,7 @@ namespace Symbiote.Core
                     retVal = manager.GetManager<IModelManager>().FindItem(lookupFQN);
                 }
             }
-
+            System.Console.WriteLine("Returning: " + retVal.FQN + " with source FQN " + retVal.SourceFQN);
             return retVal;
         }
 
