@@ -167,7 +167,9 @@ namespace Symbiote.SDK
             FQN = fqn;
             SourceItem = sourceItem;
             SourceFQN = SourceItem == default(Item) ? sourceFQN : SourceItem.FQN;
+            AccessMode = accessMode;
             Provider = provider;
+
             Value = default(object);
             Guid = Guid.NewGuid();
 
@@ -318,7 +320,7 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Gets or sets the value.
         /// </summary>
-        public object Value { get; protected set; }
+        protected object Value { get; set; }
 
         #endregion Public Properties
 
@@ -645,18 +647,15 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <threadsafety instance="true"/>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result Write(object value)
+        /// <returns>A value indicating whether the operation succeeded.</returns>
+        public virtual bool Write(object value)
         {
-            Result retVal = new Result();
+            bool retVal = false;
 
-            if (AccessMode == ItemAccessMode.ReadOnly)
-            {
-                retVal.AddError("Unable to write to '" + FQN + "'; the item is not writeable.");
-            }
-            else
+            if (AccessMode == ItemAccessMode.ReadWrite)
             {
                 ChangeValue(value);
+                retVal = true;
             }
 
             return retVal;
@@ -666,8 +665,8 @@ namespace Symbiote.SDK
         ///     Asynchronously writes the provided value to the <see cref="Value"/> property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public virtual async Task<Result> WriteAsync(object value)
+        /// <returns>A value indicating whether the operation succeeded.</returns>
+        public virtual async Task<bool> WriteAsync(object value)
         {
             return await Task.Run(() => Write(value));
         }
@@ -707,7 +706,7 @@ namespace Symbiote.SDK
         /// <returns>A value indicating whether the write operation succeeded.</returns>
         public virtual async Task<bool> WriteToSourceAsync(object value)
         {
-            return await Task.Run(() => SourceItem.WriteToSource(value));
+            return await Task.Run(() => WriteToSource(value));
         }
 
         #endregion Public Methods
