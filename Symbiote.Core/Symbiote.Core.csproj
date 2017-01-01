@@ -7,7 +7,7 @@
     <ProjectGuid>{899D0A77-77E8-4BCF-848E-2167C8CC036F}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Core</RootNamespace>
+    <RootNamespace>Symbiote.Core</RootNamespace>
     <AssemblyName>Symbiote</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -265,6 +265,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Common\Provider\" />
     <Folder Include="Plugin\Connector\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

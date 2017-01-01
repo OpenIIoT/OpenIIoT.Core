@@ -61,9 +61,13 @@ namespace Symbiote.SDK.Model
         /// </summary>
         Item Model { get; }
 
+        List<IItemProvider> ItemProviders { get; }
+
         #endregion Public Properties
 
         #region Public Methods
+
+        IList<IItemProvider> DiscoverItemProviders();
 
         /// <summary>
         ///     Adds an Item to the ModelManager's instance of Model and Dictionary.

@@ -181,8 +181,8 @@ namespace Symbiote.SDK.Tests
 
             object noAttribute = new object();
 
-            Assert.False(noAttribute.HasCustomAttribute<AttributeTestAttribute>());
-            Assert.True(hasAttribute.HasCustomAttribute<AttributeTestAttribute>());
+            Assert.False(noAttribute.GetType().HasCustomAttribute<AttributeTestAttribute>());
+            Assert.True(hasAttribute.GetType().HasCustomAttribute<AttributeTestAttribute>());
         }
 
         #endregion Public Methods

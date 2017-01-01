@@ -44,7 +44,7 @@ namespace Symbiote.SDK
     /// <summary>
     ///     Defines the interface for Event Providers.
     /// </summary>
-    public interface IEventProvider
+    public interface IEventProvider : IProvider
     {
         /// <summary>
         ///     Gets the name of the Event Provider.

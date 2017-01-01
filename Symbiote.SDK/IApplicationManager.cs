@@ -77,11 +77,15 @@ namespace Symbiote.SDK
         /// <returns>The requested Manager.</returns>
         T GetManager<T>() where T : IManager;
 
+        IProviderRegistry<T> GetProviderRegistry<T>() where T : IProvider;
+
         /// <summary>
         ///     Returns an immutable list of Manager instances.
         /// </summary>
         /// <returns>The immutable list of Manager instances.</returns>
-        ImmutableList<IManager> GetManagers();
+        IImmutableList<IManager> GetManagers();
+
+        IImmutableList<IProviderRegistry<IProvider>> GetProviderRegistries();
 
         #endregion Public Methods
     }

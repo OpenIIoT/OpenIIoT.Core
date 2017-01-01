@@ -64,12 +64,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Discovery\DiscoverableAttribute.cs" />
-    <Compile Include="Common\Providers\ItemProvider\ItemProviderAttribute.cs" />
+    <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
+    <Compile Include="Common\Provider\IProvider.cs" />
+    <Compile Include="Common\Provider\IProviderRegistryOfT.cs" />
+    <Compile Include="Common\Provider\ItemProvider\ItemProviderAttribute.cs" />
     <Compile Include="Common\Item\ItemSource.cs" />
     <Compile Include="Common\Item\ItemAccessMode.cs" />
-    <Compile Include="Common\Providers\ItemProvider\ItemProvider.cs" />
-    <Compile Include="Common\Providers\ItemProvider\IItemProvider.cs" />
+    <Compile Include="Common\Provider\ItemProvider\ItemProvider.cs" />
+    <Compile Include="Common\Provider\ItemProvider\IItemProvider.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Utility\ContractResolver.cs" />
     <Compile Include="Common\Item\Item.cs" />
@@ -84,12 +86,12 @@
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Common\Discovery\Discoverer.cs" />
-    <Compile Include="Common\Providers\EventProvider\EventAttribute.cs" />
-    <Compile Include="Common\Providers\EventProvider\EventProviderAttribute.cs" />
+    <Compile Include="Common\Provider\EventProvider\EventAttribute.cs" />
+    <Compile Include="Common\Provider\EventProvider\EventProviderAttribute.cs" />
     <Compile Include="Event\IEventManager.cs" />
     <Compile Include="ApplicationExceptions.cs" />
     <Compile Include="ApplicationManagerExceptions.cs" />
-    <Compile Include="Common\Providers\EventProvider\IEventProvider.cs" />
+    <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
     <Compile Include="Platform\PlatformExceptions.cs" />
     <Compile Include="Common\Manager\ManagerExceptions.cs" />
     <Compile Include="IApplicationManager.cs" />
@@ -101,9 +103,9 @@
     <Compile Include="Plugin\Connector\ConnectorType.cs" />
     <Compile Include="Plugin\Connector\ConnectorAttribute.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
-    <Compile Include="Common\Providers\ItemProvider\IExtensible.cs" />
-    <Compile Include="Common\Providers\ItemProvider\ISubscribable.cs" />
-    <Compile Include="Common\Providers\ItemProvider\IWriteable.cs" />
+    <Compile Include="Common\Provider\ItemProvider\IExtensible.cs" />
+    <Compile Include="Common\Provider\ItemProvider\ISubscribable.cs" />
+    <Compile Include="Common\Provider\ItemProvider\IWriteable.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\IPluginInstance.cs" />
     <Compile Include="Plugin\IPluginAssembly.cs" />

@@ -609,7 +609,7 @@ namespace Symbiote.Core.Tests
         [Fact]
         public void Properties()
         {
-            Assert.IsAssignableFrom<IItemProvider>(platformMock.ItemProvider);
+            Assert.IsAssignableFrom<IItemProvider>(platformMock.Metrics);
             Assert.Equal(PlatformType.Unknown, platformMock.PlatformType);
             Assert.Equal("1.0", platformMock.Version);
         }
@@ -831,7 +831,7 @@ namespace Symbiote.Core.Tests
         {
             PlatformType = PlatformType.Unknown;
             Version = "1.0";
-            ItemProvider = new Mock<IItemProvider>().Object;
+            Metrics = new Mock<IItemProvider>().Object;
         }
 
         #endregion Public Constructors

@@ -173,7 +173,7 @@ namespace Symbiote.Core.Tests
             Assert.IsType<Core.ApplicationManager>(manager);
             Assert.NotNull(manager);
 
-            ImmutableList<IManager> managers = manager.GetManagers();
+            IImmutableList<IManager> managers = manager.GetManagers();
 
             Assert.Equal(managers.Count, 2);
 

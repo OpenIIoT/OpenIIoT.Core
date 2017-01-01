@@ -322,7 +322,7 @@ namespace Symbiote.Core.Event
             logger.EnterMethod();
             logger.Debug("Performing Setup for '" + GetType().Name + "'...");
 
-            ImmutableList<IManager> managerInstances = Dependency<IApplicationManager>().GetManagers();
+            IImmutableList<IManager> managerInstances = Dependency<IApplicationManager>().GetManagers();
 
             // register Managers with the Event Manager
             logger.Info("Registering Managers with the Event Manager...");

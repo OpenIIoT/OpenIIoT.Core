@@ -494,13 +494,13 @@ namespace Symbiote.Core
 
                 //applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
 
-                IList<IEventProvider> itemProviders = Discoverer.Discover<IEventProvider>(applicationManager);
+                IList<IItemProvider> itemProviders = Discoverer.Discover<IItemProvider>(applicationManager);
 
                 Console.WriteLine("Found " + itemProviders.Count + " providers.");
 
-                foreach (IEventProvider provider in itemProviders)
+                foreach (IItemProvider provider in itemProviders)
                 {
-                    Console.WriteLine("P: " + provider.EventProviderName);
+                    Console.WriteLine("P: " + provider.ItemProviderName + ", " + provider.GetType().FullName);
                 }
             }
             catch (Exception ex)

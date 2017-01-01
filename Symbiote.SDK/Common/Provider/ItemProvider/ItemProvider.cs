@@ -57,7 +57,7 @@ namespace Symbiote.SDK
         protected xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ItemProvider"/> class.
+        ///     Initializes a new instance of the <see cref="IEventProvider"/> class.
         /// </summary>
         public ItemProvider(string providerName)
         {

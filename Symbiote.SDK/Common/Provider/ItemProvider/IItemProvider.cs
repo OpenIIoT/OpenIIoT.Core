@@ -48,7 +48,7 @@ namespace Symbiote.SDK
     /// <summary>
     ///     Defines the interface for classes capable of providing <see cref="Item"/> objects for use in the application <see cref="Model"/>.
     /// </summary>
-    public interface IItemProvider
+    public interface IItemProvider : IProvider
     {
         /// <summary>
         ///     Gets the name of the Item Provider.

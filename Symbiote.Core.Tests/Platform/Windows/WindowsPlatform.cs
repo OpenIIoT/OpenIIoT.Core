@@ -79,7 +79,7 @@ namespace Symbiote.Core.Tests
         public void Properties()
         {
             Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform();
-            Assert.IsAssignableFrom<IItemProvider>(platform.ItemProvider);
+            Assert.IsAssignableFrom<IItemProvider>(platform.Metrics);
             Assert.Equal(PlatformType.Windows, platform.PlatformType);
             Assert.NotNull(platform.Version);
         }

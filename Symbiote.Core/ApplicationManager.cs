@@ -143,6 +143,15 @@ namespace Symbiote.Core
             ManagerInstances = new List<IManager>();
             ManagerDependencies = new Dictionary<Type, List<Type>>();
 
+            ProviderRegistries = new IList<ProviderRegistry<IProvider>>();
+
+            IEnumerable<object> t = new List<string>();
+
+            IProviderRegistry<IProvider> test = new ProviderRegistry<IItemProvider>();
+
+            ProviderRegistries.(new ProviderRegistry<IItemProvider>());
+            ProviderRegistries.Add((new ProviderRegistry<IEventProvider>());
+
             // register the ApplicationManager with itself
             RegisterManager<IApplicationManager>(this);
 
@@ -214,7 +223,9 @@ namespace Symbiote.Core
         ///     Gets or sets the list of application Manager instances.
         /// </summary>
         [Discoverable]
-        private List<IManager> ManagerInstances { get; set; }
+        private IList<IManager> ManagerInstances { get; set; }
+
+        private IEnumerable<ProviderRegistry<IProvider>> ProviderRegistries { get; set; }
 
         /// <summary>
         ///     Gets or sets the list of application Manager Types.
@@ -307,9 +318,14 @@ namespace Symbiote.Core
         ///     Returns an immutable list of Managers.
         /// </summary>
         /// <returns>The immutable list of Managers.</returns>
-        public ImmutableList<IManager> GetManagers()
+        public IImmutableList<IManager> GetManagers()
         {
             return ManagerInstances.ToImmutableList();
+        }
+
+        public IImmutableList<IProviderRegistry<IProvider>> GetProviderRegistries()
+        {
+            return ProviderRegistries.ToImmutableList();
         }
 
         #endregion Public Methods
@@ -347,9 +363,24 @@ namespace Symbiote.Core
             // start all application managers.
             retVal.Incorporate(StartManagers());
 
+            var providers = GetProviderRegistry<IItemProvider>();
+
+            var discovered = Discoverer.Discover<IItemProvider>(this).ToList();
+
+            foreach (IItemProvider i in discovered)
+            {
+                logger.Info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Registering " + i.ToString());
+                providers.Register(i);
+            }
+
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
             return retVal;
+        }
+
+        public IProviderRegistry<T> GetProviderRegistry<T>() where T : IProvider
+        {
+            return (IProviderRegistry<T>)ProviderRegistries.Where(p => p.GetType().GetGenericArguments()?[0] == typeof(T)).FirstOrDefault();
         }
 
         #endregion Protected Methods

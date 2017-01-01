@@ -42,6 +42,8 @@
 using Symbiote.Core.Plugin;
 using Symbiote.SDK;
 using Symbiote.SDK.Model;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Symbiote.Core
 {
@@ -115,7 +117,6 @@ namespace Symbiote.Core
                 retVal = ItemSource.Plugin;
             }
 
-            System.Console.WriteLine("Item source: " + retVal.ToString());
             return retVal;
         }
 
@@ -126,35 +127,21 @@ namespace Symbiote.Core
         /// <returns>The located item.</returns>
         public static Item Resolve(string lookupFQN)
         {
-            Item retVal = default(Item);
+            System.Console.WriteLine("Lookup: " + lookupFQN);
 
             ItemSource source = GetSource(lookupFQN);
+            Item retVal = default(Item);
 
-            System.Console.WriteLine("looking up: " + lookupFQN + " source: " + source.ToString());
-
-            // if the origin is null, a malformed FQN was provided. return null.
-            if (source == ItemSource.Unknown)
+            if (source == ItemSource.Model)
             {
-                retVal = default(Item);
-            }
-            else if (source == ItemSource.Model)
-            {
-                // if the origin is the product, the FQN belongs to a Model item. use the ModelManager to look it up.
                 retVal = manager.GetManager<IModelManager>().FindItem(lookupFQN);
             }
-            else
+            else if (source == ItemSource.Plugin)
             {
-                // if the origin is something other than the product, the FQN belongs to a plugin item. use the PluginManager to
-                // look it up.
                 retVal = manager.GetManager<IPluginManager>().FindPluginItem(lookupFQN);
-
-                if (retVal == default(Item))
-                {
-                    System.Console.WriteLine("checking model...");
-                    retVal = manager.GetManager<IModelManager>().FindItem(lookupFQN);
-                }
             }
-            System.Console.WriteLine("Returning: " + retVal.FQN + " with source FQN " + retVal.SourceFQN);
+
+            System.Console.WriteLine("Found: " + retVal?.FQN);
             return retVal;
         }
 

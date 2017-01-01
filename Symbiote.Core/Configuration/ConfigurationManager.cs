@@ -526,7 +526,7 @@ namespace Symbiote.Core.Configuration
             logger.EnterMethod();
             logger.Debug("Performing Setup for '" + GetType().Name + "'...");
 
-            ImmutableList<IManager> managerInstances = Dependency<IApplicationManager>().GetManagers();
+            IImmutableList<IManager> managerInstances = Dependency<IApplicationManager>().GetManagers();
             List<Type> managerTypes = managerInstances.Select(m => m.GetType()).ToList();
 
             logger.Info("Registering Managers with the Configuration Manager...");

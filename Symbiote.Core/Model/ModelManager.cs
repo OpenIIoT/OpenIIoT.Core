@@ -175,6 +175,12 @@ namespace Symbiote.Core.Model
             return AddItem(Model, Dictionary, item);
         }
 
+        public IList<IItemProvider> DiscoverItemProviders()
+        {
+            ItemProviders = Discoverer.Discover<IItemProvider>(Dependency<IApplicationManager>()).ToList();
+            return ItemProviders;
+        }
+
         /// <summary>
         ///     Attaches the provided Item to the supplied Item. This method should be used only to attach plugin Items to the
         ///     application model. When adding Items directly, use AddItem.
@@ -925,18 +931,16 @@ namespace Symbiote.Core.Model
         /// <returns>The ModelItem stored in the supplied Dictionary corresponding to the supplied key.</returns>
         private Item FindItem(Dictionary<string, Item> dictionary, string fqn)
         {
-            IItemProvider provider = ItemProviders.Where(i => i.ItemProviderName == fqn.Split('.')[0]).FirstOrDefault();
+            logger.EnterMethod(xLogger.Params(xLogger.Exclude(), fqn));
+            Item retVal = default(Item);
 
-            if (provider != default(IItemProvider))
+            if (dictionary != default(Dictionary<string, Item>) && dictionary.ContainsKey(fqn))
             {
-                return provider.Find(fqn);
+                retVal = dictionary[fqn];
             }
-            else
-            {
-                if (dictionary.ContainsKey(fqn))
-                    return dictionary[fqn];
-                else return default(Item);
-            }
+
+            logger.ExitMethod(retVal?.FQN);
+            return retVal;
         }
 
         /// <summary>

@@ -285,7 +285,7 @@ namespace Symbiote.SDK
         {
             get
             {
-                if (Provider != default(ItemProvider))
+                if (Provider != default(IEventProvider))
                 {
                     return ItemSource.ItemProvider;
                 }
@@ -433,7 +433,7 @@ namespace Symbiote.SDK
         ///     If the <see cref="ItemSource"/> of the Item is <see cref="ItemSource.Item"/>, the value is retrieved from the
         ///     <see cref="ReadFromSource"/> method of the <see cref="SourceItem"/>. If the ItemSource is
         ///     <see cref="ItemSource.ItemProvider"/>, the value is retrieved from the <see cref="Provider"/> object's
-        ///     <see cref="ItemProvider.Read(Item)"/> method. If the ItemSource is <see cref="ItemSource.Unknown"/>, the present
+        ///     <see cref="IEventProvider.Read(Item)"/> method. If the ItemSource is <see cref="ItemSource.Unknown"/>, the present
         ///     value of the <see cref="Value"/> property is returned. If the ItemSource is <see cref="ItemSource.Unresolved"/>, a
         ///     null value is returned.
         /// </remarks>

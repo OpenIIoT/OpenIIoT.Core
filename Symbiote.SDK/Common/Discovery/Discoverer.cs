@@ -101,6 +101,8 @@ namespace Symbiote.SDK
         /// <returns>The list of discovered object instances matching the specified Type.</returns>
         private static IList<T> DiscoverInstancesOf<T>(object instance, IList<T> instances)
         {
+            Console.WriteLine("Traversing: " + instance.GetType());
+
             // check to see if the instance is of type T and add it to the list if so continue to traverse the object's properties
             // in case it is a composite.
             if (typeof(T).IsAssignableFrom(instance.GetType()))
@@ -121,8 +123,11 @@ namespace Symbiote.SDK
                     // member of the collection before moving to the next property.
                     if (typeof(IEnumerable).IsAssignableFrom(value.GetType()))
                     {
+                        Console.WriteLine("IEnumerable found");
                         foreach (object o in (IEnumerable)value)
                         {
+                            Console.WriteLine("Object: " + o.ToString());
+
                             // check for self referencing properties again
                             if (!object.ReferenceEquals(o, instance))
                             {
@@ -132,6 +137,7 @@ namespace Symbiote.SDK
                     }
                     else
                     {
+                        Console.WriteLine("Atomic value");
                         // traverse the value
                         instances = DiscoverInstancesOf<T>(value, instances);
                     }
