@@ -210,7 +210,7 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        public virtual List<Item> Browse(Item root)
+        public virtual IList<Item> Browse(Item root)
         {
             return root == null ? ItemRoot.Children : root.Children;
         }
@@ -229,7 +229,7 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        public virtual async Task<List<Item>> BrowseAsync(Item root)
+        public virtual async Task<IList<Item>> BrowseAsync(Item root)
         {
             return await Task.Run(() => Browse(root));
         }

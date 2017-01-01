@@ -42,6 +42,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -55,11 +56,6 @@ namespace Symbiote.SDK
     /// <remarks>The implementation of the <see cref="ICloneable"/> interface for this class returns a shallow copy.</remarks>
     public class Item : ICloneable
     {
-        /// <summary>
-        ///     The resolved source Item.
-        /// </summary>
-        private Item sourceItem;
-
         #region Protected Fields
 
         /// <summary>
@@ -82,6 +78,15 @@ namespace Symbiote.SDK
 
         #endregion Protected Fields
 
+        #region Private Fields
+
+        /// <summary>
+        ///     The resolved source Item.
+        /// </summary>
+        private Item sourceItem;
+
+        #endregion Private Fields
+
         #region Public Constructors
 
         /// <summary>
@@ -96,6 +101,8 @@ namespace Symbiote.SDK
         ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name and access mode.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="accessMode">The access mode of the Item.</param>
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
         public Item(string fqn, ItemAccessMode accessMode, IItemProvider provider = default(IItemProvider)) : this(fqn, default(Item), string.Empty, accessMode, provider)
         {
         }
@@ -104,6 +111,7 @@ namespace Symbiote.SDK
         ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name and provider.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
         public Item(string fqn, IItemProvider provider) : this(fqn, default(Item), string.Empty, ItemAccessMode.ReadWrite, provider)
         {
         }
@@ -153,6 +161,10 @@ namespace Symbiote.SDK
         {
         }
 
+        #endregion Public Constructors
+
+        #region Private Constructors
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name, source Item,
         ///     source FQN, access mode and provider.
@@ -176,7 +188,7 @@ namespace Symbiote.SDK
             Children = new List<Item>();
         }
 
-        #endregion Public Constructors
+        #endregion Private Constructors
 
         #region Public Events
 
@@ -195,14 +207,9 @@ namespace Symbiote.SDK
         public ItemAccessMode AccessMode { get; private set; }
 
         /// <summary>
-        ///     Gets the Item Provider from which the Item originates.
-        /// </summary>
-        public IItemProvider Provider { get; private set; }
-
-        /// <summary>
         ///     Gets the collection of children <see cref="Item"/> s.
         /// </summary>
-        public List<Item> Children { get; private set; }
+        public IList<Item> Children { get; private set; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name.
@@ -267,6 +274,11 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
+        ///     Gets the Item Provider from which the Item originates.
+        /// </summary>
+        public IItemProvider Provider { get; private set; }
+
+        /// <summary>
         ///     Gets the source of the Item.
         /// </summary>
         public ItemSource Source
@@ -306,6 +318,7 @@ namespace Symbiote.SDK
             {
                 return sourceItem;
             }
+
             set
             {
                 if (value != default(Item))
@@ -317,13 +330,17 @@ namespace Symbiote.SDK
             }
         }
 
+        #endregion Public Properties
+
+        #region Protected Properties
+
         /// <summary>
         ///     Gets or sets the value.
         /// </summary>
         [JsonProperty]
         protected object Value { get; set; }
 
-        #endregion Public Properties
+        #endregion Protected Properties
 
         #region Public Methods
 
@@ -484,7 +501,7 @@ namespace Symbiote.SDK
             System.Diagnostics.Debug.WriteLine("Removing " + item.FQN);
 
             // locate the item
-            retVal.ReturnValue = Children.Find(i => i.FQN == item.FQN);
+            retVal.ReturnValue = Children.Where(i => i.FQN == item.FQN).FirstOrDefault();
 
             // ensure that it was found in the collection
             if (retVal.ReturnValue == default(Item))
@@ -510,24 +527,6 @@ namespace Symbiote.SDK
             }
 
             return retVal;
-        }
-
-        /// <summary>
-        ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
-        /// </summary>
-        public virtual void SubscriptionsChanged()
-        {
-            if (Source == ItemSource.ItemProvider)
-            {
-                if (Changed != null)
-                {
-                    SubscribeToSource();
-                }
-                else
-                {
-                    UnsubscribeFromSource();
-                }
-            }
         }
 
         /// <summary>
@@ -561,6 +560,24 @@ namespace Symbiote.SDK
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
+        /// </summary>
+        public virtual void SubscriptionsChanged()
+        {
+            if (Source == ItemSource.ItemProvider)
+            {
+                if (Changed != null)
+                {
+                    SubscribeToSource();
+                }
+                else
+                {
+                    UnsubscribeFromSource();
+                }
+            }
         }
 
         /// <summary>
@@ -621,26 +638,6 @@ namespace Symbiote.SDK
             }
 
             return retVal;
-        }
-
-        /// <summary>
-        ///     Updates the <see cref="Value"/> property with the specified value and fires the
-        ///     <see cref="OnChange(object, object)"/> event.
-        /// </summary>
-        /// <param name="value">The updated value to which the <see cref="Value"/> property is to be set.</param>
-        private void ChangeValue(object value)
-        {
-            // only update the value and fire the event if the value has changed, or if the calling method sets the force parameter
-            // to true.
-            if (Value != value)
-            {
-                lock (valueLock)
-                {
-                    var previousValue = Value;
-                    Value = value;
-                    OnChange(value, previousValue);
-                }
-            }
         }
 
         /// <summary>
@@ -760,5 +757,29 @@ namespace Symbiote.SDK
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Updates the <see cref="Value"/> property with the specified value and fires the
+        ///     <see cref="OnChange(object, object)"/> event.
+        /// </summary>
+        /// <param name="value">The updated value to which the <see cref="Value"/> property is to be set.</param>
+        private void ChangeValue(object value)
+        {
+            // only update the value and fire the event if the value has changed, or if the calling method sets the force parameter
+            // to true.
+            if (Value != value)
+            {
+                lock (valueLock)
+                {
+                    var previousValue = Value;
+                    Value = value;
+                    OnChange(value, previousValue);
+                }
+            }
+        }
+
+        #endregion Private Methods
     }
 }

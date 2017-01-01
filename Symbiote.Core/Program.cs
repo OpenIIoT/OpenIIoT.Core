@@ -58,6 +58,7 @@ using Symbiote.SDK.Platform;
 using Symbiote.Core.Service;
 using Utility.OperationResult;
 using Symbiote.SDK.Plugin.Connector;
+using System.Collections.Generic;
 
 namespace Symbiote.Core
 {
@@ -446,52 +447,61 @@ namespace Symbiote.Core
 
             try
             {
-                // attach the Platform connector items to the model detach anything in "Symbiote.System.Platform" that was loaded
-                // from the config file
-                logger.Info("Detaching potentially stale Platform items...");
-                applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
+                //// attach the Platform connector items to the model detach anything in "Symbiote.System.Platform" that was loaded
+                //// from the config file
+                //logger.Info("Detaching potentially stale Platform items...");
+                //applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
 
-                logger.Info("Attaching new Platform items...");
+                //logger.Info("Attaching new Platform items...");
 
-                // find or create the parent for the Platform items
-                logger.Info("Checking for the 'System' item...");
-                Item systemItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName + ".System");
-                if (systemItem == default(Item))
-                {
-                    logger.Info("Creating the 'System' item...");
-                    systemItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName + ".System")).ReturnValue;
-                }
-                else
-                {
-                    logger.Info("'System' item already exists.");
-                }
+                //// find or create the parent for the Platform items
+                //logger.Info("Checking for the 'System' item...");
+                //Item systemItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName + ".System");
+                //if (systemItem == default(Item))
+                //{
+                //    logger.Info("Creating the 'System' item...");
+                //    systemItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName + ".System")).ReturnValue;
+                //}
+                //else
+                //{
+                //    logger.Info("'System' item already exists.");
+                //}
 
-                // attach the Platform items to Symbiote.System
-                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.ItemProvider.Browse(), systemItem);
-                logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
+                //// attach the Platform items to Symbiote.System
+                //applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.ItemProvider.Browse(), systemItem);
+                //logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
 
-                // find the root item, or create it if it doesn't exist for some reason
-                Item symItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName);
-                if (symItem == default(Item))
-                {
-                    symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
-                }
+                //// find the root item, or create it if it doesn't exist for some reason
+                //Item symItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName);
+                //if (symItem == default(Item))
+                //{
+                //    symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
+                //}
 
-                // attach all of the simulation items to the model
-                applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
+                //// attach all of the simulation items to the model
+                //applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
 
                 // show 'em what they've won!
                 Utility.PrintLogo(logger);
                 Utility.PrintModel(logger, applicationManager.GetManager<IModelManager>().Model, 0, null, true);
                 Utility.PrintLogoFooter(logger);
 
-                // subscribe to the datetime item
-                Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
-                subscribe.LogResult(logger.Info);
+                //// subscribe to the datetime item
+                //Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                //subscribe.LogResult(logger.Info);
 
-                Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.System.Platform.Memory.Available").SubscribeToSource();
+                //Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.System.Platform.Memory.Available").SubscribeToSource();
 
-                applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
+                //applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
+
+                IList<IEventProvider> itemProviders = Discoverer.Discover<IEventProvider>(applicationManager);
+
+                Console.WriteLine("Found " + itemProviders.Count + " providers.");
+
+                foreach (IEventProvider provider in itemProviders)
+                {
+                    Console.WriteLine("P: " + provider.EventProviderName);
+                }
             }
             catch (Exception ex)
             {

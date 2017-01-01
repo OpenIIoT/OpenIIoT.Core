@@ -28,7 +28,7 @@ namespace Symbiote.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage Read()
         {
-            List<Item> result = model.Children;
+            IList<Item> result = model.Children;
             return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn));
         }
 

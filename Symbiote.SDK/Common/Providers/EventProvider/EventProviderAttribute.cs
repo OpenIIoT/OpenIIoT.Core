@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██
-      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄
-      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀
-      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██
-      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██
-      █     ██████████   ▀██▀     ███████  █   █     ▄██▀
+      █      ▄████████                                         ▄███████▄
+      █     ███    ███                                        ███    ███
+      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████  ██████   █    █   █  ██████▄     ▄█████    █████
+      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██ ██    ██ ██    ██ ██  ██   ▀██   ██   █    ██  ██
+      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀█████████▀   ▄██▄▄█▀ ██    ██ ██    ██ ██▌ ██    ██  ▄██▄▄     ▄██▄▄█▀
+      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███        ▀███████ ██    ██ ██    ██ ██  ██    ██ ▀▀██▀▀    ▀███████
+      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███          ██  ██ ██    ██  █▄  ▄█  ██  ██   ▄██   ██   █    ██  ██
+      █     ██████████   ▀██▀     ███████  █   █     ▄██▀    ▄████▀        ██  ██  ██████    ▀██▀   █   ██████▀    ███████   ██  ██
       █
       █     ▄████████
       █     ███    ███
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Identifies Events contained within classes marked with the EventProvider Attribute.
+      █  Identifies classes capable of providing Events.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -51,22 +51,14 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Symbiote.SDK.Event
+namespace Symbiote.SDK
 {
     /// <summary>
-    ///     Identifies Events contained within classes marked with the EventProvider Attribute.
+    ///     Identifies classes capable of providing Events.
     /// </summary>
     [ExcludeFromCodeCoverage]
-    [AttributeUsage(AttributeTargets.Event)]
-    public class EventAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    public class EventProviderAttribute : Attribute
     {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the Event description.
-        /// </summary>
-        public string Description { get; set; }
-
-        #endregion Public Properties
     }
 }

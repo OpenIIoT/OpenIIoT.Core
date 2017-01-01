@@ -82,7 +82,7 @@ namespace Symbiote.Core
     ///         Managers to initialize those dependencies. Examples include the <see cref="Configuration.ConfigurationManager"/>,
     ///         which iterates over the list of Manager instances and registers Managers which implement
     ///         <see cref="SDK.Configuration.IConfigurable{T}"/>, and the <see cref="Event.EventManager"/>, which does the same for
-    ///         implementations of <see cref="SDK.Event.IEventProvider"/>.
+    ///         implementations of <see cref="SDK.IEventProvider"/>.
     ///     </para>
     ///     <para>
     ///         The methods <see cref="GetManager{T}"/> and <see cref="GetManagers"/> are provided to allow Managers to retrieve
@@ -98,6 +98,7 @@ namespace Symbiote.Core
     ///         The Application Manager uses these methods to start and stop Manager instances.
     ///     </para>
     /// </remarks>
+    [Discoverable]
     public class ApplicationManager : Manager, IApplicationManager
     {
         #region Private Fields
@@ -212,6 +213,7 @@ namespace Symbiote.Core
         /// <summary>
         ///     Gets or sets the list of application Manager instances.
         /// </summary>
+        [Discoverable]
         private List<IManager> ManagerInstances { get; set; }
 
         /// <summary>

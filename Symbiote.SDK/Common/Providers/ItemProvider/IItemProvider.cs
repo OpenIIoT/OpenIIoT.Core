@@ -72,14 +72,14 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        List<Item> Browse(Item root);
+        IList<Item> Browse(Item root);
 
         /// <summary>
         ///     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        Task<List<Item>> BrowseAsync(Item root);
+        Task<IList<Item>> BrowseAsync(Item root);
 
         /// <summary>
         ///     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.

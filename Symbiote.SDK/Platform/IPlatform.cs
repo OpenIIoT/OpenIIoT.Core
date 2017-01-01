@@ -40,7 +40,6 @@
                                                                                                    ▀▀                            */
 
 using System.Collections.Generic;
-using Symbiote.SDK;
 using Utility.OperationResult;
 
 namespace Symbiote.SDK.Platform
@@ -55,7 +54,7 @@ namespace Symbiote.SDK.Platform
         /// <summary>
         ///     Gets the Item Provider for the Platform.
         /// </summary>
-        IItemProvider ItemProvider { get; }
+        IItemProvider Metrics { get; }
 
         /// <summary>
         ///     Gets the Platform Type.
