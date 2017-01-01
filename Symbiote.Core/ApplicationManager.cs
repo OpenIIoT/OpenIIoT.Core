@@ -48,6 +48,7 @@ using NLog;
 using NLog.xLogger;
 using Symbiote.SDK;
 using Utility.OperationResult;
+using System.Collections.ObjectModel;
 
 namespace Symbiote.Core
 {
@@ -143,14 +144,7 @@ namespace Symbiote.Core
             ManagerInstances = new List<IManager>();
             ManagerDependencies = new Dictionary<Type, List<Type>>();
 
-            ProviderRegistries = new IList<ProviderRegistry<IProvider>>();
-
-            IEnumerable<object> t = new List<string>();
-
-            IProviderRegistry<IProvider> test = new ProviderRegistry<IItemProvider>();
-
-            ProviderRegistries.(new ProviderRegistry<IItemProvider>());
-            ProviderRegistries.Add((new ProviderRegistry<IEventProvider>());
+            ProviderRegistry = new ProviderRegistry(this);
 
             // register the ApplicationManager with itself
             RegisterManager<IApplicationManager>(this);
@@ -185,6 +179,14 @@ namespace Symbiote.Core
             get
             {
                 return GetInstanceName();
+            }
+        }
+
+        public IReadOnlyList<IManager> Managers
+        {
+            get
+            {
+                return ManagerInstances.ToList().AsReadOnly();
             }
         }
 
@@ -225,12 +227,12 @@ namespace Symbiote.Core
         [Discoverable]
         private IList<IManager> ManagerInstances { get; set; }
 
-        private IEnumerable<ProviderRegistry<IProvider>> ProviderRegistries { get; set; }
-
         /// <summary>
         ///     Gets or sets the list of application Manager Types.
         /// </summary>
         private List<Type> ManagerTypes { get; set; }
+
+        public ProviderRegistry ProviderRegistry { get; private set; }
 
         #endregion Private Properties
 
@@ -252,15 +254,6 @@ namespace Symbiote.Core
             }
 
             return instance;
-        }
-
-        /// <summary>
-        ///     Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retrieved.
-        /// </summary>
-        /// <returns>The name of the program instance.</returns>
-        public static string GetInstanceName()
-        {
-            return Utility.GetSetting("InstanceName", Assembly.GetExecutingAssembly().GetName().Name);
         }
 
         /// <summary>
@@ -304,6 +297,11 @@ namespace Symbiote.Core
             instance = null;
         }
 
+        public IReadOnlyList<IProvider> DiscoverProviders()
+        {
+            return ProviderRegistry.Discover();
+        }
+
         /// <summary>
         ///     Returns the Manager from the list of Managers matching the specified Type.
         /// </summary>
@@ -312,20 +310,6 @@ namespace Symbiote.Core
         public T GetManager<T>() where T : IManager
         {
             return ManagerInstances.OfType<T>().FirstOrDefault();
-        }
-
-        /// <summary>
-        ///     Returns an immutable list of Managers.
-        /// </summary>
-        /// <returns>The immutable list of Managers.</returns>
-        public IImmutableList<IManager> GetManagers()
-        {
-            return ManagerInstances.ToImmutableList();
-        }
-
-        public IImmutableList<IProviderRegistry<IProvider>> GetProviderRegistries()
-        {
-            return ProviderRegistries.ToImmutableList();
         }
 
         #endregion Public Methods
@@ -363,29 +347,25 @@ namespace Symbiote.Core
             // start all application managers.
             retVal.Incorporate(StartManagers());
 
-            var providers = GetProviderRegistry<IItemProvider>();
-
-            var discovered = Discoverer.Discover<IItemProvider>(this).ToList();
-
-            foreach (IItemProvider i in discovered)
-            {
-                logger.Info("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$ Registering " + i.ToString());
-                providers.Register(i);
-            }
+            IReadOnlyList<IProvider> providers = ProviderRegistry.Discover();
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
             return retVal;
         }
 
-        public IProviderRegistry<T> GetProviderRegistry<T>() where T : IProvider
-        {
-            return (IProviderRegistry<T>)ProviderRegistries.Where(p => p.GetType().GetGenericArguments()?[0] == typeof(T)).FirstOrDefault();
-        }
-
         #endregion Protected Methods
 
         #region Private Methods
+
+        /// <summary>
+        ///     Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retrieved.
+        /// </summary>
+        /// <returns>The name of the program instance.</returns>
+        private static string GetInstanceName()
+        {
+            return Utility.GetSetting("InstanceName", Assembly.GetExecutingAssembly().GetName().Name);
+        }
 
         /// <summary>
         ///     Retrieves the list of <see cref="Type"/> s corresponding to the <see cref="IManager"/> Types on which the specified

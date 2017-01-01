@@ -115,7 +115,7 @@ namespace Symbiote.Core.Platform
         ///     Gets or sets the accompanying Item Provider for the Platform.
         /// </summary>
         [Discoverable]
-        public IItemProvider Metrics { get; protected set; }
+        public IItemOriginator ItemOriginator { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the Platform Type.

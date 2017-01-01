@@ -487,12 +487,12 @@ namespace Symbiote.Core
                 Utility.PrintLogoFooter(logger);
 
                 //// subscribe to the datetime item
-                //Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
                 //subscribe.LogResult(logger.Info);
 
                 //Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.System.Platform.Memory.Available").SubscribeToSource();
 
-                //applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
+                applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
 
                 IList<IItemProvider> itemProviders = Discoverer.Discover<IItemProvider>(applicationManager);
 

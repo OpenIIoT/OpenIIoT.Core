@@ -41,7 +41,6 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Utility.OperationResult;
 
 namespace Symbiote.SDK
 {
@@ -50,10 +49,16 @@ namespace Symbiote.SDK
     /// </summary>
     public interface IItemProvider : IProvider
     {
+        #region Public Properties
+
         /// <summary>
         ///     Gets the name of the Item Provider.
         /// </summary>
         string ItemProviderName { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Returns the root node of the <see cref="Item"/> tree.
@@ -62,17 +67,17 @@ namespace Symbiote.SDK
         Item Browse();
 
         /// <summary>
-        ///     Asynchronously returns the root node of the <see cref="Item"/> tree.
-        /// </summary>
-        /// <returns>The root node of the Item tree.</returns>
-        Task<Item> BrowseAsync();
-
-        /// <summary>
         ///     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
         IList<Item> Browse(Item root);
+
+        /// <summary>
+        ///     Asynchronously returns the root node of the <see cref="Item"/> tree.
+        /// </summary>
+        /// <returns>The root node of the Item tree.</returns>
+        Task<Item> BrowseAsync();
 
         /// <summary>
         ///     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
@@ -95,18 +100,6 @@ namespace Symbiote.SDK
         /// <returns>The found Item, or the default(Item) if not found.</returns>
         Task<Item> FindAsync(string fqn);
 
-        /// <summary>
-        ///     Reads and returns the current value of the specified <see cref="Item"/>.
-        /// </summary>
-        /// <param name="item">The Item to read.</param>
-        /// <returns>The value of the specified Item.</returns>
-        object Read(Item item);
-
-        /// <summary>
-        ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
-        /// </summary>
-        /// <param name="item">The Item to read.</param>
-        /// <returns>The value of the specified Item.</returns>
-        Task<object> ReadAsync(Item item);
+        #endregion Public Methods
     }
 }

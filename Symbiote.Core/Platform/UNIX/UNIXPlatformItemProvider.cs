@@ -58,7 +58,7 @@ namespace Symbiote.Core.Platform.UNIX
     /// <summary>
     ///     Provides Platform statistics and metrics for the UNIX Platform on which the application is run.
     /// </summary>
-    public class UNIXPlatformItemProvider : ItemProvider
+    public class UNIXPlatformItemProvider : ItemOriginator
     {
         #region Private Fields
 

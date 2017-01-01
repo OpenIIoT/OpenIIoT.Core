@@ -50,11 +50,13 @@ using Newtonsoft.Json;
 using NLog.xLogger;
 using Utility.OperationResult;
 using Symbiote.SDK.Model;
+using System.Threading.Tasks;
 
 namespace Symbiote.Core.Model
 {
     /// <summary>
     ///     The ModelManager class manages the Model for the application.
+    ///     TODO: pull the model stuff out into Model
     /// </summary>
     public class ModelManager : Manager, IConfigurable<ModelManagerConfiguration>, IModelManager
     {
@@ -86,6 +88,7 @@ namespace Symbiote.Core.Model
             Guid guid = logger.EnterMethod(true);
 
             ManagerName = "Model Manager";
+            ItemProviderName = "Model";
 
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
@@ -99,6 +102,8 @@ namespace Symbiote.Core.Model
         #endregion Private Constructors
 
         #region Public Properties
+
+        public string ItemProviderName { get; private set; }
 
         /// <summary>
         ///     The Configuration for the Manager.
@@ -131,6 +136,64 @@ namespace Symbiote.Core.Model
         #endregion Public Properties
 
         #region Public Methods
+
+        /// <summary>
+        ///     Returns the root node of the <see cref="Item"/> tree.
+        /// </summary>
+        /// <returns>The root node of the Item tree.</returns>
+        public Item Browse()
+        {
+            return Model;
+        }
+
+        /// <summary>
+        ///     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
+        /// </summary>
+        /// <param name="root">The Item for which the children are to be returned.</param>
+        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        public virtual IList<Item> Browse(Item root)
+        {
+            return root == null ? Model.Children : root.Children;
+        }
+
+        /// <summary>
+        ///     Asynchronously returns the root node of the <see cref="Item"/> tree.
+        /// </summary>
+        /// <returns>The root node of the Item tree.</returns>
+        public async Task<Item> BrowseAsync()
+        {
+            return await Task.Run(() => Browse());
+        }
+
+        /// <summary>
+        ///     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
+        /// </summary>
+        /// <param name="root">The Item for which the children are to be returned.</param>
+        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        public async Task<IList<Item>> BrowseAsync(Item root)
+        {
+            return await Task.Run(() => Browse(root));
+        }
+
+        /// <summary>
+        ///     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        /// <returns>The found Item, or the default(Item) if not found.</returns>
+        public virtual Item Find(string fqn)
+        {
+            return FindItem(fqn);
+        }
+
+        /// <summary>
+        ///     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        /// <returns>The found Item, or the default(Item) if not found.</returns>
+        public virtual async Task<Item> FindAsync(string fqn)
+        {
+            return await Task.Run(() => Find(fqn));
+        }
 
         /// <summary>
         ///     Returns the ConfigurationDefinition for the Model Manager.
@@ -220,7 +283,8 @@ namespace Symbiote.Core.Model
 
                 // set the SourceFQN of the new item to the FQN of the original item to create a link
                 retVal.ReturnValue.SourceFQN = item.FQN;
-                retVal.ReturnValue.SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN);
+                //retVal.ReturnValue.SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN);
+                retVal.ReturnValue.SourceItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(retVal.ReturnValue.SourceFQN);
 
                 // modify the FQN of the cloned item to reflect it's new path
                 //((Item)retVal.ReturnValue).FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
@@ -794,7 +858,9 @@ namespace Symbiote.Core.Model
                         // determine whether we should defer the resolution of the source item if the source of the item is a model
                         // item, and that item's depth is greater than this item, defer the resolution of the source item until
                         // after the model has been fully built.
-                        if ((FQNResolver.GetSource(newItem.SourceFQN) == FQNResolver.ItemSource.Model) && (newItem.SourceFQN.Split('.').Length - 1 >= depth))
+                        string[] splitFQN = newItem.SourceFQN.Split('.');
+
+                        if ((splitFQN[0] == Dependency<IApplicationManager>().InstanceName) && (splitFQN.Length - 1 >= depth))
                         {
                             logger.Info("Deferring the resolution of the SourceFQN for '" + newItem.FQN + "'.");
                             result.DeferredList.Add(newItem);
@@ -803,7 +869,7 @@ namespace Symbiote.Core.Model
                         // safe to resolve.
                         else
                         {
-                            Item resolvedItem = FQNResolver.Resolve(newItem.SourceFQN);
+                            Item resolvedItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(newItem.SourceFQN);
 
                             if (resolvedItem == default(Item))
                                 result.AddWarning("The Source FQN '" + newItem.SourceFQN + "' for item '" + newItem.FQN + "' could not be found.");

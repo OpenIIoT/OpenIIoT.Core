@@ -122,7 +122,7 @@ namespace Symbiote.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -158,7 +158,7 @@ namespace Symbiote.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -189,7 +189,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -222,7 +222,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
 
             if (foundItem != default(Item))
             {

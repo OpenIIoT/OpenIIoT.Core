@@ -50,7 +50,7 @@ namespace Symbiote.Core.Service.Web.API
 
             fqn = fqn.Replace("%25", "%");
 
-            Item foundItem = FQNResolver.Resolve(fqn);
+            Item foundItem = manager.ProviderRegistry.FindItem(fqn);
 
             if (fromSource)
                 foundItem.ReadFromSource();

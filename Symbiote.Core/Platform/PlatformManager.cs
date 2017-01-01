@@ -166,10 +166,6 @@ namespace Symbiote.Core.Platform
         {
             IApplicationManager manager = Dependency<IApplicationManager>();
             IModelManager modelManager = manager.GetManager<IModelManager>();
-
-            modelManager.RegisterItemProvider(Platform.Metrics);
-
-            //modelManager.RegisterItemProvider(Platform.ItemProvider);
         }
 
         protected override Result Shutdown(StopType stopType = StopType.Stop)

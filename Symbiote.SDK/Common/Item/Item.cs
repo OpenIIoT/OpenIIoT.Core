@@ -285,7 +285,7 @@ namespace Symbiote.SDK
         {
             get
             {
-                if (Provider != default(IEventProvider))
+                if (Provider != default(IItemProvider))
                 {
                     return ItemSource.ItemProvider;
                 }
@@ -463,9 +463,12 @@ namespace Symbiote.SDK
             }
             else if (Source == ItemSource.ItemProvider)
             {
-                // if the source of this Item is an ItemProvider, return the value of the Read() method for the provider. this will
-                // be the final read in the chain.
-                readResult = Provider.Read(this);
+                // if the source of this Item is an ItemProvider and it implements IReadable, return the value of the Read() method
+                // for the provider. this will be the final read in the chain.
+                if (Provider is IReadable)
+                {
+                    readResult = ((IReadable)Provider).Read(this);
+                }
             }
             else if (Source == ItemSource.Unknown)
             {
