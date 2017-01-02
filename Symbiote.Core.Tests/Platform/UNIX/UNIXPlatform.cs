@@ -79,7 +79,7 @@ namespace Symbiote.Core.Tests
         public void Properties()
         {
             Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform();
-            Assert.IsAssignableFrom<IItemProvider>(platform.Metrics);
+            Assert.IsAssignableFrom<IItemProvider>(platform.ItemOriginator);
             Assert.Equal(PlatformType.UNIX, platform.PlatformType);
             Assert.NotNull(platform.Version);
         }

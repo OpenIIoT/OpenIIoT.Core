@@ -471,15 +471,15 @@ namespace Symbiote.Core
                 //applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.ItemProvider.Browse(), systemItem);
                 //logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
 
-                //// find the root item, or create it if it doesn't exist for some reason
-                //Item symItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName);
-                //if (symItem == default(Item))
-                //{
-                //    symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
-                //}
+                // find the root item, or create it if it doesn't exist for some reason
+                Item symItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName);
+                if (symItem == default(Item))
+                {
+                    symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
+                }
 
-                //// attach all of the simulation items to the model
-                //applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
+                // attach all of the simulation items to the model
+                applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
 
                 // show 'em what they've won!
                 Utility.PrintLogo(logger);
@@ -488,6 +488,7 @@ namespace Symbiote.Core
 
                 //// subscribe to the datetime item
                 Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.Binary.DynamicImage").SubscribeToSource();
                 //subscribe.LogResult(logger.Info);
 
                 //Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.System.Platform.Memory.Available").SubscribeToSource();
