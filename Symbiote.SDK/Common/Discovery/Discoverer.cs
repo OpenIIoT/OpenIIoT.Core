@@ -43,14 +43,13 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 
 namespace Symbiote.SDK
 {
     /// <summary>
-    ///     Fully traverses the properties of the specified object and any subordinate objects and returns a list of object
+    ///     Recursively traverses the properties of the specified object and any subordinate objects and returns a list of object
     ///     instances whose <see cref="Type"/> is assignable from the specified <see cref="Type"/>.
     /// </summary>
     /// <remarks>
@@ -73,18 +72,21 @@ namespace Symbiote.SDK
         #region Public Methods
 
         /// <summary>
+        ///     Recursively traverses the properties of the specified object and any subordinate objects and returns a list of
+        ///     object instances whose <see cref="Type"/> is assignable from the specified <see cref="Type"/>.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="instance"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">The Type from which discovered objects must be assignable from.</typeparam>
+        /// <param name="instance">The object instance to traverse.</param>
+        /// <returns>The list of discovered object instances.</returns>
         public static IList<T> Discover<T>(object instance)
         {
+            // if the specified object instance isn't discoverable, return an empty list.
             if (!instance.GetType().HasCustomAttribute<DiscoverableAttribute>())
             {
                 return new List<T>();
             }
 
-            return DiscoverInstancesOf<T>(instance, new List<T>());
+            return Discover<T>(instance, new List<T>());
         }
 
         #endregion Public Methods
@@ -95,14 +97,12 @@ namespace Symbiote.SDK
         ///     Recursively traverses the properties of the specified object instance and searches for properties matching the
         ///     specified <see cref="Type"/>, adding them to the specified instance list and returning it.
         /// </summary>
-        /// <typeparam name="T">The Type of the objects to find.</typeparam>
-        /// <param name="instance">The object to search.</param>
+        /// <typeparam name="T">The Type from which discovered objects must be assignable from.</typeparam>
+        /// <param name="instance">The object instance to traverse.</param>
         /// <param name="instances">The list of discovered object instances matching the specified Type.</param>
-        /// <returns>The list of discovered object instances matching the specified Type.</returns>
-        private static IList<T> DiscoverInstancesOf<T>(object instance, IList<T> instances)
+        /// <returns>The list of discovered object instances.</returns>
+        private static IList<T> Discover<T>(object instance, IList<T> instances)
         {
-            Console.WriteLine("Traversing: " + instance.GetType());
-
             // check to see if the instance is of type T and add it to the list if so continue to traverse the object's properties
             // in case it is a composite.
             if (typeof(T).IsAssignableFrom(instance.GetType()))
@@ -110,10 +110,8 @@ namespace Symbiote.SDK
                 instances.Add((T)instance);
             }
 
-            // iterate over the list of discoverable properties
             foreach (PropertyInfo property in GetDiscoverableProperties(instance.GetType()))
             {
-                // fetch the value of the current property
                 object value = property.GetValue(instance);
 
                 // watch out for self referencing properties to avoid stack overflows
@@ -123,23 +121,17 @@ namespace Symbiote.SDK
                     // member of the collection before moving to the next property.
                     if (typeof(IEnumerable).IsAssignableFrom(value.GetType()))
                     {
-                        Console.WriteLine("IEnumerable found");
-                        foreach (object o in (IEnumerable)value)
+                        foreach (object item in (IEnumerable)value)
                         {
-                            Console.WriteLine("Object: " + o.ToString());
-
-                            // check for self referencing properties again
-                            if (!object.ReferenceEquals(o, instance))
+                            if (!object.ReferenceEquals(item, instance))
                             {
-                                instances = DiscoverInstancesOf<T>(o, instances);
+                                instances = Discover<T>(item, instances);
                             }
                         }
                     }
                     else
                     {
-                        Console.WriteLine("Atomic value");
-                        // traverse the value
-                        instances = DiscoverInstancesOf<T>(value, instances);
+                        instances = Discover<T>(value, instances);
                     }
                 }
             }
@@ -161,14 +153,5 @@ namespace Symbiote.SDK
         }
 
         #endregion Private Methods
-    }
-
-    /// <summary>
-    ///     Identifies classes visible to the object <see cref="Discoverer"/>.
-    /// </summary>
-    [ExcludeFromCodeCoverage]
-    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
-    public class DiscoverableAttribute : Attribute
-    {
     }
 }
