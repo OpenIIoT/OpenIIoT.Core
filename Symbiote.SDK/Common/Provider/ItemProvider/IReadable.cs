@@ -1,28 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██
-      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄
-      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀
-      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██
-      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██
-      █     ██████████   ▀██▀     ███████  █   █     ▄██▀
-      █
-      █     ▄████████
-      █     ███    ███
-      █     ███    ███     ██        ██       █████  █  ▀██████▄  ██   █      ██       ▄█████
-      █     ███    ███ ▀███████▄ ▀███████▄   ██  ██ ██    ██   ██ ██   ██ ▀███████▄   ██   █
-      █   ▀███████████     ██  ▀     ██  ▀  ▄██▄▄█▀ ██▌  ▄██▄▄█▀  ██   ██     ██  ▀  ▄██▄▄
-      █     ███    ███     ██        ██    ▀███████ ██  ▀▀██▀▀█▄  ██   ██     ██    ▀▀██▀▀
-      █     ███    ███     ██        ██      ██  ██ ██    ██   ██ ██   ██     ██      ██   █
-      █     ███    █▀     ▄██▀      ▄██▀     ██  ██ █   ▄██████▀  ██████     ▄██▀     ███████
+      █    ▄█     ▄████████
+      █   ███    ███    ███
+      █   ███▌  ▄███▄▄▄▄██▀    ▄█████   ▄█████  ██████▄    ▄█████  ▀██████▄   █          ▄█████
+      █   ███▌ ▀▀███▀▀▀▀▀     ██   █    ██   ██ ██   ▀██   ██   ██   ██   ██ ██         ██   █
+      █   ███▌ ▀███████████  ▄██▄▄      ██   ██ ██    ██   ██   ██  ▄██▄▄█▀  ██        ▄██▄▄
+      █   ███    ███    ███ ▀▀██▀▀    ▀████████ ██    ██ ▀████████ ▀▀██▀▀█▄  ██       ▀▀██▀▀
+      █   ███    ███    ███   ██   █    ██   ██ ██   ▄██   ██   ██   ██   ██ ██▌    ▄   ██   █
+      █   █▀     ███    ███   ███████   ██   █▀ ██████▀    ██   █▀ ▄██████▀  ████▄▄██   ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Identifies Events contained within classes marked with the EventProvider Attribute.
+      █
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,25 +39,39 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Diagnostics.CodeAnalysis;
+using System.Threading.Tasks;
 
-namespace Symbiote.SDK.Event
+namespace Symbiote.SDK
 {
     /// <summary>
-    ///     Identifies Events contained within classes marked with the EventProvider Attribute.
+    ///     Defines the interface for Connector Plugins capable of providing data from the source of the Connector data.
     /// </summary>
-    [ExcludeFromCodeCoverage]
-    [AttributeUsage(AttributeTargets.Event)]
-    public class EventAttribute : Attribute
+    /// <remarks>
+    ///     <para>
+    ///         An <see cref="IConnector"/> instance implementing IReadable is responsible for providing data for
+    ///         <see cref="ConnectorItem"/> s by way of the <see cref="Read(Item)"/> method. This method accepts a ConnectorItem instance.
+    ///     </para>
+    ///     <para>
+    ///         The <see cref="Read(Item)"/> method must return a valid <see cref="Result{T}"/> containing the result of the
+    ///         operation, and the read data boxed within an object, including any informational, warning or error messages
+    ///         generated during the operation.
+    ///     </para>
+    ///     <para>The <see cref="ReadAsync(Item)"/> method behaves as <see cref="Read(Item)"/> but executes asynchronously.</para>
+    /// </remarks>
+    public interface IReadable
     {
-        #region Public Properties
+        /// <summary>
+        ///     Reads and returns the current value of the specified <see cref="Item"/>.
+        /// </summary>
+        /// <param name="item">The Item to read.</param>
+        /// <returns>The value of the specified Item.</returns>
+        object Read(Item item);
 
         /// <summary>
-        ///     Gets or sets the Event description.
+        ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
         /// </summary>
-        public string Description { get; set; }
-
-        #endregion Public Properties
+        /// <param name="item">The Item to read.</param>
+        /// <returns>The value of the specified Item.</returns>
+        Task<object> ReadAsync(Item item);
     }
 }

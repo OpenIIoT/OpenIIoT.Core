@@ -1,19 +1,28 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█     ▄████████                                         ▄███████▄
-      █   ███    ███    ███                                        ███    ███
-      █   ███▌   ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████  ██████   █    █   █  ██████▄     ▄█████    █████
-      █   ███▌  ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██ ██    ██ ██    ██ ██  ██   ▀██   ██   █    ██  ██
-      █   ███▌ ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀█████████▀   ▄██▄▄█▀ ██    ██ ██    ██ ██▌ ██    ██  ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███        ▀███████ ██    ██ ██    ██ ██  ██    ██ ▀▀██▀▀    ▀███████
-      █   ███    ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███          ██  ██ ██    ██  █▄  ▄█  ██  ██   ▄██   ██   █    ██  ██
-      █   █▀     ██████████   ▀██▀     ███████  █   █     ▄██▀    ▄████▀        ██  ██  ██████    ▀██▀   █   ██████▀    ███████   ██  ██
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██
+      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄
+      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀
+      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██
+      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██
+      █     ██████████   ▀██▀     ███████  █   █     ▄██▀
+      █
+      █     ▄████████
+      █     ███    ███
+      █     ███    ███     ██        ██       █████  █  ▀██████▄  ██   █      ██       ▄█████
+      █     ███    ███ ▀███████▄ ▀███████▄   ██  ██ ██    ██   ██ ██   ██ ▀███████▄   ██   █
+      █   ▀███████████     ██  ▀     ██  ▀  ▄██▄▄█▀ ██▌  ▄██▄▄█▀  ██   ██     ██  ▀  ▄██▄▄
+      █     ███    ███     ██        ██    ▀███████ ██  ▀▀██▀▀█▄  ██   ██     ██    ▀▀██▀▀
+      █     ███    ███     ██        ██      ██  ██ ██    ██   ██ ██   ██     ██      ██   █
+      █     ███    █▀     ▄██▀      ▄██▀     ██  ██ █   ▄██████▀  ██████     ▄██▀     ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for Event Providers.
+      █  Identifies Events contained within classes marked with the EventProvider Attribute.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,16 +48,25 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace Symbiote.SDK.Event
+using System;
+using System.Diagnostics.CodeAnalysis;
+
+namespace Symbiote.SDK
 {
     /// <summary>
-    ///     Defines the interface for Event Providers.
+    ///     Identifies Events contained within classes marked with the EventProvider Attribute.
     /// </summary>
-    public interface IEventProvider
+    [ExcludeFromCodeCoverage]
+    [AttributeUsage(AttributeTargets.Event)]
+    public class EventAttribute : Attribute
     {
+        #region Public Properties
+
         /// <summary>
-        ///     Gets the name of the Event Provider.
+        ///     Gets or sets the Event description.
         /// </summary>
-        string EventProviderName { get; }
+        public string Description { get; set; }
+
+        #endregion Public Properties
     }
 }

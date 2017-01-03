@@ -99,7 +99,7 @@ namespace Symbiote.Core.Service.Web.SignalR
             Item item = (Item)sender;
 
             string itemJson = item.ToJson(new ContractResolver(new List<string>(new string[] { "FQN", "Value", "Children" }), ContractResolverType.OptIn));
-            string valueJson = JsonConvert.SerializeObject(item.Value);
+            string valueJson = JsonConvert.SerializeObject(item.Read());
 
             logger.Trace("SignalR Item '" + item.FQN + "' changed.  Sending data to subscribed clients.");
 
@@ -118,17 +118,17 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// </param>
         public void Write(object[] args)
         {
-            Result retVal;
+            bool retVal;
 
             string castFQN = (string)args[0];
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
                 retVal = foundItem.Write(args[1]);
 
-                if (retVal.ResultCode != ResultCode.Failure)
+                if (retVal)
                 {
                     Clients.Caller.writeSuccess(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "updated item '" + foundItem.FQN + "' with value '" + args[1] + "'.");
@@ -137,7 +137,6 @@ namespace Symbiote.Core.Service.Web.SignalR
                 {
                     Clients.Caller.writeError(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "failed to update item '" + foundItem.FQN + "'.");
-                    retVal.LogAllMessages(logger.Info, "Info", "The following messages were generated during the write:");
                 }
             }
         }
@@ -155,17 +154,17 @@ namespace Symbiote.Core.Service.Web.SignalR
         /// </param>
         public void WriteToSource(object[] args)
         {
-            Result retVal;
+            bool retVal;
 
             string castFQN = (string)args[0];
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
                 retVal = foundItem.WriteToSource(args[1]);
 
-                if (retVal.ResultCode != ResultCode.Failure)
+                if (!retVal)
                 {
                     Clients.Caller.writeToSourceSuccess(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "updated item source '" + foundItem.FQN + "' with value '" + args[1] + "'.");
@@ -174,7 +173,6 @@ namespace Symbiote.Core.Service.Web.SignalR
                 {
                     Clients.Caller.writeToSourceError(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "failed to update item source '" + foundItem.FQN + "'.");
-                    retVal.LogAllMessages(logger.Info, "Info", "The following messages were generated during the write:");
                 }
             }
         }
@@ -191,7 +189,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -224,7 +222,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = FQNResolver.Resolve(castFQN);
+            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
 
             if (foundItem != default(Item))
             {

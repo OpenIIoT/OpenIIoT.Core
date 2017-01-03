@@ -49,7 +49,7 @@
                                                                                                    ▀▀                            */
 
 using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Symbiote.SDK;
 using Utility.OperationResult;
@@ -173,13 +173,12 @@ namespace Symbiote.Core.Tests
             Assert.IsType<Core.ApplicationManager>(manager);
             Assert.NotNull(manager);
 
-            ImmutableList<IManager> managers = manager.GetManagers();
+            IReadOnlyList<IManager> managers = manager.Managers;
 
             Assert.Equal(managers.Count, 2);
 
             Assert.NotNull(manager.ProductName);
             Assert.NotNull(manager.ProductVersion);
-            Assert.Equal(manager.InstanceName, Core.ApplicationManager.GetInstanceName());
         }
 
         /// <summary>

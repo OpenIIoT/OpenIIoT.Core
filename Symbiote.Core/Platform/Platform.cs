@@ -75,7 +75,7 @@ namespace Symbiote.Core.Platform
     ///         while Version is informational.
     ///     </para>
     ///     <para>
-    ///         The Platform instance also contains the <see cref="ItemProvider"/> property which contains a reference to the Item
+    ///         The Platform instance also contains the <see cref="Metrics"/> property which contains a reference to the Item
     ///         Provider class which accompanies the Platform. This <see cref="IItemProvider"/> provides <see cref="Item"/> objects
     ///         used to report statistics and metrics about the underlying Platform.
     ///     </para>
@@ -86,6 +86,7 @@ namespace Symbiote.Core.Platform
     ///     </para>
     ///     <para>This class is expected to continually expand as the needs of the application increase.</para>
     /// </remarks>
+    [Discoverable]
     public abstract class Platform : IPlatform
     {
         #region Private Fields
@@ -113,7 +114,8 @@ namespace Symbiote.Core.Platform
         /// <summary>
         ///     Gets or sets the accompanying Item Provider for the Platform.
         /// </summary>
-        public IItemProvider ItemProvider { get; protected set; }
+        [Discoverable]
+        public IItemOriginator ItemOriginator { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the Platform Type.

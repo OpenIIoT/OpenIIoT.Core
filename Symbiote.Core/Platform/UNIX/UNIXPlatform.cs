@@ -40,6 +40,7 @@
                                                                                                    ▀▀                            */
 
 using System;
+using Symbiote.SDK;
 using Symbiote.SDK.Platform;
 
 namespace Symbiote.Core.Platform.UNIX
@@ -47,6 +48,7 @@ namespace Symbiote.Core.Platform.UNIX
     /// <summary>
     ///     Extends the Platform class to allow file system I/O abstraction on UNIX platforms.
     /// </summary>
+    [Discoverable]
     public class UNIXPlatform : Platform
     {
         #region Public Constructors
@@ -58,7 +60,7 @@ namespace Symbiote.Core.Platform.UNIX
         {
             PlatformType = PlatformType.UNIX;
             Version = Environment.OSVersion.VersionString;
-            ItemProvider = new UNIXPlatformItemProvider();
+            ItemOriginator = new UNIXPlatformItemProvider("Platform");
         }
 
         #endregion Public Constructors

@@ -64,7 +64,7 @@ namespace Symbiote.Core.Plugin
         /// <summary>
         ///     Gets a Dictionary of all Plugin Instances, keyed by instance name.
         /// </summary>
-        Dictionary<string, IPluginInstance> PluginInstances { get; }
+        List<IPluginInstance> PluginInstances { get; }
 
         /// <summary>
         ///     Gets a list of installed plugins.

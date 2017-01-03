@@ -58,6 +58,7 @@ using Symbiote.SDK.Platform;
 using Symbiote.Core.Service;
 using Utility.OperationResult;
 using Symbiote.SDK.Plugin.Connector;
+using System.Collections.Generic;
 
 namespace Symbiote.Core
 {
@@ -446,29 +447,29 @@ namespace Symbiote.Core
 
             try
             {
-                // attach the Platform connector items to the model detach anything in "Symbiote.System.Platform" that was loaded
-                // from the config file
-                logger.Info("Detaching potentially stale Platform items...");
-                applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
+                //// attach the Platform connector items to the model detach anything in "Symbiote.System.Platform" that was loaded
+                //// from the config file
+                //logger.Info("Detaching potentially stale Platform items...");
+                //applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
 
-                logger.Info("Attaching new Platform items...");
+                //logger.Info("Attaching new Platform items...");
 
-                // find or create the parent for the Platform items
-                logger.Info("Checking for the 'System' item...");
-                Item systemItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName + ".System");
-                if (systemItem == default(Item))
-                {
-                    logger.Info("Creating the 'System' item...");
-                    systemItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName + ".System")).ReturnValue;
-                }
-                else
-                {
-                    logger.Info("'System' item already exists.");
-                }
+                //// find or create the parent for the Platform items
+                //logger.Info("Checking for the 'System' item...");
+                //Item systemItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName + ".System");
+                //if (systemItem == default(Item))
+                //{
+                //    logger.Info("Creating the 'System' item...");
+                //    systemItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName + ".System")).ReturnValue;
+                //}
+                //else
+                //{
+                //    logger.Info("'System' item already exists.");
+                //}
 
-                // attach the Platform items to Symbiote.System
-                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.ItemProvider.Browse(), systemItem);
-                logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
+                //// attach the Platform items to Symbiote.System
+                //applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.ItemProvider.Browse(), systemItem);
+                //logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
 
                 // find the root item, or create it if it doesn't exist for some reason
                 Item symItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName);
@@ -485,24 +486,22 @@ namespace Symbiote.Core
                 Utility.PrintModel(logger, applicationManager.GetManager<IModelManager>().Model, 0, null, true);
                 Utility.PrintLogoFooter(logger);
 
-                // subscribe to the datetime item
+                //// subscribe to the datetime item
                 Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
-                subscribe.LogResult(logger.Info);
+                subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.Binary.DynamicImage").SubscribeToSource();
+                //subscribe.LogResult(logger.Info);
+
+                //Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.System.Platform.Memory.Available").SubscribeToSource();
 
                 applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
 
-                foreach (var drive in System.IO.DriveInfo.GetDrives())
-                {
-                    double freeSpace = drive.TotalFreeSpace;
-                    double totalSpace = drive.TotalSize;
-                    double percentFree = (freeSpace / totalSpace) * 100;
-                    float num = (float)percentFree;
+                IList<IItemProvider> itemProviders = Discoverer.Discover<IItemProvider>(applicationManager);
 
-                    Console.WriteLine("Drive:{0} With {1} % free", drive.Name, num);
-                    Console.WriteLine("Space Remaining:{0}", drive.AvailableFreeSpace);
-                    Console.WriteLine("Percent Free Space:{0}", percentFree);
-                    Console.WriteLine("Space used:{0}", drive.TotalSize);
-                    Console.WriteLine("Type: {0}", drive.DriveType);
+                Console.WriteLine("Found " + itemProviders.Count + " providers.");
+
+                foreach (IItemProvider provider in itemProviders)
+                {
+                    Console.WriteLine("P: " + provider.ItemProviderName + ", " + provider.GetType().FullName);
                 }
             }
             catch (Exception ex)

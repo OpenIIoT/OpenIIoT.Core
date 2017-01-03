@@ -48,6 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Moq;
 using System;
 using System.Collections.Generic;
 using Utility.OperationResult;
@@ -128,13 +129,13 @@ namespace Symbiote.SDK.Tests
         [Fact]
         public void Constructor()
         {
+            // create mockups
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+
             SDK.Item item = new SDK.Item();
             Assert.IsType<SDK.Item>(item);
 
             item = new SDK.Item(string.Empty);
-            Assert.IsType<SDK.Item>(item);
-
-            item = new SDK.Item(string.Empty, false);
             Assert.IsType<SDK.Item>(item);
 
             item = new SDK.Item(string.Empty, string.Empty);
@@ -143,7 +144,10 @@ namespace Symbiote.SDK.Tests
             item = new SDK.Item(string.Empty, new SDK.Item());
             Assert.IsType<SDK.Item>(item);
 
-            item = new SDK.Item(string.Empty, default(SDK.Item), string.Empty, false);
+            item = new SDK.Item(string.Empty, new SDK.Item(), mockProvider.Object);
+            Assert.IsType<SDK.Item>(item);
+
+            item = new SDK.Item(string.Empty, string.Empty, mockProvider.Object);
             Assert.IsType<SDK.Item>(item);
         }
 
@@ -194,8 +198,7 @@ namespace Symbiote.SDK.Tests
             item.SourceItem = newItem;
             Assert.Equal(newItem, item.SourceItem);
 
-            Assert.Equal(default(object), item.Value);
-            Assert.Equal(true, item.Writeable);
+            Assert.Equal(default(object), item.Read());
 
             SDK.Item rootItem = new SDK.Item("Root");
             Assert.Equal("Root", rootItem.FQN);
@@ -204,6 +207,24 @@ namespace Symbiote.SDK.Tests
             Assert.Equal("Root.Child.Name", item.ToString());
             Assert.NotNull(item.ToJson());
             Assert.NotNull(item.ToJson(new SDK.ContractResolver()));
+        }
+
+        [Fact]
+        public void Source()
+        {
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+
+            SDK.Item provider = new SDK.Item(string.Empty, mockProvider.Object);
+            Assert.Equal(ItemSource.ItemProvider, provider.Source);
+
+            SDK.Item item = new SDK.Item(string.Empty, new SDK.Item());
+            Assert.Equal(ItemSource.Item, item.Source);
+
+            SDK.Item unresolved = new SDK.Item(string.Empty, "source");
+            Assert.Equal(ItemSource.Unresolved, unresolved.Source);
+
+            SDK.Item unknown = new SDK.Item();
+            Assert.Equal(ItemSource.Unknown, unknown.Source);
         }
 
         /// <summary>
@@ -215,7 +236,6 @@ namespace Symbiote.SDK.Tests
             SDK.Item item = new SDK.Item("Root.Item");
             item.Write("Value!");
 
-            Assert.Equal("Value!", item.Value);
             Assert.Equal("Value!", item.Read());
 
             object value = await item.ReadAsync();
@@ -244,7 +264,7 @@ namespace Symbiote.SDK.Tests
 
             // ensure the correct value is returned and set as the item's value
             Assert.Equal("source value", value);
-            Assert.Equal("source value", item.Value);
+            Assert.Equal("source value", item.Read());
 
             // change the source item's value so we can read again
             sourceItem.Write("new value");
@@ -254,7 +274,7 @@ namespace Symbiote.SDK.Tests
 
             // ensure the proper value is returned and set
             Assert.Equal("new value", newValue);
-            Assert.Equal("new value", item.Value);
+            Assert.Equal("new value", item.Read());
         }
 
         /// <summary>
@@ -274,8 +294,8 @@ namespace Symbiote.SDK.Tests
 
             // write a value to the source item and assert that the item's value updates.
             sourceItem.Write("new value");
-            Assert.Equal("new value", sourceItem.Value);
-            Assert.Equal("new value", item.Value);
+            Assert.Equal("new value", sourceItem.Read());
+            Assert.Equal("new value", item.Read());
 
             // unsubscribe the item from it's source item and assert that it succeeded
             Result unsubscribeResult = item.UnsubscribeFromSource();
@@ -283,8 +303,8 @@ namespace Symbiote.SDK.Tests
 
             // write a value to the source item and assert that the item's value doesn't update.
             sourceItem.Write("final value");
-            Assert.Equal("final value", sourceItem.Value);
-            Assert.NotEqual("final value", item.Value);
+            Assert.Equal("final value", sourceItem.Read());
+            Assert.NotEqual("final value", item.Read());
 
             // test the subscribe/unsubscribe methods with an item for which the source item has not been set
             SDK.Item lastItem = new SDK.Item("Root.LastItem");
@@ -302,66 +322,71 @@ namespace Symbiote.SDK.Tests
         [Fact]
         public async void Write()
         {
-            SDK.Item item = new SDK.Item("Root.Item");
+            SDK.Item writeableItem = new SDK.Item("Root.Item");
+            SDK.Item nonWriteableItem = new SDK.Item("Root.Item2", ItemAccessMode.ReadOnly);
 
-            Assert.Equal(true, item.Writeable);
+            bool result = writeableItem.Write("test");
+            Assert.True(result);
+            Assert.Equal("test", writeableItem.Read());
 
-            item.Write("test");
+            result = await writeableItem.WriteAsync("test two");
 
-            Assert.Equal("test", item.Value);
+            Assert.True(result);
+            Assert.Equal("test two", writeableItem.Read());
 
-            await item.WriteAsync("test two");
+            result = nonWriteableItem.Write("new value");
 
-            Assert.Equal("test two", item.Value);
-
-            item.Writeable = false;
-            Assert.Equal(false, item.Writeable);
-
-            Result writeResult = item.Write("new value");
-
-            Assert.Equal(ResultCode.Failure, writeResult.ResultCode);
-            Assert.Equal("test two", item.Value);
+            Assert.False(result);
         }
 
-        /// <summary>
-        ///     Tests the <see cref="SDK.Item.Write(object)"/> and <see cref="SDK.Item.WriteToSourceAsync(object)"/>
-        /// </summary>
+        [Fact]
+        public async void WriteToSourceAsync()
+        {
+            // mock an IWriteable item provider
+            Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
+            mockItemProvider.CallBase = true;
+            mockItemProvider.As<IWriteable>();
+
+            // create an item sourced from an ItemProvider and link a model item
+            SDK.Item providerItem = new SDK.Item("Source.Item", mockItemProvider.Object);
+
+            // setup the mock to return a good value for the provider's Write()
+            mockItemProvider.As<IWriteable>().Setup(p => p.Write(It.IsAny<SDK.Item>(), It.IsAny<object>())).Returns(true);
+
+            SDK.Item sourceItem = new SDK.Item("Root.Model.Item", providerItem);
+
+            // test a write with an IWriteable provider
+            bool result = await sourceItem.WriteToSourceAsync("source value");
+
+            // assert that the write completed and that the value was written
+            Assert.True(result);
+            Assert.Equal("source value", sourceItem.Read());
+            Assert.Equal("source value", providerItem.Read());
+        }
+
         [Fact]
         public async void WriteToSource()
         {
-            SDK.Item sourceItem1 = new SDK.Item("Root.SourceItem1");
-            sourceItem1.Write("source value 1");
+            // mock an IWriteable item provider
+            Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
+            mockItemProvider.CallBase = true;
+            mockItemProvider.As<IWriteable>();
 
-            SDK.Item sourceItem2 = new SDK.Item("Root.SourceItem2");
-            sourceItem2.Write("source value 2");
-            sourceItem2.Writeable = false;
+            // create an item sourced from an ItemProvider and link a model item
+            SDK.Item providerItem = new SDK.Item("Source.Item", mockItemProvider.Object);
 
-            SDK.Item item = new SDK.Item("Root.Item");
+            // setup the mock to return a good value for the provider's Write()
+            mockItemProvider.As<IWriteable>().Setup(p => p.Write(It.IsAny<SDK.Item>(), It.IsAny<object>())).Returns(true);
 
-            // try a write with an unbound source item
-            Result badWriteResult = item.WriteToSource("value");
+            SDK.Item sourceItem = new SDK.Item("Root.Model.Item", providerItem);
 
-            Assert.Equal(ResultCode.Success, badWriteResult.ResultCode);
-            Assert.Equal("value", item.Value);
+            // test a write with an IWriteable provider
+            bool result = sourceItem.WriteToSource("source value");
 
-            // try a write with an unwriteable source item
-            item.SourceItem = sourceItem2;
-            Result badWriteResult2 = item.WriteToSource("value");
-
-            Assert.Equal(ResultCode.Failure, badWriteResult2.ResultCode);
-
-            // write a good value
-            item.SourceItem = sourceItem1;
-            Result writeResult = item.WriteToSource("value 1");
-
-            Assert.Equal(ResultCode.Success, writeResult.ResultCode);
-            Assert.Equal("value 1", item.SourceItem.Value);
-
-            // write a good value asynchronously
-            Result writeResult2 = await item.WriteToSourceAsync("value 2");
-
-            Assert.Equal(ResultCode.Success, writeResult.ResultCode);
-            Assert.Equal("value 2", item.SourceItem.Value);
+            // assert that the write completed and that the value was written
+            Assert.True(result);
+            Assert.Equal("source value", sourceItem.Read());
+            Assert.Equal("source value", providerItem.Read());
         }
 
         #endregion Public Methods

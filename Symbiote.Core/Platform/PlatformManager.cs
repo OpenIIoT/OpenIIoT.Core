@@ -55,6 +55,7 @@ namespace Symbiote.Core.Platform
     /// <summary>
     ///     The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>
+    [Discoverable]
     public class PlatformManager : Manager, IPlatformManager
     {
         #region Private Fields
@@ -83,6 +84,7 @@ namespace Symbiote.Core.Platform
             Guid guid = logger.EnterMethod();
 
             ManagerName = "Platform Manager";
+            EventProviderName = GetType().Name;
 
             // register dependencies
             RegisterDependency<IApplicationManager>(manager);
@@ -121,6 +123,7 @@ namespace Symbiote.Core.Platform
         /// <summary>
         ///     The current platform.
         /// </summary>
+        [Discoverable]
         public IPlatform Platform { get; private set; }
 
         #endregion Public Properties
@@ -163,10 +166,6 @@ namespace Symbiote.Core.Platform
         {
             IApplicationManager manager = Dependency<IApplicationManager>();
             IModelManager modelManager = manager.GetManager<IModelManager>();
-
-            modelManager.RegisterItemProvider(Platform.ItemProvider);
-
-            //modelManager.RegisterItemProvider(Platform.ItemProvider);
         }
 
         protected override Result Shutdown(StopType stopType = StopType.Stop)

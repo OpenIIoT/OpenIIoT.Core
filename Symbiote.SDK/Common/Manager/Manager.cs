@@ -57,16 +57,16 @@ namespace Symbiote.SDK
     /// <remarks>
     ///     <para>
     ///         Each implementation of Manager is designed as a Singleton so that only one instance of the manager may be created.
-    ///         This is essential as plugins run in the same AppDomain as the core and the nature of the Manager classes is such
+    ///         This is essential as Plugins run in the same AppDomain as the Core and the nature of the Manager classes is such
     ///         that, if more than one were to be created, the potential for undefined behavior is extremely high.
     ///     </para>
     ///     <para>
     ///         To create an instance of a Manager a static method Instantiate() is used, in conjunction with a private constructor
     ///         and a private field named instance corresponding to the Type of the class. The Instantiate() and class constructor
-    ///         must define a matching parameter list accepting <see cref="IApplicationManager"/> and an interface instance for
-    ///         each Manager upon which the class is dependent. Dependencies are injected automatically when the Manager is
-    ///         instantiated by the <see cref="ApplicationManager"/>. Note that none of these elements are present in the base
-    ///         Manager class as they are specific to each implementation.
+    ///         must define a matching parameter list accepting <see cref="IApplicationManager"/> and an interface instance for the
+    ///         interface corresponding to each Manager upon which the class is dependent. Dependencies are injected automatically
+    ///         when the Manager is instantiated by the <see cref="ApplicationManager"/>. Note that none of these elements are
+    ///         present in the base Manager class as the implementation and method signature are specific to each Manager implementation.
     ///     </para>
     ///     <para>
     ///         Within the constructor each Manager must invoke the <see cref="RegisterDependency{T}(IManager)"/> method for each
@@ -109,6 +109,7 @@ namespace Symbiote.SDK
     ///         property will return true.
     ///     </para>
     /// </remarks>
+    [Discoverable]
     public abstract class Manager : IDisposable, IManager
     {
         #region Protected Fields

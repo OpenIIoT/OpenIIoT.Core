@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█     █▄                                                      ▄███████▄
-      █   ███     ███                                                    ███    ███
-      █   ███     ███  █  ██▄▄▄▄  ██████▄   ██████   █     █    ▄█████   ███    ███  █         ▄█████      ██       ▄█████  ██████     █████    ▄▄██▄▄▄
-      █   ███     ███ ██  ██▀▀▀█▄ ██   ▀██ ██    ██ ██     ██   ██  ▀    ███    ███ ██         ██   ██ ▀███████▄   ██   ▀█ ██    ██   ██  ██  ▄█▀▀██▀▀█▄
-      █   ███     ███ ██▌ ██   ██ ██    ██ ██    ██ ██     ██   ██     ▀█████████▀  ██         ██   ██     ██  ▀  ▄██▄▄    ██    ██  ▄██▄▄█▀  ██  ██  ██
-      █   ███     ███ ██  ██   ██ ██    ██ ██    ██ ██     ██ ▀███████   ███        ██       ▀████████     ██    ▀▀██▀▀    ██    ██ ▀███████  ██  ██  ██
-      █   ███ ▄█▄ ███ ██  ██   ██ ██   ▄██ ██    ██ ██ ▄█▄ ██    ▄  ██   ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██
-      █    ▀███▀███▀  █    █   █  ██████▀   ██████   ███▀███   ▄████▀   ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █
+      █    ▄█   ▄█                                   ▄██████▄
+      █   ███  ███                                  ███    ███
+      █   ███▌ ███▌     ██       ▄█████    ▄▄██▄▄▄  ███    ███    █████  █     ▄████▄   █  ██▄▄▄▄    ▄█████      ██     ██████     █████
+      █   ███▌ ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ ███    ███   ██  ██ ██    ██    ▀  ██  ██▀▀▀█▄   ██   ██ ▀███████▄ ██    ██   ██  ██
+      █   ███▌ ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ███    ███  ▄██▄▄█▀ ██▌  ▄██       ██▌ ██   ██   ██   ██     ██  ▀ ██    ██  ▄██▄▄█▀
+      █   ███  ███      ██    ▀▀██▀▀     ██  ██  ██ ███    ███ ▀███████ ██  ▀▀██ ███▄  ██  ██   ██ ▀████████     ██    ██    ██ ▀███████
+      █   ███  ███      ██      ██   █   ██  ██  ██ ███    ███   ██  ██ ██    ██    ██ ██  ██   ██   ██   ██     ██    ██    ██   ██  ██
+      █   █▀   █▀      ▄██▀     ███████   █  ██  █   ▀██████▀    ██  ██ █     ██████▀  █    █   █    ██   █▀    ▄██▀    ██████    ██  ██
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Extends the Platform class to allow file system I/O abstraction and metrics on Windows platforms.
+      █  Defines the interface for classes capable of originating Item objects; those that implement IItemProvider as well as IReadable.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,30 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using Symbiote.SDK;
-using Symbiote.SDK.Platform;
-
-namespace Symbiote.Core.Platform.Windows
+namespace Symbiote.SDK
 {
     /// <summary>
-    ///     Extends the Platform class to allow file system I/O abstraction and metrics on Windows platforms.
+    ///     Defines the interface for classes capable of originating <see cref="Item"/> objects; those that implement
+    ///     <see cref="IItemProvider"/> as well as <see cref="IReadable"/>.
     /// </summary>
-    [Discoverable]
-    public class WindowsPlatform : Platform
+    public interface IItemOriginator : IItemProvider, IReadable
     {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="WindowsPlatform"/> class.
-        /// </summary>
-        public WindowsPlatform()
-        {
-            PlatformType = PlatformType.Windows;
-            Version = Environment.OSVersion.VersionString;
-            ItemOriginator = new WindowsPlatformItemProvider("Platform");
-        }
-
-        #endregion Public Constructors
     }
 }

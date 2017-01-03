@@ -42,6 +42,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Symbiote.SDK
 {
@@ -105,15 +106,26 @@ namespace Symbiote.SDK
             return builtString.ToString();
         }
 
+        ///// <summary>
+        /////     Returns a value indicating whether <see cref="Type"/> of the specified object instance contains the specified <see cref="Attribute"/>.
+        ///// </summary>
+        ///// <typeparam name="T">The <see cref="Attribute"/> for which to check.</typeparam>
+        ///// <param name="instance">The object instance to check.</param>
+        ///// <returns>A value indicating whether the specified Type contains the specified Attribute.</returns>
+        //public static bool HasCustomAttribute<T>(this Type type) where T : Attribute
+        //{
+        //    return Attribute.IsDefined(type, typeof(T));
+        //}
+
         /// <summary>
         ///     Returns a value indicating whether <see cref="Type"/> of the specified object instance contains the specified <see cref="Attribute"/>.
         /// </summary>
         /// <typeparam name="T">The <see cref="Attribute"/> for which to check.</typeparam>
         /// <param name="instance">The object instance to check.</param>
         /// <returns>A value indicating whether the specified Type contains the specified Attribute.</returns>
-        public static bool HasCustomAttribute<T>(this object instance) where T : Attribute
+        public static bool HasCustomAttribute<T>(this MemberInfo member) where T : Attribute
         {
-            return Attribute.GetCustomAttribute(instance.GetType(), typeof(T)) != default(Attribute);
+            return Attribute.GetCustomAttribute(member, typeof(T), false) != default(Attribute);
         }
 
         /// <summary>

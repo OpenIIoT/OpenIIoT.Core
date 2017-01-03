@@ -58,7 +58,7 @@ namespace Symbiote.Core.Platform.UNIX
     /// <summary>
     ///     Provides Platform statistics and metrics for the UNIX Platform on which the application is run.
     /// </summary>
-    public class UNIXPlatformItemProvider : ItemProvider
+    public class UNIXPlatformItemProvider : ItemOriginator
     {
         #region Private Fields
 
@@ -89,12 +89,10 @@ namespace Symbiote.Core.Platform.UNIX
         /// <summary>
         ///     Initializes a new instance of the <see cref="UNIXPlatformItemProvider"/> class.
         /// </summary>
-        public UNIXPlatformItemProvider()
+        public UNIXPlatformItemProvider(string itemProviderName) : base(itemProviderName)
         {
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");
-
-            ItemProviderName = "Platform";
 
             InitializeItems();
         }
@@ -107,8 +105,8 @@ namespace Symbiote.Core.Platform.UNIX
         ///     Reads and returns the current value of the specified <see cref="Item"/>.
         /// </summary>
         /// <param name="item">The Item to read.</param>
-        /// <returns>A Result containing the result of the operation and the current value of the Item.</returns>
-        public override Result<object> Read(Item item)
+        /// <returns>The value of the specified Item.</returns>
+        public override object Read(Item item)
         {
             Result<object> retVal = new Result<object>();
 
@@ -158,8 +156,8 @@ namespace Symbiote.Core.Platform.UNIX
         ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
         /// </summary>
         /// <param name="item">The Item to read.</param>
-        /// <returns>A Result containing the result of the operation and the current value of the Item.</returns>
-        public override async Task<Result<object>> ReadAsync(Item item)
+        /// <returns>The value of the specified Item.</returns>
+        public override async Task<object> ReadAsync(Item item)
         {
             return await Task.Run(() => Read(item));
         }
@@ -174,12 +172,12 @@ namespace Symbiote.Core.Platform.UNIX
         private void InitializeItems()
         {
             // instantiate an item root
-            ItemRoot = new Item(ItemProviderName);
+            ItemRoot = new Item(ItemProviderName, this);
 
             // create CPU items
-            Item cpuRoot = ItemRoot.AddChild(new Item("CPU")).ReturnValue;
-            cpuRoot.AddChild(new Item("CPU.% Processor Time"));
-            cpuRoot.AddChild(new Item("CPU.% Idle Time"));
+            Item cpuRoot = ItemRoot.AddChild(new Item("CPU", this)).ReturnValue;
+            cpuRoot.AddChild(new Item("CPU.% Processor Time", this));
+            cpuRoot.AddChild(new Item("CPU.% Idle Time", this));
 
             // prepare variables to use for processor time. you need two successive values to report accurately so rather than
             // sleeping the thread we will just keep track from call to call. the first values will always be zero and that's ok.
@@ -187,36 +185,36 @@ namespace Symbiote.Core.Platform.UNIX
             lastCPUIdle = 0;
 
             // create memory items
-            Item memRoot = ItemRoot.AddChild(new Item("Memory")).ReturnValue;
-            memRoot.AddChild(new Item("Memory.Total"));
-            memRoot.AddChild(new Item("Memory.Available"));
-            memRoot.AddChild(new Item("Memory.Cached"));
-            memRoot.AddChild(new Item("Memory.% Used"));
+            Item memRoot = ItemRoot.AddChild(new Item("Memory", this)).ReturnValue;
+            memRoot.AddChild(new Item("Memory.Total", this));
+            memRoot.AddChild(new Item("Memory.Available", this));
+            memRoot.AddChild(new Item("Memory.Cached", this));
+            memRoot.AddChild(new Item("Memory.% Used", this));
 
             // create drive items
-            Item driveRoot = ItemRoot.AddChild(new Item("Drives")).ReturnValue;
+            Item driveRoot = ItemRoot.AddChild(new Item("Drives", this)).ReturnValue;
 
             // system drive
-            Item sysDriveRoot = driveRoot.AddChild(new Item("Drives.System")).ReturnValue;
-            sysDriveRoot.AddChild(new Item("Drives.System.Name"));
-            sysDriveRoot.AddChild(new Item("Path"));
-            sysDriveRoot.AddChild(new Item("Type"));
-            sysDriveRoot.AddChild(new Item("Capacity"));
-            sysDriveRoot.AddChild(new Item("UsedSpace"));
-            sysDriveRoot.AddChild(new Item("FreeSpace"));
-            sysDriveRoot.AddChild(new Item("PercentUsed"));
-            sysDriveRoot.AddChild(new Item("PercentFree"));
+            Item sysDriveRoot = driveRoot.AddChild(new Item("Drives.System", this)).ReturnValue;
+            sysDriveRoot.AddChild(new Item("Drives.System.Name", this));
+            sysDriveRoot.AddChild(new Item("Path", this));
+            sysDriveRoot.AddChild(new Item("Type", this));
+            sysDriveRoot.AddChild(new Item("Capacity", this));
+            sysDriveRoot.AddChild(new Item("UsedSpace", this));
+            sysDriveRoot.AddChild(new Item("FreeSpace", this));
+            sysDriveRoot.AddChild(new Item("PercentUsed", this));
+            sysDriveRoot.AddChild(new Item("PercentFree", this));
 
             // data drive
-            Item dataDriveRoot = driveRoot.AddChild(new Item("Data")).ReturnValue;
-            dataDriveRoot.AddChild(new Item("Name"));
-            dataDriveRoot.AddChild(new Item("Path"));
-            dataDriveRoot.AddChild(new Item("Type"));
-            dataDriveRoot.AddChild(new Item("Capacity"));
-            dataDriveRoot.AddChild(new Item("UsedSpace"));
-            dataDriveRoot.AddChild(new Item("FreeSpace"));
-            dataDriveRoot.AddChild(new Item("PercentUsed"));
-            dataDriveRoot.AddChild(new Item("PercentFree"));
+            Item dataDriveRoot = driveRoot.AddChild(new Item("Data", this)).ReturnValue;
+            dataDriveRoot.AddChild(new Item("Name", this));
+            dataDriveRoot.AddChild(new Item("Path", this));
+            dataDriveRoot.AddChild(new Item("Type", this));
+            dataDriveRoot.AddChild(new Item("Capacity", this));
+            dataDriveRoot.AddChild(new Item("UsedSpace", this));
+            dataDriveRoot.AddChild(new Item("FreeSpace", this));
+            dataDriveRoot.AddChild(new Item("PercentUsed", this));
+            dataDriveRoot.AddChild(new Item("PercentFree", this));
         }
 
         #endregion Private Methods

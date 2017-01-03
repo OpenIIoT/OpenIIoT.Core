@@ -42,6 +42,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -77,100 +78,117 @@ namespace Symbiote.SDK
 
         #endregion Protected Fields
 
+        #region Private Fields
+
+        /// <summary>
+        ///     The resolved source Item.
+        /// </summary>
+        private Item sourceItem;
+
+        #endregion Private Fields
+
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class.
-        /// </summary>
-        public Item() : this(string.Empty, default(Item), string.Empty, true, null)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name and the
-        ///     specified Item Provider.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="itemProvider">The Item Provider from which the Item originates.</param>
-        public Item(string fqn, IItemProvider itemProvider) : this(fqn, default(Item), string.Empty, false, itemProvider)
+        public Item(string fqn = "") : this(fqn, default(Item), string.Empty, ItemAccessMode.ReadWrite, default(IItemProvider))
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name to be used as
-        ///     the root of a model.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name and access mode.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="isRoot">True if the item is to be created as a root model item, false otherwise.</param>
-        public Item(string fqn, bool isRoot) : this(fqn, default(Item), string.Empty, isRoot, default(IItemProvider))
+        /// <param name="accessMode">The access mode of the Item.</param>
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
+        public Item(string fqn, ItemAccessMode accessMode, IItemProvider provider = default(IItemProvider)) : this(fqn, default(Item), string.Empty, accessMode, provider)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name and type.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name and provider.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
-        public Item(string fqn, string sourceFQN) : this(fqn, default(Item), sourceFQN, false, default(IItemProvider))
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
+        public Item(string fqn, IItemProvider provider) : this(fqn, default(Item), string.Empty, ItemAccessMode.ReadWrite, provider)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name and source Item.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name, source Item,
+        ///     and provider.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceItem">The source Item.</param>
-        public Item(string fqn, Item sourceItem) : this(fqn, sourceItem, sourceItem?.FQN, false, default(IItemProvider))
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
+        public Item(string fqn, Item sourceItem, IItemProvider provider) : this(fqn, sourceItem, string.Empty, ItemAccessMode.ReadWrite, provider)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name and type. If
-        ///     isRoot is true, marks the Item as the root item in a model.
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name, source item,
+        ///     access mode and provider.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceItem">The source Item.</param>
-        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
-        /// <param name="isRoot">True if the Item is to be created as a root model Item, false otherwise.</param>
-        /// <param name="itemProvider">The Item Provider from which the Item originates.</param>
-        public Item(string fqn, Item sourceItem = default(Item), string sourceFQN = "", bool isRoot = false, IItemProvider itemProvider = default(IItemProvider))
+        /// <param name="accessMode">The access mode of the Item.</param>
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
+        public Item(string fqn, Item sourceItem, ItemAccessMode accessMode = ItemAccessMode.ReadWrite, IItemProvider provider = default(IItemProvider)) : this(fqn, sourceItem, string.Empty, accessMode, provider)
         {
-            FQN = fqn;
+        }
 
-            if (sourceItem != default(Item))
-            {
-                SourceItem = sourceItem;
-                SourceFQN = sourceItem.FQN;
-            }
-            else
-            {
-                SourceFQN = sourceFQN;
-            }
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name, source FQN, and provider.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
+        public Item(string fqn, string sourceFQN, IItemProvider provider) : this(fqn, default(Item), sourceFQN, ItemAccessMode.ReadWrite, provider)
+        {
+        }
 
-            if (itemProvider != default(IItemProvider))
-            {
-                ItemProvider = itemProvider;
-            }
-
-            Value = default(object);
-
-            // create a unique Guid for this item. useful for debugging.
-            Guid = Guid.NewGuid();
-
-            // instantiate the list of children
-            Children = new List<Item>();
-
-            // if we are creating the root item, make Parent self-referential.
-            if (isRoot)
-            {
-                FQN = Name;
-                Parent = this;
-            }
-
-            Writeable = true;
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name, source FQN,
+        ///     access mode, and provider.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
+        /// <param name="accessMode">The access mode of the Item.</param>
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
+        public Item(string fqn, string sourceFQN, ItemAccessMode accessMode = ItemAccessMode.ReadWrite, IItemProvider provider = default(IItemProvider)) : this(fqn, default(Item), sourceFQN, accessMode, provider)
+        {
         }
 
         #endregion Public Constructors
+
+        #region Private Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified Name, source Item,
+        ///     source FQN, access mode and provider.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
+        /// <param name="sourceItem">The source Item.</param>
+        /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
+        /// <param name="accessMode">The access mode of the Item.</param>
+        /// <param name="provider">The Item Provider from which the Item originates.</param>
+        private Item(string fqn, Item sourceItem = default(Item), string sourceFQN = "", ItemAccessMode accessMode = ItemAccessMode.ReadWrite, IItemProvider provider = default(IItemProvider))
+        {
+            FQN = fqn;
+            SourceItem = sourceItem;
+            SourceFQN = SourceItem == default(Item) ? sourceFQN : SourceItem.FQN;
+            AccessMode = accessMode;
+            Provider = provider;
+
+            Value = default(object);
+            Guid = Guid.NewGuid();
+
+            Children = new List<Item>();
+        }
+
+        #endregion Private Constructors
 
         #region Public Events
 
@@ -184,14 +202,14 @@ namespace Symbiote.SDK
         #region Public Properties
 
         /// <summary>
-        ///     Gets the Item Provider from which the Item originates.
+        ///     Gets the access mode for the Item.
         /// </summary>
-        public IItemProvider ItemProvider { get; private set; }
+        public ItemAccessMode AccessMode { get; private set; }
 
         /// <summary>
         ///     Gets the collection of children <see cref="Item"/> s.
         /// </summary>
-        public List<Item> Children { get; private set; }
+        public IList<Item> Children { get; private set; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name.
@@ -256,6 +274,37 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
+        ///     Gets the Item Provider from which the Item originates.
+        /// </summary>
+        public IItemProvider Provider { get; private set; }
+
+        /// <summary>
+        ///     Gets the source of the Item.
+        /// </summary>
+        public ItemSource Source
+        {
+            get
+            {
+                if (Provider != default(IItemProvider))
+                {
+                    return ItemSource.ItemProvider;
+                }
+                else if (SourceItem != default(Item))
+                {
+                    return ItemSource.Item;
+                }
+                else if (SourceFQN != string.Empty)
+                {
+                    return ItemSource.Unresolved;
+                }
+                else
+                {
+                    return ItemSource.Unknown;
+                }
+            }
+        }
+
+        /// <summary>
         ///     Gets or sets the Fully Qualified Name of the source Item.
         /// </summary>
         public string SourceFQN { get; set; }
@@ -263,19 +312,35 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Gets or sets the Item instance resolved from the <see cref="SourceFQN"/> property.
         /// </summary>
-        public Item SourceItem { get; set; }
+        public Item SourceItem
+        {
+            get
+            {
+                return sourceItem;
+            }
+
+            set
+            {
+                if (value != default(Item))
+                {
+                    SourceFQN = value.FQN;
+                }
+
+                sourceItem = value;
+            }
+        }
+
+        #endregion Public Properties
+
+        #region Protected Properties
 
         /// <summary>
         ///     Gets or sets the value.
         /// </summary>
-        public object Value { get; protected set; }
+        [JsonProperty]
+        protected object Value { get; set; }
 
-        /// <summary>
-        ///     Gets or sets a value indicating whether the <see cref="Value"/> property is capable of being written to.
-        /// </summary>
-        public bool Writeable { get; set; }
-
-        #endregion Public Properties
+        #endregion Protected Properties
 
         #region Public Methods
 
@@ -319,12 +384,12 @@ namespace Symbiote.SDK
         /// <returns>A shallow copy of this Item.</returns>
         public virtual object Clone()
         {
-            Item retVal = new Item(FQN, SourceItem, SourceFQN, Parent == this);
+            Item retVal = new Item(FQN, SourceItem, SourceFQN);
             retVal.Parent = Parent;
             retVal.Children = Children.Clone<Item>();
             retVal.Value = Value;
             retVal.SourceItem = SourceItem;
-            retVal.Writeable = Writeable;
+            retVal.AccessMode = AccessMode;
             return retVal;
         }
 
@@ -346,6 +411,7 @@ namespace Symbiote.SDK
         /// <returns>The retrieved value.</returns>
         public virtual object Read()
         {
+            Console.WriteLine("Read: " + this.FQN);
             return Value;
         }
 
@@ -359,15 +425,25 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Reads this Item's value from its <see cref="SourceItem"/> and updates the <see cref="Value"/> property with the
-        ///     result. If this Item has children, ReadFromSource() is also executed on each child.
+        ///     Reads this Item's value from it's source and, if the read value is different from the present value of the
+        ///     <see cref="Value"/> property, updates the Value and fires the <see cref="Changed"/> event by invoking the
+        ///     <see cref="Write"/> method and passing the read value.
         /// </summary>
+        /// <remarks>
+        ///     If the <see cref="ItemSource"/> of the Item is <see cref="ItemSource.Item"/>, the value is retrieved from the
+        ///     <see cref="ReadFromSource"/> method of the <see cref="SourceItem"/>. If the ItemSource is
+        ///     <see cref="ItemSource.ItemProvider"/>, the value is retrieved from the <see cref="Provider"/> object's
+        ///     <see cref="IEventProvider.Read(Item)"/> method. If the ItemSource is <see cref="ItemSource.Unknown"/>, the present
+        ///     value of the <see cref="Value"/> property is returned. If the ItemSource is <see cref="ItemSource.Unresolved"/>, a
+        ///     null value is returned.
+        /// </remarks>
         /// <returns>The retrieved value.</returns>
         public virtual object ReadFromSource()
         {
-            object retVal;
+            Console.WriteLine("Read from source: " + this.FQN + " source: " + Source.ToString());
 
-            // recursively call ReadFromSource() on each child below this Item
+            // recursively call ReadFromSource() on each child in this Item's children collection this allows us to update whole
+            // branches of the model with a single read
             if (HasChildren)
             {
                 foreach (Item child in Children)
@@ -376,29 +452,32 @@ namespace Symbiote.SDK
                 }
             }
 
-            // ensure the SourceItem exists before trying to read it
-            if ((SourceItem != null) && (SourceItem != default(Item)))
-            {
-                retVal = SourceItem.ReadFromSource();
+            // prepare a variable to hold the read result
+            object readResult = new object();
 
-                // check to see if the value read from the source is the same as the Value property. if it isn't, update the Value
-                // property with the latest.
-                if (retVal != Value)
+            // if the source is an Item, return the result from that Item's ReadFromSource() method. This will recursively refresh
+            // each Item in the chain until the last Item (that which the Source = ItemProvider) is refreshed directly from the source.
+            if (Source == ItemSource.Item)
+            {
+                readResult = SourceItem.ReadFromSource();
+            }
+            else if (Source == ItemSource.ItemProvider)
+            {
+                // if the source of this Item is an ItemProvider and it implements IReadable, return the value of the Read() method
+                // for the provider. this will be the final read in the chain.
+                if (Provider is IReadable)
                 {
-                    Write(retVal);
+                    readResult = ((IReadable)Provider).Read(this);
                 }
             }
-            else if (ItemProvider != default(IItemProvider))
+            else if (Source == ItemSource.Unknown)
             {
-                System.Console.WriteLine("Trying to hit provider...");
-                retVal = ItemProvider.Read(this).ReturnValue;
-
-                Console.WriteLine("read value: " + retVal.ToString());
-                if (retVal != Value)
-                {
-                    Write(retVal);
-                }
+                // if the source of this Item is unknown, the authoritative source for the Item's value is itself, so return the
+                // Value property.
+                readResult = Value;
             }
+
+            ChangeValue(readResult);
 
             return Read();
         }
@@ -425,7 +504,7 @@ namespace Symbiote.SDK
             System.Diagnostics.Debug.WriteLine("Removing " + item.FQN);
 
             // locate the item
-            retVal.ReturnValue = Children.Find(i => i.FQN == item.FQN);
+            retVal.ReturnValue = Children.Where(i => i.FQN == item.FQN).FirstOrDefault();
 
             // ensure that it was found in the collection
             if (retVal.ReturnValue == default(Item))
@@ -454,13 +533,6 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
-        /// </summary>
-        public virtual void SubscriptionsChanged()
-        {
-        }
-
-        /// <summary>
         ///     Adds the <see cref="SourceItemChanged(object, ItemChangedEventArgs)"/> event handler to the
         ///     <see cref="SourceItem"/>'s <see cref="Changed"/> event.
         /// </summary>
@@ -469,17 +541,46 @@ namespace Symbiote.SDK
         {
             Result retVal = new Result();
 
-            if (SourceItem != default(Item) && (SourceItem != null))
+            if (Source == ItemSource.Item)
             {
                 SourceItem.Changed += SourceItemChanged;
                 SourceItem.SubscriptionsChanged();
             }
+            else if (Source == ItemSource.ItemProvider)
+            {
+                if (Provider is ISubscribable)
+                {
+                    ((ISubscribable)Provider).Subscribe(this, value => ChangeValue(value));
+                }
+                else
+                {
+                    retVal.AddError("Unable to subscribe to source; the source Item Provider is not subscribable.");
+                }
+            }
             else
             {
-                retVal.AddError("Unable to subscribe to the source item; it has not been set.");
+                retVal.AddError("Unable to subscribe to source; the source Item is either not specified or hasn't been resolved.");
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
+        /// </summary>
+        public virtual void SubscriptionsChanged()
+        {
+            if (Source == ItemSource.ItemProvider)
+            {
+                if (Changed != null)
+                {
+                    SubscribeToSource();
+                }
+                else
+                {
+                    UnsubscribeFromSource();
+                }
+            }
         }
 
         /// <summary>
@@ -518,14 +619,25 @@ namespace Symbiote.SDK
         {
             Result retVal = new Result();
 
-            if ((SourceItem != default(Item)) && (SourceItem != null))
+            if (Source == ItemSource.Item)
             {
                 SourceItem.Changed -= SourceItemChanged;
                 SourceItem.SubscriptionsChanged();
             }
+            else if (Source == ItemSource.ItemProvider)
+            {
+                if (Provider is ISubscribable)
+                {
+                    ((ISubscribable)Provider).UnSubscribe(this, value => ChangeValue(value));
+                }
+                else
+                {
+                    retVal.AddError("Unable to unsubscribe from source; the source Item Provider is not subscribable.");
+                }
+            }
             else
             {
-                retVal.AddError("Unable to unsubscribe from the source item; it has not been set.");
+                retVal.AddError("Unable to unsubscribe from source; the source Item is either not specified or hasn't been resolved.");
             }
 
             return retVal;
@@ -536,23 +648,15 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <threadsafety instance="true"/>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result Write(object value)
+        /// <returns>A value indicating whether the operation succeeded.</returns>
+        public virtual bool Write(object value)
         {
-            Result retVal = new Result();
+            bool retVal = false;
 
-            if (!Writeable)
+            if (AccessMode == ItemAccessMode.ReadWrite)
             {
-                retVal.AddError("Unable to write to '" + FQN + "'; the item is not writeable.");
-            }
-            else
-            {
-                lock (valueLock)
-                {
-                    var previousValue = Value;
-                    Value = value;
-                    OnChange(value, previousValue);
-                }
+                ChangeValue(value);
+                retVal = true;
             }
 
             return retVal;
@@ -562,49 +666,48 @@ namespace Symbiote.SDK
         ///     Asynchronously writes the provided value to the <see cref="Value"/> property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public virtual async Task<Result> WriteAsync(object value)
+        /// <returns>A value indicating whether the operation succeeded.</returns>
+        public virtual async Task<bool> WriteAsync(object value)
         {
             return await Task.Run(() => Write(value));
         }
 
         /// <summary>
-        ///     Writes the provided value to the <see cref="SourceItem"/>.
+        ///     Writes the provided value to the Item's <see cref="SourceItem"/> or <see cref="Provider"/>, depending on the value
+        ///     of the <see cref="Source"/> property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result WriteToSource(object value)
+        /// <returns>A value indicating whether the write operation succeeded.</returns>
+        public virtual bool WriteToSource(object value)
         {
-            Result retVal = new Result();
+            bool result = false;
 
-            if ((SourceItem != default(Item)) && (SourceItem != null))
+            if (Source == ItemSource.Item)
             {
-                if (!SourceItem.Writeable)
-                {
-                    retVal.AddError("Unable to write to the source item for '" + FQN + "'; the source item is not writeable.");
-                }
-                else
-                {
-                    retVal.Incorporate(SourceItem.WriteToSource(value));
-                }
+                result = SourceItem.WriteToSource(value);
+            }
+            else if (Source == ItemSource.ItemProvider && Provider is IWriteable)
+            {
+                result = ((IWriteable)Provider).Write(this, value);
             }
 
-            if (retVal.ResultCode != ResultCode.Failure)
+            if (result)
             {
-                Write(value);
+                ChangeValue(value);
             }
 
-            return retVal;
+            return result;
         }
 
         /// <summary>
-        ///     Asynchronously writes the provided value to the <see cref="SourceItem"/>.
+        ///     Asynchronously writes the provided value to the Item's <see cref="SourceItem"/> or <see cref="Provider"/>,
+        ///     depending on the value of the <see cref="Source"/> property.
         /// </summary>
         /// <param name="value">The value to write.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public virtual async Task<Result> WriteToSourceAsync(object value)
+        /// <returns>A value indicating whether the write operation succeeded.</returns>
+        public virtual async Task<bool> WriteToSourceAsync(object value)
         {
-            return await Task.Run(() => SourceItem.WriteToSource(value));
+            return await Task.Run(() => WriteToSource(value));
         }
 
         #endregion Public Methods
@@ -653,9 +756,33 @@ namespace Symbiote.SDK
         /// <param name="e">The EventArgs for the event.</param>
         protected virtual void SourceItemChanged(object sender, ItemChangedEventArgs e)
         {
-            Write(e.Value);
+            ChangeValue(e.Value);
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Updates the <see cref="Value"/> property with the specified value and fires the
+        ///     <see cref="OnChange(object, object)"/> event.
+        /// </summary>
+        /// <param name="value">The updated value to which the <see cref="Value"/> property is to be set.</param>
+        private void ChangeValue(object value)
+        {
+            // only update the value and fire the event if the value has changed, or if the calling method sets the force parameter
+            // to true.
+            if (Value != value)
+            {
+                lock (valueLock)
+                {
+                    var previousValue = Value;
+                    Value = value;
+                    OnChange(value, previousValue);
+                }
+            }
+        }
+
+        #endregion Private Methods
     }
 }

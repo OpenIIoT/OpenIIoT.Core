@@ -24,7 +24,7 @@
 using System.Threading.Tasks;
 using Utility.OperationResult;
 
-namespace Symbiote.SDK.Plugin.Connector
+namespace Symbiote.SDK
 {
     /// <summary>
     ///     Defines the interface for Connector Plugins capable of writing data to the source of the Connector data.
@@ -47,15 +47,15 @@ namespace Symbiote.SDK.Plugin.Connector
         /// </summary>
         /// <param name="item">The Item to write.</param>
         /// <param name="value">The value to write to the <see cref="Item"/>.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result Write(Item item, object value);
+        /// <returns>A value indicating whether the write operation succeeded.</returns>
+        bool Write(Item item, object value);
 
         /// <summary>
         ///     Asynchronously writes the specified value to the specified <see cref="Item"/>.
         /// </summary>
         /// <param name="item">The Item to write.</param>
         /// <param name="value">The value to write to the <see cref="Item"/>.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Task<Result> WriteAsync(Item item, object value);
+        /// <returns>A value indicating whether the write operation succeeded.</returns>
+        Task<bool> WriteAsync(Item item, object value);
     }
 }

@@ -40,7 +40,7 @@
                                                                                                    ▀▀                            */
 
 using System;
-using System.Collections.Immutable;
+using System.Collections.Generic;
 
 namespace Symbiote.SDK
 {
@@ -66,6 +66,10 @@ namespace Symbiote.SDK
         /// </summary>
         Version ProductVersion { get; }
 
+        ProviderRegistry ProviderRegistry { get; }
+
+        IReadOnlyList<IManager> Managers { get; }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -76,12 +80,6 @@ namespace Symbiote.SDK
         /// <typeparam name="T">The Type of the Manager to return.</typeparam>
         /// <returns>The requested Manager.</returns>
         T GetManager<T>() where T : IManager;
-
-        /// <summary>
-        ///     Returns an immutable list of Manager instances.
-        /// </summary>
-        /// <returns>The immutable list of Manager instances.</returns>
-        ImmutableList<IManager> GetManagers();
 
         #endregion Public Methods
     }
