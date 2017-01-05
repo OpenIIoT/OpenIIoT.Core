@@ -47,6 +47,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Utility.OperationResult;
+using System.Threading;
 
 namespace Symbiote.SDK
 {
@@ -62,19 +63,42 @@ namespace Symbiote.SDK
         ///     Lock for the <see cref="Item.Children"/> property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
-        protected object childrenLock = new object();
+        protected ReaderWriterLockSlim childrenLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Parent"/> property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
-        protected object parentLock = new object();
+        protected ReaderWriterLockSlim parentLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Value"/> property.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
-        protected object valueLock = new object();
+        protected ReaderWriterLockSlim valueLock = new ReaderWriterLockSlim();
+
+        /// <summary>
+        ///     Lock for the <see cref="Item.SourceFQN"/> property.
+        /// </summary>
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
+        protected ReaderWriterLockSlim sourceFQNLock = new ReaderWriterLockSlim();
+
+        /// <summary>
+        ///     Lock for the <see cref="Item.Provider"/> property.
+        /// </summary>
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
+        protected ReaderWriterLockSlim providerLock = new ReaderWriterLockSlim();
+
+        /// <summary>
+        ///     Lock for the <see cref="Item.SourceItem"/> property.
+        /// </summary>
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
+        protected ReaderWriterLockSlim sourceItemLock = new ReaderWriterLockSlim();
+
+        /// <summary>
+        ///     Lock for the <see cref="Item.FQN"/> property.
+        /// </summary>
+        protected ReaderWriterLockSlim fqnLock = new ReaderWriterLockSlim();
 
         #endregion Protected Fields
 
@@ -225,22 +249,50 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Gets a value indicating whether the <see cref="Children"/> collection is empty.
         /// </summary>
+        /// <threadsafety instance="true"/>
         public bool HasChildren
         {
             get
             {
-                return Children.Count > 0;
+                bool retVal;
+
+                childrenLock.EnterReadLock();
+
+                try
+                {
+                    retVal = Children.Count > 0;
+                }
+                finally
+                {
+                    childrenLock.ExitReadLock();
+                }
+
+                return retVal;
             }
         }
 
         /// <summary>
         ///     Gets a value indicating whether the <see cref="Parent"/> property has been set.
         /// </summary>
+        /// <threadsafety instance="true"/>
         public bool IsOrphaned
         {
             get
             {
-                return Parent == default(Item);
+                bool retVal;
+
+                parentLock.EnterReadLock();
+
+                try
+                {
+                    retVal = Parent == default(Item);
+                }
+                finally
+                {
+                    parentLock.ExitReadLock();
+                }
+
+                return retVal;
             }
         }
 
@@ -248,11 +300,25 @@ namespace Symbiote.SDK
         ///     Gets the name.
         /// </summary>
         /// <remarks>Corresponds to the final tuple of the <see cref="FQN"/> property.</remarks>
+        /// <threadsafety instance="true"/>
         public string Name
         {
             get
             {
-                return FQN.Substring(FQN.LastIndexOf('.') + 1);
+                string retVal;
+
+                fqnLock.EnterReadLock();
+
+                try
+                {
+                    retVal = FQN.Substring(FQN.LastIndexOf('.') + 1);
+                }
+                finally
+                {
+                    fqnLock.ExitReadLock();
+                }
+
+                return retVal;
             }
         }
 
@@ -265,11 +331,25 @@ namespace Symbiote.SDK
         ///     Gets the path.
         /// </summary>
         /// <remarks>Corresponds to the value of the <see cref="FQN"/> property, less the final tuple.</remarks>
+        /// <threadsafety instance="true"/>
         public string Path
         {
             get
             {
-                return FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
+                string retVal;
+
+                fqnLock.EnterReadLock();
+
+                try
+                {
+                    retVal = FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
+                }
+                finally
+                {
+                    fqnLock.ExitReadLock();
+                }
+
+                return retVal;
             }
         }
 
@@ -281,26 +361,44 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Gets the source of the Item.
         /// </summary>
+        /// <threadsafety instance="true"/>
         public ItemSource Source
         {
             get
             {
-                if (Provider != default(IItemProvider))
+                ItemSource retVal;
+
+                providerLock.EnterReadLock();
+                sourceItemLock.EnterReadLock();
+                sourceFQNLock.EnterReadLock();
+
+                try
                 {
-                    return ItemSource.ItemProvider;
+                    if (Provider != default(IItemProvider))
+                    {
+                        retVal = ItemSource.ItemProvider;
+                    }
+                    else if (SourceItem != default(Item))
+                    {
+                        retVal = ItemSource.Item;
+                    }
+                    else if (SourceFQN != string.Empty)
+                    {
+                        retVal = ItemSource.Unresolved;
+                    }
+                    else
+                    {
+                        retVal = ItemSource.Unknown;
+                    }
                 }
-                else if (SourceItem != default(Item))
+                finally
                 {
-                    return ItemSource.Item;
+                    sourceFQNLock.ExitReadLock();
+                    sourceItemLock.ExitReadLock();
+                    providerLock.ExitReadLock();
                 }
-                else if (SourceFQN != string.Empty)
-                {
-                    return ItemSource.Unresolved;
-                }
-                else
-                {
-                    return ItemSource.Unknown;
-                }
+
+                return retVal;
             }
         }
 
@@ -312,6 +410,7 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Gets or sets the Item instance resolved from the <see cref="SourceFQN"/> property.
         /// </summary>
+        /// <threadsafety instance="true"/>
         public Item SourceItem
         {
             get
@@ -323,7 +422,16 @@ namespace Symbiote.SDK
             {
                 if (value != default(Item))
                 {
-                    SourceFQN = value.FQN;
+                    sourceFQNLock.EnterWriteLock();
+
+                    try
+                    {
+                        SourceFQN = value.FQN;
+                    }
+                    finally
+                    {
+                        sourceFQNLock.ExitWriteLock();
+                    }
                 }
 
                 sourceItem = value;
@@ -359,14 +467,18 @@ namespace Symbiote.SDK
                 // set the new child's parent to this before adding it
                 Result<Item> setResult = item.SetParent(this);
 
-                // lock the Children collection
-                lock (childrenLock)
+                childrenLock.EnterWriteLock();
+
+                try
                 {
-                    // add the new item
                     Children.Add(setResult.ReturnValue);
-                    retVal.ReturnValue = setResult.ReturnValue;
+                }
+                finally
+                {
+                    childrenLock.ExitWriteLock();
                 }
 
+                retVal.ReturnValue = setResult.ReturnValue;
                 retVal.Incorporate(setResult);
             }
             else
@@ -409,9 +521,22 @@ namespace Symbiote.SDK
         ///     Returns the value of the <see cref="Value"/> property.
         /// </summary>
         /// <returns>The retrieved value.</returns>
+        /// <threadsafety instance="true"/>
         public virtual object Read()
         {
-            Console.WriteLine("Read: " + this.FQN);
+            object retVal;
+
+            valueLock.EnterReadLock();
+
+            try
+            {
+                retVal = Value;
+            }
+            finally
+            {
+                valueLock.ExitReadLock();
+            }
+
             return Value;
         }
 
@@ -438,14 +563,26 @@ namespace Symbiote.SDK
         ///     null value is returned.
         /// </remarks>
         /// <returns>The retrieved value.</returns>
+        /// <threadsafety instance="true"/>
         public virtual object ReadFromSource()
         {
-            Console.WriteLine("Read from source: " + this.FQN + " source: " + Source.ToString());
-
             // recursively call ReadFromSource() on each child in this Item's children collection this allows us to update whole
             // branches of the model with a single read
             if (HasChildren)
             {
+                childrenLock.EnterWriteLock();
+
+                IList<Item> children;
+
+                try
+                {
+                    children = Children;
+                }
+                finally
+                {
+                    childrenLock.ExitWriteLock();
+                }
+
                 foreach (Item child in Children)
                 {
                     child.ReadFromSource();
@@ -459,22 +596,49 @@ namespace Symbiote.SDK
             // each Item in the chain until the last Item (that which the Source = ItemProvider) is refreshed directly from the source.
             if (Source == ItemSource.Item)
             {
-                readResult = SourceItem.ReadFromSource();
+                sourceItemLock.EnterReadLock();
+
+                try
+                {
+                    readResult = SourceItem.ReadFromSource();
+                }
+                finally
+                {
+                    sourceItemLock.ExitReadLock();
+                }
             }
             else if (Source == ItemSource.ItemProvider)
             {
                 // if the source of this Item is an ItemProvider and it implements IReadable, return the value of the Read() method
                 // for the provider. this will be the final read in the chain.
-                if (Provider is IReadable)
+                providerLock.EnterReadLock();
+
+                try
                 {
-                    readResult = ((IReadable)Provider).Read(this);
+                    if (Provider is IReadable)
+                    {
+                        readResult = ((IReadable)Provider).Read(this);
+                    }
+                }
+                finally
+                {
+                    providerLock.ExitReadLock();
                 }
             }
             else if (Source == ItemSource.Unknown)
             {
                 // if the source of this Item is unknown, the authoritative source for the Item's value is itself, so return the
                 // Value property.
-                readResult = Value;
+                valueLock.EnterReadLock();
+
+                try
+                {
+                    readResult = Value;
+                }
+                finally
+                {
+                    valueLock.ExitReadLock();
+                }
             }
 
             ChangeValue(readResult);
