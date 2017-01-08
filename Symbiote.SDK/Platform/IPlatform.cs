@@ -52,9 +52,9 @@ namespace Symbiote.SDK.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the Item Originator for the Platform.
+        ///     Gets the Item Provider for the Platform.
         /// </summary>
-        IItemOriginator ItemOriginator { get; }
+        IItemProvider ItemProvider { get; }
 
         /// <summary>
         ///     Gets the Platform Type.

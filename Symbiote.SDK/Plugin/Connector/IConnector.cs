@@ -64,7 +64,7 @@ namespace Symbiote.SDK.Plugin.Connector
     ///         </list>
     ///     </para>
     /// </remarks>
-    public interface IConnector : IPluginInstance, IItemOriginator
+    public interface IConnector : IPluginInstance, IItemProvider
     {
     }
 }

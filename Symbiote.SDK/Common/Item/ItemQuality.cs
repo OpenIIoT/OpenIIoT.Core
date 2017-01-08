@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█     ▄████████
-      █   ███    ███    ███
-      █   ███▌  ▄███▄▄▄▄██▀    ▄█████   ▄█████  ██████▄    ▄█████  ▀██████▄   █          ▄█████
-      █   ███▌ ▀▀███▀▀▀▀▀     ██   █    ██   ██ ██   ▀██   ██   ██   ██   ██ ██         ██   █
-      █   ███▌ ▀███████████  ▄██▄▄      ██   ██ ██    ██   ██   ██  ▄██▄▄█▀  ██        ▄██▄▄
-      █   ███    ███    ███ ▀▀██▀▀    ▀████████ ██    ██ ▀████████ ▀▀██▀▀█▄  ██       ▀▀██▀▀
-      █   ███    ███    ███   ██   █    ██   ██ ██   ▄██   ██   ██   ██   ██ ██▌    ▄   ██   █
-      █   █▀     ███    ███   ███████   ██   █▀ ██████▀    ██   █▀ ▄██████▀  ████▄▄██   ███████
+      █    ▄█                                  ████████▄
+      █   ███                                  ███    ███
+      █   ███▌     ██       ▄█████    ▄▄██▄▄▄  ███    ███  ██   █    ▄█████   █        █      ██    ▄█   ▄
+      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ ███    ███  ██   ██   ██   ██ ██       ██  ▀███████▄ ██   █▄
+      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ███    ███  ██   ██   ██   ██ ██       ██▌     ██  ▀ ▀▀▀▀▀██
+      █   ███      ██    ▀▀██▀▀     ██  ██  ██ ███    ███  ██   ██ ▀████████ ██       ██      ██    ▄█   ██
+      █   ███      ██      ██   █   ██  ██  ██ ███  ▀ ███  ██   ██   ██   ██ ██▌    ▄ ██      ██    ██   ██
+      █   █▀      ▄██▀     ███████   █  ██  █   ▀██████▀▄█ ██████    ██   █▀ ████▄▄██ █      ▄██▀    █████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █
+      █  Enumeration of the different Item Value qualities.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,39 +39,26 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Threading.Tasks;
-
 namespace Symbiote.SDK
 {
     /// <summary>
-    ///     Defines the interface for Connector Plugins capable of providing data from the source of the Connector data.
+    ///     Enumeration of the different <see cref="Item"/><see cref="Item.Value"/> qualities.
     /// </summary>
-    /// <remarks>
-    ///     <para>
-    ///         An <see cref="IConnector"/> instance implementing IReadable is responsible for providing data for
-    ///         <see cref="ConnectorItem"/> s by way of the <see cref="Read(Item)"/> method. This method accepts a ConnectorItem instance.
-    ///     </para>
-    ///     <para>
-    ///         The <see cref="Read(Item)"/> method must return a valid <see cref="Result{T}"/> containing the result of the
-    ///         operation, and the read data boxed within an object, including any informational, warning or error messages
-    ///         generated during the operation.
-    ///     </para>
-    ///     <para>The <see cref="ReadAsync(Item)"/> method behaves as <see cref="Read(Item)"/> but executes asynchronously.</para>
-    /// </remarks>
-    public interface IReadable
+    public enum ItemQuality
     {
         /// <summary>
-        ///     Reads and returns the current value of the specified <see cref="Item"/>.
+        ///     The quality of the <see cref="Item"/><see cref="Item.Value"/> is uninitialized.
         /// </summary>
-        /// <param name="item">The Item to read.</param>
-        /// <returns>The value of the specified Item.</returns>
-        object Read(Item item);
+        Uninitialized,
 
         /// <summary>
-        ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
+        ///     The quality of the <see cref="Item"/><see cref="Item.Value"/> is bad.
         /// </summary>
-        /// <param name="item">The Item to read.</param>
-        /// <returns>The value of the specified Item.</returns>
-        Task<object> ReadAsync(Item item);
+        Bad,
+
+        /// <summary>
+        ///     The quality of the <see cref="Item"/><see cref="Item.Value"/> is good.
+        /// </summary>
+        Good
     }
 }

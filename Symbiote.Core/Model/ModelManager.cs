@@ -195,6 +195,21 @@ namespace Symbiote.Core.Model
             return await Task.Run(() => Find(fqn));
         }
 
+        public object Read(Item item)
+        {
+            return item.Read();
+        }
+
+        /// <summary>
+        ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
+        /// </summary>
+        /// <param name="item">The Item to read.</param>
+        /// <returns>The value of the specified Item.</returns>
+        public async Task<object> ReadAsync(Item item)
+        {
+            return await Task.Run(() => Read(item));
+        }
+
         /// <summary>
         ///     Returns the ConfigurationDefinition for the Model Manager.
         /// </summary>

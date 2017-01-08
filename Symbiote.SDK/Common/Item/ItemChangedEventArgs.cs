@@ -53,7 +53,7 @@ using System;
 namespace Symbiote.SDK
 {
     /// <summary>
-    ///     Represents the event arguments for Item Changed events.
+    ///     Represents the event arguments for <see cref="Item"/><see cref="Item.Changed"/> events.
     /// </summary>
     public class ItemChangedEventArgs : EventArgs
     {
@@ -64,10 +64,15 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="value">The new value of the Item.</param>
         /// <param name="previousValue">The previous value of the Item.</param>
-        public ItemChangedEventArgs(object value, object previousValue) : base()
+        /// <param name="quality">The quality of the Item.</param>
+        /// <param name="previousQuality">The previous quality of the Item.</param>
+        public ItemChangedEventArgs(object value, object previousValue, ItemQuality quality, ItemQuality previousQuality) : base()
         {
             Value = value;
             PreviousValue = previousValue;
+
+            Quality = quality;
+            PreviousQuality = previousQuality;
         }
 
         #endregion Public Constructors
@@ -75,12 +80,33 @@ namespace Symbiote.SDK
         #region Public Properties
 
         /// <summary>
-        ///     Gets the previous value of the Item.
+        ///     Gets the previous quality of the <see cref="Item"/>.
+        /// </summary>
+        public ItemQuality PreviousQuality { get; private set; }
+
+        /// <summary>
+        ///     Gets the previous value of the <see cref="Item"/>.
         /// </summary>
         public object PreviousValue { get; private set; }
 
         /// <summary>
-        ///     Gets the new value of the Item.
+        ///     Gets the new quality of the <see cref="Item"/>.
+        /// </summary>
+        public ItemQuality Quality { get; private set; }
+
+        /// <summary>
+        ///     Gets a value indicating whether the quality of the <see cref="Item"/> is different from the previous quality.
+        /// </summary>
+        public bool QualityChanged
+        {
+            get
+            {
+                return PreviousQuality == Quality;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the new value of the <see cref="Item"/>.
         /// </summary>
         public object Value { get; private set; }
 
