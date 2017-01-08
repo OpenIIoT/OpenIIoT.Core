@@ -77,7 +77,7 @@ namespace Symbiote.SDK.Tests
         {
             SDK.ItemChangedEventArgs args;
 
-            args = new SDK.ItemChangedEventArgs("new", "previous");
+            args = new SDK.ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
 
             Assert.IsType<SDK.ItemChangedEventArgs>(args);
         }
@@ -88,7 +88,7 @@ namespace Symbiote.SDK.Tests
         [Fact]
         public void Properties()
         {
-            SDK.ItemChangedEventArgs args = new SDK.ItemChangedEventArgs("new", "previous");
+            SDK.ItemChangedEventArgs args = new SDK.ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
 
             Assert.Equal("previous", args.PreviousValue);
             Assert.Equal("new", args.Value);

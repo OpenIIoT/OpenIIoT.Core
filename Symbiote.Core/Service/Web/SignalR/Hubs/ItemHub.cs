@@ -8,6 +8,7 @@ using System.Linq;
 using Symbiote.Core.Model;
 using Utility.OperationResult;
 using Symbiote.SDK;
+using Symbiote.SDK.Model;
 
 namespace Symbiote.Core.Service.Web.SignalR
 {
@@ -98,7 +99,7 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             Item item = (Item)sender;
 
-            string itemJson = item.ToJson(new ContractResolver(new List<string>(new string[] { "FQN", "Value", "Children" }), ContractResolverType.OptIn));
+            string itemJson = item.ToJson(new ContractResolver(new List<string>(new string[] { "FQN", "Value", "Quality", "Timestamp", "Children" }), ContractResolverType.OptIn));
             string valueJson = JsonConvert.SerializeObject(item.Read());
 
             logger.Trace("SignalR Item '" + item.FQN + "' changed.  Sending data to subscribed clients.");
@@ -122,7 +123,8 @@ namespace Symbiote.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -158,7 +160,8 @@ namespace Symbiote.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -189,7 +192,8 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
 
             if (foundItem != default(Item))
             {
@@ -222,7 +226,8 @@ namespace Symbiote.Core.Service.Web.SignalR
         {
             string castFQN = (string)arg;
 
-            Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
 
             if (foundItem != default(Item))
             {

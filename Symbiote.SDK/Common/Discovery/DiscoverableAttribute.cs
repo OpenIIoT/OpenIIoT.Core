@@ -56,7 +56,6 @@ namespace Symbiote.SDK
     /// <summary>
     ///     Identifies classes and properties intended to be traversed by a <see cref="Discoverer"/>.
     /// </summary>
-    [ExcludeFromCodeCoverage]
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class DiscoverableAttribute : Attribute
     {

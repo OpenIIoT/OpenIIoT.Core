@@ -7,6 +7,7 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using Symbiote.Core.Model;
 using Symbiote.SDK;
+using Symbiote.SDK.Model;
 
 namespace Symbiote.Core.Service.Web.API
 {
@@ -50,7 +51,8 @@ namespace Symbiote.Core.Service.Web.API
 
             fqn = fqn.Replace("%25", "%");
 
-            Item foundItem = manager.ProviderRegistry.FindItem(fqn);
+            //Item foundItem = manager.ProviderRegistry.FindItem(fqn);
+            Item foundItem = manager.GetManager<IModelManager>().FindItem(fqn);
 
             if (fromSource)
                 foundItem.ReadFromSource();

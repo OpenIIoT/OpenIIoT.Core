@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█                                   ▄██████▄
-      █   ███                                  ███    ███
-      █   ███▌     ██       ▄█████    ▄▄██▄▄▄  ███    ███    █████  █     ▄████▄   █  ██▄▄▄▄    ▄█████      ██     ██████     █████
-      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄ ███    ███   ██  ██ ██    ██    ▀  ██  ██▀▀▀█▄   ██   ██ ▀███████▄ ██    ██   ██  ██
-      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ███    ███  ▄██▄▄█▀ ██▌  ▄██       ██▌ ██   ██   ██   ██     ██  ▀ ██    ██  ▄██▄▄█▀
-      █   ███      ██    ▀▀██▀▀     ██  ██  ██ ███    ███ ▀███████ ██  ▀▀██ ███▄  ██  ██   ██ ▀████████     ██    ██    ██ ▀███████
-      █   ███      ██      ██   █   ██  ██  ██ ███    ███   ██  ██ ██    ██    ██ ██  ██   ██   ██   ██     ██    ██    ██   ██  ██
-      █   █▀      ▄██▀     ███████   █  ██  █   ▀██████▀    ██  ██ █     ██████▀  █    █   █    ██   █▀    ▄██▀    ██████    ██  ██
+      █    ▄█                                     ▄███████▄
+      █   ███                                    ███    ███
+      █   ███▌     ██       ▄█████    ▄▄██▄▄▄    ███    ███    █████  ██████   █    █   █  ██████▄     ▄█████    █████
+      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄   ███    ███   ██  ██ ██    ██ ██    ██ ██  ██   ▀██   ██   █    ██  ██
+      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ▀█████████▀   ▄██▄▄█▀ ██    ██ ██    ██ ██▌ ██    ██  ▄██▄▄     ▄██▄▄█▀
+      █   ███      ██    ▀▀██▀▀     ██  ██  ██   ███        ▀███████ ██    ██ ██    ██ ██  ██    ██ ▀▀██▀▀    ▀███████
+      █   ███      ██      ██   █   ██  ██  ██   ███          ██  ██ ██    ██  █▄  ▄█  ██  ██   ▄██   ██   █    ██  ██
+      █   █▀      ▄██▀     ███████   █  ██  █   ▄████▀        ██  ██  ██████    ▀██▀   █   ██████▀    ███████   ██  ██
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The abstract base class from which ItemOriginators may derive.
+      █  The abstract base class from which ItemProviders may derive.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -47,9 +47,9 @@ using System.Threading.Tasks;
 namespace Symbiote.SDK
 {
     /// <summary>
-    ///     The abstract base class from which ItemOriginators may derive.
+    ///     The abstract base class from which ItemProviders may derive.
     /// </summary>
-    public abstract class ItemOriginator : IItemOriginator, ISubscribable
+    public abstract class ItemProvider : IItemProvider, ISubscribable
     {
         /// <summary>
         ///     The Logger for this class.
@@ -57,9 +57,9 @@ namespace Symbiote.SDK
         protected xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ItemOriginator"/> class.
+        ///     Initializes a new instance of the <see cref="ItemProivider"/> class.
         /// </summary>
-        public ItemOriginator(string providerName)
+        public ItemProvider(string providerName)
         {
             ItemProviderName = providerName;
 

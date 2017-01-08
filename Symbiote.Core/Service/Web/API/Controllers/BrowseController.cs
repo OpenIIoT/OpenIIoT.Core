@@ -2,6 +2,7 @@
 using NLog;
 using Symbiote.Core.Model;
 using Symbiote.SDK;
+using Symbiote.SDK.Model;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
@@ -38,7 +39,8 @@ namespace Symbiote.Core.Service.Web.API
         public HttpResponseMessage Browse(string fqn, string verbosity = "verbose")
         {
             List<Item> result = new List<Item>();
-            result.Add(manager.ProviderRegistry.FindItem(fqn));
+            //result.Add(manager.ProviderRegistry.FindItem(fqn));
+            result.Add(manager.GetManager<IModelManager>().FindItem(fqn));
 
             JsonMediaTypeFormatter formatter;
 

@@ -100,6 +100,20 @@ namespace Symbiote.SDK
         /// <returns>The found Item, or the default(Item) if not found.</returns>
         Task<Item> FindAsync(string fqn);
 
+        /// <summary>
+        ///     Reads and returns the current value of the specified <see cref="Item"/>.
+        /// </summary>
+        /// <param name="item">The Item to read.</param>
+        /// <returns>The value of the specified Item.</returns>
+        object Read(Item item);
+
+        /// <summary>
+        ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
+        /// </summary>
+        /// <param name="item">The Item to read.</param>
+        /// <returns>The value of the specified Item.</returns>
+        Task<object> ReadAsync(Item item);
+
         #endregion Public Methods
     }
 }

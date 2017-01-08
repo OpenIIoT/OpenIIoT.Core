@@ -64,13 +64,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\Provider\ItemProvider\IItemOriginator.cs" />
-    <Compile Include="Common\Provider\ItemProvider\IReadable.cs" />
+    <Compile Include="Common\Item\ItemQuality.cs" />
+    <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
     <Compile Include="Common\Provider\ProviderRegistry.cs" />
     <Compile Include="Common\Provider\IProvider.cs" />
     <Compile Include="Common\Item\ItemSource.cs" />
     <Compile Include="Common\Item\ItemAccessMode.cs" />
-    <Compile Include="Common\Provider\ItemProvider\ItemOriginator.cs" />
+    <Compile Include="Common\Provider\ItemProvider\ItemProvider.cs" />
     <Compile Include="Common\Provider\ItemProvider\IItemProvider.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Utility\ContractResolver.cs" />

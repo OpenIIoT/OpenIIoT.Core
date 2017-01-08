@@ -54,6 +54,7 @@ using System.Diagnostics.CodeAnalysis;
 using Symbiote.SDK;
 using Utility.OperationResult;
 using Xunit;
+using System.Reflection;
 
 namespace Symbiote.Core.Tests
 {
@@ -299,6 +300,30 @@ namespace Symbiote.Core.Tests
             Assert.Equal(State.Running, manager.State);
 
             Assert.Throws<ManagerStopException>(() => manager.Stop());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="IApplicationManager.InstanceName"/> property.
+        /// </summary>
+        [Fact]
+        public void InstanceName()
+        {
+            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+
+            Assert.NotNull(manager.InstanceName);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="IApplicationManager.Managers"/> property.
+        /// </summary>
+        [Fact]
+        public void Managers()
+        {
+            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+
+            Assert.Equal(2, manager.Managers.Count);
+            Assert.Equal(manager.Managers[0].GetType(), typeof(Core.ApplicationManager));
+            Assert.Equal(manager.Managers[1].GetType(), typeof(MockManager));
         }
 
         #endregion Public Methods
