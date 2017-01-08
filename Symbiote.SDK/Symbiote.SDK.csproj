@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Item\ItemQuality.cs" />
+    <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
     <Compile Include="Common\Provider\ProviderRegistry.cs" />
     <Compile Include="Common\Provider\IProvider.cs" />
     <Compile Include="Common\Item\ItemSource.cs" />

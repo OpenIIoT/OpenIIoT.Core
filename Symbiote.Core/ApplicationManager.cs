@@ -48,7 +48,6 @@ using NLog;
 using NLog.xLogger;
 using Symbiote.SDK;
 using Utility.OperationResult;
-using System.Collections.ObjectModel;
 
 namespace Symbiote.Core
 {
@@ -86,12 +85,13 @@ namespace Symbiote.Core
     ///         implementations of <see cref="SDK.IEventProvider"/>.
     ///     </para>
     ///     <para>
-    ///         The methods <see cref="GetManager{T}"/> and <see cref="GetManagers"/> are provided to allow Managers to retrieve
-    ///         other Managers contained within the application. <see cref="GetManager{T}"/> is primarily provided to allow static
-    ///         methods to access a particular manager. This is the only valid usage; instance methods should use the dependency
-    ///         injection system. <see cref="GetManagers"/> provides an immutable list of Manager instances which allows for the
-    ///         functionality described above for <see cref="Manager.Setup"/>. This is necessary so that Managers may access other
-    ///         Managers which are not explicitly defined as dependencies. Again, this is the only valid usage of the method.
+    ///         The method <see cref="GetManager{T}"/> and property <see cref="Managers"/> are provided to allow Managers to
+    ///         retrieve other Managers contained within the application. <see cref="GetManager{T}"/> is primarily provided to
+    ///         allow static methods to access a particular manager. This is the only valid usage; instance methods should use the
+    ///         dependency injection system. The <see cref="Managers"/> property provides an immutable list of Manager instances
+    ///         which allows for the functionality described above for <see cref="Manager.Setup"/>. This is necessary so that
+    ///         Managers may access other Managers which are not explicitly defined as dependencies. Again, this is the only valid
+    ///         usage of the method.
     ///     </para>
     ///     <para>
     ///         As with other instances of <see cref="IManager"/>, the <see cref="Startup"/> and <see cref="Shutdown(StopType)"/>
@@ -138,15 +138,12 @@ namespace Symbiote.Core
 
             Guid guid = logger.EnterMethod(xLogger.Params((object)managerTypes), true);
 
-            // initialize properties
             ManagerName = "Application Manager";
             ManagerTypes = managerTypes.ToList();
             ManagerInstances = new List<IManager>();
             ManagerDependencies = new Dictionary<Type, List<Type>>();
 
-            ProviderRegistry = new ProviderRegistry(this);
-
-            // register the ApplicationManager with itself
+            // register the ApplicationManager with itself to simplify things later
             RegisterManager<IApplicationManager>(this);
 
             // create an instance of each Manager Type in the ManagerTypes list
@@ -182,6 +179,9 @@ namespace Symbiote.Core
             }
         }
 
+        /// <summary>
+        ///     Gets the list of <see cref="IManager"/> instances managed by the <see cref="IApplicationManager"/>.
+        /// </summary>
         public IReadOnlyList<IManager> Managers
         {
             get
@@ -231,8 +231,6 @@ namespace Symbiote.Core
         ///     Gets or sets the list of application Manager Types.
         /// </summary>
         private List<Type> ManagerTypes { get; set; }
-
-        public ProviderRegistry ProviderRegistry { get; private set; }
 
         #endregion Private Properties
 
@@ -297,11 +295,6 @@ namespace Symbiote.Core
             instance = null;
         }
 
-        public IReadOnlyList<IProvider> DiscoverProviders()
-        {
-            return ProviderRegistry.Discover();
-        }
-
         /// <summary>
         ///     Returns the Manager from the list of Managers matching the specified Type.
         /// </summary>
@@ -346,8 +339,6 @@ namespace Symbiote.Core
 
             // start all application managers.
             retVal.Incorporate(StartManagers());
-
-            IReadOnlyList<IProvider> providers = ProviderRegistry.Discover();
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);

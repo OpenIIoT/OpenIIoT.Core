@@ -88,13 +88,14 @@ namespace Symbiote.Core.Model
             Guid guid = logger.EnterMethod(true);
 
             ManagerName = "Model Manager";
-            ItemProviderName = "Model";
 
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
             RegisterDependency<IPluginManager>(pluginManager);
 
             ItemProviders = new List<IItemProvider>();
+
+            ProviderRegistry = new ProviderRegistry<IItemProvider>(manager);
 
             ChangeState(State.Initialized);
         }
@@ -103,7 +104,7 @@ namespace Symbiote.Core.Model
 
         #region Public Properties
 
-        public string ItemProviderName { get; private set; }
+        public ProviderRegistry<IItemProvider> ProviderRegistry { get; private set; }
 
         /// <summary>
         ///     The Configuration for the Manager.
@@ -137,78 +138,112 @@ namespace Symbiote.Core.Model
 
         #region Public Methods
 
-        /// <summary>
-        ///     Returns the root node of the <see cref="Item"/> tree.
-        /// </summary>
-        /// <returns>The root node of the Item tree.</returns>
-        public Item Browse()
+        public Item FindProviderItem(Item item)
         {
-            return Model;
+            return FindProviderItem(item.FQN);
         }
 
-        /// <summary>
-        ///     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
-        /// </summary>
-        /// <param name="root">The Item for which the children are to be returned.</param>
-        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        public virtual IList<Item> Browse(Item root)
+        public Item FindProviderItem(string fqn)
         {
-            return root == null ? Model.Children : root.Children;
+            return FindProviderItem(fqn, false);
         }
 
-        /// <summary>
-        ///     Asynchronously returns the root node of the <see cref="Item"/> tree.
-        /// </summary>
-        /// <returns>The root node of the Item tree.</returns>
-        public async Task<Item> BrowseAsync()
+        private Item FindProviderItem(string fqn, bool refreshed = false)
         {
-            return await Task.Run(() => Browse());
+            Item foundItem = default(Item);
+
+            foreach (IItemProvider provider in ProviderRegistry.Providers)
+            {
+                foundItem = provider.Find(fqn);
+                if (foundItem != default(Item))
+                {
+                    return foundItem;
+                }
+            }
+
+            if (foundItem == default(Item) && !refreshed)
+            {
+                ProviderRegistry.Discover();
+                return FindProviderItem(fqn, true);
+            }
+            else
+            {
+                return foundItem;
+            }
         }
 
-        /// <summary>
-        ///     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
-        /// </summary>
-        /// <param name="root">The Item for which the children are to be returned.</param>
-        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        public async Task<IList<Item>> BrowseAsync(Item root)
-        {
-            return await Task.Run(() => Browse(root));
-        }
+        ///// <summary>
+        /////     Returns the root node of the <see cref="Item"/> tree.
+        ///// </summary>
+        ///// <returns>The root node of the Item tree.</returns>
+        //public Item Browse()
+        //{
+        //    return Model;
+        //}
 
-        /// <summary>
-        ///     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        /// <returns>The found Item, or the default(Item) if not found.</returns>
-        public virtual Item Find(string fqn)
-        {
-            return FindItem(fqn);
-        }
+        ///// <summary>
+        /////     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
+        ///// </summary>
+        ///// <param name="root">The Item for which the children are to be returned.</param>
+        ///// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        //public virtual IList<Item> Browse(Item root)
+        //{
+        //    return root == null ? Model.Children : root.Children;
+        //}
 
-        /// <summary>
-        ///     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        /// <returns>The found Item, or the default(Item) if not found.</returns>
-        public virtual async Task<Item> FindAsync(string fqn)
-        {
-            return await Task.Run(() => Find(fqn));
-        }
+        ///// <summary>
+        /////     Asynchronously returns the root node of the <see cref="Item"/> tree.
+        ///// </summary>
+        ///// <returns>The root node of the Item tree.</returns>
+        //public async Task<Item> BrowseAsync()
+        //{
+        //    return await Task.Run(() => Browse());
+        //}
 
-        public object Read(Item item)
-        {
-            return item.Read();
-        }
+        ///// <summary>
+        /////     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
+        ///// </summary>
+        ///// <param name="root">The Item for which the children are to be returned.</param>
+        ///// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        //public async Task<IList<Item>> BrowseAsync(Item root)
+        //{
+        //    return await Task.Run(() => Browse(root));
+        //}
 
-        /// <summary>
-        ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
-        /// </summary>
-        /// <param name="item">The Item to read.</param>
-        /// <returns>The value of the specified Item.</returns>
-        public async Task<object> ReadAsync(Item item)
-        {
-            return await Task.Run(() => Read(item));
-        }
+        ///// <summary>
+        /////     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        ///// <returns>The found Item, or the default(Item) if not found.</returns>
+        //public virtual Item Find(string fqn)
+        //{
+        //    return FindItem(fqn);
+        //}
+
+        ///// <summary>
+        /////     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        ///// <returns>The found Item, or the default(Item) if not found.</returns>
+        //public virtual async Task<Item> FindAsync(string fqn)
+        //{
+        //    return await Task.Run(() => Find(fqn));
+        //}
+
+        //public object Read(Item item)
+        //{
+        //    return item.Read();
+        //}
+
+        ///// <summary>
+        /////     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
+        ///// </summary>
+        ///// <param name="item">The Item to read.</param>
+        ///// <returns>The value of the specified Item.</returns>
+        //public async Task<object> ReadAsync(Item item)
+        //{
+        //    return await Task.Run(() => Read(item));
+        //}
 
         /// <summary>
         ///     Returns the ConfigurationDefinition for the Model Manager.
@@ -299,7 +334,8 @@ namespace Symbiote.Core.Model
                 // set the SourceFQN of the new item to the FQN of the original item to create a link
                 retVal.ReturnValue.SourceFQN = item.FQN;
                 //retVal.ReturnValue.SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN);
-                retVal.ReturnValue.SourceItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(retVal.ReturnValue.SourceFQN);
+                //retVal.ReturnValue.SourceItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(retVal.ReturnValue.SourceFQN);
+                retVal.ReturnValue.SourceItem = FindProviderItem(retVal.ReturnValue.SourceFQN);
 
                 // modify the FQN of the cloned item to reflect it's new path
                 //((Item)retVal.ReturnValue).FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
@@ -884,7 +920,8 @@ namespace Symbiote.Core.Model
                         // safe to resolve.
                         else
                         {
-                            Item resolvedItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(newItem.SourceFQN);
+                            //Item resolvedItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(newItem.SourceFQN);
+                            Item resolvedItem = FindProviderItem(newItem.SourceFQN);
 
                             if (resolvedItem == default(Item))
                                 result.AddWarning("The Source FQN '" + newItem.SourceFQN + "' for item '" + newItem.FQN + "' could not be found.");

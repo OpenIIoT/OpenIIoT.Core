@@ -47,7 +47,7 @@ namespace Symbiote.SDK.Model
     /// <summary>
     ///     Defines the interface for the Model Manager.
     /// </summary>
-    public interface IModelManager : IStateful, IManager, IItemProvider
+    public interface IModelManager : IStateful, IManager
     {
         #region Public Properties
 

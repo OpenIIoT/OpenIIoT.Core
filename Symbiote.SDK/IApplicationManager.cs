@@ -57,6 +57,11 @@ namespace Symbiote.SDK
         string InstanceName { get; }
 
         /// <summary>
+        ///     Gets the list of <see cref="IManager"/> instances managed by the <see cref="IApplicationManager"/>.
+        /// </summary>
+        IReadOnlyList<IManager> Managers { get; }
+
+        /// <summary>
         ///     Gets the name of the product; retrieved from AssemblyInfo.cs.
         /// </summary>
         string ProductName { get; }
@@ -65,10 +70,6 @@ namespace Symbiote.SDK
         ///     Gets the version of the product; retrieved from AssemblyInfo.cs.
         /// </summary>
         Version ProductVersion { get; }
-
-        ProviderRegistry ProviderRegistry { get; }
-
-        IReadOnlyList<IManager> Managers { get; }
 
         #endregion Public Properties
 
