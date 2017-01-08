@@ -196,7 +196,7 @@ namespace Symbiote.Core
         internal static void Main(string[] args)
         {
             logger.EnterMethod(xLogger.Params((object)args));
-            logger.Heading(LogLevel.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+            logger.Heading(LogLevel.Info, Assembly.GetExecutingAssembly().GetName().Name + " " + Assembly.GetExecutingAssembly().GetName().Version.ToString(), true);
             logger.Info("Initializing application...");
 
             try
@@ -487,8 +487,8 @@ namespace Symbiote.Core
                 Utility.PrintLogoFooter(logger);
 
                 //// subscribe to the datetime item
-                Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
-                subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.Binary.DynamicImage").SubscribeToSource();
+                //Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.DateTime.Time").SubscribeToSource();
+                //subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.Binary.DynamicImage").SubscribeToSource();
                 //subscribe.LogResult(logger.Info);
 
                 //Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.System.Platform.Memory.Available").SubscribeToSource();

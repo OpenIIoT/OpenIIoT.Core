@@ -133,7 +133,7 @@ namespace Symbiote.Core
             logger.Info(@"      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ ");
             logger.Info(@"      █   ");
 
-            foreach (string s in BigFontGenerator.Generate("Symbiote", Font.Graffiti, FontSize.Large))
+            foreach (string s in BigFontGenerator.GenerateCaseSensitive("Symbiote", Font.Graffiti, FontSize.Large))
             {
                 logger.Info(@"      █  " + s);
             }

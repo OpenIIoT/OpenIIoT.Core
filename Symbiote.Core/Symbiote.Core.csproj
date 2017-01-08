@@ -39,7 +39,7 @@
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisIgnoreGeneratedCode>false</CodeAnalysisIgnoreGeneratedCode>
-    <DocumentationFile>bin\Debug\Documentation.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\Symbiote.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -104,15 +104,15 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.7\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.4.1\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog.RealtimeLogger, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NLog.RealtimeLogger.0.9.0.4\lib\NLog.RealtimeLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog.xLogger, Version=0.9.4.24, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.xLogger.0.9.4.24\lib\NLog.xLogger.dll</HintPath>
+    <Reference Include="NLog.xLogger, Version=0.9.5.25, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.xLogger.0.9.5.25\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -164,8 +164,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
-    <Reference Include="Utility.BigFont, Version=2.0.0.6, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Utility.BigFont.2.0.0.6\lib\Utility.BigFont.dll</HintPath>
+    <Reference Include="Utility.BigFont, Version=2.1.1.10, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Utility.BigFont.2.1.1.11\lib\Utility.BigFont.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Utility.OperationResult, Version=0.9.0.4, Culture=neutral, processorArchitecture=MSIL">
