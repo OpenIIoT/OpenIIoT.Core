@@ -30,7 +30,7 @@ namespace Symbiote.Core.Service.Web.API
         public HttpResponseMessage Read()
         {
             IList<Item> result = model.Children;
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn));
+            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Timestamp", "Quality", "Value", "Children" }), ContractResolverType.OptIn));
         }
 
         [Route("api/read/{fqn}")]
@@ -60,7 +60,7 @@ namespace Symbiote.Core.Service.Web.API
             retVal.ReturnValue.Add(foundItem);
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Type", "Value", "Children" }), ContractResolverType.OptIn));
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Timestamp", "Quality", "Value", "Children" }), ContractResolverType.OptIn));
         }
 
         public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)

@@ -486,10 +486,10 @@ namespace Symbiote.Core
                 Utility.PrintModel(logger, applicationManager.GetManager<IModelManager>().Model, 0, null, true);
                 Utility.PrintLogoFooter(logger);
 
-                //// subscribe to the datetime item
-                //Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.DateTime.Time").SubscribeToSource();
-                //subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.Binary.DynamicImage").SubscribeToSource();
-                //subscribe.LogResult(logger.Info);
+                // subscribe to the datetime item
+                Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.DateTime.Time").SubscribeToSource();
+                subscribe = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.Simulation.Binary.DynamicImage").SubscribeToSource();
+                subscribe.LogResult(logger.Info);
 
                 //Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("Symbiote.System.Platform.Memory.Available").SubscribeToSource();
 

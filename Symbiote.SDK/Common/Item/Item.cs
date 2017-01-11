@@ -104,6 +104,8 @@ namespace Symbiote.SDK
         protected ReaderWriterLockSlim qualityLock = new ReaderWriterLockSlim();
         protected ReaderWriterLockSlim timestampLock = new ReaderWriterLockSlim();
 
+        protected ReaderWriterLockSlim grandchildrenLock = new ReaderWriterLockSlim();
+
         #endregion Protected Fields
 
         #region Private Fields
@@ -487,6 +489,7 @@ namespace Symbiote.SDK
             if (item != default(Item))
             {
                 childrenLock.EnterWriteLock();
+                fqnLock.EnterReadLock();
 
                 try
                 {
@@ -494,13 +497,10 @@ namespace Symbiote.SDK
                     retVal.ReturnValue = item;
                     retVal.Incorporate(item.SetParent(this));
                 }
-                catch (Exception ex)
-                {
-                    retVal.AddError("Exception encountered while adding child Item '" + item.FQN + "' to Item '" + FQN + "': " + ex.Message);
-                }
                 finally
                 {
                     childrenLock.ExitWriteLock();
+                    fqnLock.ExitReadLock();
                 }
             }
             else
@@ -582,7 +582,7 @@ namespace Symbiote.SDK
         ///     If the <see cref="ItemSource"/> of the Item is <see cref="ItemSource.Item"/>, the value is retrieved from the
         ///     <see cref="ReadFromSource"/> method of the <see cref="SourceItem"/>. If the ItemSource is
         ///     <see cref="ItemSource.ItemProvider"/>, the value is retrieved from the <see cref="Provider"/> object's
-        ///     <see cref="IEventProvider.Read(Item)"/> method. If the ItemSource is <see cref="ItemSource.Unknown"/>, the present
+        ///     <see cref="IItemProvider.Read(Item)"/> method. If the ItemSource is <see cref="ItemSource.Unknown"/>, the present
         ///     value of the <see cref="Value"/> property is returned. If the ItemSource is <see cref="ItemSource.Unresolved"/>, a
         ///     null value is returned.
         /// </remarks>
@@ -693,37 +693,57 @@ namespace Symbiote.SDK
         ///     Removes the specified Item from the <see cref="Children"/> collection.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
-        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the removed Item.</returns>
+        /// <threadsafety instance="true"/>
         public virtual Result<Item> RemoveChild(Item item)
         {
             Result<Item> retVal = new Result<Item>();
-            System.Diagnostics.Debug.WriteLine("Removing " + item.FQN);
 
-            // locate the item
-            retVal.ReturnValue = Children.Where(i => i.FQN == item.FQN).FirstOrDefault();
-
-            // ensure that it was found in the collection
-            if (retVal.ReturnValue == default(Item))
+            if (item != default(Item))
             {
-                retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
+                // attempt to fetch the item from the Children collection
+                childrenLock.EnterReadLock();
+
+                try
+                {
+                    retVal.ReturnValue = Children.Where(i => i.FQN == item.FQN).FirstOrDefault();
+                }
+                finally
+                {
+                    childrenLock.ExitReadLock();
+                }
+
+                if (retVal.ReturnValue == default(Item))
+                {
+                    retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
+                }
+                else
+                {
+                    childrenLock.EnterWriteLock();
+                    grandchildrenLock.EnterReadLock();
+
+                    try
+                    {
+                        // begin by recursively removing all children from the item being removed
+                        IList<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
+
+                        foreach (Item child in childrenToRemove)
+                        {
+                            retVal.ReturnValue.RemoveChild(child);
+                        }
+
+                        Children.Remove(retVal.ReturnValue);
+                    }
+                    finally
+                    {
+                        grandchildrenLock.ExitReadLock();
+                        childrenLock.ExitWriteLock();
+                    }
+                }
             }
             else
             {
-                // lock the Children collection
-                lock (childrenLock)
-                {
-                    IList<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
-
-                    // if it was found, recursively remove all children before removing the found Item
-                    foreach (Item child in childrenToRemove)
-                    {
-                        retVal.ReturnValue.RemoveChild(child);
-                    }
-
-                    // remove the item itself
-                    Children.Remove(retVal.ReturnValue);
-                }
+                retVal.AddError("Invalid Item; specified Item is null or default.");
             }
 
             return retVal;
@@ -913,11 +933,13 @@ namespace Symbiote.SDK
         #region Protected Methods
 
         /// <summary>
-        ///     Raises the <see cref="ValueChanged"/> event with a new instance of <see cref="ItemValueEventArgs"/> containing the
+        ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
         ///     specified value.
         /// </summary>
         /// <param name="value">The value for the raised event.</param>
         /// <param name="previousValue">The value of the Item prior to the event.</param>
+        /// <param name="quality">The Quality of the item.</param>
+        /// <param name="previousQuality">The quality of the Item prior to the event.</param>
         protected virtual void OnChange(object value, object previousValue, ItemQuality quality, ItemQuality previousQuality)
         {
             if (Changed != null)
@@ -954,7 +976,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Event Handler for the <see cref="ValueChanged"/> event belonging to the <see cref="SourceItem"/>.
+        ///     Event Handler for the <see cref="Changed"/> event belonging to the <see cref="SourceItem"/>.
         /// </summary>
         /// <param name="sender">The Item that raised the event.</param>
         /// <param name="e">The EventArgs for the event.</param>
@@ -969,10 +991,11 @@ namespace Symbiote.SDK
 
         /// <summary>
         ///     Updates the <see cref="Value"/> property with the specified value and fires the
-        ///     <see cref="OnChange(object, object)"/> event.
+        ///     <see cref="OnChange(object, object, ItemQuality, ItemQuality)"/> event.
         /// </summary>
         /// <param name="value">The updated value to which the <see cref="Value"/> property is to be set.</param>
         /// <param name="quality">The updated quality to which the <see cref="Quality"/> property is to be set.</param>
+        /// <threadsafety instance="true"/>
         private void ChangeValue(object value, ItemQuality quality = ItemQuality.Good)
         {
             // retrieve present values
