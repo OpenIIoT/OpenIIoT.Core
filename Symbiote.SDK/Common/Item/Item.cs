@@ -43,12 +43,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Utility.OperationResult;
-using System.Threading;
-using Newtonsoft.Json.Converters;
 
 namespace Symbiote.SDK
 {
@@ -56,6 +56,7 @@ namespace Symbiote.SDK
     ///     Represents a single data entity within the application Model.
     /// </summary>
     /// <remarks>The implementation of the <see cref="ICloneable"/> interface for this class returns a shallow copy.</remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
     public class Item : ICloneable
     {
         #region Protected Fields
@@ -63,37 +64,31 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Lock for the <see cref="Item.Children"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim childrenLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Parent"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim parentLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Value"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim valueLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.SourceFQN"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim sourceFQNLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Provider"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim providerLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.SourceItem"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim sourceItemLock = new ReaderWriterLockSlim();
 
         /// <summary>
@@ -101,9 +96,19 @@ namespace Symbiote.SDK
         /// </summary>
         protected ReaderWriterLockSlim fqnLock = new ReaderWriterLockSlim();
 
+        /// <summary>
+        ///     Lock for the <see cref="Item.Quality"/> property.
+        /// </summary>
         protected ReaderWriterLockSlim qualityLock = new ReaderWriterLockSlim();
+
+        /// <summary>
+        ///     Lock for the <see cref="Item.Timestamp"/> property.
+        /// </summary>
         protected ReaderWriterLockSlim timestampLock = new ReaderWriterLockSlim();
 
+        /// <summary>
+        ///     Lock for the <see cref="Item.Children"/> property of child Items accessed while being removed.
+        /// </summary>
         protected ReaderWriterLockSlim grandchildrenLock = new ReaderWriterLockSlim();
 
         #endregion Protected Fields
@@ -240,7 +245,7 @@ namespace Symbiote.SDK
         public ItemAccessMode AccessMode { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the value.
+        ///     Gets the Item's value.
         /// </summary>
         public object Value { get; private set; }
 
@@ -489,7 +494,6 @@ namespace Symbiote.SDK
             if (item != default(Item))
             {
                 childrenLock.EnterWriteLock();
-                fqnLock.EnterReadLock();
 
                 try
                 {
@@ -500,7 +504,6 @@ namespace Symbiote.SDK
                 finally
                 {
                     childrenLock.ExitWriteLock();
-                    fqnLock.ExitReadLock();
                 }
             }
             else
@@ -751,27 +754,46 @@ namespace Symbiote.SDK
 
         /// <summary>
         ///     Adds the <see cref="SourceItemChanged(object, ItemChangedEventArgs)"/> event handler to the
-        ///     <see cref="SourceItem"/>'s <see cref="ValueChanged"/> event.
+        ///     <see cref="SourceItem"/>'s <see cref="Changed"/> event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
+        /// <threadsafety instance="true"/>
         public virtual Result SubscribeToSource()
         {
             Result retVal = new Result();
 
             if (Source == ItemSource.Item)
             {
-                SourceItem.Changed += SourceItemChanged;
-                SourceItem.SubscriptionsChanged();
+                sourceItemLock.EnterWriteLock();
+
+                try
+                {
+                    SourceItem.Changed += SourceItemChanged;
+                    SourceItem.SubscriptionsChanged();
+                }
+                finally
+                {
+                    sourceItemLock.ExitWriteLock();
+                }
             }
             else if (Source == ItemSource.ItemProvider)
             {
-                if (Provider is ISubscribable)
+                providerLock.EnterWriteLock();
+
+                try
                 {
-                    ((ISubscribable)Provider).Subscribe(this, value => ChangeValue(value));
+                    if (Provider is ISubscribable)
+                    {
+                        ((ISubscribable)Provider).Subscribe(this, value => ChangeValue(value));
+                    }
+                    else
+                    {
+                        retVal.AddError("Unable to subscribe to source; the source Item Provider is not subscribable.");
+                    }
                 }
-                else
+                finally
                 {
-                    retVal.AddError("Unable to subscribe to source; the source Item Provider is not subscribable.");
+                    providerLock.ExitWriteLock();
                 }
             }
             else
@@ -783,7 +805,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Notifies this Item that the number of subscribers to the <see cref="ValueChanged"/> event has changed.
+        ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
         /// </summary>
         public virtual void SubscriptionsChanged()
         {
@@ -823,34 +845,62 @@ namespace Symbiote.SDK
         ///     Returns the string representation of the object.
         /// </summary>
         /// <returns>The string representation of the object.</returns>
+        /// <threadsafety instance="true"/>
         public override string ToString()
         {
-            return FQN;
+            fqnLock.EnterReadLock();
+
+            try
+            {
+                return FQN;
+            }
+            finally
+            {
+                fqnLock.ExitReadLock();
+            }
         }
 
         /// <summary>
-        ///     Removes the <see cref="SourceItemChanged"/> event handler from the <see cref="SourceItem"/>'s
-        ///     <see cref="ValueChanged"/> event.
+        ///     Removes the <see cref="SourceItemChanged"/> event handler from the <see cref="SourceItem"/>'s <see cref="Changed"/> event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
+        /// <threadsafety instance="true"/>
         public virtual Result UnsubscribeFromSource()
         {
             Result retVal = new Result();
 
             if (Source == ItemSource.Item)
             {
-                SourceItem.Changed -= SourceItemChanged;
-                SourceItem.SubscriptionsChanged();
+                sourceItemLock.EnterWriteLock();
+
+                try
+                {
+                    SourceItem.Changed -= SourceItemChanged;
+                    SourceItem.SubscriptionsChanged();
+                }
+                finally
+                {
+                    sourceItemLock.ExitWriteLock();
+                }
             }
             else if (Source == ItemSource.ItemProvider)
             {
-                if (Provider is ISubscribable)
+                providerLock.EnterWriteLock();
+
+                try
                 {
-                    ((ISubscribable)Provider).UnSubscribe(this, value => ChangeValue(value));
+                    if (Provider is ISubscribable)
+                    {
+                        ((ISubscribable)Provider).UnSubscribe(this, value => ChangeValue(value));
+                    }
+                    else
+                    {
+                        retVal.AddError("Unable to unsubscribe from source; the source Item Provider is not subscribable.");
+                    }
                 }
-                else
+                finally
                 {
-                    retVal.AddError("Unable to unsubscribe from source; the source Item Provider is not subscribable.");
+                    providerLock.ExitWriteLock();
                 }
             }
             else
@@ -896,17 +946,29 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <returns>A value indicating whether the write operation succeeded.</returns>
+        /// <threadsafety instance="true"/>
         public virtual bool WriteToSource(object value)
         {
             bool result = false;
 
-            if (Source == ItemSource.Item)
+            sourceItemLock.EnterWriteLock();
+            providerLock.EnterWriteLock();
+
+            try
             {
-                result = SourceItem.WriteToSource(value);
+                if (Source == ItemSource.Item)
+                {
+                    result = SourceItem.WriteToSource(value);
+                }
+                else if (Source == ItemSource.ItemProvider && Provider is IWriteable)
+                {
+                    result = ((IWriteable)Provider).Write(this, value);
+                }
             }
-            else if (Source == ItemSource.ItemProvider && Provider is IWriteable)
+            finally
             {
-                result = ((IWriteable)Provider).Write(this, value);
+                providerLock.ExitWriteLock();
+                sourceItemLock.ExitWriteLock();
             }
 
             if (result)
@@ -952,19 +1014,28 @@ namespace Symbiote.SDK
         ///     Sets the parent Item to the supplied Item.
         /// </summary>
         /// <param name="parent">The Item to set as the Item's parent.</param>
-        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the current Item.</returns>
+        /// <threadsafety instance="true"/>
         protected virtual Result SetParent(Item parent)
         {
             Result retVal = new Result();
 
             if (parent != default(Item))
             {
-                // lock the Parent property
-                lock (parentLock)
+                string name = Name;
+
+                parentLock.EnterWriteLock();
+                fqnLock.EnterWriteLock();
+
+                try
                 {
-                    FQN = (this != parent ? parent.FQN + "." : string.Empty) + Name;
+                    FQN = (this != parent ? parent.FQN + "." : string.Empty) + name;
                     Parent = parent;
+                }
+                finally
+                {
+                    fqnLock.ExitWriteLock();
+                    parentLock.ExitWriteLock();
                 }
             }
             else
