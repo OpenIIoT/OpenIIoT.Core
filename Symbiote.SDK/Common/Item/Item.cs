@@ -43,12 +43,12 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Utility.OperationResult;
-using System.Threading;
-using Newtonsoft.Json.Converters;
 
 namespace Symbiote.SDK
 {
@@ -56,6 +56,7 @@ namespace Symbiote.SDK
     ///     Represents a single data entity within the application Model.
     /// </summary>
     /// <remarks>The implementation of the <see cref="ICloneable"/> interface for this class returns a shallow copy.</remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
     public class Item : ICloneable
     {
         #region Protected Fields
@@ -63,46 +64,32 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Lock for the <see cref="Item.Children"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim childrenLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Parent"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim parentLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Value"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim valueLock = new ReaderWriterLockSlim();
-
-        /// <summary>
-        ///     Lock for the <see cref="Item.SourceFQN"/> property.
-        /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
-        protected ReaderWriterLockSlim sourceFQNLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Provider"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim providerLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.SourceItem"/> property.
         /// </summary>
-        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
         protected ReaderWriterLockSlim sourceItemLock = new ReaderWriterLockSlim();
 
         /// <summary>
-        ///     Lock for the <see cref="Item.FQN"/> property.
+        ///     Lock for the <see cref="Item.Children"/> property of child Items accessed while being removed.
         /// </summary>
-        protected ReaderWriterLockSlim fqnLock = new ReaderWriterLockSlim();
-
-        protected ReaderWriterLockSlim qualityLock = new ReaderWriterLockSlim();
-        protected ReaderWriterLockSlim timestampLock = new ReaderWriterLockSlim();
+        protected ReaderWriterLockSlim grandchildrenLock = new ReaderWriterLockSlim();
 
         #endregion Protected Fields
 
@@ -238,7 +225,7 @@ namespace Symbiote.SDK
         public ItemAccessMode AccessMode { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the value.
+        ///     Gets the Item's value.
         /// </summary>
         public object Value { get; private set; }
 
@@ -323,25 +310,11 @@ namespace Symbiote.SDK
         ///     Gets the name.
         /// </summary>
         /// <remarks>Corresponds to the final tuple of the <see cref="FQN"/> property.</remarks>
-        /// <threadsafety instance="true"/>
         public string Name
         {
             get
             {
-                string retVal;
-
-                fqnLock.EnterReadLock();
-
-                try
-                {
-                    retVal = FQN.Substring(FQN.LastIndexOf('.') + 1);
-                }
-                finally
-                {
-                    fqnLock.ExitReadLock();
-                }
-
-                return retVal;
+                return FQN.Substring(FQN.LastIndexOf('.') + 1);
             }
         }
 
@@ -354,25 +327,11 @@ namespace Symbiote.SDK
         ///     Gets the path.
         /// </summary>
         /// <remarks>Corresponds to the value of the <see cref="FQN"/> property, less the final tuple.</remarks>
-        /// <threadsafety instance="true"/>
         public string Path
         {
             get
             {
-                string retVal;
-
-                fqnLock.EnterReadLock();
-
-                try
-                {
-                    retVal = FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
-                }
-                finally
-                {
-                    fqnLock.ExitReadLock();
-                }
-
-                return retVal;
+                return FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
             }
         }
 
@@ -393,7 +352,6 @@ namespace Symbiote.SDK
 
                 providerLock.EnterReadLock();
                 sourceItemLock.EnterReadLock();
-                sourceFQNLock.EnterReadLock();
 
                 try
                 {
@@ -416,7 +374,6 @@ namespace Symbiote.SDK
                 }
                 finally
                 {
-                    sourceFQNLock.ExitReadLock();
                     sourceItemLock.ExitReadLock();
                     providerLock.ExitReadLock();
                 }
@@ -437,7 +394,6 @@ namespace Symbiote.SDK
         ///     When this property is updated the <see cref="SourceFQN"/> property is updated with the value of the
         ///     <see cref="Item.FQN"/> property of the source <see cref="Item"/>.
         /// </remarks>
-        /// <threadsafety instance="true"/>
         public Item SourceItem
         {
             get
@@ -450,16 +406,7 @@ namespace Symbiote.SDK
                 // if the new value is a legitimate Item, set the value of the SourceFQN property to the FQN of the new SourceItem value.
                 if (value != default(Item))
                 {
-                    sourceFQNLock.EnterWriteLock();
-
-                    try
-                    {
-                        SourceFQN = value.FQN;
-                    }
-                    finally
-                    {
-                        sourceFQNLock.ExitWriteLock();
-                    }
+                    SourceFQN = value.FQN;
                 }
 
                 sourceItem = value;
@@ -494,10 +441,6 @@ namespace Symbiote.SDK
                     retVal.ReturnValue = item;
                     retVal.Incorporate(item.SetParent(this));
                 }
-                catch (Exception ex)
-                {
-                    retVal.AddError("Exception encountered while adding child Item '" + item.FQN + "' to Item '" + FQN + "': " + ex.Message);
-                }
                 finally
                 {
                     childrenLock.ExitWriteLock();
@@ -516,16 +459,34 @@ namespace Symbiote.SDK
         /// </summary>
         /// <remarks>We aren't using .MemberWiseClone() because of the GUID. We need a "deep copy".</remarks>
         /// <returns>A shallow copy of this Item.</returns>
+        /// <threadsafety instance="true"/>
         public virtual object Clone()
         {
-            Item retVal = new Item(FQN, SourceItem, SourceFQN);
-            retVal.Parent = Parent;
-            retVal.Children = Children.Clone<Item>();
-            retVal.Value = Value;
-            retVal.Quality = Quality;
-            retVal.Timestamp = Timestamp;
-            retVal.SourceItem = SourceItem;
-            retVal.AccessMode = AccessMode;
+            parentLock.EnterReadLock();
+            childrenLock.EnterReadLock();
+            valueLock.EnterReadLock();
+            sourceItemLock.EnterReadLock();
+
+            Item retVal;
+
+            try
+            {
+                retVal = new Item(FQN, SourceItem, SourceFQN);
+                retVal.Parent = Parent;
+                retVal.Children = Children.Clone<Item>();
+                retVal.Value = Value;
+                retVal.Quality = Quality;
+                retVal.Timestamp = Timestamp;
+                retVal.AccessMode = AccessMode;
+            }
+            finally
+            {
+                sourceItemLock.ExitReadLock();
+                valueLock.ExitReadLock();
+                childrenLock.ExitReadLock();
+                parentLock.ExitReadLock();
+            }
+
             return retVal;
         }
 
@@ -534,6 +495,7 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name with which this Item's FQN is to be replaced.</param>
         /// <returns>A shallow copy of this Item with the FQN substituted for the specified value.</returns>
+        /// <threadsafety instance="true"/>
         public virtual object CloneAs(string fqn)
         {
             Item retVal = (Item)Clone();
@@ -582,7 +544,7 @@ namespace Symbiote.SDK
         ///     If the <see cref="ItemSource"/> of the Item is <see cref="ItemSource.Item"/>, the value is retrieved from the
         ///     <see cref="ReadFromSource"/> method of the <see cref="SourceItem"/>. If the ItemSource is
         ///     <see cref="ItemSource.ItemProvider"/>, the value is retrieved from the <see cref="Provider"/> object's
-        ///     <see cref="IEventProvider.Read(Item)"/> method. If the ItemSource is <see cref="ItemSource.Unknown"/>, the present
+        ///     <see cref="IItemProvider.Read(Item)"/> method. If the ItemSource is <see cref="ItemSource.Unknown"/>, the present
         ///     value of the <see cref="Value"/> property is returned. If the ItemSource is <see cref="ItemSource.Unresolved"/>, a
         ///     null value is returned.
         /// </remarks>
@@ -693,37 +655,57 @@ namespace Symbiote.SDK
         ///     Removes the specified Item from the <see cref="Children"/> collection.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
-        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the removed Item.</returns>
+        /// <threadsafety instance="true"/>
         public virtual Result<Item> RemoveChild(Item item)
         {
             Result<Item> retVal = new Result<Item>();
-            System.Diagnostics.Debug.WriteLine("Removing " + item.FQN);
 
-            // locate the item
-            retVal.ReturnValue = Children.Where(i => i.FQN == item.FQN).FirstOrDefault();
-
-            // ensure that it was found in the collection
-            if (retVal.ReturnValue == default(Item))
+            if (item != default(Item))
             {
-                retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
+                // attempt to fetch the item from the Children collection
+                childrenLock.EnterReadLock();
+
+                try
+                {
+                    retVal.ReturnValue = Children.Where(i => i.FQN == item.FQN).FirstOrDefault();
+                }
+                finally
+                {
+                    childrenLock.ExitReadLock();
+                }
+
+                if (retVal.ReturnValue == default(Item))
+                {
+                    retVal.AddError("Failed to find the item '" + item.FQN + "' in the list of children for '" + FQN + "'.");
+                }
+                else
+                {
+                    childrenLock.EnterWriteLock();
+                    grandchildrenLock.EnterReadLock();
+
+                    try
+                    {
+                        // begin by recursively removing all children from the item being removed
+                        IList<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
+
+                        foreach (Item child in childrenToRemove)
+                        {
+                            retVal.ReturnValue.RemoveChild(child);
+                        }
+
+                        Children.Remove(retVal.ReturnValue);
+                    }
+                    finally
+                    {
+                        grandchildrenLock.ExitReadLock();
+                        childrenLock.ExitWriteLock();
+                    }
+                }
             }
             else
             {
-                // lock the Children collection
-                lock (childrenLock)
-                {
-                    IList<Item> childrenToRemove = retVal.ReturnValue.Children.Clone();
-
-                    // if it was found, recursively remove all children before removing the found Item
-                    foreach (Item child in childrenToRemove)
-                    {
-                        retVal.ReturnValue.RemoveChild(child);
-                    }
-
-                    // remove the item itself
-                    Children.Remove(retVal.ReturnValue);
-                }
+                retVal.AddError("Invalid Item; specified Item is null or default.");
             }
 
             return retVal;
@@ -731,27 +713,46 @@ namespace Symbiote.SDK
 
         /// <summary>
         ///     Adds the <see cref="SourceItemChanged(object, ItemChangedEventArgs)"/> event handler to the
-        ///     <see cref="SourceItem"/>'s <see cref="ValueChanged"/> event.
+        ///     <see cref="SourceItem"/>'s <see cref="Changed"/> event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
+        /// <threadsafety instance="true"/>
         public virtual Result SubscribeToSource()
         {
             Result retVal = new Result();
 
             if (Source == ItemSource.Item)
             {
-                SourceItem.Changed += SourceItemChanged;
-                SourceItem.SubscriptionsChanged();
+                sourceItemLock.EnterWriteLock();
+
+                try
+                {
+                    SourceItem.Changed += SourceItemChanged;
+                    SourceItem.SubscriptionsChanged();
+                }
+                finally
+                {
+                    sourceItemLock.ExitWriteLock();
+                }
             }
             else if (Source == ItemSource.ItemProvider)
             {
-                if (Provider is ISubscribable)
+                providerLock.EnterWriteLock();
+
+                try
                 {
-                    ((ISubscribable)Provider).Subscribe(this, value => ChangeValue(value));
+                    if (Provider is ISubscribable)
+                    {
+                        ((ISubscribable)Provider).Subscribe(this, value => ChangeValue(value));
+                    }
+                    else
+                    {
+                        retVal.AddError("Unable to subscribe to source; the source Item Provider is not subscribable.");
+                    }
                 }
-                else
+                finally
                 {
-                    retVal.AddError("Unable to subscribe to source; the source Item Provider is not subscribable.");
+                    providerLock.ExitWriteLock();
                 }
             }
             else
@@ -763,7 +764,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Notifies this Item that the number of subscribers to the <see cref="ValueChanged"/> event has changed.
+        ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
         /// </summary>
         public virtual void SubscriptionsChanged()
         {
@@ -803,34 +804,53 @@ namespace Symbiote.SDK
         ///     Returns the string representation of the object.
         /// </summary>
         /// <returns>The string representation of the object.</returns>
+        /// <threadsafety instance="true"/>
         public override string ToString()
         {
             return FQN;
         }
 
         /// <summary>
-        ///     Removes the <see cref="SourceItemChanged"/> event handler from the <see cref="SourceItem"/>'s
-        ///     <see cref="ValueChanged"/> event.
+        ///     Removes the <see cref="SourceItemChanged"/> event handler from the <see cref="SourceItem"/>'s <see cref="Changed"/> event.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
+        /// <threadsafety instance="true"/>
         public virtual Result UnsubscribeFromSource()
         {
             Result retVal = new Result();
 
             if (Source == ItemSource.Item)
             {
-                SourceItem.Changed -= SourceItemChanged;
-                SourceItem.SubscriptionsChanged();
+                sourceItemLock.EnterWriteLock();
+
+                try
+                {
+                    SourceItem.Changed -= SourceItemChanged;
+                    SourceItem.SubscriptionsChanged();
+                }
+                finally
+                {
+                    sourceItemLock.ExitWriteLock();
+                }
             }
             else if (Source == ItemSource.ItemProvider)
             {
-                if (Provider is ISubscribable)
+                providerLock.EnterWriteLock();
+
+                try
                 {
-                    ((ISubscribable)Provider).UnSubscribe(this, value => ChangeValue(value));
+                    if (Provider is ISubscribable)
+                    {
+                        ((ISubscribable)Provider).UnSubscribe(this, value => ChangeValue(value));
+                    }
+                    else
+                    {
+                        retVal.AddError("Unable to unsubscribe from source; the source Item Provider is not subscribable.");
+                    }
                 }
-                else
+                finally
                 {
-                    retVal.AddError("Unable to unsubscribe from source; the source Item Provider is not subscribable.");
+                    providerLock.ExitWriteLock();
                 }
             }
             else
@@ -876,17 +896,31 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <returns>A value indicating whether the write operation succeeded.</returns>
+        /// <threadsafety instance="true"/>
         public virtual bool WriteToSource(object value)
         {
             bool result = false;
 
-            if (Source == ItemSource.Item)
+            ItemSource source = Source;
+
+            sourceItemLock.EnterWriteLock();
+            providerLock.EnterWriteLock();
+
+            try
             {
-                result = SourceItem.WriteToSource(value);
+                if (source == ItemSource.Item)
+                {
+                    result = SourceItem.WriteToSource(value);
+                }
+                else if (source == ItemSource.ItemProvider && Provider is IWriteable)
+                {
+                    result = ((IWriteable)Provider).Write(this, value);
+                }
             }
-            else if (Source == ItemSource.ItemProvider && Provider is IWriteable)
+            finally
             {
-                result = ((IWriteable)Provider).Write(this, value);
+                providerLock.ExitWriteLock();
+                sourceItemLock.ExitWriteLock();
             }
 
             if (result)
@@ -913,11 +947,13 @@ namespace Symbiote.SDK
         #region Protected Methods
 
         /// <summary>
-        ///     Raises the <see cref="ValueChanged"/> event with a new instance of <see cref="ItemValueEventArgs"/> containing the
+        ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
         ///     specified value.
         /// </summary>
         /// <param name="value">The value for the raised event.</param>
         /// <param name="previousValue">The value of the Item prior to the event.</param>
+        /// <param name="quality">The Quality of the item.</param>
+        /// <param name="previousQuality">The quality of the Item prior to the event.</param>
         protected virtual void OnChange(object value, object previousValue, ItemQuality quality, ItemQuality previousQuality)
         {
             if (Changed != null)
@@ -930,19 +966,26 @@ namespace Symbiote.SDK
         ///     Sets the parent Item to the supplied Item.
         /// </summary>
         /// <param name="parent">The Item to set as the Item's parent.</param>
-        /// <threadsafety instance="true"/>
         /// <returns>A Result containing the result of the operation and the current Item.</returns>
+        /// <threadsafety instance="true"/>
         protected virtual Result SetParent(Item parent)
         {
             Result retVal = new Result();
 
             if (parent != default(Item))
             {
-                // lock the Parent property
-                lock (parentLock)
+                string name = Name;
+
+                parentLock.EnterWriteLock();
+
+                try
                 {
-                    FQN = (this != parent ? parent.FQN + "." : string.Empty) + Name;
+                    FQN = (this != parent ? parent.FQN + "." : string.Empty) + name;
                     Parent = parent;
+                }
+                finally
+                {
+                    parentLock.ExitWriteLock();
                 }
             }
             else
@@ -954,7 +997,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Event Handler for the <see cref="ValueChanged"/> event belonging to the <see cref="SourceItem"/>.
+        ///     Event Handler for the <see cref="Changed"/> event belonging to the <see cref="SourceItem"/>.
         /// </summary>
         /// <param name="sender">The Item that raised the event.</param>
         /// <param name="e">The EventArgs for the event.</param>
@@ -969,10 +1012,11 @@ namespace Symbiote.SDK
 
         /// <summary>
         ///     Updates the <see cref="Value"/> property with the specified value and fires the
-        ///     <see cref="OnChange(object, object)"/> event.
+        ///     <see cref="OnChange(object, object, ItemQuality, ItemQuality)"/> event.
         /// </summary>
         /// <param name="value">The updated value to which the <see cref="Value"/> property is to be set.</param>
         /// <param name="quality">The updated quality to which the <see cref="Quality"/> property is to be set.</param>
+        /// <threadsafety instance="true"/>
         private void ChangeValue(object value, ItemQuality quality = ItemQuality.Good)
         {
             // retrieve present values
@@ -980,7 +1024,6 @@ namespace Symbiote.SDK
             ItemQuality previousQuality;
 
             valueLock.EnterReadLock();
-            qualityLock.EnterReadLock();
 
             try
             {
@@ -990,13 +1033,10 @@ namespace Symbiote.SDK
             finally
             {
                 valueLock.ExitReadLock();
-                qualityLock.ExitReadLock();
             }
 
             // update the Value, Timestamp and Quality fields of the Item
             valueLock.EnterWriteLock();
-            timestampLock.EnterWriteLock();
-            qualityLock.EnterWriteLock();
 
             try
             {
@@ -1007,8 +1047,6 @@ namespace Symbiote.SDK
             finally
             {
                 valueLock.ExitWriteLock();
-                timestampLock.ExitWriteLock();
-                qualityLock.ExitWriteLock();
             }
 
             // raise the Changed event
