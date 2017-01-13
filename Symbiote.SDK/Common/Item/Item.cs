@@ -77,11 +77,6 @@ namespace Symbiote.SDK
         protected ReaderWriterLockSlim valueLock = new ReaderWriterLockSlim();
 
         /// <summary>
-        ///     Lock for the <see cref="Item.SourceFQN"/> property.
-        /// </summary>
-        protected ReaderWriterLockSlim sourceFQNLock = new ReaderWriterLockSlim();
-
-        /// <summary>
         ///     Lock for the <see cref="Item.Provider"/> property.
         /// </summary>
         protected ReaderWriterLockSlim providerLock = new ReaderWriterLockSlim();
@@ -90,21 +85,6 @@ namespace Symbiote.SDK
         ///     Lock for the <see cref="Item.SourceItem"/> property.
         /// </summary>
         protected ReaderWriterLockSlim sourceItemLock = new ReaderWriterLockSlim();
-
-        /// <summary>
-        ///     Lock for the <see cref="Item.FQN"/> property.
-        /// </summary>
-        protected ReaderWriterLockSlim fqnLock = new ReaderWriterLockSlim();
-
-        /// <summary>
-        ///     Lock for the <see cref="Item.Quality"/> property.
-        /// </summary>
-        protected ReaderWriterLockSlim qualityLock = new ReaderWriterLockSlim();
-
-        /// <summary>
-        ///     Lock for the <see cref="Item.Timestamp"/> property.
-        /// </summary>
-        protected ReaderWriterLockSlim timestampLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Children"/> property of child Items accessed while being removed.
@@ -330,25 +310,11 @@ namespace Symbiote.SDK
         ///     Gets the name.
         /// </summary>
         /// <remarks>Corresponds to the final tuple of the <see cref="FQN"/> property.</remarks>
-        /// <threadsafety instance="true"/>
         public string Name
         {
             get
             {
-                string retVal;
-
-                fqnLock.EnterReadLock();
-
-                try
-                {
-                    retVal = FQN.Substring(FQN.LastIndexOf('.') + 1);
-                }
-                finally
-                {
-                    fqnLock.ExitReadLock();
-                }
-
-                return retVal;
+                return FQN.Substring(FQN.LastIndexOf('.') + 1);
             }
         }
 
@@ -361,25 +327,11 @@ namespace Symbiote.SDK
         ///     Gets the path.
         /// </summary>
         /// <remarks>Corresponds to the value of the <see cref="FQN"/> property, less the final tuple.</remarks>
-        /// <threadsafety instance="true"/>
         public string Path
         {
             get
             {
-                string retVal;
-
-                fqnLock.EnterReadLock();
-
-                try
-                {
-                    retVal = FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
-                }
-                finally
-                {
-                    fqnLock.ExitReadLock();
-                }
-
-                return retVal;
+                return FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
             }
         }
 
@@ -400,7 +352,6 @@ namespace Symbiote.SDK
 
                 providerLock.EnterReadLock();
                 sourceItemLock.EnterReadLock();
-                sourceFQNLock.EnterReadLock();
 
                 try
                 {
@@ -423,7 +374,6 @@ namespace Symbiote.SDK
                 }
                 finally
                 {
-                    sourceFQNLock.ExitReadLock();
                     sourceItemLock.ExitReadLock();
                     providerLock.ExitReadLock();
                 }
@@ -444,7 +394,6 @@ namespace Symbiote.SDK
         ///     When this property is updated the <see cref="SourceFQN"/> property is updated with the value of the
         ///     <see cref="Item.FQN"/> property of the source <see cref="Item"/>.
         /// </remarks>
-        /// <threadsafety instance="true"/>
         public Item SourceItem
         {
             get
@@ -457,16 +406,7 @@ namespace Symbiote.SDK
                 // if the new value is a legitimate Item, set the value of the SourceFQN property to the FQN of the new SourceItem value.
                 if (value != default(Item))
                 {
-                    sourceFQNLock.EnterWriteLock();
-
-                    try
-                    {
-                        SourceFQN = value.FQN;
-                    }
-                    finally
-                    {
-                        sourceFQNLock.ExitWriteLock();
-                    }
+                    SourceFQN = value.FQN;
                 }
 
                 sourceItem = value;
@@ -519,16 +459,34 @@ namespace Symbiote.SDK
         /// </summary>
         /// <remarks>We aren't using .MemberWiseClone() because of the GUID. We need a "deep copy".</remarks>
         /// <returns>A shallow copy of this Item.</returns>
+        /// <threadsafety instance="true"/>
         public virtual object Clone()
         {
-            Item retVal = new Item(FQN, SourceItem, SourceFQN);
-            retVal.Parent = Parent;
-            retVal.Children = Children.Clone<Item>();
-            retVal.Value = Value;
-            retVal.Quality = Quality;
-            retVal.Timestamp = Timestamp;
-            retVal.SourceItem = SourceItem;
-            retVal.AccessMode = AccessMode;
+            parentLock.EnterReadLock();
+            childrenLock.EnterReadLock();
+            valueLock.EnterReadLock();
+            sourceItemLock.EnterReadLock();
+
+            Item retVal;
+
+            try
+            {
+                retVal = new Item(FQN, SourceItem, SourceFQN);
+                retVal.Parent = Parent;
+                retVal.Children = Children.Clone<Item>();
+                retVal.Value = Value;
+                retVal.Quality = Quality;
+                retVal.Timestamp = Timestamp;
+                retVal.AccessMode = AccessMode;
+            }
+            finally
+            {
+                sourceItemLock.ExitReadLock();
+                valueLock.ExitReadLock();
+                childrenLock.ExitReadLock();
+                parentLock.ExitReadLock();
+            }
+
             return retVal;
         }
 
@@ -537,6 +495,7 @@ namespace Symbiote.SDK
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name with which this Item's FQN is to be replaced.</param>
         /// <returns>A shallow copy of this Item with the FQN substituted for the specified value.</returns>
+        /// <threadsafety instance="true"/>
         public virtual object CloneAs(string fqn)
         {
             Item retVal = (Item)Clone();
@@ -848,16 +807,7 @@ namespace Symbiote.SDK
         /// <threadsafety instance="true"/>
         public override string ToString()
         {
-            fqnLock.EnterReadLock();
-
-            try
-            {
-                return FQN;
-            }
-            finally
-            {
-                fqnLock.ExitReadLock();
-            }
+            return FQN;
         }
 
         /// <summary>
@@ -951,16 +901,18 @@ namespace Symbiote.SDK
         {
             bool result = false;
 
+            ItemSource source = Source;
+
             sourceItemLock.EnterWriteLock();
             providerLock.EnterWriteLock();
 
             try
             {
-                if (Source == ItemSource.Item)
+                if (source == ItemSource.Item)
                 {
                     result = SourceItem.WriteToSource(value);
                 }
-                else if (Source == ItemSource.ItemProvider && Provider is IWriteable)
+                else if (source == ItemSource.ItemProvider && Provider is IWriteable)
                 {
                     result = ((IWriteable)Provider).Write(this, value);
                 }
@@ -1025,7 +977,6 @@ namespace Symbiote.SDK
                 string name = Name;
 
                 parentLock.EnterWriteLock();
-                fqnLock.EnterWriteLock();
 
                 try
                 {
@@ -1034,7 +985,6 @@ namespace Symbiote.SDK
                 }
                 finally
                 {
-                    fqnLock.ExitWriteLock();
                     parentLock.ExitWriteLock();
                 }
             }
@@ -1074,7 +1024,6 @@ namespace Symbiote.SDK
             ItemQuality previousQuality;
 
             valueLock.EnterReadLock();
-            qualityLock.EnterReadLock();
 
             try
             {
@@ -1084,13 +1033,10 @@ namespace Symbiote.SDK
             finally
             {
                 valueLock.ExitReadLock();
-                qualityLock.ExitReadLock();
             }
 
             // update the Value, Timestamp and Quality fields of the Item
             valueLock.EnterWriteLock();
-            timestampLock.EnterWriteLock();
-            qualityLock.EnterWriteLock();
 
             try
             {
@@ -1101,8 +1047,6 @@ namespace Symbiote.SDK
             finally
             {
                 valueLock.ExitWriteLock();
-                timestampLock.ExitWriteLock();
-                qualityLock.ExitWriteLock();
             }
 
             // raise the Changed event
