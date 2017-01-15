@@ -92,6 +92,7 @@ namespace Symbiote.SDK.Tests
 
             Assert.Equal("previous", args.PreviousValue);
             Assert.Equal("new", args.Value);
+            Assert.Equal(false, args.QualityChanged);
         }
 
         #endregion Public Methods
