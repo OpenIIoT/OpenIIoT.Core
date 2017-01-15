@@ -202,6 +202,7 @@ namespace Symbiote.SDK
             Quality = ItemQuality.Uninitialized;
 
             Guid = Guid.NewGuid();
+            Lock = new ReaderWriterLockSlim();
 
             Children = new List<Item>();
         }
@@ -296,6 +297,11 @@ namespace Symbiote.SDK
         public bool IsSubscribedToSource { get; private set; }
 
         /// <summary>
+        ///     Gets the lock for this Item to be used to help ensure thread safety.
+        /// </summary>
+        public ReaderWriterLockSlim Lock { get; private set; }
+
+        /// <summary>
         ///     Gets the name.
         /// </summary>
         /// <remarks>Corresponds to the final tuple of the <see cref="FQN"/> property.</remarks>
@@ -303,7 +309,8 @@ namespace Symbiote.SDK
         {
             get
             {
-                return FQN.Substring(FQN.LastIndexOf('.') + 1);
+                string fqn = FQN;
+                return fqn.Substring(fqn.LastIndexOf('.') + 1);
             }
         }
 
@@ -320,7 +327,8 @@ namespace Symbiote.SDK
         {
             get
             {
-                return FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
+                string fqn = FQN;
+                return fqn.Substring(0, fqn.LastIndexOf(".") == -1 ? 0 : fqn.LastIndexOf("."));
             }
         }
 
