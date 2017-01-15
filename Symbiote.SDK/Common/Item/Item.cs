@@ -291,7 +291,7 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the Item is subscribed to its source Item.
+        ///     Gets a value indicating whether the Item is subscribed to its source Item.
         /// </summary>
         public bool IsSubscribedToSource { get; private set; }
 
@@ -423,7 +423,8 @@ namespace Symbiote.SDK
         #region Public Methods
 
         /// <summary>
-        ///     Adds the supplied <see cref="Item"/> to the <see cref="Children"/> collection.
+        ///     Adds the supplied <see cref="Item"/> to the <see cref="Children"/> collection. Do not invoke this method on Items
+        ///     which are managed by the application's Model Manager.
         /// </summary>
         /// <remarks>
         ///     This method should be avoided for Items within the application Model; use the public methods in the
@@ -665,7 +666,8 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
-        ///     Removes the specified Item from the <see cref="Children"/> collection.
+        ///     Removes the specified Item from the <see cref="Children"/> collection. Do not invoke this method on Items which are
+        ///     managed by the application's Model Manager.
         /// </summary>
         /// <param name="item">The Item to remove.</param>
         /// <returns>A Result containing the result of the operation and the removed Item.</returns>
@@ -978,7 +980,7 @@ namespace Symbiote.SDK
         ///     <see cref="Item"/> is among its ancestors.
         /// </summary>
         /// <param name="item">The Item for which to search.</param>
-        /// <returns>A value indicating whether the specified Item exists among this ITem's ancestors.</returns>
+        /// <returns>A value indicating whether the specified Item exists among this Item's ancestors.</returns>
         protected bool IsAncestor(Item item)
         {
             return IsAncestor(this, item);

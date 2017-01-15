@@ -48,9 +48,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Moq;
 using System;
 using System.Collections.Generic;
+using Moq;
 using Utility.OperationResult;
 using Xunit;
 
@@ -457,6 +457,61 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
+        ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is <see cref="ItemSource.Item"/>.
+        /// </summary>
+        [Fact]
+        public void SubscribeToSourceItem()
+        {
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+
+            Result result = item.SubscribeToSource();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(item.IsSubscribedToSource);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is <see cref="ItemSource.ItemProvider"/>.
+        /// </summary>
+        [Fact]
+        public void SubscribeToSourceProvider()
+        {
+            // mock an IItemProvider that also implements ISubscribable
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+            mockProvider.As<ISubscribable>();
+
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
+
+            Assert.Equal(ItemSource.ItemProvider, item.Source);
+
+            Result result = item.SubscribeToSource();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(item.IsSubscribedToSource);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is
+        ///     <see cref="ItemSource.ItemProvider"/> and where the <see cref="SDK.Item.Provider"/> does not implement <see cref="ISubscribable"/>.
+        /// </summary>
+        [Fact]
+        public void SubscribeToSourceProviderNotSubscribable()
+        {
+            // mock an IItemProvider that doesn't implement ISubscribable
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
+
+            Result result = item.SubscribeToSource();
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.False(item.IsSubscribedToSource);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> and <see cref="SDK.Item.UnsubscribeFromSource"/> methods.
         /// </summary>
         [Fact]
@@ -495,18 +550,41 @@ namespace Symbiote.SDK.Tests
             Assert.Equal(ResultCode.Failure, lastItemUnSub.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.SubscriptionsChanged"/> method with no subscribers listening.
+        /// </summary>
         [Fact]
-        public void SubscribeToSourceItem()
+        public void SubscriptionsChangedNoSubscribers()
         {
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
+            mockItemProvider.As<ISubscribable>();
 
-            Result result = item.SubscribeToSource();
+            SDK.Item item = new SDK.Item("Root", mockItemProvider.Object);
 
-            Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.True(item.IsSubscribedToSource);
+            item.SubscriptionsChanged();
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.SubscriptionsChanged"/> method with subscribers listening.
+        /// </summary>
+        [Fact]
+        public void SubscriptionsChangedSubscribers()
+        {
+            Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
+            mockItemProvider.As<ISubscribable>();
+
+            SDK.Item item = new SDK.Item("Root", mockItemProvider.Object);
+
+            EventHandler<SDK.ItemChangedEventArgs> handler = (sender, e) => { };
+
+            item.Changed += handler;
+
+            item.SubscriptionsChanged();
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.UnsubscribeFromSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is <see cref="ItemSource.Item"/>.
+        /// </summary>
         [Fact]
         public void UnSubscribeFromSourceItem()
         {
@@ -522,24 +600,9 @@ namespace Symbiote.SDK.Tests
             Assert.False(item.IsSubscribedToSource);
         }
 
-        [Fact]
-        public void SubscribeToSourceProvider()
-        {
-            // mock an IItemProvider that also implements ISubscribable
-            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
-            mockProvider.As<ISubscribable>();
-
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
-
-            Assert.Equal(ItemSource.ItemProvider, item.Source);
-
-            Result result = item.SubscribeToSource();
-
-            Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.True(item.IsSubscribedToSource);
-        }
-
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.UnsubscribeFromSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is <see cref="ItemSource.ItemProvider"/>.
+        /// </summary>
         [Fact]
         public void UnSubscribeFromSourceProvider()
         {
@@ -557,21 +620,6 @@ namespace Symbiote.SDK.Tests
             Result result = item.UnsubscribeFromSource();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.False(item.IsSubscribedToSource);
-        }
-
-        [Fact]
-        public void SubscribeToSourceProviderNotSubscribable()
-        {
-            // mock an IItemProvider that doesn't implement ISubscribable
-            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
-
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
-
-            Result result = item.SubscribeToSource();
-
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
             Assert.False(item.IsSubscribedToSource);
         }
 
@@ -671,32 +719,6 @@ namespace Symbiote.SDK.Tests
             Assert.True(result);
             Assert.Equal("source value", sourceItem.Read());
             Assert.Equal("source value", providerItem.Read());
-        }
-
-        [Fact]
-        public void SubscriptionsChangedNoSubscribers()
-        {
-            Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
-            mockItemProvider.As<ISubscribable>();
-
-            SDK.Item item = new SDK.Item("Root", mockItemProvider.Object);
-
-            item.SubscriptionsChanged();
-        }
-
-        [Fact]
-        public void SubscriptionsChangedSubscribers()
-        {
-            Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
-            mockItemProvider.As<ISubscribable>();
-
-            SDK.Item item = new SDK.Item("Root", mockItemProvider.Object);
-
-            EventHandler<SDK.ItemChangedEventArgs> handler = (sender, e) => { };
-
-            item.Changed += handler;
-
-            item.SubscriptionsChanged();
         }
 
         #endregion Public Methods
