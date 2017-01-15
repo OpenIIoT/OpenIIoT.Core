@@ -2,13 +2,13 @@
 
 ## Project Organization
 
-All classes, interfaces, enumerations which need to be accessible to plugins, in addition to exceptions and other trivial classes, must reside in the ```Symbiote.SDK``` project.  Organization of the ```Symbiote.SDK``` project must
-mirror that of the ```Symbiote.Core``` project.
+All classes, interfaces, enumerations which need to be accessible to plugins, in addition to exceptions and other trivial classes, must reside in the ```OpenIIoT.SDK``` project.  Organization of the ```OpenIIoT.SDK``` project must
+mirror that of the ```OpenIIoT.Core``` project.
 
 ## Testing
 
 All projects containing source code must have an accompanying Unit Test project named ```<project>.Tests``` where the project under test preceeds the final period in the project name.  For example,
-the project ```Symbiote.SDK``` must have a Unit Test project named ```Symbiote.SDK.Tests``` within the same solution.
+the project ```OpenIIoT.SDK``` must have a Unit Test project named ```OpenIIoT.SDK.Tests``` within the same solution.
 
 Test project organization must mirror the project under test, and test classes must mirror the names of the classes being tested.  The file header for the Unit Test class must match that of the class under test followed by
 the word "Test" on a new line under the name of the class.  The verbiage of the class description must be ```Unit tests for the <class> class.```, where ```<class>``` is the name of the class under test.
@@ -32,16 +32,16 @@ in the remarks section of the XML documentation for that unit test.
 
 ### Namespaces
 
-The root namespace of the application must remain ```Symbiote.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
+The root namespace of the application must remain ```OpenIIoT.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
 folder of the same name.  All namespaces are to be in Pascal Case.  Conversely, all project folders must contain code with a namespace corresponding 
-to the folder name.  The only exception is the ```Common``` folder in which miscellanous files within the ```Symbiote.Core``` namespace are stored.
+to the folder name.  The only exception is the ```Common``` folder in which miscellanous files within the ```OpenIIoT.Core``` namespace are stored.
 
-Plugin namespaces must begin with ```Symbiote.Plugin```.  Currently the third tuple of the namespace must match the plugin type, e.g. ```Symbiote.Plugin.Connector```, however this is subject to change.  The final tuple must match the plugin name, however, regardless of the presense of the plugin type.
+Plugin namespaces must begin with ```OpenIIoT.Plugin```.  Currently the third tuple of the namespace must match the plugin type, e.g. ```OpenIIoT.Plugin.Connector```, however this is subject to change.  The final tuple must match the plugin name, however, regardless of the presense of the plugin type.
 
 ### StyleCop
 
-[StyleCop](https://github.com/StyleCop) must be used to ensure compliance with generally accepted code formatting and organizational standards.  The [Settings.StyleCop](https://github.com/Symbiote/Symbiote.Settings/blob/master/Settings.StyleCop) 
-file from the [Symbiote.Settings](https://github.com/Symbiote/Symbiote.Settings)
+[StyleCop](https://github.com/StyleCop) must be used to ensure compliance with generally accepted code formatting and organizational standards.  The [Settings.StyleCop](https://github.com/OpenIIoT/OpenIIoT.Settings/blob/master/Settings.StyleCop) 
+file from the [OpenIIoT.Settings](https://github.com/OpenIIoT/OpenIIoT.Settings)
 repository should be copied to projects to ensure consistency.  The default StyleCop rules are used with the following exceptions:
 
 * Documentation Rules\File Headers category (conflicts with my stylistic approach)
@@ -51,7 +51,7 @@ repository should be copied to projects to ensure consistency.  The default Styl
 
 ### CodeMaid
 
-[CodeMaid](http://www.codemaid.net/) must be used to organize and format source files.  The [CodeMaid.config](https://github.com/Symbiote/Symbiote.Settings/blob/master/CodeMaid.config) file from the [Symbiote.Settings](https://github.com/Symbiote/Symbiote.Settings)
+[CodeMaid](http://www.codemaid.net/) must be used to organize and format source files.  The [CodeMaid.config](https://github.com/OpenIIoT/OpenIIoT.Settings/blob/master/CodeMaid.config) file from the [OpenIIoT.Settings](https://github.com/OpenIIoT/OpenIIoT.Settings)
 repository should be imported into the CodeMaid Options dialog to ensure consistency.  The default CodeMaid options are used with the following exceptions:
 
 * Insert New Regions: True
@@ -117,10 +117,10 @@ The following rules should be followed, with few exceptions:
 
 ### Logging
 
-[NLog](http://nlog-project.org/) is used for all logging within the application.  The [NLog.xLogger](https://github.com/jpdillingham/NLog.xLogger) extension is mandatory for the ```Symbiote.Core``` and ```Symbiote.SDK``` projects and preferred
+[NLog](http://nlog-project.org/) is used for all logging within the application.  The [NLog.xLogger](https://github.com/jpdillingham/NLog.xLogger) extension is mandatory for the ```OpenIIoT.Core``` and ```OpenIIoT.SDK``` projects and preferred
 but not required for all other projects.
 
-Non-trivial methods within the ```Symbiote.Core``` and ```Symbiote.SDK``` projects must use the ```EnterMethod()``` and ```ExitMethod()``` methods from the ```xLogger``` extension.  Exceptions may be made for methods relating to the manipulation
+Non-trivial methods within the ```OpenIIoT.Core``` and ```OpenIIoT.SDK``` projects must use the ```EnterMethod()``` and ```ExitMethod()``` methods from the ```xLogger``` extension.  Exceptions may be made for methods relating to the manipulation
 and reading and writing of the application model and model items.
 
 Log messages and and the logging level at which they are logged are discretionary.  Developers are encouraged to review the messages at the ```Trace```, ```Debug``` and ```Info``` logging levels for overall style and "fit" with
@@ -130,7 +130,7 @@ the whole of the application.  In general, messages logged with the ```Info``` l
 
 Only exceptions which should stop the application may be thrown explicitly.  Thrown exceptions should attempt to use a framework defined exception type at the site of the exception, if one is applicable.  If not, custom
 exceptions must be created and stored in a single file named ```<namespace|subject>Exceptions.cs``` where the containing namespace or subject of the exceptions is contained within the name.  For example, exceptions relating to the application Model
-must store all model related exceptions in ```ModelExceptions.cs```.  Exception classes must be stored in the ```Symbiote.SDK``` project.
+must store all model related exceptions in ```ModelExceptions.cs```.  Exception classes must be stored in the ```OpenIIoT.SDK``` project.
 
 All exception classes must be contained within the file.  Suppress StyleCop rule SA1402 to eliminate warnings.  The first exception class must extend ```Exception``` and must match the filename; e.g. the first exception class
 within ```ModelExceptions.cs``` would be ```ModelException```.  All further exceptions must extend this class.
