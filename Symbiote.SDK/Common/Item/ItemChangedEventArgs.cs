@@ -101,7 +101,7 @@ namespace Symbiote.SDK
         {
             get
             {
-                return PreviousQuality == Quality;
+                return PreviousQuality != Quality;
             }
         }
 
