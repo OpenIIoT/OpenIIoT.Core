@@ -65,58 +65,26 @@ namespace Symbiote.SDK.Tests
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> and <see cref="SDK.Item.RemoveChild(SDK.Item)"/> methods.
+        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method.
         /// </summary>
         [Fact]
-        public void AddRemoveChildren()
+        public void AddChild()
         {
             SDK.Item item = new SDK.Item("Root");
             SDK.Item child = new SDK.Item("Root.Child");
-            SDK.Item childsChild = new SDK.Item("Root.Child.Child");
-            child.AddChild(childsChild);
 
-            // add the child and ensure the operation was successful and that it returns the child item
-            Result<SDK.Item> addResult = item.AddChild(child);
+            Result<SDK.Item> result = item.AddChild(child);
 
-            Assert.Equal(ResultCode.Success, addResult.ResultCode);
-            Assert.Equal(child, addResult.ReturnValue);
+            // assert that the add succeeded and that it returned the item we specified
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Same(child, result.ReturnValue);
 
-            // remove the child and ensure it was successful and that it returns the child item
-            Result<SDK.Item> removeResult = item.RemoveChild(child);
+            // assert that the parent of the item we added is now equal to the item to which it was added
+            Assert.Same(item, child.Parent);
 
-            Assert.Equal(ResultCode.Success, removeResult.ResultCode);
-            Assert.Equal(child, removeResult.ReturnValue);
-
-            // attempt to remove a non-existent child and ensure that the operation fails
-            Result<SDK.Item> badRemoveResult = item.RemoveChild(new SDK.Item("Root.New"));
-
-            Assert.Equal(ResultCode.Failure, badRemoveResult.ResultCode);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method by attempting to add a child Item to itself.
-        /// </summary>
-        [Fact]
-        public void AddChildSelf()
-        {
-            SDK.Item item = new SDK.Item("Root");
-
-            Result result = item.AddChild(item);
-
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method by attempting to add a null child to an Item.
-        /// </summary>
-        [Fact]
-        public void AddChildNull()
-        {
-            SDK.Item item = new SDK.Item("Root");
-
-            Result result = item.AddChild(null);
-
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            // assert that the parent item's children count is 1 and that the only child is the same as the one we added
+            Assert.Equal(1, item.Children.Count);
+            Assert.Same(child, item.Children[0]);
         }
 
         /// <summary>
@@ -139,14 +107,27 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.RemoveChild(SDK.Item)"/> method by attempting to remove a null child.
+        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method by attempting to add a null child to an Item.
         /// </summary>
         [Fact]
-        public void RemoveChildNull()
+        public void AddChildNull()
         {
             SDK.Item item = new SDK.Item("Root");
 
-            Result result = item.RemoveChild(null);
+            Result result = item.AddChild(null);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method by attempting to add a child Item to itself.
+        /// </summary>
+        [Fact]
+        public void AddChildSelf()
+        {
+            SDK.Item item = new SDK.Item("Root");
+
+            Result result = item.AddChild(item);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -255,6 +236,7 @@ namespace Symbiote.SDK.Tests
             Assert.Equal(new Guid().ToString().Length, item.Guid.ToString().Length);
             Assert.Equal(false, item.HasChildren);
             Assert.Equal(true, item.IsOrphaned);
+            Assert.Equal(false, item.IsSubscribedToSource);
             Assert.Equal("Name", item.Name);
             Assert.Equal(default(SDK.Item), item.Parent);
             Assert.Equal("Root.Child", item.Path);
@@ -277,27 +259,6 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.Source"/> property.
-        /// </summary>
-        [Fact]
-        public void Source()
-        {
-            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
-
-            SDK.Item provider = new SDK.Item(string.Empty, mockProvider.Object);
-            Assert.Equal(ItemSource.ItemProvider, provider.Source);
-
-            SDK.Item item = new SDK.Item(string.Empty, new SDK.Item());
-            Assert.Equal(ItemSource.Item, item.Source);
-
-            SDK.Item unresolved = new SDK.Item(string.Empty, "source");
-            Assert.Equal(ItemSource.Unresolved, unresolved.Source);
-
-            SDK.Item unknown = new SDK.Item();
-            Assert.Equal(ItemSource.Unknown, unknown.Source);
-        }
-
-        /// <summary>
         ///     Tests the <see cref="SDK.Item.Read"/> and <see cref="SDK.Item.ReadAsync"/> methods.
         /// </summary>
         [Fact]
@@ -311,6 +272,27 @@ namespace Symbiote.SDK.Tests
             object value = await item.ReadAsync();
 
             Assert.Equal("Value!", value);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.ReadFromSourceAsync"/> method.
+        /// </summary>
+        [Fact]
+        public async void ReadFromSourceAsync()
+        {
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            sourceItem.Write("source value");
+
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            item.Write("value");
+
+            SDK.Item child = new SDK.Item("Root.Item.Child");
+            item.AddChild(child);
+
+            object value = await item.ReadFromSourceAsync();
+
+            Assert.Equal("source value", value);
+            Assert.Equal(ItemQuality.Good, item.Quality);
         }
 
         /// <summary>
@@ -335,27 +317,6 @@ namespace Symbiote.SDK.Tests
             // ensure the correct value is returned and set as the item's value
             Assert.Equal("source value", value);
             Assert.Equal("source value", item.Read());
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.Item"/>.
-        /// </summary>
-        [Fact]
-        public void ReadFromSourceUnresolved()
-        {
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            sourceItem.Write("source value");
-
-            // create an "unresolved" Item by specifying the source FQN but not the corresponding Item.
-            SDK.Item item = new SDK.Item("Root.Item", "some.fqn");
-
-            // invoke the ReadFromSource method on the item. the method should return the source item's value, and should set the
-            // item's value to the same value.
-            object value = item.ReadFromSource();
-
-            // ensure the correct value is returned and set as the item's value
-            Assert.Equal(null, value);
-            Assert.Equal(null, item.Read());
         }
 
         /// <summary>
@@ -403,24 +364,96 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.ReadFromSourceAsync"/> method.
+        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.Item"/>.
         /// </summary>
         [Fact]
-        public async void ReadFromSourceAsync()
+        public void ReadFromSourceUnresolved()
         {
             SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
             sourceItem.Write("source value");
 
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
-            item.Write("value");
+            // create an "unresolved" Item by specifying the source FQN but not the corresponding Item.
+            SDK.Item item = new SDK.Item("Root.Item", "some.fqn");
 
-            SDK.Item child = new SDK.Item("Root.Item.Child");
+            // invoke the ReadFromSource method on the item. the method should return the source item's value, and should set the
+            // item's value to the same value.
+            object value = item.ReadFromSource();
+
+            // ensure the correct value is returned and set as the item's value
+            Assert.Equal(null, value);
+            Assert.Equal(null, item.Read());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> and <see cref="SDK.Item.RemoveChild(SDK.Item)"/> methods.
+        /// </summary>
+        [Fact]
+        public void RemoveChild()
+        {
+            SDK.Item item = new SDK.Item("Root");
+            SDK.Item child = new SDK.Item("Root.Child");
+            SDK.Item grandChild = new SDK.Item("Root.Child.Child");
+
             item.AddChild(child);
+            child.AddChild(grandChild);
 
-            object value = await item.ReadFromSourceAsync();
+            // remove the child and ensure it was successful and that it returns the child item
+            Result<SDK.Item> removeResult = item.RemoveChild(child);
 
-            Assert.Equal("source value", value);
-            Assert.Equal(ItemQuality.Good, item.Quality);
+            Assert.Equal(ResultCode.Success, removeResult.ResultCode);
+            Assert.Equal(child, removeResult.ReturnValue);
+
+            // assert that the parent's children count is now zero
+            Assert.Equal(0, item.Children.Count);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.RemoveChild(SDK.Item)"/> method with an Item that has not been added to the list of children.
+        /// </summary>
+        [Fact]
+        public void RemoveChildDoesntExist()
+        {
+            SDK.Item item = new SDK.Item("Root");
+            SDK.Item child = new SDK.Item("Root.Child");
+
+            Result result = item.RemoveChild(child);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.True(result.GetLastError().Contains("Failed to find"));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.RemoveChild(SDK.Item)"/> method by attempting to remove a null child.
+        /// </summary>
+        [Fact]
+        public void RemoveChildNull()
+        {
+            SDK.Item item = new SDK.Item("Root");
+
+            Result result = item.RemoveChild(null);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.Source"/> property.
+        /// </summary>
+        [Fact]
+        public void Source()
+        {
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+
+            SDK.Item provider = new SDK.Item(string.Empty, mockProvider.Object);
+            Assert.Equal(ItemSource.ItemProvider, provider.Source);
+
+            SDK.Item item = new SDK.Item(string.Empty, new SDK.Item());
+            Assert.Equal(ItemSource.Item, item.Source);
+
+            SDK.Item unresolved = new SDK.Item(string.Empty, "source");
+            Assert.Equal(ItemSource.Unresolved, unresolved.Source);
+
+            SDK.Item unknown = new SDK.Item();
+            Assert.Equal(ItemSource.Unknown, unknown.Source);
         }
 
         /// <summary>
@@ -460,6 +493,86 @@ namespace Symbiote.SDK.Tests
 
             Result lastItemUnSub = lastItem.UnsubscribeFromSource();
             Assert.Equal(ResultCode.Failure, lastItemUnSub.ResultCode);
+        }
+
+        [Fact]
+        public void SubscribeToSourceItem()
+        {
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+
+            Result result = item.SubscribeToSource();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(item.IsSubscribedToSource);
+        }
+
+        [Fact]
+        public void UnSubscribeFromSourceItem()
+        {
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            item.SubscribeToSource();
+
+            Assert.True(item.IsSubscribedToSource);
+
+            Result result = item.UnsubscribeFromSource();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.False(item.IsSubscribedToSource);
+        }
+
+        [Fact]
+        public void SubscribeToSourceProvider()
+        {
+            // mock an IItemProvider that also implements ISubscribable
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+            mockProvider.As<ISubscribable>();
+
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
+
+            Assert.Equal(ItemSource.ItemProvider, item.Source);
+
+            Result result = item.SubscribeToSource();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(item.IsSubscribedToSource);
+        }
+
+        [Fact]
+        public void UnSubscribeFromSourceProvider()
+        {
+            // mock an IItemProvider that also implements ISubscribable
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+            mockProvider.As<ISubscribable>();
+
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
+            item.SubscribeToSource();
+
+            Assert.Equal(ItemSource.ItemProvider, item.Source);
+            Assert.True(item.IsSubscribedToSource);
+
+            Result result = item.UnsubscribeFromSource();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.False(item.IsSubscribedToSource);
+        }
+
+        [Fact]
+        public void SubscribeToSourceProviderNotSubscribable()
+        {
+            // mock an IItemProvider that doesn't implement ISubscribable
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
+
+            Result result = item.SubscribeToSource();
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.False(item.IsSubscribedToSource);
         }
 
         /// <summary>
@@ -505,6 +618,34 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
+        ///     Tests the <see cref="SDK.Item.WriteToSource(object)"/> method.
+        /// </summary>
+        [Fact]
+        public void WriteToSource()
+        {
+            // mock an IWriteable item provider
+            Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
+            mockItemProvider.CallBase = true;
+            mockItemProvider.As<IWriteable>();
+
+            // create an item sourced from an ItemProvider and link a model item
+            SDK.Item providerItem = new SDK.Item("Source.Item", mockItemProvider.Object);
+
+            // setup the mock to return a good value for the provider's Write()
+            mockItemProvider.As<IWriteable>().Setup(p => p.Write(It.IsAny<SDK.Item>(), It.IsAny<object>())).Returns(true);
+
+            SDK.Item sourceItem = new SDK.Item("Root.Model.Item", providerItem);
+
+            // test a write with an IWriteable provider
+            bool result = sourceItem.WriteToSource("source value");
+
+            // assert that the write completed and that the value was written
+            Assert.True(result);
+            Assert.Equal("source value", sourceItem.Read());
+            Assert.Equal("source value", providerItem.Read());
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SDK.Item.WriteToSourceAsync(object)"/> method.
         /// </summary>
         [Fact]
@@ -532,32 +673,30 @@ namespace Symbiote.SDK.Tests
             Assert.Equal("source value", providerItem.Read());
         }
 
-        /// <summary>
-        ///     Tests the <see cref="SDK.Item.WriteToSource(object)"/> method.
-        /// </summary>
         [Fact]
-        public void WriteToSource()
+        public void SubscriptionsChangedNoSubscribers()
         {
-            // mock an IWriteable item provider
             Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
-            mockItemProvider.CallBase = true;
-            mockItemProvider.As<IWriteable>();
+            mockItemProvider.As<ISubscribable>();
 
-            // create an item sourced from an ItemProvider and link a model item
-            SDK.Item providerItem = new SDK.Item("Source.Item", mockItemProvider.Object);
+            SDK.Item item = new SDK.Item("Root", mockItemProvider.Object);
 
-            // setup the mock to return a good value for the provider's Write()
-            mockItemProvider.As<IWriteable>().Setup(p => p.Write(It.IsAny<SDK.Item>(), It.IsAny<object>())).Returns(true);
+            item.SubscriptionsChanged();
+        }
 
-            SDK.Item sourceItem = new SDK.Item("Root.Model.Item", providerItem);
+        [Fact]
+        public void SubscriptionsChangedSubscribers()
+        {
+            Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
+            mockItemProvider.As<ISubscribable>();
 
-            // test a write with an IWriteable provider
-            bool result = sourceItem.WriteToSource("source value");
+            SDK.Item item = new SDK.Item("Root", mockItemProvider.Object);
 
-            // assert that the write completed and that the value was written
-            Assert.True(result);
-            Assert.Equal("source value", sourceItem.Read());
-            Assert.Equal("source value", providerItem.Read());
+            EventHandler<SDK.ItemChangedEventArgs> handler = (sender, e) => { };
+
+            item.Changed += handler;
+
+            item.SubscriptionsChanged();
         }
 
         #endregion Public Methods

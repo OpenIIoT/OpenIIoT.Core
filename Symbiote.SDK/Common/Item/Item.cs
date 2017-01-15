@@ -291,6 +291,11 @@ namespace Symbiote.SDK
         }
 
         /// <summary>
+        ///     Gets or sets a value indicating whether the Item is subscribed to its source Item.
+        /// </summary>
+        public bool IsSubscribedToSource { get; private set; }
+
+        /// <summary>
         ///     Gets the name.
         /// </summary>
         /// <remarks>Corresponds to the final tuple of the <see cref="FQN"/> property.</remarks>
@@ -737,6 +742,7 @@ namespace Symbiote.SDK
                 {
                     SourceItem.Changed += SourceItemChanged;
                     SourceItem.SubscriptionsChanged();
+                    IsSubscribedToSource = true;
                 }
                 finally
                 {
@@ -752,6 +758,7 @@ namespace Symbiote.SDK
                     if (Provider is ISubscribable)
                     {
                         ((ISubscribable)Provider).Subscribe(this, value => ChangeValue(value));
+                        IsSubscribedToSource = true;
                     }
                     else
                     {
@@ -774,9 +781,26 @@ namespace Symbiote.SDK
         /// <summary>
         ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
         /// </summary>
+        /// <remarks>
+        ///     If the <see cref="SourceItem"/> of this Item is <see cref="ItemSource.ItemProvider"/>, either subscribe to or
+        ///     unsubscribe from the source, depending on whether any listeners are attached to the <see cref="Changed"/> event.
+        /// </remarks>
         public virtual void SubscriptionsChanged()
         {
-            if (Source == ItemSource.ItemProvider)
+            IItemProvider provider;
+
+            providerLock.EnterReadLock();
+
+            try
+            {
+                provider = Provider;
+            }
+            finally
+            {
+                providerLock.ExitReadLock();
+            }
+
+            if (Source == ItemSource.ItemProvider && provider is ISubscribable)
             {
                 if (Changed != null)
                 {
@@ -835,6 +859,7 @@ namespace Symbiote.SDK
                 {
                     SourceItem.Changed -= SourceItemChanged;
                     SourceItem.SubscriptionsChanged();
+                    IsSubscribedToSource = false;
                 }
                 finally
                 {
@@ -847,14 +872,8 @@ namespace Symbiote.SDK
 
                 try
                 {
-                    if (Provider is ISubscribable)
-                    {
-                        ((ISubscribable)Provider).UnSubscribe(this, value => ChangeValue(value));
-                    }
-                    else
-                    {
-                        retVal.AddError("Unable to unsubscribe from source; the source Item Provider is not subscribable.");
-                    }
+                    ((ISubscribable)Provider).UnSubscribe(this, value => ChangeValue(value));
+                    IsSubscribedToSource = false;
                 }
                 finally
                 {
