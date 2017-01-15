@@ -243,6 +243,8 @@ namespace Symbiote.SDK.Tests
             Assert.Equal("Source", item.SourceFQN);
             Assert.Equal(default(SDK.Item), item.SourceItem);
 
+            Assert.IsType<System.Threading.ReaderWriterLockSlim>(item.Lock);
+
             SDK.Item newItem = new SDK.Item("Source.Item");
             item.SourceItem = newItem;
             Assert.Equal(newItem, item.SourceItem);

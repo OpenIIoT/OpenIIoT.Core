@@ -202,6 +202,7 @@ namespace Symbiote.SDK
             Quality = ItemQuality.Uninitialized;
 
             Guid = Guid.NewGuid();
+            Lock = new ReaderWriterLockSlim();
 
             Children = new List<Item>();
         }
@@ -296,6 +297,11 @@ namespace Symbiote.SDK
         public bool IsSubscribedToSource { get; private set; }
 
         /// <summary>
+        ///     Gets the lock for this Item to be used to help ensure thread safety.
+        /// </summary>
+        public ReaderWriterLockSlim Lock { get; private set; }
+
+        /// <summary>
         ///     Gets the name.
         /// </summary>
         /// <remarks>Corresponds to the final tuple of the <see cref="FQN"/> property.</remarks>
@@ -303,7 +309,8 @@ namespace Symbiote.SDK
         {
             get
             {
-                return FQN.Substring(FQN.LastIndexOf('.') + 1);
+                string fqn = FQN;
+                return fqn.Substring(fqn.LastIndexOf('.') + 1);
             }
         }
 
@@ -320,7 +327,8 @@ namespace Symbiote.SDK
         {
             get
             {
-                return FQN.Substring(0, FQN.LastIndexOf(".") == -1 ? 0 : FQN.LastIndexOf("."));
+                string fqn = FQN;
+                return fqn.Substring(0, fqn.LastIndexOf(".") == -1 ? 0 : fqn.LastIndexOf("."));
             }
         }
 
@@ -352,7 +360,7 @@ namespace Symbiote.SDK
                 {
                     if (Provider != default(IItemProvider))
                     {
-                        retVal = ItemSource.ItemProvider;
+                        retVal = ItemSource.Provider;
                     }
                     else if (SourceItem != default(Item))
                     {
@@ -608,7 +616,7 @@ namespace Symbiote.SDK
                     sourceItemLock.ExitReadLock();
                 }
             }
-            else if (Source == ItemSource.ItemProvider)
+            else if (Source == ItemSource.Provider)
             {
                 // if the source of this Item is an ItemProvider and it implements IReadable, return the value of the Read() method
                 // for the provider. this will be the final read in the chain.
@@ -751,7 +759,7 @@ namespace Symbiote.SDK
                     sourceItemLock.ExitWriteLock();
                 }
             }
-            else if (Source == ItemSource.ItemProvider)
+            else if (Source == ItemSource.Provider)
             {
                 providerLock.EnterWriteLock();
 
@@ -802,7 +810,7 @@ namespace Symbiote.SDK
                 providerLock.ExitReadLock();
             }
 
-            if (Source == ItemSource.ItemProvider && provider is ISubscribable)
+            if (Source == ItemSource.Provider && provider is ISubscribable)
             {
                 if (Changed != null)
                 {
@@ -868,7 +876,7 @@ namespace Symbiote.SDK
                     sourceItemLock.ExitWriteLock();
                 }
             }
-            else if (Source == ItemSource.ItemProvider)
+            else if (Source == ItemSource.Provider)
             {
                 providerLock.EnterWriteLock();
 
@@ -941,7 +949,7 @@ namespace Symbiote.SDK
                 {
                     result = SourceItem.WriteToSource(value);
                 }
-                else if (source == ItemSource.ItemProvider && Provider is IWriteable)
+                else if (source == ItemSource.Provider && Provider is IWriteable)
                 {
                     result = ((IWriteable)Provider).Write(this, value);
                 }
