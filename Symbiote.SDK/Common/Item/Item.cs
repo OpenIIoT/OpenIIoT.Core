@@ -67,14 +67,14 @@ namespace Symbiote.SDK
         protected ReaderWriterLockSlim childrenLock = new ReaderWriterLockSlim();
 
         /// <summary>
+        ///     Lock for the <see cref="Item.Children"/> property of child Items accessed while being removed.
+        /// </summary>
+        protected ReaderWriterLockSlim grandchildrenLock = new ReaderWriterLockSlim();
+
+        /// <summary>
         ///     Lock for the <see cref="Item.Parent"/> property.
         /// </summary>
         protected ReaderWriterLockSlim parentLock = new ReaderWriterLockSlim();
-
-        /// <summary>
-        ///     Lock for the <see cref="Item.Value"/> property.
-        /// </summary>
-        protected ReaderWriterLockSlim valueLock = new ReaderWriterLockSlim();
 
         /// <summary>
         ///     Lock for the <see cref="Item.Provider"/> property.
@@ -87,9 +87,9 @@ namespace Symbiote.SDK
         protected ReaderWriterLockSlim sourceItemLock = new ReaderWriterLockSlim();
 
         /// <summary>
-        ///     Lock for the <see cref="Item.Children"/> property of child Items accessed while being removed.
+        ///     Lock for the <see cref="Item.Value"/> property.
         /// </summary>
-        protected ReaderWriterLockSlim grandchildrenLock = new ReaderWriterLockSlim();
+        protected ReaderWriterLockSlim valueLock = new ReaderWriterLockSlim();
 
         #endregion Protected Fields
 
@@ -225,22 +225,6 @@ namespace Symbiote.SDK
         public ItemAccessMode AccessMode { get; private set; }
 
         /// <summary>
-        ///     Gets the Item's value.
-        /// </summary>
-        public object Value { get; private set; }
-
-        /// <summary>
-        ///     Gets the timestamp of the last update to the <see cref="Item.Value"/> property.
-        /// </summary>
-        public DateTime Timestamp { get; private set; }
-
-        /// <summary>
-        ///     Gets the quality of the <see cref="Item.Value"/> property.
-        /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
-        public ItemQuality Quality { get; private set; }
-
-        /// <summary>
         ///     Gets the collection of children <see cref="Item"/> s.
         /// </summary>
         public IList<Item> Children { get; private set; }
@@ -341,6 +325,12 @@ namespace Symbiote.SDK
         public IItemProvider Provider { get; private set; }
 
         /// <summary>
+        ///     Gets the quality of the <see cref="Item.Value"/> property.
+        /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
+        public ItemQuality Quality { get; private set; }
+
+        /// <summary>
         ///     Gets the source of the Item.
         /// </summary>
         /// <threadsafety instance="true"/>
@@ -413,6 +403,16 @@ namespace Symbiote.SDK
             }
         }
 
+        /// <summary>
+        ///     Gets the timestamp of the last update to the <see cref="Item.Value"/> property.
+        /// </summary>
+        public DateTime Timestamp { get; private set; }
+
+        /// <summary>
+        ///     Gets the Item's value.
+        /// </summary>
+        public object Value { get; private set; }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -431,7 +431,19 @@ namespace Symbiote.SDK
         {
             Result<Item> retVal = new Result<Item>();
 
-            if (item != default(Item))
+            if (item == default(Item))
+            {
+                retVal.AddError("Invalid Item; specified Item is null.");
+            }
+            else if (ReferenceEquals(item, this))
+            {
+                retVal.AddError("Invalid Item; an Item cannot be added as a child of itself.");
+            }
+            else if (IsAncestor(item))
+            {
+                retVal.AddError("Unable to add the Item to the Children for this Item; doing so would create a circular reference.");
+            }
+            else
             {
                 childrenLock.EnterWriteLock();
 
@@ -445,10 +457,6 @@ namespace Symbiote.SDK
                 {
                     childrenLock.ExitWriteLock();
                 }
-            }
-            else
-            {
-                retVal.AddError("Invalid Item; specified Item is null or default.");
             }
 
             return retVal;
@@ -947,6 +955,40 @@ namespace Symbiote.SDK
         #region Protected Methods
 
         /// <summary>
+        ///     Recursively examines the hierarchy in which this <see cref="Item"/> resides to determine whether the specified
+        ///     <see cref="Item"/> is among its ancestors.
+        /// </summary>
+        /// <param name="item">The Item for which to search.</param>
+        /// <returns>A value indicating whether the specified Item exists among this ITem's ancestors.</returns>
+        protected bool IsAncestor(Item item)
+        {
+            return IsAncestor(this, item);
+        }
+
+        /// <summary>
+        ///     Recursively examines the <see cref="Parent"/> of the specified <see cref="Item"/> to determine whether the
+        ///     specified <see cref="Item"/> is among its ancestors.
+        /// </summary>
+        /// <param name="parent">The Item for which the Parent should be examined.</param>
+        /// <param name="item">The Item for which to search.</param>
+        /// <returns>A value indicating whether the specified Item exists among the specified Item's ancestors.</returns>
+        protected bool IsAncestor(Item parent, Item item)
+        {
+            if (ReferenceEquals(parent, item))
+            {
+                return true;
+            }
+            else if (parent.Parent == default(Item) | ReferenceEquals(parent, parent.Parent))
+            {
+                return false;
+            }
+            else
+            {
+                return IsAncestor(parent.Parent, item);
+            }
+        }
+
+        /// <summary>
         ///     Raises the <see cref="Changed"/> event with a new instance of <see cref="ItemChangedEventArgs"/> containing the
         ///     specified value.
         /// </summary>
@@ -972,25 +1014,18 @@ namespace Symbiote.SDK
         {
             Result retVal = new Result();
 
-            if (parent != default(Item))
+            string name = Name;
+
+            parentLock.EnterWriteLock();
+
+            try
             {
-                string name = Name;
-
-                parentLock.EnterWriteLock();
-
-                try
-                {
-                    FQN = (this != parent ? parent.FQN + "." : string.Empty) + name;
-                    Parent = parent;
-                }
-                finally
-                {
-                    parentLock.ExitWriteLock();
-                }
+                FQN = (this != parent ? parent.FQN + "." : string.Empty) + name;
+                Parent = parent;
             }
-            else
+            finally
             {
-                retVal.AddError("The provided parent Item is invalid.");
+                parentLock.ExitWriteLock();
             }
 
             return retVal;

@@ -94,6 +94,64 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
+        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method by attempting to add a child Item to itself.
+        /// </summary>
+        [Fact]
+        public void AddChildSelf()
+        {
+            SDK.Item item = new SDK.Item("Root");
+
+            Result result = item.AddChild(item);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method by attempting to add a null child to an Item.
+        /// </summary>
+        [Fact]
+        public void AddChildNull()
+        {
+            SDK.Item item = new SDK.Item("Root");
+
+            Result result = item.AddChild(null);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method to ensure that circular references can't be introduced.
+        /// </summary>
+        [Fact]
+        public void AddChildCircular()
+        {
+            SDK.Item rootItem = new SDK.Item("Root");
+            SDK.Item child = new SDK.Item("Root.Child");
+            SDK.Item childsChild = new SDK.Item("Root.Child.Child");
+            rootItem.AddChild(child);
+            child.AddChild(childsChild);
+
+            // attempt to create a circular reference
+            Result result = childsChild.AddChild(rootItem);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.True(result.GetLastError().Contains("circular reference"));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.RemoveChild(SDK.Item)"/> method by attempting to remove a null child.
+        /// </summary>
+        [Fact]
+        public void RemoveChildNull()
+        {
+            SDK.Item item = new SDK.Item("Root");
+
+            Result result = item.RemoveChild(null);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SDK.Item.Clone"/> method.
         /// </summary>
         [Fact]
@@ -136,6 +194,15 @@ namespace Symbiote.SDK.Tests
             Assert.IsType<SDK.Item>(item);
 
             item = new SDK.Item(string.Empty);
+            Assert.IsType<SDK.Item>(item);
+
+            item = new SDK.Item(string.Empty, ItemAccessMode.ReadWrite);
+            Assert.IsType<SDK.Item>(item);
+
+            item = new SDK.Item(string.Empty, ItemAccessMode.ReadWrite, mockProvider.Object);
+            Assert.IsType<SDK.Item>(item);
+
+            item = new SDK.Item(string.Empty, mockProvider.Object);
             Assert.IsType<SDK.Item>(item);
 
             item = new SDK.Item(string.Empty, string.Empty);
@@ -209,6 +276,9 @@ namespace Symbiote.SDK.Tests
             Assert.NotNull(item.ToJson(new SDK.ContractResolver()));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.Source"/> property.
+        /// </summary>
         [Fact]
         public void Source()
         {
@@ -244,10 +314,10 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> and <see cref="SDK.Item.ReadFromSourceAsync"/> methods.
+        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.Item"/>.
         /// </summary>
         [Fact]
-        public async void ReadFromSource()
+        public void ReadFromSourceItem()
         {
             SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
             sourceItem.Write("source value");
@@ -265,16 +335,92 @@ namespace Symbiote.SDK.Tests
             // ensure the correct value is returned and set as the item's value
             Assert.Equal("source value", value);
             Assert.Equal("source value", item.Read());
+        }
 
-            // change the source item's value so we can read again
-            sourceItem.Write("new value");
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.Item"/>.
+        /// </summary>
+        [Fact]
+        public void ReadFromSourceUnresolved()
+        {
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            sourceItem.Write("source value");
 
-            // invoke the method asynchronously
-            object newValue = await item.ReadFromSourceAsync();
+            // create an "unresolved" Item by specifying the source FQN but not the corresponding Item.
+            SDK.Item item = new SDK.Item("Root.Item", "some.fqn");
 
-            // ensure the proper value is returned and set
-            Assert.Equal("new value", newValue);
-            Assert.Equal("new value", item.Read());
+            // invoke the ReadFromSource method on the item. the method should return the source item's value, and should set the
+            // item's value to the same value.
+            object value = item.ReadFromSource();
+
+            // ensure the correct value is returned and set as the item's value
+            Assert.Equal(null, value);
+            Assert.Equal(null, item.Read());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.ItemProvider"/>.
+        /// </summary>
+        [Fact]
+        public void ReadFromSourceProvider()
+        {
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+
+            SDK.Item item = new SDK.Item("Root.Item", mockProvider.Object);
+
+            mockProvider.Setup(m => m.Read(item)).Returns("source value");
+
+            // invoke the ReadFromSource method on the item. the method should return the source item's value, and should set the
+            // item's value to the same value.
+            object value = item.ReadFromSource();
+
+            // ensure the correct value is returned and set as the item's value
+            Assert.Equal("source value", value);
+            Assert.Equal("source value", item.Read());
+            Assert.Equal(ItemQuality.Good, item.Quality);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.ItemProvider"/>.
+        /// </summary>
+        [Fact]
+        public void ReadFromSourceProviderBad()
+        {
+            Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
+
+            SDK.Item item = new SDK.Item("Root.Item", mockProvider.Object);
+
+            mockProvider.Setup(m => m.Read(item)).Throws(new Exception());
+
+            // invoke the ReadFromSource method on the item. the method should return the source item's value, and should set the
+            // item's value to the same value.
+            object value = item.ReadFromSource();
+
+            // ensure the correct value is returned and set as the item's value
+            Assert.Equal(null, value);
+            Assert.Equal(null, item.Read());
+            Assert.Equal(ItemQuality.Bad, item.Quality);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.ReadFromSourceAsync"/> method.
+        /// </summary>
+        [Fact]
+        public async void ReadFromSourceAsync()
+        {
+            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            sourceItem.Write("source value");
+
+            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            item.Write("value");
+
+            SDK.Item child = new SDK.Item("Root.Item.Child");
+            item.AddChild(child);
+
+            object value = await item.ReadFromSourceAsync();
+
+            Assert.Equal("source value", value);
+            Assert.Equal(ItemQuality.Good, item.Quality);
         }
 
         /// <summary>
@@ -317,7 +463,7 @@ namespace Symbiote.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.Write(object)"/> and <see cref="SDK.Item.WriteAsync(object)"/> methods.
+        ///     Tests the <see cref="SDK.Item.Write(object)"/> method.
         /// </summary>
         [Fact]
         public async void Write()
@@ -339,6 +485,28 @@ namespace Symbiote.SDK.Tests
             Assert.False(result);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.WriteAsync(object)"/> method.
+        /// </summary>
+        [Fact]
+        public async void WriteAsync()
+        {
+            SDK.Item writeableItem = new SDK.Item("Root.Item");
+            SDK.Item nonWriteableItem = new SDK.Item("Root.Item2", ItemAccessMode.ReadOnly);
+
+            bool result = await writeableItem.WriteAsync("test two");
+
+            Assert.True(result);
+            Assert.Equal("test two", writeableItem.Read());
+
+            result = nonWriteableItem.Write("new value");
+
+            Assert.False(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.WriteToSourceAsync(object)"/> method.
+        /// </summary>
         [Fact]
         public async void WriteToSourceAsync()
         {
@@ -364,8 +532,11 @@ namespace Symbiote.SDK.Tests
             Assert.Equal("source value", providerItem.Read());
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Item.WriteToSource(object)"/> method.
+        /// </summary>
         [Fact]
-        public async void WriteToSource()
+        public void WriteToSource()
         {
             // mock an IWriteable item provider
             Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
