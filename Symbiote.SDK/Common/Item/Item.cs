@@ -360,7 +360,7 @@ namespace Symbiote.SDK
                 {
                     if (Provider != default(IItemProvider))
                     {
-                        retVal = ItemSource.ItemProvider;
+                        retVal = ItemSource.Provider;
                     }
                     else if (SourceItem != default(Item))
                     {
@@ -616,7 +616,7 @@ namespace Symbiote.SDK
                     sourceItemLock.ExitReadLock();
                 }
             }
-            else if (Source == ItemSource.ItemProvider)
+            else if (Source == ItemSource.Provider)
             {
                 // if the source of this Item is an ItemProvider and it implements IReadable, return the value of the Read() method
                 // for the provider. this will be the final read in the chain.
@@ -759,7 +759,7 @@ namespace Symbiote.SDK
                     sourceItemLock.ExitWriteLock();
                 }
             }
-            else if (Source == ItemSource.ItemProvider)
+            else if (Source == ItemSource.Provider)
             {
                 providerLock.EnterWriteLock();
 
@@ -810,7 +810,7 @@ namespace Symbiote.SDK
                 providerLock.ExitReadLock();
             }
 
-            if (Source == ItemSource.ItemProvider && provider is ISubscribable)
+            if (Source == ItemSource.Provider && provider is ISubscribable)
             {
                 if (Changed != null)
                 {
@@ -876,7 +876,7 @@ namespace Symbiote.SDK
                     sourceItemLock.ExitWriteLock();
                 }
             }
-            else if (Source == ItemSource.ItemProvider)
+            else if (Source == ItemSource.Provider)
             {
                 providerLock.EnterWriteLock();
 
@@ -949,7 +949,7 @@ namespace Symbiote.SDK
                 {
                     result = SourceItem.WriteToSource(value);
                 }
-                else if (source == ItemSource.ItemProvider && Provider is IWriteable)
+                else if (source == ItemSource.Provider && Provider is IWriteable)
                 {
                     result = ((IWriteable)Provider).Write(this, value);
                 }

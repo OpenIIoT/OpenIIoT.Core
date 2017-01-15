@@ -65,6 +65,6 @@ namespace Symbiote.SDK
         /// <summary>
         ///     The <see cref="Item"/> source is a class implementing the <see cref="IItemProvider"/> interface.
         /// </summary>
-        ItemProvider
+        Provider
     }
 }
