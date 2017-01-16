@@ -46,7 +46,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Discovery
 {
     /// <summary>
     ///     Recursively traverses the properties of the specified object and any subordinate objects and returns a list of object

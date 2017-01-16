@@ -43,7 +43,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using NLog.xLogger;
-using OpenIIoT.SDK.Exceptions;
+using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
 
 namespace OpenIIoT.Core.Platform

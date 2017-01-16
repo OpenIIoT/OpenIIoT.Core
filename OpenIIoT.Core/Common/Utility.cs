@@ -41,6 +41,7 @@
 
 using NLog;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
 using Utility.BigFont;

@@ -52,6 +52,8 @@ using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common.Discovery;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
 namespace OpenIIoT.Core.Platform
 {
@@ -498,7 +500,7 @@ namespace OpenIIoT.Core.Platform
             retVal.ReturnValue = new List<string>();
 
             logger.Trace("Converting pattern '" + searchPattern + "' to RegEx..");
-            Regex regex = new Regex(SDK.Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
+            Regex regex = new Regex(SDK.Common.Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
             logger.Trace("Converted pattern to RegEx '" + regex + "'");
 
             try

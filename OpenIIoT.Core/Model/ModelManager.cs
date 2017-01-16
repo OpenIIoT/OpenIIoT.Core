@@ -50,7 +50,13 @@ using Newtonsoft.Json;
 using NLog.xLogger;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Model;
-using System.Threading.Tasks;
+using OpenIIoT.SDK.Common.Discovery;
+using OpenIIoT.SDK.Common;
+
+using OpenIIoT.SDK.Common;
+
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
+using OpenIIoT.SDK.Common.Provider;
 
 namespace OpenIIoT.Core.Model
 {

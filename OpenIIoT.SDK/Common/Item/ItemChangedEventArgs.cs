@@ -50,7 +50,7 @@
 
 using System;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common
 {
     /// <summary>
     ///     Represents the event arguments for <see cref="Item"/><see cref="Item.Changed"/> events.

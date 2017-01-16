@@ -57,6 +57,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using OpenIIoT.SDK.Common;
 using Xunit;
 
 namespace OpenIIoT.SDK.Tests
@@ -75,11 +76,11 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void Constructor()
         {
-            SDK.ItemChangedEventArgs args;
+            SDK.Common.ItemChangedEventArgs args;
 
-            args = new SDK.ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
+            args = new SDK.Common.ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
 
-            Assert.IsType<SDK.ItemChangedEventArgs>(args);
+            Assert.IsType<SDK.Common.ItemChangedEventArgs>(args);
         }
 
         /// <summary>
@@ -88,7 +89,7 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void Properties()
         {
-            SDK.ItemChangedEventArgs args = new SDK.ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
+            SDK.Common.ItemChangedEventArgs args = new SDK.Common.ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
 
             Assert.Equal("previous", args.PreviousValue);
             Assert.Equal("new", args.Value);

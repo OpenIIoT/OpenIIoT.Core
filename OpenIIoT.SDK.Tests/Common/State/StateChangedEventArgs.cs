@@ -57,6 +57,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using OpenIIoT.SDK.Common;
 using Xunit;
 
 namespace OpenIIoT.SDK.Tests
@@ -75,16 +76,16 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void Constructor()
         {
-            SDK.StateChangedEventArgs args;
+            SDK.Common.StateChangedEventArgs args;
 
-            args = new SDK.StateChangedEventArgs(State.Initialized, State.Undefined);
-            Assert.IsType<SDK.StateChangedEventArgs>(args);
+            args = new SDK.Common.StateChangedEventArgs(State.Initialized, State.Undefined);
+            Assert.IsType<SDK.Common.StateChangedEventArgs>(args);
 
-            args = new SDK.StateChangedEventArgs(State.Initialized, State.Undefined, "message");
-            Assert.IsType<SDK.StateChangedEventArgs>(args);
+            args = new SDK.Common.StateChangedEventArgs(State.Initialized, State.Undefined, "message");
+            Assert.IsType<SDK.Common.StateChangedEventArgs>(args);
 
-            args = new SDK.StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
-            Assert.IsType<SDK.StateChangedEventArgs>(args);
+            args = new SDK.Common.StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
+            Assert.IsType<SDK.Common.StateChangedEventArgs>(args);
         }
 
         /// <summary>
@@ -93,7 +94,7 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void Properties()
         {
-            SDK.StateChangedEventArgs args = new SDK.StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
+            SDK.Common.StateChangedEventArgs args = new SDK.Common.StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
 
             Assert.Equal(State.Initialized, args.State);
             Assert.Equal(State.Undefined, args.PreviousState);

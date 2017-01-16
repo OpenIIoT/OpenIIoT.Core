@@ -39,7 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common
 {
     /// <summary>
     ///     Enumeration of the different component states.

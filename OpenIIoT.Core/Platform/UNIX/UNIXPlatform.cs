@@ -42,6 +42,7 @@
 using System;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Platform;
+using OpenIIoT.SDK.Common.Discovery;
 
 namespace OpenIIoT.Core.Platform.UNIX
 {

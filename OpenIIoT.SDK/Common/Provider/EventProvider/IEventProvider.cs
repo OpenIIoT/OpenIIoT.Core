@@ -39,7 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Provider.EventProvider
 {
     /// <summary>
     ///     Defines the interface for Event Providers.

@@ -2,6 +2,7 @@
 using NLog;
 using OpenIIoT.Core.Configuration;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
 using System.Net;

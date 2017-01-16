@@ -3,6 +3,7 @@ using NLog;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
 using System.Collections.Generic;
 using System.Linq;

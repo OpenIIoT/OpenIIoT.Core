@@ -2,6 +2,7 @@
 using NLog;
 using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;

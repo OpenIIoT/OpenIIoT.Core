@@ -44,7 +44,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common
 {
     /// <summary>
     ///     Contains miscellaneous static methods.

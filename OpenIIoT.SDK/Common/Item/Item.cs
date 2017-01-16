@@ -49,8 +49,9 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common
 {
     /// <summary>
     ///     Represents a single data entity within the application Model.

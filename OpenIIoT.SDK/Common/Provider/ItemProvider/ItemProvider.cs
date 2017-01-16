@@ -40,11 +40,12 @@
                                                                                                    ▀▀                            */
 
 using NLog.xLogger;
+using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
     /// <summary>
     ///     The abstract base class from which ItemProviders may derive.

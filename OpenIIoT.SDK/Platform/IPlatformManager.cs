@@ -39,6 +39,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using OpenIIoT.SDK.Common;
+
 namespace OpenIIoT.SDK.Platform
 {
     /// <summary>

@@ -57,7 +57,7 @@ namespace OpenIIoT.Core.Service.Web
         public ApiResult(HttpRequestMessage request) : base()
         {
             Request = request;
-            ShortGuid = SDK.Utility.ShortGuid();
+            ShortGuid = SDK.Common.Utility.ShortGuid();
             StatusCode = HttpStatusCode.OK;
         }
 

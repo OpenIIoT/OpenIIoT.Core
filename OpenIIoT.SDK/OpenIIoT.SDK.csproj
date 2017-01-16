@@ -86,11 +86,11 @@
     <Compile Include="Common\Provider\EventProvider\EventAttribute.cs" />
     <Compile Include="Common\Discovery\DiscoverableAttribute.cs" />
     <Compile Include="Event\IEventManager.cs" />
-    <Compile Include="Exceptions\ApplicationExceptions.cs" />
-    <Compile Include="Exceptions\ApplicationManagerExceptions.cs" />
+    <Compile Include="Common\Exceptions\ApplicationExceptions.cs" />
+    <Compile Include="Common\Exceptions\ApplicationManagerExceptions.cs" />
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
-    <Compile Include="Exceptions\PlatformExceptions.cs" />
-    <Compile Include="Exceptions\ManagerExceptions.cs" />
+    <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
+    <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
     <Compile Include="IApplicationManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Platform\IPlatform.cs" />

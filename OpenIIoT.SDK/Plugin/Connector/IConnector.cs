@@ -22,6 +22,7 @@
                                                                                                   ▀▀                            */
 
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Plugin;
 using System.Collections.Generic;
 using System.Threading.Tasks;

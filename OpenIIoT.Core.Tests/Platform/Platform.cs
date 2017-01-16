@@ -58,6 +58,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
 namespace OpenIIoT.Core.Tests
 {
