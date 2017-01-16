@@ -52,6 +52,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Exceptions;
 using Utility.OperationResult;
 using Xunit;
 using System.Reflection;

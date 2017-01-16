@@ -47,6 +47,7 @@ using System.Reflection;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Exceptions;
 using Utility.OperationResult;
 
 namespace OpenIIoT.Core

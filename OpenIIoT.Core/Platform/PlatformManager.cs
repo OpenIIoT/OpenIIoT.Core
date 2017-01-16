@@ -46,6 +46,7 @@ using OpenIIoT.Core.Model;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Platform;
+using OpenIIoT.SDK.Exceptions;
 using System;
 using System.Collections.Generic;
 using Utility.OperationResult;

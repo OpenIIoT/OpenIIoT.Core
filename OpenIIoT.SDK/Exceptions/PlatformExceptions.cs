@@ -51,7 +51,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OpenIIoT.SDK.Platform
+namespace OpenIIoT.SDK.Exceptions
 {
     /// <summary>
     ///     Represents errors that occur while loading the application's directory configuration.

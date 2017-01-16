@@ -54,6 +54,7 @@ using System.Threading;
 using Moq;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.SDK.Exceptions;
 
 namespace OpenIIoT.SDK.Tests.Common
 {

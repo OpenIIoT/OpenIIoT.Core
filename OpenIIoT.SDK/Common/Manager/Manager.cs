@@ -47,6 +47,7 @@ using System.Timers;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK.Event;
+using OpenIIoT.SDK.Exceptions;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK

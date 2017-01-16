@@ -53,6 +53,7 @@ using OpenIIoT.Core.Model;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Exceptions;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Platform;
 using OpenIIoT.Core.Service;
@@ -494,15 +495,6 @@ namespace OpenIIoT.Core
                 //Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.System.Platform.Memory.Available").SubscribeToSource();
 
                 applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
-
-                IList<IItemProvider> itemProviders = Discoverer.Discover<IItemProvider>(applicationManager);
-
-                Console.WriteLine("Found " + itemProviders.Count + " providers.");
-
-                foreach (IItemProvider provider in itemProviders)
-                {
-                    Console.WriteLine("P: " + provider.ItemProviderName + ", " + provider.GetType().FullName);
-                }
             }
             catch (Exception ex)
             {
