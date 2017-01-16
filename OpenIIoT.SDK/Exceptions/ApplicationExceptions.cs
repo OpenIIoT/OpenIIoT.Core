@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄
-      █    ▄██▀▀▀███▀▀▀██▄
-      █    ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████
-      █    ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██
-      █    ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀
-      █    ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████
-      █    ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
-      █     ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
+      █     ▄████████
+      █     ███    ███
+      █     ███    ███    █████▄    █████▄  █        █   ▄██████   ▄█████      ██     █   ██████  ██▄▄▄▄
+      █     ███    ███   ██   ██   ██   ██ ██       ██  ██    ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄
+      █   ▀███████████   ██   ██   ██   ██ ██       ██▌ ██    ▀    ██   ██     ██  ▀ ██▌ ██    ██ ██   ██
+      █     ███    ███ ▀██████▀  ▀██████▀  ██       ██  ██    ▄  ▀████████     ██    ██  ██    ██ ██   ██
+      █     ███    ███   ██        ██      ██▌    ▄ ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██
+      █     ███    █▀   ▄███▀     ▄███▀    ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █
       █
       █      ▄████████
       █     ███    ███
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Exceptions for the Manager class and subclasses.
+      █  Exceptions for the Program class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -51,42 +51,42 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Exceptions
 {
     /// <summary>
-    ///     Represents errors that occur when referenced dependencies can not be resolved.
+    ///     Represents errors that occur while parsing and applying command line arguments.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class DependencyNotResolvedException : ManagerException
+    public class ApplicationArgumentException : ApplicationException
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class.
+        ///     Initializes a new instance of the <see cref="ApplicationArgumentException"/> class.
         /// </summary>
-        public DependencyNotResolvedException() : base()
+        public ApplicationArgumentException() : base()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class with a specified error message.
+        ///     Initializes a new instance of the <see cref="ApplicationArgumentException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public DependencyNotResolvedException(string message) : base(message)
+        public ApplicationArgumentException(string message) : base(message)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class with a specified error message
+        ///     Initializes a new instance of the <see cref="ApplicationArgumentException"/> class with a specified error message
         ///     and a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public DependencyNotResolvedException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationArgumentException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
@@ -94,39 +94,39 @@ namespace OpenIIoT.SDK
     }
 
     /// <summary>
-    ///     Represents errors that occur at the program level.
+    ///     Represents errors that occur while initializing the Application.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class ManagerException : Exception
+    public class ApplicationInitializationException : ApplicationException
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerException"/> class.
+        ///     Initializes a new instance of the <see cref="ApplicationInitializationException"/> class.
         /// </summary>
-        public ManagerException() : base()
+        public ApplicationInitializationException() : base()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerException"/> class with a specified error message.
+        ///     Initializes a new instance of the <see cref="ApplicationInitializationException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ManagerException(string message) : base(message)
+        public ApplicationInitializationException(string message) : base(message)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerException"/> class with a specified error message and a
-        ///     reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ApplicationInitializationException"/> class with a specified error
+        ///     message and a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ManagerException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationInitializationException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
@@ -134,39 +134,39 @@ namespace OpenIIoT.SDK
     }
 
     /// <summary>
-    ///     Represents errors that occur when the setup of a Manager returns an abnormal result.
+    ///     Represents errors that occur while performing the Application shutdown routine.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class ManagerSetupException : ManagerException
+    public class ApplicationShutdownRoutineException : ApplicationException
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class.
+        ///     Initializes a new instance of the <see cref="ApplicationShutdownRoutineException"/> class.
         /// </summary>
-        public ManagerSetupException() : base()
+        public ApplicationShutdownRoutineException() : base()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class with a specified error message.
+        ///     Initializes a new instance of the <see cref="ApplicationShutdownRoutineException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ManagerSetupException(string message) : base(message)
+        public ApplicationShutdownRoutineException(string message) : base(message)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class with a specified error message and a
-        ///     reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ApplicationShutdownRoutineException"/> class with a specified error
+        ///     message and a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ManagerSetupException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationShutdownRoutineException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
@@ -174,39 +174,39 @@ namespace OpenIIoT.SDK
     }
 
     /// <summary>
-    ///     Represents errors that occur when a Manager fails to start.
+    ///     Represents errors that occur while starting the Application.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class ManagerStartException : ManagerException
+    public class ApplicationStartException : ApplicationException
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class.
+        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class.
         /// </summary>
-        public ManagerStartException() : base()
+        public ApplicationStartException() : base()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class with a specified error message.
+        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ManagerStartException(string message) : base(message)
+        public ApplicationStartException(string message) : base(message)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerStartException"/> class with a specified error message and a
-        ///     reference to the inner exception that is the cause of this exception.
+        ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class with a specified error message and
+        ///     a reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ManagerStartException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationStartException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
@@ -214,39 +214,79 @@ namespace OpenIIoT.SDK
     }
 
     /// <summary>
-    ///     Represents errors that occur when a Manager fails to stop.
+    ///     Represents errors that occur while performing the Application startup routine.
     /// </summary>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
-    public class ManagerStopException : ManagerException
+    public class ApplicationStartupRoutineException : ApplicationException
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerStopException"/> class.
+        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class.
         /// </summary>
-        public ManagerStopException() : base()
+        public ApplicationStartupRoutineException() : base()
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerStopException"/> class with a specified error message.
+        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ManagerStopException(string message) : base(message)
+        public ApplicationStartupRoutineException(string message) : base(message)
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManagerStopException"/> class with a specified error message and a
+        ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class with a specified error
+        ///     message and a reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">
+        ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
+        /// </param>
+        public ApplicationStartupRoutineException(string message, Exception innerException) : base(message, innerException)
+        {
+        }
+
+        #endregion Public Constructors
+    }
+
+    /// <summary>
+    ///     Represents errors that occur while stopping the Application.
+    /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+    [ExcludeFromCodeCoverage]
+    [Serializable]
+    public class ApplicationStopException : ApplicationException
+    {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class.
+        /// </summary>
+        public ApplicationStopException() : base()
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class with a specified error message.
+        /// </summary>
+        /// <param name="message">The message that describes the error.</param>
+        public ApplicationStopException(string message) : base(message)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class with a specified error message and a
         ///     reference to the inner exception that is the cause of this exception.
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ManagerStopException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationStopException(string message, Exception innerException) : base(message, innerException)
         {
         }
 
