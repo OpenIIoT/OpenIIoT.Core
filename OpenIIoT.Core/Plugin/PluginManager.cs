@@ -54,6 +54,10 @@ using Utility.OperationResult;
 using OpenIIoT.SDK.Plugin;
 using OpenIIoT.SDK.Plugin.Connector;
 using OpenIIoT.SDK.Platform;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Discovery;
+
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Plugin
 {
@@ -1116,7 +1120,7 @@ namespace OpenIIoT.Core.Plugin
                                             // plugin because we've already passed the more rigorous check using the
                                             // FingerprintValidator, we only need to save the hash of the file that came from the
                                             // zip to ensure it is not tampered with.
-                                            string hash = SDK.Utility.ComputeHash(archive.Plugin.FQN + archive.Plugin.Version + checksumResult.ReturnValue);
+                                            string hash = SDK.Common.Utility.ComputeHash(archive.Plugin.FQN + archive.Plugin.Version + checksumResult.ReturnValue);
                                             logger.Trace("Hash: " + hash);
 
                                             // set the fingerprint
@@ -1385,7 +1389,7 @@ namespace OpenIIoT.Core.Plugin
                 Result<string> checksumResult = Dependency<IPlatformManager>().Platform.ComputeFileChecksum(assemblyFileName);
                 if (checksumResult.ResultCode != ResultCode.Failure)
                 {
-                    string computedFingerprint = SDK.Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.ReturnValue);
+                    string computedFingerprint = SDK.Common.Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.ReturnValue);
 
                     computedFingerprint = plugin.Fingerprint;
 

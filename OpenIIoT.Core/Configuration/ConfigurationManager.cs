@@ -52,6 +52,9 @@ using System.Collections.Immutable;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Platform;
+using OpenIIoT.SDK.Common;
+
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Configuration
 {

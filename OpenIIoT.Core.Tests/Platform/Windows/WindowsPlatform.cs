@@ -49,6 +49,7 @@
                                                                                                    ▀▀                            */
 
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
 using Xunit;
 

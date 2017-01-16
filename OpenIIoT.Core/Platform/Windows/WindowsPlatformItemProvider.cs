@@ -53,6 +53,8 @@ using System.Threading.Tasks;
 using OpenIIoT.SDK;
 using NLog.xLogger;
 using NLog;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
 namespace OpenIIoT.Core.Platform.Windows
 {

@@ -51,7 +51,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Provider.EventProvider
 {
     /// <summary>
     ///     Identifies Events contained within classes marked with the EventProvider Attribute.

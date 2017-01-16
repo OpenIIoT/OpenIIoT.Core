@@ -46,11 +46,14 @@ using System.Linq;
 using System.Timers;
 using NLog;
 using NLog.xLogger;
+using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Event;
-using OpenIIoT.SDK.Exceptions;
+using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Provider.EventProvider;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common
 {
     /// <summary>
     ///     The abstract base class from which Managers may inherit.

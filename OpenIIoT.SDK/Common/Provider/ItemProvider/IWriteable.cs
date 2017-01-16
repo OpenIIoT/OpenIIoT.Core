@@ -21,10 +21,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using OpenIIoT.SDK.Common;
 using System.Threading.Tasks;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
     /// <summary>
     ///     Defines the interface for Connector Plugins capable of writing data to the source of the Connector data.

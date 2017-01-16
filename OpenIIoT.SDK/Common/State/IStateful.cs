@@ -42,7 +42,7 @@
 using System;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common
 {
     /// <summary>
     ///     Defines the interface for Stateful components.

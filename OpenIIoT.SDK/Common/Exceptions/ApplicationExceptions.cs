@@ -51,7 +51,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace OpenIIoT.SDK.Exceptions
+namespace OpenIIoT.SDK.Common.Exceptions
 {
     /// <summary>
     ///     Represents errors that occur while parsing and applying command line arguments.

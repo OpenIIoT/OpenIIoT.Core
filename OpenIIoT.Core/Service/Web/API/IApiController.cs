@@ -1,4 +1,5 @@
 ﻿using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using System.Collections.Generic;
 using System.Net.Http.Formatting;
 

@@ -1,10 +1,13 @@
 ﻿using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common.Discovery;
+using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Provider
 {
     public class ProviderRegistry
     {

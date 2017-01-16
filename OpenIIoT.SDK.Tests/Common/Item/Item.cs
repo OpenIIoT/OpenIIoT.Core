@@ -52,12 +52,14 @@ using System;
 using System.Collections.Generic;
 using Moq;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common;
 using Xunit;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
 namespace OpenIIoT.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Item"/> class.
+    ///     Unit tests for the <see cref="SDK.Common.Item"/> class.
     /// </summary>
     [Collection("Item")]
     public class Item
@@ -65,15 +67,15 @@ namespace OpenIIoT.SDK.Tests
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method.
+        ///     Tests the <see cref="SDK.Common.Item.AddChild(SDK.Common.Item)"/> method.
         /// </summary>
         [Fact]
         public void AddChild()
         {
-            SDK.Item item = new SDK.Item("Root");
-            SDK.Item child = new SDK.Item("Root.Child");
+            SDK.Common.Item item = new SDK.Common.Item("Root");
+            SDK.Common.Item child = new SDK.Common.Item("Root.Child");
 
-            Result<SDK.Item> result = item.AddChild(child);
+            Result<SDK.Common.Item> result = item.AddChild(child);
 
             // assert that the add succeeded and that it returned the item we specified
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -88,14 +90,15 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method to ensure that circular references can't be introduced.
+        ///     Tests the <see cref="SDK.Common.Item.AddChild(SDK.Common.Item)"/> method to ensure that circular references can't
+        ///     be introduced.
         /// </summary>
         [Fact]
         public void AddChildCircular()
         {
-            SDK.Item rootItem = new SDK.Item("Root");
-            SDK.Item child = new SDK.Item("Root.Child");
-            SDK.Item childsChild = new SDK.Item("Root.Child.Child");
+            SDK.Common.Item rootItem = new SDK.Common.Item("Root");
+            SDK.Common.Item child = new SDK.Common.Item("Root.Child");
+            SDK.Common.Item childsChild = new SDK.Common.Item("Root.Child.Child");
             rootItem.AddChild(child);
             child.AddChild(childsChild);
 
@@ -107,12 +110,12 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method by attempting to add a null child to an Item.
+        ///     Tests the <see cref="SDK.Common.Item.AddChild(SDK.Common.Item)"/> method by attempting to add a null child to an Item.
         /// </summary>
         [Fact]
         public void AddChildNull()
         {
-            SDK.Item item = new SDK.Item("Root");
+            SDK.Common.Item item = new SDK.Common.Item("Root");
 
             Result result = item.AddChild(null);
 
@@ -120,12 +123,12 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> method by attempting to add a child Item to itself.
+        ///     Tests the <see cref="SDK.Common.Item.AddChild(SDK.Common.Item)"/> method by attempting to add a child Item to itself.
         /// </summary>
         [Fact]
         public void AddChildSelf()
         {
-            SDK.Item item = new SDK.Item("Root");
+            SDK.Common.Item item = new SDK.Common.Item("Root");
 
             Result result = item.AddChild(item);
 
@@ -133,19 +136,19 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.Clone"/> method.
+        ///     Tests the <see cref="SDK.Common.Item.Clone"/> method.
         /// </summary>
         [Fact]
         public void Clone()
         {
-            SDK.Item original = new SDK.Item("Root.Item");
-            SDK.Item clone = (SDK.Item)original.Clone();
+            SDK.Common.Item original = new SDK.Common.Item("Root.Item");
+            SDK.Common.Item clone = (SDK.Common.Item)original.Clone();
 
             Assert.Equal(original.FQN, clone.FQN);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.CloneAs(string)"/> method.
+        ///     Tests the <see cref="SDK.Common.Item.CloneAs(string)"/> method.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the mutated Item from which this Item is cloned.</param>
         [Theory]
@@ -154,8 +157,8 @@ namespace OpenIIoT.SDK.Tests
         [InlineData("")]
         public void CloneAs(string fqn)
         {
-            SDK.Item original = new SDK.Item("Root.Item");
-            SDK.Item clone = (SDK.Item)original.CloneAs(fqn);
+            SDK.Common.Item original = new SDK.Common.Item("Root.Item");
+            SDK.Common.Item clone = (SDK.Common.Item)original.CloneAs(fqn);
 
             Assert.Equal(fqn, clone.FQN);
             Assert.NotNull(clone.Name);
@@ -171,42 +174,42 @@ namespace OpenIIoT.SDK.Tests
             // create mockups
             Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
 
-            SDK.Item item = new SDK.Item();
-            Assert.IsType<SDK.Item>(item);
+            SDK.Common.Item item = new SDK.Common.Item();
+            Assert.IsType<SDK.Common.Item>(item);
 
-            item = new SDK.Item(string.Empty);
-            Assert.IsType<SDK.Item>(item);
+            item = new SDK.Common.Item(string.Empty);
+            Assert.IsType<SDK.Common.Item>(item);
 
-            item = new SDK.Item(string.Empty, ItemAccessMode.ReadWrite);
-            Assert.IsType<SDK.Item>(item);
+            item = new SDK.Common.Item(string.Empty, ItemAccessMode.ReadWrite);
+            Assert.IsType<SDK.Common.Item>(item);
 
-            item = new SDK.Item(string.Empty, ItemAccessMode.ReadWrite, mockProvider.Object);
-            Assert.IsType<SDK.Item>(item);
+            item = new SDK.Common.Item(string.Empty, ItemAccessMode.ReadWrite, mockProvider.Object);
+            Assert.IsType<SDK.Common.Item>(item);
 
-            item = new SDK.Item(string.Empty, mockProvider.Object);
-            Assert.IsType<SDK.Item>(item);
+            item = new SDK.Common.Item(string.Empty, mockProvider.Object);
+            Assert.IsType<SDK.Common.Item>(item);
 
-            item = new SDK.Item(string.Empty, string.Empty);
-            Assert.IsType<SDK.Item>(item);
+            item = new SDK.Common.Item(string.Empty, string.Empty);
+            Assert.IsType<SDK.Common.Item>(item);
 
-            item = new SDK.Item(string.Empty, new SDK.Item());
-            Assert.IsType<SDK.Item>(item);
+            item = new SDK.Common.Item(string.Empty, new SDK.Common.Item());
+            Assert.IsType<SDK.Common.Item>(item);
 
-            item = new SDK.Item(string.Empty, new SDK.Item(), mockProvider.Object);
-            Assert.IsType<SDK.Item>(item);
+            item = new SDK.Common.Item(string.Empty, new SDK.Common.Item(), mockProvider.Object);
+            Assert.IsType<SDK.Common.Item>(item);
 
-            item = new SDK.Item(string.Empty, string.Empty, mockProvider.Object);
-            Assert.IsType<SDK.Item>(item);
+            item = new SDK.Common.Item(string.Empty, string.Empty, mockProvider.Object);
+            Assert.IsType<SDK.Common.Item>(item);
         }
 
         /// <summary>
-        ///     Tests the functionality of the <see cref="SDK.Item.AddChild(SDK.Item)"/> method.
+        ///     Tests the functionality of the <see cref="SDK.Common.Item.AddChild(SDK.Common.Item)"/> method.
         /// </summary>
         [Fact]
         public void ItemAdoption()
         {
-            SDK.Item root = new SDK.Item("Root");
-            SDK.Item child = new SDK.Item("Orphaned.Item");
+            SDK.Common.Item root = new SDK.Common.Item("Root");
+            SDK.Common.Item child = new SDK.Common.Item("Orphaned.Item");
 
             Assert.Equal(true, child.IsOrphaned);
             Assert.Equal("Orphaned.Item", child.FQN);
@@ -219,7 +222,7 @@ namespace OpenIIoT.SDK.Tests
             Assert.Equal("Root", child.Path);
 
             // try to add a null/default Item to the test item. it should fail.
-            Result result = root.AddChild(default(SDK.Item));
+            Result result = root.AddChild(default(SDK.Common.Item));
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
@@ -229,44 +232,44 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void Properties()
         {
-            SDK.Item item = new SDK.Item("Root.Child.Name", "Source");
+            SDK.Common.Item item = new SDK.Common.Item("Root.Child.Name", "Source");
 
-            Assert.Equal(new List<SDK.Item>(), item.Children);
+            Assert.Equal(new List<SDK.Common.Item>(), item.Children);
             Assert.Equal("Root.Child.Name", item.FQN);
             Assert.Equal(new Guid().ToString().Length, item.Guid.ToString().Length);
             Assert.Equal(false, item.HasChildren);
             Assert.Equal(true, item.IsOrphaned);
             Assert.Equal(false, item.IsSubscribedToSource);
             Assert.Equal("Name", item.Name);
-            Assert.Equal(default(SDK.Item), item.Parent);
+            Assert.Equal(default(SDK.Common.Item), item.Parent);
             Assert.Equal("Root.Child", item.Path);
             Assert.Equal("Source", item.SourceFQN);
-            Assert.Equal(default(SDK.Item), item.SourceItem);
+            Assert.Equal(default(SDK.Common.Item), item.SourceItem);
 
             Assert.IsType<System.Threading.ReaderWriterLockSlim>(item.Lock);
 
-            SDK.Item newItem = new SDK.Item("Source.Item");
+            SDK.Common.Item newItem = new SDK.Common.Item("Source.Item");
             item.SourceItem = newItem;
             Assert.Equal(newItem, item.SourceItem);
 
             Assert.Equal(default(object), item.Read());
 
-            SDK.Item rootItem = new SDK.Item("Root");
+            SDK.Common.Item rootItem = new SDK.Common.Item("Root");
             Assert.Equal("Root", rootItem.FQN);
 
             // not technically properties but we are testing them here anyway
             Assert.Equal("Root.Child.Name", item.ToString());
             Assert.NotNull(item.ToJson());
-            Assert.NotNull(item.ToJson(new SDK.ContractResolver()));
+            Assert.NotNull(item.ToJson(new SDK.Common.ContractResolver()));
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.Read"/> and <see cref="SDK.Item.ReadAsync"/> methods.
+        ///     Tests the <see cref="SDK.Common.Item.Read"/> and <see cref="SDK.Common.Item.ReadAsync"/> methods.
         /// </summary>
         [Fact]
         public async void Read()
         {
-            SDK.Item item = new SDK.Item("Root.Item");
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item");
             item.Write("Value!");
 
             Assert.Equal("Value!", item.Read());
@@ -277,39 +280,39 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.ReadFromSourceAsync"/> method.
+        ///     Tests the <see cref="SDK.Common.Item.ReadFromSourceAsync"/> method.
         /// </summary>
         [Fact]
         public async void ReadFromSourceAsync()
         {
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
             sourceItem.Write("source value");
 
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", sourceItem);
             item.Write("value");
 
-            SDK.Item child = new SDK.Item("Root.Item.Child");
+            SDK.Common.Item child = new SDK.Common.Item("Root.Item.Child");
             item.AddChild(child);
 
             object value = await item.ReadFromSourceAsync();
 
             Assert.Equal("source value", value);
-            Assert.Equal(ItemQuality.Good, item.Quality);
+            Assert.Equal(SDK.Common.ItemQuality.Good, item.Quality);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.Item"/>.
+        ///     Tests the <see cref="SDK.Common.Item.ReadFromSource"/> method when the <see cref="SDK.Common.Item.Source"/> is <see cref="SDK.Common.ItemSource.Item"/>.
         /// </summary>
         [Fact]
         public void ReadFromSourceItem()
         {
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
             sourceItem.Write("source value");
 
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", sourceItem);
             item.Write("value");
 
-            SDK.Item child = new SDK.Item("Root.Item.Child");
+            SDK.Common.Item child = new SDK.Common.Item("Root.Item.Child");
             item.AddChild(child);
 
             // invoke the ReadFromSource method on the item. the method should return the source item's value, and should set the
@@ -322,14 +325,14 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.ItemProvider"/>.
+        ///     Tests the <see cref="SDK.Common.Item.ReadFromSource"/> method when the <see cref="SDK.Common.Item.Source"/> is <see cref="SDK.Common.ItemSource.ItemProvider"/>.
         /// </summary>
         [Fact]
         public void ReadFromSourceProvider()
         {
             Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
 
-            SDK.Item item = new SDK.Item("Root.Item", mockProvider.Object);
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", mockProvider.Object);
 
             mockProvider.Setup(m => m.Read(item)).Returns("source value");
 
@@ -344,14 +347,14 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.ItemProvider"/>.
+        ///     Tests the <see cref="SDK.Common.Item.ReadFromSource"/> method when the <see cref="SDK.Common.Item.Source"/> is <see cref="SDK.Common.ItemSource.ItemProvider"/>.
         /// </summary>
         [Fact]
         public void ReadFromSourceProviderBad()
         {
             Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
 
-            SDK.Item item = new SDK.Item("Root.Item", mockProvider.Object);
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", mockProvider.Object);
 
             mockProvider.Setup(m => m.Read(item)).Throws(new Exception());
 
@@ -366,16 +369,16 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.ReadFromSource"/> method when the <see cref="SDK.Item.Source"/> is <see cref="SDK.ItemSource.Item"/>.
+        ///     Tests the <see cref="SDK.Common.Item.ReadFromSource"/> method when the <see cref="SDK.Common.Item.Source"/> is <see cref="SDK.Common.ItemSource.Item"/>.
         /// </summary>
         [Fact]
         public void ReadFromSourceUnresolved()
         {
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
             sourceItem.Write("source value");
 
             // create an "unresolved" Item by specifying the source FQN but not the corresponding Item.
-            SDK.Item item = new SDK.Item("Root.Item", "some.fqn");
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", "some.fqn");
 
             // invoke the ReadFromSource method on the item. the method should return the source item's value, and should set the
             // item's value to the same value.
@@ -387,20 +390,21 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.AddChild(SDK.Item)"/> and <see cref="SDK.Item.RemoveChild(SDK.Item)"/> methods.
+        ///     Tests the <see cref="SDK.Common.Item.AddChild(SDK.Common.Item)"/> and
+        ///     <see cref="SDK.Common.Item.RemoveChild(SDK.Common.Item)"/> methods.
         /// </summary>
         [Fact]
         public void RemoveChild()
         {
-            SDK.Item item = new SDK.Item("Root");
-            SDK.Item child = new SDK.Item("Root.Child");
-            SDK.Item grandChild = new SDK.Item("Root.Child.Child");
+            SDK.Common.Item item = new SDK.Common.Item("Root");
+            SDK.Common.Item child = new SDK.Common.Item("Root.Child");
+            SDK.Common.Item grandChild = new SDK.Common.Item("Root.Child.Child");
 
             item.AddChild(child);
             child.AddChild(grandChild);
 
             // remove the child and ensure it was successful and that it returns the child item
-            Result<SDK.Item> removeResult = item.RemoveChild(child);
+            Result<SDK.Common.Item> removeResult = item.RemoveChild(child);
 
             Assert.Equal(ResultCode.Success, removeResult.ResultCode);
             Assert.Equal(child, removeResult.ReturnValue);
@@ -410,13 +414,14 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.RemoveChild(SDK.Item)"/> method with an Item that has not been added to the list of children.
+        ///     Tests the <see cref="SDK.Common.Item.RemoveChild(SDK.Common.Item)"/> method with an Item that has not been added to
+        ///     the list of children.
         /// </summary>
         [Fact]
         public void RemoveChildDoesntExist()
         {
-            SDK.Item item = new SDK.Item("Root");
-            SDK.Item child = new SDK.Item("Root.Child");
+            SDK.Common.Item item = new SDK.Common.Item("Root");
+            SDK.Common.Item child = new SDK.Common.Item("Root.Child");
 
             Result result = item.RemoveChild(child);
 
@@ -425,12 +430,12 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.RemoveChild(SDK.Item)"/> method by attempting to remove a null child.
+        ///     Tests the <see cref="SDK.Common.Item.RemoveChild(SDK.Common.Item)"/> method by attempting to remove a null child.
         /// </summary>
         [Fact]
         public void RemoveChildNull()
         {
-            SDK.Item item = new SDK.Item("Root");
+            SDK.Common.Item item = new SDK.Common.Item("Root");
 
             Result result = item.RemoveChild(null);
 
@@ -438,34 +443,35 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.Source"/> property.
+        ///     Tests the <see cref="SDK.Common.Item.Source"/> property.
         /// </summary>
         [Fact]
         public void Source()
         {
             Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
 
-            SDK.Item provider = new SDK.Item(string.Empty, mockProvider.Object);
+            SDK.Common.Item provider = new SDK.Common.Item(string.Empty, mockProvider.Object);
             Assert.Equal(ItemSource.Provider, provider.Source);
 
-            SDK.Item item = new SDK.Item(string.Empty, new SDK.Item());
+            SDK.Common.Item item = new SDK.Common.Item(string.Empty, new SDK.Common.Item());
             Assert.Equal(ItemSource.Item, item.Source);
 
-            SDK.Item unresolved = new SDK.Item(string.Empty, "source");
+            SDK.Common.Item unresolved = new SDK.Common.Item(string.Empty, "source");
             Assert.Equal(ItemSource.Unresolved, unresolved.Source);
 
-            SDK.Item unknown = new SDK.Item();
+            SDK.Common.Item unknown = new SDK.Common.Item();
             Assert.Equal(ItemSource.Unknown, unknown.Source);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is <see cref="ItemSource.Item"/>.
+        ///     Tests the <see cref="SDK.Common.Item.SubscribeToSource"/> method with an Item whose
+        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.Item"/>.
         /// </summary>
         [Fact]
         public void SubscribeToSourceItem()
         {
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", sourceItem);
 
             Result result = item.SubscribeToSource();
 
@@ -474,7 +480,8 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is <see cref="ItemSource.ItemProvider"/>.
+        ///     Tests the <see cref="SDK.Common.Item.SubscribeToSource"/> method with an Item whose
+        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.ItemProvider"/>.
         /// </summary>
         [Fact]
         public void SubscribeToSourceProvider()
@@ -483,8 +490,8 @@ namespace OpenIIoT.SDK.Tests
             Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
             mockProvider.As<ISubscribable>();
 
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", sourceItem, mockProvider.Object);
 
             Assert.Equal(ItemSource.Provider, item.Source);
 
@@ -495,8 +502,9 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is
-        ///     <see cref="ItemSource.ItemProvider"/> and where the <see cref="SDK.Item.Provider"/> does not implement <see cref="ISubscribable"/>.
+        ///     Tests the <see cref="SDK.Common.Item.SubscribeToSource"/> method with an Item whose
+        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.ItemProvider"/> and where the
+        ///     <see cref="SDK.Common.Item.Provider"/> does not implement <see cref="ISubscribable"/>.
         /// </summary>
         [Fact]
         public void SubscribeToSourceProviderNotSubscribable()
@@ -504,8 +512,8 @@ namespace OpenIIoT.SDK.Tests
             // mock an IItemProvider that doesn't implement ISubscribable
             Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
 
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", sourceItem, mockProvider.Object);
 
             Result result = item.SubscribeToSource();
 
@@ -514,15 +522,15 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.SubscribeToSource"/> and <see cref="SDK.Item.UnsubscribeFromSource"/> methods.
+        ///     Tests the <see cref="SDK.Common.Item.SubscribeToSource"/> and <see cref="SDK.Common.Item.UnsubscribeFromSource"/> methods.
         /// </summary>
         [Fact]
         public void Subscription()
         {
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
             sourceItem.Write("initial value");
 
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", sourceItem);
 
             // subscribe the item to it's source item and assert that it succeeded
             Result subscribeResult = item.SubscribeToSource();
@@ -543,7 +551,7 @@ namespace OpenIIoT.SDK.Tests
             Assert.NotEqual("final value", item.Read());
 
             // test the subscribe/unsubscribe methods with an item for which the source item has not been set
-            SDK.Item lastItem = new SDK.Item("Root.LastItem");
+            SDK.Common.Item lastItem = new SDK.Common.Item("Root.LastItem");
 
             Result lastItemSub = lastItem.SubscribeToSource();
             Assert.Equal(ResultCode.Failure, lastItemSub.ResultCode);
@@ -553,7 +561,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.SubscriptionsChanged"/> method with no subscribers listening.
+        ///     Tests the <see cref="SDK.Common.Item.SubscriptionsChanged"/> method with no subscribers listening.
         /// </summary>
         [Fact]
         public void SubscriptionsChangedNoSubscribers()
@@ -561,13 +569,13 @@ namespace OpenIIoT.SDK.Tests
             Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
             mockItemProvider.As<ISubscribable>();
 
-            SDK.Item item = new SDK.Item("Root", mockItemProvider.Object);
+            SDK.Common.Item item = new SDK.Common.Item("Root", mockItemProvider.Object);
 
             item.SubscriptionsChanged();
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.SubscriptionsChanged"/> method with subscribers listening.
+        ///     Tests the <see cref="SDK.Common.Item.SubscriptionsChanged"/> method with subscribers listening.
         /// </summary>
         [Fact]
         public void SubscriptionsChangedSubscribers()
@@ -575,9 +583,9 @@ namespace OpenIIoT.SDK.Tests
             Mock<IItemProvider> mockItemProvider = new Mock<IItemProvider>();
             mockItemProvider.As<ISubscribable>();
 
-            SDK.Item item = new SDK.Item("Root", mockItemProvider.Object);
+            SDK.Common.Item item = new SDK.Common.Item("Root", mockItemProvider.Object);
 
-            EventHandler<SDK.ItemChangedEventArgs> handler = (sender, e) => { };
+            EventHandler<SDK.Common.ItemChangedEventArgs> handler = (sender, e) => { };
 
             item.Changed += handler;
 
@@ -585,13 +593,14 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.UnsubscribeFromSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is <see cref="ItemSource.Item"/>.
+        ///     Tests the <see cref="SDK.Common.Item.UnsubscribeFromSource"/> method with an Item whose
+        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.Item"/>.
         /// </summary>
         [Fact]
         public void UnSubscribeFromSourceItem()
         {
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem);
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", sourceItem);
             item.SubscribeToSource();
 
             Assert.True(item.IsSubscribedToSource);
@@ -603,7 +612,8 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.UnsubscribeFromSource"/> method with an Item whose <see cref="SDK.Item.Source"/> is <see cref="ItemSource.ItemProvider"/>.
+        ///     Tests the <see cref="SDK.Common.Item.UnsubscribeFromSource"/> method with an Item whose
+        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.ItemProvider"/>.
         /// </summary>
         [Fact]
         public void UnSubscribeFromSourceProvider()
@@ -612,8 +622,8 @@ namespace OpenIIoT.SDK.Tests
             Mock<IItemProvider> mockProvider = new Mock<IItemProvider>();
             mockProvider.As<ISubscribable>();
 
-            SDK.Item sourceItem = new SDK.Item("Root.SourceItem");
-            SDK.Item item = new SDK.Item("Root.Item", sourceItem, mockProvider.Object);
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.SourceItem");
+            SDK.Common.Item item = new SDK.Common.Item("Root.Item", sourceItem, mockProvider.Object);
             item.SubscribeToSource();
 
             Assert.Equal(ItemSource.Provider, item.Source);
@@ -626,13 +636,13 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.Write(object)"/> method.
+        ///     Tests the <see cref="SDK.Common.Item.Write(object)"/> method.
         /// </summary>
         [Fact]
         public async void Write()
         {
-            SDK.Item writeableItem = new SDK.Item("Root.Item");
-            SDK.Item nonWriteableItem = new SDK.Item("Root.Item2", ItemAccessMode.ReadOnly);
+            SDK.Common.Item writeableItem = new SDK.Common.Item("Root.Item");
+            SDK.Common.Item nonWriteableItem = new SDK.Common.Item("Root.Item2", ItemAccessMode.ReadOnly);
 
             bool result = writeableItem.Write("test");
             Assert.True(result);
@@ -649,13 +659,13 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.WriteAsync(object)"/> method.
+        ///     Tests the <see cref="SDK.Common.Item.WriteAsync(object)"/> method.
         /// </summary>
         [Fact]
         public async void WriteAsync()
         {
-            SDK.Item writeableItem = new SDK.Item("Root.Item");
-            SDK.Item nonWriteableItem = new SDK.Item("Root.Item2", ItemAccessMode.ReadOnly);
+            SDK.Common.Item writeableItem = new SDK.Common.Item("Root.Item");
+            SDK.Common.Item nonWriteableItem = new SDK.Common.Item("Root.Item2", ItemAccessMode.ReadOnly);
 
             bool result = await writeableItem.WriteAsync("test two");
 
@@ -668,7 +678,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.WriteToSource(object)"/> method.
+        ///     Tests the <see cref="SDK.Common.Item.WriteToSource(object)"/> method.
         /// </summary>
         [Fact]
         public void WriteToSource()
@@ -679,12 +689,12 @@ namespace OpenIIoT.SDK.Tests
             mockItemProvider.As<IWriteable>();
 
             // create an item sourced from an ItemProvider and link a model item
-            SDK.Item providerItem = new SDK.Item("Source.Item", mockItemProvider.Object);
+            SDK.Common.Item providerItem = new SDK.Common.Item("Source.Item", mockItemProvider.Object);
 
             // setup the mock to return a good value for the provider's Write()
-            mockItemProvider.As<IWriteable>().Setup(p => p.Write(It.IsAny<SDK.Item>(), It.IsAny<object>())).Returns(true);
+            mockItemProvider.As<IWriteable>().Setup(p => p.Write(It.IsAny<SDK.Common.Item>(), It.IsAny<object>())).Returns(true);
 
-            SDK.Item sourceItem = new SDK.Item("Root.Model.Item", providerItem);
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.Model.Item", providerItem);
 
             // test a write with an IWriteable provider
             bool result = sourceItem.WriteToSource("source value");
@@ -696,7 +706,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Item.WriteToSourceAsync(object)"/> method.
+        ///     Tests the <see cref="SDK.Common.Item.WriteToSourceAsync(object)"/> method.
         /// </summary>
         [Fact]
         public async void WriteToSourceAsync()
@@ -707,12 +717,12 @@ namespace OpenIIoT.SDK.Tests
             mockItemProvider.As<IWriteable>();
 
             // create an item sourced from an ItemProvider and link a model item
-            SDK.Item providerItem = new SDK.Item("Source.Item", mockItemProvider.Object);
+            SDK.Common.Item providerItem = new SDK.Common.Item("Source.Item", mockItemProvider.Object);
 
             // setup the mock to return a good value for the provider's Write()
-            mockItemProvider.As<IWriteable>().Setup(p => p.Write(It.IsAny<SDK.Item>(), It.IsAny<object>())).Returns(true);
+            mockItemProvider.As<IWriteable>().Setup(p => p.Write(It.IsAny<SDK.Common.Item>(), It.IsAny<object>())).Returns(true);
 
-            SDK.Item sourceItem = new SDK.Item("Root.Model.Item", providerItem);
+            SDK.Common.Item sourceItem = new SDK.Common.Item("Root.Model.Item", providerItem);
 
             // test a write with an IWriteable provider
             bool result = await sourceItem.WriteToSourceAsync("source value");

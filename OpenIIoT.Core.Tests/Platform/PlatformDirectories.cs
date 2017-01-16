@@ -51,7 +51,7 @@
 using System;
 using System.Collections.Generic;
 using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Exceptions;
+using OpenIIoT.SDK.Common.Exceptions;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests

@@ -1,10 +1,11 @@
 ﻿using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common.Discovery;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Provider
 {
     public class ProviderRegistry<T> where T : IProvider
     {

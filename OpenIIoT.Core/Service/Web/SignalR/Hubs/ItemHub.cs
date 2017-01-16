@@ -9,6 +9,7 @@ using OpenIIoT.Core.Model;
 using Utility.OperationResult;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Model;
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Service.Web.SignalR
 {

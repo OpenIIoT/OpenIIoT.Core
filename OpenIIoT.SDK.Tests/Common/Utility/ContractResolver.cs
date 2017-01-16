@@ -52,6 +52,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 using Xunit;
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Tests
 {
@@ -90,16 +91,16 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void Constructor()
         {
-            SDK.ContractResolver resolver;
+            SDK.Common.ContractResolver resolver;
 
-            resolver = new SDK.ContractResolver();
-            Assert.IsType<SDK.ContractResolver>(resolver);
+            resolver = new SDK.Common.ContractResolver();
+            Assert.IsType<SDK.Common.ContractResolver>(resolver);
 
-            resolver = new SDK.ContractResolver(new List<string>(new string[] { }));
-            Assert.IsType<SDK.ContractResolver>(resolver);
+            resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { }));
+            Assert.IsType<SDK.Common.ContractResolver>(resolver);
 
-            resolver = new SDK.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptIn);
-            Assert.IsType<SDK.ContractResolver>(resolver);
+            resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptIn);
+            Assert.IsType<SDK.Common.ContractResolver>(resolver);
         }
 
         /// <summary>
@@ -109,7 +110,7 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void OptIn()
         {
-            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { "Name" }), ContractResolverType.OptIn);
+            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { "Name" }), ContractResolverType.OptIn);
 
             string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
 
@@ -123,7 +124,7 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void OptOut()
         {
-            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { "Number", "TrueFalse" }), ContractResolverType.OptOut);
+            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { "Number", "TrueFalse" }), ContractResolverType.OptOut);
 
             string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
 
@@ -136,7 +137,7 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void Resolve()
         {
-            SDK.ContractResolver resolver = new SDK.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptOut);
+            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptOut);
 
             string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
 

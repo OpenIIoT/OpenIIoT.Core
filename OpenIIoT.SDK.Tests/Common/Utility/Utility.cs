@@ -49,6 +49,7 @@
                                                                                                    ▀▀                            */
 
 using Moq;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Event;
 using System;
 using System.Collections.Generic;
@@ -95,12 +96,12 @@ namespace OpenIIoT.SDK.Tests
             string unsaltedResult = "982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1";
             string saltedResult = "3353e16497ad272fea4382119ff2801e54f0a4cf2057f4e32d00317bda5126c3";
 
-            string unsaltedHash = SDK.Utility.ComputeHash("text");
+            string unsaltedHash = SDK.Common.Utility.ComputeHash("text");
 
             Assert.Equal(64, unsaltedHash.Length);
             Assert.Equal(unsaltedResult, unsaltedHash);
 
-            string saltedHash = SDK.Utility.ComputeHash("text", "salt");
+            string saltedHash = SDK.Common.Utility.ComputeHash("text", "salt");
 
             Assert.Equal(64, saltedHash.Length);
             Assert.Equal(saltedResult, saltedHash);
@@ -112,8 +113,8 @@ namespace OpenIIoT.SDK.Tests
         [Fact]
         public void ShortGuid()
         {
-            string guid1 = SDK.Utility.ShortGuid();
-            string guid2 = SDK.Utility.ShortGuid();
+            string guid1 = SDK.Common.Utility.ShortGuid();
+            string guid2 = SDK.Common.Utility.ShortGuid();
 
             Assert.Equal(8, guid1.Length);
             Assert.Equal(8, guid2.Length);
@@ -168,7 +169,7 @@ namespace OpenIIoT.SDK.Tests
             string wildcard = "test*string?";
             string regex = "^test.*string.$";
 
-            Assert.Equal(regex, SDK.Utility.WildcardToRegex(wildcard));
+            Assert.Equal(regex, SDK.Common.Utility.WildcardToRegex(wildcard));
         }
 
         /// <summary>

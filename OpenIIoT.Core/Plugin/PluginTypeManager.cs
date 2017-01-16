@@ -1,6 +1,7 @@
 ﻿using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
 using System;
 using System.Collections.Generic;

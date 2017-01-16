@@ -41,7 +41,7 @@
 
 using System;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common
 {
     /// <summary>
     ///     Enumeration of the circumstances under which a Stateful component can stop.

@@ -39,6 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
 

@@ -2,6 +2,7 @@
 using OpenIIoT.SDK.Model;
 using System.Collections.Generic;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Model
 {

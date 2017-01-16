@@ -1,4 +1,5 @@
 ﻿using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Plugin
 {

@@ -52,10 +52,13 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Exceptions;
+using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
 using Xunit;
 using System.Reflection;
+using OpenIIoT.SDK.Common;
+
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Tests
 {
@@ -338,7 +341,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManager : Manager
+    public class MockManager : SDK.Common.Manager
     {
         #region Private Fields
 
@@ -422,7 +425,7 @@ namespace OpenIIoT.Core.Tests
     ///     <see cref="Instantiate(MockManager)"/> method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBadDependency : Manager
+    public class MockManagerBadDependency : SDK.Common.Manager
     {
         #region Private Constructors
 
@@ -461,7 +464,7 @@ namespace OpenIIoT.Core.Tests
     ///     simulate the behavior under test.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBadInstantiate : Manager
+    public class MockManagerBadInstantiate : SDK.Common.Manager
     {
     }
 
@@ -473,7 +476,7 @@ namespace OpenIIoT.Core.Tests
     ///     <see cref="Manager.Setup()"/> method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBroken : Manager
+    public class MockManagerBroken : SDK.Common.Manager
     {
         #region Private Fields
 
@@ -554,7 +557,7 @@ namespace OpenIIoT.Core.Tests
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1642:ConstructorSummaryDocumentationMustBeginWithStandardText", Justification = "Reviewed.")]
-    public class MockManagerNoDependencies : Manager
+    public class MockManagerNoDependencies : SDK.Common.Manager
     {
         #region Private Constructors
 
@@ -590,7 +593,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerRunning : Manager
+    public class MockManagerRunning : SDK.Common.Manager
     {
         #region Private Constructors
 
@@ -631,7 +634,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStartBadReturn : Manager
+    public class MockManagerStartBadReturn : SDK.Common.Manager
     {
         #region Private Constructors
 
@@ -685,7 +688,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStartFail : Manager
+    public class MockManagerStartFail : SDK.Common.Manager
     {
         #region Private Constructors
 
@@ -739,7 +742,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStopBadReturn : Manager
+    public class MockManagerStopBadReturn : SDK.Common.Manager
     {
         #region Private Constructors
 
@@ -794,7 +797,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStopFail : Manager
+    public class MockManagerStopFail : SDK.Common.Manager
     {
         #region Private Constructors
 

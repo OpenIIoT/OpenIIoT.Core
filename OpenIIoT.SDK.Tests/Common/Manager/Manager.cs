@@ -54,7 +54,10 @@ using System.Threading;
 using Moq;
 using Utility.OperationResult;
 using Xunit;
-using OpenIIoT.SDK.Exceptions;
+using OpenIIoT.SDK.Common.Exceptions;
+using OpenIIoT.SDK.Common;
+
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Tests.Common
 {
@@ -240,7 +243,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void RestartNotRunning()
         {
-            Mock<SDK.Manager> mock = new Mock<SDK.Manager>();
+            Mock<SDK.Common.Manager> mock = new Mock<SDK.Common.Manager>();
             mock.CallBase = true;
 
             Result restart = mock.Object.Restart();
@@ -354,7 +357,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMock : SDK.Manager
+    public class ManagerMock : SDK.Common.Manager
     {
         #region Private Fields
 
@@ -425,7 +428,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Shutdown() method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockBadShutdown : SDK.Manager
+    public class ManagerMockBadShutdown : SDK.Common.Manager
     {
         #region Private Fields
 
@@ -490,7 +493,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Startup() method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockBadStartup : SDK.Manager
+    public class ManagerMockBadStartup : SDK.Common.Manager
     {
         #region Private Fields
 
@@ -554,7 +557,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Shutdown() method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockFailingShutdown : SDK.Manager
+    public class ManagerMockFailingShutdown : SDK.Common.Manager
     {
         #region Private Constructors
 
@@ -609,7 +612,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Startup() method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockFailingStartup : SDK.Manager
+    public class ManagerMockFailingStartup : SDK.Common.Manager
     {
         #region Private Constructors
 
@@ -663,7 +666,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockTwo : SDK.Manager
+    public class ManagerMockTwo : SDK.Common.Manager
     {
         #region Private Fields
 
@@ -730,7 +733,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockWithDependency : SDK.Manager
+    public class ManagerMockWithDependency : SDK.Common.Manager
     {
         #region Private Fields
 

@@ -49,9 +49,8 @@
                                                                                                    ▀▀                            */
 
 using System;
-using System.Diagnostics.CodeAnalysis;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Discovery
 {
     /// <summary>
     ///     Identifies classes and properties intended to be traversed by a <see cref="Discoverer"/>.

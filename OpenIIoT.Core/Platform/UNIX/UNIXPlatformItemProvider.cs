@@ -52,6 +52,8 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using OpenIIoT.SDK;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
 namespace OpenIIoT.Core.Platform.UNIX
 {

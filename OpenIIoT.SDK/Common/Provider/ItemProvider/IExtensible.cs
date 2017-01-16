@@ -21,10 +21,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using OpenIIoT.SDK.Common;
 using System.Collections.Generic;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK
+namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
     /// <summary>
     ///     Defines the interface for Connector Plugins capable of allowing new ConnectorItems to be added at runtime.
