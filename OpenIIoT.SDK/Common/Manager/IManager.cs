@@ -39,9 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
-using OpenIIoT.SDK.Event;
 
 namespace OpenIIoT.SDK.Common
 {

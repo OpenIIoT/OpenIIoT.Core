@@ -47,11 +47,9 @@ using System.Timers;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Event;
 using OpenIIoT.SDK.Common.Exceptions;
-using Utility.OperationResult;
-using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
+using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Common
 {
@@ -69,7 +67,7 @@ namespace OpenIIoT.SDK.Common
     ///         and a private field named instance corresponding to the Type of the class. The Instantiate() and class constructor
     ///         must define a matching parameter list accepting <see cref="IApplicationManager"/> and an interface instance for the
     ///         interface corresponding to each Manager upon which the class is dependent. Dependencies are injected automatically
-    ///         when the Manager is instantiated by the <see cref="ApplicationManager"/>. Note that none of these elements are
+    ///         when the Manager is instantiated by the <see cref="IApplicationManager"/>. Note that none of these elements are
     ///         present in the base Manager class as the implementation and method signature are specific to each Manager implementation.
     ///     </para>
     ///     <para>
@@ -90,8 +88,8 @@ namespace OpenIIoT.SDK.Common
     ///     </para>
     ///     <para>
     ///         Two additional methods may also be overridden; <see cref="Setup()"/> and <see cref="Teardown()"/>. The Setup()
-    ///         method is invoked by the <see cref="ApplicationManager"/> after all Managers have been instantiated. This method is
-    ///         intended to be used to allow the Manager to set up intra-Manager dependencies which are not capable of being
+    ///         method is invoked by the <see cref="IApplicationManager"/> after all Managers have been instantiated. This method
+    ///         is intended to be used to allow the Manager to set up intra-Manager dependencies which are not capable of being
     ///         established at instantiation; for instance, the Event Manager uses reflection to collect event providers from the
     ///         other Managers, and it can't do so when it is instantiated because not all of the other Managers will have been
     ///         instantiated unless the Event Manager is the last Manager to be instantiated, which can't be guaranteed. The
@@ -164,7 +162,7 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Gets the Event Provider name.
+        ///     Gets or sets the Event Provider name.
         /// </summary>
         public string EventProviderName { get; protected set; }
 
@@ -357,7 +355,7 @@ namespace OpenIIoT.SDK.Common
         #region Protected Methods
 
         /// <summary>
-        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="SDK.State"/> and fires the StateChanged event.
+        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="State"/> and fires the StateChanged event.
         /// </summary>
         /// <param name="state">The State to which the <see cref="State"/> property is to be changed.</param>
         protected void ChangeState(State state)
@@ -366,7 +364,7 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="SDK.State"/> and fires the StateChanged event.
+        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="State"/> and fires the StateChanged event.
         /// </summary>
         /// <param name="state">The State to which the <see cref="State"/> property is to be changed.</param>
         /// <param name="stopType">The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.</param>
@@ -376,7 +374,7 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="SDK.State"/> and fires the StateChanged event.
+        ///     Changes the <see cref="State"/> of the Manager to the specified <see cref="State"/> and fires the StateChanged event.
         /// </summary>
         /// <param name="state">The State to which the <see cref="State"/> property is to be changed.</param>
         /// <param name="message">The optional message describing the nature or reason for the change.</param>
@@ -413,10 +411,10 @@ namespace OpenIIoT.SDK.Common
 
         /// <summary>
         ///     Examines the <see cref="State"/> of the <see cref="IManager"/> s contained within the <see cref="Dependencies"/>
-        ///     property to ensure each is in a <see cref="SDK.State"/> contained within the supplied list of
-        ///     <see cref="SDK.State"/> s. If not, an error message is added to the return <see cref="Result"/>.
+        ///     property to ensure each is in a <see cref="State"/> contained within the supplied list of <see cref="State"/> s. If
+        ///     not, an error message is added to the return <see cref="Result"/>.
         /// </summary>
-        /// <param name="states">The list of <see cref="SDK.State"/> to which the state of each dependency will be compared.</param>
+        /// <param name="states">The list of <see cref="State"/> to which the state of each dependency will be compared.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         protected Result DependenciesAreAllInState(params State[] states)
         {
