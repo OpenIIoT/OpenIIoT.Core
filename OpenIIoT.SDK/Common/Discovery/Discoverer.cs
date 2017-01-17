@@ -114,24 +114,27 @@ namespace OpenIIoT.SDK.Common.Discovery
             {
                 object value = property.GetValue(instance);
 
-                // watch out for self referencing properties to avoid stack overflows
-                if (!object.ReferenceEquals(value, instance))
+                if (value != null)
                 {
-                    // if the value of the retrieved property is assignable from IEnumerable, it is a collection traverse each
-                    // member of the collection before moving to the next property.
-                    if (typeof(IEnumerable).IsAssignableFrom(value.GetType()))
+                    // watch out for self referencing properties to avoid stack overflows
+                    if (!object.ReferenceEquals(value, instance))
                     {
-                        foreach (object item in (IEnumerable)value)
+                        // if the value of the retrieved property is assignable from IEnumerable, it is a collection traverse each
+                        // member of the collection before moving to the next property.
+                        if (typeof(IEnumerable).IsAssignableFrom(value.GetType()))
                         {
-                            if (!object.ReferenceEquals(item, instance))
+                            foreach (object item in (IEnumerable)value)
                             {
-                                instances = Discover<T>(item, instances);
+                                if (!object.ReferenceEquals(item, instance))
+                                {
+                                    instances = Discover<T>(item, instances);
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        instances = Discover<T>(value, instances);
+                        else
+                        {
+                            instances = Discover<T>(value, instances);
+                        }
                     }
                 }
             }
