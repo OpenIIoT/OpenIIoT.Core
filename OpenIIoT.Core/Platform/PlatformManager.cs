@@ -89,7 +89,7 @@ namespace OpenIIoT.Core.Platform
             Guid guid = logger.EnterMethod();
 
             ManagerName = "Platform Manager";
-            EventProviderName = GetType().Name;
+            ProviderName = GetType().Name;
 
             // register dependencies
             RegisterDependency<IApplicationManager>(manager);

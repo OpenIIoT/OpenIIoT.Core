@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for Event Providers.
+      █  Defines the interface for Event Providers; classes capable of providing Events.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -42,13 +42,9 @@
 namespace OpenIIoT.SDK.Common.Provider.EventProvider
 {
     /// <summary>
-    ///     Defines the interface for Event Providers.
+    ///     Defines the interface for Event Providers; classes capable of providing Events.
     /// </summary>
     public interface IEventProvider : IProvider
     {
-        /// <summary>
-        ///     Gets the name of the Event Provider.
-        /// </summary>
-        string EventProviderName { get; }
     }
 }
