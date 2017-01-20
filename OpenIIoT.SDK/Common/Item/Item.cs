@@ -56,7 +56,77 @@ namespace OpenIIoT.SDK.Common
     /// <summary>
     ///     Represents a single data entity within the application Model.
     /// </summary>
-    /// <remarks>The implementation of the <see cref="ICloneable"/> interface for this class returns a shallow copy.</remarks>
+    /// <remarks>
+    ///     <para>
+    ///         <see cref="Item"/> instances are addressed primarily by their <see cref="FQN"/> property; the Fully Qualified Name
+    ///         of the item. The <see cref="Path"/> and <see cref="Name"/> properties provide the path and name of the Item,
+    ///         corresponding to the FQN less the final period-separated tuple and the final tuple, respectively. Each Item has an
+    ///         <see cref="AccessMode"/> property which may be <see cref="ItemAccessMode.ReadOnly"/> or
+    ///         <see cref="ItemAccessMode.ReadWrite"/>, depending on whether the Item is capable of being written. All Items are
+    ///         capable of being read. The <see cref="Guid"/> property is generated on creation and provides a unique identifier
+    ///         for the Item.
+    ///     </para>
+    ///     <para>
+    ///         The Item's <see cref="Value"/> property contains the Item's present value, and the <see cref="Quality"/> property
+    ///         indicates whether the Value is <see cref="ItemQuality.Good"/>, <see cref="ItemQuality.Bad"/>, or, if the Item has
+    ///         been created but not yet read or written, <see cref="ItemQuality.Uninitialized"/> . The <see cref="Timestamp"/>
+    ///         property contains the timestamp at which the Value was last updated.
+    ///     </para>
+    ///     <para>
+    ///         The Item class is a composite object; it is composed of other Item instances contained within the
+    ///         <see cref="Children"/> and <see cref="Parent"/> properties. Children are added and removed via the
+    ///         <see cref="AddChild(Item)"/> and <see cref="RemoveChild(Item)"/> methods, and the <see cref="HasChildren"/>
+    ///         property returns a value indicating whether the Children collection is empty. Finally, the <see cref="IsOrphaned"/>
+    ///         property returns a value indicating whether the Parent property is set to an instance of an Item.
+    ///     </para>
+    ///     <para>
+    ///         Instances of the <see cref="Item"/> class are one of two basic types; those that originate from an
+    ///         <see cref="ItemProvider"/> and those that don't. The <see cref="Provider"/> property of Items originating from an
+    ///         ItemProvider will contain an instance of an ItemProvider, and the <see cref="Source"/> property will return
+    ///         <see cref="ItemSource.Provider"/>. Items that don't originate from an ItemProvider will have a null Provider and
+    ///         the Source will be <see cref="ItemSource.Item"/> if the source is another Item, <see cref="ItemSource.Unresolved"/>
+    ///         if the <see cref="SourceFQN"/> is non-null but <see cref="SourceItem"/> property is null, and
+    ///         <see cref="ItemSource.Unknown"/> if neither the SourceFQN nor SourceItem properties are non-null.
+    ///     </para>
+    ///     <para>
+    ///         Instances that don't originate from an ItemProvider read and write data to and from other Item instances when the
+    ///         <see cref="ReadFromSource"/> and <see cref="WriteToSource(object)"/> methods are invoked. These invocations are
+    ///         cascaded through each successive Item until an Item which originates from an ItemProvider is encountered, at which
+    ///         point data is read from and written to the source <see cref="Provider"/> directly, at which point the
+    ///         <see cref="Value"/> property is updated and the <see cref="OnChange(object, object, ItemQuality, ItemQuality)"/>
+    ///         event is fired.
+    ///     </para>
+    ///     <para>
+    ///         The <see cref="Read"/> and <see cref="Write(object)"/> methods update the Value property and fire the OnChange
+    ///         method but do not cascade reads or writes to the underlying source.
+    ///     </para>
+    ///     <para>
+    ///         In addition to the read and write methods, Items can be subscribed to their source Item with the
+    ///         <see cref="SubscribeToSource"/> method, and conversely unsubscribed using <see cref="UnsubscribeFromSource"/>. When
+    ///         an Item is subscribed the <see cref="SourceItemChanged(object, ItemChangedEventArgs)"/> event handler is bound to
+    ///         the OnChange event of the source Item, and each time the event fires the subscribed Item's Value is updated and the
+    ///         OnChange event is fired, cascading the event through any subscribers of the Item. The
+    ///         <see cref="IsSubscribedToSource"/> property returns a value indicating whether the Item is subscribed to its source Item.
+    ///     </para>
+    ///     <para>
+    ///         The <see cref="SubscriptionsChanged"/> method is to be invoked by Items subscribing to the Item's updates; when an
+    ///         Item's Source is <see cref="ItemSource.Provider"/>, the Item must be subscribed to it's source Item when downstream
+    ///         Items subscribe to it. In other words, when an Item subscribes to an Item originating from an ItemProvider, the
+    ///         subscribed Item will then automatically subscribe to its source Item. Furthermore, when an Item unsubscribes from
+    ///         an Item originating from an ItemProvider the Item will be unsubscrubed from its source Item upon the unsubscription
+    ///         of the final Item (when the event has no more handlers attached). Items not originating from an ItemProvider must
+    ///         be explicitly subscribed and unsubscribed.
+    ///     </para>
+    ///     <para>
+    ///         The <see cref="Clone"/> and <see cref="CloneAs(string)"/> methods are used to create clones of the Item (CloneAs
+    ///         returning the Item with a different FQN) to allow the manipulation of Item trees.
+    ///     </para>
+    ///     <para>
+    ///         The <see cref="Lock"/> property provides an instance of the <see cref="ReaderWriterLockSlim"/> class which external
+    ///         code can use to lock the object to ensure thread safety.
+    ///     </para>
+    ///     <para>The implementation of the <see cref="ICloneable"/> interface for this class returns a shallow copy.</para>
+    /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
     public class Item : ICloneable
     {
@@ -566,7 +636,7 @@ namespace OpenIIoT.SDK.Common
         /// <remarks>
         ///     If the <see cref="ItemSource"/> of the Item is <see cref="ItemSource.Item"/>, the value is retrieved from the
         ///     <see cref="ReadFromSource"/> method of the <see cref="SourceItem"/>. If the ItemSource is
-        ///     <see cref="ItemSource.ItemProvider"/>, the value is retrieved from the <see cref="Provider"/> object's
+        ///     <see cref="ItemSource.Provider"/>, the value is retrieved from the <see cref="Provider"/> object's
         ///     <see cref="IItemProvider.Read(Item)"/> method. If the ItemSource is <see cref="ItemSource.Unknown"/>, the present
         ///     value of the <see cref="Value"/> property is returned. If the ItemSource is <see cref="ItemSource.Unresolved"/>, a
         ///     null value is returned.
@@ -793,7 +863,7 @@ namespace OpenIIoT.SDK.Common
         ///     Notifies this Item that the number of subscribers to the <see cref="Changed"/> event has changed.
         /// </summary>
         /// <remarks>
-        ///     If the <see cref="SourceItem"/> of this Item is <see cref="ItemSource.ItemProvider"/>, either subscribe to or
+        ///     If the <see cref="SourceItem"/> of this Item is <see cref="ItemSource.Provider"/>, either subscribe to or
         ///     unsubscribe from the source, depending on whether any listeners are attached to the <see cref="Changed"/> event.
         /// </remarks>
         public virtual void SubscriptionsChanged()

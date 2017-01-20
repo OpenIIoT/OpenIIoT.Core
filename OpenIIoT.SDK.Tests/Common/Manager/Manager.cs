@@ -103,7 +103,7 @@ namespace OpenIIoT.SDK.Tests.Common
             ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
             Assert.Equal("Mock Manager", test.ManagerName);
-            Assert.Equal(test.GetType().Name, test.EventProviderName);
+            Assert.Equal(test.GetType().Name, test.ProviderName);
 
             Assert.Equal(true, test.CheckDependency());
             Assert.Throws<DependencyNotResolvedException>(() => test.CheckBadDependency());
@@ -377,7 +377,7 @@ namespace OpenIIoT.SDK.Tests.Common
         private ManagerMock(IApplicationManager manager)
         {
             ManagerName = "Mock Manager";
-            EventProviderName = GetType().Name;
+            ProviderName = GetType().Name;
 
             RegisterDependency<IApplicationManager>(manager);
 

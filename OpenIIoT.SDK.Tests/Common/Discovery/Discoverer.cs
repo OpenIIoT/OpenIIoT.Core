@@ -62,6 +62,10 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
     {
     }
 
+    public interface IDiscoverableParent
+    {
+    }
+
     /// <summary>
     ///     Mocks a class implementing a discoverable interface.
     /// </summary>
@@ -79,7 +83,7 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [Discoverable]
-    public class DiscoverableParent
+    public class DiscoverableParent : IDiscoverableParent
     {
         #region Public Constructors
 
@@ -110,6 +114,12 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
         /// </summary>
         [Discoverable]
         public List<DiscoverableChild> Children { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the parent.
+        /// </summary>
+        [Discoverable]
+        public DiscoverableParent Parent { get; set; }
 
         #endregion Public Properties
     }
@@ -147,6 +157,27 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
             IList<string> list = SDK.Common.Discovery.Discoverer.Discover<string>(astring);
 
             Assert.Empty(list);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Discovery.Discoverer.Discover{T}(object)"/> method with a self-referencing object.
+        /// </summary>
+        [Fact]
+        public void DiscoverSelfReferential()
+        {
+            DiscoverableParent parent = new DiscoverableParent();
+
+            parent.Parent = new DiscoverableParent();
+
+            IList<IDiscoverableParent> list = SDK.Common.Discovery.Discoverer.Discover<IDiscoverableParent>(parent);
+
+            Assert.Equal(2, list.Count);
+
+            parent.Parent = parent;
+
+            list = SDK.Common.Discovery.Discoverer.Discover<IDiscoverableParent>(parent);
+
+            Assert.Equal(1, list.Count);
         }
 
         #endregion Public Methods

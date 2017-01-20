@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for classes capable of providing Item objects for use in the application Model.
+      █  Defines the interface for Item Providers; classes capable of providing Item objects for use in the application Model.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -46,19 +46,11 @@ using System.Threading.Tasks;
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
     /// <summary>
-    ///     Defines the interface for classes capable of providing <see cref="Item"/> objects for use in the application <see cref="Model"/>.
+    ///     Defines the interface for Item Providers; classes capable of providing <see cref="Item"/> objects for use in the
+    ///     application <see cref="Model"/>.
     /// </summary>
     public interface IItemProvider : IProvider
     {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the name of the Item Provider.
-        /// </summary>
-        string ItemProviderName { get; }
-
-        #endregion Public Properties
-
         #region Public Methods
 
         /// <summary>

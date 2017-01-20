@@ -177,7 +177,7 @@ namespace OpenIIoT.Core.Platform.Windows
         private void InitializeItems()
         {
             // instantiate an item root
-            ItemRoot = new Item(ItemProviderName, this);
+            ItemRoot = new Item(ProviderName, this);
 
             // create CPU items
             Item cpuRoot = ItemRoot.AddChild(new Item("CPU", this)).ReturnValue;

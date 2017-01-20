@@ -58,9 +58,9 @@ namespace OpenIIoT.SDK.Common
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         Each implementation of Manager is designed as a Singleton so that only one instance of the manager may be created.
-    ///         This is essential as Plugins run in the same AppDomain as the Core and the nature of the Manager classes is such
-    ///         that, if more than one were to be created, the potential for undefined behavior is extremely high.
+    ///         Each implementation of <see cref="Manager"/> is designed as a Singleton so that only one instance of the manager
+    ///         may be created. This is essential as Plugins run in the same AppDomain as the Core and the nature of the Manager
+    ///         classes is such that, if more than one were to be created, the potential for undefined behavior is extremely high.
     ///     </para>
     ///     <para>
     ///         To create an instance of a Manager a static method Instantiate() is used, in conjunction with a private constructor
@@ -162,9 +162,9 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Gets or sets the Event Provider name.
+        ///     Gets or sets the Provider name.
         /// </summary>
-        public string EventProviderName { get; protected set; }
+        public string ProviderName { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the name of the Manager.

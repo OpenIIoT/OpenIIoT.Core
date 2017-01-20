@@ -399,25 +399,25 @@ namespace OpenIIoT.Core.Event
                 logger.Trace("The Type '" + provider.GetType() + "' is registered.  Checking the instance name...");
 
                 // check to see if the type contains the specified provider instance
-                if (registeredProviders[provider.GetType()].Contains(provider.EventProviderName))
+                if (registeredProviders[provider.GetType()].Contains(provider.ProviderName))
                 {
                     // if it does, exit.
-                    return retVal.AddError("The provider '" + provider.EventProviderName + "' has already been registered.");
+                    return retVal.AddError("The provider '" + provider.ProviderName + "' has already been registered.");
                 }
                 else
                 {
                     // if not, add it.
-                    logger.Trace("The instance '" + provider.EventProviderName + "' isn't registered.  Adding it to the list...");
-                    registeredProviders[provider.GetType()].Add(provider.EventProviderName);
+                    logger.Trace("The instance '" + provider.ProviderName + "' isn't registered.  Adding it to the list...");
+                    registeredProviders[provider.GetType()].Add(provider.ProviderName);
                 }
             }
             else
             {
                 // if the provider dictionary doesn't contain the Type, add the key and initialize the provider list with this
                 // provider name.
-                logger.Trace("The Type '" + provider.GetType() + "' hasn't yet been registered.  Adding it to the Dictionary with the instance '" + provider.EventProviderName + "'...");
+                logger.Trace("The Type '" + provider.GetType() + "' hasn't yet been registered.  Adding it to the Dictionary with the instance '" + provider.ProviderName + "'...");
                 List<string> list = new List<string>();
-                list.Add(provider.EventProviderName);
+                list.Add(provider.ProviderName);
 
                 registeredProviders.Add(provider.GetType(), list);
             }
