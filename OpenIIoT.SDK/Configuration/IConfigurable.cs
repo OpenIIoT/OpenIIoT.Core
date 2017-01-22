@@ -56,8 +56,8 @@ namespace OpenIIoT.SDK.Configuration
     ///         static methods; GetConfigurationDefinition() and GetDefaultConfiguration().
     ///     </para>
     ///     <para>
-    ///         These static methods are implemented to allow the <see cref="ConfigurationManager"/> to configure new instances of
-    ///         a class (for instance, a Plugin) without requiring an instance to be created first. Without this functionality the
+    ///         These static methods are implemented to allow the ConfigurationManager to configure new instances of a class (for
+    ///         instance, a Plugin) without requiring an instance to be created first. Without this functionality the
     ///         ConfigurationManager (or API, or whatever is trying to configure a new instance) would need to create a temporary
     ///         "dummy" instance of the object, fetch the ConfigurationDefinition and default Configuration from that instance,
     ///         then discard it. The static methods provide a cleaner method for doing this.
@@ -66,12 +66,7 @@ namespace OpenIIoT.SDK.Configuration
     /// <typeparam name="T">The Configuration type</typeparam>
     public interface IConfigurable<T>
     {
-        #region Properties
-
-        /// <summary>
-        ///     Gets the ConfigurationDefinition for the class.
-        /// </summary>
-        ConfigurationDefinition ConfigurationDefinition { get; }
+        #region Public Properties
 
         /// <summary>
         ///     Gets the instance of T representing the Configuration for the implementation instance.
@@ -81,6 +76,15 @@ namespace OpenIIoT.SDK.Configuration
         ///     type will work here.
         /// </remarks>
         T Configuration { get; }
+
+        /// <summary>
+        ///     Gets the ConfigurationDefinition for the class.
+        /// </summary>
+        ConfigurationDefinition ConfigurationDefinition { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Fetches the configuration for the current instance of the implementation from the Configuration Manager and
@@ -102,6 +106,6 @@ namespace OpenIIoT.SDK.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         Result SaveConfiguration();
 
-        #endregion Properties
+        #endregion Public Methods
     }
 }

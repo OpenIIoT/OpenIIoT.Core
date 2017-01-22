@@ -85,6 +85,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Common\Discovery\Discoverer.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
     <Compile Include="Common\Item\Item.cs" />
@@ -104,6 +105,7 @@
       <Name>OpenIIoT.SDK</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
