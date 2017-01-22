@@ -39,14 +39,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Configuration;
 using System;
 using System.Collections.Generic;
+using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Configuration
@@ -56,7 +51,7 @@ namespace OpenIIoT.SDK.Configuration
     /// </summary>
     public interface IConfigurationManager : IStateful, IManager
     {
-        #region Properties
+        #region Public Properties
 
         /// <summary>
         ///     Gets the current configuration.
@@ -73,73 +68,9 @@ namespace OpenIIoT.SDK.Configuration
         /// </summary>
         Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get; }
 
-        #endregion Properties
+        #endregion Public Properties
 
-        #region Methods
-
-        #region Configuration Management
-
-        /// <summary>
-        ///     Saves the current configuration to the file specified in app.exe.config.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result SaveConfiguration();
-
-        /// <summary>
-        ///     Validates the current configuration.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result ValidateConfiguration();
-
-        #endregion Configuration Management
-
-        #region Instance Registration
-
-        /// <summary>
-        ///     Evaluates the provided type regarding whether it can be configured and returns the result. To be configurable, the
-        ///     type must implement IConfigurable and must have static methods GetConfigurationDefinition and GetDefaultConfiguration.
-        /// </summary>
-        /// <param name="type">The Type to evaluate.</param>
-        /// <returns>A Result containing the result of the operation and the Type of the configuration.</returns>
-        Result<Type> IsConfigurable(Type type);
-
-        /// <summary>
-        ///     Checks to see if the supplied Type is in the RegisteredTypes dictionary.
-        /// </summary>
-        /// <param name="type">The Type to check.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and a boolean indicating whether the specified Type was found in
-        ///     the dictionary.
-        /// </returns>
-        Result<bool> IsRegistered(Type type);
-
-        /// <summary>
-        ///     Registers each Type within the supplied list which implements the IConfigurable interface.
-        /// </summary>
-        /// <param name="types">The list of Types to register.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result RegisterTypes(List<Type> types);
-
-        /// <summary>
-        ///     Registers the supplied Type with the Configuration Manager.
-        /// </summary>
-        /// <remarks>When called during application startup, throwExceptionOnFailure should be set to true.</remarks>
-        /// <param name="type">The Type to register.</param>
-        /// <param name="throwExceptionOnFailure">If true, throws an exception on failure.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result RegisterType(Type type, bool throwExceptionOnFailure = false);
-
-        #endregion Instance Registration
-
-        #region Instance Configuration Management
-
-        /// <summary>
-        ///     Determines whether the specified instance of the specified type is configured.
-        /// </summary>
-        /// <param name="type">The Type of the instance to check.</param>
-        /// <param name="instanceName">The name of the instance to check.</param>
-        /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
-        Result<bool> IsConfigured(Type type, string instanceName = "");
+        #region Public Methods
 
         /// <summary>
         ///     Adds the specified configuration to the specified instance of the specified type.
@@ -165,13 +96,46 @@ namespace OpenIIoT.SDK.Configuration
         Result<T> GetInstanceConfiguration<T>(Type type, string instanceName = "");
 
         /// <summary>
-        ///     Saves the specified Configuration model to the Configuration for the specified instance and Type.
+        ///     Evaluates the provided type regarding whether it can be configured and returns the result. To be configurable, the
+        ///     type must implement IConfigurable and must have static methods GetConfigurationDefinition and GetDefaultConfiguration.
         /// </summary>
-        /// <param name="type">The Type of the calling class.</param>
-        /// <param name="instanceConfiguration">The Configuration model to save.</param>
-        /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
+        /// <param name="type">The Type to evaluate.</param>
+        /// <returns>A Result containing the result of the operation and the Type of the configuration.</returns>
+        Result<Type> IsConfigurable(Type type);
+
+        /// <summary>
+        ///     Determines whether the specified instance of the specified type is configured.
+        /// </summary>
+        /// <param name="type">The Type of the instance to check.</param>
+        /// <param name="instanceName">The name of the instance to check.</param>
+        /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
+        Result<bool> IsConfigured(Type type, string instanceName = "");
+
+        /// <summary>
+        ///     Checks to see if the supplied Type is in the RegisteredTypes dictionary.
+        /// </summary>
+        /// <param name="type">The Type to check.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a boolean indicating whether the specified Type was found in
+        ///     the dictionary.
+        /// </returns>
+        Result<bool> IsRegistered(Type type);
+
+        /// <summary>
+        ///     Registers the supplied Type with the Configuration Manager.
+        /// </summary>
+        /// <remarks>When called during application startup, throwExceptionOnFailure should be set to true.</remarks>
+        /// <param name="type">The Type to register.</param>
+        /// <param name="throwExceptionOnFailure">If true, throws an exception on failure.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "");
+        Result RegisterType(Type type, bool throwExceptionOnFailure = false);
+
+        /// <summary>
+        ///     Registers each Type within the supplied list which implements the IConfigurable interface.
+        /// </summary>
+        /// <param name="types">The list of Types to register.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result RegisterTypes(List<Type> types);
 
         /// <summary>
         ///     Removes the specified instance of the specified type from the configuration.
@@ -181,8 +145,27 @@ namespace OpenIIoT.SDK.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         Result RemoveInstanceConfiguration(Type type, string instanceName = "");
 
-        #endregion Instance Configuration Management
+        /// <summary>
+        ///     Saves the current configuration to the file specified in app.exe.config.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result SaveConfiguration();
 
-        #endregion Methods
+        /// <summary>
+        ///     Saves the specified Configuration model to the Configuration for the specified instance and Type.
+        /// </summary>
+        /// <param name="type">The Type of the calling class.</param>
+        /// <param name="instanceConfiguration">The Configuration model to save.</param>
+        /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "");
+
+        /// <summary>
+        ///     Validates the current configuration.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result ValidateConfiguration();
+
+        #endregion Public Methods
     }
 }

@@ -50,11 +50,12 @@
 
 using Xunit;
 
-namespace Symbiote.SDK.Tests.Configuration
+namespace OpenIIoT.SDK.Tests.Configuration
 {
     /// <summary>
-    ///     Unit tests for the ConfigurationDefinition class.
+    ///     Unit tests for the <see cref="SDK.Configuration.ConfigurationDefinition"/> class.
     /// </summary>
+    [Collection("ConfigurationDefinition")]
     public class ConfigurationDefinition
     {
         #region Public Methods
