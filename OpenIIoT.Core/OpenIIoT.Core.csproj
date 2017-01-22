@@ -185,7 +185,6 @@
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
-    <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
     <Compile Include="Plugin\IPluginManager.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginArchive.cs" />
@@ -265,6 +264,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Plugin\Connector\" />
+    <Folder Include="Plugin\Endpoint\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
