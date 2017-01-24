@@ -58,23 +58,23 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         protected xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ItemProivider"/> class.
+        ///     Initializes a new instance of the <see cref="ItemProvider"/> class.
         /// </summary>
         public ItemProvider(string providerName)
         {
-            ProviderName = providerName;
+            ItemProviderName = providerName;
 
             Subscriptions = new Dictionary<Item, List<Action<object>>>();
 
-            logger.Debug("Initializing Item Provider '" + ProviderName + "'...");
+            logger.Debug("Initializing Item Provider '" + ItemProviderName + "'...");
         }
 
         #region Public Properties
 
         /// <summary>
-        ///     Gets the Provider name.
+        ///     Gets the Item Provider name.
         /// </summary>
-        public string ProviderName { get; protected set; }
+        public string ItemProviderName { get; protected set; }
 
         /// <summary>
         ///     The <see cref="Dictionary{TKey, TValue}"/> keyed on subscribed Item and containing a <see cref="List{T}"/> of the
@@ -114,7 +114,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         public bool Subscribe(Item item, Action<object> callback)
         {
             logger.EnterMethod(xLogger.Params(item, callback));
-            logger.Debug("Subscribing to Item '" + item.FQN + "' on Provider '" + ProviderName + "'...");
+            logger.Debug("Subscribing to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "'...");
 
             bool retVal = false;
 
@@ -130,7 +130,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 
                 Subscriptions[item].Add(callback);
 
-                logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
+                logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
 
                 retVal = true;
             }
@@ -160,7 +160,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         public bool UnSubscribe(Item item, Action<object> callback)
         {
             logger.EnterMethod(xLogger.Params(item, callback));
-            logger.Debug("UnSubscribing from Item '" + item.FQN + "' on Provider '" + ProviderName + "'...");
+            logger.Debug("UnSubscribing from Item '" + item.FQN + "' on Provider '" + ItemProviderName + "'...");
 
             bool retVal = false;
 
@@ -172,7 +172,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 
                     Subscriptions[item].Remove(callback);
 
-                    logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
+                    logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
 
                     if (Subscriptions[item].Count == 0)
                     {
@@ -185,7 +185,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
                 }
                 else
                 {
-                    logger.Debug("Subscription for Item '" + item.FQN + "' on Provider '" + ProviderName + "' not found.");
+                    logger.Debug("Subscription for Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' not found.");
                 }
             }
             catch (Exception ex)

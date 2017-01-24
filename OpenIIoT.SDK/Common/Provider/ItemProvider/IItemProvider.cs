@@ -39,7 +39,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -51,61 +50,70 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
     /// </summary>
     public interface IItemProvider : IProvider
     {
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the name of the Item Provider.
+        /// </summary>
+        string ItemProviderName { get; }
+
+        #endregion Public Properties
+
         #region Public Methods
 
         /// <summary>
         ///     Returns the root node of the <see cref="Item"/> tree.
         /// </summary>
         /// <returns>The root node of the Item tree.</returns>
-        Common.Item Browse();
+        Item Browse();
 
         /// <summary>
         ///     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        IList<Common.Item> Browse(Common.Item root);
+        IList<Item> Browse(Item root);
 
         /// <summary>
         ///     Asynchronously returns the root node of the <see cref="Item"/> tree.
         /// </summary>
         /// <returns>The root node of the Item tree.</returns>
-        Task<Common.Item> BrowseAsync();
+        Task<Item> BrowseAsync();
 
         /// <summary>
         ///     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
         /// </summary>
         /// <param name="root">The Item for which the children are to be returned.</param>
         /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        Task<IList<Common.Item>> BrowseAsync(Common.Item root);
+        Task<IList<Item>> BrowseAsync(Item root);
 
         /// <summary>
         ///     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
         /// <returns>The found Item, or the default(Item) if not found.</returns>
-        Common.Item Find(string fqn);
+        Item Find(string fqn);
 
         /// <summary>
         ///     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
         /// <returns>The found Item, or the default(Item) if not found.</returns>
-        Task<Common.Item> FindAsync(string fqn);
+        Task<Item> FindAsync(string fqn);
 
         /// <summary>
         ///     Reads and returns the current value of the specified <see cref="Item"/>.
         /// </summary>
         /// <param name="item">The Item to read.</param>
         /// <returns>The value of the specified Item.</returns>
-        object Read(Common.Item item);
+        object Read(Item item);
 
         /// <summary>
         ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
         /// </summary>
         /// <param name="item">The Item to read.</param>
         /// <returns>The value of the specified Item.</returns>
-        Task<object> ReadAsync(Common.Item item);
+        Task<object> ReadAsync(Item item);
 
         #endregion Public Methods
     }
