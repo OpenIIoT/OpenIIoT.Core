@@ -48,27 +48,26 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Moq;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Event;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using OpenIIoT.SDK.Common;
 using Xunit;
 
 namespace OpenIIoT.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Utility"/> class.
+    ///     Unit tests for the <see cref="SDK.Common.Utility"/> class.
     /// </summary>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [Collection("Utility")]
     public class Utility
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Utility.Clone"/> extension method.
+        ///     Tests the <see cref="SDK.Common.Utility.Clone"/> extension method.
         /// </summary>
         [Fact]
         public void Clone()
@@ -88,7 +87,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Utility.ComputeHash(string, string)"/> method.
+        ///     Tests the <see cref="SDK.Common.Utility.ComputeHash(string, string)"/> method.
         /// </summary>
         [Fact]
         public void ComputeHash()
@@ -108,7 +107,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Utility.ShortGuid"/> method.
+        ///     Tests the <see cref="SDK.Common.Utility.ShortGuid"/> method.
         /// </summary>
         [Fact]
         public void ShortGuid()
@@ -122,7 +121,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Utility.SubArray{T}(T[], int, int)"/> extension method.
+        ///     Tests the <see cref="SDK.Common.Utility.SubArray{T}(T[], int, int)"/> extension method.
         /// </summary>
         [Fact]
         public void SubArray()
@@ -147,7 +146,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Utility.TakeLast{T}(IEnumerable{T}, int)"/> extension method.
+        ///     Tests the <see cref="SDK.Common.Utility.TakeLast{T}(IEnumerable{T}, int)"/> extension method.
         /// </summary>
         [Fact]
         public void TakeLast()
@@ -161,7 +160,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Utility.WildcardToRegex(string)"/> method.
+        ///     Tests the <see cref="SDK.Common.Utility.WildcardToRegex(string)"/> method.
         /// </summary>
         [Fact]
         public void WildcardToRegex()
@@ -173,7 +172,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Utility.HasCustomAttribute{T}(object)"/> extension method.
+        ///     Tests the <see cref="SDK.Common.Utility.HasCustomAttribute{T}(object)"/> extension method.
         /// </summary>
         [Fact]
         public void HasAttribute()
@@ -196,6 +195,7 @@ namespace OpenIIoT.SDK.Tests
     ///     It is not feasible to use a mocking framework to mock this class because the underlying code being tested does not
     ///     detected attributes added at runtime.
     /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [AttributeTest]
     public class AttributeTest
     {
@@ -208,6 +208,7 @@ namespace OpenIIoT.SDK.Tests
     ///     It is not feasible to use a mocking framework to mock this class because the underlying code being tested does not
     ///     detected attributes added at runtime.
     /// </remarks>
+    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class AttributeTestAttribute : Attribute
     {
     }
