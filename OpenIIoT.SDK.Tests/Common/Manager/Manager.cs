@@ -52,17 +52,15 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Moq;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
 using Xunit;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Tests.Common
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Manager"/> class.
+    ///     Unit tests for the <see cref="SDK.Common.Manager"/> class.
     /// </summary>
     [Collection("Manager")]
     public class Manager
@@ -103,7 +101,7 @@ namespace OpenIIoT.SDK.Tests.Common
             ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
             Assert.Equal("Mock Manager", test.ManagerName);
-            Assert.Equal(test.GetType().Name, test.ProviderName);
+            Assert.Equal(test.GetType().Name, test.EventProviderName);
 
             Assert.Equal(true, test.CheckDependency());
             Assert.Throws<DependencyNotResolvedException>(() => test.CheckBadDependency());
@@ -219,7 +217,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.Manager.Restart(StopType)"/>.
+        ///     Tests <see cref="SDK.Common.Manager.Restart(StopType)"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -238,7 +236,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.Manager.Restart(StopType)"/> with the manager in the stopped State.
+        ///     Tests <see cref="SDK.Common.Manager.Restart(StopType)"/> with the manager in the stopped State.
         /// </summary>
         [Fact]
         public void RestartNotRunning()
@@ -251,7 +249,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Manager.Shutdown(StopType)"/> method.
+        ///     Tests the <see cref="SDK.Common.Manager.Shutdown(StopType)"/> method.
         /// </summary>
         [Fact]
         public void Shutdown()
@@ -274,7 +272,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.Manager.Start"/>.
+        ///     Tests <see cref="SDK.Common.Manager.Start"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -292,7 +290,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Manager.Startup"/> method.
+        ///     Tests the <see cref="SDK.Common.Manager.Startup"/> method.
         /// </summary>
         [Fact]
         public void Startup()
@@ -309,7 +307,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.Manager.Start"/> with a dependency in the stopped State.
+        ///     Tests <see cref="SDK.Common.Manager.Start"/> with a dependency in the stopped State.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -326,7 +324,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.Manager.Stop(StopType)"/>.
+        ///     Tests <see cref="SDK.Common.Manager.Stop(StopType)"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -377,7 +375,7 @@ namespace OpenIIoT.SDK.Tests.Common
         private ManagerMock(IApplicationManager manager)
         {
             ManagerName = "Mock Manager";
-            ProviderName = GetType().Name;
+            EventProviderName = GetType().Name;
 
             RegisterDependency<IApplicationManager>(manager);
 
@@ -422,7 +420,7 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Mocks a Manager which throws an exception in the <see cref="SDK.Manager.Shutdown(StopType)"/> method.
+    ///     Mocks a Manager which throws an exception in the <see cref="SDK.Common.Manager.Shutdown(StopType)"/> method.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Shutdown() method.
@@ -487,7 +485,7 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Mocks a Manager which throws an exception in the <see cref="SDK.Manager.Startup"/> method.
+    ///     Mocks a Manager which throws an exception in the <see cref="SDK.Common.Manager.Startup"/> method.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Startup() method.
@@ -551,7 +549,7 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Mocks a Manager which returns a failing Result from the <see cref="SDK.Manager.Shutdown(StopType)"/> method.
+    ///     Mocks a Manager which returns a failing Result from the <see cref="SDK.Common.Manager.Shutdown(StopType)"/> method.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Shutdown() method.
@@ -606,7 +604,7 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Mocks a Manager which returns a failing Result from the <see cref="SDK.Manager.Startup"/> method.
+    ///     Mocks a Manager which returns a failing Result from the <see cref="SDK.Common.Manager.Startup"/> method.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Startup() method.

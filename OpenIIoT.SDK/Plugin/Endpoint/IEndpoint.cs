@@ -1,7 +1,7 @@
 ﻿using OpenIIoT.SDK.Plugin;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Plugin.Endpoint
+namespace OpenIIoT.SDK.Plugin.Endpoint
 {
     public interface IEndpoint : IPluginInstance
     {

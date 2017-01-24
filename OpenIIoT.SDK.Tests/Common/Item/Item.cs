@@ -51,10 +51,10 @@
 using System;
 using System.Collections.Generic;
 using Moq;
-using Utility.OperationResult;
 using OpenIIoT.SDK.Common;
-using Xunit;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
+using Utility.OperationResult;
+using Xunit;
 
 namespace OpenIIoT.SDK.Tests
 {

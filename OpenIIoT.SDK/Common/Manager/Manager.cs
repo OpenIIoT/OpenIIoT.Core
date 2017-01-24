@@ -162,9 +162,9 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Gets or sets the Provider name.
+        ///     Gets or sets the Event Provider name.
         /// </summary>
-        public string ProviderName { get; protected set; }
+        public string EventProviderName { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the name of the Manager.

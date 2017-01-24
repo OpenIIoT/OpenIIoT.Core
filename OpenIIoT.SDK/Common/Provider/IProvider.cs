@@ -46,9 +46,5 @@ namespace OpenIIoT.SDK.Common.Provider
     /// </summary>
     public interface IProvider
     {
-        /// <summary>
-        ///     Gets the name of the Provider.
-        /// </summary>
-        string ProviderName { get; }
     }
 }

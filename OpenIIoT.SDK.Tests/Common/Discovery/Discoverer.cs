@@ -62,6 +62,9 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
     {
     }
 
+    /// <summary>
+    ///     Defines the interface used for the DiscoverableParent class.
+    /// </summary>
     public interface IDiscoverableParent
     {
     }

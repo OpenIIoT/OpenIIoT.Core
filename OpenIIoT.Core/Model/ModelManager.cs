@@ -469,7 +469,7 @@ namespace OpenIIoT.Core.Model
 
             if (!ItemProviders.Contains(provider))
             {
-                retVal.AddWarning("The specified ItemProvider '" + provider.ProviderName + "' has not been registered and therefore cannot be deregistered.");
+                retVal.AddWarning("The specified ItemProvider '" + provider.ItemProviderName + "' has not been registered and therefore cannot be deregistered.");
             }
             else
             {
@@ -519,7 +519,7 @@ namespace OpenIIoT.Core.Model
 
             if (ItemProviders.Contains(provider))
             {
-                retVal.AddError("The specified ItemProvider '" + provider.ProviderName + "' has already been registered.");
+                retVal.AddError("The specified ItemProvider '" + provider.ItemProviderName + "' has already been registered.");
             }
             else
             {

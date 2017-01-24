@@ -51,13 +51,13 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
-using Xunit;
 using OpenIIoT.SDK.Common;
+using Xunit;
 
 namespace OpenIIoT.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.ContractResolver"/> class.
+    ///     Unit tests for the <see cref="SDK.Common.ContractResolver"/> class.
     /// </summary>
     [Collection("ContractResolver")]
     public class ContractResolver
@@ -104,8 +104,8 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
-        ///     <see cref="SDK.ContractResolverType.OptIn"/> resolver type.
+        ///     Tests the <see cref="SDK.Common.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
+        ///     <see cref="SDK.Common.ContractResolverType.OptIn"/> resolver type.
         /// </summary>
         [Fact]
         public void OptIn()
@@ -118,8 +118,8 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
-        ///     <see cref="SDK.ContractResolverType.OptOut"/> resolver type.
+        ///     Tests the <see cref="SDK.Common.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
+        ///     <see cref="SDK.Common.ContractResolverType.OptOut"/> resolver type.
         /// </summary>
         [Fact]
         public void OptOut()
@@ -132,7 +132,7 @@ namespace OpenIIoT.SDK.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method.
+        ///     Tests the <see cref="SDK.Common.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method.
         /// </summary>
         [Fact]
         public void Resolve()

@@ -102,6 +102,7 @@
     <Compile Include="Common\Provider\ItemProvider\IExtensible.cs" />
     <Compile Include="Common\Provider\ItemProvider\ISubscribable.cs" />
     <Compile Include="Common\Provider\ItemProvider\IWriteable.cs" />
+    <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
     <Compile Include="Plugin\IPluginInstance.cs" />
     <Compile Include="Plugin\IPluginAssembly.cs" />

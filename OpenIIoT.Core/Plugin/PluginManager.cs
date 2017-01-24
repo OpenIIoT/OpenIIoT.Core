@@ -47,8 +47,6 @@ using System.Threading.Tasks;
 using NLog;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK;
-using OpenIIoT.Core.Platform;
-using OpenIIoT.Core.Plugin.Endpoint;
 using NLog.xLogger;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Plugin;
@@ -58,6 +56,8 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 
 using OpenIIoT.SDK.Common;
+
+using OpenIIoT.SDK.Plugin.Endpoint;
 
 namespace OpenIIoT.Core.Plugin
 {

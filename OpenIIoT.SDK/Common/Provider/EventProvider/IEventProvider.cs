@@ -46,5 +46,13 @@ namespace OpenIIoT.SDK.Common.Provider.EventProvider
     /// </summary>
     public interface IEventProvider : IProvider
     {
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the Event Provider name.
+        /// </summary>
+        string EventProviderName { get; }
+
+        #endregion Public Properties
     }
 }

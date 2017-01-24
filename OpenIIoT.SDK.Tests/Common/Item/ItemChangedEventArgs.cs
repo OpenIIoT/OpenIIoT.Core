@@ -63,7 +63,7 @@ using Xunit;
 namespace OpenIIoT.SDK.Tests
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.ItemChangedEventArgs"/> class.
+    ///     Unit tests for the <see cref="SDK.Common.ItemChangedEventArgs"/> class.
     /// </summary>
     [Collection("ItemChangedEventArgs")]
     public class ItemChangedEventArgs
