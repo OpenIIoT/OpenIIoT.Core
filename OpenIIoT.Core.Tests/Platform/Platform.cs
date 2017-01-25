@@ -209,7 +209,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void CreateDirectoryFailure()
         {
-            Result result = platformMock.CreateDirectory(Path.Combine(testDirectory, "?"));
+            Result result = platformMock.CreateDirectory(Path.Combine(testDirectory, "?/?"));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -248,7 +248,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void CreateZipFailing()
         {
-            Result<string> result = platformMock.CreateZip("?", testDirectory);
+            Result<string> result = platformMock.CreateZip("?/?", testDirectory);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -738,7 +738,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void WriteFileFailure()
         {
-            string file = Path.Combine(testDirectory, "?");
+            string file = Path.Combine(testDirectory, "?/?");
 
             Result result = platformMock.WriteFile(file, string.Empty);
 
@@ -804,7 +804,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void WriteFileLinesFailure()
         {
-            string file = Path.Combine(testDirectory, "?");
+            string file = Path.Combine(testDirectory, "?/?");
 
             Result result = platformMock.WriteFileLines(file, new string[] { });
 
