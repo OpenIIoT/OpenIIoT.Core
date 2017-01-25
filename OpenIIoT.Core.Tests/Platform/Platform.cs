@@ -209,7 +209,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void CreateDirectoryFailure()
         {
-            Result result = platformMock.CreateDirectory(Path.Combine(testDirectory, "?/?"));
+            Result result = platformMock.CreateDirectory(testDirectory + Path.DirectorySeparatorChar + "<>|&\0");
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
