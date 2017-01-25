@@ -2,8 +2,7 @@ language: csharp
 solution: OpenIIoT.Core.sln
 install:
   - nuget restore OpenIIoT.Core.sln
-  - nuget install xunit.runners -Version 1.9.2 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release OpenIIoT.Core.sln
-  - mono ./testrunner/xunit.runner.console.2.1.0/tools/xunit.console.exe ./OpenIIoT.Core.Tests/bin/Release/OpenIIoT.Core.Tests.dll
-  - mono ./testrunner/xunit.runner.console.2.1.0/tools/xunit.console.exe ./OpenIIoT.SDK.Tests/bin/Release/OpenIIoT.SDK.Tests.dll
+  - mono ./packages/xunit.runner.console.2.1.0/tools/xunit.console.exe ./OpenIIoT.Core.Tests/bin/Release/OpenIIoT.Core.Tests.dll
+  - mono ./packages/xunit.runner.console.2.1.0/tools/xunit.console.exe ./OpenIIoT.SDK.Tests/bin/Release/OpenIIoT.SDK.Tests.dll
