@@ -5,5 +5,5 @@ install:
   - nuget install xunit.runners -Version 1.9.2 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release OpenIIoT.Core.sln
-  - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./OpenIIoT.Core.Tests/bin/Release/OpenIIoT.Core.Tests.dll
-  - mono ./testrunner/xunit.runners.1.9.2/tools/xunit.console.clr4.exe ./OpenIIoT.SDK.Tests/bin/Release/OpenIIoT.SDK.Tests.dll
+  - mono ./testrunner/xunit.runner.console.2.1.0/tools/xunit.console.exe ./OpenIIoT.Core.Tests/bin/Release/OpenIIoT.Core.Tests.dll
+  - mono ./testrunner/xunit.runner.console.2.1.0/tools/xunit.console.exe ./OpenIIoT.SDK.Tests/bin/Release/OpenIIoT.SDK.Tests.dll
