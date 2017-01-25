@@ -395,7 +395,7 @@ namespace OpenIIoT.Core.Platform
             try
             {
                 logger.Trace("Opening zip file '" + zipFile + "'...");
-                using (ZipArchive archive = ZipFile.Open(zipFile, ZipArchiveMode.Update))
+                using (ZipArchive archive = ZipFile.Open(zipFile, ZipArchiveMode.Read))
                 {
                     ZipArchiveEntry entry = archive.GetEntry(file);
 
