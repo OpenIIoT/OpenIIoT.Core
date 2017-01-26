@@ -50,7 +50,6 @@
 
 using Moq;
 using OpenIIoT.SDK.Common.Provider;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using Utility.OperationResult;
 using Xunit;
 
