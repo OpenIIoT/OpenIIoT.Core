@@ -51,6 +51,7 @@
 using Moq;
 using OpenIIoT.SDK.Common.Provider;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
+using Utility.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.SDK.Tests.Common.Provider
@@ -71,9 +72,9 @@ namespace OpenIIoT.SDK.Tests.Common.Provider
         {
             Mock<IApplicationManager> applicationManager = new Mock<IApplicationManager>();
 
-            ProviderRegistry<IItemProvider> test = new ProviderRegistry<IItemProvider>(applicationManager.Object);
+            ProviderRegistry<IProvider> test = new ProviderRegistry<IProvider>(applicationManager.Object);
 
-            Assert.IsType<ProviderRegistry<IItemProvider>>(test);
+            Assert.IsType<ProviderRegistry<IProvider>>(test);
         }
 
         /// <summary>
@@ -83,7 +84,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider
         public void Discover()
         {
             Mock<IApplicationManager> applicationManager = new Mock<IApplicationManager>();
-            ProviderRegistry<IItemProvider> test = new ProviderRegistry<IItemProvider>(applicationManager.Object);
+            ProviderRegistry<IProvider> test = new ProviderRegistry<IProvider>(applicationManager.Object);
 
             Assert.Empty(test.Providers);
 
@@ -99,14 +100,34 @@ namespace OpenIIoT.SDK.Tests.Common.Provider
         public void Register()
         {
             Mock<IApplicationManager> applicationManager = new Mock<IApplicationManager>();
-            ProviderRegistry<IItemProvider> test = new ProviderRegistry<IItemProvider>(applicationManager.Object);
-            Mock<IItemProvider> itemProvider = new Mock<IItemProvider>();
+            ProviderRegistry<IProvider> test = new ProviderRegistry<IProvider>(applicationManager.Object);
+            Mock<IProvider> provider = new Mock<IProvider>();
 
             Assert.Empty(test.Providers);
 
-            test.Register(itemProvider.Object);
+            Result result = test.Register(provider.Object);
 
+            Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.NotEmpty(test.Providers);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="ProviderRegistry{T}.Register(T)"/> method with an object that has already been registered.
+        /// </summary>
+        [Fact]
+        public void RegisterAlreadyRegistered()
+        {
+            Mock<IApplicationManager> applicationManager = new Mock<IApplicationManager>();
+            ProviderRegistry<IProvider> test = new ProviderRegistry<IProvider>(applicationManager.Object);
+            Mock<IProvider> provider = new Mock<IProvider>();
+
+            Result result = test.Register(provider.Object);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+
+            result = test.Register(provider.Object);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>
@@ -116,15 +137,31 @@ namespace OpenIIoT.SDK.Tests.Common.Provider
         public void UnRegister()
         {
             Mock<IApplicationManager> applicationManager = new Mock<IApplicationManager>();
-            ProviderRegistry<IItemProvider> test = new ProviderRegistry<IItemProvider>(applicationManager.Object);
-            Mock<IItemProvider> itemProvider = new Mock<IItemProvider>();
-            test.Register(itemProvider.Object);
+            ProviderRegistry<IProvider> test = new ProviderRegistry<IProvider>(applicationManager.Object);
+            Mock<IProvider> provider = new Mock<IProvider>();
+            test.Register(provider.Object);
 
             Assert.NotEmpty(test.Providers);
 
-            test.UnRegister(itemProvider.Object);
+            Result result = test.UnRegister(provider.Object);
 
+            Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Empty(test.Providers);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="ProviderRegistry{T}.UnRegister(T)"/> method with an object that has not been registered.
+        /// </summary>
+        [Fact]
+        public void UnRegisterNotRegistered()
+        {
+            Mock<IApplicationManager> applicationManager = new Mock<IApplicationManager>();
+            ProviderRegistry<IProvider> test = new ProviderRegistry<IProvider>(applicationManager.Object);
+            Mock<IProvider> provider = new Mock<IProvider>();
+
+            Result result = test.UnRegister(provider.Object);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         #endregion Public Methods

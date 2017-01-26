@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using NLog.xLogger;
-using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
+using NLog.xLogger;
 
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
@@ -55,11 +55,13 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         /// <summary>
         ///     The Logger for this class.
         /// </summary>
+        [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Allows GetCurrentClassLogger() in extension classes.")]
         protected xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ItemProvider"/> class.
         /// </summary>
+        /// <param name="providerName">The name of the provider.</param>
         public ItemProvider(string providerName)
         {
             ItemProviderName = providerName;
@@ -72,13 +74,13 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         #region Public Properties
 
         /// <summary>
-        ///     Gets the Item Provider name.
+        ///     Gets or sets the Item Provider name.
         /// </summary>
         public string ItemProviderName { get; protected set; }
 
         /// <summary>
-        ///     The <see cref="Dictionary{TKey, TValue}"/> keyed on subscribed Item and containing a <see cref="List{T}"/> of the
-        ///     <see cref="Action{T}"/> delegates used to update the subscribers.
+        ///     Gets or sets the <see cref="Dictionary{TKey, TValue}"/> keyed on subscribed Item and containing a
+        ///     <see cref="List{T}"/> of the <see cref="Action{T}"/> delegates used to update the subscribers.
         /// </summary>
         public Dictionary<Item, List<Action<object>>> Subscriptions { get; protected set; }
 
