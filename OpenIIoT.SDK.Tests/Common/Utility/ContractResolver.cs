@@ -54,7 +54,7 @@ using Newtonsoft.Json;
 using OpenIIoT.SDK.Common;
 using Xunit;
 
-namespace OpenIIoT.SDK.Tests
+namespace OpenIIoT.SDK.Tests.Common
 {
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Common.ContractResolver"/> class.
