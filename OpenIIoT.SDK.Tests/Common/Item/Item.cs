@@ -56,7 +56,7 @@ using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using Utility.OperationResult;
 using Xunit;
 
-namespace OpenIIoT.SDK.Tests
+namespace OpenIIoT.SDK.Tests.Common
 {
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Common.Item"/> class.

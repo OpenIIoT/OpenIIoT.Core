@@ -85,6 +85,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Common\Provider\ItemProvider\ItemProvider.cs" />
     <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Common\Discovery\Discoverer.cs" />

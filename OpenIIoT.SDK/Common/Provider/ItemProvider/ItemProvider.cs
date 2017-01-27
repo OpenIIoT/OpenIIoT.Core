@@ -65,10 +65,9 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         public ItemProvider(string providerName)
         {
             ItemProviderName = providerName;
+            logger.Debug("Initializing Item Provider '" + ItemProviderName + "'...");
 
             Subscriptions = new Dictionary<Item, List<Action<object>>>();
-
-            logger.Debug("Initializing Item Provider '" + ItemProviderName + "'...");
         }
 
         #region Public Properties

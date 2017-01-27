@@ -100,13 +100,58 @@ namespace OpenIIoT.SDK.Tests.Common
         {
             ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
-            Assert.Equal("Mock Manager", test.ManagerName);
-            Assert.Equal(test.GetType().Name, test.EventProviderName);
-
             Assert.Equal(true, test.CheckDependency());
             Assert.Throws<DependencyNotResolvedException>(() => test.CheckBadDependency());
 
             test.Dispose();
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Manager.EventProviderName"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void EventProviderName()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(test.GetType().Name, test.EventProviderName);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Manager.ManagerName"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void ManagerName()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal("Mock Manager", test.ManagerName);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Manager.State"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void StateProperty()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(State.Initialized, test.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Manager.AutomaticRestartPending"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void AutomaticRestartPending()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(false, test.AutomaticRestartPending);
         }
 
         /// <summary>
