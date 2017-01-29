@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using NLog;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using NLog;
+using OpenIIoT.SDK.Common;
 using Utility.BigFont;
 
 namespace OpenIIoT.Core
@@ -64,6 +64,20 @@ namespace OpenIIoT.Core
             foreach (var rule in LogManager.Configuration.LoggingRules)
             {
                 rule.DisableLoggingForLevel(level);
+            }
+
+            LogManager.ReconfigExistingLoggers();
+        }
+
+        /// <summary>
+        ///     Enables the specified logging level within the LogManager.
+        /// </summary>
+        /// <param name="level">The level to enable.</param>
+        public static void EnableLoggingLevel(LogLevel level)
+        {
+            foreach (var rule in LogManager.Configuration.LoggingRules)
+            {
+                rule.EnableLoggingForLevel(level);
             }
 
             LogManager.ReconfigExistingLoggers();
@@ -103,6 +117,7 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <param name="action">The action to perform (uninstall or install).</param>
         /// <returns>True if the installation/uninstallation succeeded, false otherwise.</returns>
+        [ExcludeFromCodeCoverage]
         public static bool ModifyService(string action)
         {
             try
@@ -207,6 +222,7 @@ namespace OpenIIoT.Core
         ///     Sets the logging level of the LogManager to the specified level, disabling all lower logging levels.
         /// </summary>
         /// <param name="level">The desired logging level.</param>
+        /// <exception cref="Exception">Thrown when the specified string is not a valid logging level.</exception>
         public static void SetLoggingLevel(string level)
         {
             try
@@ -231,6 +247,9 @@ namespace OpenIIoT.Core
                         goto case "trace";
                     case "trace":
                         break;
+
+                    default:
+                        throw new Exception();
                 }
             }
             catch (Exception ex)
@@ -244,13 +263,21 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <param name="key">The setting to update.</param>
         /// <param name="value">The value to which the setting should be set.</param>
+        /// <exception cref="ArgumentException">Thrown when the specified key can not be found in the configuration.</exception>
         public static void UpdateSetting(string key, string value)
         {
-            System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
-            configuration.AppSettings.Settings[key].Value = value;
-            configuration.Save();
+            try
+            {
+                System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
+                configuration.AppSettings.Settings[key].Value = value;
+                configuration.Save();
 
-            System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+                System.Configuration.ConfigurationManager.RefreshSection("appSettings");
+            }
+            catch (NullReferenceException)
+            {
+                throw new ArgumentException("The specified key could not be found in the configuration.");
+            }
         }
 
         #endregion Public Methods

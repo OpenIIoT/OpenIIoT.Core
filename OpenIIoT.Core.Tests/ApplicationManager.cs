@@ -55,9 +55,6 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
 using Xunit;
-using System.Reflection;
-using OpenIIoT.SDK.Common;
-
 using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Tests
