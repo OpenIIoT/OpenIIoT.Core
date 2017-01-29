@@ -126,29 +126,19 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
                 Subscriptions.Add(item, new List<Action<object>>());
             }
 
-            List<Action<object>> callbackList = Subscriptions[item];
-            bool containsCallback = callbackList.Contains(callback);
-
-            if (!containsCallback)
+            if (Subscriptions[item].Where(c => ReferenceEquals(c, callback)).Count() <= 0)
             {
-                //int count = Subscriptions[item].Count;
-                try
-                {
-                    Subscriptions[item].Add(callback);
-                }
-                catch (NullReferenceException ex)
-                {
-                    Subscriptions[item] = new List<Action<object>>();
-                    Subscriptions[item].Add(callback);
-                }
+                int count = Subscriptions[item].Count;
 
-                //logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
+                Subscriptions[item].Add(callback);
+
+                logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
 
                 retVal = true;
             }
             else
             {
-                logger.Debug("The specified item '" + item.FQN + "' and callback '" + callback.Target.ToString() + "' has already been subscribed.");
+                logger.Debug("The specified item '" + item.FQN + "' and callback '" + callback?.Target?.ToString() + "' has already been subscribed.");
             }
 
             logger.ExitMethod(retVal);
