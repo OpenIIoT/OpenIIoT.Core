@@ -190,13 +190,11 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
 
             bool result = itemProvider.Object.Subscribe(item, action);
 
-            Assert.True(result); Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+            Assert.True(result);
 
             result = itemProvider.Object.Subscribe(item, action);
 
             Assert.False(result);
-            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
-            Assert.Equal(1, itemProvider.Object.Subscriptions[item].Count);
         }
 
         /// <summary>
