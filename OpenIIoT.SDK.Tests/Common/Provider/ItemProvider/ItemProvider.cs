@@ -130,6 +130,9 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
             Assert.Empty(items);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/> method.
+        /// </summary>
         [Fact]
         public void Subscribe()
         {
@@ -146,6 +149,10 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
             Assert.Equal(1, itemProvider.Object.Subscriptions[item].Count);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/>
+        ///     with a second subscription to a previously subscribed Item.
+        /// </summary>
         [Fact]
         public void SubscribeSecondSubscriber()
         {
@@ -168,6 +175,10 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
             Assert.Equal(2, itemProvider.Object.Subscriptions[item].Count);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/>
+        ///     method with a duplicate subscription.
+        /// </summary>
         [Fact]
         public void SubscribeDuplicateSubscription()
         {
@@ -189,6 +200,9 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
             Assert.Equal(1, itemProvider.Object.Subscriptions[item].Count);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/> method.
+        /// </summary>
         [Fact]
         public void UnSubscribe()
         {
@@ -205,6 +219,10 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
             Assert.Empty(itemProvider.Object.Subscriptions);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/>
+        ///     method with an Item to which there are no subscriptions.
+        /// </summary>
         [Fact]
         public void UnSubscribeNotSubscribed()
         {
