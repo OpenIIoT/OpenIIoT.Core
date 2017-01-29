@@ -183,7 +183,6 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         public void SubscribeDuplicateSubscription()
         {
             SDK.Common.Item item = new SDK.Common.Item();
-
             Action<object> action = delegate (object obj) { };
 
             Assert.Empty(itemProvider.Object.Subscriptions);
