@@ -136,7 +136,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         [Fact]
         public void Subscribe()
         {
-            SDK.Common.Item item = new SDK.Common.Item();
+            SDK.Common.Item item = new SDK.Common.Item("test");
 
             Action<object> action = delegate (object obj) { };
 
@@ -156,7 +156,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         [Fact]
         public void SubscribeSecondSubscriber()
         {
-            SDK.Common.Item item = new SDK.Common.Item();
+            SDK.Common.Item item = new SDK.Common.Item("test");
 
             Action<object> action1 = delegate (object obj) { };
             Action<object> action2 = delegate (object obj) { };
@@ -182,7 +182,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         [Fact]
         public void SubscribeDuplicateSubscription()
         {
-            SDK.Common.Item item = new SDK.Common.Item();
+            SDK.Common.Item item = new SDK.Common.Item("test");
             Action<object> action = delegate (object obj) { };
 
             Assert.Empty(itemProvider.Object.Subscriptions);
@@ -202,7 +202,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         [Fact]
         public void UnSubscribe()
         {
-            SDK.Common.Item item = new SDK.Common.Item();
+            SDK.Common.Item item = new SDK.Common.Item("test");
 
             Action<object> action = delegate (object obj) { };
 

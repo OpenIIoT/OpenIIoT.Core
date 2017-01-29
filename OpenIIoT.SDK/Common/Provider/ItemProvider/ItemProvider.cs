@@ -131,12 +131,11 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 
             if (!containsCallback)
             {
-                //int count = Subscriptions[item].Count;
+                int count = Subscriptions[item].Count;
 
-                //Subscriptions[item].Add(callback);
+                Subscriptions[item].Add(callback);
 
-                // logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " +
-                // count + " to " + Subscriptions[item].Count + ".");
+                logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
 
                 retVal = true;
             }
