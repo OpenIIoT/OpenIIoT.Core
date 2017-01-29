@@ -138,7 +138,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
             }
             else
             {
-                logger.Debug("The specified item '" + item.FQN + "' and callback '" + callback.Target.ToString() + "' has already been subscribed.");
+                logger.Debug("The specified item '" + item.FQN + "' and callback '" + callback?.Target?.ToString() + "' has already been subscribed.");
             }
 
             logger.ExitMethod(retVal);
