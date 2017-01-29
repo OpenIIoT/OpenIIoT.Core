@@ -126,7 +126,8 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
                 Subscriptions.Add(item, new List<Action<object>>());
             }
 
-            if (Subscriptions[item].Where(c => ReferenceEquals(c, callback)).Count() <= 0)
+            //if (Subscriptions[item].Where(c => ReferenceEquals(c, callback)).Count() <= 0)
+            if (true)
             {
                 int count = Subscriptions[item].Count;
 
