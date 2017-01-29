@@ -44,6 +44,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 using NLog.xLogger;
+using System.Linq;
 
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
@@ -119,14 +120,14 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 
             bool retVal = false;
 
-            try
+            if (!Subscriptions.ContainsKey(item))
             {
-                if (!Subscriptions.ContainsKey(item))
-                {
-                    logger.Debug("The Item '" + item.FQN + "' has been added to the Subscriptions list.");
-                    Subscriptions.Add(item, new List<Action<object>>());
-                }
+                logger.Debug("The Item '" + item.FQN + "' has been added to the Subscriptions list.");
+                Subscriptions.Add(item, new List<Action<object>>());
+            }
 
+            if (Subscriptions[item].Where(c => ReferenceEquals(c, callback)).Count() <= 0)
+            {
                 int count = Subscriptions[item].Count;
 
                 Subscriptions[item].Add(callback);
@@ -135,9 +136,9 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 
                 retVal = true;
             }
-            catch (Exception ex)
+            else
             {
-                logger.Exception(ex);
+                logger.Debug("The specified item '" + item.FQN + "' and callback '" + callback.Target.ToString() + "' has already been subscribed.");
             }
 
             logger.ExitMethod(retVal);
@@ -165,33 +166,26 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 
             bool retVal = false;
 
-            try
+            if (Subscriptions.ContainsKey(item))
             {
-                if (Subscriptions.ContainsKey(item))
+                int count = Subscriptions[item].Count;
+
+                Subscriptions[item].Remove(callback);
+
+                logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
+
+                if (Subscriptions[item].Count == 0)
                 {
-                    int count = Subscriptions[item].Count;
+                    Subscriptions.Remove(item);
 
-                    Subscriptions[item].Remove(callback);
-
-                    logger.Debug("Subscriptions to Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' changed from " + count + " to " + Subscriptions[item].Count + ".");
-
-                    if (Subscriptions[item].Count == 0)
-                    {
-                        Subscriptions.Remove(item);
-
-                        logger.Debug("Item '" + item.FQN + "' has no further subscribers and has been removed from the Subscriptions list.");
-                    }
-
-                    retVal = true;
+                    logger.Debug("Item '" + item.FQN + "' has no further subscribers and has been removed from the Subscriptions list.");
                 }
-                else
-                {
-                    logger.Debug("Subscription for Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' not found.");
-                }
+
+                retVal = true;
             }
-            catch (Exception ex)
+            else
             {
-                logger.Exception(ex);
+                logger.Debug("Subscription for Item '" + item.FQN + "' on Provider '" + ItemProviderName + "' not found.");
             }
 
             logger.ExitMethod(retVal);
