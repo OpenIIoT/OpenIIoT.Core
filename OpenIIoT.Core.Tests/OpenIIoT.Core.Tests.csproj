@@ -86,6 +86,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ApplicationManager.cs" />
+    <Compile Include="Common\Utility.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />
     <Compile Include="Platform\Platform.cs" />
@@ -113,10 +114,7 @@
       <Name>OpenIIoT.Core</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\Manager\" />
-    <Folder Include="Common\Utility\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
