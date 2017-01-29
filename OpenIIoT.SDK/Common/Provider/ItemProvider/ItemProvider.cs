@@ -126,7 +126,10 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
                 Subscriptions.Add(item, new List<Action<object>>());
             }
 
-            if (!Subscriptions[item].Contains(callback))
+            List<Action<object>> callbackList = Subscriptions[item];
+            bool containsCallback = callbackList.Contains(callback);
+
+            if (!containsCallback)
             {
                 int count = Subscriptions[item].Count;
 
