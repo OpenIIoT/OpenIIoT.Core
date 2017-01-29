@@ -130,6 +130,93 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
             Assert.Empty(items);
         }
 
+        [Fact]
+        public void Subscribe()
+        {
+            SDK.Common.Item item = new SDK.Common.Item();
+
+            Action<object> action = delegate (object obj) { };
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+
+            bool result = itemProvider.Object.Subscribe(item, action);
+
+            Assert.True(result);
+            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+            Assert.Equal(1, itemProvider.Object.Subscriptions[item].Count);
+        }
+
+        [Fact]
+        public void SubscribeSecondSubscriber()
+        {
+            SDK.Common.Item item = new SDK.Common.Item();
+
+            Action<object> action1 = delegate (object obj) { };
+            Action<object> action2 = delegate (object obj) { };
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+
+            bool result = itemProvider.Object.Subscribe(item, action1);
+
+            Assert.True(result);
+            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+
+            result = itemProvider.Object.Subscribe(item, action2);
+
+            Assert.True(result);
+            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+            Assert.Equal(2, itemProvider.Object.Subscriptions[item].Count);
+        }
+
+        [Fact]
+        public void SubscribeDuplicateSubscription()
+        {
+            SDK.Common.Item item = new SDK.Common.Item();
+
+            Action<object> action = delegate (object obj) { };
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+
+            bool result = itemProvider.Object.Subscribe(item, action);
+
+            Assert.True(result);
+            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+
+            result = itemProvider.Object.Subscribe(item, action);
+
+            Assert.False(result);
+            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+            Assert.Equal(1, itemProvider.Object.Subscriptions[item].Count);
+        }
+
+        [Fact]
+        public void UnSubscribe()
+        {
+            SDK.Common.Item item = new SDK.Common.Item();
+
+            Action<object> action = delegate (object obj) { };
+
+            itemProvider.Object.Subscribe(item, action);
+
+            Assert.NotEmpty(itemProvider.Object.Subscriptions);
+
+            itemProvider.Object.UnSubscribe(item, action);
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+        }
+
+        [Fact]
+        public void UnSubscribeNotSubscribed()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("test");
+
+            Action<object> action = delegate (object obj) { };
+
+            itemProvider.Object.UnSubscribe(item, action);
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+        }
+
         /// <summary>
         ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Browse(SDK.Common.Item)"/> method.
         /// </summary>
