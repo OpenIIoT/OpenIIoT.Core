@@ -264,6 +264,7 @@ namespace OpenIIoT.Core
         /// <param name="key">The setting to update.</param>
         /// <param name="value">The value to which the setting should be set.</param>
         /// <exception cref="ArgumentException">Thrown when the specified key can not be found in the configuration.</exception>
+        [ExcludeFromCodeCoverage]
         public static void UpdateSetting(string key, string value)
         {
             try
