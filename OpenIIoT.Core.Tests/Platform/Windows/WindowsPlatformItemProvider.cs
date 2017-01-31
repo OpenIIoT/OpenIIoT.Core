@@ -10,10 +10,28 @@
       █   ███ ▄█▄ ███ ██  ██   ██ ██   ▄██ ██    ██ ██ ▄█▄ ██    ▄  ██   ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██
       █    ▀███▀███▀  █    █   █  ██████▀   ██████   ███▀███   ▄████▀   ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █
       █
+      █    ▄█                                     ▄███████▄
+      █   ███                                    ███    ███
+      █   ███▌     ██       ▄█████    ▄▄██▄▄▄    ███    ███    █████  ██████   █    █   █  ██████▄     ▄█████    █████
+      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄   ███    ███   ██  ██ ██    ██ ██    ██ ██  ██   ▀██   ██   █    ██  ██
+      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ▀█████████▀   ▄██▄▄█▀ ██    ██ ██    ██ ██▌ ██    ██  ▄██▄▄     ▄██▄▄█▀
+      █   ███      ██    ▀▀██▀▀     ██  ██  ██   ███        ▀███████ ██    ██ ██    ██ ██  ██    ██ ▀▀██▀▀    ▀███████
+      █   ███      ██      ██   █   ██  ██  ██   ███          ██  ██ ██    ██  █▄  ▄█  ██  ██   ▄██   ██   █    ██  ██
+      █   █▀      ▄██▀     ███████   █  ██  █   ▄████▀        ██  ██  ██████    ▀██▀   █   ██████▀    ███████   ██  ██
+      █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Extends the Platform class to allow file system I/O abstraction and metrics on Windows platforms.
+      █  Unit tests for the WindowsPlatformItemProvider class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,30 +57,96 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Platform;
+using Xunit;
 
-namespace OpenIIoT.Core.Platform.Windows
+namespace OpenIIoT.Core.Tests.Platform.Windows
 {
     /// <summary>
-    ///     Extends the Platform class to allow file system I/O abstraction and metrics on Windows platforms.
+    ///     Unit tests for the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider"/> class.
     /// </summary>
-    [Discoverable]
-    public class WindowsPlatform : Platform
+    public class WindowsPlatformItemProvider
     {
+        #region Private Fields
+
+        /// <summary>
+        ///     The instance of <see cref="Core.Platform.Windows.WindowsPlatformItemProvider"/> under test.
+        /// </summary>
+        private Core.Platform.Windows.WindowsPlatformItemProvider provider;
+
+        #endregion Private Fields
+
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="WindowsPlatform"/> class.
+        ///     Initializes a new instance of the <see cref="WindowsPlatformItemProvider"/> class.
         /// </summary>
-        public WindowsPlatform()
+        public WindowsPlatformItemProvider()
         {
-            PlatformType = PlatformType.Windows;
-            Version = Environment.OSVersion.VersionString;
-            ItemProvider = new WindowsPlatformItemProvider("Platform");
+            provider = new Core.Platform.Windows.WindowsPlatformItemProvider("Windows");
         }
 
         #endregion Public Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            Assert.IsType<Core.Platform.Windows.WindowsPlatformItemProvider>(provider);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider.Dispose()"/> method.
+        /// </summary>
+        [Fact]
+        public void Dispose()
+        {
+            provider.Dispose();
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider.Read(SDK.Common.Item)"/> method.
+        /// </summary>
+        [Fact]
+        public void Read()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("Windows.CPU.% Processor Time", provider);
+
+            object result = provider.Read(item);
+
+            Assert.NotNull(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider.ReadAsync(SDK.Common.Item)"/> method.
+        /// </summary>
+        [Fact]
+        public async void ReadAsync()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("Windows.CPU.% Processor Time", provider);
+
+            object result = await provider.ReadAsync(item);
+
+            Assert.NotNull(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider.Read(SDK.Common.Item)"/> method with a known
+        ///     bad Item.
+        /// </summary>
+        [Fact]
+        public void ReadBad()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("bad value", provider);
+
+            object result = provider.Read(item);
+
+            Assert.Null(result);
+        }
+
+        #endregion Public Methods
     }
 }

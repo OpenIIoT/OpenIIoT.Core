@@ -49,11 +49,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using NLog;
 using NLog.xLogger;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
+using OpenIIoT.SDK.Platform;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Platform
 {
@@ -77,7 +77,7 @@ namespace OpenIIoT.Core.Platform
     ///         while Version is informational.
     ///     </para>
     ///     <para>
-    ///         The Platform instance also contains the <see cref="Metrics"/> property which contains a reference to the Item
+    ///         The Platform instance also contains the <see cref="ItemProvider"/> property which contains a reference to the Item
     ///         Provider class which accompanies the Platform. This <see cref="IItemProvider"/> provides <see cref="Item"/> objects
     ///         used to report statistics and metrics about the underlying Platform.
     ///     </para>

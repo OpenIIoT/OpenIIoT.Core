@@ -54,13 +54,12 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Moq;
-using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Core.Tests.Platform
 {
     /// <summary>
     ///     Unit tests for the <see cref="Core.Platform.Platform"/> class.
@@ -177,7 +176,7 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests all constructor overloads.
+        ///     Tests all constructor.
         /// </summary>
         [Fact]
         public void Constructor()

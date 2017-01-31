@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
-using OpenIIoT.SDK;
-using Utility.OperationResult;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
@@ -60,9 +60,14 @@ namespace OpenIIoT.Core.Platform.UNIX
     /// <summary>
     ///     Provides Platform statistics and metrics for the UNIX Platform on which the application is run.
     /// </summary>
-    public class UNIXPlatformItemProvider : ItemProvider
+    public class UNIXPlatformItemProvider : ItemProvider, IDisposable
     {
         #region Private Fields
+
+        /// <summary>
+        ///     The dictionary of <see cref="Func{T}"/> delegates for each Item.
+        /// </summary>
+        private Dictionary<string, Func<object>> actions;
 
         /// <summary>
         ///     PerformanceCounter for the CPU % Idle Time counter.
@@ -91,8 +96,11 @@ namespace OpenIIoT.Core.Platform.UNIX
         /// <summary>
         ///     Initializes a new instance of the <see cref="UNIXPlatformItemProvider"/> class.
         /// </summary>
+        /// <param name="itemProviderName">The name of the Item Provider.</param>
         public UNIXPlatformItemProvider(string itemProviderName) : base(itemProviderName)
         {
+            actions = new Dictionary<string, Func<object>>();
+
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");
 
@@ -104,54 +112,29 @@ namespace OpenIIoT.Core.Platform.UNIX
         #region Public Methods
 
         /// <summary>
+        ///     Disposes this <see cref="UNIXPlatformItemProvider"/> .
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
         ///     Reads and returns the current value of the specified <see cref="Item"/>.
         /// </summary>
         /// <param name="item">The Item to read.</param>
         /// <returns>The value of the specified Item.</returns>
         public override object Read(Item item)
         {
-            Result<object> retVal = new Result<object>();
+            object retVal = default(object);
 
-            string[] itemName = item.FQN.Split('.');
-
-            if (itemName.Length < 3)
+            if (actions.ContainsKey(item.FQN))
             {
-                return null;
+                return actions[item.FQN]();
             }
 
-            switch (itemName[itemName.Length - 2] + "." + itemName[itemName.Length - 1])
-            {
-                case "CPU.% Processor Time":
-                    lastCPUUsed = cpuUsed.NextValue();
-                    lastCPUIdle = cpuIdle.NextValue();
-                    retVal.ReturnValue = lastCPUUsed;
-                    return retVal;
-
-                case "CPU.% Idle Time":
-                    lastCPUUsed = cpuUsed.NextValue();
-                    lastCPUIdle = cpuIdle.NextValue();
-                    retVal.ReturnValue = lastCPUIdle;
-                    return retVal;
-
-                case "Memory.Total":
-                    retVal.ReturnValue = 0;
-                    return retVal;
-
-                case "Memory.Available":
-                    retVal.ReturnValue = new PerformanceCounter("Memory", "Available Bytes").NextValue();
-                    return retVal;
-
-                case "Memory.Cached":
-                    retVal.ReturnValue = new PerformanceCounter("Memory", "Cache Bytes").NextValue();
-                    return retVal;
-
-                case "Memory.% Used":
-                    retVal.ReturnValue = new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
-                    return retVal;
-
-                default:
-                    return retVal.AddError("Unable to find Item '" + item + "'.");
-            }
+            return retVal;
         }
 
         /// <summary>
@@ -166,6 +149,23 @@ namespace OpenIIoT.Core.Platform.UNIX
 
         #endregion Public Methods
 
+        #region Protected Methods
+
+        /// <summary>
+        ///     Disposes the <see cref="cpuIdle"/> and <see cref="cpuUsed"/> fields.
+        /// </summary>
+        /// <param name="disposing">Indicates whether the object is in the process of disposing.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                cpuIdle.Dispose();
+                cpuUsed.Dispose();
+            }
+        }
+
+        #endregion Protected Methods
+
         #region Private Methods
 
         /// <summary>
@@ -178,8 +178,30 @@ namespace OpenIIoT.Core.Platform.UNIX
 
             // create CPU items
             Item cpuRoot = ItemRoot.AddChild(new Item("CPU", this)).ReturnValue;
-            cpuRoot.AddChild(new Item("CPU.% Processor Time", this));
-            cpuRoot.AddChild(new Item("CPU.% Idle Time", this));
+
+            // % CPU used
+            Item cpuProcessorTime = new Item("CPU.% Processor Time", this);
+            cpuRoot.AddChild(cpuProcessorTime);
+
+            actions.Add(
+                cpuProcessorTime.FQN,
+                () =>
+            {
+                lastCPUUsed = cpuUsed.NextValue();
+                return lastCPUUsed;
+            });
+
+            // % CPU Idle
+            Item cpuIdleTime = new Item("CPU.% Idle Time", this);
+            cpuRoot.AddChild(cpuIdleTime);
+
+            actions.Add(
+                cpuIdleTime.FQN,
+                () =>
+            {
+                lastCPUIdle = cpuIdle.NextValue();
+                return lastCPUIdle;
+            });
 
             // prepare variables to use for processor time. you need two successive values to report accurately so rather than
             // sleeping the thread we will just keep track from call to call. the first values will always be zero and that's ok.
@@ -188,10 +210,50 @@ namespace OpenIIoT.Core.Platform.UNIX
 
             // create memory items
             Item memRoot = ItemRoot.AddChild(new Item("Memory", this)).ReturnValue;
-            memRoot.AddChild(new Item("Memory.Total", this));
-            memRoot.AddChild(new Item("Memory.Available", this));
-            memRoot.AddChild(new Item("Memory.Cached", this));
-            memRoot.AddChild(new Item("Memory.% Used", this));
+
+            // total memory
+            Item memoryTotal = new Item("Memory.Total", this);
+            memRoot.AddChild(memoryTotal);
+
+            actions.Add(
+                memoryTotal.FQN,
+                () =>
+            {
+                return 0;
+            });
+
+            // available memory
+            Item memoryAvailable = new Item("Memory.Available", this);
+            memRoot.AddChild(memoryAvailable);
+
+            actions.Add(
+                memoryAvailable.FQN,
+                () =>
+            {
+                return new PerformanceCounter("Memory", "Available Bytes").NextValue();
+            });
+
+            // cached memory
+            Item memoryCached = new Item("Memory.Cached", this);
+            memRoot.AddChild(memoryCached);
+
+            actions.Add(
+                memoryCached.FQN,
+                () =>
+            {
+                return new PerformanceCounter("Memory", "Cache Bytes").NextValue();
+            });
+
+            // used memory
+            Item memoryUsed = new Item("Memory.% Used", this);
+            memRoot.AddChild(memoryUsed);
+
+            actions.Add(
+                memoryUsed.FQN,
+                () =>
+            {
+                return new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
+            });
 
             // create drive items
             Item driveRoot = ItemRoot.AddChild(new Item("Drives", this)).ReturnValue;
