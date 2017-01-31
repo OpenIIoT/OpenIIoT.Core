@@ -67,7 +67,7 @@ namespace OpenIIoT.Core.Platform.Windows
         /// <summary>
         ///     The dictionary of <see cref="Func{T}"/> delegates for each Item.
         /// </summary>
-        private Dictionary<Item, Func<object>> actions;
+        private Dictionary<string, Func<object>> actions;
 
         /// <summary>
         ///     PerformanceCounter for the CPU % Idle Time counter.
@@ -99,7 +99,7 @@ namespace OpenIIoT.Core.Platform.Windows
         /// <param name="itemProviderName">The name of the Item Provider.</param>
         public WindowsPlatformItemProvider(string itemProviderName) : base(itemProviderName)
         {
-            actions = new Dictionary<Item, Func<object>>();
+            actions = new Dictionary<string, Func<object>>();
 
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");
@@ -129,9 +129,9 @@ namespace OpenIIoT.Core.Platform.Windows
         {
             object retVal = default(object);
 
-            if (actions.ContainsKey(item))
+            if (actions.ContainsKey(item.FQN))
             {
-                actions[item]();
+                return actions[item.FQN]();
             }
 
             return retVal;
@@ -184,10 +184,10 @@ namespace OpenIIoT.Core.Platform.Windows
             cpuRoot.AddChild(cpuProcessorTime);
 
             actions.Add(
-                cpuProcessorTime,
+                cpuProcessorTime.FQN,
                 () =>
                 {
-                    lastCPUIdle = cpuIdle.NextValue();
+                    lastCPUUsed = cpuUsed.NextValue();
                     return lastCPUUsed;
                 });
 
@@ -196,7 +196,7 @@ namespace OpenIIoT.Core.Platform.Windows
             cpuRoot.AddChild(cpuIdleTime);
 
             actions.Add(
-                cpuIdleTime,
+                cpuIdleTime.FQN,
                 () =>
                 {
                     lastCPUIdle = cpuIdle.NextValue();
@@ -216,7 +216,7 @@ namespace OpenIIoT.Core.Platform.Windows
             memRoot.AddChild(memoryTotal);
 
             actions.Add(
-                memoryTotal,
+                memoryTotal.FQN,
                 () =>
                 {
                     return 0;
@@ -227,7 +227,7 @@ namespace OpenIIoT.Core.Platform.Windows
             memRoot.AddChild(memoryAvailable);
 
             actions.Add(
-                memoryAvailable,
+                memoryAvailable.FQN,
                 () =>
                 {
                     return new PerformanceCounter("Memory", "Available Bytes").NextValue();
@@ -238,7 +238,7 @@ namespace OpenIIoT.Core.Platform.Windows
             memRoot.AddChild(memoryCached);
 
             actions.Add(
-                memoryCached,
+                memoryCached.FQN,
                 () =>
                 {
                     return new PerformanceCounter("Memory", "Cache Bytes").NextValue();
@@ -249,7 +249,7 @@ namespace OpenIIoT.Core.Platform.Windows
             memRoot.AddChild(memoryUsed);
 
             actions.Add(
-                memoryUsed,
+                memoryUsed.FQN,
                 () =>
                 {
                     return new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();

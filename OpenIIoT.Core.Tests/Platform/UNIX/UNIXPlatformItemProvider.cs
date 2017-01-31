@@ -10,10 +10,28 @@
       █   ███    ███ ███   ███ ███   ▄███     ███▄    ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██
       █   ████████▀   ▀█   █▀  █▀   ████       ███▄  ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █
       █
+      █    ▄█                                     ▄███████▄
+      █   ███                                    ███    ███
+      █   ███▌     ██       ▄█████    ▄▄██▄▄▄    ███    ███    █████  ██████   █    █   █  ██████▄     ▄█████    █████
+      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄   ███    ███   ██  ██ ██    ██ ██    ██ ██  ██   ▀██   ██   █    ██  ██
+      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ▀█████████▀   ▄██▄▄█▀ ██    ██ ██    ██ ██▌ ██    ██  ▄██▄▄     ▄██▄▄█▀
+      █   ███      ██    ▀▀██▀▀     ██  ██  ██   ███        ▀███████ ██    ██ ██    ██ ██  ██    ██ ▀▀██▀▀    ▀███████
+      █   ███      ██      ██   █   ██  ██  ██   ███          ██  ██ ██    ██  █▄  ▄█  ██  ██   ▄██   ██   █    ██  ██
+      █   █▀      ▄██▀     ███████   █  ██  █   ▄████▀        ██  ██  ██████    ▀██▀   █   ██████▀    ███████   ██  ██
+      █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Extends the Platform class to allow file system I/O abstraction and metrics on UNIX platforms.
+      █  Unit tests for the UNIXPlatformItemProvider class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,30 +57,95 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Platform;
+using Xunit;
 
-namespace OpenIIoT.Core.Platform.UNIX
+namespace OpenIIoT.Core.Tests.Platform.UNIX
 {
     /// <summary>
-    ///     Extends the Platform class to allow file system I/O abstraction on UNIX platforms.
+    ///     Unit tests for the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider"/> class.
     /// </summary>
-    [Discoverable]
-    public class UNIXPlatform : Platform
+    public class UNIXPlatformItemProvider
     {
+        #region Private Fields
+
+        /// <summary>
+        ///     The instance of <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider"/> under test.
+        /// </summary>
+        private Core.Platform.UNIX.UNIXPlatformItemProvider provider;
+
+        #endregion Private Fields
+
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="UNIXPlatform"/> class.
+        ///     Initializes a new instance of the <see cref="UNIXPlatformItemProvider"/> class.
         /// </summary>
-        public UNIXPlatform()
+        public UNIXPlatformItemProvider()
         {
-            PlatformType = PlatformType.UNIX;
-            Version = Environment.OSVersion.VersionString;
-            ItemProvider = new UNIXPlatformItemProvider("Platform");
+            provider = new Core.Platform.UNIX.UNIXPlatformItemProvider("UNIX");
         }
 
         #endregion Public Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            Assert.IsType<Core.Platform.UNIX.UNIXPlatformItemProvider>(provider);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.Dispose()"/> method.
+        /// </summary>
+        [Fact]
+        public void Dispose()
+        {
+            provider.Dispose();
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.Read(SDK.Common.Item)"/> method.
+        /// </summary>
+        [Fact]
+        public void Read()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("UNIX.CPU.% Processor Time", provider);
+
+            object result = provider.Read(item);
+
+            Assert.NotNull(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.ReadAsync(SDK.Common.Item)"/> method.
+        /// </summary>
+        [Fact]
+        public async void ReadAsync()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("UNIX.CPU.% Processor Time", provider);
+
+            object result = await provider.ReadAsync(item);
+
+            Assert.NotNull(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.Read(SDK.Common.Item)"/> method with a known bad Item.
+        /// </summary>
+        [Fact]
+        public void ReadBad()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("bad value", provider);
+
+            object result = provider.Read(item);
+
+            Assert.Null(result);
+        }
+
+        #endregion Public Methods
     }
 }

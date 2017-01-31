@@ -48,12 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
 using Xunit;
 
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Core.Tests.Platform
 {
     /// <summary>
     ///     Unit tests for the <see cref="Core.Platform.UNIX.UNIXPlatform"/> class.
