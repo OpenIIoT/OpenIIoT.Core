@@ -57,6 +57,26 @@ namespace OpenIIoT.Core.Platform
     /// <summary>
     ///     The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         The primary purposes are to assist the application in determining the current platform (e.g. Windows or UNIX) and
+    ///         to allow for platform dependent code such as file IO to be substituted at run time. This allows for a single
+    ///         project that can be compiled and run on both Windows and UNIX systems with no programatic changes.
+    ///     </para>
+    ///     <para>
+    ///         Each Platform type gets a folder (e.g. UNIX, Windows) and within that folder a derivation of Platform named as
+    ///         "PlatformPlatform" where the first "Platform" is the name. Each Platform type is required to provide an
+    ///         implementation of IConnector for the platform which returns statistical information about the hardware and OS
+    ///         hosting the application. Of primary concern is CPU, Memory and Hard Disk usage.
+    ///     </para>
+    ///     <para>
+    ///         Finally, the Platform Manager and PlatformDirectories class work together to ensure that the necessary directories
+    ///         are present in the configured locations. If any directories are missing they are recreated at startup. The
+    ///         app.exe.config file contains the definition for these directories. If the configuration file is missing any or all
+    ///         of the programatically defined directories an exception will be thrown by the constructor of PlatformDirectories,
+    ///         causing the initialization of the application to fail.
+    ///     </para>
+    /// </remarks>
     [Discoverable]
     public class PlatformManager : Manager, IPlatformManager
     {
@@ -166,8 +186,6 @@ namespace OpenIIoT.Core.Platform
 
         protected override void Setup()
         {
-            IApplicationManager manager = Dependency<IApplicationManager>();
-            IModelManager modelManager = manager.GetManager<IModelManager>();
         }
 
         protected override Result Shutdown(StopType stopType = StopType.Stop)
@@ -256,13 +274,13 @@ namespace OpenIIoT.Core.Platform
             return Utility.GetSetting(
                 "Directories",
                 @"{
-                      &quot;Data&quot;:&quot;Data&quot;,
-                      &quot;Archives&quot;:&quot;Data\|Archives&quot;,
-                      &quot;Plugins&quot;:&quot;Plugins&quot;,
-                      &quot;Temp&quot;:&quot;Data\|Temp&quot;,
-		              &quot;Persistence&quot;:&quot;Data\|Persistence&quot;,
-                      &quot;Web&quot;:&quot;Web&quot;,
-                      &quot;Logs&quot;:&quot;Logs&quot;
+                      'Data':'Data',
+                      'Archives':'Data\|Archives',
+                      'Plugins':'Plugins',
+                      'Temp':'Data\|Temp',
+		              'Persistence':'Data\|Persistence',
+                      'Web':'Web',
+                      'Logs':'Logs'
                  }"
             ).Replace('|', System.IO.Path.DirectorySeparatorChar);
         }
@@ -306,31 +324,4 @@ namespace OpenIIoT.Core.Platform
 
         #endregion Private Methods
     }
-
-    /// <summary>
-    ///     The Platform namespace abstracts the platform on which the app runs.
-    /// </summary>
-    /// <remarks>
-    ///     <para>
-    ///         The primary purposes are to assist the application in determining the current platform (e.g. Windows or UNIX) and
-    ///         to allow for platform dependent code such as file IO to be substituted at run time. This allows for a single
-    ///         project that can be compiled and run on both Windows and UNIX systems with no programatic changes.
-    ///     </para>
-    ///     <para>
-    ///         Each Platform type gets a folder (e.g. UNIX, Windows) and within that folder a derivation of Platform named as
-    ///         "PlatformPlatform" where the first "Platform" is the name. Each Platform type is required to provide an
-    ///         implementation of IConnector for the platform which returns statistical information about the hardware and OS
-    ///         hosting the application. Of primary concern is CPU, Memory and Hard Disk usage.
-    ///     </para>
-    ///     <para>
-    ///         Finally, the Platform Manager and PlatformDirectories class work together to ensure that the necessary directories
-    ///         are present in the configured locations. If any directories are missing they are recreated at startup. The
-    ///         app.exe.config file contains the definition for these directories. If the configuration file is missing any or all
-    ///         of the programatically defined directories an exception will be thrown by the constructor of PlatformDirectories,
-    ///         causing the initialization of the application to fail.
-    ///     </para>
-    /// </remarks>
-    [System.Runtime.CompilerServices.CompilerGenerated]
-    internal class NamespaceDoc
-    { }
 }

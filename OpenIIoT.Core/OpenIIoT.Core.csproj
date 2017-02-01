@@ -219,7 +219,6 @@
     <Compile Include="Service\Web\API\Controllers\ConfigurationController.cs" />
     <Compile Include="Service\Web\API\Controllers\LogController.cs" />
     <Compile Include="Service\Web\API\Controllers\ReadController.cs" />
-    <Compile Include="Service\Web\API\Controllers\APIController.cs" />
     <Compile Include="Service\Web\API\Controllers\ValuesController.cs" />
     <Compile Include="Service\Web\API\IApiController.cs" />
     <Compile Include="Service\Web\SignalR\HubHelper.cs" />

@@ -53,7 +53,6 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Common.Provider.APIProvider;
 using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Platform
@@ -90,7 +89,7 @@ namespace OpenIIoT.Core.Platform
     ///     <para>This class is expected to continually expand as the needs of the application increase.</para>
     /// </remarks>
     [Discoverable]
-    public abstract class Platform : IPlatform, IAPIProvider
+    public abstract class Platform : IPlatform
     {
         #region Private Fields
 
@@ -108,14 +107,11 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         public Platform()
         {
-            APIProviderName = "Platform";
         }
 
         #endregion Public Constructors
 
         #region Public Properties
-
-        public string APIProviderName { get; protected set; }
 
         /// <summary>
         ///     Gets or sets the accompanying Item Provider for the Platform.
@@ -136,12 +132,6 @@ namespace OpenIIoT.Core.Platform
         #endregion Public Properties
 
         #region Public Methods
-
-        [API(Verb = APIVerb.GET)]
-        public string GetPlatformType()
-        {
-            return PlatformType.ToString();
-        }
 
         /// <summary>
         ///     Deletes all files and subdirectories within the specified directory.
