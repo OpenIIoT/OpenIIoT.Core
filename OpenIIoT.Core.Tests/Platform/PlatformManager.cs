@@ -48,11 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Xunit;
 using Moq;
-using System;
-using Utility.OperationResult;
+using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using Utility.OperationResult;
+using Xunit;
 
 namespace OpenIIoT.Core.Tests.Platform
 {
@@ -61,32 +61,50 @@ namespace OpenIIoT.Core.Tests.Platform
     /// </summary>
     public class PlatformManager
     {
+        #region Private Fields
+
+        /// <summary>
+        ///     The <see cref="IApplicationManager"/> mockup to be used as the dependency for the <see cref="Core.Platform.PlatformManager"/>.
+        /// </summary>
+        private Mock<IApplicationManager> applicationManager;
+
         /// <summary>
         ///     The <see cref="Core.Platform.PlatformManager"/> instance under test.
         /// </summary>
         private Core.Platform.PlatformManager manager;
 
-        /// <summary> The <see cref="Core.ApplicationManager"/> mockup to be used as the dependency for the <see
-        /// cref="Core.Platform.PlatformManager">. </summary>
-        private Core.ApplicationManager applicationManager;
+        #endregion Private Fields
+
+        #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Core.Platform.PlatformManager"/> class.
+        ///     Initializes a new instance of the <see cref="PlatformManager"/> class.
         /// </summary>
         public PlatformManager()
         {
-            applicationManager = Core.ApplicationManager.Instantiate(new Type[] { typeof(Core.Platform.PlatformManager) });
-            applicationManager.Start();
+            applicationManager = new Mock<IApplicationManager>();
+            applicationManager.Setup(a => a.State).Returns(State.Running);
+            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            manager = Core.Platform.PlatformManager.Instantiate(applicationManager);
+            manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
         }
 
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
         [Fact]
         public void Constructor()
         {
             Assert.IsType<Core.Platform.PlatformManager>(manager);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method via <see cref="SDK.Common.Manager.Start()"/> .
+        /// </summary>
         [Fact]
         public void Start()
         {
@@ -95,5 +113,21 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(State.Running, manager.State);
         }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Shutdown(StopType)"/> method via
+        ///     <see cref="SDK.Common.Manager.Stop(StopType)"/> .
+        /// </summary>
+        [Fact]
+        public void Stop()
+        {
+            manager.Start();
+            Result result = manager.Stop();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(State.Stopped, manager.State);
+        }
+
+        #endregion Public Methods
     }
 }
