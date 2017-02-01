@@ -87,6 +87,7 @@
   <ItemGroup>
     <Compile Include="ApplicationManager.cs" />
     <Compile Include="Common\Utility.cs" />
+    <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />
     <Compile Include="Platform\Windows\WindowsPlatformItemProvider.cs" />
