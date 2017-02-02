@@ -45,16 +45,12 @@ using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json;
 using NLog;
-using OpenIIoT.Core.Platform;
 using NLog.xLogger;
-using Utility.OperationResult;
-using System.Collections.Immutable;
-using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Common;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Configuration
 {
