@@ -47,12 +47,10 @@ using System.Reflection;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core
 {
@@ -87,7 +85,7 @@ namespace OpenIIoT.Core
     ///         Managers to initialize those dependencies. Examples include the <see cref="Configuration.ConfigurationManager"/>,
     ///         which iterates over the list of Manager instances and registers Managers which implement
     ///         <see cref="SDK.Configuration.IConfigurable{T}"/>, and the <see cref="Event.EventManager"/>, which does the same for
-    ///         implementations of <see cref="SDK.IEventProvider"/>.
+    ///         implementations of <see cref="SDK.Common.Provider.EventProvider.IEventProvider"/>.
     ///     </para>
     ///     <para>
     ///         The method <see cref="GetManager{T}"/> and property <see cref="Managers"/> are provided to allow Managers to
