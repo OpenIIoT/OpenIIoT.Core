@@ -3,6 +3,7 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/fe97n9g7kc66k6wp?svg=true)](https://ci.appveyor.com/project/OpenIIoTAdmin/openiiot-core)
 [![Build Status](https://travis-ci.org/OpenIIoT/OpenIIoT.Core.svg?branch=master)](https://travis-ci.org/OpenIIoT/OpenIIoT.Core)
 [![codecov](https://codecov.io/gh/OpenIIoT/OpenIIoT.Core/branch/master/graph/badge.svg)](https://codecov.io/gh/OpenIIoT/OpenIIoT.Core)
+[![coverity](https://scan.coverity.com/projects/11638/badge.svg)](https://scan.coverity.com/projects/openiiot-core)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](https://github.com/OpenIIoT/OpenIIoT.Core/blob/master/LICENSE)
 
 ## About
