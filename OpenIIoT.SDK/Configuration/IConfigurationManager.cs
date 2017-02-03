@@ -64,9 +64,9 @@ namespace OpenIIoT.SDK.Configuration
         string ConfigurationFileName { get; }
 
         /// <summary>
-        ///     Gets a dictionary containing all registered configurable types and their ConfigurationDefinitions.
+        ///     Gets the registry of configurable Types.
         /// </summary>
-        Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get; }
+        ConfigurationRegistry Registry { get; }
 
         #endregion Public Properties
 
@@ -96,46 +96,12 @@ namespace OpenIIoT.SDK.Configuration
         Result<T> GetInstanceConfiguration<T>(Type type, string instanceName = "");
 
         /// <summary>
-        ///     Evaluates the provided type regarding whether it can be configured and returns the result. To be configurable, the
-        ///     type must implement IConfigurable and must have static methods GetConfigurationDefinition and GetDefaultConfiguration.
-        /// </summary>
-        /// <param name="type">The Type to evaluate.</param>
-        /// <returns>A Result containing the result of the operation and the Type of the configuration.</returns>
-        Result<Type> IsConfigurable(Type type);
-
-        /// <summary>
         ///     Determines whether the specified instance of the specified type is configured.
         /// </summary>
         /// <param name="type">The Type of the instance to check.</param>
         /// <param name="instanceName">The name of the instance to check.</param>
         /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
         Result<bool> IsConfigured(Type type, string instanceName = "");
-
-        /// <summary>
-        ///     Checks to see if the supplied Type is in the RegisteredTypes dictionary.
-        /// </summary>
-        /// <param name="type">The Type to check.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and a boolean indicating whether the specified Type was found in
-        ///     the dictionary.
-        /// </returns>
-        Result<bool> IsRegistered(Type type);
-
-        /// <summary>
-        ///     Registers the supplied Type with the Configuration Manager.
-        /// </summary>
-        /// <remarks>When called during application startup, throwExceptionOnFailure should be set to true.</remarks>
-        /// <param name="type">The Type to register.</param>
-        /// <param name="throwExceptionOnFailure">If true, throws an exception on failure.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result RegisterType(Type type, bool throwExceptionOnFailure = false);
-
-        /// <summary>
-        ///     Registers each Type within the supplied list which implements the IConfigurable interface.
-        /// </summary>
-        /// <param name="types">The list of Types to register.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result RegisterTypes(List<Type> types);
 
         /// <summary>
         ///     Removes the specified instance of the specified type from the configuration.
