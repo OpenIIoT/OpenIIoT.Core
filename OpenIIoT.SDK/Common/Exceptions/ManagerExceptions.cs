@@ -51,12 +51,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+
 namespace OpenIIoT.SDK.Common.Exceptions
 {
     /// <summary>
     ///     Represents errors that occur when referenced dependencies can not be resolved.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class DependencyNotResolvedException : ManagerException
@@ -94,9 +95,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
     }
 
     /// <summary>
-    ///     Represents errors that occur at the program level.
+    ///     Represents errors that occur within the Manager class.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerException : Exception
@@ -136,7 +136,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur when the setup of a Manager returns an abnormal result.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerSetupException : ManagerException
@@ -176,7 +175,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur when a Manager fails to start.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerStartException : ManagerException
@@ -216,7 +214,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur when a Manager fails to stop.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerStopException : ManagerException

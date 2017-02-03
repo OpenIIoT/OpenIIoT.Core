@@ -64,6 +64,7 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
     /// <summary>
     ///     Unit tests for the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider"/> class.
     /// </summary>
+    [Collection("WindowsPlatformItemProvider")]
     public class WindowsPlatformItemProvider
     {
         #region Private Fields

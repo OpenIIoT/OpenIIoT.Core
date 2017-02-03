@@ -64,6 +64,7 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
     /// <summary>
     ///     Unit tests for the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider"/> class.
     /// </summary>
+    [Collection("UNIXPlatformItemProvider")]
     public class UNIXPlatformItemProvider
     {
         #region Private Fields

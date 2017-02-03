@@ -50,7 +50,6 @@
 
 using System;
 using System.Collections.Generic;
-using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Common.Exceptions;
 using Xunit;
 
