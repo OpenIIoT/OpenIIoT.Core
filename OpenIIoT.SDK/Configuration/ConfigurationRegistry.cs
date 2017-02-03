@@ -179,7 +179,7 @@ namespace OpenIIoT.SDK.Configuration
                     }
                     else
                     {
-                        retVal = RegisterType(type, typedef, RegisteredTypes);
+                        retVal = RegisterType(type, typedef);
                     }
                 }
                 catch (Exception ex)
