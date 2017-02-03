@@ -59,6 +59,7 @@ namespace OpenIIoT.Core.Tests.Platform
     /// <summary>
     ///     Unit tests for the <see cref="Core.Platform.PlatformManager"/> class.
     /// </summary>
+    [Collection("PlatformManager")]
     public class PlatformManager
     {
         #region Private Fields
