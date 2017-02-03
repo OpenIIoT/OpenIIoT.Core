@@ -95,7 +95,7 @@ namespace OpenIIoT.SDK.Common.Exceptions
     }
 
     /// <summary>
-    ///     Represents errors that occur at the program level.
+    ///     Represents errors that occur within the Manager class.
     /// </summary>
     [ExcludeFromCodeCoverage]
     [Serializable]

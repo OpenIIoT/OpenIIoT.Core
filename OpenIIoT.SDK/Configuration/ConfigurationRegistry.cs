@@ -46,6 +46,7 @@ using NLog;
 using NLog.xLogger;
 using Utility.OperationResult;
 using System.Reflection;
+using OpenIIoT.SDK.Common.Exceptions;
 
 namespace OpenIIoT.SDK.Configuration
 {
@@ -153,6 +154,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="type">The Type to register.</param>
         /// <param name="throwExceptionOnFailure">If true, throws an exception on failure.</param>
         /// <returns>A Result containing the result of the operation.</returns>
+        /// <exception cref="ConfigurationRegistrationException">Thrown when the specified Type is fails to be registered.</exception>
         public Result RegisterType(Type type, bool throwExceptionOnFailure = false)
         {
             logger.EnterMethod(xLogger.Params(type, throwExceptionOnFailure));
@@ -188,7 +190,7 @@ namespace OpenIIoT.SDK.Configuration
 
             if (throwExceptionOnFailure && retVal.ResultCode == ResultCode.Failure)
             {
-                throw new Exception("Failed to register the type '" + type.Name + "' for configuration.");
+                throw new ConfigurationRegistrationException("Failed to register the type '" + type.Name + "' for configuration.");
             }
 
             logger.ExitMethod(retVal);
@@ -235,9 +237,8 @@ namespace OpenIIoT.SDK.Configuration
         /// </summary>
         /// <param name="type">The Type to register.</param>
         /// <param name="definition">The ConfigurationDefinition with which to register the Type.</param>
-        /// <param name="registeredTypes">The Dictionary of registered types.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        private Result RegisterType(Type type, ConfigurationDefinition definition, Dictionary<Type, ConfigurationDefinition> registeredTypes)
+        private Result RegisterType(Type type, ConfigurationDefinition definition)
         {
             logger.EnterMethod();
             logger.Debug("Registering type '" + type.Name + "'...");
@@ -245,11 +246,11 @@ namespace OpenIIoT.SDK.Configuration
             Result retVal = new Result();
 
             // check to ensure that the type hasn't already been registered
-            if (!registeredTypes.ContainsKey(type))
+            if (!RegisteredTypes.ContainsKey(type))
             {
                 try
                 {
-                    registeredTypes.Add(type, definition);
+                    RegisteredTypes.Add(type, definition);
                     logger.Debug("Registered type '" + type.Name + "' for configuration.");
                 }
                 catch (Exception ex)
