@@ -51,12 +51,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+
 namespace OpenIIoT.SDK.Common.Exceptions
 {
     /// <summary>
     ///     Represents errors that occur while parsing and applying command line arguments.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ApplicationArgumentException : ApplicationException
@@ -96,7 +97,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur while initializing the Application.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ApplicationInitializationException : ApplicationException
@@ -136,7 +136,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur while performing the Application shutdown routine.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ApplicationShutdownRoutineException : ApplicationException
@@ -176,7 +175,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur while starting the Application.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ApplicationStartException : ApplicationException
@@ -216,7 +214,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur while performing the Application startup routine.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ApplicationStartupRoutineException : ApplicationException
@@ -256,7 +253,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur while stopping the Application.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ApplicationStopException : ApplicationException

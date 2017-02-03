@@ -51,12 +51,13 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
+[assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+
 namespace OpenIIoT.SDK.Common.Exceptions
 {
     /// <summary>
     ///     Represents errors that occur within the ApplicationManager class.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ApplicationManagerException : Exception
@@ -96,7 +97,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur while fetching Manager dependencies.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerDependencyException : ApplicationManagerException
@@ -136,7 +136,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur when the instantiation of a Manager returns an abnormal result.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerInstantiationException : ApplicationManagerException
@@ -176,7 +175,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur when a Manager instance is requested but the Manager has not yet been initialized.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerNotInitializedException : ApplicationManagerException
@@ -216,7 +214,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur during the registration of a Manager instance.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerRegistrationException : ApplicationManagerException
@@ -256,7 +253,6 @@ namespace OpenIIoT.SDK.Common.Exceptions
     /// <summary>
     ///     Represents errors that occur when the type list argument for the ApplicationManager constructor is malformed.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [ExcludeFromCodeCoverage]
     [Serializable]
     public class ManagerTypeListException : ApplicationManagerException
