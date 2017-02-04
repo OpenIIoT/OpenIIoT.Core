@@ -43,6 +43,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Newtonsoft.Json.Linq;
 
 namespace OpenIIoT.SDK.Common
 {
@@ -106,26 +107,41 @@ namespace OpenIIoT.SDK.Common
             return builtString.ToString();
         }
 
-        ///// <summary>
-        /////     Returns a value indicating whether <see cref="Type"/> of the specified object instance contains the specified <see cref="Attribute"/>.
-        ///// </summary>
-        ///// <typeparam name="T">The <see cref="Attribute"/> for which to check.</typeparam>
-        ///// <param name="instance">The object instance to check.</param>
-        ///// <returns>A value indicating whether the specified Type contains the specified Attribute.</returns>
-        //public static bool HasCustomAttribute<T>(this Type type) where T : Attribute
-        //{
-        //    return Attribute.IsDefined(type, typeof(T));
-        //}
-
         /// <summary>
         ///     Returns a value indicating whether <see cref="Type"/> of the specified object instance contains the specified <see cref="Attribute"/>.
         /// </summary>
         /// <typeparam name="T">The <see cref="Attribute"/> for which to check.</typeparam>
-        /// <param name="instance">The object instance to check.</param>
+        /// <param name="member">The object instance to check.</param>
         /// <returns>A value indicating whether the specified Type contains the specified Attribute.</returns>
         public static bool HasCustomAttribute<T>(this MemberInfo member) where T : Attribute
         {
             return Attribute.GetCustomAttribute(member, typeof(T), false) != default(Attribute);
+        }
+
+        /// <summary>
+        ///     Returns a value indicating whether the specified string is valid Json.
+        /// </summary>
+        /// <param name="input">The string to validate.</param>
+        /// <returns>A value indicating whether the specified string is valid Json.</returns>
+        public static bool IsValidJson(this string input)
+        {
+            input = input.Trim();
+            if ((input.StartsWith("{") && input.EndsWith("}")) || (input.StartsWith("[") && input.EndsWith("]")))
+            {
+                try
+                {
+                    var obj = JToken.Parse(input);
+                    return true;
+                }
+                catch (Exception)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -138,7 +154,7 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Returns a subset of the supplied array.
+        ///     Returns a subset of the specified array.
         /// </summary>
         /// <typeparam name="T">The type of the array.</typeparam>
         /// <param name="data">The array.</param>

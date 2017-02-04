@@ -52,8 +52,8 @@ namespace OpenIIoT.SDK.Configuration
     ///         configuration file. The type T is defined by the implementing class.
     ///     </para>
     ///     <para>
-    ///         Any class wishing to store configuration information must to implement this interface and must also provide two
-    ///         static methods; GetConfigurationDefinition() and GetDefaultConfiguration().
+    ///         Any class wishing to store configuration information must to implement this interface and must also provide the
+    ///         static method GetConfigurationDefinition(), which returns the <see cref="ConfigurationDefinition"/> for the class.
     ///     </para>
     ///     <para>
     ///         These static methods are implemented to allow the ConfigurationManager to configure new instances of a class (for

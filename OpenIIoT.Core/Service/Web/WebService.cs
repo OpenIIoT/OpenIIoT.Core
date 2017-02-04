@@ -70,7 +70,7 @@ namespace OpenIIoT.Core.Service.Web
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                Result<WebServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().AddInstanceConfiguration<WebServiceConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<WebServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().AddInstanceConfiguration<WebServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                     Configure(createResult.ReturnValue);
             }
@@ -96,14 +96,13 @@ namespace OpenIIoT.Core.Service.Web
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
             retVal.Model = typeof(WebServiceConfiguration);
-            return retVal;
-        }
 
-        public static WebServiceConfiguration GetDefaultConfiguration()
-        {
-            WebServiceConfiguration retVal = new WebServiceConfiguration();
-            retVal.Port = 80;
-            retVal.Root = "";
+            WebServiceConfiguration config = new WebServiceConfiguration();
+            config.Port = 80;
+            config.Root = "";
+
+            retVal.DefaultConfiguration = config;
+
             return retVal;
         }
 

@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ▄████████                                                                                                         ▄████████
-      █   ███    ███                                                                                                       ███    ███
-      █   ███    █▀   ██████  ██▄▄▄▄     ▄█████  █     ▄████▄  ██   █     █████   ▄█████      ██     █   ██████  ██▄▄▄▄   ▄███▄▄▄▄██▀    ▄█████    ▄████▄   █    ▄█████     ██       █████ ▄█   ▄
-      █   ███        ██    ██ ██▀▀▀█▄   ██   ▀█ ██    ██    ▀  ██   ██   ██  ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄ ▀▀███▀▀▀▀▀     ██   █    ██    ▀  ██    ██  ▀  ▀███████▄   ██  ██ ██   █▄
-      █   ███        ██    ██ ██   ██  ▄██▄▄    ██▌  ▄██       ██   ██  ▄██▄▄█▀   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀███████████  ▄██▄▄     ▄██       ██▌   ██         ██  ▀  ▄██▄▄█▀ ▀▀▀▀▀██
-      █   ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████     ██    ██  ██    ██ ██   ██   ███    ███ ▀▀██▀▀    ▀▀██ ███▄  ██  ▀███████     ██    ▀███████ ▄█   ██
-      █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██     ██    ██  ██    ██ ██   ██   ███    ███   ██   █    ██    ██ ██     ▄  ██     ██      ██  ██ ██   ██
-      █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀    ▄██▀   █    ██████   █   █    ███    ███   ███████   ██████▀  █    ▄████▀     ▄██▀     ██  ██  █████
+      █   ▄████████                                                                                                        ███                                    ▄████████
+      █   ███    ███                                                                                                   ▀█████████▄                               ███    ███
+      █   ███    █▀   ██████  ██▄▄▄▄     ▄█████  █     ▄████▄  ██   █     █████   ▄█████  ▀██████▄   █          ▄█████    ▀███▀▀██ ▄█   ▄     █████▄    ▄█████  ▄███▄▄▄▄██▀    ▄█████    ▄████▄   █    ▄█████     ██       █████ ▄█   ▄
+      █   ███        ██    ██ ██▀▀▀█▄   ██   ▀█ ██    ██    ▀  ██   ██   ██  ██   ██   ██   ██   ██ ██         ██   █      ███   ▀ ██   █▄   ██   ██   ██   █  ▀▀███▀▀▀▀▀     ██   █    ██    ▀  ██    ██  ▀  ▀███████▄   ██  ██ ██   █▄
+      █   ███        ██    ██ ██   ██  ▄██▄▄    ██▌  ▄██       ██   ██  ▄██▄▄█▀   ██   ██  ▄██▄▄█▀  ██        ▄██▄▄        ███     ▀▀▀▀▀██   ██   ██  ▄██▄▄    ▀███████████  ▄██▄▄     ▄██       ██▌   ██         ██  ▀  ▄██▄▄█▀ ▀▀▀▀▀██
+      █   ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████ ▀▀██▀▀█▄  ██       ▀▀██▀▀        ███     ▄█   ██ ▀██████▀  ▀▀██▀▀      ███    ███ ▀▀██▀▀    ▀▀██ ███▄  ██  ▀███████     ██    ▀███████ ▄█   ██
+      █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██   ██   ██ ██▌    ▄   ██   █      ███     ██   ██   ██        ██   █    ███    ███   ██   █    ██    ██ ██     ▄  ██     ██      ██  ██ ██   ██
+      █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀ ▄██████▀  ████▄▄██   ███████    ▄████▀    █████   ▄███▀      ███████   ███    ███   ███████   ██████▀  █    ▄████▀     ▄██▀     ██  ██  █████
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the ConfigurationRegistry class.
+      █  Unit tests for the ConfigurableTypeRegistry class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -92,15 +92,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Returns the default configuration for the Type.
-        /// </summary>
-        /// <returns>The default configuration for the Type.</returns>
-        public static int GetDefaultConfiguration()
-        {
-            return 0;
-        }
-
-        /// <summary>
         ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
         ///     default configuration.
         /// </summary>
@@ -162,15 +153,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
         {
             throw new Exception();
-        }
-
-        /// <summary>
-        ///     Returns the default configuration for the Type.
-        /// </summary>
-        /// <returns>The default configuration for the Type.</returns>
-        public static int GetDefaultConfiguration()
-        {
-            return 0;
         }
 
         /// <summary>
@@ -291,15 +273,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         #region Public Methods
 
         /// <summary>
-        ///     Returns the default configuration for the Type.
-        /// </summary>
-        /// <returns>The default configuration for the Type.</returns>
-        public static int GetDefaultConfiguration()
-        {
-            return 0;
-        }
-
-        /// <summary>
         ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
         ///     default configuration.
         /// </summary>
@@ -364,15 +337,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Returns the default configuration for the Type.
-        /// </summary>
-        /// <returns>The default configuration for the Type.</returns>
-        public static int GetDefaultConfiguration()
-        {
-            return 0;
-        }
-
-        /// <summary>
         ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
         ///     default configuration.
         /// </summary>
@@ -405,17 +369,17 @@ namespace OpenIIoT.SDK.Tests.Configuration
     }
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Configuration.ConfigurationRegistry"/> class.
+    ///     Unit tests for the <see cref="SDK.Configuration.ConfigurableTypeRegistry"/> class.
     /// </summary>
-    [Collection("ConfigurationRegistry")]
-    public class ConfigurationRegistry
+    [Collection("ConfigurableTypeRegistry")]
+    public class ConfigurableTypeRegistry
     {
         #region Private Fields
 
         /// <summary>
         ///     The instance under test.
         /// </summary>
-        private SDK.Configuration.ConfigurationRegistry registry;
+        private SDK.Configuration.ConfigurableTypeRegistry registry;
 
         #endregion Private Fields
 
@@ -424,9 +388,9 @@ namespace OpenIIoT.SDK.Tests.Configuration
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConfigurationRegistry"/> class.
         /// </summary>
-        public ConfigurationRegistry()
+        public ConfigurableTypeRegistry()
         {
-            registry = new SDK.Configuration.ConfigurationRegistry();
+            registry = new SDK.Configuration.ConfigurableTypeRegistry();
         }
 
         #endregion Public Constructors
@@ -439,11 +403,11 @@ namespace OpenIIoT.SDK.Tests.Configuration
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<SDK.Configuration.ConfigurationRegistry>(registry);
+            Assert.IsType<SDK.Configuration.ConfigurableTypeRegistry>(registry);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.IsRegistered(Type)"/> method.
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.IsRegistered(Type)"/> method.
         /// </summary>
         [Fact]
         public void IsRegistered()
@@ -462,7 +426,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterType(Type, bool)"/> method.
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method.
         /// </summary>
         [Fact]
         public void Register()
@@ -472,7 +436,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterType(Type, bool)"/> method with a duplicate Type.
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a duplicate Type.
         /// </summary>
         [Fact]
         public void RegisterDuplicate()
@@ -485,8 +449,8 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterType(Type, bool)"/> method with a Type which
-        ///     throws an exception from the GetConfigurationDefinition method.
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
+        ///     which throws an exception from the GetConfigurationDefinition method.
         /// </summary>
         [Fact]
         public void RegisterExceptionDefinition()
@@ -496,19 +460,8 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterType(Type, bool)"/> method with a Type missing
-        ///     the GetDefaultConfiguration method.
-        /// </summary>
-        [Fact]
-        public void RegisterMissingDefault()
-        {
-            Result result = registry.RegisterType(typeof(ConfigurableMockMissingDefault));
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterType(Type, bool)"/> method with a Type missing
-        ///     the GetConfigurationDefinition method
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
+        ///     missing the GetConfigurationDefinition method
         /// </summary>
         [Fact]
         public void RegisterMissingDefinition()
@@ -518,8 +471,8 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterType(Type, bool)"/> method with a Type which
-        ///     does not implement <see cref="IConfigurable{T}"/> .
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
+        ///     which does not implement <see cref="IConfigurable{T}"/> .
         /// </summary>
         [Fact]
         public void RegisterNotConfigurable()
@@ -529,7 +482,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterType(Type, bool)"/> method with a
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a
         ///     non-configurable Type and using the throwsExceptionOnFailure flag.
         /// </summary>
         [Fact]
@@ -539,7 +492,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterType(Type, bool)"/> method with a Type
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
         ///     returning a null value from the GetConfigurationDefinition method
         /// </summary>
         [Fact]
@@ -550,8 +503,8 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurationRegistry.RegisterTypes(List{Type}, bool)"/> method with both a
-        ///     configurable and non-configurable Type.
+        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterTypes(List{Type}, bool)"/> method with both
+        ///     a configurable and non-configurable Type.
         /// </summary>
         [Fact]
         public void RegisterTypes()

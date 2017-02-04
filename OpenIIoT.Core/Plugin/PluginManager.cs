@@ -54,9 +54,6 @@ using OpenIIoT.SDK.Plugin.Connector;
 using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
-
-using OpenIIoT.SDK.Common;
-
 using OpenIIoT.SDK.Plugin.Endpoint;
 
 namespace OpenIIoT.Core.Plugin
@@ -186,29 +183,21 @@ namespace OpenIIoT.Core.Plugin
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
             retVal.Model = typeof(PluginManagerConfiguration);
-            return retVal;
-        }
 
-        /// <summary>
-        ///     Returns the default instance of the configuration Model for the Type.
-        /// </summary>
-        /// <returns>The default instance of the configuration Model for the Type.</returns>
-        public static PluginManagerConfiguration GetDefaultConfiguration()
-        {
-            PluginManagerConfiguration retVal = new PluginManagerConfiguration();
-            retVal.Instances = new List<PluginManagerConfigurationPluginInstance>();
+            // create the default configuration
+            PluginManagerConfiguration config = new PluginManagerConfiguration();
+            config.Instances = new List<PluginManagerConfigurationPluginInstance>();
 
             PluginManagerConfigurationPluginInstance sim = new PluginManagerConfigurationPluginInstance();
             sim.InstanceName = "Simulation";
             sim.AssemblyName = "OpenIIoT.Plugin.Connector.Simulation";
 
-            retVal.Instances.Add(sim);
+            config.Instances.Add(sim);
+
+            retVal.DefaultConfiguration = config;
+
             return retVal;
         }
-
-        //// See the Manager class for the IStateful implementation for this class.
-
-        //// See the Manager class for the IManager implementation for this class.
 
         /// <summary>
         ///     Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the
@@ -232,7 +221,7 @@ namespace OpenIIoT.Core.Plugin
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<PluginManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<PluginManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -1440,7 +1429,7 @@ namespace OpenIIoT.Core.Plugin
                                                     assembly);
 
                 // register the plugin type as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
-                Result registerResult = Dependency<IConfigurationManager>().Registry.RegisterType(validationResult.ReturnValue);
+                Result registerResult = Dependency<IConfigurationManager>().ConfigurableTypeRegistry.RegisterType(validationResult.ReturnValue);
                 if (registerResult.ResultCode == ResultCode.Failure)
                 {
                     throw new Exception("Failed to register the assembly type with the Configuration Manager.");

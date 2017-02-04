@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ▄████████                                                                                                         ▄████████
-      █   ███    ███                                                                                                       ███    ███
-      █   ███    █▀   ██████  ██▄▄▄▄     ▄█████  █     ▄████▄  ██   █     █████   ▄█████      ██     █   ██████  ██▄▄▄▄   ▄███▄▄▄▄██▀    ▄█████    ▄████▄   █    ▄█████     ██       █████ ▄█   ▄
-      █   ███        ██    ██ ██▀▀▀█▄   ██   ▀█ ██    ██    ▀  ██   ██   ██  ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄ ▀▀███▀▀▀▀▀     ██   █    ██    ▀  ██    ██  ▀  ▀███████▄   ██  ██ ██   █▄
-      █   ███        ██    ██ ██   ██  ▄██▄▄    ██▌  ▄██       ██   ██  ▄██▄▄█▀   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀███████████  ▄██▄▄     ▄██       ██▌   ██         ██  ▀  ▄██▄▄█▀ ▀▀▀▀▀██
-      █   ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████     ██    ██  ██    ██ ██   ██   ███    ███ ▀▀██▀▀    ▀▀██ ███▄  ██  ▀███████     ██    ▀███████ ▄█   ██
-      █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██     ██    ██  ██    ██ ██   ██   ███    ███   ██   █    ██    ██ ██     ▄  ██     ██      ██  ██ ██   ██
-      █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀    ▄██▀   █    ██████   █   █    ███    ███   ███████   ██████▀  █    ▄████▀     ▄██▀     ██  ██  █████
+      █   ▄████████                                                                                                        ███                                    ▄████████
+      █   ███    ███                                                                                                   ▀█████████▄                               ███    ███
+      █   ███    █▀   ██████  ██▄▄▄▄     ▄█████  █     ▄████▄  ██   █     █████   ▄█████  ▀██████▄   █          ▄█████    ▀███▀▀██ ▄█   ▄     █████▄    ▄█████  ▄███▄▄▄▄██▀    ▄█████    ▄████▄   █    ▄█████     ██       █████ ▄█   ▄
+      █   ███        ██    ██ ██▀▀▀█▄   ██   ▀█ ██    ██    ▀  ██   ██   ██  ██   ██   ██   ██   ██ ██         ██   █      ███   ▀ ██   █▄   ██   ██   ██   █  ▀▀███▀▀▀▀▀     ██   █    ██    ▀  ██    ██  ▀  ▀███████▄   ██  ██ ██   █▄
+      █   ███        ██    ██ ██   ██  ▄██▄▄    ██▌  ▄██       ██   ██  ▄██▄▄█▀   ██   ██  ▄██▄▄█▀  ██        ▄██▄▄        ███     ▀▀▀▀▀██   ██   ██  ▄██▄▄    ▀███████████  ▄██▄▄     ▄██       ██▌   ██         ██  ▀  ▄██▄▄█▀ ▀▀▀▀▀██
+      █   ███    █▄  ██    ██ ██   ██ ▀▀██▀▀    ██  ▀▀██ ███▄  ██   ██ ▀███████ ▀████████ ▀▀██▀▀█▄  ██       ▀▀██▀▀        ███     ▄█   ██ ▀██████▀  ▀▀██▀▀      ███    ███ ▀▀██▀▀    ▀▀██ ███▄  ██  ▀███████     ██    ▀███████ ▄█   ██
+      █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██   ██   ██ ██▌    ▄   ██   █      ███     ██   ██   ██        ██   █    ███    ███   ██   █    ██    ██ ██     ▄  ██     ██      ██  ██ ██   ██
+      █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀ ▄██████▀  ████▄▄██   ███████    ▄████▀    █████   ▄███▀      ███████   ███    ███   ███████   ██████▀  █    ▄████▀     ▄██▀     ██  ██  █████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
@@ -53,7 +53,7 @@ namespace OpenIIoT.SDK.Configuration
     /// <summary>
     ///     Maintains a registry of Types implementing the <see cref="IConfigurable{T}"/> interface.
     /// </summary>
-    public class ConfigurationRegistry
+    public class ConfigurableTypeRegistry
     {
         #region Private Fields
 
@@ -67,9 +67,9 @@ namespace OpenIIoT.SDK.Configuration
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ConfigurationRegistry"/> class.
+        ///     Initializes a new instance of the <see cref="ConfigurableTypeRegistry"/> class.
         /// </summary>
-        public ConfigurationRegistry()
+        public ConfigurableTypeRegistry()
         {
             RegisteredTypes = new Dictionary<Type, ConfigurationDefinition>();
         }
@@ -89,8 +89,7 @@ namespace OpenIIoT.SDK.Configuration
 
         /// <summary>
         ///     Evaluates the specified <see cref="Type"/> to determine whether it can be configured, and returns the result. To be
-        ///     configurable, the type must implement <see cref="IConfigurable{T}"/> and must have static methods
-        ///     GetConfigurationDefinition and GetDefaultConfiguration.
+        ///     configurable, the type must implement <see cref="IConfigurable{T}"/> and must contain the static method GetConfigurationDefinition.
         /// </summary>
         /// <param name="type">The Type to evaluate.</param>
         /// <returns>
@@ -112,12 +111,6 @@ namespace OpenIIoT.SDK.Configuration
             if (type.GetMethod("GetConfigurationDefinition") == default(MethodInfo))
             {
                 retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetConfigurationDefinition'");
-            }
-
-            // check whether the Type contains the static method "GetDefaultConfiguration"
-            if (type.GetMethod("GetDefaultConfiguration") == default(MethodInfo))
-            {
-                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetDefaultConfiguration'");
             }
 
             // if none of the previous checks failed, the type is configurable.
@@ -240,7 +233,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         private Result RegisterType(Type type, ConfigurationDefinition definition)
         {
-            logger.EnterMethod();
+            logger.EnterMethod(xLogger.Params(type, definition));
             logger.Debug("Registering type '" + type.Name + "'...");
 
             Result retVal = new Result();

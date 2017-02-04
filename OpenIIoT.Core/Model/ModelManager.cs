@@ -261,22 +261,17 @@ namespace OpenIIoT.Core.Model
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
             retVal.Model = typeof(ModelManagerConfiguration);
-            return retVal;
-        }
 
-        /// <summary>
-        ///     Returns the default Configuration for the Model Manager.
-        /// </summary>
-        /// <returns>The default Configuration for the Model Manager.</returns>
-        public static ModelManagerConfiguration GetDefaultConfiguration()
-        {
-            ModelManagerConfiguration retVal = new ModelManagerConfiguration();
-            retVal.Items.Add(
+            ModelManagerConfiguration config = new ModelManagerConfiguration();
+            config.Items.Add(
                 new ModelManagerConfigurationItem()
                 {
                     FQN = "",
                     SourceFQN = ""
                 });
+
+            retVal.DefaultConfiguration = config;
+
             return retVal;
         }
 
@@ -402,7 +397,7 @@ namespace OpenIIoT.Core.Model
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<ModelManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<ModelManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");

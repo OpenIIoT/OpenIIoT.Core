@@ -66,7 +66,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Gets the registry of configurable Types.
         /// </summary>
-        ConfigurationRegistry Registry { get; }
+        ConfigurableTypeRegistry ConfigurableTypeRegistry { get; }
 
         #endregion Public Properties
 

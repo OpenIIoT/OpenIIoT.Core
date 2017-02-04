@@ -1,20 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
-using Microsoft.Owin.Hosting;
-using Microsoft.AspNet.SignalR;
-using System.Web.Http;
-using Newtonsoft.Json;
-using OpenIIoT.Core.Configuration;
 using NLog.xLogger;
 using Utility.OperationResult;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Common;
-
 using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Service
@@ -123,7 +113,7 @@ namespace OpenIIoT.Core.Service
             {
                 logger.Trace("Registering Web Services...");
                 retVal.ReturnValue.Add("Web Services", typeof(Web.WebService));
-                configurationManager.Registry.RegisterType(typeof(Web.WebService));
+                configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(Web.WebService));
             }
             catch (Exception ex)
             {
