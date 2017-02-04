@@ -94,7 +94,7 @@ namespace OpenIIoT.SDK.Configuration
             Form = form;
             Schema = schema;
             Model = model;
-            Default = defaultConfiguration;
+            DefaultConfiguration = defaultConfiguration;
         }
 
         #endregion Public Constructors
@@ -105,7 +105,7 @@ namespace OpenIIoT.SDK.Configuration
         ///     Gets or sets the default configuration.
         /// </summary>
         /// <remarks>Must be an instance of the Type specified in the <see cref="Model"/> property.</remarks>
-        public object Default { get; set; }
+        public object DefaultConfiguration { get; set; }
 
         /// <summary>
         ///     Gets or sets a string containing a json representation of an HTML configuration form.
@@ -155,7 +155,7 @@ namespace OpenIIoT.SDK.Configuration
                 retVal.AddError("The Model property does not contain a valid Type.");
             }
 
-            if (Default != null && !Default.GetType().Equals(Model))
+            if (DefaultConfiguration != null && !DefaultConfiguration.GetType().Equals(Model))
             {
                 retVal.AddError("The Default property does not contain an instance of an object corresponding to the Type specified in the Model property.");
             }

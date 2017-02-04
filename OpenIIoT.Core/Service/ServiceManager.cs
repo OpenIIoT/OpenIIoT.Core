@@ -1,20 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NLog;
-using Microsoft.Owin.Hosting;
-using Microsoft.AspNet.SignalR;
-using System.Web.Http;
-using Newtonsoft.Json;
-using OpenIIoT.Core.Configuration;
 using NLog.xLogger;
 using Utility.OperationResult;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Common;
-
 using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Service

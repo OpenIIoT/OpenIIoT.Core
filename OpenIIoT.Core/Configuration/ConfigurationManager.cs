@@ -84,10 +84,9 @@ namespace OpenIIoT.Core.Configuration
     ///         The method IsConfigurable uses reflection to examine the given Type to ensure that:
     ///         1. it implements IConfigurable
     ///         2. it contains the static method GetConfigurationDefinition
-    ///         3. it contains the static method GetDefaultConfiguration
     ///         <para></para>
-    ///         If all three predicates are true, the Type can be registered with the Configuration Manager and instances of that
-    ///         type can load and save configuration data.
+    ///         If both predicates are true, the Type can be registered with the Configuration Manager and instances of that type
+    ///         can load and save configuration data.
     ///         <para></para>
     ///         Before any Type can use the Configuration Manager, the method RegisterType() must be called and passed the Type of
     ///         that class. This method checks IsConfigurable and if passing, fetches the ConfigurationDefinition for the Type from

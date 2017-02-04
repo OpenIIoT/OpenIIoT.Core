@@ -110,10 +110,6 @@ namespace OpenIIoT.Core.Event
 
         #endregion Private Constructors
 
-        //// See the Manager class for the IStateful properties for this class.
-
-        //// See the Manager class for the IManager properties for this class.
-
         #region Public Properties
 
         /// <summary>
@@ -147,26 +143,21 @@ namespace OpenIIoT.Core.Event
         #region Public Methods
 
         /// <summary>
-        ///     Returns the ConfigurationDefinition for the Model Manager.
+        ///     Returns the ConfigurationDefinition for the Event Manager.
         /// </summary>
-        /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
+        /// <returns>The ConfigurationDefinition for the Event Manager.</returns>
         public static ConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
             retVal.Model = typeof(EventManagerConfiguration);
-            return retVal;
-        }
 
-        /// <summary>
-        ///     Returns the default Configuration for the Model Manager.
-        /// </summary>
-        /// <returns>The default Configuration for the Model Manager.</returns>
-        public static EventManagerConfiguration GetDefaultConfiguration()
-        {
-            EventManagerConfiguration retVal = new EventManagerConfiguration();
-            retVal.Events.Add("Hello World!");
+            EventManagerConfiguration config = new EventManagerConfiguration();
+            config.Events.Add("Hello World!");
+
+            retVal.DefaultConfiguration = config;
+
             return retVal;
         }
 
@@ -219,7 +210,7 @@ namespace OpenIIoT.Core.Event
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<EventManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<EventManagerConfiguration>(this.GetType(), GetDefaultConfiguration());
+                Result<EventManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<EventManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");

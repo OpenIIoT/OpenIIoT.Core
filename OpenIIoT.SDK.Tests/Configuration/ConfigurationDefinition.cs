@@ -158,7 +158,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             Assert.Equal("form", config.Form);
             Assert.Equal("schema", config.Schema);
             Assert.Equal(typeof(int), config.Model);
-            Assert.Equal(1, config.Default);
+            Assert.Equal(1, config.DefaultConfiguration);
         }
 
         #endregion Public Methods

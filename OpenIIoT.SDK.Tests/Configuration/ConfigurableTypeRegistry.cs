@@ -92,15 +92,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Returns the default configuration for the Type.
-        /// </summary>
-        /// <returns>The default configuration for the Type.</returns>
-        public static int GetDefaultConfiguration()
-        {
-            return 0;
-        }
-
-        /// <summary>
         ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
         ///     default configuration.
         /// </summary>
@@ -162,15 +153,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
         {
             throw new Exception();
-        }
-
-        /// <summary>
-        ///     Returns the default configuration for the Type.
-        /// </summary>
-        /// <returns>The default configuration for the Type.</returns>
-        public static int GetDefaultConfiguration()
-        {
-            return 0;
         }
 
         /// <summary>
@@ -291,15 +273,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         #region Public Methods
 
         /// <summary>
-        ///     Returns the default configuration for the Type.
-        /// </summary>
-        /// <returns>The default configuration for the Type.</returns>
-        public static int GetDefaultConfiguration()
-        {
-            return 0;
-        }
-
-        /// <summary>
         ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
         ///     default configuration.
         /// </summary>
@@ -361,15 +334,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
         {
             return null;
-        }
-
-        /// <summary>
-        ///     Returns the default configuration for the Type.
-        /// </summary>
-        /// <returns>The default configuration for the Type.</returns>
-        public static int GetDefaultConfiguration()
-        {
-            return 0;
         }
 
         /// <summary>
@@ -492,17 +456,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         public void RegisterExceptionDefinition()
         {
             Result result = registry.RegisterType(typeof(ConfigurableMockExceptionDefinition));
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
-        ///     missing the GetDefaultConfiguration method.
-        /// </summary>
-        [Fact]
-        public void RegisterMissingDefault()
-        {
-            Result result = registry.RegisterType(typeof(ConfigurableMockMissingDefault));
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
