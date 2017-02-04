@@ -144,7 +144,7 @@ namespace OpenIIoT.Core.Configuration
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
 
-            Registry = new ConfigurationRegistry();
+            ConfigurableTypeRegistry = new ConfigurableTypeRegistry();
 
             ConfigurationFileName = GetConfigurationFileName();
 
@@ -167,7 +167,10 @@ namespace OpenIIoT.Core.Configuration
         /// </summary>
         public string ConfigurationFileName { get; private set; }
 
-        public ConfigurationRegistry Registry { get; private set; }
+        /// <summary>
+        ///     Gets the registry of configurable Types.
+        /// </summary>
+        public ConfigurableTypeRegistry ConfigurableTypeRegistry { get; private set; }
 
         #endregion Public Properties
 
@@ -359,7 +362,7 @@ namespace OpenIIoT.Core.Configuration
             List<Type> managerTypes = managerInstances.Select(m => m.GetType()).ToList();
 
             logger.Info("Registering Managers with the Configuration Manager...");
-            Result registerResult = Registry.RegisterTypes(managerTypes);
+            Result registerResult = ConfigurableTypeRegistry.RegisterTypes(managerTypes);
 
             if (registerResult.ResultCode == ResultCode.Failure)
             {
@@ -495,7 +498,7 @@ namespace OpenIIoT.Core.Configuration
 
             Result<T> retVal = new Result<T>();
 
-            if (!Registry.IsRegistered(type))
+            if (!ConfigurableTypeRegistry.IsRegistered(type))
             {
                 retVal.AddError("The type '" + type.Name + "' is configurable but has not been registered.");
             }

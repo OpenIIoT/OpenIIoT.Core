@@ -123,7 +123,7 @@ namespace OpenIIoT.Core.Service
             {
                 logger.Trace("Registering Web Services...");
                 retVal.ReturnValue.Add("Web Services", typeof(Web.WebService));
-                configurationManager.Registry.RegisterType(typeof(Web.WebService));
+                configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(Web.WebService));
             }
             catch (Exception ex)
             {

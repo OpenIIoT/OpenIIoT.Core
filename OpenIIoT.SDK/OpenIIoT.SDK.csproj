@@ -80,7 +80,7 @@
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
-    <Compile Include="Configuration\ConfigurationRegistry.cs" />
+    <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\IConfigurable.cs" />
     <Compile Include="Configuration\IConfigurationManager.cs" />
     <Compile Include="Common\Discovery\Discoverer.cs" />
