@@ -248,15 +248,8 @@ namespace OpenIIoT.SDK.Configuration
             // check to ensure that the type hasn't already been registered
             if (!RegisteredTypes.ContainsKey(type))
             {
-                try
-                {
-                    RegisteredTypes.Add(type, definition);
-                    logger.Debug("Registered type '" + type.Name + "' for configuration.");
-                }
-                catch (Exception ex)
-                {
-                    retVal.AddError("Exception thrown while registering the type: " + ex);
-                }
+                RegisteredTypes.Add(type, definition);
+                logger.Debug("Registered type '" + type.Name + "' for configuration.");
             }
             else
             {
