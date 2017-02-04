@@ -50,9 +50,9 @@ namespace OpenIIoT.SDK.Configuration
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         The configuration is comprised of two strings, a form and a schema, and a Type representing the model. The strings
-    ///         are intended to contain json data; the form containing a json representation of an HTML form, and the schema
-    ///         containing a logical schema to be used as the basis of the form.
+    ///         The configuration is comprised of two strings, a form and a schema, a Type representing the model, and a default
+    ///         value for the model. The strings are intended to contain json data; the form containing a json representation of an
+    ///         HTML form, and the schema containing a logical schema to be used as the basis of the form.
     ///     </para>
     ///     <para>
     ///         When the configuration is edited (or a new instance created), the form and schema are used to generate an HTML form
