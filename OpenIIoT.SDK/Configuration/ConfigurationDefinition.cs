@@ -40,6 +40,8 @@
                                                                                                    ▀▀                            */
 
 using System;
+using OpenIIoT.SDK.Common;
+using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Configuration
 {
@@ -76,7 +78,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConfigurationDefinition"/> class.
         /// </summary>
-        public ConfigurationDefinition() : this(string.Empty, string.Empty, null)
+        public ConfigurationDefinition() : this(string.Empty, string.Empty, null, null)
         {
         }
 
@@ -86,16 +88,24 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="form">A string containing the json representation of an HTML form.</param>
         /// <param name="schema">A string containing a json representation of the schema to populate using the form.</param>
         /// <param name="model">A type representing the model to be built from the schema.</param>
-        public ConfigurationDefinition(string form, string schema, Type model)
+        /// <param name="defaultConfiguration">The default instance of the configuration.</param>
+        public ConfigurationDefinition(string form, string schema, Type model, object defaultConfiguration)
         {
-            this.Form = form;
-            this.Schema = schema;
-            this.Model = model;
+            Form = form;
+            Schema = schema;
+            Model = model;
+            Default = defaultConfiguration;
         }
 
         #endregion Public Constructors
 
         #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets the default configuration.
+        /// </summary>
+        /// <remarks>Must be an instance of the Type specified in the <see cref="Model"/> property.</remarks>
+        public object Default { get; set; }
 
         /// <summary>
         ///     Gets or sets a string containing a json representation of an HTML configuration form.
@@ -113,5 +123,51 @@ namespace OpenIIoT.SDK.Configuration
         public string Schema { get; set; }
 
         #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Returns a value indicating whether this instance is valid.
+        /// </summary>
+        /// <remarks>
+        ///     To be considered valid, the <see cref="Form"/> and <see cref="Schema"/> properties must contain valid Json, the
+        ///     <see cref="Model"/> property must not be null, and the Type of the value contained in <see cref="Default"/> must be
+        ///     of the same Type specified in the Model property.
+        /// </remarks>
+        /// <returns>A value indicating whether this instance is valid.</returns>
+        public Result<bool> IsValid()
+        {
+            Result<bool> retVal = new Result<bool>();
+            retVal.ReturnValue = false;
+
+            if (!Form.IsValidJson())
+            {
+                retVal.AddError("The Form property does not contain valid Json data.");
+            }
+
+            if (!Schema.IsValidJson())
+            {
+                retVal.AddError("The Schema property does not contain valid Json data.");
+            }
+
+            if (Model == default(Type))
+            {
+                retVal.AddError("The Model property does not contain a valid Type.");
+            }
+
+            if (Default != null && !Default.GetType().Equals(Model))
+            {
+                retVal.AddError("The Default property does not contain an instance of an object corresponding to the Type specified in the Model property.");
+            }
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                retVal.ReturnValue = true;
+            }
+
+            return retVal;
+        }
+
+        #endregion Public Methods
     }
 }

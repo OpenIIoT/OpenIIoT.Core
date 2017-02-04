@@ -55,12 +55,36 @@ using System.Linq;
 using OpenIIoT.SDK.Common;
 using Xunit;
 
+[assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+
 namespace OpenIIoT.SDK.Tests.Common
 {
     /// <summary>
+    ///     Mocks a class containing the <see cref="AttributeTestAttribute"/> Attribute.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework to mock this class because the underlying code being tested does not
+    ///     detected attributes added at runtime.
+    /// </remarks>
+    [AttributeTest]
+    public class AttributeTest
+    {
+    }
+
+    /// <summary>
+    ///     Creates an attribute for testing.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework to mock this class because the underlying code being tested does not
+    ///     detected attributes added at runtime.
+    /// </remarks>
+    public class AttributeTestAttribute : Attribute
+    {
+    }
+
+    /// <summary>
     ///     Unit tests for the <see cref="SDK.Common.Utility"/> class.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [Collection("Utility")]
     public class Utility
     {
@@ -104,6 +128,41 @@ namespace OpenIIoT.SDK.Tests.Common
 
             Assert.Equal(64, saltedHash.Length);
             Assert.Equal(saltedResult, saltedHash);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Utility.HasCustomAttribute{T}(object)"/> extension method.
+        /// </summary>
+        [Fact]
+        public void HasAttribute()
+        {
+            AttributeTest hasAttribute = new AttributeTest();
+
+            object noAttribute = new object();
+
+            Assert.False(noAttribute.GetType().HasCustomAttribute<AttributeTestAttribute>());
+            Assert.True(hasAttribute.GetType().HasCustomAttribute<AttributeTestAttribute>());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Utility.IsValidJson(string)"/> extension method with known good values.
+        /// </summary>
+        /// <param name="json">The Json string to test.</param>
+        [Theory]
+        [InlineData("{ \"boolean\": true }")]
+        [InlineData("[ 1,2,3 ]")]
+        public void IsValidJson(string json)
+        {
+            Assert.True(json.IsValidJson());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Utility.IsValidJson(string)"/> extension method with a known bad value.
+        /// </summary>
+        public void IsValidJsonInvalid()
+        {
+            string json = "hello world!";
+            Assert.False(json.IsValidJson());
         }
 
         /// <summary>
@@ -171,45 +230,6 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.Equal(regex, SDK.Common.Utility.WildcardToRegex(wildcard));
         }
 
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.HasCustomAttribute{T}(object)"/> extension method.
-        /// </summary>
-        [Fact]
-        public void HasAttribute()
-        {
-            AttributeTest hasAttribute = new AttributeTest();
-
-            object noAttribute = new object();
-
-            Assert.False(noAttribute.GetType().HasCustomAttribute<AttributeTestAttribute>());
-            Assert.True(hasAttribute.GetType().HasCustomAttribute<AttributeTestAttribute>());
-        }
-
         #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Mocks a class containing the <see cref="AttributeTestAttribute"/> Attribute.
-    /// </summary>
-    /// <remarks>
-    ///     It is not feasible to use a mocking framework to mock this class because the underlying code being tested does not
-    ///     detected attributes added at runtime.
-    /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    [AttributeTest]
-    public class AttributeTest
-    {
-    }
-
-    /// <summary>
-    ///     Creates an attribute for testing.
-    /// </summary>
-    /// <remarks>
-    ///     It is not feasible to use a mocking framework to mock this class because the underlying code being tested does not
-    ///     detected attributes added at runtime.
-    /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class AttributeTestAttribute : Attribute
-    {
     }
 }

@@ -48,6 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Utility.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.SDK.Tests.Configuration
@@ -70,9 +71,79 @@ namespace OpenIIoT.SDK.Tests.Configuration
 
             Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
 
-            config = new SDK.Configuration.ConfigurationDefinition("form", "schema", typeof(int));
+            config = new SDK.Configuration.ConfigurationDefinition("form", "schema", typeof(int), 1);
 
             Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.ConfigurationDefinition.IsValid"/> method with a valid instance of a ConfigurationDefinition.
+        /// </summary>
+        [Fact]
+        public void IsValid()
+        {
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("{ \"form\": \"\" }", "{ \"schema\": \"\" }", typeof(int), 1);
+
+            Assert.True(config.IsValid().ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.ConfigurationDefinition.IsValid"/> method with an instance with mismatched
+        ///     Model and Default properties.
+        /// </summary>
+        [Fact]
+        public void IsValidInvalidDefault()
+        {
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("form", "{ \"schema\": \"\" }", typeof(int), "test");
+
+            Result<bool> result = config.IsValid();
+
+            Assert.False(result.ReturnValue);
+            Assert.True(result.GetLastError().Contains("Default"));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.ConfigurationDefinition.IsValid"/> method with an instance with a Form
+        ///     property containing invalid Json.
+        /// </summary>
+        [Fact]
+        public void IsValidInvalidForm()
+        {
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("form", "{ \"schema\": \"\" }", typeof(int), 1);
+
+            Result<bool> result = config.IsValid();
+
+            Assert.False(result.ReturnValue);
+            Assert.True(result.GetLastError().Contains("Form"));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.ConfigurationDefinition.IsValid"/> method with an instance with a null Model property.
+        /// </summary>
+        [Fact]
+        public void IsValidInvalidModel()
+        {
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("form", "{ \"schema\": \"\" }", null, null);
+
+            Result<bool> result = config.IsValid();
+
+            Assert.False(result.ReturnValue);
+            Assert.True(result.GetLastError().Contains("Model"));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.ConfigurationDefinition.IsValid"/> method with an instance with a Schema
+        ///     property containing invalid Json.
+        /// </summary>
+        [Fact]
+        public void IsValidInvalidSchema()
+        {
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("{ \"form\": \"\" }", "schema", typeof(int), 1);
+
+            Result<bool> result = config.IsValid();
+
+            Assert.False(result.ReturnValue);
+            Assert.True(result.GetLastError().Contains("Schema"));
         }
 
         /// <summary>
@@ -81,12 +152,13 @@ namespace OpenIIoT.SDK.Tests.Configuration
         [Fact]
         public void Properties()
         {
-            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("form", "schema", typeof(int));
+            SDK.Configuration.ConfigurationDefinition config = new SDK.Configuration.ConfigurationDefinition("form", "schema", typeof(int), 1);
 
             Assert.IsType<SDK.Configuration.ConfigurationDefinition>(config);
             Assert.Equal("form", config.Form);
             Assert.Equal("schema", config.Schema);
             Assert.Equal(typeof(int), config.Model);
+            Assert.Equal(1, config.Default);
         }
 
         #endregion Public Methods
