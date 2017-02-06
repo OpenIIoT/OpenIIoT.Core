@@ -554,7 +554,7 @@ namespace OpenIIoT.Core
         /// <returns>The value returned by the method invocation.</returns>
         private T InvokeMethod<T>(MethodInfo method, Type type, Type exceptionType, string exceptionMessage, object[] parameters = null) where T : IManager
         {
-            logger.EnterMethod(xLogger.Params(method, type, parameters));
+            logger.EnterMethod(xLogger.Params(method, type, exceptionType, exceptionMessage, parameters));
 
             MethodInfo generic = method.MakeGenericMethod(type);
             T retVal;

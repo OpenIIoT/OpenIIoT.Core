@@ -39,8 +39,8 @@
       <HintPath>..\packages\NLog.4.4.1\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NLog.xLogger, Version=0.9.5.25, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.xLogger.0.9.5.25\lib\NLog.xLogger.dll</HintPath>
+    <Reference Include="NLog.xLogger, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
