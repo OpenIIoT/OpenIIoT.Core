@@ -239,6 +239,7 @@ namespace OpenIIoT.Core.Platform
         ///     Implements the startup procedure for the <see cref="PlatformManager"/> class.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
+        /// <exception cref="DirectoryException">Thrown when one or more application directories can not be verified.</exception>
         protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);
@@ -259,7 +260,7 @@ namespace OpenIIoT.Core.Platform
             Result checkResult = CheckDirectories();
             if (checkResult.ResultCode == ResultCode.Failure)
             {
-                throw new Exception("Failed to verify and/or create one or more required program directory: " + checkResult.GetLastError());
+                throw new DirectoryException("Failed to verify and/or create one or more required program directories: " + checkResult.GetLastError());
             }
 
             checkResult.LogResult(logger.Debug, "CheckDirectories");
