@@ -315,7 +315,7 @@ namespace OpenIIoT.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
         {
-            ConfigurationLoader loader = ConfigurationLoader.CreateLoader(Dependency<IPlatformManager>().Platform);
+            ConfigurationLoader loader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
 
             return loader.Save(Configuration, ConfigurationFileName);
         }
@@ -407,8 +407,9 @@ namespace OpenIIoT.Core.Configuration
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            ConfigurationLoader loader = ConfigurationLoader.CreateLoader(Dependency<IPlatformManager>().Platform);
+            ConfigurationLoader loader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
 
+            logger.Info("Loading application configuration from '" + ConfigurationFileName + "'...");
             Result<Dictionary<string, Dictionary<string, object>>> loadResult = loader.Load(ConfigurationFileName);
 
             if (loadResult.ResultCode == ResultCode.Failure)
