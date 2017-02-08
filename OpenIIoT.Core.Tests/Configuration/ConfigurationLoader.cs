@@ -48,11 +48,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Xunit;
-using Moq;
-using OpenIIoT.SDK.Platform;
+using System;
 using System.Collections.Generic;
+using Moq;
+using OpenIIoT.SDK.Common.Exceptions;
+using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using Xunit;
 
 namespace OpenIIoT.Core.Tests.Configuration
 {
@@ -90,6 +92,81 @@ namespace OpenIIoT.Core.Tests.Configuration
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.NotNull(result.ReturnValue);
             Assert.IsType<Dictionary<string, Dictionary<string, object>>>(result.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the
+        ///     <see cref="Core.Configuration.ConfigurationLoader.Save(Dictionary{string, Dictionary{string, object}}, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void Save()
+        {
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+
+            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+
+            Dictionary<string, Dictionary<string, object>> configuration = new Dictionary<string, Dictionary<string, object>>();
+
+            Result result = loader.Save(configuration, "file.ext");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Load(string)"/> method.
+        /// </summary>
+        [Fact]
+        public void Load()
+        {
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
+            platform.Setup(p => p.ReadFile(It.IsAny<string>())).Returns(new Result<string>().SetReturnValue("{}"));
+
+            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+
+            Result result = loader.Load("file.ext");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Load(string)"/> method with a mockup which simulates a
+        ///     failure to read the specified file.
+        /// </summary>
+        [Fact]
+        public void LoadReadFailure()
+        {
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
+            platform.Setup(p => p.ReadFile(It.IsAny<string>())).Returns(new Result<string>().SetResultCode(ResultCode.Failure));
+
+            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+
+            Exception ex = Record.Exception(() => loader.Load("file.ext"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ConfigurationLoadException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Load(string)"/> method with a mockup which indicates
+        ///     the specified file could not be found.
+        /// </summary>
+        [Fact]
+        public void LoadFileNotFound()
+        {
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
+
+            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+
+            Result result = loader.Load("file.ext");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
     }
 }

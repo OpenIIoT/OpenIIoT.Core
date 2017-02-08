@@ -169,7 +169,9 @@ namespace OpenIIoT.Core.Configuration
 
             string content = JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter());
 
-            retVal.Incorporate(Platform.WriteFile(fileName, content));
+            Result writeResult = Platform.WriteFile(fileName, content);
+
+            retVal.Incorporate(writeResult);
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
