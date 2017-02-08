@@ -50,6 +50,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common.Exceptions;
 
 namespace OpenIIoT.Core.Configuration
 {
@@ -111,12 +112,7 @@ namespace OpenIIoT.Core.Configuration
         /// <summary>
         ///     The Logger for this class.
         /// </summary>
-        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        /// <summary>
-        ///     Lock for the State property.
-        /// </summary>
-        private object stateLock = new object();
+        private static new xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         #endregion Private Fields
 
@@ -319,7 +315,9 @@ namespace OpenIIoT.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
         {
-            return SaveConfiguration(Configuration, ConfigurationFileName);
+            ConfigurationLoader loader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
+
+            return loader.Save(Configuration, ConfigurationFileName);
         }
 
         /// <summary>
@@ -351,7 +349,7 @@ namespace OpenIIoT.Core.Configuration
         ///     <para>Executed upon instantiation of all program Managers.</para>
         ///     <para>Registers all IManagers in the specified list implementing IConfigurable.</para>
         /// </summary>
-        /// <exception cref="Exception">Thrown when an error is encountered during setup.</exception>
+        /// <exception cref="ConfigurationRegistrationException">Thrown when an error is encountered during setup.</exception>
         protected override void Setup()
         {
             logger.EnterMethod();
@@ -365,7 +363,7 @@ namespace OpenIIoT.Core.Configuration
 
             if (registerResult.ResultCode == ResultCode.Failure)
             {
-                throw new Exception("Error registering Manager Types: " + registerResult.GetLastError());
+                throw new ConfigurationRegistrationException("Error registering Manager Types: " + registerResult.GetLastError());
             }
 
             logger.ExitMethod();
@@ -409,51 +407,35 @@ namespace OpenIIoT.Core.Configuration
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            // check whether the configuration file exists and if it doesn't, build it from scratch.
-            if (!Dependency<IPlatformManager>().Platform.FileExists(ConfigurationFileName))
-            {
-                logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
-                Result<Dictionary<string, Dictionary<string, object>>> buildResult = BuildNewConfiguration();
+            ConfigurationLoader loader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
 
-                if (buildResult.ResultCode != ResultCode.Failure)
-                {
-                    // the replacement configuration was built successfully; print the result.
-                    buildResult.LogResult(logger, "BuildNewConfiguration");
-
-                    // try to save the new configuration to file
-                    logger.Info("Saving the new configuration to '" + ConfigurationFileName + "'...");
-                    Result saveResult = SaveConfiguration(buildResult.ReturnValue);
-
-                    if (saveResult.ResultCode != ResultCode.Failure)
-                    {
-                        // the file saved properly. print the result and a final confirmation.
-                        saveResult.LogResult(logger, "SaveConfiguration");
-                        logger.Info("Saved the new configuration to '" + ConfigurationFileName + "'.");
-                    }
-                    else
-                    {
-                        throw new Exception("Failed to save the new configuration: " + saveResult.GetLastError());
-                    }
-                }
-                else
-                {
-                    throw new Exception("The configuration file was missing and the application failed to build a replacement: " + buildResult.GetLastError());
-                }
-            }
-
-            logger.Checkpoint("Configuration file validated/generated", guid);
-
-            // load the configuration.
-            Result<Dictionary<string, Dictionary<string, object>>> loadResult = LoadConfiguration();
+            logger.Info("Loading application configuration from '" + ConfigurationFileName + "'...");
+            Result<Dictionary<string, Dictionary<string, object>>> loadResult = loader.Load(ConfigurationFileName);
 
             if (loadResult.ResultCode == ResultCode.Failure)
             {
-                throw new Exception("Failed to load the configuration: " + loadResult.GetLastError());
+                logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
+
+                loadResult = loader.Build();
+                logger.Info("New configuration built.");
+
+                // try to save the new configuration to file
+                logger.Info("Saving the new configuration to '" + ConfigurationFileName + "'...");
+                Result saveResult = loader.Save(loadResult.ReturnValue, ConfigurationFileName);
+
+                if (saveResult.ResultCode != ResultCode.Failure)
+                {
+                    // the file saved properly. print the result and a final confirmation.
+                    saveResult.LogResult(logger, "SaveConfiguration");
+                    logger.Info("Saved the new configuration to '" + ConfigurationFileName + "'.");
+                }
+                else
+                {
+                    throw new ConfigurationLoadException("Failed to save the new configuration: " + saveResult.GetLastError());
+                }
             }
 
-            retVal.Incorporate(loadResult);
-
-            logger.Checkpoint("Configuration loaded for validation", guid);
+            logger.Checkpoint("Configuration file loaded.", guid);
 
             // validate the configuration.
             Result validationResult = ValidateConfiguration(Configuration);
@@ -526,21 +508,6 @@ namespace OpenIIoT.Core.Configuration
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Manually builds an instance of Configuration with default values.
-        /// </summary>
-        /// <returns>A Result containing the default instance of a Configuration.</returns>
-        private Result<Dictionary<string, Dictionary<string, object>>> BuildNewConfiguration()
-        {
-            logger.EnterMethod();
-
-            Result<Dictionary<string, Dictionary<string, object>>> retVal = new Result<Dictionary<string, Dictionary<string, object>>>();
-            retVal.ReturnValue = new Dictionary<string, Dictionary<string, object>>();
-
-            logger.ExitMethod();
             return retVal;
         }
 
@@ -623,52 +590,6 @@ namespace OpenIIoT.Core.Configuration
         }
 
         /// <summary>
-        ///     Loads the configuration from the file specified in the ConfigurationFileName property.
-        /// </summary>
-        /// <returns>
-        ///     A Result containing the result of the operation and the instance of Configuration containing the loaded configuration.
-        /// </returns>
-        private Result<Dictionary<string, Dictionary<string, object>>> LoadConfiguration()
-        {
-            return LoadConfiguration(ConfigurationFileName);
-        }
-
-        /// <summary>
-        ///     Reads the given file and attempts to deserialize it to an instance of Configuration.
-        /// </summary>
-        /// <param name="fileName">The file to read and deserialize.</param>
-        /// <returns>A Result containing the result of the operation and the Configuration instance created from the file.</returns>
-        private Result<Dictionary<string, Dictionary<string, object>>> LoadConfiguration(string fileName)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(fileName), true);
-
-            logger.Info("Loading configuration from '" + fileName + "'...");
-            Result<Dictionary<string, Dictionary<string, object>>> retVal = new Result<Dictionary<string, Dictionary<string, object>>>();
-
-            string configFile = string.Empty;
-
-            try
-            {
-                // read the entirety of the configuration file into configFile
-                configFile = Dependency<IPlatformManager>().Platform.ReadFile(fileName).ReturnValue;
-                logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
-
-                // attempt to deserialize the contents of the file to an object of type ApplicationConfiguration
-                retVal.ReturnValue = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(configFile);
-                logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Exception thrown while loading Configuration from '" + fileName + "': " + ex);
-                logger.Exception(LogLevel.Error, ex, xLogger.Vars(configFile), xLogger.Names("configFile"), guid);
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
         ///     Removes the specified instance of the specified type from the configuration.
         /// </summary>
         /// <param name="type">The Type of instance to remove.</param>
@@ -693,47 +614,6 @@ namespace OpenIIoT.Core.Configuration
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Saves the provided configuration to the file specified in app.exe.config.
-        /// </summary>
-        /// <param name="configuration">The Configuration instance to save.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result SaveConfiguration(Dictionary<string, Dictionary<string, object>> configuration)
-        {
-            logger.Info("Saving specified configuration to '" + ConfigurationFileName + "'...");
-            Result retVal = SaveConfiguration(configuration, ConfigurationFileName);
-            retVal.LogResult(logger);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Saves the given configuration to the specified file.
-        /// </summary>
-        /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
-        /// <param name="fileName">The file in which to save the configuration.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result SaveConfiguration(Dictionary<string, Dictionary<string, object>> configuration, string fileName)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(configuration, fileName), true);
-
-            logger.Info("Saving configuration to '" + fileName + "'...");
-            Result retVal = new Result();
-
-            try
-            {
-                logger.Trace("Flushing configuration to disk at '" + fileName + "'.");
-                Dependency<IPlatformManager>().Platform.WriteFile(fileName, JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter()));
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Exception thrown when attempting to save the Configuration to '" + fileName + "': " + ex.Message);
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
