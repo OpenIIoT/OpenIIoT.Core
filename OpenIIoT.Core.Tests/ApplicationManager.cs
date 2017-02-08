@@ -87,7 +87,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void DoubleManagers()
         {
-            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager), typeof(MockManager) }));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager), typeof(MockManager) }));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerInstantiationException>(ex);
         }
 
         /// <summary>
@@ -96,7 +99,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void GetInstanceBeforeInstantiation()
         {
-            Assert.Throws<ManagerNotInitializedException>(() => Core.ApplicationManager.GetInstance());
+            Exception ex = Record.Exception(() => Core.ApplicationManager.GetInstance());
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerNotInitializedException>(ex);
         }
 
         /// <summary>
@@ -131,7 +137,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstantiateWithBrokenSetupMethod()
         {
-            Assert.Throws<ManagerSetupException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerSetupException>(ex);
         }
 
         /// <summary>
@@ -140,7 +149,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstantiateWithEmptyArray()
         {
-            Assert.Throws<ManagerTypeListException>(() => Core.ApplicationManager.Instantiate(new Type[] { }));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { }));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerTypeListException>(ex);
         }
 
         /// <summary>
@@ -150,7 +162,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstantiateWithNonIManager()
         {
-            Assert.Throws<ManagerTypeListException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(int) }));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(int) }));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerTypeListException>(ex);
         }
 
         /// <summary>
@@ -159,7 +174,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstantiateWithNull()
         {
-            Assert.Throws<ManagerTypeListException>(() => Core.ApplicationManager.Instantiate(null));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(null));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerTypeListException>(ex);
         }
 
         /// <summary>
@@ -192,7 +210,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void ManagerDoesntImplementIManager()
         {
-            Assert.Throws<ManagerTypeListException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerDoesntImplementIManager) }));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerDoesntImplementIManager) }));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerTypeListException>(ex);
         }
 
         /// <summary>
@@ -202,7 +223,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void ManagerWithBadDepdency()
         {
-            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadDependency) }));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadDependency) }));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerInstantiationException>(ex);
         }
 
         /// <summary>
@@ -212,7 +236,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void ManagerWithBadInstantiate()
         {
-            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadInstantiate) }));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadInstantiate) }));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerInstantiationException>(ex);
         }
 
         /// <summary>
@@ -222,7 +249,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void ManagerWithNoDependencies()
         {
-            Assert.Throws<ManagerInstantiationException>(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoDependencies) }));
+            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoDependencies) }));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerInstantiationException>(ex);
         }
 
         /// <summary>
@@ -234,7 +264,10 @@ namespace OpenIIoT.Core.Tests
         {
             Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartBadReturn) });
 
-            Assert.Throws<ManagerStartException>(() => manager.Start());
+            Exception ex = Record.Exception(() => manager.Start());
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerStartException>(ex);
         }
 
         /// <summary>
@@ -246,7 +279,10 @@ namespace OpenIIoT.Core.Tests
         {
             Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartFail) });
 
-            Assert.Throws<ManagerStartException>(() => manager.Start());
+            Exception ex = Record.Exception(() => manager.Start());
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerStartException>(ex);
         }
 
         /// <summary>
@@ -283,7 +319,10 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(ResultCode.Failure, startResult.ResultCode);
             Assert.Equal(State.Running, manager.State);
 
-            Assert.Throws<ManagerStopException>(() => manager.Stop());
+            Exception ex = Record.Exception(() => manager.Stop());
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerStopException>(ex);
         }
 
         /// <summary>
@@ -300,7 +339,10 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(ResultCode.Failure, startResult.ResultCode);
             Assert.Equal(State.Running, manager.State);
 
-            Assert.Throws<ManagerStopException>(() => manager.Stop());
+            Exception ex = Record.Exception(() => manager.Stop());
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerStopException>(ex);
         }
 
         /// <summary>
