@@ -5,9 +5,11 @@
 All classes, interfaces, enumerations which need to be accessible to plugins, in addition to exceptions and other trivial classes, must reside in the ```OpenIIoT.SDK``` project.  Organization of the ```OpenIIoT.SDK``` project must
 mirror that of the ```OpenIIoT.Core``` project.
 
+Classes relating to the core application, including all Manager classes, must reside in the ```OpenIIoT.Core``` project.  Managers must have a corresponding interface in the ```OpenIIoT.SDK``` project to allow usage from plugins without a reference to the core binary.
+
 ## Testing
 
-All projects containing source code must have an accompanying Unit Test project named ```<project>.Tests``` where the project under test preceeds the final period in the project name.  For example,
+All projects containing source code must have an accompanying Unit Test project named ```<project>.Tests``` where the project under test precedes the final period in the project name.  For example,
 the project ```OpenIIoT.SDK``` must have a Unit Test project named ```OpenIIoT.SDK.Tests``` within the same solution.
 
 Test project organization must mirror the project under test, and test classes must mirror the names of the classes being tested.  The file header for the Unit Test class must match that of the class under test followed by
@@ -25,7 +27,7 @@ coverage extension for Visual Studio.
 The code coverage target for all classes is _95%_ or above, preferably 100%.  Classes failing to reach 95% coverage must be refactored such that the target may be reached.
 
 The [Moq](https://github.com/moq/moq) mocking framework must be used to mock any non-trivial objects required for unit testing, where practical.  If a test must use a concrete mockup, the code for the mockup must be included
-within the file in which it is used.  The rationale explaining why a mocking framework must be included in the remarks section of the XML documentation for the class, and any unit test dependent upon the mockup must state the depencency
+within the file in which it is used.  The rationale explaining why a mocking framework must be included in the remarks section of the XML documentation for the class, and any unit test dependent upon the mockup must state the dependency
 in the remarks section of the XML documentation for that unit test.
 
 ## Coding Standards and Styling
@@ -34,9 +36,9 @@ in the remarks section of the XML documentation for that unit test.
 
 The root namespace of the application must remain ```OpenIIoT.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
 folder of the same name.  All namespaces are to be in Pascal Case.  Conversely, all project folders must contain code with a namespace corresponding 
-to the folder name.  The only exception is the ```Common``` folder in which miscellanous files within the ```OpenIIoT.Core``` namespace are stored.
+to the folder name.  The only exception is the ```Common``` folder in which miscellaneous files within the ```OpenIIoT.Core``` namespace are stored.
 
-Plugin namespaces must begin with ```OpenIIoT.Plugin```.  Currently the third tuple of the namespace must match the plugin type, e.g. ```OpenIIoT.Plugin.Connector```, however this is subject to change.  The final tuple must match the plugin name, however, regardless of the presense of the plugin type.
+Plugin namespaces must begin with ```OpenIIoT.Plugin```.  Currently the third tuple of the namespace must match the plugin type, e.g. ```OpenIIoT.Plugin.Connector```, however this is subject to change.  The final tuple must match the plugin name, however, regardless of the presence of the plugin type.
 
 ### StyleCop
 
@@ -69,7 +71,7 @@ All files must contain the standard file header at the top of the file.  The fil
 
 * Match the general style of the ```Program.cs``` file header.
 * Contain the name of the class/interface, generated with the BigFont tool using Graffiti font and size large for uppercase characters and medium for lower.
-* Contain a brief summary of the class or interface.  This must match the first paragraph of the summary tag for the xml documentation for the class or interface.
+* Contain a brief summary of the class or interface.  This must match the first paragraph of the summary tag for the XML documentation for the class or interface.
 * Contain the GNU AGPL v3 license introduction.
 
 ### XML Documentation
@@ -111,7 +113,7 @@ The following rules must be followed:
 
 The following rules should be followed, with few exceptions:
 
-* Minimize private fields (utility/generic stuff is ok, for everything else use private properties).
+* Minimize private fields (utility/generic stuff is OK, for everything else use private properties).
 * Avoid enumerations within classes (preference is a separate file).
 * Avoid nested classes (preference is a separate file).
 
@@ -123,7 +125,7 @@ but not required for all other projects.
 Non-trivial methods within the ```OpenIIoT.Core``` and ```OpenIIoT.SDK``` projects must use the ```EnterMethod()``` and ```ExitMethod()``` methods from the ```xLogger``` extension.  Exceptions may be made for methods relating to the manipulation
 and reading and writing of the application model and model items.
 
-Log messages and and the logging level at which they are logged are discretionary.  Developers are encouraged to review the messages at the ```Trace```, ```Debug``` and ```Info``` logging levels for overall style and "fit" with
+Log messages and the logging level at which they are logged are discretionary.  Developers are encouraged to review the messages at the ```Trace```, ```Debug``` and ```Info``` logging levels for overall style and "fit" with
 the whole of the application.  In general, messages logged with the ```Info``` level should be targeted to a semi-technical person.
 
 ### Exceptions
@@ -135,7 +137,7 @@ must store all model related exceptions in ```ModelExceptions.cs```.  Exception 
 All exception classes must be contained within the file.  Suppress StyleCop rule SA1402 to eliminate warnings.  The first exception class must extend ```Exception``` and must match the filename; e.g. the first exception class
 within ```ModelExceptions.cs``` would be ```ModelException```.  All further exceptions must extend this class.
 
-Where possible, exceptions should be re-thrown as inner exceptions at each level back to Main().  For example, if an exception is generated while loading the configuration file during startup, the exception heirarchy might look like the following:
+Where possible, exceptions should be re-thrown as inner exceptions at each level back to Main().  For example, if an exception is generated while loading the configuration file during startup, the exception hierarchy might look like the following:
 
 ```
 ApplicationStartException
@@ -153,7 +155,7 @@ This strategy should aid in debugging and support as the application scales.
 
 Methods which need to return status information or errors, other than fatal exceptions, must have a return type of [Operation Result](https://github.com/jpdillingham/OperationResult).  Methods returning values must use the generic variant ```Result<T>```.
 
-The usage of this class allows the application to gracefully handle recoverable errors without the expense of exceptions, and eliminates the need for sentinal values in return types.
+The usage of this class allows the application to gracefully handle recoverable errors without the expense of exceptions, and eliminates the need for sentinel values in return types.
 
 
 
