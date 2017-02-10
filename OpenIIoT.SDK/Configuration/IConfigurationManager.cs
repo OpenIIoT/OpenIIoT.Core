@@ -126,12 +126,6 @@ namespace OpenIIoT.SDK.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "");
 
-        /// <summary>
-        ///     Validates the current configuration.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result ValidateConfiguration();
-
         #endregion Public Methods
     }
 }
