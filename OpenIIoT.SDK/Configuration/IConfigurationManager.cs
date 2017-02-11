@@ -54,6 +54,11 @@ namespace OpenIIoT.SDK.Configuration
         #region Public Properties
 
         /// <summary>
+        ///     Gets the registry of configurable Types.
+        /// </summary>
+        ConfigurableTypeRegistry ConfigurableTypeRegistry { get; }
+
+        /// <summary>
         ///     Gets the current configuration.
         /// </summary>
         Dictionary<string, Dictionary<string, object>> Configuration { get; }
@@ -62,11 +67,6 @@ namespace OpenIIoT.SDK.Configuration
         ///     Gets the filename of the configuration file.
         /// </summary>
         string ConfigurationFileName { get; }
-
-        /// <summary>
-        ///     Gets the registry of configurable Types.
-        /// </summary>
-        ConfigurableTypeRegistry ConfigurableTypeRegistry { get; }
 
         #endregion Public Properties
 
@@ -101,7 +101,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="type">The Type of the instance to check.</param>
         /// <param name="instanceName">The name of the instance to check.</param>
         /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
-        Result<bool> IsConfigured(Type type, string instanceName = "");
+        Result<bool> IsInstanceConfigured(Type type, string instanceName = "");
 
         /// <summary>
         ///     Removes the specified instance of the specified type from the configuration.
