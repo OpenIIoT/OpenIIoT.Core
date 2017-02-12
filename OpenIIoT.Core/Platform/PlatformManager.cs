@@ -182,30 +182,6 @@ namespace OpenIIoT.Core.Platform
             return instance;
         }
 
-        /// <summary>
-        ///     Check each of the directories in the internal directory list and ensures that they exist.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result CheckDirectories()
-        {
-            logger.EnterMethod();
-            Result retVal = new Result();
-
-            Dictionary<string, string> directories = Directories.ToDictionary();
-
-            foreach (string directory in directories.Keys)
-            {
-                if (!Platform.DirectoryExists(directories[directory]))
-                {
-                    Platform.CreateDirectory(directories[directory]);
-                    retVal.AddWarning("The directory '" + directories[directory] + "' was missing and was recreated.");
-                }
-            }
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
         #endregion Public Methods
 
         #region Protected Methods
@@ -295,6 +271,30 @@ namespace OpenIIoT.Core.Platform
                  }";
 
             return Utility.GetSetting("Directories", defaultDirectories).Replace('|', System.IO.Path.DirectorySeparatorChar);
+        }
+
+        /// <summary>
+        ///     Check each of the directories in the internal directory list and ensures that they exist.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        private Result CheckDirectories()
+        {
+            logger.EnterMethod();
+            Result retVal = new Result();
+
+            Dictionary<string, string> directories = Directories.ToDictionary();
+
+            foreach (string directory in directories.Keys)
+            {
+                if (!Platform.DirectoryExists(directories[directory]))
+                {
+                    Platform.CreateDirectory(directories[directory]);
+                    retVal.AddWarning("The directory '" + directories[directory] + "' was missing and was recreated.");
+                }
+            }
+
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
         /// <summary>
