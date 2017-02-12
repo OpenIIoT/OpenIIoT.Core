@@ -92,7 +92,7 @@ namespace OpenIIoT.Core.Configuration
         ///     Manually builds an instance of Configuration with default values.
         /// </summary>
         /// <returns>A Result containing the default instance of a Configuration.</returns>
-        public Result<Dictionary<string, Dictionary<string, object>>> Build()
+        public Result<Dictionary<string, Dictionary<string, object>>> BuildNew()
         {
             logger.EnterMethod();
             logger.Debug("Building new configuration...");

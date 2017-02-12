@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using NLog;
 using OpenIIoT.Core.Configuration;
+using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using System;
@@ -16,7 +17,7 @@ namespace OpenIIoT.Core.Service.Web.API
     {
         private static IApplicationManager manager = ApplicationManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static Dictionary<string, Dictionary<string, object>> configuration = manager.GetManager<ConfigurationManager>().Configuration;
+        private static SDK.Configuration.Configuration configuration = manager.GetManager<ConfigurationManager>().Configuration;
 
         private static List<string> serializationProperties = new List<string>(new string[] { });
 
