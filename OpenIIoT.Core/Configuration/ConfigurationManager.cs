@@ -42,15 +42,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Newtonsoft.Json;
-using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Common.Exceptions;
 
 namespace OpenIIoT.Core.Configuration
 {
@@ -139,7 +137,8 @@ namespace OpenIIoT.Core.Configuration
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
 
-            ConfigurableTypeRegistry = new ConfigurableTypeRegistry();
+            TypeRegistry = new ConfigurableTypeRegistry();
+            Configuration = new SDK.Configuration.Configuration(TypeRegistry);
 
             ConfigurationFileName = GetConfigurationFileName();
 
@@ -153,19 +152,19 @@ namespace OpenIIoT.Core.Configuration
         #region Public Properties
 
         /// <summary>
-        ///     Gets the registry of configurable Types.
-        /// </summary>
-        public ConfigurableTypeRegistry ConfigurableTypeRegistry { get; private set; }
-
-        /// <summary>
         ///     Gets the current configuration.
         /// </summary>
-        public Dictionary<string, Dictionary<string, object>> Configuration { get; private set; }
+        public SDK.Configuration.Configuration Configuration { get; private set; }
 
         /// <summary>
         ///     Gets the filename of the configuration file.
         /// </summary>
         public string ConfigurationFileName { get; private set; }
+
+        /// <summary>
+        ///     Gets the registry of configurable Types.
+        /// </summary>
+        public ConfigurableTypeRegistry TypeRegistry { get; private set; }
 
         #endregion Public Properties
 
@@ -193,155 +192,6 @@ namespace OpenIIoT.Core.Configuration
         }
 
         /// <summary>
-        ///     Adds the specified configuration to the specified instance of the specified type.
-        /// </summary>
-        /// <typeparam name="T">The configuration Type.</typeparam>
-        /// <param name="type">The Type of the instance to be configured.</param>
-        /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
-        /// <param name="instanceName">The name of the instance to configure.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
-
-            Result<T> retVal = new Result<T>();
-
-            if (!ConfigurableTypeRegistry.IsRegistered(type))
-            {
-                retVal.AddError("The type '" + type.Name + "' is configurable but has not been registered.");
-            }
-            else if (!IsInstanceConfigured(type, instanceName).ReturnValue)
-            {
-                // ensure the configuration doesn't already exist
-                logger.Trace("Inserting configuration into the Configuration dictionary...");
-
-                // if the configuration doesn't contain a section for the type, add it
-                if (!Configuration.ContainsKey(type.FullName))
-                {
-                    Configuration.Add(type.FullName, new Dictionary<string, object>());
-                }
-
-                // add the default configuration for the requested type/instance to the configuration.
-                Configuration[type.FullName].Add(instanceName, instanceConfiguration);
-
-                retVal.ReturnValue = (T)instanceConfiguration;
-
-                logger.Trace("The configuration was inserted successfully.");
-            }
-            else
-            {
-                retVal.AddError("The configuration for instance '" + instanceName + "' of type '" + type.Name + "' already exists.");
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Retrieves the configuration for the instance matching instanceName of the supplied Type. If the configuration can't
-        ///     be found, returns the default configuration for the Type.
-        /// </summary>
-        /// <typeparam name="T">The Type matching the Configuration model for the calling class.</typeparam>
-        /// <param name="type">The Type of the calling class.</param>
-        /// <param name="instanceName">The name of the instance for which to retrieve the configuration.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and an instance of the Configuration model for the calling class
-        ///     containing the retrieved configuration.
-        /// </returns>
-        public Result<T> GetInstanceConfiguration<T>(Type type, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
-
-            Result<T> retVal = new Result<T>();
-
-            // ensure the specified type and instance is configured
-            if (IsInstanceConfigured(type, instanceName).ReturnValue)
-            {
-                try
-                {
-                    // json.net needs to know the type when it deserializes; we can't cast or convert after the fact. the solution
-                    // is to grab our object, serialize it again, then deserialize it into the required type.
-                    var rawObject = Configuration[type.FullName][instanceName];
-                    var newSerializedObject = JsonConvert.SerializeObject(rawObject);
-                    var newDeSerializedObject = JsonConvert.DeserializeObject<T>(newSerializedObject);
-                    retVal.ReturnValue = newDeSerializedObject;
-                }
-                catch (Exception ex)
-                {
-                    retVal.AddError("Error retrieving and re-serializing the data from the configuration for type '" + type.Name + "', instance '" + instanceName + "': " + ex);
-                }
-            }
-            else
-            {
-                retVal.AddError("The specified type '" + type.Name + "' is not configured.");
-            }
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Determines whether the specified instance of the specified type is configured.
-        /// </summary>
-        /// <param name="type">The Type of the instance to check.</param>
-        /// <param name="instanceName">The name of the instance to check.</param>
-        /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
-        public Result<bool> IsInstanceConfigured(Type type, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
-
-            Result<bool> retVal = new Result<bool>();
-
-            // check to see if the type is in the comfiguration
-            if (Configuration.ContainsKey(type.FullName))
-            {
-                // check to see if the specified instance is in the type configuration
-                if (!Configuration[type.FullName].ContainsKey(instanceName))
-                {
-                    retVal.AddError("The specified instance name '" + instanceName + "' wasn't found in the configuration for type '" + type.Name + "'.");
-                }
-            }
-            else
-            {
-                retVal.AddError("The specified type '" + type.Name + "' was not found in the configuration.");
-            }
-
-            // if any messages were generated the configuration wasn't found, so return false.
-            retVal.ReturnValue = retVal.ResultCode != ResultCode.Failure;
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Removes the specified instance of the specified type from the configuration.
-        /// </summary>
-        /// <param name="type">The Type of instance to remove.</param>
-        /// <param name="instanceName">The name of the instance to remove from the Type.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result RemoveInstanceConfiguration(Type type, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, Configuration, instanceName));
-
-            logger.Debug("Removing configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
-            Result retVal = new Result();
-
-            if (IsInstanceConfigured(type, instanceName).ReturnValue)
-            {
-                Configuration[type.FullName].Remove(instanceName);
-            }
-            else
-            {
-                retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
         ///     Saves the current configuration to the file specified in app.exe.config.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -349,35 +199,7 @@ namespace OpenIIoT.Core.Configuration
         {
             ConfigurationLoader loader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
 
-            return loader.Save(Configuration, ConfigurationFileName);
-        }
-
-        /// <summary>
-        ///     Saves the specified Configuration model to the Configuration for the specified instance and Type.
-        /// </summary>
-        /// <param name="type">The Type of the calling class.</param>
-        /// <param name="instanceConfiguration">The Configuration model to save.</param>
-        /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "")
-        {
-            logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
-
-            logger.Debug("Updating configuration for instance '" + instanceName + "' of type '" + type.Name + "'...");
-            Result retVal = new Result();
-
-            if (IsInstanceConfigured(type, instanceName).ReturnValue)
-            {
-                Configuration[type.FullName][instanceName] = instanceConfiguration;
-            }
-            else
-            {
-                retVal.AddError("The specified instance '" + instanceName + "' of type '" + type.Name + "' was not found in the configuration.");
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
+            return loader.Save(Configuration.Instances, ConfigurationFileName);
         }
 
         #endregion Public Methods
@@ -398,7 +220,7 @@ namespace OpenIIoT.Core.Configuration
             List<Type> managerTypes = managerInstances.Select(m => m.GetType()).ToList();
 
             logger.Info("Registering Managers with the Configuration Manager...");
-            Result registerResult = ConfigurableTypeRegistry.RegisterTypes(managerTypes);
+            Result registerResult = TypeRegistry.RegisterTypes(managerTypes);
 
             if (registerResult.ResultCode == ResultCode.Failure)
             {
@@ -479,7 +301,7 @@ namespace OpenIIoT.Core.Configuration
             // attach the configuration
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                Configuration = loadResult.ReturnValue;
+                Configuration.LoadInstancesFrom(loadResult.ReturnValue);
             }
 
             retVal.LogResult(logger.Debug);

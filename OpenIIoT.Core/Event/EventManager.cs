@@ -198,7 +198,7 @@ namespace OpenIIoT.Core.Event
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            Result<EventManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().GetInstanceConfiguration<EventManagerConfiguration>(this.GetType());
+            Result<EventManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstanceConfiguration<EventManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -210,7 +210,7 @@ namespace OpenIIoT.Core.Event
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<EventManagerConfiguration> createResult = Dependency<IConfigurationManager>().AddInstanceConfiguration<EventManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                Result<EventManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstanceConfiguration<EventManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -298,7 +298,7 @@ namespace OpenIIoT.Core.Event
             logger.EnterMethod();
             Result retVal = new Result();
 
-            retVal.Incorporate(Dependency<IConfigurationManager>().UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstanceConfiguration(this.GetType(), Configuration));
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
