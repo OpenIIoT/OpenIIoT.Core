@@ -1429,7 +1429,7 @@ namespace OpenIIoT.Core.Plugin
                                                     assembly);
 
                 // register the plugin type as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
-                Result registerResult = Dependency<IConfigurationManager>().TypeRegistry.RegisterType(validationResult.ReturnValue);
+                Result registerResult = Dependency<IConfigurationManager>().ConfigurableTypeRegistry.RegisterType(validationResult.ReturnValue);
                 if (registerResult.ResultCode == ResultCode.Failure)
                 {
                     throw new Exception("Failed to register the assembly type with the Configuration Manager.");

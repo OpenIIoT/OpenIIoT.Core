@@ -57,14 +57,9 @@ namespace OpenIIoT.SDK.Configuration
         Configuration Configuration { get; }
 
         /// <summary>
-        ///     Gets the filename of the configuration file.
-        /// </summary>
-        string ConfigurationFileName { get; }
-
-        /// <summary>
         ///     Gets the registry of configurable Types.
         /// </summary>
-        ConfigurableTypeRegistry TypeRegistry { get; }
+        ConfigurableTypeRegistry ConfigurableTypeRegistry { get; }
 
         #endregion Public Properties
 

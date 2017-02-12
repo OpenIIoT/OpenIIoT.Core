@@ -87,7 +87,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
-            Result<Dictionary<string, Dictionary<string, object>>> result = loader.Build();
+            Result<Dictionary<string, Dictionary<string, object>>> result = loader.BuildNew();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.NotNull(result.ReturnValue);

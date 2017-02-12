@@ -137,10 +137,11 @@ namespace OpenIIoT.Core.Configuration
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
 
-            TypeRegistry = new ConfigurableTypeRegistry();
-            Configuration = new SDK.Configuration.Configuration(TypeRegistry);
+            ConfigurableTypeRegistry = new ConfigurableTypeRegistry();
+            Configuration = new SDK.Configuration.Configuration(ConfigurableTypeRegistry);
 
             ConfigurationFileName = GetConfigurationFileName();
+            ConfigurationLoader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
 
             ChangeState(State.Initialized);
 
@@ -152,21 +153,30 @@ namespace OpenIIoT.Core.Configuration
         #region Public Properties
 
         /// <summary>
+        ///     Gets the registry of configurable Types.
+        /// </summary>
+        public ConfigurableTypeRegistry ConfigurableTypeRegistry { get; private set; }
+
+        /// <summary>
         ///     Gets the current configuration.
         /// </summary>
         public SDK.Configuration.Configuration Configuration { get; private set; }
 
-        /// <summary>
-        ///     Gets the filename of the configuration file.
-        /// </summary>
-        public string ConfigurationFileName { get; private set; }
-
-        /// <summary>
-        ///     Gets the registry of configurable Types.
-        /// </summary>
-        public ConfigurableTypeRegistry TypeRegistry { get; private set; }
-
         #endregion Public Properties
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the filename of the configuration file.
+        /// </summary>
+        private string ConfigurationFileName { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the configuration loader.
+        /// </summary>
+        private ConfigurationLoader ConfigurationLoader { get; set; }
+
+        #endregion Private Properties
 
         #region Public Methods
 
@@ -197,9 +207,7 @@ namespace OpenIIoT.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public Result SaveConfiguration()
         {
-            ConfigurationLoader loader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
-
-            return loader.Save(Configuration.Instances, ConfigurationFileName);
+            return ConfigurationLoader.Save(Configuration.Instances, ConfigurationFileName);
         }
 
         #endregion Public Methods
@@ -220,7 +228,7 @@ namespace OpenIIoT.Core.Configuration
             List<Type> managerTypes = managerInstances.Select(m => m.GetType()).ToList();
 
             logger.Info("Registering Managers with the Configuration Manager...");
-            Result registerResult = TypeRegistry.RegisterTypes(managerTypes);
+            Result registerResult = ConfigurableTypeRegistry.RegisterTypes(managerTypes);
 
             if (registerResult.ResultCode == ResultCode.Failure)
             {
@@ -268,21 +276,19 @@ namespace OpenIIoT.Core.Configuration
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            ConfigurationLoader loader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
-
             logger.Info("Loading application configuration from '" + ConfigurationFileName + "'...");
-            Result<Dictionary<string, Dictionary<string, object>>> loadResult = loader.Load(ConfigurationFileName);
+            Result<Dictionary<string, Dictionary<string, object>>> loadResult = ConfigurationLoader.Load(ConfigurationFileName);
 
             if (loadResult.ResultCode == ResultCode.Failure)
             {
                 logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
 
-                loadResult = loader.Build();
+                loadResult = ConfigurationLoader.BuildNew();
                 logger.Info("New configuration built.");
 
                 // try to save the new configuration to file
                 logger.Info("Saving the new configuration to '" + ConfigurationFileName + "'...");
-                Result saveResult = loader.Save(loadResult.ReturnValue, ConfigurationFileName);
+                Result saveResult = ConfigurationLoader.Save(loadResult.ReturnValue, ConfigurationFileName);
 
                 if (saveResult.ResultCode != ResultCode.Failure)
                 {
