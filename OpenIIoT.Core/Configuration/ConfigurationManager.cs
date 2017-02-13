@@ -105,7 +105,7 @@ namespace OpenIIoT.Core.Configuration
         /// <summary>
         ///     The Singleton instance of ConfigurationManager.
         /// </summary>
-        private static ConfigurationManager instance;
+        private static IConfigurationManager instance;
 
         /// <summary>
         ///     The Logger for this class.
@@ -191,7 +191,7 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="platformManager">The PlatformManager instance for the application.</param>
         /// <returns>The Singleton instance of the ConfigurationManager.</returns>
-        public static ConfigurationManager Instantiate(IApplicationManager manager, IPlatformManager platformManager)
+        public static IConfigurationManager Instantiate(IApplicationManager manager, IPlatformManager platformManager)
         {
             if (instance == null)
             {

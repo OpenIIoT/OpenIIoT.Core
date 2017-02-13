@@ -87,7 +87,7 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     The Singleton instance of PlatformManager.
         /// </summary>
-        private static PlatformManager instance;
+        private static IPlatformManager instance;
 
         /// <summary>
         ///     The Logger for this class.
@@ -172,7 +172,7 @@ namespace OpenIIoT.Core.Platform
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <returns>The Singleton instance of PlatformManager.</returns>
-        public static PlatformManager Instantiate(IApplicationManager manager)
+        public static IPlatformManager Instantiate(IApplicationManager manager)
         {
             if (instance == null)
             {

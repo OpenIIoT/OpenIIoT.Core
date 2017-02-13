@@ -63,7 +63,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     The collection of instance configurations.
         /// </summary>
-        private Dictionary<string, Dictionary<string, object>> instances;
+        private IDictionary<string, Dictionary<string, object>> instances;
 
         #endregion Private Fields
 
@@ -96,7 +96,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Gets the collection of instance configurations.
         /// </summary>
-        public ReadOnlyDictionary<string, Dictionary<string, object>> Instances
+        public IReadOnlyDictionary<string, Dictionary<string, object>> Instances
         {
             get
             {

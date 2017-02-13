@@ -70,9 +70,9 @@ namespace OpenIIoT.Core.Tests.Platform
         private Mock<IApplicationManager> applicationManager;
 
         /// <summary>
-        ///     The <see cref="Core.Platform.PlatformManager"/> instance under test.
+        ///     The <see cref="SDK.Platform.IPlatformManager"/> instance under test.
         /// </summary>
-        private Core.Platform.PlatformManager manager;
+        private SDK.Platform.IPlatformManager manager;
 
         #endregion Private Fields
 

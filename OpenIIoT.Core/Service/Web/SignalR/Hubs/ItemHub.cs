@@ -23,7 +23,7 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         /// <summary>
         ///     The ApplicationManager for the application.
         /// </summary>
-        private ApplicationManager manager = ApplicationManager.GetInstance();
+        private IApplicationManager manager = ApplicationManager.GetInstance();
 
         /// <summary>
         ///     The Logger for this class.

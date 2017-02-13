@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNet.SignalR;
 using Newtonsoft.Json;
 using NLog;
+using OpenIIoT.SDK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,7 +22,7 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         /// <summary>
         ///     The ApplicationManager for the application.
         /// </summary>
-        private ApplicationManager manager;
+        private IApplicationManager manager;
 
         /// <summary>
         ///     The Logger for this class.
@@ -51,7 +52,7 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         /// </summary>
         /// <param name="manager">The ApplicationManager for the application.</param>
         /// <param name="hub">The hub to be managed by the HubManager.</param>
-        public HubHelper(ApplicationManager manager, IHub hub)
+        public HubHelper(IApplicationManager manager, IHub hub)
         {
             this.manager = manager;
             Hub = hub;

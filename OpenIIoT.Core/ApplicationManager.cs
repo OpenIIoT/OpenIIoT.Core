@@ -110,7 +110,7 @@ namespace OpenIIoT.Core
         /// <summary>
         ///     The Singleton instance of ApplicationManager.
         /// </summary>
-        private static ApplicationManager instance;
+        private static IApplicationManager instance;
 
         /// <summary>
         ///     The Logger for this class.
@@ -247,7 +247,7 @@ namespace OpenIIoT.Core
         /// <exception cref="ManagerNotInitializedException">
         ///     Thrown when a Manager instance is requested but the Manager has not yet been initialized.
         /// </exception>
-        public static ApplicationManager GetInstance()
+        public static IApplicationManager GetInstance()
         {
             if (instance == null)
             {
@@ -266,7 +266,7 @@ namespace OpenIIoT.Core
         ///     Thrown when the supplied list of Manager Types is empty or if one or more supplied Types do not implement the
         ///     <see cref="IManager"/> interface.
         /// </exception>
-        public static ApplicationManager Instantiate(Type[] managers)
+        public static IApplicationManager Instantiate(Type[] managers)
         {
             // validate input. ensure the list of types is not empty and that all types implement IManager.
             if (managers == default(Type[]) || managers.Count() == 0)
