@@ -79,6 +79,7 @@
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
+    <Compile Include="Configuration\IConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />

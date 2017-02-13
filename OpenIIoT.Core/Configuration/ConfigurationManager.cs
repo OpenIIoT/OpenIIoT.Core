@@ -155,7 +155,7 @@ namespace OpenIIoT.Core.Configuration
         /// <summary>
         ///     Gets the registry of configurable Types.
         /// </summary>
-        public ConfigurableTypeRegistry ConfigurableTypeRegistry { get; private set; }
+        public IConfigurableTypeRegistry ConfigurableTypeRegistry { get; private set; }
 
         /// <summary>
         ///     Gets the current configuration.

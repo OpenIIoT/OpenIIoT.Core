@@ -41,6 +41,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using NLog.xLogger;
 using Utility.OperationResult;
@@ -59,6 +60,11 @@ namespace OpenIIoT.SDK.Configuration
         /// </summary>
         private static xLogger logger = xLogManager.GetCurrentClassxLogger();
 
+        /// <summary>
+        ///     The collection of instance configurations.
+        /// </summary>
+        private Dictionary<string, Dictionary<string, object>> instances;
+
         #endregion Private Fields
 
         #region Public Constructors
@@ -67,7 +73,7 @@ namespace OpenIIoT.SDK.Configuration
         ///     Initializes a new instance of the <see cref="Configuration"/> class with the specified Type registry.
         /// </summary>
         /// <param name="registry">The Type registry with which to initialize the configuration.</param>
-        public Configuration(ConfigurableTypeRegistry registry) : this(registry, new Dictionary<string, Dictionary<string, object>>())
+        public Configuration(IConfigurableTypeRegistry registry) : this(registry, new Dictionary<string, Dictionary<string, object>>())
         {
         }
 
@@ -77,10 +83,10 @@ namespace OpenIIoT.SDK.Configuration
         /// </summary>
         /// <param name="registry">The Type registry with which to initialize the configuration.</param>
         /// <param name="instances">The collection of instance configurations with which to initialize the configuration.</param>
-        public Configuration(ConfigurableTypeRegistry registry, Dictionary<string, Dictionary<string, object>> instances)
+        public Configuration(IConfigurableTypeRegistry registry, Dictionary<string, Dictionary<string, object>> instances)
         {
             TypeRegistry = registry;
-            Instances = instances;
+            this.instances = instances;
         }
 
         #endregion Public Constructors
@@ -90,7 +96,13 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Gets the collection of instance configurations.
         /// </summary>
-        public Dictionary<string, Dictionary<string, object>> Instances { get; private set; }
+        public ReadOnlyDictionary<string, Dictionary<string, object>> Instances
+        {
+            get
+            {
+                return new ReadOnlyDictionary<string, Dictionary<string, object>>(instances);
+            }
+        }
 
         #endregion Public Properties
 
@@ -99,7 +111,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Gets or sets the registry of configurable Types.
         /// </summary>
-        private ConfigurableTypeRegistry TypeRegistry { get; set; }
+        private IConfigurableTypeRegistry TypeRegistry { get; set; }
 
         #endregion Private Properties
 
@@ -113,7 +125,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
         /// <param name="instanceName">The name of the instance to configure.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result<T> AddInstanceConfiguration<T>(Type type, object instanceConfiguration, string instanceName = "")
+        public Result<T> AddInstance<T>(Type type, object instanceConfiguration, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
 
@@ -129,13 +141,13 @@ namespace OpenIIoT.SDK.Configuration
                 logger.Trace("Inserting configuration into the Configuration dictionary...");
 
                 // if the configuration doesn't contain a section for the type, add it
-                if (!Instances.ContainsKey(type.FullName))
+                if (!instances.ContainsKey(type.FullName))
                 {
-                    Instances.Add(type.FullName, new Dictionary<string, object>());
+                    instances.Add(type.FullName, new Dictionary<string, object>());
                 }
 
                 // add the default configuration for the requested type/instance to the configuration.
-                Instances[type.FullName].Add(instanceName, instanceConfiguration);
+                instances[type.FullName].Add(instanceName, instanceConfiguration);
 
                 retVal.ReturnValue = (T)instanceConfiguration;
 
@@ -162,7 +174,7 @@ namespace OpenIIoT.SDK.Configuration
         ///     A Result containing the result of the operation and an instance of the Configuration model for the calling class
         ///     containing the retrieved configuration.
         /// </returns>
-        public Result<T> GetInstanceConfiguration<T>(Type type, string instanceName = "")
+        public Result<T> GetInstance<T>(Type type, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
 
@@ -175,7 +187,7 @@ namespace OpenIIoT.SDK.Configuration
                 {
                     // json.net needs to know the type when it deserializes; we can't cast or convert after the fact. the solution
                     // is to grab our object, serialize it again, then deserialize it into the required type.
-                    var rawObject = Instances[type.FullName][instanceName];
+                    var rawObject = instances[type.FullName][instanceName];
                     var newSerializedObject = JsonConvert.SerializeObject(rawObject);
                     var newDeSerializedObject = JsonConvert.DeserializeObject<T>(newSerializedObject);
                     retVal.ReturnValue = newDeSerializedObject;
@@ -203,14 +215,13 @@ namespace OpenIIoT.SDK.Configuration
         public Result<bool> IsInstanceConfigured(Type type, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
-
             Result<bool> retVal = new Result<bool>();
 
             // check to see if the type is in the comfiguration
-            if (Instances.ContainsKey(type.FullName))
+            if (instances.ContainsKey(type.FullName))
             {
                 // check to see if the specified instance is in the type configuration
-                if (!Instances[type.FullName].ContainsKey(instanceName))
+                if (!instances[type.FullName].ContainsKey(instanceName))
                 {
                     retVal.AddError("The specified instance name '" + instanceName + "' wasn't found in the configuration for type '" + type.Name + "'.");
                 }
@@ -235,7 +246,7 @@ namespace OpenIIoT.SDK.Configuration
         {
             if (instances != default(Dictionary<string, Dictionary<string, object>>))
             {
-                Instances = instances;
+                this.instances = instances;
             }
         }
 
@@ -245,7 +256,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="type">The Type of instance to remove.</param>
         /// <param name="instanceName">The name of the instance to remove from the Type.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result RemoveInstanceConfiguration(Type type, string instanceName = "")
+        public Result RemoveInstance(Type type, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, instanceName));
 
@@ -254,7 +265,7 @@ namespace OpenIIoT.SDK.Configuration
 
             if (IsInstanceConfigured(type, instanceName).ReturnValue)
             {
-                Instances[type.FullName].Remove(instanceName);
+                instances[type.FullName].Remove(instanceName);
             }
             else
             {
@@ -273,7 +284,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="instanceConfiguration">The Configuration model to save.</param>
         /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result UpdateInstanceConfiguration(Type type, object instanceConfiguration, string instanceName = "")
+        public Result UpdateInstance(Type type, object instanceConfiguration, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
 
@@ -282,7 +293,7 @@ namespace OpenIIoT.SDK.Configuration
 
             if (IsInstanceConfigured(type, instanceName).ReturnValue)
             {
-                Instances[type.FullName][instanceName] = instanceConfiguration;
+                instances[type.FullName][instanceName] = instanceConfiguration;
             }
             else
             {

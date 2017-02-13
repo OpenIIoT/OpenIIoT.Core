@@ -48,8 +48,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Moq;
 using Xunit;
+using System;
+using Utility.OperationResult;
 
 [assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
@@ -61,5 +65,99 @@ namespace OpenIIoT.SDK.Tests.Configuration
     [Collection("Configuration")]
     public class Configuration
     {
+        private Mock<SDK.Configuration.IConfigurableTypeRegistry> registry;
+        private SDK.Configuration.Configuration configuration;
+
+        public Configuration()
+        {
+            registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
+            configuration = new SDK.Configuration.Configuration(registry.Object);
+        }
+
+        [Fact]
+        public void Constructor()
+        {
+            // instantiate a new configuration with no instances
+            SDK.Configuration.Configuration test = new SDK.Configuration.Configuration(registry.Object);
+
+            Assert.IsType<SDK.Configuration.Configuration>(test);
+            Assert.Empty(test.Instances);
+
+            // instantiate a new configuration with a predetermined list of instances
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add("test", new Dictionary<string, object>());
+
+            test = new SDK.Configuration.Configuration(registry.Object, instances);
+
+            Assert.IsType<SDK.Configuration.Configuration>(test);
+            Assert.NotEmpty(test.Instances);
+        }
+
+        [Fact]
+        public void LoadInstancesFrom()
+        {
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add("test", new Dictionary<string, object>());
+            instances.Add("test 2", new Dictionary<string, object>());
+
+            Assert.Empty(configuration.Instances);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Assert.NotEmpty(configuration.Instances);
+            Assert.Equal(2, configuration.Instances.Count);
+            Assert.True(configuration.Instances.ContainsKey("test 2"));
+        }
+
+        [Fact]
+        public void IsInstanceConfiguredNoType()
+        {
+            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), "");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.False(result.ReturnValue);
+        }
+
+        [Fact]
+        public void IsInstanceConfiguredNoInstance()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add("", 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), "test");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.False(result.ReturnValue);
+        }
+
+        [Fact]
+        public void IsInstanceConfigured()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add("", 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), "");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(result.ReturnValue);
+        }
+
+        [Fact]
+        public void AddInstance()
+        {
+            registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
+        }
     }
 }

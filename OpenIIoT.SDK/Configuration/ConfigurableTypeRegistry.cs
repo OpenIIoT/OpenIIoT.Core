@@ -53,7 +53,7 @@ namespace OpenIIoT.SDK.Configuration
     /// <summary>
     ///     Maintains a registry of Types implementing the <see cref="IConfigurable{T}"/> interface.
     /// </summary>
-    public class ConfigurableTypeRegistry
+    public class ConfigurableTypeRegistry : IConfigurableTypeRegistry
     {
         #region Private Fields
 

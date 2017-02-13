@@ -209,7 +209,7 @@ namespace OpenIIoT.Core.Plugin
             logger.EnterMethod();
             Result retVal = new Result();
 
-            Result<PluginManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstanceConfiguration<PluginManagerConfiguration>(this.GetType());
+            Result<PluginManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<PluginManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -221,7 +221,7 @@ namespace OpenIIoT.Core.Plugin
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<PluginManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstanceConfiguration<PluginManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                Result<PluginManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<PluginManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -506,7 +506,7 @@ namespace OpenIIoT.Core.Plugin
 
             Configuration.InstalledPlugins = installedPluginList;
 
-            retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration));
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);

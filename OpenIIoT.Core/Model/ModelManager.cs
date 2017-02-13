@@ -385,7 +385,7 @@ namespace OpenIIoT.Core.Model
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            Result<ModelManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstanceConfiguration<ModelManagerConfiguration>(this.GetType());
+            Result<ModelManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<ModelManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -397,7 +397,7 @@ namespace OpenIIoT.Core.Model
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<ModelManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstanceConfiguration<ModelManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                Result<ModelManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<ModelManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -548,7 +548,7 @@ namespace OpenIIoT.Core.Model
             logger.EnterMethod();
             Result retVal = new Result();
 
-            retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstanceConfiguration(this.GetType(), Configuration));
+            retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration));
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);

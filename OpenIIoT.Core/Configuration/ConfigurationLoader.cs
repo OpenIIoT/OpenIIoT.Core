@@ -111,7 +111,6 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="fileName">The file to read and deserialize.</param>
         /// <returns>A Result containing the result of the operation and the Configuration instance created from the file.</returns>
         /// <exception cref="ConfigurationLoadException">Thrown when a configuration file exists but can not be read.</exception>
-        /// "
         public Result<Dictionary<string, Dictionary<string, object>>> Load(string fileName)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(fileName), true);
@@ -159,7 +158,7 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
         /// <param name="fileName">The file in which to save the configuration.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Save(Dictionary<string, Dictionary<string, object>> configuration, string fileName)
+        public Result Save(IDictionary<string, Dictionary<string, object>> configuration, string fileName)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(configuration, fileName), true);
             logger.Debug("Attempting to save configuration to '" + fileName + "'...");
