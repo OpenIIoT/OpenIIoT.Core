@@ -159,5 +159,127 @@ namespace OpenIIoT.SDK.Tests.Configuration
         {
             registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
         }
+
+        [Fact]
+        public void GetInstanceNotConfigured()
+        {
+            Result<int> result = configuration.GetInstance<int>(typeof(int), "");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void GetInstance()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add("", 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result<int> result = configuration.GetInstance<int>(typeof(int), "");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(1, result.ReturnValue);
+        }
+
+        [Fact]
+        public void GetInstanceException()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add("", new CircularObject());
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(CircularObject).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result<CircularObject> result = configuration.GetInstance<CircularObject>(typeof(CircularObject), "");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void UpdateInstance()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add("", 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result result = configuration.UpdateInstance(typeof(int), 2, "");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+
+            Result<int> getResult = configuration.GetInstance<int>(typeof(int), "");
+
+            Assert.Equal(ResultCode.Success, getResult.ResultCode);
+            Assert.Equal(2, getResult.ReturnValue);
+        }
+
+        [Fact]
+        public void RemoveInstance()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add("", 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Assert.NotEmpty(configuration.Instances);
+
+            Result result = configuration.RemoveInstance(typeof(int), "");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Empty(configuration.Instances[typeof(int).FullName]);
+        }
+
+        [Fact]
+        public void UpdateInstanceNotConfigured()
+        {
+            Result result = configuration.UpdateInstance(typeof(string), "test", "");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void RemoveInstanceNotConfigured()
+        {
+            Result result = configuration.RemoveInstance(typeof(int), "");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Creates a class with a circular property to force a serialization exception.
+        /// </summary>
+        /// <remarks>
+        ///     It is not feasible to use a mocking framework for this mockup due to the simplicity and the work involved to create
+        ///     a matching interface.
+        /// </remarks>
+        private class CircularObject
+        {
+            /// <summary>
+            ///     Gets the circular reference.
+            /// </summary>
+            public CircularObject This
+            {
+                get
+                {
+                    return this;
+                }
+            }
+        }
     }
 }
