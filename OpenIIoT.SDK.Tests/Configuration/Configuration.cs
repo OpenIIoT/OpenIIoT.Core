@@ -155,12 +155,6 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         [Fact]
-        public void AddInstance()
-        {
-            registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
-        }
-
-        [Fact]
         public void GetInstanceNotConfigured()
         {
             Result<int> result = configuration.GetInstance<int>(typeof(int), "");
@@ -257,6 +251,46 @@ namespace OpenIIoT.SDK.Tests.Configuration
         public void RemoveInstanceNotConfigured()
         {
             Result result = configuration.RemoveInstance(typeof(int), "");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void AddInstanceNotRegistered()
+        {
+            Result result = configuration.AddInstance<int>(typeof(int), "");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void AddInstance()
+        {
+            registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
+            registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
+
+            configuration = new SDK.Configuration.Configuration(registry.Object);
+
+            Result result = configuration.AddInstance<int>(typeof(int), 1, "test");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(configuration.IsInstanceConfigured(typeof(int), "test"));
+        }
+
+        [Fact]
+        public void AddInstanceAlreadyConfigured()
+        {
+            registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
+            registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
+
+            configuration = new SDK.Configuration.Configuration(registry.Object);
+
+            Result result = configuration.AddInstance<int>(typeof(int), 1, "test");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(configuration.IsInstanceConfigured(typeof(int), "test"));
+
+            result = configuration.AddInstance<int>(typeof(int), 2, "test");
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
