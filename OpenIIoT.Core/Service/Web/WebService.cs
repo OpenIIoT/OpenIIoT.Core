@@ -62,7 +62,7 @@ namespace OpenIIoT.Core.Service.Web
         {
             Result retVal = new Result();
 
-            Result<WebServiceConfiguration> fetchResult = manager.GetManager<IConfigurationManager>().Configuration.GetInstanceConfiguration<WebServiceConfiguration>(GetType());
+            Result<WebServiceConfiguration> fetchResult = manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebServiceConfiguration>(GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -70,12 +70,12 @@ namespace OpenIIoT.Core.Service.Web
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                Result<WebServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstanceConfiguration<WebServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                Result<WebServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstance<WebServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                     Configure(createResult.ReturnValue);
             }
 
-            return Configure(manager.GetManager<IConfigurationManager>().Configuration.GetInstanceConfiguration<WebServiceConfiguration>(this.GetType()).ReturnValue);
+            return Configure(manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebServiceConfiguration>(this.GetType()).ReturnValue);
         }
 
         public Result Configure(WebServiceConfiguration configuration)
@@ -87,7 +87,7 @@ namespace OpenIIoT.Core.Service.Web
 
         public Result SaveConfiguration()
         {
-            return manager.GetManager<IConfigurationManager>().Configuration.UpdateInstanceConfiguration(this.GetType(), Configuration);
+            return manager.GetManager<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration);
         }
 
         public static ConfigurationDefinition GetConfigurationDefinition()

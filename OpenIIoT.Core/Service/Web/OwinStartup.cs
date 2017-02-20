@@ -7,12 +7,13 @@ using System.Web.Http;
 using Microsoft.AspNet.SignalR;
 using Swashbuckle.Application;
 using OpenIIoT.Core.Platform;
+using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core.Service.Web
 {
     public class OwinStartup
     {
-        private ApplicationManager manager = ApplicationManager.GetInstance();
+        private IApplicationManager manager = ApplicationManager.GetInstance();
 
         private WebServiceConfiguration WebServiceConfiguration { get; set; }
 

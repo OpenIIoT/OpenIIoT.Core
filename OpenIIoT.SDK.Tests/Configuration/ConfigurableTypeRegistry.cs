@@ -61,314 +61,6 @@ using Xunit;
 namespace OpenIIoT.SDK.Tests.Configuration
 {
     /// <summary>
-    ///     Mocks a configurable Type.
-    /// </summary>
-    /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
-    public class ConfigurableMock : IConfigurable<int>
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the class Configuration.
-        /// </summary>
-        public int Configuration { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the class ConfigurationDefinition.
-        /// </summary>
-        public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Returns the ConfigurationDefinition for the Type.
-        /// </summary>
-        /// <returns>The ConfigurationDefinition for the Type.</returns>
-        public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
-        {
-            return new SDK.Configuration.ConfigurationDefinition();
-        }
-
-        /// <summary>
-        ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
-        ///     default configuration.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Configures the Type using the supplied configuration.
-        /// </summary>
-        /// <param name="configuration">The configuration with which the Type should be configured.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure(int configuration)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Saves the Type's configuration to the Configuration Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Mocks a configurable Type which throws an exception in the
-    ///     <see cref="ConfigurableMockExceptionDefinition.GetConfigurationDefinition"/> method.
-    /// </summary>
-    /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
-    public class ConfigurableMockExceptionDefinition : IConfigurable<int>
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the class Configuration.
-        /// </summary>
-        public int Configuration { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the class ConfigurationDefinition.
-        /// </summary>
-        public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Returns the ConfigurationDefinition for the Type.
-        /// </summary>
-        /// <returns>The ConfigurationDefinition for the Type.</returns>
-        public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
-        {
-            throw new Exception();
-        }
-
-        /// <summary>
-        ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
-        ///     default configuration.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Configures the Type using the supplied configuration.
-        /// </summary>
-        /// <param name="configuration">The configuration with which the Type should be configured.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure(int configuration)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Saves the Type's configuration to the Configuration Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Mocks a configurable Type with a missing <see cref="ConfigurableMockMissingDefault.GetDefaultDefinition"/> method.
-    /// </summary>
-    /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
-    public class ConfigurableMockMissingDefault : IConfigurable<int>
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the class Configuration.
-        /// </summary>
-        public int Configuration { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the class ConfigurationDefinition.
-        /// </summary>
-        public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Returns the ConfigurationDefinition for the Type.
-        /// </summary>
-        /// <returns>The ConfigurationDefinition for the Type.</returns>
-        public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
-        {
-            return new SDK.Configuration.ConfigurationDefinition();
-        }
-
-        /// <summary>
-        ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
-        ///     default configuration.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Configures the Type using the supplied configuration.
-        /// </summary>
-        /// <param name="configuration">The configuration with which the Type should be configured.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure(int configuration)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Saves the Type's configuration to the Configuration Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Mocks a configurable Type with a missing <see cref="ConfigurableMockMissingDefinition.GetConfigurationDefinition"/> method.
-    /// </summary>
-    /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
-    public class ConfigurableMockMissingDefinition : IConfigurable<int>
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the class Configuration.
-        /// </summary>
-        public int Configuration { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the class ConfigurationDefinition.
-        /// </summary>
-        public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
-        ///     default configuration.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Configures the Type using the supplied configuration.
-        /// </summary>
-        /// <param name="configuration">The configuration with which the Type should be configured.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure(int configuration)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Saves the Type's configuration to the Configuration Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
-    ///     Mocks a configurable Type which returns a null value from the
-    ///     <see cref="ConfigurableMockNullDefinition.GetConfigurationDefinition"/> method.
-    /// </summary>
-    /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
-    public class ConfigurableMockNullDefinition : IConfigurable<int>
-    {
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the class Configuration.
-        /// </summary>
-        public int Configuration { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the class ConfigurationDefinition.
-        /// </summary>
-        public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
-
-        #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Returns the ConfigurationDefinition for the Type.
-        /// </summary>
-        /// <returns>The ConfigurationDefinition for the Type.</returns>
-        public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
-        {
-            return null;
-        }
-
-        /// <summary>
-        ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
-        ///     default configuration.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Configures the Type using the supplied configuration.
-        /// </summary>
-        /// <param name="configuration">The configuration with which the Type should be configured.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure(int configuration)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        ///     Saves the Type's configuration to the Configuration Manager.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion Public Methods
-    }
-
-    /// <summary>
     ///     Unit tests for the <see cref="SDK.Configuration.ConfigurableTypeRegistry"/> class.
     /// </summary>
     [Collection("ConfigurableTypeRegistry")]
@@ -514,5 +206,317 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         #endregion Public Methods
+
+        #region Private Classes
+
+        /// <summary>
+        ///     Mocks a configurable Type.
+        /// </summary>
+        /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
+        private class ConfigurableMock : IConfigurable<int>
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the class Configuration.
+            /// </summary>
+            public int Configuration { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the class ConfigurationDefinition.
+            /// </summary>
+            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+
+            #endregion Public Properties
+
+            #region Public Methods
+
+            /// <summary>
+            ///     Returns the ConfigurationDefinition for the Type.
+            /// </summary>
+            /// <returns>The ConfigurationDefinition for the Type.</returns>
+            public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            {
+                return new SDK.Configuration.ConfigurationDefinition();
+            }
+
+            /// <summary>
+            ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
+            ///     default configuration.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure()
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Configures the Type using the supplied configuration.
+            /// </summary>
+            /// <param name="configuration">The configuration with which the Type should be configured.</param>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure(int configuration)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Saves the Type's configuration to the Configuration Manager.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result SaveConfiguration()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion Public Methods
+        }
+
+        /// <summary>
+        ///     Mocks a configurable Type which throws an exception in the
+        ///     <see cref="ConfigurableMockExceptionDefinition.GetConfigurationDefinition"/> method.
+        /// </summary>
+        /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
+        private class ConfigurableMockExceptionDefinition : IConfigurable<int>
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the class Configuration.
+            /// </summary>
+            public int Configuration { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the class ConfigurationDefinition.
+            /// </summary>
+            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+
+            #endregion Public Properties
+
+            #region Public Methods
+
+            /// <summary>
+            ///     Returns the ConfigurationDefinition for the Type.
+            /// </summary>
+            /// <returns>The ConfigurationDefinition for the Type.</returns>
+            public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            {
+                throw new Exception();
+            }
+
+            /// <summary>
+            ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
+            ///     default configuration.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure()
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Configures the Type using the supplied configuration.
+            /// </summary>
+            /// <param name="configuration">The configuration with which the Type should be configured.</param>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure(int configuration)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Saves the Type's configuration to the Configuration Manager.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result SaveConfiguration()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion Public Methods
+        }
+
+        /// <summary>
+        ///     Mocks a configurable Type with a missing <see cref="ConfigurableMockMissingDefault.GetDefaultDefinition"/> method.
+        /// </summary>
+        /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
+        private class ConfigurableMockMissingDefault : IConfigurable<int>
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the class Configuration.
+            /// </summary>
+            public int Configuration { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the class ConfigurationDefinition.
+            /// </summary>
+            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+
+            #endregion Public Properties
+
+            #region Public Methods
+
+            /// <summary>
+            ///     Returns the ConfigurationDefinition for the Type.
+            /// </summary>
+            /// <returns>The ConfigurationDefinition for the Type.</returns>
+            public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            {
+                return new SDK.Configuration.ConfigurationDefinition();
+            }
+
+            /// <summary>
+            ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
+            ///     default configuration.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure()
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Configures the Type using the supplied configuration.
+            /// </summary>
+            /// <param name="configuration">The configuration with which the Type should be configured.</param>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure(int configuration)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Saves the Type's configuration to the Configuration Manager.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result SaveConfiguration()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion Public Methods
+        }
+
+        /// <summary>
+        ///     Mocks a configurable Type with a missing <see cref="ConfigurableMockMissingDefinition.GetConfigurationDefinition"/> method.
+        /// </summary>
+        /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
+        private class ConfigurableMockMissingDefinition : IConfigurable<int>
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the class Configuration.
+            /// </summary>
+            public int Configuration { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the class ConfigurationDefinition.
+            /// </summary>
+            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+
+            #endregion Public Properties
+
+            #region Public Methods
+
+            /// <summary>
+            ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
+            ///     default configuration.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure()
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Configures the Type using the supplied configuration.
+            /// </summary>
+            /// <param name="configuration">The configuration with which the Type should be configured.</param>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure(int configuration)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Saves the Type's configuration to the Configuration Manager.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result SaveConfiguration()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion Public Methods
+        }
+
+        /// <summary>
+        ///     Mocks a configurable Type which returns a null value from the
+        ///     <see cref="ConfigurableMockNullDefinition.GetConfigurationDefinition"/> method.
+        /// </summary>
+        /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
+        private class ConfigurableMockNullDefinition : IConfigurable<int>
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets or sets the class Configuration.
+            /// </summary>
+            public int Configuration { get; set; }
+
+            /// <summary>
+            ///     Gets or sets the class ConfigurationDefinition.
+            /// </summary>
+            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+
+            #endregion Public Properties
+
+            #region Public Methods
+
+            /// <summary>
+            ///     Returns the ConfigurationDefinition for the Type.
+            /// </summary>
+            /// <returns>The ConfigurationDefinition for the Type.</returns>
+            public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            {
+                return null;
+            }
+
+            /// <summary>
+            ///     Configures the Type using the configuration stored in the Configuration Manager, or, failing that, using the
+            ///     default configuration.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure()
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Configures the Type using the supplied configuration.
+            /// </summary>
+            /// <param name="configuration">The configuration with which the Type should be configured.</param>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result Configure(int configuration)
+            {
+                throw new NotImplementedException();
+            }
+
+            /// <summary>
+            ///     Saves the Type's configuration to the Configuration Manager.
+            /// </summary>
+            /// <returns>A Result containing the result of the operation.</returns>
+            public Result SaveConfiguration()
+            {
+                throw new NotImplementedException();
+            }
+
+            #endregion Public Methods
+        }
+
+        #endregion Private Classes
     }
 }

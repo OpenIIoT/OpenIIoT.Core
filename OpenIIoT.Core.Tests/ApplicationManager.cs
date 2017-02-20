@@ -112,8 +112,8 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstantiateAndGetInstance()
         {
-            Core.ApplicationManager manager1 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-            Core.ApplicationManager manager2 = Core.ApplicationManager.GetInstance();
+            IApplicationManager manager1 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager2 = Core.ApplicationManager.GetInstance();
 
             Assert.Equal(manager1, manager2);
         }
@@ -125,8 +125,8 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstantiateTwice()
         {
-            Core.ApplicationManager manager1 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-            Core.ApplicationManager manager2 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager1 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager2 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
         }
 
         /// <summary>
@@ -188,7 +188,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstantiateWithValidIManager()
         {
-            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Assert.IsType<Core.ApplicationManager>(manager);
             Assert.NotNull(manager);
@@ -262,7 +262,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StartBadReturn()
         {
-            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartBadReturn) });
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartBadReturn) });
 
             Exception ex = Record.Exception(() => manager.Start());
 
@@ -277,7 +277,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StartFail()
         {
-            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartFail) });
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartFail) });
 
             Exception ex = Record.Exception(() => manager.Start());
 
@@ -292,7 +292,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StartStop()
         {
-            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Result startResult = manager.Start();
 
@@ -312,7 +312,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StopBadReturn()
         {
-            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopBadReturn) });
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopBadReturn) });
 
             Result startResult = manager.Start();
 
@@ -332,7 +332,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StopFail()
         {
-            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopFail) });
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopFail) });
 
             Result startResult = manager.Start();
 
@@ -351,7 +351,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstanceName()
         {
-            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Assert.NotNull(manager.InstanceName);
         }
@@ -362,7 +362,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Managers()
         {
-            Core.ApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Assert.Equal(2, manager.Managers.Count);
             Assert.Equal(manager.Managers[0].GetType(), typeof(Core.ApplicationManager));

@@ -32,7 +32,7 @@ namespace OpenIIoT.Core.Service.Web.API
         /// <summary>
         ///     The ApplicationManager for the application.
         /// </summary>
-        private ApplicationManager manager = ApplicationManager.GetInstance();
+        private IApplicationManager manager = ApplicationManager.GetInstance();
 
         /// <summary>
         ///     The default serialization properties for an AppArchive.

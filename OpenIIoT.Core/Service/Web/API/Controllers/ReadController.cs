@@ -22,7 +22,7 @@ namespace OpenIIoT.Core.Service.Web.API
         /// <summary>
         ///     The ApplicationManager for the application.
         /// </summary>
-        private static ApplicationManager manager = ApplicationManager.GetInstance();
+        private static IApplicationManager manager = ApplicationManager.GetInstance();
 
         private static Item model = manager.GetManager<ModelManager>().Model;
 

@@ -64,24 +64,13 @@ namespace OpenIIoT.Core.Tests.Configuration
     [Collection("ConfigurationLoader")]
     public class ConfigurationLoader
     {
-        /// <summary>
-        ///     Tests the constructor.
-        /// </summary>
-        [Fact]
-        public void Constructor()
-        {
-            Mock<IPlatform> platform = new Mock<IPlatform>();
-
-            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
-
-            Assert.IsType<Core.Configuration.ConfigurationLoader>(loader);
-        }
+        #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Build"/> method.
+        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.BuildNew"/> method.
         /// </summary>
         [Fact]
-        public void Build()
+        public void BuildNew()
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
 
@@ -95,22 +84,16 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="Core.Configuration.ConfigurationLoader.Save(Dictionary{string, Dictionary{string, object}}, string)"/> method.
+        ///     Tests the constructor.
         /// </summary>
         [Fact]
-        public void Save()
+        public void Constructor()
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
-            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
-            Dictionary<string, Dictionary<string, object>> configuration = new Dictionary<string, Dictionary<string, object>>();
-
-            Result result = loader.Save(configuration, "file.ext");
-
-            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.IsType<Core.Configuration.ConfigurationLoader>(loader);
         }
 
         /// <summary>
@@ -129,6 +112,24 @@ namespace OpenIIoT.Core.Tests.Configuration
             Result result = loader.Load("file.ext");
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Load(string)"/> method with a mockup which indicates
+        ///     the specified file could not be found.
+        /// </summary>
+        [Fact]
+        public void LoadFileNotFound()
+        {
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
+
+            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+
+            Result result = loader.Load("file.ext");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>
@@ -152,21 +153,24 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Load(string)"/> method with a mockup which indicates
-        ///     the specified file could not be found.
+        ///     Tests the
+        ///     <see cref="Core.Configuration.ConfigurationLoader.Save(Dictionary{string, Dictionary{string, object}}, string)"/> method.
         /// </summary>
         [Fact]
-        public void LoadFileNotFound()
+        public void Save()
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
             platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
-            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
-            Result result = loader.Load("file.ext");
+            Dictionary<string, Dictionary<string, object>> configuration = new Dictionary<string, Dictionary<string, object>>();
 
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Result result = loader.Save(configuration, "file.ext");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
         }
+
+        #endregion Public Methods
     }
 }

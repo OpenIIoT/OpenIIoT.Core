@@ -48,7 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using Moq;
+using Utility.OperationResult;
 using Xunit;
 
 [assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
@@ -61,5 +65,339 @@ namespace OpenIIoT.SDK.Tests.Configuration
     [Collection("Configuration")]
     public class Configuration
     {
+        #region Private Fields
+
+        /// <summary>
+        ///     The Configuration under test.
+        /// </summary>
+        private SDK.Configuration.Configuration configuration;
+
+        /// <summary>
+        ///     The registry to inject into the Configuration under test.
+        /// </summary>
+        private Mock<SDK.Configuration.IConfigurableTypeRegistry> registry;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Configuration"/> class.
+        /// </summary>
+        public Configuration()
+        {
+            registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
+            configuration = new SDK.Configuration.Configuration(registry.Object);
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void AddInstance()
+        {
+            registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
+            registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
+
+            configuration = new SDK.Configuration.Configuration(registry.Object);
+
+            Result result = configuration.AddInstance<int>(typeof(int), 1, "test");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(configuration.IsInstanceConfigured(typeof(int), "test"));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method with an
+        ///     instance that has already been configured.
+        /// </summary>
+        [Fact]
+        public void AddInstanceAlreadyConfigured()
+        {
+            registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
+            registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
+
+            configuration = new SDK.Configuration.Configuration(registry.Object);
+
+            Result result = configuration.AddInstance<int>(typeof(int), 1, "test");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(configuration.IsInstanceConfigured(typeof(int), "test"));
+
+            result = configuration.AddInstance<int>(typeof(int), 2, "test");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method with an
+        ///     instance whose Type has not been configured.
+        /// </summary>
+        [Fact]
+        public void AddInstanceNotRegistered()
+        {
+            Result result = configuration.AddInstance<int>(typeof(int), string.Empty);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests all constructor overloads.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            // instantiate a new configuration with no instances
+            SDK.Configuration.Configuration test = new SDK.Configuration.Configuration(registry.Object);
+
+            Assert.IsType<SDK.Configuration.Configuration>(test);
+            Assert.Empty(test.Instances);
+
+            // instantiate a new configuration with a predetermined list of instances
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add("test", new Dictionary<string, object>());
+
+            test = new SDK.Configuration.Configuration(registry.Object, instances);
+
+            Assert.IsType<SDK.Configuration.Configuration>(test);
+            Assert.NotEmpty(test.Instances);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.GetInstance{T}(Type, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void GetInstance()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add(string.Empty, 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result<int> result = configuration.GetInstance<int>(typeof(int), string.Empty);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(1, result.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.GetInstance{T}(Type, string)"/> method with input which is
+        ///     known to raise an exception.
+        /// </summary>
+        [Fact]
+        public void GetInstanceException()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add(string.Empty, new CircularObject());
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(CircularObject).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result<CircularObject> result = configuration.GetInstance<CircularObject>(typeof(CircularObject), string.Empty);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.GetInstance{T}(Type, string)"/> method with an instance which
+        ///     is not configured.
+        /// </summary>
+        [Fact]
+        public void GetInstanceNotConfigured()
+        {
+            Result<int> result = configuration.GetInstance<int>(typeof(int), string.Empty);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void IsInstanceConfigured()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add(string.Empty, 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), string.Empty);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(result.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> with an instance for
+        ///     which there is a Type entry but no matching instance.
+        /// </summary>
+        [Fact]
+        public void IsInstanceConfiguredNoInstance()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add(string.Empty, 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), "test");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.False(result.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> method with an instance
+        ///     for which there is no Type entry.
+        /// </summary>
+        [Fact]
+        public void IsInstanceConfiguredNoType()
+        {
+            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), string.Empty);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.False(result.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the
+        ///     <see cref="SDK.Configuration.Configuration.LoadInstancesFrom(Dictionary{string, Dictionary{string, object}})"/> method.
+        /// </summary>
+        [Fact]
+        public void LoadInstancesFrom()
+        {
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add("test", new Dictionary<string, object>());
+            instances.Add("test 2", new Dictionary<string, object>());
+
+            Assert.Empty(configuration.Instances);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Assert.NotEmpty(configuration.Instances);
+            Assert.Equal(2, configuration.Instances.Count);
+            Assert.True(configuration.Instances.ContainsKey("test 2"));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.RemoveInstance(Type, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void RemoveInstance()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add(string.Empty, 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Assert.NotEmpty(configuration.Instances);
+
+            Result result = configuration.RemoveInstance(typeof(int), string.Empty);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Empty(configuration.Instances[typeof(int).FullName]);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.RemoveInstance(Type, string)"/> method with an instance that
+        ///     has not been configured.
+        /// </summary>
+        [Fact]
+        public void RemoveInstanceNotConfigured()
+        {
+            Result result = configuration.RemoveInstance(typeof(int), string.Empty);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.UpdateInstance(Type, object, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void UpdateInstance()
+        {
+            // prepare instance list
+            Dictionary<string, object> instanceList = new Dictionary<string, object>();
+            instanceList.Add(string.Empty, 1);
+
+            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            instances.Add(typeof(int).FullName, instanceList);
+
+            configuration.LoadInstancesFrom(instances);
+
+            Result result = configuration.UpdateInstance(typeof(int), 2, string.Empty);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+
+            Result<int> getResult = configuration.GetInstance<int>(typeof(int), string.Empty);
+
+            Assert.Equal(ResultCode.Success, getResult.ResultCode);
+            Assert.Equal(2, getResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Configuration.Configuration.UpdateInstance(Type, object, string)"/> method with an
+        ///     instance that has not been configured.
+        /// </summary>
+        [Fact]
+        public void UpdateInstanceNotConfigured()
+        {
+            Result result = configuration.UpdateInstance(typeof(string), "test", string.Empty);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        #endregion Public Methods
+
+        #region Private Classes
+
+        /// <summary>
+        ///     Creates a class with a circular property to force a serialization exception.
+        /// </summary>
+        /// <remarks>
+        ///     It is not feasible to use a mocking framework for this mockup due to the simplicity and the work involved to create
+        ///     a matching interface.
+        /// </remarks>
+        private class CircularObject
+        {
+            #region Public Properties
+
+            /// <summary>
+            ///     Gets the circular reference.
+            /// </summary>
+            public CircularObject This
+            {
+                get
+                {
+                    return this;
+                }
+            }
+
+            #endregion Public Properties
+        }
+
+        #endregion Private Classes
     }
 }
