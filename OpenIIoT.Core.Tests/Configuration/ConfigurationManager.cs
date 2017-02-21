@@ -48,6 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Moq;
+using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Platform;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Configuration
@@ -58,12 +62,54 @@ namespace OpenIIoT.Core.Tests.Configuration
     [Collection("ConfigurationManager")]
     public class ConfigurationManager
     {
+        #region Private Fields
+
+        /// <summary>
+        ///     The <see cref="IApplicationManager"/> mockup to be used as the dependency for the <see cref="Core.Configuration.ConfigurationManager"/>.
+        /// </summary>
+        private Mock<IApplicationManager> applicationManager;
+
+        /// <summary>
+        ///     The <see cref="SDK.Configuration.IConfigurationManager"/> instance under test.
+        /// </summary>
+        private SDK.Configuration.IConfigurationManager manager;
+
+        /// <summary>
+        ///     The <see cref="IPlatformManager"/> mockup to be used as the dependency for the <see cref="Core.Configuration.ConfigurationManager"/>.
+        /// </summary>
+        private Mock<IPlatformManager> platformManager;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ConfigurationManager"/> class.
+        /// </summary>
+        public ConfigurationManager()
+        {
+            applicationManager = new Mock<IApplicationManager>();
+            applicationManager.Setup(a => a.State).Returns(State.Running);
+            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            platformManager = new Mock<IPlatformManager>();
+
+            manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
         /// <summary>
         ///     Tests the constructor.
         /// </summary>
         [Fact]
         public void Constructor()
         {
+            Assert.IsType<Core.Configuration.ConfigurationManager>(manager);
         }
+
+        #endregion Public Methods
     }
 }
