@@ -157,6 +157,15 @@ namespace OpenIIoT.Core.Tests.Configuration
             Assert.Equal(State.Stopped, manager.State);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Terminate()"/> method.
+        /// </summary>
+        [Fact]
+        public void Terminate()
+        {
+            Core.Configuration.ConfigurationManager.Terminate();
+        }
+
         #endregion Public Methods
     }
 }

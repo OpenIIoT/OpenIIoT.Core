@@ -202,6 +202,14 @@ namespace OpenIIoT.Core.Configuration
         }
 
         /// <summary>
+        ///     Terminates Singleton instance of ConfigurationManager.
+        /// </summary>
+        public static void Terminate()
+        {
+            instance = null;
+        }
+
+        /// <summary>
         ///     Saves the current configuration to the file specified in app.exe.config.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>

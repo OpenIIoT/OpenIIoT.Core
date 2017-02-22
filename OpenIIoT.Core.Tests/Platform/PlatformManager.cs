@@ -129,6 +129,15 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.Equal(State.Stopped, manager.State);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Terminate()"/> method.
+        /// </summary>
+        [Fact]
+        public void Terminate()
+        {
+            Core.Platform.PlatformManager.Terminate();
+        }
+
         #endregion Public Methods
     }
 }

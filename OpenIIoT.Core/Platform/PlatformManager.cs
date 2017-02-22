@@ -182,6 +182,14 @@ namespace OpenIIoT.Core.Platform
             return instance;
         }
 
+        /// <summary>
+        ///     Terminates Singleton instance of PlatformManager.
+        /// </summary>
+        public static void Terminate()
+        {
+            instance = null;
+        }
+
         #endregion Public Methods
 
         #region Protected Methods
