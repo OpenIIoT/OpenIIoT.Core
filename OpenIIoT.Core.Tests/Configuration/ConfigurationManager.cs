@@ -48,6 +48,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Moq;
+using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Exceptions;
+using OpenIIoT.SDK.Platform;
+using System;
+using Utility.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Configuration
@@ -58,12 +65,151 @@ namespace OpenIIoT.Core.Tests.Configuration
     [Collection("ConfigurationManager")]
     public class ConfigurationManager
     {
+        #region Private Fields
+
+        /// <summary>
+        ///     The <see cref="IApplicationManager"/> mockup to be used as the dependency for the <see cref="Core.Configuration.ConfigurationManager"/>.
+        /// </summary>
+        private Mock<IApplicationManager> applicationManager;
+
+        /// <summary>
+        ///     The <see cref="SDK.Configuration.IConfigurationManager"/> instance under test.
+        /// </summary>
+        private SDK.Configuration.IConfigurationManager manager;
+
+        /// <summary>
+        ///     The <see cref="IPlatformManager"/> mockup to be used as the dependency for the <see cref="Core.Configuration.ConfigurationManager"/>.
+        /// </summary>
+        private Mock<IPlatformManager> platformManager;
+
+        #endregion Private Fields
+
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ConfigurationManager"/> class.
+        /// </summary>
+        public ConfigurationManager()
+        {
+            applicationManager = new Mock<IApplicationManager>();
+            applicationManager.Setup(a => a.State).Returns(State.Running);
+            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            platformManager = new Mock<IPlatformManager>();
+            platformManager.Setup(p => p.State).Returns(State.Running);
+            platformManager.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
+            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform());
+
+            manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
         /// <summary>
         ///     Tests the constructor.
         /// </summary>
         [Fact]
         public void Constructor()
         {
+            Assert.IsType<Core.Configuration.ConfigurationManager>(manager);
         }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method via
+        ///     <see cref="SDK.Common.Manager.Start()"/> .
+        /// </summary>
+        [Fact]
+        public void Start()
+        {
+            // terminate and re-instantiate the manager instance in case it has been started by another test
+            Core.Configuration.ConfigurationManager.Terminate();
+            manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
+
+            Result result = manager.Start();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(State.Running, manager.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method with conditions which should force
+        ///     an exception.
+        /// </summary>
+        [Fact]
+        public void StartFailure()
+        {
+            Core.Configuration.ConfigurationManager.Terminate();
+
+            // prepare a platform mockup which returns false for any call to FileExists() and a bad result for WriteFile(). these
+            // two return values should force a ConfigurationLoadException
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>().AddError(string.Empty));
+
+            // inject the platform mockup into the platform manager mockup
+            platformManager.Setup(p => p.Platform).Returns(platform.Object);
+
+            // re-instantiate the manager with the mocked platform manager and platform
+            manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
+
+            Exception ex = Assert.Throws<ManagerStartException>(() => manager.Start());
+
+            Assert.NotNull(ex);
+            Assert.Equal(typeof(ConfigurationLoadException), ex.InnerException.GetType());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method with conditions which should force
+        ///     a rebuild of the configuration.
+        /// </summary>
+        [Fact]
+        public void StartRebuildConfiguration()
+        {
+            Core.Configuration.ConfigurationManager.Terminate();
+
+            // prepare a platform mockup which returns false for any call to FileExists() and a good result for WriteFile(). these
+            // two return values should force a rebuild of the config.
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+
+            // inject the platform mockup into the platform manager mockup
+            platformManager.Setup(p => p.Platform).Returns(platform.Object);
+
+            // re-instantiate the manager with the mocked platform manager and platform
+            manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
+
+            Result result = manager.Start();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(State.Running, manager.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Shutdown(StopType)"/> method via
+        ///     <see cref="SDK.Common.Manager.Stop(StopType)"/> .
+        /// </summary>
+        [Fact]
+        public void Stop()
+        {
+            manager.Start();
+            Result result = manager.Stop();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(State.Stopped, manager.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Terminate()"/> method.
+        /// </summary>
+        [Fact]
+        public void Terminate()
+        {
+            Core.Configuration.ConfigurationManager.Terminate();
+        }
+
+        #endregion Public Methods
     }
 }
