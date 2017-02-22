@@ -142,7 +142,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         {
             Core.Configuration.ConfigurationManager.Terminate();
 
-            // prepare a platform mockup which returns false for any call to FileExists() and a bad result for WriteFile() these
+            // prepare a platform mockup which returns false for any call to FileExists() and a bad result for WriteFile(). these
             // two return values should force a ConfigurationLoadException
             Mock<IPlatform> platform = new Mock<IPlatform>();
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
@@ -158,6 +158,33 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             Assert.NotNull(ex);
             Assert.Equal(typeof(ConfigurationLoadException), ex.InnerException.GetType());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method with conditions which should force
+        ///     a rebuild of the configuration.
+        /// </summary>
+        [Fact]
+        public void StartRebuildConfiguration()
+        {
+            Core.Configuration.ConfigurationManager.Terminate();
+
+            // prepare a platform mockup which returns false for any call to FileExists() and a good result for WriteFile(). these
+            // two return values should force a rebuild of the config.
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+
+            // inject the platform mockup into the platform manager mockup
+            platformManager.Setup(p => p.Platform).Returns(platform.Object);
+
+            // re-instantiate the manager with the mocked platform manager and platform
+            manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
+
+            Result result = manager.Start();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(State.Running, manager.State);
         }
 
         /// <summary>
