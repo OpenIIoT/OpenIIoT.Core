@@ -52,6 +52,7 @@ using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Platform;
+using Utility.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Configuration
@@ -93,6 +94,9 @@ namespace OpenIIoT.Core.Tests.Configuration
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
             platformManager = new Mock<IPlatformManager>();
+            platformManager.Setup(p => p.State).Returns(State.Running);
+            platformManager.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
+            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform());
 
             manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
         }
@@ -108,6 +112,49 @@ namespace OpenIIoT.Core.Tests.Configuration
         public void Constructor()
         {
             Assert.IsType<Core.Configuration.ConfigurationManager>(manager);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method via
+        ///     <see cref="SDK.Common.Manager.Start()"/> .
+        /// </summary>
+        [Fact]
+        public void Start()
+        {
+            Result result = manager.Start();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(State.Running, manager.State);
+        }
+
+        [Fact]
+        public void StartFailure()
+        {
+            // prepare a platform mockup which returns false for any call to FileExists() and a bad result for WriteFile()
+            Mock<IPlatform> platform = new Mock<IPlatform>();
+            platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
+            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>().AddError(string.Empty));
+
+            // inject the platform mockup into the platform manager mockup platformManager.Setup(p => p.Platform).Returns(platform.Object);
+
+            Result result = manager.Start();
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(State.Initialized, manager.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Shutdown(StopType)"/> method via
+        ///     <see cref="SDK.Common.Manager.Stop(StopType)"/> .
+        /// </summary>
+        [Fact]
+        public void Stop()
+        {
+            manager.Start();
+            Result result = manager.Stop();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(State.Stopped, manager.State);
         }
 
         #endregion Public Methods
