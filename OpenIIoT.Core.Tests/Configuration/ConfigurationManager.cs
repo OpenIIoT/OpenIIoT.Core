@@ -51,7 +51,9 @@
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
+using System;
 using Utility.OperationResult;
 using Xunit;
 
@@ -121,26 +123,41 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void Start()
         {
+            // terminate and re-instantiate the manager instance in case it has been started by another test
+            Core.Configuration.ConfigurationManager.Terminate();
+            manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
+
             Result result = manager.Start();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(State.Running, manager.State);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method with conditions which should force
+        ///     an exception.
+        /// </summary>
         [Fact]
         public void StartFailure()
         {
-            // prepare a platform mockup which returns false for any call to FileExists() and a bad result for WriteFile()
+            Core.Configuration.ConfigurationManager.Terminate();
+
+            // prepare a platform mockup which returns false for any call to FileExists() and a bad result for WriteFile() these
+            // two return values should force a ConfigurationLoadException
             Mock<IPlatform> platform = new Mock<IPlatform>();
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
             platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>().AddError(string.Empty));
 
-            // inject the platform mockup into the platform manager mockup platformManager.Setup(p => p.Platform).Returns(platform.Object);
+            // inject the platform mockup into the platform manager mockup
+            platformManager.Setup(p => p.Platform).Returns(platform.Object);
 
-            Result result = manager.Start();
+            // re-instantiate the manager with the mocked platform manager and platform
+            manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
 
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
-            Assert.Equal(State.Initialized, manager.State);
+            Exception ex = Assert.Throws<ManagerStartException>(() => manager.Start());
+
+            Assert.NotNull(ex);
+            Assert.Equal(typeof(ConfigurationLoadException), ex.InnerException.GetType());
         }
 
         /// <summary>
