@@ -48,12 +48,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
-using System;
 using Utility.OperationResult;
 using Xunit;
 
