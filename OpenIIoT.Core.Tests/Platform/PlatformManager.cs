@@ -120,7 +120,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Start()
         {
-            Result result = manager.Start();
+            IResult result = manager.Start();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(State.Running, manager.State);
@@ -135,7 +135,7 @@ namespace OpenIIoT.Core.Tests.Platform
         {
             manager.Platform.SetDirectories(new Core.Platform.PlatformDirectories());
 
-            Result result = manager.Start();
+            IResult result = manager.Start();
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -148,7 +148,7 @@ namespace OpenIIoT.Core.Tests.Platform
         public void Stop()
         {
             manager.Start();
-            Result result = manager.Stop();
+            IResult result = manager.Stop();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(State.Stopped, manager.State);

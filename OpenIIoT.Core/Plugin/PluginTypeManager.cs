@@ -88,7 +88,7 @@ namespace OpenIIoT.Core.Plugin
         ///     Restarts the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart(StopType stopType = StopType.Stop)
+        public IResult Restart(StopType stopType = StopType.Stop)
         {
             return new Result();
         }
@@ -97,7 +97,7 @@ namespace OpenIIoT.Core.Plugin
         ///     Starts the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Start()
+        public IResult Start()
         {
             return new Result();
         }
@@ -106,7 +106,7 @@ namespace OpenIIoT.Core.Plugin
         ///     Stops the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Stop(StopType stopType = StopType.Stop)
+        public IResult Stop(StopType stopType = StopType.Stop)
         {
             return new Result();
         }

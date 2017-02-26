@@ -225,7 +225,7 @@ namespace OpenIIoT.SDK.Common
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Restart(StopType stopType = StopType.Stop)
+        public IResult Restart(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(stopType), true);
             logger.Info("Restarting the " + ManagerName + "...");
@@ -252,7 +252,7 @@ namespace OpenIIoT.SDK.Common
         /// <exception cref="ManagerStartException">
         ///     Thrown when an exception is encountered during the Start or Startup routines.
         /// </exception>
-        public Result Start()
+        public IResult Start()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Info("Starting the " + ManagerName + "...");
@@ -304,7 +304,7 @@ namespace OpenIIoT.SDK.Common
         /// <exception cref="ManagerStopException">
         ///     Thrown when an exception is encountered during the Stop or Shutdown routines.
         /// </exception>
-        public Result Stop(StopType stopType = StopType.Stop)
+        public IResult Stop(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(stopType), true);
             logger.Info("Stopping the " + ManagerName + "...");
@@ -583,7 +583,7 @@ namespace OpenIIoT.SDK.Common
                 logger.Debug("All dependencies for " + ManagerName + " are running.  Attempting to start...");
 
                 // if all of the dependencies are running, start the Manager.
-                Result startResult = Start();
+                IResult startResult = Start();
 
                 // if it started successfully, stop the timer and remove the event handler.
                 if (startResult.ResultCode != ResultCode.Failure)
