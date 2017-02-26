@@ -190,6 +190,7 @@
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginArchive.cs" />
     <Compile Include="Plugin\PluginArchiveLoadResult.cs" />
+    <Compile Include="Plugin\PluginInstaller.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
     <Compile Include="Plugin\PluginTypeManager.cs" />
     <Compile Include="ProjectInstaller.cs">
