@@ -290,7 +290,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod();
             Result retVal = new Result();
 
-            Dictionary<string, string> directories = Directories.ToDictionary();
+            IDictionary<string, string> directories = Directories.ToDictionary();
 
             foreach (string directory in directories.Keys)
             {

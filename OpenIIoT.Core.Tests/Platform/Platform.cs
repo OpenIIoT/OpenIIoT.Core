@@ -125,7 +125,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.True(File.Exists(file));
 
             // clear the test directory
-            Result result = platformMock.ClearDirectory(testDirectory);
+            IResult result = platformMock.ClearDirectory(testDirectory);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
 
@@ -141,7 +141,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void ClearDirectoryFailure()
         {
-            Result result = platformMock.ClearDirectory(Path.Combine(testDirectory, "null"));
+            IResult result = platformMock.ClearDirectory(Path.Combine(testDirectory, "null"));
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
@@ -156,7 +156,7 @@ namespace OpenIIoT.Core.Tests.Platform
             File.WriteAllText(file, "Hello World!");
 
             // compute the checksum
-            Result<string> result = platformMock.ComputeFileChecksum(file);
+            IResult<string> result = platformMock.ComputeFileChecksum(file);
 
             // assert that the operation succeeded and compare the result to the known checksum for the written content
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -169,7 +169,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void ComputeFileChecksumFailure()
         {
-            Result<string> result = platformMock.ComputeFileChecksum(Path.Combine(testDirectory, "null"));
+            IResult<string> result = platformMock.ComputeFileChecksum(Path.Combine(testDirectory, "null"));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
             Assert.Equal(default(string), result.ReturnValue);
@@ -193,7 +193,7 @@ namespace OpenIIoT.Core.Tests.Platform
             string testDir = Path.Combine(testDirectory, "test");
 
             // create the directory and assert that it exists
-            Result result = platformMock.CreateDirectory(testDir);
+            IResult result = platformMock.CreateDirectory(testDir);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.True(Directory.Exists(testDir));
@@ -208,7 +208,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void CreateDirectoryFailure()
         {
-            Result result = platformMock.CreateDirectory(testDirectory + Path.DirectorySeparatorChar + "<>|&\0");
+            IResult result = platformMock.CreateDirectory(testDirectory + Path.DirectorySeparatorChar + "<>|&\0");
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -234,7 +234,7 @@ namespace OpenIIoT.Core.Tests.Platform
             string zipFile = Path.Combine(testDirectory, "zip.zip");
 
             // zip it
-            Result<string> result = platformMock.CreateZip(zipFile, folder);
+            IResult<string> result = platformMock.CreateZip(zipFile, folder);
 
             // assert that the zip succeeded and that the resulting file exists
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -247,7 +247,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void CreateZipFailing()
         {
-            Result<string> result = platformMock.CreateZip("?/?", testDirectory);
+            IResult<string> result = platformMock.CreateZip("?/?", testDirectory);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -264,7 +264,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Directory.CreateDirectory(testDir);
 
             // delete the directory and assert that it doesn't exist
-            Result result = platformMock.DeleteDirectory(testDir);
+            IResult result = platformMock.DeleteDirectory(testDir);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.False(Directory.Exists(testDir));
@@ -276,7 +276,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void DeleteDirectoryFailure()
         {
-            Result result = platformMock.DeleteDirectory(Path.Combine(testDirectory, "null"));
+            IResult result = platformMock.DeleteDirectory(Path.Combine(testDirectory, "null"));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -292,7 +292,7 @@ namespace OpenIIoT.Core.Tests.Platform
             File.WriteAllText(file, "Hello World!");
 
             // delete
-            Result result = platformMock.DeleteFile(file);
+            IResult result = platformMock.DeleteFile(file);
 
             // assert that the operation succeeded and that the file no longer exists
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -305,7 +305,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void DeleteFileFailure()
         {
-            Result result = platformMock.DeleteFile(string.Empty);
+            IResult result = platformMock.DeleteFile(string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -378,7 +378,7 @@ namespace OpenIIoT.Core.Tests.Platform
 
             string zipFile = Path.Combine(testDirectory, "zip.zip");
 
-            Result<string> result = platformMock.CreateZip(zipFile, folder);
+            IResult<string> result = platformMock.CreateZip(zipFile, folder);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.True(File.Exists(zipFile));
@@ -387,7 +387,7 @@ namespace OpenIIoT.Core.Tests.Platform
             string unzipFolder = Path.Combine(testDirectory, "unzipFolder");
 
             // unzip the file
-            Result<string> extractResult = platformMock.ExtractZip(zipFile, unzipFolder);
+            IResult<string> extractResult = platformMock.ExtractZip(zipFile, unzipFolder);
 
             // assert that the unzip succeeded
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -408,7 +408,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void ExtractZipFailing()
         {
-            Result<string> result = platformMock.ExtractZip(".", string.Empty);
+            IResult<string> result = platformMock.ExtractZip(".", string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -433,7 +433,7 @@ namespace OpenIIoT.Core.Tests.Platform
 
             string zipFile = Path.Combine(testDirectory, "zip.zip");
 
-            Result<string> result = platformMock.CreateZip(zipFile, folder);
+            IResult<string> result = platformMock.CreateZip(zipFile, folder);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.True(File.Exists(zipFile));
@@ -445,7 +445,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.True(Directory.Exists(destination));
 
             // perform the extraction
-            Result<string> extractFileResult = platformMock.ExtractZipFile(zipFile, "file1.txt", destination);
+            IResult<string> extractFileResult = platformMock.ExtractZipFile(zipFile, "file1.txt", destination);
 
             // assert that the extraction succeeded and that the file exists and contains the expected contents
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -462,7 +462,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void ExtractZipFileFailing()
         {
-            Result<string> result = platformMock.ExtractZipFile(".", string.Empty, string.Empty);
+            IResult<string> result = platformMock.ExtractZipFile(".", string.Empty, string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -499,7 +499,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Directory.CreateDirectory(dir2);
 
             // list
-            Result<List<string>> result = platformMock.ListDirectories(testDirectory);
+            IResult<IList<string>> result = platformMock.ListDirectories(testDirectory);
 
             // assert that two directories matching our directory names were returned
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -514,7 +514,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void ListDirectoriesFailure()
         {
-            Result result = platformMock.ListDirectories(Path.Combine(testDirectory, "null"));
+            IResult result = platformMock.ListDirectories(Path.Combine(testDirectory, "null"));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -538,7 +538,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.True(File.Exists(file2));
 
             // list the files in the test directory
-            Result<List<string>> result = platformMock.ListFiles(testDirectory);
+            IResult<IList<string>> result = platformMock.ListFiles(testDirectory);
 
             // assert that two files matching the files we created are returned
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -553,7 +553,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void ListFilesFailure()
         {
-            Result result = platformMock.ListFiles(Path.Combine(testDirectory, "null"));
+            IResult result = platformMock.ListFiles(Path.Combine(testDirectory, "null"));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -577,13 +577,13 @@ namespace OpenIIoT.Core.Tests.Platform
 
             string zipFile = Path.Combine(testDirectory, "zip.zip");
 
-            Result<string> result = platformMock.CreateZip(zipFile, folder);
+            IResult<string> result = platformMock.CreateZip(zipFile, folder);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.True(File.Exists(zipFile));
 
             // list the contents of the zip we crated
-            Result<List<string>> listResult = platformMock.ListZipFiles(zipFile);
+            IResult<IList<string>> listResult = platformMock.ListZipFiles(zipFile);
 
             // ensure the contents match the file we created
             Assert.Equal(ResultCode.Success, listResult.ResultCode);
@@ -598,7 +598,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void ListZipFilesFailing()
         {
-            Result<List<string>> result = platformMock.ListZipFiles(string.Empty);
+            IResult<IList<string>> result = platformMock.ListZipFiles(string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -626,7 +626,7 @@ namespace OpenIIoT.Core.Tests.Platform
             File.WriteAllText(file, content);
 
             // read it
-            Result<string> result = platformMock.ReadFile(file);
+            IResult<string> result = platformMock.ReadFile(file);
 
             // assert that the contents match
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -641,7 +641,7 @@ namespace OpenIIoT.Core.Tests.Platform
         {
             string file = Path.Combine(testDirectory, "null");
 
-            Result result = platformMock.ReadFile(file);
+            IResult result = platformMock.ReadFile(file);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -658,7 +658,7 @@ namespace OpenIIoT.Core.Tests.Platform
             File.WriteAllLines(file, content);
 
             // read it
-            Result<string[]> result = platformMock.ReadFileLines(file);
+            IResult<string[]> result = platformMock.ReadFileLines(file);
 
             // assert that the contents match
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -673,7 +673,7 @@ namespace OpenIIoT.Core.Tests.Platform
         {
             string file = Path.Combine(testDirectory, "null");
 
-            Result result = platformMock.ReadFileLines(file);
+            IResult result = platformMock.ReadFileLines(file);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -692,7 +692,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.False(File.Exists(file));
 
             // write it
-            Result<string> result = platformMock.WriteFile(file, contents);
+            IResult<string> result = platformMock.WriteFile(file, contents);
 
             // assert that it was written
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -711,7 +711,7 @@ namespace OpenIIoT.Core.Tests.Platform
             string contents = "Hello World!";
             string newContents = "The quick brown fox jumped over the lazy dog.";
 
-            Result<string> result = platformMock.WriteFile(file, contents);
+            IResult<string> result = platformMock.WriteFile(file, contents);
 
             // assert that it was written
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -739,7 +739,7 @@ namespace OpenIIoT.Core.Tests.Platform
         {
             string file = Path.Combine(testDirectory, "?/?");
 
-            Result result = platformMock.WriteFile(file, string.Empty);
+            IResult result = platformMock.WriteFile(file, string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -758,7 +758,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.False(File.Exists(file));
 
             // write it
-            Result<string> result = platformMock.WriteFileLines(file, contents);
+            IResult<string> result = platformMock.WriteFileLines(file, contents);
 
             // assert that it was written
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -777,7 +777,7 @@ namespace OpenIIoT.Core.Tests.Platform
             string[] contents = new string[] { "Hello", "World!" };
             string[] newContents = new string[] { "The quick brown", "fox jumped over", "the lazy dog." };
 
-            Result<string> result = platformMock.WriteFileLines(file, contents);
+            IResult<string> result = platformMock.WriteFileLines(file, contents);
 
             // assert that it was written
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -805,7 +805,7 @@ namespace OpenIIoT.Core.Tests.Platform
         {
             string file = Path.Combine(testDirectory, "?/?");
 
-            Result result = platformMock.WriteFileLines(file, new string[] { });
+            IResult result = platformMock.WriteFileLines(file, new string[] { });
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }

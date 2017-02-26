@@ -433,8 +433,8 @@ namespace OpenIIoT.Core.Plugin
             // configuration file
             logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(Dependency<IPlatformManager>().Directories.Root, string.Empty) + "'...");
 
-            Result extractResult;
-            Result payloadExtractResult;
+            IResult extractResult;
+            IResult payloadExtractResult;
 
             // lock the file system and InstalledPlugins manipulation to ensure thread safety
             lock (installationLock)
@@ -463,7 +463,7 @@ namespace OpenIIoT.Core.Plugin
                                 // locate the plugin assembly among the extracted files. a valid assembly is named 'FQN.dll' where
                                 // FQN is the FQN of the plugin
                                 logger.Debug("Attempting to locate the extracted assembly...");
-                                Result<List<string>> findDllResult = platform.ListFiles(destination, "*.dll");
+                                IResult<IList<string>> findDllResult = platform.ListFiles(destination, "*.dll");
                                 if (findDllResult.ResultCode != ResultCode.Failure)
                                 {
                                     logger.Debug("Trying to fetch '" + archive.Plugin.FQN + ".dll' from the list of files...");
@@ -473,7 +473,7 @@ namespace OpenIIoT.Core.Plugin
                                     {
                                         // the plugin assembly was found. calculate the fingerprint.
                                         logger.Debug("Assembly found.  Calculating checksum for the Plugin fingerprint...");
-                                        Result<string> checksumResult = platform.ComputeFileChecksum(dllFile);
+                                        IResult<string> checksumResult = platform.ComputeFileChecksum(dllFile);
                                         if (checksumResult.ResultCode != ResultCode.Failure)
                                         {
                                             logger.Trace("Checksum: " + checksumResult.ReturnValue);
@@ -725,7 +725,7 @@ namespace OpenIIoT.Core.Plugin
                     lock (installationLock)
                     {
                         // delete the plugin directory
-                        Result deleteResult = platform.DeleteDirectory(pluginDirectory);
+                        IResult deleteResult = platform.DeleteDirectory(pluginDirectory);
                         if (deleteResult.ResultCode != ResultCode.Failure)
                         {
                             logger.Debug("Removing Plugin from PluginManager configuration...");
@@ -1232,7 +1232,7 @@ namespace OpenIIoT.Core.Plugin
 
             // retrieve a list of probable plugin archive files from the configured plugin archive directory
             logger.Trace("Listing matching files...");
-            Result<List<string>> searchResult = platform.ListFiles(directory, searchPattern);
+            IResult<IList<string>> searchResult = platform.ListFiles(directory, searchPattern);
             logger.Debug("Found " + searchResult.ReturnValue.Count + " Archives.");
 
             retVal.Incorporate(searchResult);
@@ -1331,7 +1331,7 @@ namespace OpenIIoT.Core.Plugin
             try
             {
                 // validate the assembly fingerprint
-                Result<string> checksumResult = Dependency<IPlatformManager>().Platform.ComputeFileChecksum(assemblyFileName);
+                IResult<string> checksumResult = Dependency<IPlatformManager>().Platform.ComputeFileChecksum(assemblyFileName);
                 if (checksumResult.ResultCode != ResultCode.Failure)
                 {
                     string computedFingerprint = SDK.Common.Utility.ComputeHash(plugin.FQN + plugin.Version + checksumResult.ReturnValue);
@@ -1452,7 +1452,7 @@ namespace OpenIIoT.Core.Plugin
 
             // retrieve the contents of the configuration file and deserialize it to an instance of Plugin
             logger.Trace("Retrieving the configuration file...");
-            Result<List<string>> zipFileListResult = platform.ListZipFiles(fileName, configFileName);
+            IResult<IList<string>> zipFileListResult = platform.ListZipFiles(fileName, configFileName);
             if (zipFileListResult.ResultCode != ResultCode.Failure)
             {
                 // ensure that a file named configFileName exists within the archive
@@ -1462,13 +1462,13 @@ namespace OpenIIoT.Core.Plugin
                     logger.Trace("Configuration file found.  Extracting it from the archive...");
 
                     // extract the config file to the temp directory
-                    Result<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, Dependency<IPlatformManager>().Directories.Temp);
+                    IResult<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, Dependency<IPlatformManager>().Directories.Temp);
                     if (extractConfigFileResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("File extracted successfully.  Attempting to read contents...");
 
                         // read the contents of the file
-                        Result<string> readConfigFileResult = platform.ReadFile(extractConfigFileResult.ReturnValue);
+                        IResult<string> readConfigFileResult = platform.ReadFile(extractConfigFileResult.ReturnValue);
                         if (readConfigFileResult.ResultCode != ResultCode.Failure)
                         {
                             // the contents of the config file are in readConfigFileResult.ReturnValue. try to deserialize it..
@@ -1521,7 +1521,7 @@ namespace OpenIIoT.Core.Plugin
 
             // ensure the plugin contains the Plugin.zip file and calculate its checksum
             logger.Trace("Looking for the Plugin payload file...");
-            Result<List<string>> zipPayloadCheckResult = platform.ListZipFiles(fileName, payloadFileName);
+            IResult<IList<string>> zipPayloadCheckResult = platform.ListZipFiles(fileName, payloadFileName);
             if (zipPayloadCheckResult.ResultCode != ResultCode.Failure)
             {
                 // ensure that the payload file exists within the zip
@@ -1531,13 +1531,13 @@ namespace OpenIIoT.Core.Plugin
                     logger.Trace("Payload file found.  Attempting to extract...");
 
                     // extract the file to the temp directory
-                    Result<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, Dependency<IPlatformManager>().Directories.Temp);
+                    IResult<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, Dependency<IPlatformManager>().Directories.Temp);
                     if (extractPayloadResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("Payload file extracted.  Attempting to calculate checksum...");
 
                         // compute the checksum of the file
-                        Result<string> payloadChecksumResult = platform.ComputeFileChecksum(extractPayloadResult.ReturnValue);
+                        IResult<string> payloadChecksumResult = platform.ComputeFileChecksum(extractPayloadResult.ReturnValue);
                         if (payloadChecksumResult.ResultCode != ResultCode.Failure)
                         {
                             logger.Trace("Payload checksum: " + payloadChecksumResult.ReturnValue);
@@ -1554,7 +1554,7 @@ namespace OpenIIoT.Core.Plugin
                         {
                             logger.Trace("The Plugin contains a binary.  Make sure it exists...");
 
-                            Result<List<string>> zipFileDllResult = platform.ListZipFiles(extractPayloadResult.ReturnValue, "*.dll");
+                            IResult<IList<string>> zipFileDllResult = platform.ListZipFiles(extractPayloadResult.ReturnValue, "*.dll");
                             if (zipFileDllResult.ResultCode != ResultCode.Failure)
                             {
                                 if (zipFileDllResult.ReturnValue.Where(d => d == retVal.ReturnValue.Plugin.FQN + ".dll").FirstOrDefault() == default(string))

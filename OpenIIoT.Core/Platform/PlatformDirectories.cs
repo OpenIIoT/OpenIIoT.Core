@@ -148,9 +148,9 @@ namespace OpenIIoT.Core.Platform
         ///     Returns a dictionary containing all of the program directories keyed by name.
         /// </summary>
         /// <returns>A dictionary containing all of the program directories keyed by name.</returns>
-        public Dictionary<string, string> ToDictionary()
+        public IDictionary<string, string> ToDictionary()
         {
-            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            IDictionary<string, string> dictionary = new Dictionary<string, string>();
 
             foreach (PropertyInfo p in GetType().GetProperties())
             {

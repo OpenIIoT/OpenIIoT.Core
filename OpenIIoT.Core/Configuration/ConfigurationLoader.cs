@@ -126,7 +126,7 @@ namespace OpenIIoT.Core.Configuration
                 logger.Trace("File '" + fileName + "' was found.  Attempting to read...");
 
                 // read the entirety of the configuration file into configFile
-                Result<string> readResult = Platform.ReadFile(fileName);
+                IResult<string> readResult = Platform.ReadFile(fileName);
 
                 if (readResult.ResultCode != ResultCode.Failure)
                 {
@@ -168,7 +168,7 @@ namespace OpenIIoT.Core.Configuration
 
             string content = JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter());
 
-            Result writeResult = Platform.WriteFile(fileName, content);
+            IResult writeResult = Platform.WriteFile(fileName, content);
 
             retVal.Incorporate(writeResult);
 

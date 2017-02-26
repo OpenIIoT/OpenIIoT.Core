@@ -143,7 +143,7 @@ namespace OpenIIoT.Core.Tests
             Assert.Equal(FullDir("Plugins"), test.Plugins);
             Assert.Equal(FullDir("Temp"), test.Temp);
 
-            Dictionary<string, string> dict = test.ToDictionary();
+            IDictionary<string, string> dict = test.ToDictionary();
 
             Assert.Equal(FullDir("Data"), dict["Data"]);
             Assert.Equal(FullDir("Archives"), dict["Archives"]);
