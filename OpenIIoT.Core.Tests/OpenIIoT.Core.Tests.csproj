@@ -83,7 +83,9 @@
   <ItemGroup>
     <Compile Include="ApplicationManager.cs" />
     <Compile Include="Common\Utility.cs" />
+    <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
     <Compile Include="Platform\PlatformManager.cs" />

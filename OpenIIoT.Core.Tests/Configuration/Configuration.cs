@@ -105,10 +105,10 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             configuration = new Core.Configuration.Configuration(registry.Object);
 
-            Result result = configuration.AddInstance<int>(typeof(int), 1, "test");
+            IResult result = configuration.AddInstance<int>(typeof(int), 1, "test");
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.True(configuration.IsInstanceConfigured(typeof(int), "test"));
+            Assert.True(configuration.IsInstanceConfigured(typeof(int), "test").ReturnValue);
         }
 
         /// <summary>
@@ -123,10 +123,10 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             configuration = new Core.Configuration.Configuration(registry.Object);
 
-            Result result = configuration.AddInstance<int>(typeof(int), 1, "test");
+            IResult result = configuration.AddInstance<int>(typeof(int), 1, "test");
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.True(configuration.IsInstanceConfigured(typeof(int), "test"));
+            Assert.True(configuration.IsInstanceConfigured(typeof(int), "test").ReturnValue);
 
             result = configuration.AddInstance<int>(typeof(int), 2, "test");
 
@@ -140,7 +140,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void AddInstanceNotRegistered()
         {
-            Result result = configuration.AddInstance<int>(typeof(int), string.Empty);
+            IResult result = configuration.AddInstance<int>(typeof(int), string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -182,7 +182,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             configuration.LoadInstancesFrom(instances);
 
-            Result<int> result = configuration.GetInstance<int>(typeof(int), string.Empty);
+            IResult<int> result = configuration.GetInstance<int>(typeof(int), string.Empty);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(1, result.ReturnValue);
@@ -204,7 +204,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             configuration.LoadInstancesFrom(instances);
 
-            Result<CircularObject> result = configuration.GetInstance<CircularObject>(typeof(CircularObject), string.Empty);
+            IResult<CircularObject> result = configuration.GetInstance<CircularObject>(typeof(CircularObject), string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -216,7 +216,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void GetInstanceNotConfigured()
         {
-            Result<int> result = configuration.GetInstance<int>(typeof(int), string.Empty);
+            IResult<int> result = configuration.GetInstance<int>(typeof(int), string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -236,7 +236,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             configuration.LoadInstancesFrom(instances);
 
-            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), string.Empty);
+            IResult<bool> result = configuration.IsInstanceConfigured(typeof(int), string.Empty);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.True(result.ReturnValue);
@@ -258,7 +258,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             configuration.LoadInstancesFrom(instances);
 
-            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), "test");
+            IResult<bool> result = configuration.IsInstanceConfigured(typeof(int), "test");
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
             Assert.False(result.ReturnValue);
@@ -271,7 +271,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void IsInstanceConfiguredNoType()
         {
-            Result<bool> result = configuration.IsInstanceConfigured(typeof(int), string.Empty);
+            IResult<bool> result = configuration.IsInstanceConfigured(typeof(int), string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
             Assert.False(result.ReturnValue);
@@ -314,7 +314,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             Assert.NotEmpty(configuration.Instances);
 
-            Result result = configuration.RemoveInstance(typeof(int), string.Empty);
+            IResult result = configuration.RemoveInstance(typeof(int), string.Empty);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Empty(configuration.Instances[typeof(int).FullName]);
@@ -327,7 +327,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void RemoveInstanceNotConfigured()
         {
-            Result result = configuration.RemoveInstance(typeof(int), string.Empty);
+            IResult result = configuration.RemoveInstance(typeof(int), string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -347,11 +347,11 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             configuration.LoadInstancesFrom(instances);
 
-            Result result = configuration.UpdateInstance(typeof(int), 2, string.Empty);
+            IResult result = configuration.UpdateInstance(typeof(int), 2, string.Empty);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
 
-            Result<int> getResult = configuration.GetInstance<int>(typeof(int), string.Empty);
+            IResult<int> getResult = configuration.GetInstance<int>(typeof(int), string.Empty);
 
             Assert.Equal(ResultCode.Success, getResult.ResultCode);
             Assert.Equal(2, getResult.ReturnValue);
@@ -364,7 +364,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void UpdateInstanceNotConfigured()
         {
-            Result result = configuration.UpdateInstance(typeof(string), "test", string.Empty);
+            IResult result = configuration.UpdateInstance(typeof(string), "test", string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }

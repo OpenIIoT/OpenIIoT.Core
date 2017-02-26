@@ -49,6 +49,8 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
@@ -94,6 +96,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             applicationManager = new Mock<IApplicationManager>();
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            applicationManager.Setup(a => a.Managers).Returns(new List<IManager>());
 
             platformManager = new Mock<IPlatformManager>();
             platformManager.Setup(p => p.State).Returns(State.Running);
@@ -117,6 +120,16 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Setup"/> method using reflection.
+        /// </summary>
+        [Fact]
+        public void Setup()
+        {
+            MethodInfo setup = typeof(Core.Configuration.ConfigurationManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
+            setup.Invoke(manager, new object[] { });
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method via
         ///     <see cref="SDK.Common.Manager.Start()"/> .
         /// </summary>
@@ -127,7 +140,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Core.Configuration.ConfigurationManager.Terminate();
             manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
 
-            Result result = manager.Start();
+            IResult result = manager.Start();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(State.Running, manager.State);
@@ -181,7 +194,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             // re-instantiate the manager with the mocked platform manager and platform
             manager = Core.Configuration.ConfigurationManager.Instantiate(applicationManager.Object, platformManager.Object);
 
-            Result result = manager.Start();
+            IResult result = manager.Start();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(State.Running, manager.State);
@@ -195,7 +208,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         public void Stop()
         {
             manager.Start();
-            Result result = manager.Stop();
+            IResult result = manager.Stop();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(State.Stopped, manager.State);

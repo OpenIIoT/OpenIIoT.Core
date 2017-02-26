@@ -81,20 +81,20 @@ namespace OpenIIoT.SDK.Common
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Restart(StopType stopType = StopType.Stop);
+        IResult Restart(StopType stopType = StopType.Stop);
 
         /// <summary>
         ///     Starts the stateful object.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Start();
+        IResult Start();
 
         /// <summary>
         ///     Stops the stateful object.
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Stop(StopType stopType = StopType.Stop);
+        IResult Stop(StopType stopType = StopType.Stop);
 
         #endregion Public Methods
     }

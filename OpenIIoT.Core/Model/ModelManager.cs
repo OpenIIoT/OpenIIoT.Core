@@ -54,6 +54,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Common.Provider;
 using OpenIIoT.SDK.Plugin;
+using OpenIIoT.Core.Configuration;
 
 namespace OpenIIoT.Core.Model
 {
@@ -117,7 +118,7 @@ namespace OpenIIoT.Core.Model
         /// <summary>
         ///     The ConfigurationDefinition for the Manager.
         /// </summary>
-        public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+        public IConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
 
         /// <summary>
         ///     A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
@@ -252,7 +253,7 @@ namespace OpenIIoT.Core.Model
         ///     Returns the ConfigurationDefinition for the Model Manager.
         /// </summary>
         /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
-        public static ConfigurationDefinition GetConfigurationDefinition()
+        public static IConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
@@ -375,14 +376,14 @@ namespace OpenIIoT.Core.Model
         ///     the default configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure()
+        public IResult Configure()
         {
             logger.EnterMethod();
 
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            Result<ModelManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<ModelManagerConfiguration>(this.GetType());
+            IResult<ModelManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<ModelManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -394,7 +395,7 @@ namespace OpenIIoT.Core.Model
             else
             {
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<ModelManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<ModelManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                IResult<ModelManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<ModelManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -414,7 +415,7 @@ namespace OpenIIoT.Core.Model
         /// </summary>
         /// <param name="configuration">The configuration with which the Manager should be configured.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure(ModelManagerConfiguration configuration)
+        public IResult Configure(ModelManagerConfiguration configuration)
         {
             logger.EnterMethod(xLogger.Params(configuration));
 
@@ -540,7 +541,7 @@ namespace OpenIIoT.Core.Model
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
+        public IResult SaveConfiguration()
         {
             logger.EnterMethod();
             Result retVal = new Result();
@@ -634,7 +635,7 @@ namespace OpenIIoT.Core.Model
 
             //--------------- - - -
             // Configure the Manager
-            Result configureResult = Configure();
+            IResult configureResult = Configure();
 
             if (configureResult.ResultCode == ResultCode.Failure)
                 throw new Exception("Failed to configure the Model Manager: " + configureResult.GetLastError());

@@ -294,12 +294,12 @@ namespace OpenIIoT.Core.Tests
         {
             IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
-            Result startResult = manager.Start();
+            IResult startResult = manager.Start();
 
             Assert.NotEqual(ResultCode.Failure, startResult.ResultCode);
             Assert.Equal(State.Running, manager.State);
 
-            Result stopResult = manager.Stop();
+            IResult stopResult = manager.Stop();
 
             Assert.NotEqual(ResultCode.Failure, stopResult.ResultCode);
             Assert.Equal(State.Stopped, manager.State);
@@ -314,7 +314,7 @@ namespace OpenIIoT.Core.Tests
         {
             IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopBadReturn) });
 
-            Result startResult = manager.Start();
+            IResult startResult = manager.Start();
 
             Assert.NotEqual(ResultCode.Failure, startResult.ResultCode);
             Assert.Equal(State.Running, manager.State);
@@ -334,7 +334,7 @@ namespace OpenIIoT.Core.Tests
         {
             IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopFail) });
 
-            Result startResult = manager.Start();
+            IResult startResult = manager.Start();
 
             Assert.NotEqual(ResultCode.Failure, startResult.ResultCode);
             Assert.Equal(State.Running, manager.State);

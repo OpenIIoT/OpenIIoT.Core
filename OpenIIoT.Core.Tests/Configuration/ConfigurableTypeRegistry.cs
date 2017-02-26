@@ -58,10 +58,10 @@ using Xunit;
 
 [assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
-namespace OpenIIoT.SDK.Tests.Configuration
+namespace OpenIIoT.Core.Tests.Configuration
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Configuration.ConfigurableTypeRegistry"/> class.
+    ///     Unit tests for the <see cref="Core.Configuration.ConfigurableTypeRegistry"/> class.
     /// </summary>
     [Collection("ConfigurableTypeRegistry")]
     public class ConfigurableTypeRegistry
@@ -71,7 +71,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         /// <summary>
         ///     The instance under test.
         /// </summary>
-        private SDK.Configuration.ConfigurableTypeRegistry registry;
+        private Core.Configuration.ConfigurableTypeRegistry registry;
 
         #endregion Private Fields
 
@@ -82,7 +82,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         /// </summary>
         public ConfigurableTypeRegistry()
         {
-            registry = new SDK.Configuration.ConfigurableTypeRegistry();
+            registry = new Core.Configuration.ConfigurableTypeRegistry();
         }
 
         #endregion Public Constructors
@@ -95,11 +95,11 @@ namespace OpenIIoT.SDK.Tests.Configuration
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<SDK.Configuration.ConfigurableTypeRegistry>(registry);
+            Assert.IsType<Core.Configuration.ConfigurableTypeRegistry>(registry);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.IsRegistered(Type)"/> method.
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.IsRegistered(Type)"/> method.
         /// </summary>
         [Fact]
         public void IsRegistered()
@@ -113,27 +113,28 @@ namespace OpenIIoT.SDK.Tests.Configuration
         [Fact]
         public void Properties()
         {
-            Assert.IsType<Dictionary<Type, SDK.Configuration.ConfigurationDefinition>>(registry.RegisteredTypes);
+            Assert.IsType<Dictionary<Type, SDK.Configuration.IConfigurationDefinition>>(registry.RegisteredTypes);
             Assert.Empty(registry.RegisteredTypes);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method.
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method.
         /// </summary>
         [Fact]
         public void Register()
         {
-            Result result = registry.RegisterType(typeof(ConfigurableMock));
+            IResult result = registry.RegisterType(typeof(ConfigurableMock));
             Assert.Equal(ResultCode.Success, result.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a duplicate Type.
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a
+        ///     duplicate Type.
         /// </summary>
         [Fact]
         public void RegisterDuplicate()
         {
-            Result result = registry.RegisterType(typeof(ConfigurableMock));
+            IResult result = registry.RegisterType(typeof(ConfigurableMock));
             Assert.Equal(ResultCode.Success, result.ResultCode);
 
             result = registry.RegisterType(typeof(ConfigurableMock));
@@ -141,40 +142,40 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
         ///     which throws an exception from the GetConfigurationDefinition method.
         /// </summary>
         [Fact]
         public void RegisterExceptionDefinition()
         {
-            Result result = registry.RegisterType(typeof(ConfigurableMockExceptionDefinition));
+            IResult result = registry.RegisterType(typeof(ConfigurableMockExceptionDefinition));
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
         ///     missing the GetConfigurationDefinition method
         /// </summary>
         [Fact]
         public void RegisterMissingDefinition()
         {
-            Result result = registry.RegisterType(typeof(ConfigurableMockMissingDefinition));
+            IResult result = registry.RegisterType(typeof(ConfigurableMockMissingDefinition));
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
         ///     which does not implement <see cref="IConfigurable{T}"/> .
         /// </summary>
         [Fact]
         public void RegisterNotConfigurable()
         {
-            Result result = registry.RegisterType(typeof(int));
+            IResult result = registry.RegisterType(typeof(int));
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a
         ///     non-configurable Type and using the throwsExceptionOnFailure flag.
         /// </summary>
         [Fact]
@@ -184,24 +185,24 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
         ///     returning a null value from the GetConfigurationDefinition method
         /// </summary>
         [Fact]
         public void RegisterNullDefinition()
         {
-            Result result = registry.RegisterType(typeof(ConfigurableMockNullDefinition));
+            IResult result = registry.RegisterType(typeof(ConfigurableMockNullDefinition));
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterTypes(List{Type}, bool)"/> method with both
-        ///     a configurable and non-configurable Type.
+        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterTypes(List{Type}, bool)"/> method with
+        ///     both a configurable and non-configurable Type.
         /// </summary>
         [Fact]
         public void RegisterTypes()
         {
-            Result result = registry.RegisterTypes(new List<Type>() { typeof(ConfigurableMock), typeof(int) });
+            IResult result = registry.RegisterTypes(new List<Type>() { typeof(ConfigurableMock), typeof(int) });
             Assert.Equal(ResultCode.Success, result.ResultCode);
         }
 
@@ -225,7 +226,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -235,9 +236,9 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Returns the ConfigurationDefinition for the Type.
             /// </summary>
             /// <returns>The ConfigurationDefinition for the Type.</returns>
-            public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            public static Core.Configuration.ConfigurationDefinition GetConfigurationDefinition()
             {
-                return new SDK.Configuration.ConfigurationDefinition();
+                return new Core.Configuration.ConfigurationDefinition();
             }
 
             /// <summary>
@@ -245,7 +246,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     default configuration.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure()
+            public IResult Configure()
             {
                 throw new NotImplementedException();
             }
@@ -255,7 +256,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// </summary>
             /// <param name="configuration">The configuration with which the Type should be configured.</param>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure(int configuration)
+            public IResult Configure(int configuration)
             {
                 throw new NotImplementedException();
             }
@@ -264,7 +265,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Saves the Type's configuration to the Configuration Manager.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result SaveConfiguration()
+            public IResult SaveConfiguration()
             {
                 throw new NotImplementedException();
             }
@@ -289,7 +290,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -299,7 +300,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Returns the ConfigurationDefinition for the Type.
             /// </summary>
             /// <returns>The ConfigurationDefinition for the Type.</returns>
-            public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            public static Core.Configuration.ConfigurationDefinition GetConfigurationDefinition()
             {
                 throw new Exception();
             }
@@ -309,7 +310,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     default configuration.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure()
+            public IResult Configure()
             {
                 throw new NotImplementedException();
             }
@@ -319,7 +320,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// </summary>
             /// <param name="configuration">The configuration with which the Type should be configured.</param>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure(int configuration)
+            public IResult Configure(int configuration)
             {
                 throw new NotImplementedException();
             }
@@ -328,7 +329,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Saves the Type's configuration to the Configuration Manager.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result SaveConfiguration()
+            public IResult SaveConfiguration()
             {
                 throw new NotImplementedException();
             }
@@ -352,7 +353,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -362,9 +363,9 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Returns the ConfigurationDefinition for the Type.
             /// </summary>
             /// <returns>The ConfigurationDefinition for the Type.</returns>
-            public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            public static Core.Configuration.ConfigurationDefinition GetConfigurationDefinition()
             {
-                return new SDK.Configuration.ConfigurationDefinition();
+                return new Core.Configuration.ConfigurationDefinition();
             }
 
             /// <summary>
@@ -372,7 +373,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     default configuration.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure()
+            public IResult Configure()
             {
                 throw new NotImplementedException();
             }
@@ -382,7 +383,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// </summary>
             /// <param name="configuration">The configuration with which the Type should be configured.</param>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure(int configuration)
+            public IResult Configure(int configuration)
             {
                 throw new NotImplementedException();
             }
@@ -391,7 +392,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Saves the Type's configuration to the Configuration Manager.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result SaveConfiguration()
+            public IResult SaveConfiguration()
             {
                 throw new NotImplementedException();
             }
@@ -415,7 +416,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -426,7 +427,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     default configuration.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure()
+            public IResult Configure()
             {
                 throw new NotImplementedException();
             }
@@ -436,7 +437,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// </summary>
             /// <param name="configuration">The configuration with which the Type should be configured.</param>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure(int configuration)
+            public IResult Configure(int configuration)
             {
                 throw new NotImplementedException();
             }
@@ -445,7 +446,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Saves the Type's configuration to the Configuration Manager.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result SaveConfiguration()
+            public IResult SaveConfiguration()
             {
                 throw new NotImplementedException();
             }
@@ -470,7 +471,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public SDK.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -480,7 +481,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Returns the ConfigurationDefinition for the Type.
             /// </summary>
             /// <returns>The ConfigurationDefinition for the Type.</returns>
-            public static SDK.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            public static Core.Configuration.ConfigurationDefinition GetConfigurationDefinition()
             {
                 return null;
             }
@@ -490,7 +491,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     default configuration.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure()
+            public IResult Configure()
             {
                 throw new NotImplementedException();
             }
@@ -500,7 +501,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             /// </summary>
             /// <param name="configuration">The configuration with which the Type should be configured.</param>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result Configure(int configuration)
+            public IResult Configure(int configuration)
             {
                 throw new NotImplementedException();
             }
@@ -509,7 +510,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             ///     Saves the Type's configuration to the Configuration Manager.
             /// </summary>
             /// <returns>A Result containing the result of the operation.</returns>
-            public Result SaveConfiguration()
+            public IResult SaveConfiguration()
             {
                 throw new NotImplementedException();
             }

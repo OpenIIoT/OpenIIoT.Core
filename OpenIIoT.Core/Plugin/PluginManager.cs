@@ -57,6 +57,7 @@ using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Plugin.Endpoint;
 using OpenIIoT.SDK.Plugin.Archive;
 using OpenIIoT.Core.Plugin.Archive;
+using OpenIIoT.Core.Configuration;
 
 namespace OpenIIoT.Core.Plugin
 {
@@ -160,7 +161,7 @@ namespace OpenIIoT.Core.Plugin
         ///     Returns the ConfigurationDefinition for the Type.
         /// </summary>
         /// <returns>The ConfigurationDefinition for the Type.</returns>
-        public static ConfigurationDefinition GetConfigurationDefinition()
+        public static IConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
@@ -187,12 +188,12 @@ namespace OpenIIoT.Core.Plugin
         ///     default configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure()
+        public IResult Configure()
         {
             logger.EnterMethod();
             Result retVal = new Result();
 
-            Result<PluginManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<PluginManagerConfiguration>(this.GetType());
+            IResult<PluginManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<PluginManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -204,7 +205,7 @@ namespace OpenIIoT.Core.Plugin
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<PluginManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<PluginManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                IResult<PluginManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<PluginManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -226,7 +227,7 @@ namespace OpenIIoT.Core.Plugin
         /// </summary>
         /// <param name="configuration">The configuration with which the Model Manager should be configured.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure(PluginManagerConfiguration configuration)
+        public IResult Configure(PluginManagerConfiguration configuration)
         {
             logger.EnterMethod(xLogger.Params(configuration));
             logger.Info("Retrieving and applying the configuration from the Configuration Manager...");
@@ -666,7 +667,7 @@ namespace OpenIIoT.Core.Plugin
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
+        public IResult SaveConfiguration()
         {
             logger.EnterMethod();
             logger.Info("Saving the configuration to the Configuration Manager...");
@@ -825,7 +826,7 @@ namespace OpenIIoT.Core.Plugin
             Result retVal = new Result();
 
             // Configure the manager
-            Result configureResult = Configure();
+            IResult configureResult = Configure();
             if (configureResult.ResultCode == ResultCode.Failure)
             {
                 throw new Exception("Failed to start the Plugin Manager: " + configureResult.GetLastError());
@@ -1385,7 +1386,7 @@ namespace OpenIIoT.Core.Plugin
                                                     assembly);
 
                 // register the plugin type as a design rule, all plugins must implement IConfigurable and either IConnector or IEndpoint
-                Result registerResult = Dependency<IConfigurationManager>().ConfigurableTypeRegistry.RegisterType(validationResult.ReturnValue);
+                IResult registerResult = Dependency<IConfigurationManager>().ConfigurableTypeRegistry.RegisterType(validationResult.ReturnValue);
                 if (registerResult.ResultCode == ResultCode.Failure)
                 {
                     throw new Exception("Failed to register the assembly type with the Configuration Manager.");

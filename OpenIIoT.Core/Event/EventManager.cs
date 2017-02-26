@@ -51,10 +51,8 @@ using NLog.xLogger;
 using Utility.OperationResult;
 using System.Collections.Immutable;
 using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Common;
-
 using OpenIIoT.SDK.Common.Provider.EventProvider;
+using OpenIIoT.Core.Configuration;
 
 namespace OpenIIoT.Core.Event
 {
@@ -191,14 +189,14 @@ namespace OpenIIoT.Core.Event
         ///     default configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure()
+        public IResult Configure()
         {
             logger.EnterMethod();
 
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            Result<EventManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<EventManagerConfiguration>(this.GetType());
+            IResult<EventManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<EventManagerConfiguration>(this.GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -210,7 +208,7 @@ namespace OpenIIoT.Core.Event
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                Result<EventManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<EventManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                IResult<EventManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<EventManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
@@ -232,7 +230,7 @@ namespace OpenIIoT.Core.Event
         /// </summary>
         /// <param name="configuration">The configuration with which the Manager should be configured.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Configure(EventManagerConfiguration configuration)
+        public IResult Configure(EventManagerConfiguration configuration)
         {
             logger.EnterMethod(xLogger.Params(configuration));
 
@@ -293,7 +291,7 @@ namespace OpenIIoT.Core.Event
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
+        public IResult SaveConfiguration()
         {
             logger.EnterMethod();
             Result retVal = new Result();

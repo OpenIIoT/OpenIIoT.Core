@@ -283,7 +283,7 @@ namespace OpenIIoT.Core
                 logger.SubHeading(LogLevel.Debug, applicationManager.ManagerName);
                 logger.Info($"Starting the {applicationManager.ManagerName}...");
 
-                Result managerStartResult = applicationManager.Start();
+                IResult managerStartResult = applicationManager.Start();
 
                 if (managerStartResult.ResultCode == ResultCode.Failure)
                 {
@@ -329,7 +329,7 @@ namespace OpenIIoT.Core
 
                 Shutdown();
 
-                Result managerStopResult = applicationManager.Stop(StopType.Shutdown);
+                IResult managerStopResult = applicationManager.Stop(StopType.Shutdown);
 
                 if (managerStopResult.ResultCode == ResultCode.Failure)
                 {

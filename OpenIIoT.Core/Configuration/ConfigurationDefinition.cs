@@ -41,9 +41,10 @@
 
 using System;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Configuration
+namespace OpenIIoT.Core.Configuration
 {
     /// <summary>
     ///     Establishes a common object to represent the configuration details for various application items.
@@ -71,7 +72,7 @@ namespace OpenIIoT.SDK.Configuration
     ///         file as serialized json.
     ///     </para>
     /// </remarks>
-    public class ConfigurationDefinition
+    public class ConfigurationDefinition : IConfigurationDefinition
     {
         #region Public Constructors
 
@@ -131,11 +132,11 @@ namespace OpenIIoT.SDK.Configuration
         /// </summary>
         /// <remarks>
         ///     To be considered valid, the <see cref="Form"/> and <see cref="Schema"/> properties must contain valid Json, the
-        ///     <see cref="Model"/> property must not be null, and the Type of the value contained in <see cref="Default"/> must be
-        ///     of the same Type specified in the Model property.
+        ///     <see cref="Model"/> property must not be null, and the Type of the value contained in
+        ///     <see cref="DefaultConfiguration"/> must be of the same Type specified in the Model property.
         /// </remarks>
         /// <returns>A value indicating whether this instance is valid.</returns>
-        public Result<bool> IsValid()
+        public IResult<bool> IsValid()
         {
             Result<bool> retVal = new Result<bool>();
             retVal.ReturnValue = false;

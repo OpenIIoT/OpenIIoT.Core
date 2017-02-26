@@ -69,7 +69,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
         /// <param name="instanceName">The name of the instance to configure.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result<T> AddInstance<T>(Type type, object instanceConfiguration, string instanceName = "");
+        IResult<T> AddInstance<T>(Type type, object instanceConfiguration, string instanceName = "");
 
         /// <summary>
         ///     Retrieves the configuration for the instance matching instanceName of the supplied Type. If the configuration can't
@@ -82,7 +82,7 @@ namespace OpenIIoT.SDK.Configuration
         ///     A Result containing the result of the operation and an instance of the Configuration model for the calling class
         ///     containing the retrieved configuration.
         /// </returns>
-        Result<T> GetInstance<T>(Type type, string instanceName = "");
+        IResult<T> GetInstance<T>(Type type, string instanceName = "");
 
         /// <summary>
         ///     Determines whether the specified instance of the specified type is configured.
@@ -90,7 +90,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="type">The Type of the instance to check.</param>
         /// <param name="instanceName">The name of the instance to check.</param>
         /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
-        Result<bool> IsInstanceConfigured(Type type, string instanceName = "");
+        IResult<bool> IsInstanceConfigured(Type type, string instanceName = "");
 
         /// <summary>
         ///     Sets value of the Instance property to the specified instance configuration collection.
@@ -104,7 +104,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="type">The Type of instance to remove.</param>
         /// <param name="instanceName">The name of the instance to remove from the Type.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result RemoveInstance(Type type, string instanceName = "");
+        IResult RemoveInstance(Type type, string instanceName = "");
 
         /// <summary>
         ///     Saves the specified Configuration model to the Configuration for the specified instance and Type.
@@ -113,7 +113,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="instanceConfiguration">The Configuration model to save.</param>
         /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result UpdateInstance(Type type, object instanceConfiguration, string instanceName = "");
+        IResult UpdateInstance(Type type, object instanceConfiguration, string instanceName = "");
 
         #endregion Public Methods
     }

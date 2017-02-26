@@ -56,7 +56,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Gets a dictionary containing all registered configurable types and their ConfigurationDefinitions.
         /// </summary>
-        Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get; }
+        IDictionary<Type, IConfigurationDefinition> RegisteredTypes { get; }
 
         #endregion Public Properties
 
@@ -77,7 +77,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="throwExceptionOnFailure">If true, throws an exception on failure.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         /// <exception cref="ConfigurationRegistrationException">Thrown when the specified Type is fails to be registered.</exception>
-        Result RegisterType(Type type, bool throwExceptionOnFailure = false);
+        IResult RegisterType(Type type, bool throwExceptionOnFailure = false);
 
         /// <summary>
         ///     Registers each Type within the supplied list which implements the IConfigurable interface.
@@ -87,7 +87,7 @@ namespace OpenIIoT.SDK.Configuration
         ///     A value indicating whether an exception should be thrown if a registration fails.
         /// </param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result RegisterTypes(List<Type> types, bool throwExceptionOnFailure = false);
+        IResult RegisterTypes(List<Type> types, bool throwExceptionOnFailure = false);
 
         #endregion Public Methods
     }

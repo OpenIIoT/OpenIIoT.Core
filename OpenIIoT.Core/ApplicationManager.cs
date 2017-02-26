@@ -808,12 +808,12 @@ namespace OpenIIoT.Core
         /// <param name="manager">The IManager instance to stop.</param>
         /// <param name="stopType">The type of stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        private Result StopManager(IManager manager, StopType stopType = StopType.Stop)
+        private IResult StopManager(IManager manager, StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager, stopType), true);
             logger.Debug("Stopping " + manager.GetType().Name + "...");
 
-            Result retVal = manager.Stop(stopType);
+            IResult retVal = manager.Stop(stopType);
 
             if (retVal.ResultCode == ResultCode.Failure)
             {

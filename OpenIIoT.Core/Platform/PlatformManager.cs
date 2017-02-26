@@ -282,7 +282,7 @@ namespace OpenIIoT.Core.Platform
             {
                 if (!Platform.DirectoryExists(directories[directory]))
                 {
-                    Platform.CreateDirectory(directories[directory]);
+                    retVal.Incorporate(Platform.CreateDirectory(directories[directory]));
                     retVal.AddWarning("The directory '" + directories[directory] + "' was missing and was recreated.");
                 }
             }

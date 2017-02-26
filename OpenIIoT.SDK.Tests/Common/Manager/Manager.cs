@@ -170,7 +170,7 @@ namespace OpenIIoT.SDK.Tests.Common
             ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(applicationManagerMock.Object, o);
 
             // start the manager and assert that it is running
-            Result start = test.Start();
+            IResult start = test.Start();
             Assert.Equal(State.Running, test.State);
 
             // fault the manager upon which the test manager is dependent ensure that this manager stops.start the other manager
@@ -206,7 +206,7 @@ namespace OpenIIoT.SDK.Tests.Common
             ManagerMockWithDependency test = ManagerMockWithDependency.Instantiate(applicationManagerMock.Object, o);
 
             // start the manager and assert that it is running
-            Result start = test.Start();
+            IResult start = test.Start();
             Assert.Equal(State.Running, test.State);
 
             // stop the other manager (the manager upon which this test manager is dependent) ensure that this manager stops.
@@ -275,7 +275,7 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.Equal(State.Running, test.State);
 
             // restart the manager and assert that the operation succeeded
-            Result restart = test.Restart();
+            IResult restart = test.Restart();
             Assert.Equal(ResultCode.Success, restart.ResultCode);
             Assert.Equal(State.Running, test.State);
         }
@@ -289,7 +289,7 @@ namespace OpenIIoT.SDK.Tests.Common
             Mock<SDK.Common.Manager> mock = new Mock<SDK.Common.Manager>();
             mock.CallBase = true;
 
-            Result restart = mock.Object.Restart();
+            IResult restart = mock.Object.Restart();
             Assert.Equal(ResultCode.Failure, restart.ResultCode);
         }
 
@@ -311,7 +311,7 @@ namespace OpenIIoT.SDK.Tests.Common
             fail.Start();
             Assert.Equal(State.Running, fail.State);
 
-            Result result = fail.Stop();
+            IResult result = fail.Stop();
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -326,11 +326,11 @@ namespace OpenIIoT.SDK.Tests.Common
             ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
 
             // start the manager and assert that it is running
-            Result start = test.Start();
+            IResult start = test.Start();
             Assert.Equal(State.Running, test.State);
 
             // try to start again and assert that the operation fails
-            Result startAgain = test.Start();
+            IResult startAgain = test.Start();
             Assert.Equal(ResultCode.Failure, startAgain.ResultCode);
         }
 
@@ -346,7 +346,7 @@ namespace OpenIIoT.SDK.Tests.Common
 
             ManagerMockFailingStartup fail = ManagerMockFailingStartup.Instantiate(applicationManagerMock.Object);
 
-            Result result = fail.Start();
+            IResult result = fail.Start();
             Assert.Equal(ResultCode.Failure, result.ResultCode);
             Assert.Equal(fail.State, State.Faulted);
         }
@@ -364,7 +364,7 @@ namespace OpenIIoT.SDK.Tests.Common
             ManagerMock test = ManagerMock.Instantiate(a.Object);
 
             // start the manager and assert that it is running
-            Result start = test.Start();
+            IResult start = test.Start();
             Assert.Equal(ResultCode.Failure, start.ResultCode);
         }
 
@@ -386,7 +386,7 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.Equal(State.Stopped, test.State);
 
             // try to stop again and assert that the operation fails
-            Result stop = test.Stop();
+            IResult stop = test.Stop();
             Assert.Equal(ResultCode.Failure, stop.ResultCode);
         }
 

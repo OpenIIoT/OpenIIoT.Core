@@ -86,20 +86,20 @@ namespace OpenIIoT.SDK.Configuration
         ///     configures the instance with the returned Configuration T.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Configure();
+        IResult Configure();
 
         /// <summary>
         ///     Configures the current instance of the implementation with the supplied Configuration T.
         /// </summary>
         /// <param name="configuration">The instance of T containing the Configuration to be used to configure the instance.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result Configure(T configuration);
+        IResult Configure(T configuration);
 
         /// <summary>
         ///     Stores the Configuration for the current instance of the implementation to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result SaveConfiguration();
+        IResult SaveConfiguration();
 
         #endregion Public Methods
     }
