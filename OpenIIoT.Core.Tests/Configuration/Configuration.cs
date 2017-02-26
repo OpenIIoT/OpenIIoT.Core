@@ -57,10 +57,10 @@ using Xunit;
 
 [assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
-namespace OpenIIoT.SDK.Tests.Configuration
+namespace OpenIIoT.Core.Tests.Configuration
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Configuration.Configuration"/> class.
+    ///     Unit tests for the <see cref="Core.Configuration.Configuration"/> class.
     /// </summary>
     [Collection("Configuration")]
     public class Configuration
@@ -70,7 +70,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         /// <summary>
         ///     The Configuration under test.
         /// </summary>
-        private SDK.Configuration.Configuration configuration;
+        private Core.Configuration.Configuration configuration;
 
         /// <summary>
         ///     The registry to inject into the Configuration under test.
@@ -87,7 +87,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         public Configuration()
         {
             registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
-            configuration = new SDK.Configuration.Configuration(registry.Object);
+            configuration = new Core.Configuration.Configuration(registry.Object);
         }
 
         #endregion Public Constructors
@@ -95,7 +95,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method.
+        ///     Tests the <see cref="Core.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method.
         /// </summary>
         [Fact]
         public void AddInstance()
@@ -103,7 +103,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
             registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
 
-            configuration = new SDK.Configuration.Configuration(registry.Object);
+            configuration = new Core.Configuration.Configuration(registry.Object);
 
             Result result = configuration.AddInstance<int>(typeof(int), 1, "test");
 
@@ -112,7 +112,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method with an
+        ///     Tests the <see cref="Core.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method with an
         ///     instance that has already been configured.
         /// </summary>
         [Fact]
@@ -121,7 +121,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
             registry = new Mock<SDK.Configuration.IConfigurableTypeRegistry>();
             registry.Setup(r => r.IsRegistered(It.IsAny<Type>())).Returns(true);
 
-            configuration = new SDK.Configuration.Configuration(registry.Object);
+            configuration = new Core.Configuration.Configuration(registry.Object);
 
             Result result = configuration.AddInstance<int>(typeof(int), 1, "test");
 
@@ -134,7 +134,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method with an
+        ///     Tests the <see cref="Core.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method with an
         ///     instance whose Type has not been configured.
         /// </summary>
         [Fact]
@@ -152,23 +152,23 @@ namespace OpenIIoT.SDK.Tests.Configuration
         public void Constructor()
         {
             // instantiate a new configuration with no instances
-            SDK.Configuration.Configuration test = new SDK.Configuration.Configuration(registry.Object);
+            Core.Configuration.Configuration test = new Core.Configuration.Configuration(registry.Object);
 
-            Assert.IsType<SDK.Configuration.Configuration>(test);
+            Assert.IsType<Core.Configuration.Configuration>(test);
             Assert.Empty(test.Instances);
 
             // instantiate a new configuration with a predetermined list of instances
             Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
             instances.Add("test", new Dictionary<string, object>());
 
-            test = new SDK.Configuration.Configuration(registry.Object, instances);
+            test = new Core.Configuration.Configuration(registry.Object, instances);
 
-            Assert.IsType<SDK.Configuration.Configuration>(test);
+            Assert.IsType<Core.Configuration.Configuration>(test);
             Assert.NotEmpty(test.Instances);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.GetInstance{T}(Type, string)"/> method.
+        ///     Tests the <see cref="Core.Configuration.Configuration.GetInstance{T}(Type, string)"/> method.
         /// </summary>
         [Fact]
         public void GetInstance()
@@ -189,7 +189,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.GetInstance{T}(Type, string)"/> method with input which is
+        ///     Tests the <see cref="Core.Configuration.Configuration.GetInstance{T}(Type, string)"/> method with input which is
         ///     known to raise an exception.
         /// </summary>
         [Fact]
@@ -210,7 +210,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.GetInstance{T}(Type, string)"/> method with an instance which
+        ///     Tests the <see cref="Core.Configuration.Configuration.GetInstance{T}(Type, string)"/> method with an instance which
         ///     is not configured.
         /// </summary>
         [Fact]
@@ -222,7 +222,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> method.
+        ///     Tests the <see cref="Core.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> method.
         /// </summary>
         [Fact]
         public void IsInstanceConfigured()
@@ -243,7 +243,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> with an instance for
+        ///     Tests the <see cref="Core.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> with an instance for
         ///     which there is a Type entry but no matching instance.
         /// </summary>
         [Fact]
@@ -265,7 +265,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> method with an instance
+        ///     Tests the <see cref="Core.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> method with an instance
         ///     for which there is no Type entry.
         /// </summary>
         [Fact]
@@ -279,7 +279,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="SDK.Configuration.Configuration.LoadInstancesFrom(Dictionary{string, Dictionary{string, object}})"/> method.
+        ///     <see cref="Core.Configuration.Configuration.LoadInstancesFrom(Dictionary{string, Dictionary{string, object}})"/> method.
         /// </summary>
         [Fact]
         public void LoadInstancesFrom()
@@ -298,7 +298,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.RemoveInstance(Type, string)"/> method.
+        ///     Tests the <see cref="Core.Configuration.Configuration.RemoveInstance(Type, string)"/> method.
         /// </summary>
         [Fact]
         public void RemoveInstance()
@@ -321,7 +321,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.RemoveInstance(Type, string)"/> method with an instance that
+        ///     Tests the <see cref="Core.Configuration.Configuration.RemoveInstance(Type, string)"/> method with an instance that
         ///     has not been configured.
         /// </summary>
         [Fact]
@@ -333,7 +333,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.UpdateInstance(Type, object, string)"/> method.
+        ///     Tests the <see cref="Core.Configuration.Configuration.UpdateInstance(Type, object, string)"/> method.
         /// </summary>
         [Fact]
         public void UpdateInstance()
@@ -358,7 +358,7 @@ namespace OpenIIoT.SDK.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Configuration.Configuration.UpdateInstance(Type, object, string)"/> method with an
+        ///     Tests the <see cref="Core.Configuration.Configuration.UpdateInstance(Type, object, string)"/> method with an
         ///     instance that has not been configured.
         /// </summary>
         [Fact]
