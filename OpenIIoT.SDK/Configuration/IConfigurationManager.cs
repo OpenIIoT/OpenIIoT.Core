@@ -47,14 +47,14 @@ namespace OpenIIoT.SDK.Configuration
     /// <summary>
     ///     Defines the interface for the Configuration Manager.
     /// </summary>
-    public interface IConfigurationManager : IStateful, IManager
+    public interface IConfigurationManager : IManager
     {
         #region Public Properties
 
         /// <summary>
         ///     Gets the current configuration.
         /// </summary>
-        Configuration Configuration { get; }
+        IConfiguration Configuration { get; }
 
         /// <summary>
         ///     Gets the registry of configurable Types.
@@ -69,7 +69,7 @@ namespace OpenIIoT.SDK.Configuration
         ///     Saves the current configuration to the file specified in app.exe.config.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result SaveConfiguration();
+        IResult SaveConfiguration();
 
         #endregion Public Methods
     }

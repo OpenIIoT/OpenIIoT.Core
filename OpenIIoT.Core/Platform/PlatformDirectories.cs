@@ -65,6 +65,13 @@ namespace OpenIIoT.Core.Platform
         #region Public Constructors
 
         /// <summary>
+        ///     Initializes a new instance of the <see cref="PlatformDirectories"/> class with a blank dictionary.
+        /// </summary>
+        public PlatformDirectories()
+        {
+        }
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="PlatformDirectories"/> class with the specified dictionary.
         /// </summary>
         /// <param name="directories">A dictionary containing the name and directory for each of the program directories.</param>
@@ -148,9 +155,9 @@ namespace OpenIIoT.Core.Platform
         ///     Returns a dictionary containing all of the program directories keyed by name.
         /// </summary>
         /// <returns>A dictionary containing all of the program directories keyed by name.</returns>
-        public Dictionary<string, string> ToDictionary()
+        public IDictionary<string, string> ToDictionary()
         {
-            Dictionary<string, string> dictionary = new Dictionary<string, string>();
+            IDictionary<string, string> dictionary = new Dictionary<string, string>();
 
             foreach (PropertyInfo p in GetType().GetProperties())
             {

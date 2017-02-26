@@ -44,14 +44,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 using NLog.xLogger;
+using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Configuration
+namespace OpenIIoT.Core.Configuration
 {
     /// <summary>
     ///     Represents the configuration for the application and all instances of Types implementing the IConfigurable interface.
     /// </summary>
-    public class Configuration
+    public class Configuration : IConfiguration
     {
         #region Private Fields
 

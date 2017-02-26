@@ -51,11 +51,6 @@ namespace OpenIIoT.SDK.Platform
         #region Public Properties
 
         /// <summary>
-        ///     A Dictionary containing all of the application directories, loaded from the App.config.
-        /// </summary>
-        IPlatformDirectories Directories { get; }
-
-        /// <summary>
         ///     The current platform.
         /// </summary>
         IPlatform Platform { get; }

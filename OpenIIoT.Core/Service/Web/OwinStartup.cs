@@ -48,7 +48,7 @@ namespace OpenIIoT.Core.Service.Web
             // linux uses web/content.
             app.UseFileServer(new FileServerOptions()
             {
-                FileSystem = new PhysicalFileSystem(manager.GetManager<PlatformManager>().Directories.Web),
+                FileSystem = new PhysicalFileSystem(manager.GetManager<PlatformManager>().Platform.Directories.Web),
                 RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : "") + webRoot)
             });
         }

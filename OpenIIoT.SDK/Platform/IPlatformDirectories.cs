@@ -99,7 +99,7 @@ namespace OpenIIoT.SDK.Platform
         ///     Returns a dictionary containing all of the program directories keyed by name.
         /// </summary>
         /// <returns>A dictionary containing all of the program directories keyed by name.</returns>
-        Dictionary<string, string> ToDictionary();
+        IDictionary<string, string> ToDictionary();
 
         #endregion Public Methods
     }

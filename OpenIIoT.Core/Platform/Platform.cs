@@ -77,6 +77,11 @@ namespace OpenIIoT.Core.Platform
     ///         while Version is informational.
     ///     </para>
     ///     <para>
+    ///         The <see cref="Directories"/> property is set to an instance of the <see cref="PlatformDirectories"/> class. This
+    ///         class serves as a container for the various directories in which the application stores files. The instance is
+    ///         passed via the constructor.
+    ///     </para>
+    ///     <para>
     ///         The Platform instance also contains the <see cref="ItemProvider"/> property which contains a reference to the Item
     ///         Provider class which accompanies the Platform. This <see cref="IItemProvider"/> provides <see cref="Item"/> objects
     ///         used to report statistics and metrics about the underlying Platform.
@@ -114,6 +119,11 @@ namespace OpenIIoT.Core.Platform
         #region Public Properties
 
         /// <summary>
+        ///     Gets a Dictionary containing all of the application directories, loaded from the App.config.
+        /// </summary>
+        public IPlatformDirectories Directories { get; private set; }
+
+        /// <summary>
         ///     Gets or sets the accompanying Item Provider for the Platform.
         /// </summary>
         [Discoverable]
@@ -138,7 +148,7 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         /// <param name="directory">The directory to clear.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result ClearDirectory(string directory)
+        public virtual IResult ClearDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Debug("Attempting to clear the contents of directory '" + directory + "'...");
@@ -176,7 +186,7 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         /// <param name="file">The file for which the checksum is to be computed.</param>
         /// <returns>A Result containing the result of the operation and the computed checksum.</returns>
-        public virtual Result<string> ComputeFileChecksum(string file)
+        public virtual IResult<string> ComputeFileChecksum(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
             Result<string> retVal = new Result<string>();
@@ -209,7 +219,7 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         /// <param name="directory">The directory to create.</param>
         /// <returns>A Result containing the result of the operation and the fully qualified path to the created directory.</returns>
-        public virtual Result<string> CreateDirectory(string directory)
+        public virtual IResult<string> CreateDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Debug("Creating directory '" + directory + "'...");
@@ -238,7 +248,7 @@ namespace OpenIIoT.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation and the fully qualified filename of the created zip file.
         /// </returns>
-        public virtual Result<string> CreateZip(string zipFile, string source)
+        public virtual IResult<string> CreateZip(string zipFile, string source)
         {
             logger.EnterMethod(xLogger.Params(zipFile, source));
             logger.Trace("Creating zip file '" + zipFile + "' from directory '" + source + "'...");
@@ -268,7 +278,7 @@ namespace OpenIIoT.Core.Platform
         ///     A value indicating whether to recursively delete subdirectories and files contained within the directory.
         /// </param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result DeleteDirectory(string directory, bool recursive = true)
+        public virtual IResult DeleteDirectory(string directory, bool recursive = true)
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Debug("Attempting to delete directory '" + directory + "'...");
@@ -295,7 +305,7 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         /// <param name="file">The file to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public virtual Result DeleteFile(string file)
+        public virtual IResult DeleteFile(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
             logger.Debug("Deleting file '" + file + "'...");
@@ -336,7 +346,7 @@ namespace OpenIIoT.Core.Platform
         ///     True if the destination directory should be cleared prior to extraction, false otherwise.
         /// </param>
         /// <returns>A Result containing the result of the operation and the fully qualified path to the extracted files.</returns>
-        public virtual Result<string> ExtractZip(string zipFile, string destination, bool clearDestination = true)
+        public virtual IResult<string> ExtractZip(string zipFile, string destination, bool clearDestination = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, destination, clearDestination));
             logger.Trace("Extracting zip file '" + zipFile + "' to destination '" + destination + "'...");
@@ -353,7 +363,7 @@ namespace OpenIIoT.Core.Platform
                 if (clearDestination)
                 {
                     logger.Trace("Attempting to clear destination directory '" + destination + "'...");
-                    Result clearResult = ClearDirectory(destination);
+                    IResult clearResult = ClearDirectory(destination);
                     if (clearResult.ResultCode != ResultCode.Success)
                     {
                         throw new Exception("Error clearing destination directory: " + clearResult.GetLastError());
@@ -385,7 +395,7 @@ namespace OpenIIoT.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation and the fully qualified filename of the extracted file.
         /// </returns>
-        public virtual Result<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true)
+        public virtual IResult<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, file, destination, overwrite));
             logger.Trace("Extracting file '" + file + "' from zip file '" + zipFile + "' into directory '" + destination + "'...");
@@ -435,10 +445,10 @@ namespace OpenIIoT.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
         /// </returns>
-        public virtual Result<List<string>> ListDirectories(string parentDirectory, string searchPattern = "*")
+        public virtual IResult<IList<string>> ListDirectories(string parentDirectory, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
-            Result<List<string>> retVal = new Result<List<string>>();
+            IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
             try
@@ -463,10 +473,10 @@ namespace OpenIIoT.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        public virtual Result<List<string>> ListFiles(string parentDirectory, string searchPattern = "*")
+        public virtual IResult<IList<string>> ListFiles(string parentDirectory, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
-            Result<List<string>> retVal = new Result<List<string>>();
+            IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
             try
@@ -491,12 +501,12 @@ namespace OpenIIoT.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        public virtual Result<List<string>> ListZipFiles(string zipFile, string searchPattern = "*")
+        public virtual IResult<IList<string>> ListZipFiles(string zipFile, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(zipFile, searchPattern));
             logger.Trace("Listing files in zip file '" + zipFile + "' matching searchPattern '" + searchPattern + "'...");
 
-            Result<List<string>> retVal = new Result<List<string>>();
+            IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
             logger.Trace("Converting pattern '" + searchPattern + "' to RegEx..");
@@ -538,7 +548,7 @@ namespace OpenIIoT.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a string containing the entire contents of the file.
         /// </returns>
-        public virtual Result<string> ReadFile(string file)
+        public virtual IResult<string> ReadFile(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Reading contents of file '" + file + "'...");
@@ -567,7 +577,7 @@ namespace OpenIIoT.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a string array containing all of the lines from the file.
         /// </returns>
-        public virtual Result<string[]> ReadFileLines(string file)
+        public virtual IResult<string[]> ReadFileLines(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Reading lines from file '" + file + "'...");
@@ -590,12 +600,21 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
+        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IPlatformDirectories"/>.
+        /// </summary>
+        /// <param name="directories">The value to which the <see cref="Directories"/> properties is set.</param>
+        public void SetDirectories(IPlatformDirectories directories)
+        {
+            Directories = directories;
+        }
+
+        /// <summary>
         ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.
         /// </summary>
         /// <param name="file">The file to which the specified contents are written.</param>
         /// <param name="contents">The string containing the content to write.</param>
         /// <returns>The fully qualified name of the written file.</returns>
-        public virtual Result<string> WriteFile(string file, string contents)
+        public virtual IResult<string> WriteFile(string file, string contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
             logger.Trace("Writing to file '" + file + "'...");
@@ -625,7 +644,7 @@ namespace OpenIIoT.Core.Platform
         /// <param name="file">The file to which the specified contents are written.</param>
         /// <param name="contents">The string array containing the content to write.</param>
         /// <returns>The fully qualified name of the written file.</returns>
-        public virtual Result<string> WriteFileLines(string file, string[] contents)
+        public virtual IResult<string> WriteFileLines(string file, string[] contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
             logger.Trace("Writing to file '" + file + "'...");

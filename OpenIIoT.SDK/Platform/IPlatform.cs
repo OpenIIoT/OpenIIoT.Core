@@ -53,6 +53,11 @@ namespace OpenIIoT.SDK.Platform
         #region Public Properties
 
         /// <summary>
+        ///     A Dictionary containing all of the application directories, loaded from the App.config.
+        /// </summary>
+        IPlatformDirectories Directories { get; }
+
+        /// <summary>
         ///     Gets the Item Provider for the Platform.
         /// </summary>
         IItemProvider ItemProvider { get; }
@@ -76,7 +81,7 @@ namespace OpenIIoT.SDK.Platform
         /// </summary>
         /// <param name="directory">The directory to clear.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result ClearDirectory(string directory);
+        IResult ClearDirectory(string directory);
 
         /// <summary>
         ///     Computes the checksum of the specified file using the SHA256 hashing algorithm.
@@ -86,14 +91,14 @@ namespace OpenIIoT.SDK.Platform
         /// </remarks>
         /// <param name="file">The file for which the checksum is to be computed.</param>
         /// <returns>A Result containing the result of the operation and the computed checksum.</returns>
-        Result<string> ComputeFileChecksum(string file);
+        IResult<string> ComputeFileChecksum(string file);
 
         /// <summary>
         ///     Creates the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to create.</param>
         /// <returns>A Result containing the result of the operation and the fully qualified path to the directory.</returns>
-        Result<string> CreateDirectory(string directory);
+        IResult<string> CreateDirectory(string directory);
 
         /// <summary>
         ///     Creates the specified zip file from the specified directory.
@@ -103,7 +108,7 @@ namespace OpenIIoT.SDK.Platform
         /// <returns>
         ///     A Result containing the result of the operation and the fully qualified filename of the created zip file.
         /// </returns>
-        Result<string> CreateZip(string zipFile, string source);
+        IResult<string> CreateZip(string zipFile, string source);
 
         /// <summary>
         ///     Deletes the specified directory.
@@ -113,14 +118,14 @@ namespace OpenIIoT.SDK.Platform
         ///     A value indicating whether to recursively delete subdirectories and files contained within the directory.
         /// </param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result DeleteDirectory(string directory, bool recursive = true);
+        IResult DeleteDirectory(string directory, bool recursive = true);
 
         /// <summary>
         ///     Deletes the specified file.
         /// </summary>
         /// <param name="file">The file to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Result DeleteFile(string file);
+        IResult DeleteFile(string file);
 
         /// <summary>
         ///     Returns true if the specified directory exists, false otherwise.
@@ -139,7 +144,7 @@ namespace OpenIIoT.SDK.Platform
         ///     True if the destination directory should be cleared prior to extraction, false otherwise.
         /// </param>
         /// <returns>A Result containing the result of the operation and the fully qualified path to the extracted files.</returns>
-        Result<string> ExtractZip(string zipFile, string destination, bool clearDestination = true);
+        IResult<string> ExtractZip(string zipFile, string destination, bool clearDestination = true);
 
         /// <summary>
         ///     Extracts the supplied file from the supplied zip file to the supplied destination, overwriting the file if
@@ -152,7 +157,7 @@ namespace OpenIIoT.SDK.Platform
         /// <returns>
         ///     A Result containing the result of the operation and the fully qualified filename of the extracted file.
         /// </returns>
-        Result<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true);
+        IResult<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true);
 
         /// <summary>
         ///     Returns true if the specified file exists, false otherwise.
@@ -169,7 +174,7 @@ namespace OpenIIoT.SDK.Platform
         /// <returns>
         ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
         /// </returns>
-        Result<List<string>> ListDirectories(string parentDirectory, string searchPattern = "*");
+        IResult<IList<string>> ListDirectories(string parentDirectory, string searchPattern = "*");
 
         /// <summary>
         ///     Returns a list of files within the specified directory matching the supplied searchPattern.
@@ -179,7 +184,7 @@ namespace OpenIIoT.SDK.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        Result<List<string>> ListFiles(string parentDirectory, string searchPattern = "*");
+        IResult<IList<string>> ListFiles(string parentDirectory, string searchPattern = "*");
 
         /// <summary>
         ///     Returns a list of files contained within the specified zip file matching the supplied searchPattern.
@@ -189,7 +194,7 @@ namespace OpenIIoT.SDK.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        Result<List<string>> ListZipFiles(string zipFile, string searchPattern = "*");
+        IResult<IList<string>> ListZipFiles(string zipFile, string searchPattern = "*");
 
         /// <summary>
         ///     Reads the contents of the specified file into a single string.
@@ -198,7 +203,7 @@ namespace OpenIIoT.SDK.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a string containing the entire contents of the file.
         /// </returns>
-        Result<string> ReadFile(string file);
+        IResult<string> ReadFile(string file);
 
         /// <summary>
         ///     Reads the contents of the specified file into a string array.
@@ -207,7 +212,13 @@ namespace OpenIIoT.SDK.Platform
         /// <returns>
         ///     A Result containing the result of the operation and a string array containing all of the lines from the file.
         /// </returns>
-        Result<string[]> ReadFileLines(string file);
+        IResult<string[]> ReadFileLines(string file);
+
+        /// <summary>
+        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IPlatformDirectories"/>.
+        /// </summary>
+        /// <param name="directories">The value to which the <see cref="Directories"/> properties is set.</param>
+        void SetDirectories(IPlatformDirectories directories);
 
         /// <summary>
         ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.
@@ -215,7 +226,7 @@ namespace OpenIIoT.SDK.Platform
         /// <param name="file">The file to write.</param>
         /// <param name="contents">The text to write to the file.</param>
         /// <returns>The fully qualified name of the written file.</returns>
-        Result<string> WriteFile(string file, string contents);
+        IResult<string> WriteFile(string file, string contents);
 
         #endregion Public Methods
     }

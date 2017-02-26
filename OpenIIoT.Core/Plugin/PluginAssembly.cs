@@ -23,7 +23,7 @@ namespace OpenIIoT.Core.Plugin
         ///     The version of the Plugin.
         /// </summary>
         /// <remarks>
-        ///     Formatting is disretionary. Any comparisons between versions will be "equals" rather than greater than/less than.
+        ///     Formatting is discretionary. Any comparisons between versions will be "equals" rather than greater than/less than.
         /// </remarks>
         public string Version { get; private set; }
 

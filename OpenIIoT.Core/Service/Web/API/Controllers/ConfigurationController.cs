@@ -17,7 +17,7 @@ namespace OpenIIoT.Core.Service.Web.API
     {
         private static IApplicationManager manager = ApplicationManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static SDK.Configuration.Configuration configuration = manager.GetManager<ConfigurationManager>().Configuration;
+        private static IConfiguration configuration = manager.GetManager<ConfigurationManager>().Configuration;
 
         private static List<string> serializationProperties = new List<string>(new string[] { });
 

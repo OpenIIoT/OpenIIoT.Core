@@ -64,6 +64,8 @@ using System.Collections.Generic;
 
 using OpenIIoT.SDK.Common;
 
+using OpenIIoT.SDK.Plugin;
+
 namespace OpenIIoT.Core
 {
     /// <summary>

@@ -77,11 +77,6 @@ namespace OpenIIoT.SDK.Configuration
         /// </remarks>
         T Configuration { get; }
 
-        /// <summary>
-        ///     Gets the ConfigurationDefinition for the class.
-        /// </summary>
-        ConfigurationDefinition ConfigurationDefinition { get; }
-
         #endregion Public Properties
 
         #region Public Methods

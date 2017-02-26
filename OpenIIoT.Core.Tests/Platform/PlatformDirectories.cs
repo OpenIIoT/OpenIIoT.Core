@@ -110,6 +110,9 @@ namespace OpenIIoT.Core.Tests
             Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
             Assert.IsType<Core.Platform.PlatformDirectories>(test);
 
+            test = new Core.Platform.PlatformDirectories();
+            Assert.IsType<Core.Platform.PlatformDirectories>(test);
+
             Assert.Throws<DirectoryConfigurationException>(() => new Core.Platform.PlatformDirectories(badDirs));
         }
 
@@ -143,7 +146,7 @@ namespace OpenIIoT.Core.Tests
             Assert.Equal(FullDir("Plugins"), test.Plugins);
             Assert.Equal(FullDir("Temp"), test.Temp);
 
-            Dictionary<string, string> dict = test.ToDictionary();
+            IDictionary<string, string> dict = test.ToDictionary();
 
             Assert.Equal(FullDir("Data"), dict["Data"]);
             Assert.Equal(FullDir("Archives"), dict["Archives"]);

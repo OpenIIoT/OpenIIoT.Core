@@ -58,9 +58,9 @@ namespace OpenIIoT.Core.Configuration
     /// <remarks>
     ///     <para>
     ///         The Configuration file is generated from the json serialization of the Configuration model. The Configuration model
-    ///         consists of a single instance of <see cref="SDK.Configuration.Configuration"/>. This instance creates a nested
-    ///         dictionary keyed on type first, then by name. The resulting key value pair contains the Configuration object for
-    ///         the specified Type and named instance.
+    ///         consists of a single instance of <see cref="Configuration"/>. This instance creates a nested dictionary keyed on
+    ///         type first, then by name. The resulting key value pair contains the Configuration object for the specified Type and
+    ///         named instance.
     ///     </para>
     ///     <para>
     ///         There are two main types of configuration supported by this scheme; configuration for static objects like the
@@ -91,15 +91,14 @@ namespace OpenIIoT.Core.Configuration
     ///     </para>
     ///     <para>
     ///         Configured objects may retrieve their stored configuration via the
-    ///         <see cref="SDK.Configuration.Configuration.GetInstance{T}(Type, string)"/> method, and may save their configuration
-    ///         using <see cref="SDK.Configuration.Configuration.UpdateInstance(Type, object, string)"/>.
+    ///         <see cref="Configuration.GetInstance{T}(Type, string)"/> method, and may save their configuration using <see cref="Configuration.UpdateInstance(Type, object, string)"/>.
     ///     </para>
     ///     <para>
     ///         New instances of configurable Types may be added to the configuration using the
-    ///         <see cref="SDK.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method, and may be removed using
-    ///         <see cref="SDK.Configuration.Configuration.RemoveInstance(Type, string)"/>. The
-    ///         <see cref="SDK.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> method is used to determine
-    ///         whether a given instance is configured.
+    ///         <see cref="Configuration.AddInstance{T}(Type, object, string)"/> method, and may be removed using
+    ///         <see cref="Configuration.RemoveInstance(Type, string)"/>. The
+    ///         <see cref="Configuration.IsInstanceConfigured(Type, string)"/> method is used to determine whether a given instance
+    ///         is configured.
     ///     </para>
     ///     <para>
     ///         The configuration is loaded from file within the <see cref="Startup"/> method, and saved within
@@ -108,7 +107,7 @@ namespace OpenIIoT.Core.Configuration
     ///         "OpenIIoT.json" is used.
     ///     </para>
     /// </remarks>
-    public sealed class ConfigurationManager : Manager, IStateful, IManager, IConfigurationManager
+    public sealed class ConfigurationManager : Manager, IConfigurationManager
     {
         #region Private Fields
 
@@ -148,7 +147,7 @@ namespace OpenIIoT.Core.Configuration
             RegisterDependency<IPlatformManager>(platformManager);
 
             ConfigurableTypeRegistry = new ConfigurableTypeRegistry();
-            Configuration = new SDK.Configuration.Configuration(ConfigurableTypeRegistry);
+            Configuration = new Configuration(ConfigurableTypeRegistry);
 
             ConfigurationFileName = GetConfigurationFileName();
             ConfigurationLoader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
@@ -170,7 +169,7 @@ namespace OpenIIoT.Core.Configuration
         /// <summary>
         ///     Gets the current configuration.
         /// </summary>
-        public SDK.Configuration.Configuration Configuration { get; private set; }
+        public IConfiguration Configuration { get; private set; }
 
         #endregion Public Properties
 
@@ -223,7 +222,7 @@ namespace OpenIIoT.Core.Configuration
         ///     Saves the current configuration to the file specified in app.exe.config.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result SaveConfiguration()
+        public IResult SaveConfiguration()
         {
             return ConfigurationLoader.Save(Configuration.Instances, ConfigurationFileName);
         }

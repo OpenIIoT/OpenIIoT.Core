@@ -45,18 +45,15 @@ using System.Collections.Generic;
 using System.Linq;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK;
-using OpenIIoT.Core.Plugin;
 using Newtonsoft.Json;
 using NLog.xLogger;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Common;
-
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Common.Provider;
+using OpenIIoT.SDK.Plugin;
 
 namespace OpenIIoT.Core.Model
 {
