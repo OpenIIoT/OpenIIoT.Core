@@ -12,6 +12,7 @@ using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK;
 using System.Web.Http.Services;
 using Utility.OperationResult;
+using OpenIIoT.Core.Configuration;
 
 namespace OpenIIoT.Core.Service.Web
 {
@@ -29,7 +30,7 @@ namespace OpenIIoT.Core.Service.Web
         [ThreadStatic]
         internal static WebServiceConfiguration configuration;
 
-        public ConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+        public IConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
         public WebServiceConfiguration Configuration { get; private set; }
         public bool IsRunning { get { return (server != null); } }
 
@@ -58,11 +59,11 @@ namespace OpenIIoT.Core.Service.Web
             return instance;
         }
 
-        public Result Configure()
+        public IResult Configure()
         {
             Result retVal = new Result();
 
-            Result<WebServiceConfiguration> fetchResult = manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebServiceConfiguration>(GetType());
+            IResult<WebServiceConfiguration> fetchResult = manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebServiceConfiguration>(GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -70,7 +71,7 @@ namespace OpenIIoT.Core.Service.Web
             // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
-                Result<WebServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstance<WebServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                IResult<WebServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstance<WebServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                     Configure(createResult.ReturnValue);
             }
@@ -78,19 +79,19 @@ namespace OpenIIoT.Core.Service.Web
             return Configure(manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebServiceConfiguration>(this.GetType()).ReturnValue);
         }
 
-        public Result Configure(WebServiceConfiguration configuration)
+        public IResult Configure(WebServiceConfiguration configuration)
         {
             Configuration = configuration;
             GetConfiguration = configuration;
             return new Result();
         }
 
-        public Result SaveConfiguration()
+        public IResult SaveConfiguration()
         {
             return manager.GetManager<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration);
         }
 
-        public static ConfigurationDefinition GetConfigurationDefinition()
+        public static IConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";

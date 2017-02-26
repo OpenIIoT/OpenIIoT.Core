@@ -245,7 +245,7 @@ namespace OpenIIoT.Core.Configuration
             List<Type> managerTypes = managerInstances.Select(m => m.GetType()).ToList();
 
             logger.Info("Registering Managers with the Configuration Manager...");
-            Result registerResult = ConfigurableTypeRegistry.RegisterTypes(managerTypes);
+            IResult registerResult = ConfigurableTypeRegistry.RegisterTypes(managerTypes);
 
             if (registerResult.ResultCode == ResultCode.Failure)
             {

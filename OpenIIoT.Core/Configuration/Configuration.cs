@@ -126,7 +126,7 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
         /// <param name="instanceName">The name of the instance to configure.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result<T> AddInstance<T>(Type type, object instanceConfiguration, string instanceName = "")
+        public IResult<T> AddInstance<T>(Type type, object instanceConfiguration, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
 
@@ -175,7 +175,7 @@ namespace OpenIIoT.Core.Configuration
         ///     A Result containing the result of the operation and an instance of the Configuration model for the calling class
         ///     containing the retrieved configuration.
         /// </returns>
-        public Result<T> GetInstance<T>(Type type, string instanceName = "")
+        public IResult<T> GetInstance<T>(Type type, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
 
@@ -213,7 +213,7 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="type">The Type of the instance to check.</param>
         /// <param name="instanceName">The name of the instance to check.</param>
         /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
-        public Result<bool> IsInstanceConfigured(Type type, string instanceName = "")
+        public IResult<bool> IsInstanceConfigured(Type type, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
             Result<bool> retVal = new Result<bool>();
@@ -257,7 +257,7 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="type">The Type of instance to remove.</param>
         /// <param name="instanceName">The name of the instance to remove from the Type.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result RemoveInstance(Type type, string instanceName = "")
+        public IResult RemoveInstance(Type type, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, instanceName));
 
@@ -285,7 +285,7 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="instanceConfiguration">The Configuration model to save.</param>
         /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result UpdateInstance(Type type, object instanceConfiguration, string instanceName = "")
+        public IResult UpdateInstance(Type type, object instanceConfiguration, string instanceName = "")
         {
             logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
 

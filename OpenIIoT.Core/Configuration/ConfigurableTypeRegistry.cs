@@ -42,13 +42,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using NLog;
 using NLog.xLogger;
-using Utility.OperationResult;
-using System.Reflection;
 using OpenIIoT.SDK.Common.Exceptions;
+using OpenIIoT.SDK.Configuration;
+using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Configuration
+namespace OpenIIoT.Core.Configuration
 {
     /// <summary>
     ///     Maintains a registry of Types implementing the <see cref="IConfigurable{T}"/> interface.
@@ -71,7 +72,7 @@ namespace OpenIIoT.SDK.Configuration
         /// </summary>
         public ConfigurableTypeRegistry()
         {
-            RegisteredTypes = new Dictionary<Type, ConfigurationDefinition>();
+            RegisteredTypes = new Dictionary<Type, IConfigurationDefinition>();
         }
 
         #endregion Public Constructors
@@ -81,48 +82,11 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Gets a dictionary containing all registered configurable types and their ConfigurationDefinitions.
         /// </summary>
-        public Dictionary<Type, ConfigurationDefinition> RegisteredTypes { get; private set; }
+        public IDictionary<Type, IConfigurationDefinition> RegisteredTypes { get; private set; }
 
         #endregion Public Properties
 
         #region Public Methods
-
-        /// <summary>
-        ///     Evaluates the specified <see cref="Type"/> to determine whether it can be configured, and returns the result. To be
-        ///     configurable, the type must implement <see cref="IConfigurable{T}"/> and must contain the static method GetConfigurationDefinition.
-        /// </summary>
-        /// <param name="type">The Type to evaluate.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and a boolean value indicating whether the specified Type can be configured.
-        /// </returns>
-        private Result<bool> IsConfigurable(Type type)
-        {
-            logger.EnterMethod(xLogger.Params(type));
-            Result<bool> retVal = new Result<bool>();
-            retVal.ReturnValue = false;
-
-            // check whether the Type implements IConfigurable
-            if (!type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
-            {
-                retVal.AddError("The provided type '" + type.Name + "' does not implement IConfigurable.");
-            }
-
-            // check whether the Type contains the static method "GetConfigurationDefinition"
-            if (type.GetMethod("GetConfigurationDefinition") == default(MethodInfo))
-            {
-                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetConfigurationDefinition'");
-            }
-
-            // if none of the previous checks failed, the type is configurable.
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                retVal.ReturnValue = true;
-            }
-
-            retVal.LogResult(logger.Trace);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
 
         /// <summary>
         ///     Checks to see if the supplied Type is in the RegisteredTypes dictionary.
@@ -148,7 +112,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <param name="throwExceptionOnFailure">If true, throws an exception on failure.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         /// <exception cref="ConfigurationRegistrationException">Thrown when the specified Type is fails to be registered.</exception>
-        public Result RegisterType(Type type, bool throwExceptionOnFailure = false)
+        public IResult RegisterType(Type type, bool throwExceptionOnFailure = false)
         {
             logger.EnterMethod(xLogger.Params(type, throwExceptionOnFailure));
             Result retVal = new Result();
@@ -198,7 +162,7 @@ namespace OpenIIoT.SDK.Configuration
         ///     A value indicating whether an exception should be thrown if a registration fails.
         /// </param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result RegisterTypes(List<Type> types, bool throwExceptionOnFailure = false)
+        public IResult RegisterTypes(List<Type> types, bool throwExceptionOnFailure = false)
         {
             logger.EnterMethod(xLogger.Params(types));
             logger.Debug("Attempting to register " + types.Count() + " types...");
@@ -224,6 +188,43 @@ namespace OpenIIoT.SDK.Configuration
         #endregion Public Methods
 
         #region Private Methods
+
+        /// <summary>
+        ///     Evaluates the specified <see cref="Type"/> to determine whether it can be configured, and returns the result. To be
+        ///     configurable, the type must implement <see cref="IConfigurable{T}"/> and must contain the static method GetConfigurationDefinition.
+        /// </summary>
+        /// <param name="type">The Type to evaluate.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a boolean value indicating whether the specified Type can be configured.
+        /// </returns>
+        private Result<bool> IsConfigurable(Type type)
+        {
+            logger.EnterMethod(xLogger.Params(type));
+            Result<bool> retVal = new Result<bool>();
+            retVal.ReturnValue = false;
+
+            // check whether the Type implements IConfigurable
+            if (!type.GetInterfaces().Any(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConfigurable<>)))
+            {
+                retVal.AddError("The provided type '" + type.Name + "' does not implement IConfigurable.");
+            }
+
+            // check whether the Type contains the static method "GetConfigurationDefinition"
+            if (type.GetMethod("GetConfigurationDefinition") == default(MethodInfo))
+            {
+                retVal.AddError("The provided type '" + type.Name + "' is missing the static method 'GetConfigurationDefinition'");
+            }
+
+            // if none of the previous checks failed, the type is configurable.
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                retVal.ReturnValue = true;
+            }
+
+            retVal.LogResult(logger.Trace);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
 
         /// <summary>
         ///     Registers the supplied Type with the Configuration Manager using the supplied ConfigurationDefinition.
