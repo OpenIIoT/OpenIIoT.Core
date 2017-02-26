@@ -48,6 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System.Reflection;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
@@ -104,6 +105,16 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Setup"/> method using reflection.
+        /// </summary>
+        [Fact]
+        public void Setup()
+        {
+            MethodInfo setup = typeof(Core.Platform.PlatformManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
+            setup.Invoke(manager, new object[] { });
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method via <see cref="SDK.Common.Manager.Start()"/> .
         /// </summary>
         [Fact]
@@ -113,6 +124,20 @@ namespace OpenIIoT.Core.Tests.Platform
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(State.Running, manager.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method with a bad instance of PlatformDirectories
+        ///     via <see cref="SDK.Common.Manager.Start()"/> .
+        /// </summary>
+        [Fact]
+        public void StartBadDirectories()
+        {
+            manager.Platform.SetDirectories(new Core.Platform.PlatformDirectories());
+
+            Result result = manager.Start();
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>

@@ -49,6 +49,8 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
+using System.Reflection;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
@@ -94,6 +96,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             applicationManager = new Mock<IApplicationManager>();
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            applicationManager.Setup(a => a.Managers).Returns(new List<IManager>());
 
             platformManager = new Mock<IPlatformManager>();
             platformManager.Setup(p => p.State).Returns(State.Running);
@@ -114,6 +117,16 @@ namespace OpenIIoT.Core.Tests.Configuration
         public void Constructor()
         {
             Assert.IsType<Core.Configuration.ConfigurationManager>(manager);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Setup"/> method using reflection.
+        /// </summary>
+        [Fact]
+        public void Setup()
+        {
+            MethodInfo setup = typeof(Core.Configuration.ConfigurationManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
+            setup.Invoke(manager, new object[] { });
         }
 
         /// <summary>
