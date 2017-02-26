@@ -57,22 +57,17 @@ namespace OpenIIoT.Core.Configuration
     /// </summary>
     /// <remarks>
     ///     <para>
-    ///         The Configuration namespace encapsulates the Configuration Manager and the classes and interfaces used by various
-    ///         application components to allow the configuration of application level objects.
-    ///     </para>
-    ///     <para>
     ///         The Configuration file is generated from the json serialization of the Configuration model. The Configuration model
-    ///         consists of a single instance of type Dictionary(Type, Dictionary(string, object)). This instance creates a nested
+    ///         consists of a single instance of <see cref="SDK.Configuration.Configuration"/>. This instance creates a nested
     ///         dictionary keyed on type first, then by name. The resulting key value pair contains the Configuration object for
     ///         the specified Type and named instance.
     ///     </para>
     ///     <para>
     ///         There are two main types of configuration supported by this scheme; configuration for static objects like the
-    ///         various application Managers and Services, and for dynamic objects encompassed by Plugins; namely Endpoints and
-    ///         Connectors. The key difference is the number of instances of each; static objects will have only one instance while
-    ///         the Plugin objects may have any number. Static objects do not supply an instance name when using the Configuration
-    ///         Manager, and their configuration is saved within the model with an empty string. Dynamic objects must supply an
-    ///         instance name.
+    ///         various application Managers and Services, and for dynamic objects encompassed by Plugins. The key difference is
+    ///         the number of instances of each; static objects will have only one instance while Plugin objects may have any
+    ///         number. Static objects do not supply an instance name when using the Configuration Manager, and their configuration
+    ///         is saved within the model with an empty string. Dynamic objects must supply an instance name.
     ///     </para>
     ///     <para>
     ///         The Configuration file maintained by the Configuration Manager is capable of being rebuilt from scratch. If
@@ -80,22 +75,37 @@ namespace OpenIIoT.Core.Configuration
     ///         model and flushes it to disk before loading it. This ensures the application can start normally in the event of a deletion.
     ///     </para>
     ///     <para>
-    ///         The method IsConfigurable uses reflection to examine the given Type to ensure that:
-    ///         1. it implements IConfigurable
-    ///         2. it contains the static method GetConfigurationDefinition
-    ///         <para></para>
+    ///         A Type is considered to be configurable if:
+    ///         <list type="number">
+    ///             <item>it implements the <see cref="SDK.Configuration.IConfigurable{T}"/> interface</item>
+    ///             <item>It contains the static method GetConfigurationDefinition()</item>
+    ///         </list>
     ///         If both predicates are true, the Type can be registered with the Configuration Manager and instances of that type
     ///         can load and save configuration data.
     ///         <para></para>
-    ///         Before any Type can use the Configuration Manager, the method RegisterType() must be called and passed the Type of
-    ///         that class. This method checks IsConfigurable and if passing, fetches the ConfigurationDefinition for the Type from
-    ///         the static method GetConfigurationDefinition and stores the Type and the ConfigurationDefinition in the
-    ///         RegisteredTypes dictionary.
+    ///         Before any Type can use the Configuration Manager, the method
+    ///         <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method within the
+    ///         <see cref="ConfigurableTypeRegistry"/> must be called and passed the Type of that class. This method fetches the
+    ///         ConfigurationDefinition for the Type from the static method GetConfigurationDefinition and stores the Type and the
+    ///         ConfigurationDefinition in the RegisteredTypes dictionary.
     ///     </para>
     ///     <para>
-    ///         The GetInstanceConfiguration(T) method is called by configurable instances to retrieve the saved configuration for
-    ///         the calling class and instance. By default, if the configuration is not found the default configuration is
-    ///         retrieved from the calling class and returned to the caller.
+    ///         Configured objects may retrieve their stored configuration via the
+    ///         <see cref="SDK.Configuration.Configuration.GetInstance{T}(Type, string)"/> method, and may save their configuration
+    ///         using <see cref="SDK.Configuration.Configuration.UpdateInstance(Type, object, string)"/>.
+    ///     </para>
+    ///     <para>
+    ///         New instances of configurable Types may be added to the configuration using the
+    ///         <see cref="SDK.Configuration.Configuration.AddInstance{T}(Type, object, string)"/> method, and may be removed using
+    ///         <see cref="SDK.Configuration.Configuration.RemoveInstance(Type, string)"/>. The
+    ///         <see cref="SDK.Configuration.Configuration.IsInstanceConfigured(Type, string)"/> method is used to determine
+    ///         whether a given instance is configured.
+    ///     </para>
+    ///     <para>
+    ///         The configuration is loaded from file within the <see cref="Startup"/> method, and saved within
+    ///         <see cref="Shutdown(StopType)"/>. The filename of the stored configuration is defined in the application settings
+    ///         file with the key "ConfigurationFileName". If the key is missing from the configuration, the default name
+    ///         "OpenIIoT.json" is used.
     ///     </para>
     /// </remarks>
     public sealed class ConfigurationManager : Manager, IStateful, IManager, IConfigurationManager
