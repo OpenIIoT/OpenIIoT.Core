@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using OpenIIoT.SDK.Plugin.Archive;
+using System.Collections.Generic;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Plugin
+namespace OpenIIoT.SDK.Plugin.Archive
 {
     /// <summary>
     ///     The PluginArchiveLoadResult extends the Result class and adds a list of type PluginArchive and a Dictionary with key
@@ -12,25 +13,25 @@ namespace OpenIIoT.Core.Plugin
     ///     The InvalidArchive dictionary contains the list of archives that did not pass validation, along with the reason
     ///     validation failed.
     /// </summary>
-    public class PluginArchiveLoadResult : Result
+    public class PluginArchiveLoadResult : Result, IPluginArchiveLoadResult
     {
         /// <summary>
         ///     The list of valid Plugin Archives discovered during the load.
         /// </summary>
-        public List<PluginArchive> ValidArchives { get; set; }
+        public IList<IPluginArchive> ValidArchives { get; set; }
 
         /// <summary>
         ///     The list of invalid Plugin Archives and the reason they failed validation.
         /// </summary>
-        public List<InvalidPluginArchive> InvalidArchives { get; set; }
+        public IList<IInvalidPluginArchive> InvalidArchives { get; set; }
 
         /// <summary>
         ///     The default constructor.
         /// </summary>
         public PluginArchiveLoadResult() : base()
         {
-            ValidArchives = new List<PluginArchive>();
-            InvalidArchives = new List<InvalidPluginArchive>();
+            ValidArchives = new List<IPluginArchive>();
+            InvalidArchives = new List<IInvalidPluginArchive>();
         }
     }
 }

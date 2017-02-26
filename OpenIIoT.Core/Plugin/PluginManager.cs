@@ -55,6 +55,8 @@ using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Plugin.Endpoint;
+using OpenIIoT.SDK.Plugin.Archive;
+using OpenIIoT.Core.Plugin.Archive;
 
 namespace OpenIIoT.Core.Plugin
 {
@@ -127,28 +129,28 @@ namespace OpenIIoT.Core.Plugin
         /// <summary>
         ///     Gets a list of all invalid Plugin Archives.
         /// </summary>
-        public List<InvalidPluginArchive> InvalidPluginArchives { get; private set; }
+        public IList<IInvalidPluginArchive> InvalidPluginArchives { get; private set; }
 
         /// <summary>
         ///     Gets a list of all Plugin Archives.
         /// </summary>
-        public List<PluginArchive> PluginArchives { get; private set; }
+        public IList<IPluginArchive> PluginArchives { get; private set; }
 
         /// <summary>
         ///     Gets a list of currently loaded plugin assemblies.
         /// </summary>
-        public List<IPluginAssembly> PluginAssemblies { get; private set; }
+        public IList<IPluginAssembly> PluginAssemblies { get; private set; }
 
         /// <summary>
         ///     Gets a Dictionary of all Plugin Instances, keyed by instance name.
         /// </summary>
         [Discoverable]
-        public List<IPluginInstance> PluginInstances { get; private set; }
+        public IList<IPluginInstance> PluginInstances { get; private set; }
 
         /// <summary>
         ///     Gets a list of installed plugins.
         /// </summary>
-        public List<IPlugin> Plugins { get; private set; }
+        public IList<IPlugin> Plugins { get; private set; }
 
         #endregion Public Properties
 
@@ -340,7 +342,7 @@ namespace OpenIIoT.Core.Plugin
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <param name="updatePlugin">When true, bypasses checks that prevent duplicate installations.</param>
         /// <returns>A Result containing the result of the operation and the created Plugin instance.</returns>
-        public Result<IPlugin> InstallPlugin(PluginArchive archive, bool updatePlugin = false)
+        public Result<IPlugin> InstallPlugin(IPluginArchive archive, bool updatePlugin = false)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(archive, new xLogger.ExcludedParam(), new xLogger.ExcludedParam(), updatePlugin), true);
 
@@ -533,7 +535,7 @@ namespace OpenIIoT.Core.Plugin
         /// </summary>
         /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
         /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        public async Task<Result<IPlugin>> InstallPluginAsync(PluginArchive archive)
+        public async Task<Result<IPlugin>> InstallPluginAsync(IPluginArchive archive)
         {
             return await Task.Run(() => InstallPlugin(archive));
         }
@@ -606,7 +608,7 @@ namespace OpenIIoT.Core.Plugin
             Result retVal = new Result();
 
             logger.Debug("Attempting to locate the Plugin Archive for the supplied Plugin...");
-            PluginArchive foundArchive = PluginArchives.Where(p => p.Plugin.FQN == plugin.FQN).FirstOrDefault();
+            IPluginArchive foundArchive = PluginArchives.Where(p => p.Plugin.FQN == plugin.FQN).FirstOrDefault();
             if (foundArchive == default(PluginArchive))
             {
                 retVal.AddError("Unable to locate the Plugin Archive for the supplied Plugin.  The Plugin can not be reinstalled.");
@@ -642,12 +644,12 @@ namespace OpenIIoT.Core.Plugin
         ///     Refreshes the lists of valid and invalid Plugin Archives.
         /// </summary>
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
-        public PluginArchiveLoadResult ReloadPluginArchives()
+        public IPluginArchiveLoadResult ReloadPluginArchives()
         {
             Guid guid = logger.EnterMethod(true);
 
             logger.Info("Reloading Plugin Archives...");
-            PluginArchiveLoadResult retVal = LoadPluginArchives();
+            IPluginArchiveLoadResult retVal = LoadPluginArchives();
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
@@ -765,7 +767,7 @@ namespace OpenIIoT.Core.Plugin
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        public Result<IPlugin> UpdatePlugin(PluginArchive archive)
+        public Result<IPlugin> UpdatePlugin(IPluginArchive archive)
         {
             return InstallPlugin(archive, true);
         }
@@ -775,7 +777,7 @@ namespace OpenIIoT.Core.Plugin
         /// </summary>
         /// <param name="archive">The PluginArchive to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        public async Task<Result<IPlugin>> UpdatePluginAsync(PluginArchive archive)
+        public async Task<Result<IPlugin>> UpdatePluginAsync(IPluginArchive archive)
         {
             return await Task.Run(() => UpdatePlugin(archive));
         }
@@ -835,7 +837,7 @@ namespace OpenIIoT.Core.Plugin
             // generate a list of valid archive files in the archive directory
             logger.SubSubHeading(LogLevel.Debug, "Archives...");
 
-            PluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
+            IPluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
 
             if (pluginArchiveLoadResult.ResultCode != ResultCode.Failure)
             {
@@ -1146,16 +1148,6 @@ namespace OpenIIoT.Core.Plugin
         }
 
         /// <summary>
-        ///     Iterates over the configured list of Plugin Instances, retrieves the matching PluginAssembly from the list of
-        ///     loaded PluginAssemblies and instantiates each instance
-        /// </summary>
-        /// <returns>A Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
-        private Result<List<IPluginInstance>> InstantiatePlugins()
-        {
-            return InstantiatePlugins(Configuration.Instances, PluginAssemblies, Dependency<IApplicationManager>());
-        }
-
-        /// <summary>
         ///     Iterates over the specified List of type <see cref="PluginManagerConfigurationPluginInstance"/>, retrieves the
         ///     matching PluginAssembly from the supplied List of type PluginAssembly and instantiates each instance, passing the
         ///     instance name and an instance of xLogger with the Fully Qualified Name of the instance.
@@ -1164,24 +1156,19 @@ namespace OpenIIoT.Core.Plugin
         ///     The <see cref="InstantiatePlugin{T}(IApplicationManager, string, xLogger)"/> method is invoked via reflection so
         ///     that the type parameter for the method can be specified dynamically.
         /// </remarks>
-        /// <param name="configuredInstances">
-        ///     The List of type PluginManagerConfigurationPluginInstance containing the list of Plugin instances to create.
-        /// </param>
-        /// <param name="assemblies">
-        ///     The List of type PluginAssembly containing the assemblies to which the supplied instances should be matched
-        /// </param>
-        /// <param name="instanceManager">The ApplicationManager instance to be passed to Plugin instances.</param>
         /// <returns>A Result containing the result of the operation and a Dictionary containing the instantiated Plugins.</returns>
-        private Result<List<IPluginInstance>> InstantiatePlugins(List<PluginManagerConfigurationPluginInstance> configuredInstances, List<IPluginAssembly> assemblies, IApplicationManager instanceManager)
+        private Result<List<IPluginInstance>> InstantiatePlugins()
         {
-            logger.EnterMethod(xLogger.Params(configuredInstances, assemblies));
+            logger.EnterMethod();
             logger.Info("Creating Plugin Instances...");
 
             Result<List<IPluginInstance>> retVal = new Result<List<IPluginInstance>>();
             retVal.ReturnValue = new List<IPluginInstance>();
 
+            IApplicationManager applicationManager = Dependency<IApplicationManager>();
+
             // iterate over the configured plugin instances from the configuration
-            foreach (PluginManagerConfigurationPluginInstance instance in configuredInstances)
+            foreach (PluginManagerConfigurationPluginInstance instance in Configuration.Instances)
             {
                 logger.SubSubHeading(LogLevel.Debug, "Instance: " + instance.InstanceName);
                 logger.Info("Creating instance '" + instance.InstanceName + "' of Type '" + instance.AssemblyName + "'...");
@@ -1199,7 +1186,7 @@ namespace OpenIIoT.Core.Plugin
 
                     // invoke the CreatePluginInstance method
                     MethodInfo method = this.GetType().GetMethod("InstantiatePlugin").MakeGenericMethod(assembly.Type);
-                    Result<IPluginInstance> invokeResult = (Result<IPluginInstance>)method.Invoke(this, new object[] { instanceManager, instance.InstanceName, instanceLogger });
+                    Result<IPluginInstance> invokeResult = (Result<IPluginInstance>)method.Invoke(this, new object[] { applicationManager, instance.InstanceName, instanceLogger });
 
                     // if the invocation succeeded, add the result to the Instances Dictionary
                     if (invokeResult.ResultCode == ResultCode.Success)
@@ -1222,9 +1209,9 @@ namespace OpenIIoT.Core.Plugin
         ///     Loads all valid Plugin Archives in the archive directory into a list of type PluginArchive and returns it.
         /// </summary>
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
-        private PluginArchiveLoadResult LoadPluginArchives()
+        private IPluginArchiveLoadResult LoadPluginArchives()
         {
-            return LoadPluginArchives(Dependency<IPlatformManager>().Directories.Archives, GetPluginArchiveExtension(), Dependency<IPlatformManager>().Platform);
+            return LoadPluginArchives(Dependency<IPlatformManager>().Directories.Archives, GetPluginArchiveExtension());
         }
 
         /// <summary>
@@ -1233,14 +1220,15 @@ namespace OpenIIoT.Core.Plugin
         /// </summary>
         /// <param name="directory">The directory to search.</param>
         /// <param name="searchPattern">The file extension of Plugin Archives.</param>
-        /// <param name="platform">The IPlatform instance to use to perform the search.</param>
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
-        private PluginArchiveLoadResult LoadPluginArchives(string directory, string searchPattern, IPlatform platform)
+        private IPluginArchiveLoadResult LoadPluginArchives(string directory, string searchPattern)
         {
-            Guid guid = logger.EnterMethod(xLogger.Params(directory, searchPattern, platform), true);
+            Guid guid = logger.EnterMethod(xLogger.Params(directory, searchPattern), true);
 
             logger.Info("Loading Plugin Archives...");
-            PluginArchiveLoadResult retVal = new PluginArchiveLoadResult();
+            IPluginArchiveLoadResult retVal = new PluginArchiveLoadResult();
+
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
 
             // retrieve a list of probable plugin archive files from the configured plugin archive directory
             logger.Trace("Listing matching files...");
@@ -1277,29 +1265,19 @@ namespace OpenIIoT.Core.Plugin
         }
 
         /// <summary>
-        ///     Loads the Plugin Assemblies specified in the InstalledPlugins list of the Plugin Manager configuration.
+        ///     Loads the Plugin Assemblies specified in the supplied list of Plugins using the supplied IPlatform instance.
         /// </summary>
         /// <returns>A Result containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
         private Result<List<IPluginAssembly>> LoadPluginAssemblies()
         {
-            return LoadPluginAssemblies(Plugins);
-        }
-
-        /// <summary>
-        ///     Loads the Plugin Assemblies specified in the supplied list of Plugins using the supplied IPlatform instance.
-        /// </summary>
-        /// <param name="plugins">The list of Plugins from which the Plugin Assemblies should be loaded.</param>
-        /// <returns>A Result containing the result of the operation and a list of the loaded PluginAssembly instances.</returns>
-        private Result<List<IPluginAssembly>> LoadPluginAssemblies(List<IPlugin> plugins)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(plugins), true);
+            Guid guid = logger.EnterMethod(true);
             logger.Info("Loading Plugin Assemblies...");
 
             Result<List<IPluginAssembly>> retVal = new Result<List<IPluginAssembly>>();
             retVal.ReturnValue = new List<IPluginAssembly>();
 
             // discard any plugins that aren't loadable (e.g. apps)
-            plugins = plugins.Where(p => IsPluginLoadable(p)).ToList();
+            List<IPlugin> plugins = Plugins.Where(p => IsPluginLoadable(p)).ToList();
 
             // load the assemblies
             foreach (IPlugin plugin in plugins)
@@ -1334,7 +1312,7 @@ namespace OpenIIoT.Core.Plugin
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
         /// <param name="pluginAssemblies">The list of type PluginAssembly to which the new instance should be added.</param>
         /// <returns>A Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
-        private Result<IPluginAssembly> LoadPluginAssembly(IPlugin plugin, List<IPluginAssembly> pluginAssemblies)
+        private Result<IPluginAssembly> LoadPluginAssembly(IPlugin plugin, IList<IPluginAssembly> pluginAssemblies)
         {
             logger.EnterMethod(xLogger.Params(plugin, new xLogger.ExcludedParam()));
             logger.Info("Loading Plugin Assembly for Plugin '" + plugin.FQN + "'...");
@@ -1342,7 +1320,7 @@ namespace OpenIIoT.Core.Plugin
             Result<IPluginAssembly> retVal = new Result<IPluginAssembly>();
             Assembly assembly;
 
-            if (pluginAssemblies.Exists(p => p.FQN == plugin.FQN))
+            if (pluginAssemblies.Any(p => p.FQN == plugin.FQN))
             {
                 return retVal.AddError("The Plugin Assembly for Plugin '" + plugin.FQN + "' has already been loaded.");
             }
@@ -1449,7 +1427,7 @@ namespace OpenIIoT.Core.Plugin
         /// <returns>A Result containing the result of the operation and the parsed PluginArchive.</returns>
         private Result<PluginArchive> ParsePluginArchive(string fileName)
         {
-            return ParsePluginArchive(fileName, GetPluginArchiveConfigurationFileName(), GetPluginArchivePayloadFileName(), Dependency<IPlatformManager>().Platform);
+            return ParsePluginArchive(fileName, GetPluginArchiveConfigurationFileName(), GetPluginArchivePayloadFileName());
         }
 
         /// <summary>
@@ -1460,16 +1438,17 @@ namespace OpenIIoT.Core.Plugin
         /// <param name="payloadFileName">
         ///     The name of the file containing the Plugin files expected to be found within the archive.
         /// </param>
-        /// <param name="platform">The IPlatform instance to use to carry out the parse.</param>
         /// <returns>A Result containing the result of the operation and the parsed PluginArchive.</returns>
-        private Result<PluginArchive> ParsePluginArchive(string fileName, string configFileName, string payloadFileName, IPlatform platform)
+        private Result<PluginArchive> ParsePluginArchive(string fileName, string configFileName, string payloadFileName)
         {
-            Guid guid = logger.EnterMethod(xLogger.Params(fileName, configFileName, payloadFileName, platform), true);
+            Guid guid = logger.EnterMethod(xLogger.Params(fileName, configFileName, payloadFileName), true);
 
             logger.Trace("Parsing Plugin Archive '" + fileName + "'...");
 
             Result<PluginArchive> retVal = new Result<PluginArchive>();
             retVal.ReturnValue = new PluginArchive(fileName);
+
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
 
             // retrieve the contents of the configuration file and deserialize it to an instance of Plugin
             logger.Trace("Retrieving the configuration file...");

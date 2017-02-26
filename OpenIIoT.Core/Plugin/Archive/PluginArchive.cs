@@ -1,11 +1,12 @@
 ﻿using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Plugin.Archive;
 
-namespace OpenIIoT.Core.Plugin
+namespace OpenIIoT.Core.Plugin.Archive
 {
     /// <summary>
     ///     Represents a Plugin Archive file.
     /// </summary>
-    public class PluginArchive
+    public class PluginArchive : IPluginArchive
     {
         /// <summary>
         ///     The fully qualified filename of the file.
@@ -45,27 +46,6 @@ namespace OpenIIoT.Core.Plugin
         public void SetPlugin(IPlugin plugin)
         {
             Plugin = plugin;
-        }
-    }
-
-    /// <summary>
-    ///     Represents an invalid Plugin Archive file.
-    /// </summary>
-    public class InvalidPluginArchive : PluginArchive
-    {
-        /// <summary>
-        ///     A string containing the reason the Plugin Archive is invalid.
-        /// </summary>
-        public string Message { get; private set; }
-
-        /// <summary>
-        ///     Constructs a new InvalidPluginArchive and sets the Message property to the provided string.
-        /// </summary>
-        /// <param name="fileName">The fully qualified filename of the file.</param>
-        /// <param name="message">A string containing the reason the file is invalid.</param>
-        public InvalidPluginArchive(string fileName, string message) : base(fileName)
-        {
-            Message = message;
         }
     }
 }

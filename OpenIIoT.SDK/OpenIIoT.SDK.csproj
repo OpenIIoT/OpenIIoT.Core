@@ -100,6 +100,9 @@
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\IPlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
+    <Compile Include="Plugin\Archive\IInvalidPluginArchive.cs" />
+    <Compile Include="Plugin\Archive\IPluginArchive.cs" />
+    <Compile Include="Plugin\Archive\IPluginArchiveLoadResult.cs" />
     <Compile Include="Plugin\Connector\ConnectorType.cs" />
     <Compile Include="Plugin\Connector\ConnectorAttribute.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
@@ -108,8 +111,9 @@
     <Compile Include="Common\Provider\ItemProvider\IWriteable.cs" />
     <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
     <Compile Include="Plugin\IPlugin.cs" />
-    <Compile Include="Plugin\IPluginInstance.cs" />
     <Compile Include="Plugin\IPluginAssembly.cs" />
+    <Compile Include="Plugin\IPluginInstance.cs" />
+    <Compile Include="Plugin\IPluginManager.cs" />
     <Compile Include="Plugin\PluginType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

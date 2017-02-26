@@ -186,10 +186,11 @@
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\PlatformDirectories.cs" />
-    <Compile Include="Plugin\IPluginManager.cs" />
+    <Compile Include="Plugin\Archive\InvalidPluginArchive.cs" />
+    <Compile Include="Plugin\Archive\PluginArchive.cs" />
+    <Compile Include="Plugin\Archive\PluginArchiveLoadResult.cs" />
     <Compile Include="Plugin\Plugin.cs" />
-    <Compile Include="Plugin\PluginArchive.cs" />
-    <Compile Include="Plugin\PluginArchiveLoadResult.cs" />
+    <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginInstaller.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
     <Compile Include="Plugin\PluginTypeManager.cs" />
@@ -199,7 +200,6 @@
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="Plugin\Repository\RepositoryManager.cs" />
     <Compile Include="Scripting\ScriptManager.cs" />
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
@@ -211,7 +211,6 @@
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />
-    <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -268,10 +267,7 @@
       <Name>OpenIIoT.SDK</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Plugin\Connector\" />
-    <Folder Include="Plugin\Endpoint\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

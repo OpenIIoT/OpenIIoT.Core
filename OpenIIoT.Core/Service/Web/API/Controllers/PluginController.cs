@@ -2,9 +2,11 @@
 using NLog;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
+using OpenIIoT.Core.Plugin.Archive;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Plugin.Archive;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -51,7 +53,7 @@ namespace OpenIIoT.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage ListPluginArchives()
         {
-            ApiResult<List<PluginArchive>> retVal = new ApiResult<List<PluginArchive>>(Request);
+            ApiResult<IList<IPluginArchive>> retVal = new ApiResult<IList<IPluginArchive>>(Request);
             retVal.LogRequest(logger.Info);
 
             retVal.ReturnValue = manager.GetManager<PluginManager>().PluginArchives;
@@ -68,7 +70,7 @@ namespace OpenIIoT.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage ReloadPluginArchives()
         {
-            ApiResult<PluginArchiveLoadResult> retVal = new ApiResult<PluginArchiveLoadResult>(Request);
+            ApiResult<IPluginArchiveLoadResult> retVal = new ApiResult<IPluginArchiveLoadResult>(Request);
             retVal.LogRequest(logger.Info);
 
             retVal.ReturnValue = manager.GetManager<PluginManager>().ReloadPluginArchives();
@@ -89,7 +91,7 @@ namespace OpenIIoT.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage GetPluginArchive(string fileName)
         {
-            ApiResult<PluginArchive> retVal = new ApiResult<PluginArchive>(Request);
+            ApiResult<IPluginArchive> retVal = new ApiResult<IPluginArchive>(Request);
             retVal.LogRequest(logger.Info);
 
             retVal.ReturnValue = manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault();
