@@ -810,6 +810,21 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.SetDirectories(IPlatformDirectories)"/> method.
+        /// </summary>
+        [Fact]
+        public void SetDirectories()
+        {
+            IPlatformDirectories pd = new Core.Platform.PlatformDirectories();
+
+            Assert.NotEqual(pd, platformMock.Directories);
+
+            platformMock.SetDirectories(pd);
+
+            Assert.Equal(pd, platformMock.Directories);
+        }
+
         #endregion Public Methods
     }
 

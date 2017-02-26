@@ -77,6 +77,11 @@ namespace OpenIIoT.Core.Platform
     ///         while Version is informational.
     ///     </para>
     ///     <para>
+    ///         The <see cref="Directories"/> property is set to an instance of the <see cref="PlatformDirectories"/> class. This
+    ///         class serves as a container for the various directories in which the application stores files. The instance is
+    ///         passed via the constructor.
+    ///     </para>
+    ///     <para>
     ///         The Platform instance also contains the <see cref="ItemProvider"/> property which contains a reference to the Item
     ///         Provider class which accompanies the Platform. This <see cref="IItemProvider"/> provides <see cref="Item"/> objects
     ///         used to report statistics and metrics about the underlying Platform.
@@ -112,6 +117,11 @@ namespace OpenIIoT.Core.Platform
         #endregion Public Constructors
 
         #region Public Properties
+
+        /// <summary>
+        ///     Gets a Dictionary containing all of the application directories, loaded from the App.config.
+        /// </summary>
+        public IPlatformDirectories Directories { get; private set; }
 
         /// <summary>
         ///     Gets or sets the accompanying Item Provider for the Platform.
@@ -587,6 +597,15 @@ namespace OpenIIoT.Core.Platform
             retVal.LogResult(logger.Trace);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
+        }
+
+        /// <summary>
+        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IPlatformDirectories"/>.
+        /// </summary>
+        /// <param name="directories">The value to which the <see cref="Directories"/> properties is set.</param>
+        public void SetDirectories(IPlatformDirectories directories)
+        {
+            Directories = directories;
         }
 
         /// <summary>

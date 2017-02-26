@@ -162,7 +162,7 @@ namespace OpenIIoT.Core.Service.Web.API
             ApiResult<bool> retVal = new ApiResult<bool>(Request);
             retVal.LogRequest(logger.Info);
 
-            string pluginArchive = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Directories.Archives, manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
+            string pluginArchive = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Archives, manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
 
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
 

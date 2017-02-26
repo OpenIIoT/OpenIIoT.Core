@@ -351,7 +351,7 @@ namespace OpenIIoT.Core.Plugin
 
             IPlatform platform = Dependency<IPlatform>();
 
-            string fullFileName = System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Archives, archive.FileName);
+            string fullFileName = System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Archives, archive.FileName);
 
             // check to see if the app is installed already
             IPlugin foundPlugin = FindPlugin(archive.Plugin.FQN);
@@ -386,7 +386,7 @@ namespace OpenIIoT.Core.Plugin
 
             // re-validate the file; it may have changed between the time it was loaded and when installation was requested.
             logger.Debug("Re-parsing the archive to ensure that it hasn't changed since it was loaded.");
-            Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Archives, archive.FileName));
+            Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Archives, archive.FileName));
             if (parseResult.ResultCode != ResultCode.Failure)
             {
                 if (!parseResult.ReturnValue.Plugin.Equals(archive.Plugin))
@@ -412,17 +412,17 @@ namespace OpenIIoT.Core.Plugin
             string tempDestination;
             string destination;
 
-            tempDestination = System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Temp, archive.Plugin.FQN);
+            tempDestination = System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Temp, archive.Plugin.FQN);
 
             // ..\Web\AppName
             if (archive.Plugin.PluginType == PluginType.App)
             {
-                destination = System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Web, archive.Plugin.Name);
+                destination = System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Web, archive.Plugin.Name);
             }
             else
             {
                 // ..\Plugins\(Connector|Endpoint)\AppName
-                destination = System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Plugins, archive.Plugin.PluginType.ToString(), archive.Plugin.Name);
+                destination = System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Plugins, archive.Plugin.PluginType.ToString(), archive.Plugin.Name);
             }
 
             logger.Debug("Output folders: Temp: '" + tempDestination + "'; Plugin: '" + destination + "'");
@@ -431,7 +431,7 @@ namespace OpenIIoT.Core.Plugin
 
             // extract the archive; first to the temp directory, then extract the payload to the plugin destination and copy the
             // configuration file
-            logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(Dependency<IPlatformManager>().Directories.Root, string.Empty) + "'...");
+            logger.Info("Extracting '" + System.IO.Path.GetFileName(fullFileName) + "' to '" + tempDestination.Replace(Dependency<IPlatformManager>().Platform.Directories.Root, string.Empty) + "'...");
 
             IResult extractResult;
             IResult payloadExtractResult;
@@ -978,11 +978,11 @@ namespace OpenIIoT.Core.Plugin
         {
             if (plugin.PluginType == PluginType.App)
             {
-                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Directories.Web, plugin.Name);
+                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Platform.Directories.Web, plugin.Name);
             }
             else
             {
-                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
+                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Platform.Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
             }
         }
 
@@ -1211,7 +1211,7 @@ namespace OpenIIoT.Core.Plugin
         /// <returns>An instance of PluginArchiveLoadResult.</returns>
         private IPluginArchiveLoadResult LoadPluginArchives()
         {
-            return LoadPluginArchives(Dependency<IPlatformManager>().Directories.Archives, GetPluginArchiveExtension());
+            return LoadPluginArchives(Dependency<IPlatformManager>().Platform.Directories.Archives, GetPluginArchiveExtension());
         }
 
         /// <summary>
@@ -1462,7 +1462,7 @@ namespace OpenIIoT.Core.Plugin
                     logger.Trace("Configuration file found.  Extracting it from the archive...");
 
                     // extract the config file to the temp directory
-                    IResult<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, Dependency<IPlatformManager>().Directories.Temp);
+                    IResult<string> extractConfigFileResult = platform.ExtractZipFile(fileName, foundConfigFile, Dependency<IPlatformManager>().Platform.Directories.Temp);
                     if (extractConfigFileResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("File extracted successfully.  Attempting to read contents...");
@@ -1505,7 +1505,7 @@ namespace OpenIIoT.Core.Plugin
 
             // clean up the temp directory. this will fail if the file wasn't extracted but we don't care.
             logger.Trace("Cleaning up the temp directory...");
-            platform.DeleteFile(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Temp, configFileName));
+            platform.DeleteFile(System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Temp, configFileName));
 
             // if we've encountered any errors, bail out.
             if (retVal.ResultCode == ResultCode.Failure)
@@ -1531,7 +1531,7 @@ namespace OpenIIoT.Core.Plugin
                     logger.Trace("Payload file found.  Attempting to extract...");
 
                     // extract the file to the temp directory
-                    IResult<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, Dependency<IPlatformManager>().Directories.Temp);
+                    IResult<string> extractPayloadResult = platform.ExtractZipFile(fileName, foundPayloadFile, Dependency<IPlatformManager>().Platform.Directories.Temp);
                     if (extractPayloadResult.ResultCode != ResultCode.Failure)
                     {
                         logger.Trace("Payload file extracted.  Attempting to calculate checksum...");
@@ -1583,7 +1583,7 @@ namespace OpenIIoT.Core.Plugin
 
             // clean up the temp directory. this will fail if the file wasn't extracted but we don't care.
             logger.Trace("Cleaning up the temp directory (again)...");
-            platform.DeleteFile(System.IO.Path.Combine(Dependency<IPlatformManager>().Directories.Temp, payloadFileName));
+            platform.DeleteFile(System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Temp, payloadFileName));
 
             // if we've encountered any errors up to this point, bail out.
             if (retVal.ResultCode == ResultCode.Failure)

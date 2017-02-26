@@ -69,15 +69,6 @@ namespace OpenIIoT.Core.Platform
     ///         either <see cref="Windows.WindowsPlatform"/> or <see cref="UNIX.UNIXPlatform"/> . This implementation contains all
     ///         of the (potentially) platform specific methods, such as those used for file I/O.
     ///     </para>
-    ///     <para>
-    ///         The <see cref="Directories"/> property is set to an instance of the <see cref="PlatformDirectories"/> class. This
-    ///         class serves as a container for the various directories in which the application stores files. Upon
-    ///         <see cref="Startup()"/> the Platform Manager fetches the list of directories (specified as JSON) from the
-    ///         application's .exe.config file, or, if the list is missing from the file, substitutes a default list defined in the
-    ///         code below. The <see cref="LoadDirectories(string)"/> method parses the list into an instance of the
-    ///         <see cref="PlatformDirectories"/> class, and <see cref="CheckDirectories"/> checks the file system for each of the
-    ///         defined directories and, if they aren't present, creates them.
-    ///     </para>
     /// </remarks>
     [Discoverable]
     public class PlatformManager : Manager, IPlatformManager
@@ -136,11 +127,6 @@ namespace OpenIIoT.Core.Platform
         #endregion Private Constructors
 
         #region Public Properties
-
-        /// <summary>
-        ///     Gets a Dictionary containing all of the application directories, loaded from the App.config.
-        /// </summary>
-        public IPlatformDirectories Directories { get; private set; }
 
         /// <summary>
         ///     Gets the current platform.
@@ -235,7 +221,7 @@ namespace OpenIIoT.Core.Platform
 
             // fetch the directory list from .exe.config file
             string directoryList = GetDirectories();
-            Directories = LoadDirectories(directoryList);
+            Platform.SetDirectories(LoadDirectories(directoryList));
 
             logger.Checkpoint("Directory configuration loaded", guid);
 
@@ -290,7 +276,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod();
             Result retVal = new Result();
 
-            IDictionary<string, string> directories = Directories.ToDictionary();
+            IDictionary<string, string> directories = Platform.Directories.ToDictionary();
 
             foreach (string directory in directories.Keys)
             {

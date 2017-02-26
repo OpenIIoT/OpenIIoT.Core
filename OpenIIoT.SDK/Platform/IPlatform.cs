@@ -53,6 +53,11 @@ namespace OpenIIoT.SDK.Platform
         #region Public Properties
 
         /// <summary>
+        ///     A Dictionary containing all of the application directories, loaded from the App.config.
+        /// </summary>
+        IPlatformDirectories Directories { get; }
+
+        /// <summary>
         ///     Gets the Item Provider for the Platform.
         /// </summary>
         IItemProvider ItemProvider { get; }
@@ -208,6 +213,12 @@ namespace OpenIIoT.SDK.Platform
         ///     A Result containing the result of the operation and a string array containing all of the lines from the file.
         /// </returns>
         IResult<string[]> ReadFileLines(string file);
+
+        /// <summary>
+        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IPlatformDirectories"/>.
+        /// </summary>
+        /// <param name="directories">The value to which the <see cref="Directories"/> properties is set.</param>
+        void SetDirectories(IPlatformDirectories directories);
 
         /// <summary>
         ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.

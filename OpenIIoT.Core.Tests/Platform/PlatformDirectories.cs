@@ -110,6 +110,9 @@ namespace OpenIIoT.Core.Tests
             Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
             Assert.IsType<Core.Platform.PlatformDirectories>(test);
 
+            test = new Core.Platform.PlatformDirectories();
+            Assert.IsType<Core.Platform.PlatformDirectories>(test);
+
             Assert.Throws<DirectoryConfigurationException>(() => new Core.Platform.PlatformDirectories(badDirs));
         }
 
