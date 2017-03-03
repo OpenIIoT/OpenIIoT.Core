@@ -226,7 +226,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public IConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -236,9 +236,9 @@ namespace OpenIIoT.Core.Tests.Configuration
             ///     Returns the ConfigurationDefinition for the Type.
             /// </summary>
             /// <returns>The ConfigurationDefinition for the Type.</returns>
-            public static Core.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            public static IConfigurationDefinition GetConfigurationDefinition()
             {
-                return new Core.Configuration.ConfigurationDefinition();
+                return new ConfigurationDefinition();
             }
 
             /// <summary>
@@ -290,7 +290,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public IConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -300,7 +300,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             ///     Returns the ConfigurationDefinition for the Type.
             /// </summary>
             /// <returns>The ConfigurationDefinition for the Type.</returns>
-            public static Core.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            public static IConfigurationDefinition GetConfigurationDefinition()
             {
                 throw new Exception();
             }
@@ -353,7 +353,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public IConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -363,9 +363,9 @@ namespace OpenIIoT.Core.Tests.Configuration
             ///     Returns the ConfigurationDefinition for the Type.
             /// </summary>
             /// <returns>The ConfigurationDefinition for the Type.</returns>
-            public static Core.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            public static IConfigurationDefinition GetConfigurationDefinition()
             {
-                return new Core.Configuration.ConfigurationDefinition();
+                return new ConfigurationDefinition();
             }
 
             /// <summary>
@@ -416,7 +416,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public IConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -471,7 +471,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             /// <summary>
             ///     Gets or sets the class ConfigurationDefinition.
             /// </summary>
-            public Core.Configuration.ConfigurationDefinition ConfigurationDefinition { get; set; }
+            public IConfigurationDefinition ConfigurationDefinition { get; set; }
 
             #endregion Public Properties
 
@@ -481,7 +481,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             ///     Returns the ConfigurationDefinition for the Type.
             /// </summary>
             /// <returns>The ConfigurationDefinition for the Type.</returns>
-            public static Core.Configuration.ConfigurationDefinition GetConfigurationDefinition()
+            public static IConfigurationDefinition GetConfigurationDefinition()
             {
                 return null;
             }

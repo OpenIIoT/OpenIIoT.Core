@@ -44,7 +44,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Configuration
+namespace OpenIIoT.SDK.Configuration
 {
     /// <summary>
     ///     Establishes a common object to represent the configuration details for various application items.
