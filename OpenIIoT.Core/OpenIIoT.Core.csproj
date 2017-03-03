@@ -195,7 +195,6 @@
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
-    <Compile Include="Plugin\PluginTypeManager.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>

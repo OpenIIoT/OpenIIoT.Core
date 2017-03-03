@@ -102,8 +102,6 @@
     <Compile Include="Plugin\Archive\IInvalidPluginArchive.cs" />
     <Compile Include="Plugin\Archive\IPluginArchive.cs" />
     <Compile Include="Plugin\Archive\IPluginArchiveLoadResult.cs" />
-    <Compile Include="Plugin\Connector\ConnectorType.cs" />
-    <Compile Include="Plugin\Connector\ConnectorAttribute.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Common\Provider\ItemProvider\IExtensible.cs" />
     <Compile Include="Common\Provider\ItemProvider\ISubscribable.cs" />
