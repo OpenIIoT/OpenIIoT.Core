@@ -2,11 +2,11 @@
 using NLog;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
-using OpenIIoT.Core.Plugin.Archive;
+using OpenIIoT.Core.Plugin.Package;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
-using OpenIIoT.SDK.Plugin.Archive;
+using OpenIIoT.SDK.Plugin.Package;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -20,7 +20,7 @@ using Utility.OperationResult;
 namespace OpenIIoT.Core.Service.Web.API
 {
     /// <summary>
-    ///     Handles the API methods for AppArchives.
+    ///     Handles the API methods for AppPackages.
     /// </summary>
     public class PluginController : ApiController, IApiController
     {
@@ -37,66 +37,66 @@ namespace OpenIIoT.Core.Service.Web.API
         private IApplicationManager manager = ApplicationManager.GetInstance();
 
         /// <summary>
-        ///     The default serialization properties for an AppArchive.
+        ///     The default serialization properties for an AppPackage.
         /// </summary>
-        private static List<string> pluginArchiveSerializationProperties = new List<string>(new string[] { });
+        private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { });
 
         #endregion Variables
 
         #region Instance Methods
 
         /// <summary>
-        ///     Returns the list of available AppArchives.
+        ///     Returns the list of available AppPackages.
         /// </summary>
-        /// <returns>The list of available AppArchives.</returns>
+        /// <returns>The list of available AppPackages.</returns>
         [Route("api/plugin/archive")]
         [HttpGet]
-        public HttpResponseMessage ListPluginArchives()
+        public HttpResponseMessage ListPluginPackages()
         {
-            ApiResult<IList<IPluginArchive>> retVal = new ApiResult<IList<IPluginArchive>>(Request);
+            ApiResult<IList<IPluginPackage>> retVal = new ApiResult<IList<IPluginPackage>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().PluginArchives;
+            retVal.ReturnValue = manager.GetManager<PluginManager>().PluginPackages;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut));
+            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         /// <summary>
-        ///     Reloads the list of PluginArchives from disk and returns the list.
+        ///     Reloads the list of PluginPackages from disk and returns the list.
         /// </summary>
-        /// <returns>The reloaded list of available PluginArchives.</returns>
+        /// <returns>The reloaded list of available PluginPackages.</returns>
         [Route("api/plugin/archive/reload")]
         [HttpGet]
-        public HttpResponseMessage ReloadPluginArchives()
+        public HttpResponseMessage ReloadPluginPackages()
         {
-            ApiResult<IPluginArchiveLoadResult> retVal = new ApiResult<IPluginArchiveLoadResult>(Request);
+            ApiResult<IPluginPackageLoadResult> retVal = new ApiResult<IPluginPackageLoadResult>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().ReloadPluginArchives();
+            retVal.ReturnValue = manager.GetManager<PluginManager>().ReloadPluginPackages();
 
             if (retVal.ReturnValue.ResultCode == ResultCode.Failure)
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut));
+            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         /// <summary>
-        ///     Returns the PluginArchive from the list of available PluginArchives that matches the supplied filename.
+        ///     Returns the PluginPackage from the list of available PluginPackages that matches the supplied filename.
         /// </summary>
-        /// <param name="fileName">The Fully Qualified Name of the PluginArchive to return.</param>
-        /// <returns>The matching PluginArchive.</returns>
+        /// <param name="fileName">The Fully Qualified Name of the PluginPackage to return.</param>
+        /// <returns>The matching PluginPackage.</returns>
         [Route("api/plugin/archive/{fileName}")]
         [HttpGet]
-        public HttpResponseMessage GetPluginArchive(string fileName)
+        public HttpResponseMessage GetPluginPackage(string fileName)
         {
-            ApiResult<IPluginArchive> retVal = new ApiResult<IPluginArchive>(Request);
+            ApiResult<IPluginPackage> retVal = new ApiResult<IPluginPackage>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault();
+            retVal.ReturnValue = manager.GetManager<PluginManager>().PluginPackages.Where(p => p.FileName == fileName).FirstOrDefault();
 
-            if (retVal.ReturnValue == default(PluginArchive))
+            if (retVal.ReturnValue == default(PluginPackage))
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
             retVal.LogResult(logger);
@@ -104,9 +104,9 @@ namespace OpenIIoT.Core.Service.Web.API
         }
 
         /// <summary>
-        ///     Installs the supplied PluginArchive.
+        ///     Installs the supplied PluginPackage.
         /// </summary>
-        /// <param name="fileName">The filename of the Plugin Archive to install.</param>
+        /// <param name="fileName">The filename of the Plugin Package to install.</param>
         /// <returns>The App instance resulting from the installation.</returns>
         [Route("api/plugin/archive/{fileName}/install")]
         [HttpGet]
@@ -115,7 +115,7 @@ namespace OpenIIoT.Core.Service.Web.API
             ApiResult<Result<IPlugin>> retVal = new ApiResult<Result<IPlugin>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = await manager.GetManager<PluginManager>().InstallPluginAsync(manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault());
+            retVal.ReturnValue = await manager.GetManager<PluginManager>().InstallPluginAsync(manager.GetManager<PluginManager>().PluginPackages.Where(p => p.FileName == fileName).FirstOrDefault());
 
             if ((retVal.ReturnValue == default(Result<Plugin.Plugin>)) || (retVal.ReturnValue.ResultCode == ResultCode.Failure))
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
@@ -134,7 +134,7 @@ namespace OpenIIoT.Core.Service.Web.API
             retVal.ReturnValue = manager.GetManager<PluginManager>().Configuration.InstalledPlugins.ToList<IPlugin>();
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginArchiveSerializationProperties, ContractResolverType.OptOut));
+            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         /// <summary>
@@ -157,18 +157,18 @@ namespace OpenIIoT.Core.Service.Web.API
 
         [Route("api/plugin/archive/{fileName}/download")]
         [HttpGet]
-        public HttpResponseMessage DownloadPluginArchive(string fileName)
+        public HttpResponseMessage DownloadPluginPackage(string fileName)
         {
             ApiResult<bool> retVal = new ApiResult<bool>(Request);
             retVal.LogRequest(logger.Info);
 
-            string pluginArchive = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Archives, manager.GetManager<PluginManager>().PluginArchives.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
+            string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<PluginManager>().PluginPackages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
 
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
 
-            result.Content = new StreamContent(new System.IO.FileStream(pluginArchive, System.IO.FileMode.Open));
+            result.Content = new StreamContent(new System.IO.FileStream(pluginPackage, System.IO.FileMode.Open));
             result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = System.IO.Path.GetFileName(pluginArchive) };
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = System.IO.Path.GetFileName(pluginPackage) };
 
             retVal.LogResult(logger);
             return result;

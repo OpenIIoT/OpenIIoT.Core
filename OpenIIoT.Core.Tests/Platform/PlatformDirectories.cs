@@ -85,7 +85,7 @@ namespace OpenIIoT.Core.Tests
             goodDirs = new Dictionary<string, string>();
 
             goodDirs.Add("Data", "Data");
-            goodDirs.Add("Archives", "Archives");
+            goodDirs.Add("Packages", "Packages");
             goodDirs.Add("Plugins", "Plugins");
             goodDirs.Add("Temp", "Temp");
             goodDirs.Add("Persistence", "Persistence");
@@ -125,7 +125,7 @@ namespace OpenIIoT.Core.Tests
             Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
 
             Assert.Equal(FullDir("Data"), test.Data);
-            Assert.Equal(FullDir("Archives"), test.Archives);
+            Assert.Equal(FullDir("Packages"), test.Packages);
             Assert.Equal(FullDir("Plugins"), test.Plugins);
             Assert.Equal(FullDir("Temp"), test.Temp);
             Assert.Equal(FullDir("Persistence"), test.Persistence);
@@ -142,14 +142,14 @@ namespace OpenIIoT.Core.Tests
             Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
 
             Assert.Equal(FullDir("Data"), test.Data);
-            Assert.Equal(FullDir("Archives"), test.Archives);
+            Assert.Equal(FullDir("Packages"), test.Packages);
             Assert.Equal(FullDir("Plugins"), test.Plugins);
             Assert.Equal(FullDir("Temp"), test.Temp);
 
             IDictionary<string, string> dict = test.ToDictionary();
 
             Assert.Equal(FullDir("Data"), dict["Data"]);
-            Assert.Equal(FullDir("Archives"), dict["Archives"]);
+            Assert.Equal(FullDir("Packages"), dict["Packages"]);
             Assert.Equal(FullDir("Temp"), dict["Temp"]);
         }
 

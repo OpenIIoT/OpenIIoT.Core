@@ -1013,12 +1013,12 @@
           <xs:element name="footer" minOccurs="0" maxOccurs="1" type="Layout" />
           <xs:element name="encoding" minOccurs="0" maxOccurs="1" type="xs:string" />
           <xs:element name="lineEnding" minOccurs="0" maxOccurs="1" type="LineEndingMode" />
-          <xs:element name="archiveNumbering" minOccurs="0" maxOccurs="1" type="NLog.Targets.ArchiveNumberingMode" />
+          <xs:element name="archiveNumbering" minOccurs="0" maxOccurs="1" type="NLog.Targets.PackageNumberingMode" />
           <xs:element name="archiveFileName" minOccurs="0" maxOccurs="1" type="Layout" />
-          <xs:element name="archiveEvery" minOccurs="0" maxOccurs="1" type="NLog.Targets.FileArchivePeriod" />
+          <xs:element name="archiveEvery" minOccurs="0" maxOccurs="1" type="NLog.Targets.FilePackagePeriod" />
           <xs:element name="archiveAboveSize" minOccurs="0" maxOccurs="1" type="xs:long" />
-          <xs:element name="enableArchiveFileCompression" minOccurs="0" maxOccurs="1" type="xs:boolean" />
-          <xs:element name="maxArchiveFiles" minOccurs="0" maxOccurs="1" type="xs:integer" />
+          <xs:element name="enablePackageFileCompression" minOccurs="0" maxOccurs="1" type="xs:boolean" />
+          <xs:element name="maxPackageFiles" minOccurs="0" maxOccurs="1" type="xs:integer" />
           <xs:element name="forceManaged" minOccurs="0" maxOccurs="1" type="xs:boolean" />
           <xs:element name="archiveFileKind" minOccurs="0" maxOccurs="1" type="NLog.Targets.FilePathKind" />
           <xs:element name="cleanupFileName" minOccurs="0" maxOccurs="1" type="xs:boolean" />
@@ -1074,7 +1074,7 @@
             <xs:documentation>Line ending mode.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="archiveNumbering" type="NLog.Targets.ArchiveNumberingMode">
+        <xs:attribute name="archiveNumbering" type="NLog.Targets.PackageNumberingMode">
           <xs:annotation>
             <xs:documentation>Way file archives are numbered.</xs:documentation>
           </xs:annotation>
@@ -1084,7 +1084,7 @@
             <xs:documentation>Name of the file to be used for an archive.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="archiveEvery" type="NLog.Targets.FileArchivePeriod">
+        <xs:attribute name="archiveEvery" type="NLog.Targets.FilePackagePeriod">
           <xs:annotation>
             <xs:documentation>Indicates whether to automatically archive log files every time the specified time passes.</xs:documentation>
           </xs:annotation>
@@ -1094,12 +1094,12 @@
             <xs:documentation>Size in bytes above which log files will be automatically archived. Warning: combining this with  isn't supported. We cannot create multiple archive files, if they should have the same name. Choose: </xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="enableArchiveFileCompression" type="xs:boolean">
+        <xs:attribute name="enablePackageFileCompression" type="xs:boolean">
           <xs:annotation>
             <xs:documentation>Indicates whether to compress archive files into the zip archive format.</xs:documentation>
           </xs:annotation>
         </xs:attribute>
-        <xs:attribute name="maxArchiveFiles" type="xs:integer">
+        <xs:attribute name="maxPackageFiles" type="xs:integer">
           <xs:annotation>
             <xs:documentation>Maximum number of archive files that should be kept.</xs:documentation>
           </xs:annotation>
@@ -1227,7 +1227,7 @@
       </xs:extension>
     </xs:complexContent>
   </xs:complexType>
-  <xs:simpleType name="NLog.Targets.ArchiveNumberingMode">
+  <xs:simpleType name="NLog.Targets.PackageNumberingMode">
     <xs:restriction base="xs:string">
       <xs:enumeration value="Sequence" />
       <xs:enumeration value="Rolling" />
@@ -1235,7 +1235,7 @@
       <xs:enumeration value="DateAndSequence" />
     </xs:restriction>
   </xs:simpleType>
-  <xs:simpleType name="NLog.Targets.FileArchivePeriod">
+  <xs:simpleType name="NLog.Targets.FilePackagePeriod">
     <xs:restriction base="xs:string">
       <xs:enumeration value="None" />
       <xs:enumeration value="Year" />
@@ -1257,7 +1257,7 @@
       <xs:enumeration value="ReadOnly" />
       <xs:enumeration value="Hidden" />
       <xs:enumeration value="System" />
-      <xs:enumeration value="Archive" />
+      <xs:enumeration value="Package" />
       <xs:enumeration value="Device" />
       <xs:enumeration value="Normal" />
       <xs:enumeration value="Temporary" />

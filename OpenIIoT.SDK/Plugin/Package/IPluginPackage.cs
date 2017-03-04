@@ -1,11 +1,11 @@
 ﻿using OpenIIoT.SDK.Plugin;
 
-namespace OpenIIoT.SDK.Plugin.Archive
+namespace OpenIIoT.SDK.Plugin.Package
 {
     /// <summary>
-    ///     Represents a Plugin Archive file.
+    ///     Represents a Plugin Package file.
     /// </summary>
-    public interface IPluginArchive
+    public interface IPluginPackage
     {
         /// <summary>
         ///     The fully qualified filename of the file.

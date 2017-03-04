@@ -5,9 +5,9 @@ namespace OpenIIoT.Core.Plugin
     /// <summary>
     ///     The Plugin class represents Plugins that have been installed but not yet loaded.
     ///
-    ///     The heirarchy of Plugin objects is: PluginArchive Plugin PluginAssembly PluginInstance
+    ///     The heirarchy of Plugin objects is: PluginPackage Plugin PluginAssembly PluginInstance
     ///
-    ///     PluginArchive instances are installed, creating Plugin instances. Plugin instances are loaded, creating PluginAssembly
+    ///     PluginPackage instances are installed, creating Plugin instances. Plugin instances are loaded, creating PluginAssembly
     ///     instances. PluginAssembly instances are instantiated, creating PluginInstance instances.
     /// </summary>
     public class Plugin : IPlugin

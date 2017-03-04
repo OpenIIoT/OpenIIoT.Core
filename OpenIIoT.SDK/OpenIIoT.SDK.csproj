@@ -100,9 +100,9 @@
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\IPlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Plugin\Archive\IInvalidPluginArchive.cs" />
-    <Compile Include="Plugin\Archive\IPluginArchive.cs" />
-    <Compile Include="Plugin\Archive\IPluginArchiveLoadResult.cs" />
+    <Compile Include="Plugin\Package\IInvalidPluginPackage.cs" />
+    <Compile Include="Plugin\Package\IPluginPackage.cs" />
+    <Compile Include="Plugin\Package\IPluginPackageLoadResult.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Common\Provider\ItemProvider\IExtensible.cs" />
     <Compile Include="Common\Provider\ItemProvider\ISubscribable.cs" />

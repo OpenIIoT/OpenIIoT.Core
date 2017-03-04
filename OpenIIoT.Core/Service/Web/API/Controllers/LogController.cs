@@ -17,7 +17,7 @@ namespace OpenIIoT.Core.Service.Web.API
         private static IApplicationManager manager = ApplicationManager.GetInstance();
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
-        //private static List<string> appArchiveSerializationProperties = new List<string>(new string[] { "FQN", "FileName", "Version", "AppType", "ConfigurationDefinition" });
+        //private static List<string> appPackageSerializationProperties = new List<string>(new string[] { "FQN", "FileName", "Version", "AppType", "ConfigurationDefinition" });
 
         [Route("api/log")]
         [HttpGet]
