@@ -1,12 +1,12 @@
-﻿using OpenIIoT.SDK.Plugin;
-using OpenIIoT.SDK.Plugin.Archive;
+﻿using OpenIIoT.SDK.Extensibility.Plugin;
+using OpenIIoT.SDK.Extensibility.Package;
 
-namespace OpenIIoT.Core.Plugin.Archive
+namespace OpenIIoT.Core.Extensibility.Package
 {
     /// <summary>
-    ///     Represents a Plugin Archive file.
+    ///     Represents a Plugin Package file.
     /// </summary>
-    public class PluginArchive : IPluginArchive
+    public class Package : IPackage
     {
         /// <summary>
         ///     The fully qualified filename of the file.
@@ -24,7 +24,7 @@ namespace OpenIIoT.Core.Plugin.Archive
         /// <param name="fileName">The fully qualified filename of the file.</param>
         /// <param name="checksum">The checksum of the file.</param>
         /// <param name="plugin">The Plugin contained within the archive.</param>
-        public PluginArchive(string fileName = "", string checksum = "", IPlugin plugin = null)
+        public Package(string fileName = "", string checksum = "", IPlugin plugin = null)
         {
             FileName = fileName;
             Plugin = plugin;

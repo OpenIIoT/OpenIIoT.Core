@@ -256,7 +256,7 @@ namespace OpenIIoT.Core.Platform
         {
             string defaultDirectories = @"{
                       'Data':'Data',
-                      'Archives':'Data\|Archives',
+                      'Packages':'Data\|Packages',
                       'Plugins':'Plugins',
                       'Temp':'Data\|Temp',
 		              'Persistence':'Data\|Persistence',

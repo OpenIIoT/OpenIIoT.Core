@@ -1,8 +1,8 @@
-﻿using OpenIIoT.SDK.Plugin;
+﻿using OpenIIoT.SDK.Extensibility.Plugin;
 using System;
 using System.Collections.Generic;
 
-namespace OpenIIoT.Core.Plugin
+namespace OpenIIoT.Core.Extensibility.Plugin
 {
     /// <summary>
     ///     PluginManagerConfiguration contains the configuration model for the PluginManager.

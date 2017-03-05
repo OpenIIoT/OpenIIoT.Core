@@ -48,23 +48,23 @@ using System.Text.RegularExpressions;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Configuration;
-using OpenIIoT.Core.Event;
+using OpenIIoT.Core.Extensibility.Event;
 using OpenIIoT.Core.Model;
 using OpenIIoT.Core.Platform;
-using OpenIIoT.Core.Plugin;
+using OpenIIoT.Core.Extensibility.Plugin;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Platform;
 using OpenIIoT.Core.Service;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Plugin.Connector;
+using OpenIIoT.SDK.Extensibility.Plugin.Connector;
 using OpenIIoT.SDK.Common;
 using System.Collections.Generic;
 
 using OpenIIoT.SDK.Common;
 
-using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Extensibility.Plugin;
 
 namespace OpenIIoT.Core
 {

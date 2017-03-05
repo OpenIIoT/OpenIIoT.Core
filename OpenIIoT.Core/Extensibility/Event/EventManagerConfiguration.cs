@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.Core.Event
+namespace OpenIIoT.Core.Extensibility.Event
 {
     public class EventManagerConfiguration
     {

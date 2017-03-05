@@ -1,7 +1,7 @@
-﻿using OpenIIoT.SDK.Plugin;
+﻿using OpenIIoT.SDK.Extensibility.Plugin;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Plugin.Endpoint
+namespace OpenIIoT.SDK.Extensibility.Plugin.Endpoint
 {
     public interface IEndpoint : IPluginInstance
     {

@@ -51,9 +51,9 @@ namespace OpenIIoT.SDK.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the Archive directory
+        ///     Gets the Package directory
         /// </summary>
-        string Archives { get; }
+        string Packages { get; }
 
         /// <summary>
         ///     Gets the Data directory

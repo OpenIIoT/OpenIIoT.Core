@@ -1,4 +1,4 @@
-﻿namespace OpenIIoT.SDK.Plugin
+﻿namespace OpenIIoT.SDK.Extensibility.Plugin
 {
     /// <summary>
     ///     Defines the interface for Plugin objects.

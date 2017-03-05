@@ -45,7 +45,7 @@ using System.Linq;
 using System.Reflection;
 using NLog;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Event;
+using OpenIIoT.SDK.Extensibility.Event;
 using OpenIIoT.SDK;
 using NLog.xLogger;
 using Utility.OperationResult;
@@ -54,7 +54,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
 using OpenIIoT.Core.Configuration;
 
-namespace OpenIIoT.Core.Event
+namespace OpenIIoT.Core.Extensibility.Event
 {
     /// <summary>
     ///     Represents and controls the Event subsystem.

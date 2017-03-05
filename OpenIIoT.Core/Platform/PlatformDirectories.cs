@@ -86,7 +86,7 @@ namespace OpenIIoT.Core.Platform
             {
                 Root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
                 Data = System.IO.Path.Combine(Root, directories["Data"]);
-                Archives = System.IO.Path.Combine(Root, directories["Archives"]);
+                Packages = System.IO.Path.Combine(Root, directories["Packages"]);
                 Plugins = System.IO.Path.Combine(Root, directories["Plugins"]);
                 Temp = System.IO.Path.Combine(Root, directories["Temp"]);
                 Persistence = System.IO.Path.Combine(Root, directories["Persistence"]);
@@ -109,7 +109,7 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     Gets the archive directory
         /// </summary>
-        public string Archives { get; private set; }
+        public string Packages { get; private set; }
 
         /// <summary>
         ///     Gets the data directory

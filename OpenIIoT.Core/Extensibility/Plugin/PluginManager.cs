@@ -49,17 +49,17 @@ using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK;
 using NLog.xLogger;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Plugin;
-using OpenIIoT.SDK.Plugin.Connector;
+using OpenIIoT.SDK.Extensibility.Plugin;
+using OpenIIoT.SDK.Extensibility.Plugin.Connector;
 using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Plugin.Endpoint;
-using OpenIIoT.SDK.Plugin.Archive;
-using OpenIIoT.Core.Plugin.Archive;
-using OpenIIoT.Core.Configuration;
+using OpenIIoT.SDK.Extensibility.Plugin.Endpoint;
+using OpenIIoT.SDK.Plugin.Package;
+using OpenIIoT.SDK.Extensibility.Package;
+using OpenIIoT.Core.Extensibility.Package;
 
-namespace OpenIIoT.Core.Plugin
+namespace OpenIIoT.Core.Extensibility.Plugin
 {
     /// <summary>
     ///     Represents and manages the Plugin subsystem.
@@ -128,14 +128,14 @@ namespace OpenIIoT.Core.Plugin
         public PluginManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
-        ///     Gets a list of all invalid Plugin Archives.
+        ///     Gets a list of all invalid Plugin Packages.
         /// </summary>
-        public IList<IInvalidPluginArchive> InvalidPluginArchives { get; private set; }
+        public IList<IInvalidPackage> InvalidPackages { get; private set; }
 
         /// <summary>
-        ///     Gets a list of all Plugin Archives.
+        ///     Gets a list of all Plugin Packages.
         /// </summary>
-        public IList<IPluginArchive> PluginArchives { get; private set; }
+        public IList<IPackage> Packages { get; private set; }
 
         /// <summary>
         ///     Gets a list of currently loaded plugin assemblies.
@@ -330,20 +330,20 @@ namespace OpenIIoT.Core.Plugin
 
         /// <summary>
         ///     <para>
-        ///         Installs the Plugin contained within the supplied PluginArchive using the supplied IPlatform and adds the
-        ///         installed Plugin to the supplied PluginManagerConfiguration.
+        ///         Installs the Plugin contained within the supplied Package using the supplied IPlatform and adds the installed
+        ///         Plugin to the supplied PluginManagerConfiguration.
         ///     </para>
         ///     <para>
-        ///         Prior to installing, the Plugin Archive is re-parsed to ensure it did not changed between the time it was
-        ///         loaded into the PluginArchives list and when installation was requested. If the Plugin within the archive is
-        ///         the same as the loaded plugin, installation continues, otherwise the operation fails and requests that the user
+        ///         Prior to installing, the Plugin Package is re-parsed to ensure it did not changed between the time it was
+        ///         loaded into the Packages list and when installation was requested. If the Plugin within the archive is the same
+        ///         as the loaded plugin, installation continues, otherwise the operation fails and requests that the user
         ///         refreshes the list.
         ///     </para>
         /// </summary>
-        /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
+        /// <param name="archive">The Package from which the Plugin is to be installed.</param>
         /// <param name="updatePlugin">When true, bypasses checks that prevent duplicate installations.</param>
         /// <returns>A Result containing the result of the operation and the created Plugin instance.</returns>
-        public Result<IPlugin> InstallPlugin(IPluginArchive archive, bool updatePlugin = false)
+        public Result<IPlugin> InstallPlugin(IPackage archive, bool updatePlugin = false)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(archive, new xLogger.ExcludedParam(), new xLogger.ExcludedParam(), updatePlugin), true);
 
@@ -352,7 +352,7 @@ namespace OpenIIoT.Core.Plugin
 
             IPlatform platform = Dependency<IPlatform>();
 
-            string fullFileName = System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Archives, archive.FileName);
+            string fullFileName = System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Packages, archive.FileName);
 
             // check to see if the app is installed already
             IPlugin foundPlugin = FindPlugin(archive.Plugin.FQN);
@@ -387,12 +387,12 @@ namespace OpenIIoT.Core.Plugin
 
             // re-validate the file; it may have changed between the time it was loaded and when installation was requested.
             logger.Debug("Re-parsing the archive to ensure that it hasn't changed since it was loaded.");
-            Result<PluginArchive> parseResult = ParsePluginArchive(System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Archives, archive.FileName));
+            Result<Package.Package> parseResult = ParsePackage(System.IO.Path.Combine(Dependency<IPlatformManager>().Platform.Directories.Packages, archive.FileName));
             if (parseResult.ResultCode != ResultCode.Failure)
             {
                 if (!parseResult.ReturnValue.Plugin.Equals(archive.Plugin))
                 {
-                    retVal.AddError("The archive '" + System.IO.Path.GetFileName(archive.FileName) + "' has changed since it was loaded.  Refresh Plugin Archives and try again.");
+                    retVal.AddError("The archive '" + System.IO.Path.GetFileName(archive.FileName) + "' has changed since it was loaded.  Refresh Plugin Packages and try again.");
                 }
             }
 
@@ -447,12 +447,12 @@ namespace OpenIIoT.Core.Plugin
                 {
                     // ensure the payload archive was extracted properly
                     logger.Debug("Checking to ensure the payload file was extracted...");
-                    string payloadFileName = System.IO.Path.Combine(tempDestination, GetPluginArchiveConfigurationFileName());
+                    string payloadFileName = System.IO.Path.Combine(tempDestination, GetPackageConfigurationFileName());
                     if (platform.FileExists(payloadFileName))
                     {
                         // extract the payload archive to the plugin destination
                         logger.Debug("Extracting the payload file to the Plugin destination...");
-                        payloadExtractResult = platform.ExtractZip(System.IO.Path.Combine(tempDestination, GetPluginArchivePayloadFileName()), destination, true);
+                        payloadExtractResult = platform.ExtractZip(System.IO.Path.Combine(tempDestination, GetPackagePayloadFileName()), destination, true);
                         if (payloadExtractResult.ResultCode != ResultCode.Failure)
                         {
                             logger.Debug("Payload extracted successfully.");
@@ -532,11 +532,11 @@ namespace OpenIIoT.Core.Plugin
         }
 
         /// <summary>
-        ///     Asynchronously installs the Plugin contained within the supplied PluginArchive.
+        ///     Asynchronously installs the Plugin contained within the supplied Package.
         /// </summary>
-        /// <param name="archive">The PluginArchive from which the Plugin is to be installed.</param>
+        /// <param name="archive">The Package from which the Plugin is to be installed.</param>
         /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        public async Task<Result<IPlugin>> InstallPluginAsync(IPluginArchive archive)
+        public async Task<Result<IPlugin>> InstallPluginAsync(IPackage archive)
         {
             return await Task.Run(() => InstallPlugin(archive));
         }
@@ -608,11 +608,11 @@ namespace OpenIIoT.Core.Plugin
             logger.Info("Reinstalling Plugin '" + plugin.FQN + "'...");
             Result retVal = new Result();
 
-            logger.Debug("Attempting to locate the Plugin Archive for the supplied Plugin...");
-            IPluginArchive foundArchive = PluginArchives.Where(p => p.Plugin.FQN == plugin.FQN).FirstOrDefault();
-            if (foundArchive == default(PluginArchive))
+            logger.Debug("Attempting to locate the Plugin Package for the supplied Plugin...");
+            IPackage foundPackage = Packages.Where(p => p.Plugin.FQN == plugin.FQN).FirstOrDefault();
+            if (foundPackage == default(Package.Package))
             {
-                retVal.AddError("Unable to locate the Plugin Archive for the supplied Plugin.  The Plugin can not be reinstalled.");
+                retVal.AddError("Unable to locate the Plugin Package for the supplied Plugin.  The Plugin can not be reinstalled.");
             }
             else
             {
@@ -622,7 +622,7 @@ namespace OpenIIoT.Core.Plugin
                 logger.Debug("Reinstalling the Plugin...");
                 if (retVal.ResultCode != ResultCode.Failure)
                 {
-                    retVal.Incorporate(InstallPlugin(foundArchive));
+                    retVal.Incorporate(InstallPlugin(foundPackage));
                 }
             }
 
@@ -642,20 +642,20 @@ namespace OpenIIoT.Core.Plugin
         }
 
         /// <summary>
-        ///     Refreshes the lists of valid and invalid Plugin Archives.
+        ///     Refreshes the lists of valid and invalid Plugin Packages.
         /// </summary>
-        /// <returns>An instance of PluginArchiveLoadResult.</returns>
-        public IPluginArchiveLoadResult ReloadPluginArchives()
+        /// <returns>An instance of PackageLoadResult.</returns>
+        public IPackageLoadResult ReloadPackages()
         {
             Guid guid = logger.EnterMethod(true);
 
-            logger.Info("Reloading Plugin Archives...");
-            IPluginArchiveLoadResult retVal = LoadPluginArchives();
+            logger.Info("Reloading Plugin Packages...");
+            IPackageLoadResult retVal = LoadPackages();
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                PluginArchives = retVal.ValidArchives;
-                InvalidPluginArchives = retVal.InvalidArchives;
+                Packages = retVal.ValidPackages;
+                InvalidPackages = retVal.InvalidPackages;
             }
 
             retVal.LogResult(logger);
@@ -764,21 +764,21 @@ namespace OpenIIoT.Core.Plugin
         }
 
         /// <summary>
-        ///     Updates the Plugin contained within the specified PluginArchive.
+        ///     Updates the Plugin contained within the specified Package.
         /// </summary>
-        /// <param name="archive">The PluginArchive to use for the update.</param>
+        /// <param name="archive">The Package to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        public Result<IPlugin> UpdatePlugin(IPluginArchive archive)
+        public Result<IPlugin> UpdatePlugin(IPackage archive)
         {
             return InstallPlugin(archive, true);
         }
 
         /// <summary>
-        ///     Asynchronously Updates the Plugin contained within the specified PluginArchive.
+        ///     Asynchronously Updates the Plugin contained within the specified Package.
         /// </summary>
-        /// <param name="archive">The PluginArchive to use for the update.</param>
+        /// <param name="archive">The Package to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        public async Task<Result<IPlugin>> UpdatePluginAsync(IPluginArchive archive)
+        public async Task<Result<IPlugin>> UpdatePluginAsync(IPackage archive)
         {
             return await Task.Run(() => UpdatePlugin(archive));
         }
@@ -803,8 +803,8 @@ namespace OpenIIoT.Core.Plugin
             //PluginInstances = new Dictionary<string, IPluginInstance>();
             PluginInstances = new List<IPluginInstance>();
             Plugins = null;
-            PluginArchives = null;
-            InvalidPluginArchives = null;
+            Packages = null;
+            InvalidPackages = null;
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -814,7 +814,7 @@ namespace OpenIIoT.Core.Plugin
         /// <summary>
         ///     <para>Executed upon startup of the Manager.</para>
         ///     <para>
-        ///         Configures the Manager using the Configuration Manager, generates a list of the available Plugin Archives,
+        ///         Configures the Manager using the Configuration Manager, generates a list of the available Plugin Packages,
         ///         loads installed Plugin Assemblies and registers them for configuration, and instantiates configured Plugin Instances.
         ///     </para>
         /// </summary>
@@ -836,42 +836,42 @@ namespace OpenIIoT.Core.Plugin
             logger.Checkpoint("Configured the Plugin Manager", guid);
 
             // generate a list of valid archive files in the archive directory
-            logger.SubSubHeading(LogLevel.Debug, "Archives...");
+            logger.SubSubHeading(LogLevel.Debug, "Packages...");
 
-            IPluginArchiveLoadResult pluginArchiveLoadResult = LoadPluginArchives();
+            IPackageLoadResult pluginPackageLoadResult = LoadPackages();
 
-            if (pluginArchiveLoadResult.ResultCode != ResultCode.Failure)
+            if (pluginPackageLoadResult.ResultCode != ResultCode.Failure)
             {
-                PluginArchives = pluginArchiveLoadResult.ValidArchives;
-                InvalidPluginArchives = pluginArchiveLoadResult.InvalidArchives;
+                Packages = pluginPackageLoadResult.ValidPackages;
+                InvalidPackages = pluginPackageLoadResult.InvalidPackages;
             }
 
-            retVal.Incorporate(pluginArchiveLoadResult);
+            retVal.Incorporate(pluginPackageLoadResult);
 
             // print the lists of valid and invalid archives
-            if (PluginArchives.Count > 0)
+            if (Packages.Count > 0)
             {
-                logger.Info("Valid Plugin Archives:");
+                logger.Info("Valid Plugin Packages:");
             }
 
-            foreach (PluginArchive archive in PluginArchives)
+            foreach (Package.Package archive in Packages)
             {
                 logger.Info("\t" + System.IO.Path.GetFileName(archive.FileName) + " (" + archive.Plugin.FQN + ")");
             }
 
-            if (InvalidPluginArchives.Count > 0)
+            if (InvalidPackages.Count > 0)
             {
-                logger.Info("Invalid Plugin Archives:");
+                logger.Info("Invalid Plugin Packages:");
             }
 
-            foreach (InvalidPluginArchive invalidArchive in InvalidPluginArchives)
+            foreach (InvalidPackage invalidPackage in InvalidPackages)
             {
-                logger.Info(new string(' ', 5) + System.IO.Path.GetFileName(invalidArchive.FileName) + " (" + invalidArchive.Message + ")");
+                logger.Info(new string(' ', 5) + System.IO.Path.GetFileName(invalidPackage.FileName) + " (" + invalidPackage.Message + ")");
             }
 
-            logger.Info(PluginArchives.Count + " Plugin " + (PluginArchives.Count == 1 ? "Archive" : "Archives") + " loaded.");
+            logger.Info(Packages.Count + " Plugin " + (Packages.Count == 1 ? "Package" : "Packages") + " loaded.");
 
-            logger.Checkpoint("Plugin Archives loaded", xLogger.Vars(PluginArchives, InvalidPluginArchives), xLogger.Names("PluginArchives", "InvalidPluginArchives"), guid);
+            logger.Checkpoint("Plugin Packages loaded", xLogger.Vars(Packages, InvalidPackages), xLogger.Names("Packages", "InvalidPackages"), guid);
 
             // load installed plugin assemblies into memory and register them with the configuration manager
             logger.SubSubHeading(LogLevel.Debug, "Assemblies...");
@@ -943,30 +943,30 @@ namespace OpenIIoT.Core.Plugin
         #region Private Methods
 
         /// <summary>
-        ///     Retrieves the PluginArchiveConfigurationFileName setting or substitutes "OpenIIoTPlugin.json" if retrieval fails.
+        ///     Retrieves the PackageConfigurationFileName setting or substitutes "OpenIIoTPlugin.json" if retrieval fails.
         /// </summary>
-        /// <returns>The name of the Plugin Archive configuration file.</returns>
-        private static string GetPluginArchiveConfigurationFileName()
+        /// <returns>The name of the Plugin Package configuration file.</returns>
+        private static string GetPackageConfigurationFileName()
         {
-            return Utility.GetSetting("PluginArchiveConfigurationFileName", "OpenIIoTPlugin.json");
+            return Utility.GetSetting("PackageConfigurationFileName", "OpenIIoTPlugin.json");
         }
 
         /// <summary>
-        ///     Retrieves the PluginArchiveExtension setting or substitutes "*.zip" if retrieval fails.
+        ///     Retrieves the PackageExtension setting or substitutes "*.zip" if retrieval fails.
         /// </summary>
-        /// <returns>The wildcard mask of the file extension for Plugin Archives.</returns>
-        private static string GetPluginArchiveExtension()
+        /// <returns>The wildcard mask of the file extension for Plugin Packages.</returns>
+        private static string GetPackageExtension()
         {
-            return Utility.GetSetting("PluginArchiveExtension", "*.zip");
+            return Utility.GetSetting("PackageExtension", "*.zip");
         }
 
         /// <summary>
-        ///     Retrieves the PluginArchivePayloadFileName setting or substitutes "Plugin.zip" if retrieval fails.
+        ///     Retrieves the PackagePayloadFileName setting or substitutes "Plugin.zip" if retrieval fails.
         /// </summary>
-        /// <returns>The name of the Plugin payload file contained within a Plugin Archive.</returns>
-        private static string GetPluginArchivePayloadFileName()
+        /// <returns>The name of the Plugin payload file contained within a Plugin Package.</returns>
+        private static string GetPackagePayloadFileName()
         {
-            return Utility.GetSetting("PluginArchivePayloadFileName", "Plugin.zip");
+            return Utility.GetSetting("PackagePayloadFileName", "Plugin.zip");
         }
 
         /// <summary>
@@ -1207,57 +1207,57 @@ namespace OpenIIoT.Core.Plugin
         }
 
         /// <summary>
-        ///     Loads all valid Plugin Archives in the archive directory into a list of type PluginArchive and returns it.
+        ///     Loads all valid Plugin Packages in the archive directory into a list of type Package and returns it.
         /// </summary>
-        /// <returns>An instance of PluginArchiveLoadResult.</returns>
-        private IPluginArchiveLoadResult LoadPluginArchives()
+        /// <returns>An instance of PackageLoadResult.</returns>
+        private IPackageLoadResult LoadPackages()
         {
-            return LoadPluginArchives(Dependency<IPlatformManager>().Platform.Directories.Archives, GetPluginArchiveExtension());
+            return LoadPackages(Dependency<IPlatformManager>().Platform.Directories.Packages, GetPackageExtension());
         }
 
         /// <summary>
-        ///     Loads all valid Plugin Archives matching the supplied searchPattern in the supplied directory using the supplied
-        ///     IPlatform into a list of type PluginArchive and returns it.
+        ///     Loads all valid Plugin Packages matching the supplied searchPattern in the supplied directory using the supplied
+        ///     IPlatform into a list of type Package and returns it.
         /// </summary>
         /// <param name="directory">The directory to search.</param>
-        /// <param name="searchPattern">The file extension of Plugin Archives.</param>
-        /// <returns>An instance of PluginArchiveLoadResult.</returns>
-        private IPluginArchiveLoadResult LoadPluginArchives(string directory, string searchPattern)
+        /// <param name="searchPattern">The file extension of Plugin Packages.</param>
+        /// <returns>An instance of PackageLoadResult.</returns>
+        private IPackageLoadResult LoadPackages(string directory, string searchPattern)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(directory, searchPattern), true);
 
-            logger.Info("Loading Plugin Archives...");
-            IPluginArchiveLoadResult retVal = new PluginArchiveLoadResult();
+            logger.Info("Loading Plugin Packages...");
+            IPackageLoadResult retVal = new PackageLoadResult();
 
             IPlatform platform = Dependency<IPlatformManager>().Platform;
 
             // retrieve a list of probable plugin archive files from the configured plugin archive directory
             logger.Trace("Listing matching files...");
             IResult<IList<string>> searchResult = platform.ListFiles(directory, searchPattern);
-            logger.Debug("Found " + searchResult.ReturnValue.Count + " Archives.");
+            logger.Debug("Found " + searchResult.ReturnValue.Count + " Packages.");
 
             retVal.Incorporate(searchResult);
 
             // iterate over the list of found files
             foreach (string fileName in searchResult.ReturnValue)
             {
-                logger.SubSubHeading(LogLevel.Debug, "Archive: .." + string.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
-                logger.Debug("Parsing Archive file '" + fileName + "'...");
+                logger.SubSubHeading(LogLevel.Debug, "Package: .." + string.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
+                logger.Debug("Parsing Package file '" + fileName + "'...");
 
                 // parse the current plugin archive file
-                Result<PluginArchive> parseResult = ParsePluginArchive(fileName);
+                Result<Package.Package> parseResult = ParsePackage(fileName);
 
                 if (parseResult.ResultCode != ResultCode.Failure)
                 {
                     parseResult.ReturnValue.SetFileName(System.IO.Path.GetFileName(fileName));
-                    retVal.ValidArchives.Add(parseResult.ReturnValue);
+                    retVal.ValidPackages.Add(parseResult.ReturnValue);
                 }
                 else
                 {
-                    retVal.InvalidArchives.Add(new InvalidPluginArchive(System.IO.Path.GetFileName(fileName), parseResult.GetLastError()));
+                    retVal.InvalidPackages.Add(new InvalidPackage(System.IO.Path.GetFileName(fileName), parseResult.GetLastError()));
                 }
 
-                parseResult.LogResult(logger.Debug, "ParsePluginArchive");
+                parseResult.LogResult(logger.Debug, "ParsePackage");
             }
 
             retVal.LogResult(logger);
@@ -1422,32 +1422,32 @@ namespace OpenIIoT.Core.Plugin
         }
 
         /// <summary>
-        ///     Parses a Plugin Archive file into a PluginArchive object and validates it using default parameters.
+        ///     Parses a Plugin Package file into a Package object and validates it using default parameters.
         /// </summary>
-        /// <param name="fileName">The Plugin Archive file to parse.</param>
-        /// <returns>A Result containing the result of the operation and the parsed PluginArchive.</returns>
-        private Result<PluginArchive> ParsePluginArchive(string fileName)
+        /// <param name="fileName">The Plugin Package file to parse.</param>
+        /// <returns>A Result containing the result of the operation and the parsed Package.</returns>
+        private Result<Package.Package> ParsePackage(string fileName)
         {
-            return ParsePluginArchive(fileName, GetPluginArchiveConfigurationFileName(), GetPluginArchivePayloadFileName());
+            return ParsePackage(fileName, GetPackageConfigurationFileName(), GetPackagePayloadFileName());
         }
 
         /// <summary>
-        ///     Parses a Plugin Archive file into a PluginArchive object and validates it.
+        ///     Parses a Plugin Package file into a Package object and validates it.
         /// </summary>
-        /// <param name="fileName">The Plugin Archive file to parse.</param>
+        /// <param name="fileName">The Plugin Package file to parse.</param>
         /// <param name="configFileName">The name of the Plugin config file expected to be found within the archive.</param>
         /// <param name="payloadFileName">
         ///     The name of the file containing the Plugin files expected to be found within the archive.
         /// </param>
-        /// <returns>A Result containing the result of the operation and the parsed PluginArchive.</returns>
-        private Result<PluginArchive> ParsePluginArchive(string fileName, string configFileName, string payloadFileName)
+        /// <returns>A Result containing the result of the operation and the parsed Package.</returns>
+        private Result<Package.Package> ParsePackage(string fileName, string configFileName, string payloadFileName)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(fileName, configFileName, payloadFileName), true);
 
-            logger.Trace("Parsing Plugin Archive '" + fileName + "'...");
+            logger.Trace("Parsing Plugin Package '" + fileName + "'...");
 
-            Result<PluginArchive> retVal = new Result<PluginArchive>();
-            retVal.ReturnValue = new PluginArchive(fileName);
+            Result<Package.Package> retVal = new Result<Package.Package>();
+            retVal.ReturnValue = new Package.Package(fileName);
 
             IPlatform platform = Dependency<IPlatformManager>().Platform;
 

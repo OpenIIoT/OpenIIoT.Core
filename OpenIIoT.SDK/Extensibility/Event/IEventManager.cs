@@ -44,7 +44,7 @@ using System;
 using System.Collections.Generic;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Event
+namespace OpenIIoT.SDK.Extensibility.Event
 {
     /// <summary>
     ///     Defines the interface for the Event Manager.
