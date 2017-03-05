@@ -48,7 +48,7 @@ using System.Text.RegularExpressions;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Configuration;
-using OpenIIoT.Core.Event;
+using OpenIIoT.Core.Extensibility.Event;
 using OpenIIoT.Core.Model;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Extensibility.Plugin;
