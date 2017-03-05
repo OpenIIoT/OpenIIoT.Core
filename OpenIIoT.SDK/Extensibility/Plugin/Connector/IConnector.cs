@@ -23,11 +23,11 @@
 
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
-using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Extensibility.Plugin;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.SDK.Plugin.Connector
+namespace OpenIIoT.SDK.Extensibility.Plugin.Connector
 {
     /// <summary>
     ///     Defines the interface for Connector Plugins.

@@ -100,19 +100,19 @@
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\IPlatformDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Plugin\Package\IInvalidPluginPackage.cs" />
-    <Compile Include="Plugin\Package\IPluginPackage.cs" />
-    <Compile Include="Plugin\Package\IPluginPackageLoadResult.cs" />
-    <Compile Include="Plugin\Connector\IConnector.cs" />
+    <Compile Include="Extensibility\Package\IInvalidPackage.cs" />
+    <Compile Include="Extensibility\Package\IPackage.cs" />
+    <Compile Include="Extensibility\Package\IPackageLoadResult.cs" />
+    <Compile Include="Extensibility\Plugin\Connector\IConnector.cs" />
     <Compile Include="Common\Provider\ItemProvider\IExtensible.cs" />
     <Compile Include="Common\Provider\ItemProvider\ISubscribable.cs" />
     <Compile Include="Common\Provider\ItemProvider\IWriteable.cs" />
-    <Compile Include="Plugin\Endpoint\IEndpoint.cs" />
-    <Compile Include="Plugin\IPlugin.cs" />
-    <Compile Include="Plugin\IPluginAssembly.cs" />
-    <Compile Include="Plugin\IPluginInstance.cs" />
-    <Compile Include="Plugin\IPluginManager.cs" />
-    <Compile Include="Plugin\PluginType.cs" />
+    <Compile Include="Extensibility\Plugin\Endpoint\IEndpoint.cs" />
+    <Compile Include="Extensibility\Plugin\IPlugin.cs" />
+    <Compile Include="Extensibility\Plugin\IPluginAssembly.cs" />
+    <Compile Include="Extensibility\Plugin\IPluginInstance.cs" />
+    <Compile Include="Extensibility\Plugin\IPluginManager.cs" />
+    <Compile Include="Extensibility\Plugin\PluginType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -41,12 +41,12 @@
 
 using NLog.xLogger;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Plugin.Package;
+using OpenIIoT.SDK.Extensibility.Package;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Plugin
+namespace OpenIIoT.SDK.Extensibility.Plugin
 {
     /// <summary>
     ///     Defines the interface for the Plugin Manager.
@@ -73,12 +73,12 @@ namespace OpenIIoT.SDK.Plugin
         /// <summary>
         ///     Gets a list of all Plugin Packages.
         /// </summary>
-        IList<IPluginPackage> PluginPackages { get; }
+        IList<IPackage> Packages { get; }
 
         /// <summary>
         ///     Gets a list of all invalid Plugin Packages.
         /// </summary>
-        IList<IInvalidPluginPackage> InvalidPluginPackages { get; }
+        IList<IInvalidPackage> InvalidPackages { get; }
 
         #endregion Properties
 
@@ -87,23 +87,23 @@ namespace OpenIIoT.SDK.Plugin
         /// <summary>
         ///     Refreshes the lists of valid and invalid Plugin Packages.
         /// </summary>
-        /// <returns>An instance of PluginPackageLoadResult.</returns>
-        IPluginPackageLoadResult ReloadPluginPackages();
+        /// <returns>An instance of PackageLoadResult.</returns>
+        IPackageLoadResult ReloadPackages();
 
         /// <summary>
-        ///     Asynchronously installs the Plugin contained within the supplied PluginPackage.
+        ///     Asynchronously installs the Plugin contained within the supplied Package.
         /// </summary>
-        /// <param name="archive">The PluginPackage from which the Plugin is to be installed.</param>
+        /// <param name="archive">The Package from which the Plugin is to be installed.</param>
         /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        Task<Result<IPlugin>> InstallPluginAsync(IPluginPackage archive);
+        Task<Result<IPlugin>> InstallPluginAsync(IPackage archive);
 
         /// <summary>
-        ///     Installs the Plugin contained within the supplied PluginPackage.
+        ///     Installs the Plugin contained within the supplied Package.
         /// </summary>
-        /// <param name="archive">The PluginPackage from which the Plugin is to be installed.</param>
+        /// <param name="archive">The Package from which the Plugin is to be installed.</param>
         /// <param name="updatePlugin">When true, bypasses checks that prevent</param>
         /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        Result<IPlugin> InstallPlugin(IPluginPackage archive, bool updatePlugin = false);
+        Result<IPlugin> InstallPlugin(IPackage archive, bool updatePlugin = false);
 
         /// <summary>
         ///     Asynchronously uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes
@@ -136,18 +136,18 @@ namespace OpenIIoT.SDK.Plugin
         Result ReinstallPlugin(IPlugin plugin);
 
         /// <summary>
-        ///     Asynchronously Updates the Plugin contained within the specified PluginPackage.
+        ///     Asynchronously Updates the Plugin contained within the specified Package.
         /// </summary>
-        /// <param name="archive">The PluginPackage to use for the update.</param>
+        /// <param name="archive">The Package to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        Task<Result<IPlugin>> UpdatePluginAsync(IPluginPackage archive);
+        Task<Result<IPlugin>> UpdatePluginAsync(IPackage archive);
 
         /// <summary>
-        ///     Updates the Plugin contained within the specified PluginPackage.
+        ///     Updates the Plugin contained within the specified Package.
         /// </summary>
-        /// <param name="archive">The PluginPackage to use for the update.</param>
+        /// <param name="archive">The Package to use for the update.</param>
         /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        Result<IPlugin> UpdatePlugin(IPluginPackage archive);
+        Result<IPlugin> UpdatePlugin(IPackage archive);
 
         /// <summary>
         ///     Searches the Plugins list for a Plugin with an FQN matching the supplied FQN and returns it if found.

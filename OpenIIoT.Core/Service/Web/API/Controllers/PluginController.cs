@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using NLog;
 using OpenIIoT.Core.Platform;
-using OpenIIoT.Core.Plugin;
-using OpenIIoT.Core.Plugin.Package;
+using OpenIIoT.Core.Extensibility.Plugin;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Plugin;
-using OpenIIoT.SDK.Plugin.Package;
+using OpenIIoT.SDK.Extensibility.Plugin;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -16,6 +14,8 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Extensibility.Package;
+using OpenIIoT.Core.Extensibility.Package;
 
 namespace OpenIIoT.Core.Service.Web.API
 {
@@ -51,29 +51,29 @@ namespace OpenIIoT.Core.Service.Web.API
         /// <returns>The list of available AppPackages.</returns>
         [Route("api/plugin/archive")]
         [HttpGet]
-        public HttpResponseMessage ListPluginPackages()
+        public HttpResponseMessage ListPackages()
         {
-            ApiResult<IList<IPluginPackage>> retVal = new ApiResult<IList<IPluginPackage>>(Request);
+            ApiResult<IList<IPackage>> retVal = new ApiResult<IList<IPackage>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().PluginPackages;
+            retVal.ReturnValue = manager.GetManager<PluginManager>().Packages;
 
             retVal.LogResult(logger);
             return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         /// <summary>
-        ///     Reloads the list of PluginPackages from disk and returns the list.
+        ///     Reloads the list of Packages from disk and returns the list.
         /// </summary>
-        /// <returns>The reloaded list of available PluginPackages.</returns>
+        /// <returns>The reloaded list of available Packages.</returns>
         [Route("api/plugin/archive/reload")]
         [HttpGet]
-        public HttpResponseMessage ReloadPluginPackages()
+        public HttpResponseMessage ReloadPackages()
         {
-            ApiResult<IPluginPackageLoadResult> retVal = new ApiResult<IPluginPackageLoadResult>(Request);
+            ApiResult<IPackageLoadResult> retVal = new ApiResult<IPackageLoadResult>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().ReloadPluginPackages();
+            retVal.ReturnValue = manager.GetManager<PluginManager>().ReloadPackages();
 
             if (retVal.ReturnValue.ResultCode == ResultCode.Failure)
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
@@ -83,20 +83,20 @@ namespace OpenIIoT.Core.Service.Web.API
         }
 
         /// <summary>
-        ///     Returns the PluginPackage from the list of available PluginPackages that matches the supplied filename.
+        ///     Returns the Package from the list of available Packages that matches the supplied filename.
         /// </summary>
-        /// <param name="fileName">The Fully Qualified Name of the PluginPackage to return.</param>
-        /// <returns>The matching PluginPackage.</returns>
+        /// <param name="fileName">The Fully Qualified Name of the Package to return.</param>
+        /// <returns>The matching Package.</returns>
         [Route("api/plugin/archive/{fileName}")]
         [HttpGet]
-        public HttpResponseMessage GetPluginPackage(string fileName)
+        public HttpResponseMessage GetPackage(string fileName)
         {
-            ApiResult<IPluginPackage> retVal = new ApiResult<IPluginPackage>(Request);
+            ApiResult<IPackage> retVal = new ApiResult<IPackage>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().PluginPackages.Where(p => p.FileName == fileName).FirstOrDefault();
+            retVal.ReturnValue = manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault();
 
-            if (retVal.ReturnValue == default(PluginPackage))
+            if (retVal.ReturnValue == default(Package))
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
             retVal.LogResult(logger);
@@ -104,7 +104,7 @@ namespace OpenIIoT.Core.Service.Web.API
         }
 
         /// <summary>
-        ///     Installs the supplied PluginPackage.
+        ///     Installs the supplied Package.
         /// </summary>
         /// <param name="fileName">The filename of the Plugin Package to install.</param>
         /// <returns>The App instance resulting from the installation.</returns>
@@ -115,9 +115,9 @@ namespace OpenIIoT.Core.Service.Web.API
             ApiResult<Result<IPlugin>> retVal = new ApiResult<Result<IPlugin>>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = await manager.GetManager<PluginManager>().InstallPluginAsync(manager.GetManager<PluginManager>().PluginPackages.Where(p => p.FileName == fileName).FirstOrDefault());
+            retVal.ReturnValue = await manager.GetManager<PluginManager>().InstallPluginAsync(manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault());
 
-            if ((retVal.ReturnValue == default(Result<Plugin.Plugin>)) || (retVal.ReturnValue.ResultCode == ResultCode.Failure))
+            if ((retVal.ReturnValue == default(Result<Plugin>)) || (retVal.ReturnValue.ResultCode == ResultCode.Failure))
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
             retVal.LogResult(logger);
@@ -157,12 +157,12 @@ namespace OpenIIoT.Core.Service.Web.API
 
         [Route("api/plugin/archive/{fileName}/download")]
         [HttpGet]
-        public HttpResponseMessage DownloadPluginPackage(string fileName)
+        public HttpResponseMessage DownloadPackage(string fileName)
         {
             ApiResult<bool> retVal = new ApiResult<bool>(Request);
             retVal.LogRequest(logger.Info);
 
-            string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<PluginManager>().PluginPackages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
+            string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
 
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
 

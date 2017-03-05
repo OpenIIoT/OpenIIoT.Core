@@ -1,13 +1,13 @@
-﻿using OpenIIoT.SDK.Plugin;
+﻿using OpenIIoT.SDK.Extensibility.Plugin;
 
-namespace OpenIIoT.Core.Plugin
+namespace OpenIIoT.Core.Extensibility.Plugin
 {
     /// <summary>
     ///     The Plugin class represents Plugins that have been installed but not yet loaded.
     ///
-    ///     The heirarchy of Plugin objects is: PluginPackage Plugin PluginAssembly PluginInstance
+    ///     The heirarchy of Plugin objects is: Package Plugin PluginAssembly PluginInstance
     ///
-    ///     PluginPackage instances are installed, creating Plugin instances. Plugin instances are loaded, creating PluginAssembly
+    ///     Package instances are installed, creating Plugin instances. Plugin instances are loaded, creating PluginAssembly
     ///     instances. PluginAssembly instances are instantiated, creating PluginInstance instances.
     /// </summary>
     public class Plugin : IPlugin
