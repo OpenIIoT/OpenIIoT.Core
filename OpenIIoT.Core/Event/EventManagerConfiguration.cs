@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace OpenIIoT.Core.Extensibility.Event
+namespace OpenIIoT.Core.Event
 {
     public class EventManagerConfiguration
     {

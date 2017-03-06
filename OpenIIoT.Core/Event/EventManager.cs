@@ -45,16 +45,14 @@ using System.Linq;
 using System.Reflection;
 using NLog;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Extensibility.Event;
+using OpenIIoT.SDK.Event;
 using OpenIIoT.SDK;
 using NLog.xLogger;
 using Utility.OperationResult;
-using System.Collections.Immutable;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
-using OpenIIoT.Core.Configuration;
 
-namespace OpenIIoT.Core.Extensibility.Event
+namespace OpenIIoT.Core.Event
 {
     /// <summary>
     ///     Represents and controls the Event subsystem.

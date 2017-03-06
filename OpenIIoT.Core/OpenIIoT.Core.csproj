@@ -182,8 +182,8 @@
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
-    <Compile Include="Extensibility\Event\EventManager.cs" />
-    <Compile Include="Extensibility\Event\EventManagerConfiguration.cs" />
+    <Compile Include="Event\EventManager.cs" />
+    <Compile Include="Event\EventManagerConfiguration.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />

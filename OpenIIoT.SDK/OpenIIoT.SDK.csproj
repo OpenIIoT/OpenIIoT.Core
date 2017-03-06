@@ -88,7 +88,7 @@
     <Compile Include="Common\Discovery\Discoverer.cs" />
     <Compile Include="Common\Provider\EventProvider\EventAttribute.cs" />
     <Compile Include="Common\Discovery\DiscoverableAttribute.cs" />
-    <Compile Include="Extensibility\Event\IEventManager.cs" />
+    <Compile Include="Event\IEventManager.cs" />
     <Compile Include="Common\Exceptions\ApplicationExceptions.cs" />
     <Compile Include="Common\Exceptions\ApplicationManagerExceptions.cs" />
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
