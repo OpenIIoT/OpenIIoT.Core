@@ -184,6 +184,7 @@
     <Compile Include="Configuration\ConfigurationLoader.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
+    <Compile Include="Extensibility\Package\PackageManager.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />

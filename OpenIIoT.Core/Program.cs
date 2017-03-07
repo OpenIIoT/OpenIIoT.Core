@@ -52,6 +52,7 @@ using OpenIIoT.Core.Event;
 using OpenIIoT.Core.Model;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Extensibility.Plugin;
+using OpenIIoT.Core.Extensibility.Package;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Model;
@@ -60,11 +61,8 @@ using OpenIIoT.Core.Service;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Extensibility.Plugin.Connector;
 using OpenIIoT.SDK.Common;
-using System.Collections.Generic;
-
-using OpenIIoT.SDK.Common;
-
 using OpenIIoT.SDK.Extensibility.Plugin;
+using OpenIIoT.SDK.Extensibility.Package;
 
 namespace OpenIIoT.Core
 {
@@ -129,7 +127,8 @@ namespace OpenIIoT.Core
             typeof(EventManager),
             typeof(PluginManager),
             typeof(ModelManager),
-            typeof(ServiceManager)
+            typeof(ServiceManager),
+            typeof(PackageManager)
         };
 
         #endregion Private Fields
