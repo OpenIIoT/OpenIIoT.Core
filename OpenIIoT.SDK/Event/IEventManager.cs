@@ -49,7 +49,7 @@ namespace OpenIIoT.SDK.Event
     /// <summary>
     ///     Defines the interface for the Event Manager.
     /// </summary>
-    public interface IEventManager : IStateful, IManager
+    public interface IEventManager : IManager
     {
         #region Properties
 

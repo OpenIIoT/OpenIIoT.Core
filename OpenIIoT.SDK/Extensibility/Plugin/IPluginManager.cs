@@ -51,7 +51,7 @@ namespace OpenIIoT.SDK.Extensibility.Plugin
     /// <summary>
     ///     Defines the interface for the Plugin Manager.
     /// </summary>
-    public interface IPluginManager : IStateful, IManager
+    public interface IPluginManager : IManager
     {
         #region Properties
 
