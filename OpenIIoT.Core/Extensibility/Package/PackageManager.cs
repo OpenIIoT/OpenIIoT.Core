@@ -47,6 +47,8 @@ using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Extensibility.Package;
+using OpenIIoT.SDK.Configuration;
+using OpenIIoT.Core.Extensibility.Package.Configuration;
 
 namespace OpenIIoT.Core.Extensibility.Package
 {
@@ -54,7 +56,7 @@ namespace OpenIIoT.Core.Extensibility.Package
     ///     The Package Manager manages the installation and uninstallation of software packages used to extend the functionality
     ///     of the application.
     /// </summary>
-    public sealed class PackageManager : Manager, IPackageManager
+    public sealed class PackageManager : Manager, IPackageManager, IConfigurable<PackageManagerConfiguration>
     {
         #region Private Fields
 
@@ -100,7 +102,31 @@ namespace OpenIIoT.Core.Extensibility.Package
 
         #endregion Private Constructors
 
+        #region Public Properties
+
+        public PackageManagerConfiguration Configuration { get; private set; }
+
+        #endregion Public Properties
+
         #region Public Methods
+
+        /// <summary>
+        ///     Returns the ConfigurationDefinition for the Model Manager.
+        /// </summary>
+        /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
+        public static IConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
+            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
+            retVal.Model = typeof(PackageManagerConfiguration);
+
+            PackageManagerConfiguration config = new PackageManagerConfiguration();
+
+            retVal.DefaultConfiguration = config;
+
+            return retVal;
+        }
 
         /// <summary>
         ///     Instantiates and/or returns the <see cref="IPackageManager"/> instance.
@@ -129,6 +155,89 @@ namespace OpenIIoT.Core.Extensibility.Package
         public static void Terminate()
         {
             instance = null;
+        }
+
+        /// <summary>
+        ///     Configures this <see cref="IManager"/> using the configuration stored in the <see cref="IConfigurationManager"/>,
+        ///     or, failing that, using the default configuration from the
+        ///     <see cref="ConfigurationDefinition.DefaultConfiguration"/> property from the <see cref="ConfigurationDefinition"/>
+        ///     retrieved from the <see cref="GetConfigurationDefinition"/> method.
+        /// </summary>
+        /// <returns>An <see cref="IResult"/> containing the result of the operation.</returns>
+        public IResult Configure()
+        {
+            logger.EnterMethod();
+
+            logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
+            Result retVal = new Result();
+
+            IResult<PackageManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<PackageManagerConfiguration>(this.GetType());
+
+            // if the fetch succeeded, configure this instance with the result.
+            if (fetchResult.ResultCode != ResultCode.Failure)
+            {
+                logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
+                Configure(fetchResult.ReturnValue);
+            }
+            // if the fetch failed, add a new default instance to the configuration and try again.
+            else
+            {
+                logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
+                IResult<PackageManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<PackageManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                if (createResult.ResultCode != ResultCode.Failure)
+                {
+                    logger.Debug("Successfully added the configuration.  Configuring...");
+                    Configure(createResult.ReturnValue);
+                }
+                else
+                    retVal.Incorporate(createResult);
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Configures this <see cref="IManager"/> using the supplied configuration, then saves the configuration to the
+        ///     <see cref="IConfigurationManager"/> .
+        /// </summary>
+        /// <param name="configuration">
+        ///     The <see cref="PackageManagerConfiguration"/> with which this <see cref="IManager"/> is to be configured.
+        /// </param>
+        /// <returns>An <see cref="IResult"/> containing the result of the operation.</returns>
+        public IResult Configure(PackageManagerConfiguration configuration)
+        {
+            logger.EnterMethod(xLogger.Params(configuration));
+            Result retVal = new Result();
+
+            // update the configuration
+            Configuration = configuration;
+            logger.Debug("Successfully configured the Manager.");
+
+            // save it
+            logger.Debug("Saving the new configuration...");
+            retVal.Incorporate(SaveConfiguration());
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Saves the <see cref="Configuration"/> to the <see cref="IConfigurationManager"/> .
+        /// </summary>
+        /// <returns>An <see cref="IResult"/> containing the result of the operation.</returns>
+        public IResult SaveConfiguration()
+        {
+            logger.EnterMethod();
+            Result retVal = new Result();
+
+            retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration));
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
         #endregion Public Methods

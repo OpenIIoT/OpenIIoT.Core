@@ -1,0 +1,12 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace OpenIIoT.Core.Extensibility.Package.Configuration
+{
+    /// <summary>
+    ///     A class representing the configuration items for the Model Manager.
+    /// </summary>
+    public class PackageManagerConfiguration
+    {
+    }
+}
