@@ -200,7 +200,7 @@
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
-    <Compile Include="Extensibility\Scripting\ScriptManager.cs" />
+    <Compile Include="Scripting\ScriptManager.cs" />
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
