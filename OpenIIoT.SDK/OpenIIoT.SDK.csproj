@@ -94,7 +94,6 @@
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
-    <Compile Include="Extensibility\Plugin\Repository\IExtensible.cs" />
     <Compile Include="Extensibility\Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
