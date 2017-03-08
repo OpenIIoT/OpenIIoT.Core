@@ -8,5 +8,6 @@ namespace OpenIIoT.Core.Extensibility.Package.Configuration
     /// </summary>
     public class PackageManagerConfiguration
     {
+        public int Number { get; set; }
     }
 }

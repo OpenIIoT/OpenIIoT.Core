@@ -79,12 +79,13 @@ namespace OpenIIoT.Core.Extensibility.Package
         /// </summary>
         /// <remarks>
         ///     This constructor is marked private and is intended to be called from the
-        ///     <see cref="Instantiate(IApplicationManager, IPlatformManager)"/> method exclusively in order to implement the
-        ///     Singleton design pattern.
+        ///     <see cref="Instantiate(IApplicationManager, IPlatformManager, IConfigurationManager)"/> method exclusively in order
+        ///     to implement the Singleton design pattern.
         /// </remarks>
-        /// <param name="manager">The ApplicationManager instance for the application.</param>
-        /// <param name="platformManager">The PlatformManager instance for the application.</param>
-        private PackageManager(IApplicationManager manager, IPlatformManager platformManager)
+        /// <param name="manager">The <see cref="IApplicationManager"/> instance for the application.</param>
+        /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
+        /// <param name="configurationManager">The <see cref="IConfigurationManager"/> instance for the application.</param>
+        private PackageManager(IApplicationManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
         {
             base.logger = logger;
             logger.EnterMethod();
@@ -94,6 +95,7 @@ namespace OpenIIoT.Core.Extensibility.Package
             // register dependencies
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
+            RegisterDependency<IConfigurationManager>(configurationManager);
 
             ChangeState(State.Initialized);
 
@@ -111,9 +113,9 @@ namespace OpenIIoT.Core.Extensibility.Package
         #region Public Methods
 
         /// <summary>
-        ///     Returns the ConfigurationDefinition for the Model Manager.
+        ///     Returns the <see cref="IConfigurationDefinition"/> for the <see cref="IManager"/>.
         /// </summary>
-        /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
+        /// <returns>The <see cref="IConfigurationDefinition"/> for the <see cref="IManager"/>.</returns>
         public static IConfigurationDefinition GetConfigurationDefinition()
         {
             ConfigurationDefinition retVal = new ConfigurationDefinition();
@@ -122,6 +124,7 @@ namespace OpenIIoT.Core.Extensibility.Package
             retVal.Model = typeof(PackageManagerConfiguration);
 
             PackageManagerConfiguration config = new PackageManagerConfiguration();
+            config.Number = 1;
 
             retVal.DefaultConfiguration = config;
 
@@ -138,19 +141,20 @@ namespace OpenIIoT.Core.Extensibility.Package
         /// </remarks>
         /// <param name="manager">The <see cref="IApplicationManager"/> instance for the application.</param>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
-        /// <returns>The Singleton instance of the ConfigurationManager.</returns>
-        public static IPackageManager Instantiate(IApplicationManager manager, IPlatformManager platformManager)
+        /// <param name="configurationManager">The <see cref="IConfigurationManager"/> instance for the application.</param>
+        /// <returns>The Singleton instance of the <see cref="IManager"/>.</returns>
+        public static IPackageManager Instantiate(IApplicationManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
         {
             if (instance == null)
             {
-                instance = new PackageManager(manager, platformManager);
+                instance = new PackageManager(manager, platformManager, configurationManager);
             }
 
             return instance;
         }
 
         /// <summary>
-        ///     Terminates Singleton instance of ConfigurationManager.
+        ///     Terminates Singleton instance of the <see cref="IManager"/>.
         /// </summary>
         public static void Terminate()
         {
@@ -160,7 +164,7 @@ namespace OpenIIoT.Core.Extensibility.Package
         /// <summary>
         ///     Configures this <see cref="IManager"/> using the configuration stored in the <see cref="IConfigurationManager"/>,
         ///     or, failing that, using the default configuration from the
-        ///     <see cref="ConfigurationDefinition.DefaultConfiguration"/> property from the <see cref="ConfigurationDefinition"/>
+        ///     <see cref="ConfigurationDefinition.DefaultConfiguration"/> property of the <see cref="ConfigurationDefinition"/>
         ///     retrieved from the <see cref="GetConfigurationDefinition"/> method.
         /// </summary>
         /// <returns>An <see cref="IResult"/> containing the result of the operation.</returns>
@@ -272,6 +276,7 @@ namespace OpenIIoT.Core.Extensibility.Package
 
             if (!stopType.HasFlag(StopType.Exception))
             {
+                SaveConfiguration();
             }
 
             retVal.LogResult(logger.Debug);
@@ -292,6 +297,8 @@ namespace OpenIIoT.Core.Extensibility.Package
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
+
+            retVal.Incorporate(Configure());
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
