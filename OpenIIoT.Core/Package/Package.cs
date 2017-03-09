@@ -1,7 +1,7 @@
-﻿using OpenIIoT.SDK.Extensibility.Plugin;
-using OpenIIoT.SDK.Extensibility.Package;
+﻿using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Extensibility.Plugin;
 
-namespace OpenIIoT.Core.Extensibility.Package
+namespace OpenIIoT.Core.Package
 {
     /// <summary>
     ///     Represents a Plugin Package file.

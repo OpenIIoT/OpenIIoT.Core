@@ -51,8 +51,8 @@ using OpenIIoT.Core.Configuration;
 using OpenIIoT.Core.Event;
 using OpenIIoT.Core.Model;
 using OpenIIoT.Core.Platform;
+using OpenIIoT.Core.Package;
 using OpenIIoT.Core.Extensibility.Plugin;
-using OpenIIoT.Core.Extensibility.Package;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Model;
@@ -62,7 +62,6 @@ using Utility.OperationResult;
 using OpenIIoT.SDK.Extensibility.Plugin.Connector;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Extensibility.Plugin;
-using OpenIIoT.SDK.Extensibility.Package;
 
 namespace OpenIIoT.Core
 {

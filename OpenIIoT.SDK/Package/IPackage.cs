@@ -1,6 +1,6 @@
 ﻿using OpenIIoT.SDK.Extensibility.Plugin;
 
-namespace OpenIIoT.SDK.Extensibility.Package
+namespace OpenIIoT.SDK.Package
 {
     /// <summary>
     ///     Represents a Package file.

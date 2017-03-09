@@ -46,11 +46,11 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Extensibility.Package;
+using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.Core.Extensibility.Package.Configuration;
+using OpenIIoT.Core.Package.Configuration;
 
-namespace OpenIIoT.Core.Extensibility.Package
+namespace OpenIIoT.Core.Package
 {
     /// <summary>
     ///     The Package Manager manages the installation and uninstallation of software packages used to extend the functionality

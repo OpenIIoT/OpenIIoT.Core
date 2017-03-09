@@ -1,4 +1,4 @@
-﻿namespace OpenIIoT.SDK.Extensibility.Package
+﻿namespace OpenIIoT.SDK.Package
 {
     /// <summary>
     ///     Represents an invalid Package file.

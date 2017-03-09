@@ -1,11 +1,11 @@
-﻿using OpenIIoT.SDK.Extensibility.Package;
+﻿using OpenIIoT.SDK.Package;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.Core.Extensibility.Package
+namespace OpenIIoT.Core.Package
 {
     /// <summary>
     ///     Represents an invalid Plugin Package file.

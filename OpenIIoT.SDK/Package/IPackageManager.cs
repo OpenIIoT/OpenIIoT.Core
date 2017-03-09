@@ -41,7 +41,7 @@
 
 using OpenIIoT.SDK.Common;
 
-namespace OpenIIoT.SDK.Extensibility.Package
+namespace OpenIIoT.SDK.Package
 {
     /// <summary>
     ///     Defines the interface for the Package Manager.

@@ -55,9 +55,8 @@ using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Extensibility.Plugin.Endpoint;
-using OpenIIoT.SDK.Plugin.Package;
-using OpenIIoT.SDK.Extensibility.Package;
-using OpenIIoT.Core.Extensibility.Package;
+using OpenIIoT.SDK.Package;
+using OpenIIoT.Core.Package;
 
 namespace OpenIIoT.Core.Extensibility.Plugin
 {

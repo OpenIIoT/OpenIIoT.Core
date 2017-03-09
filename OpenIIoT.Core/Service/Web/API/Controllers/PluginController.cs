@@ -14,8 +14,8 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Extensibility.Package;
-using OpenIIoT.Core.Extensibility.Package;
+using OpenIIoT.SDK.Package;
+using OpenIIoT.Core.Package;
 
 namespace OpenIIoT.Core.Service.Web.API
 {
@@ -96,7 +96,7 @@ namespace OpenIIoT.Core.Service.Web.API
 
             retVal.ReturnValue = manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault();
 
-            if (retVal.ReturnValue == default(Package))
+            if (retVal.ReturnValue == default(Package.Package))
                 retVal.StatusCode = HttpStatusCode.NotFound;
 
             retVal.LogResult(logger);
