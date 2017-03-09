@@ -1,5 +1,5 @@
 ﻿using OpenIIoT.SDK.Package;
-using OpenIIoT.SDK.Extensibility.Plugin;
+using OpenIIoT.SDK.Plugin;
 
 namespace OpenIIoT.Core.Package
 {

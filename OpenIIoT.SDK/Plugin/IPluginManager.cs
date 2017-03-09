@@ -49,7 +49,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Extensibility.Plugin
+namespace OpenIIoT.SDK.Plugin
 {
     /// <summary>
     ///     Defines the interface for the Plugin Manager.

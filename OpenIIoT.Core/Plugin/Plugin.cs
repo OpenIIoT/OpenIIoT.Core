@@ -1,6 +1,8 @@
-﻿using OpenIIoT.SDK.Extensibility.Plugin;
+﻿using OpenIIoT.SDK.Plugin;
 
-namespace OpenIIoT.Core.Extensibility.Plugin
+using OpenIIoT.SDK.Plugin;
+
+namespace OpenIIoT.Core.Plugin
 {
     /// <summary>
     ///     The Plugin class represents Plugins that have been installed but not yet loaded.

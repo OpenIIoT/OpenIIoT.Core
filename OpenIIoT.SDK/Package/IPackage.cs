@@ -1,4 +1,4 @@
-﻿using OpenIIoT.SDK.Extensibility.Plugin;
+﻿using OpenIIoT.SDK.Plugin;
 
 namespace OpenIIoT.SDK.Package
 {

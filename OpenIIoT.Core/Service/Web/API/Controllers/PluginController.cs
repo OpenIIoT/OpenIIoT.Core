@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
 using NLog;
 using OpenIIoT.Core.Platform;
-using OpenIIoT.Core.Extensibility.Plugin;
+using OpenIIoT.Core.Plugin;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Extensibility.Plugin;
+using OpenIIoT.SDK.Plugin;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -117,7 +117,7 @@ namespace OpenIIoT.Core.Service.Web.API
 
             retVal.ReturnValue = await manager.GetManager<PluginManager>().InstallPluginAsync(manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault());
 
-            if ((retVal.ReturnValue == default(Result<Plugin>)) || (retVal.ReturnValue.ResultCode == ResultCode.Failure))
+            if ((retVal.ReturnValue == default(Result<Plugin.Plugin>)) || (retVal.ReturnValue.ResultCode == ResultCode.Failure))
                 retVal.StatusCode = HttpStatusCode.InternalServerError;
 
             retVal.LogResult(logger);

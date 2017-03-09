@@ -49,16 +49,18 @@ using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK;
 using NLog.xLogger;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Extensibility.Plugin;
-using OpenIIoT.SDK.Extensibility.Plugin.Connector;
+using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Plugin.Connector;
 using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Extensibility.Plugin.Endpoint;
+using OpenIIoT.SDK.Plugin.Endpoint;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.Core.Package;
 
-namespace OpenIIoT.Core.Extensibility.Plugin
+using OpenIIoT.SDK.Plugin;
+
+namespace OpenIIoT.Core.Plugin
 {
     /// <summary>
     ///     Represents and manages the Plugin subsystem.

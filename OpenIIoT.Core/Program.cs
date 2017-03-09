@@ -52,16 +52,16 @@ using OpenIIoT.Core.Event;
 using OpenIIoT.Core.Model;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Package;
-using OpenIIoT.Core.Extensibility.Plugin;
+using OpenIIoT.Core.Plugin;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Platform;
 using OpenIIoT.Core.Service;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Extensibility.Plugin.Connector;
+using OpenIIoT.SDK.Plugin.Connector;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Extensibility.Plugin;
+using OpenIIoT.SDK.Plugin;
 
 namespace OpenIIoT.Core
 {

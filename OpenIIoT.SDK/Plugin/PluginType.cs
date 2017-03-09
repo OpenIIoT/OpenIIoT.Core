@@ -1,4 +1,4 @@
-﻿namespace OpenIIoT.SDK.Extensibility.Plugin
+﻿namespace OpenIIoT.SDK.Plugin
 {
     /// <summary>
     ///     Enumeration of the different Plugin types.

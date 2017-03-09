@@ -193,9 +193,9 @@
     <Compile Include="Package\InvalidPackage.cs" />
     <Compile Include="Package\Package.cs" />
     <Compile Include="Package\PackageLoadResult.cs" />
-    <Compile Include="Extensibility\Plugin\Plugin.cs" />
-    <Compile Include="Extensibility\Plugin\PluginAssembly.cs" />
-    <Compile Include="Extensibility\Plugin\PluginManagerConfiguration.cs" />
+    <Compile Include="Plugin\Plugin.cs" />
+    <Compile Include="Plugin\PluginAssembly.cs" />
+    <Compile Include="Plugin\PluginManagerConfiguration.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -213,7 +213,7 @@
     <Compile Include="Model\ModelManager.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />
-    <Compile Include="Extensibility\Plugin\PluginManager.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Service\Web\API\ApiOperationResult.cs" />
