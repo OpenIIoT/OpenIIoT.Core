@@ -52,7 +52,7 @@ namespace OpenIIoT.SDK.Model
     /// <summary>
     ///     Defines the interface for the Model Manager.
     /// </summary>
-    public interface IModelManager : IStateful, IManager
+    public interface IModelManager : IManager
     {
         #region Public Properties
 

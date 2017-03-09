@@ -53,7 +53,7 @@ using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Common.Provider;
-using OpenIIoT.SDK.Extensibility.Plugin;
+using OpenIIoT.SDK.Plugin;
 using OpenIIoT.Core.Configuration;
 
 namespace OpenIIoT.Core.Model
