@@ -190,7 +190,7 @@
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
-    <Compile Include="Platform\PlatformDirectories.cs" />
+    <Compile Include="Platform\Directories.cs" />
     <Compile Include="Package\InvalidPackage.cs" />
     <Compile Include="Package\Package.cs" />
     <Compile Include="Package\PackageLoadResult.cs" />

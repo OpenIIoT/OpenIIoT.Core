@@ -48,7 +48,6 @@ using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.Core.Package.Configuration;
 
 namespace OpenIIoT.Core.Package
 {

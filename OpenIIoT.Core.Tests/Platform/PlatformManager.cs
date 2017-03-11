@@ -127,13 +127,13 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method with a bad instance of PlatformDirectories
-        ///     via <see cref="SDK.Common.Manager.Start()"/> .
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method with a bad instance of Directories via
+        ///     <see cref="SDK.Common.Manager.Start()"/> .
         /// </summary>
         [Fact]
         public void StartBadDirectories()
         {
-            manager.Platform.SetDirectories(new Core.Platform.PlatformDirectories());
+            manager.Platform.SetDirectories(new Core.Platform.Directories());
 
             IResult result = manager.Start();
 
