@@ -43,7 +43,7 @@ using Newtonsoft.Json;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
-    public class Manifest
+    public class PackageManifest
     {
         [JsonProperty(Order = 1)]
         public string Namespace { get; set; }
@@ -70,7 +70,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         public string Url { get; set; }
 
         [JsonProperty(Order = 9)]
-        public ManifestSignature Signature { get; set; }
+        public PackageManifestSignature Signature { get; set; }
 
         [JsonProperty(Order = 10)]
         public string[] Content { get; set; }

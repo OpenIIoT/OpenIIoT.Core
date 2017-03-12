@@ -2,12 +2,12 @@
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
-    internal class ManifestContentItem
+    public class PackageManifestSignature
     {
         [JsonProperty(Order = 1)]
-        private string Name { get; set; }
+        public string Digest { get; set; }
 
         [JsonProperty(Order = 2)]
-        private string Path { get; set; }
+        public string KeyUrl { get; set; }
     }
 }

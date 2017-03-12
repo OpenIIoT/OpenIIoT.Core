@@ -95,10 +95,10 @@
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
     <Compile Include="Package\IPackageManager.cs" />
-    <Compile Include="Package\Manifest\Manifest.cs" />
-    <Compile Include="Package\Manifest\ManifestContent.cs" />
-    <Compile Include="Package\Manifest\ManifestContentItem.cs" />
-    <Compile Include="Package\Manifest\ManifestSignature.cs" />
+    <Compile Include="Package\Manifest\PackageManifest.cs" />
+    <Compile Include="Package\Manifest\PackageManifestContent.cs" />
+    <Compile Include="Package\Manifest\PackageManifestContentItem.cs" />
+    <Compile Include="Package\Manifest\PackageManifestSignature.cs" />
     <Compile Include="Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
