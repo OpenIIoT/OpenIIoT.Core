@@ -41,7 +41,7 @@
 
 using Newtonsoft.Json;
 
-namespace OpenIIoT.Core.Package
+namespace OpenIIoT.SDK.Package.Manifest
 {
     public class Manifest
     {

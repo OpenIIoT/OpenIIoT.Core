@@ -184,10 +184,6 @@
     <Compile Include="Configuration\ConfigurationLoader.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
-    <Compile Include="Package\Manifest.cs" />
-    <Compile Include="Package\ManifestContent.cs" />
-    <Compile Include="Package\ManifestContentItem.cs" />
-    <Compile Include="Package\ManifestSignature.cs" />
     <Compile Include="Package\PackageManagerConfiguration.cs" />
     <Compile Include="Package\PackageManager.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
