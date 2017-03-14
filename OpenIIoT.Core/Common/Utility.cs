@@ -40,9 +40,6 @@
                                                                                                    ▀▀                            */
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using NLog;
 using OpenIIoT.SDK.Common;
 using Utility.BigFont;
 
@@ -95,28 +92,28 @@ namespace OpenIIoT.Core
         ///     Disables the specified logging level within the LogManager.
         /// </summary>
         /// <param name="level">The level to disable.</param>
-        public static void DisableLoggingLevel(LogLevel level)
+        public static void DisableLoggingLevel(NLog.LogLevel level)
         {
-            foreach (var rule in LogManager.Configuration.LoggingRules)
+            foreach (var rule in NLog.LogManager.Configuration.LoggingRules)
             {
                 rule.DisableLoggingForLevel(level);
             }
 
-            LogManager.ReconfigExistingLoggers();
+            NLog.LogManager.ReconfigExistingLoggers();
         }
 
         /// <summary>
         ///     Enables the specified logging level within the LogManager.
         /// </summary>
         /// <param name="level">The level to enable.</param>
-        public static void EnableLoggingLevel(LogLevel level)
+        public static void EnableLoggingLevel(NLog.LogLevel level)
         {
-            foreach (var rule in LogManager.Configuration.LoggingRules)
+            foreach (var rule in NLog.LogManager.Configuration.LoggingRules)
             {
                 rule.EnableLoggingForLevel(level);
             }
 
-            LogManager.ReconfigExistingLoggers();
+            NLog.LogManager.ReconfigExistingLoggers();
         }
 
         /// <summary>
@@ -153,7 +150,7 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <param name="action">The action to perform (uninstall or install).</param>
         /// <returns>True if the installation/uninstallation succeeded, false otherwise.</returns>
-        [ExcludeFromCodeCoverage]
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public static bool ModifyService(string action)
         {
             try
@@ -179,7 +176,7 @@ namespace OpenIIoT.Core
         ///     Prints the logo for the application.
         /// </summary>
         /// <param name="logger">The logger to which the logo should be logged.</param>
-        public static void PrintLogo(Logger logger)
+        public static void PrintLogo(NLog.Logger logger)
         {
             logger.Info(string.Empty);
             logger.Info(@"      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ ");
@@ -200,7 +197,7 @@ namespace OpenIIoT.Core
         ///     Prints the logo footer for the application.
         /// </summary>
         /// <param name="logger">The logger to which the logo should be logged.</param>
-        public static void PrintLogoFooter(Logger logger)
+        public static void PrintLogoFooter(NLog.Logger logger)
         {
             logger.Info(@"      █  ");
             logger.Info(@"      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██ ");
@@ -219,12 +216,12 @@ namespace OpenIIoT.Core
         /// <param name="indent">The current level of indent to apply.</param>
         /// <param name="levels">The list of indentation levels.</param>
         /// <param name="last">True if the specified element is the last in the current chain.</param>
-        public static void PrintModel(Logger logger, Item root, int indent, List<bool> levels = null, bool last = false)
+        public static void PrintModel(NLog.Logger logger, Item root, int indent, System.Collections.Generic.List<bool> levels = null, bool last = false)
         {
             // if indent is zero we are starting with the root. initialize the list and add the first level.
             if (indent == 0)
             {
-                levels = new List<bool>();
+                levels = new System.Collections.Generic.List<bool>();
             }
 
             // if indent is greater than the count of items in levels, the tree is deeper than it has been before. add a new level
@@ -267,19 +264,19 @@ namespace OpenIIoT.Core
                 switch (level.ToLower())
                 {
                     case "fatal":
-                        DisableLoggingLevel(LogLevel.Error);
+                        DisableLoggingLevel(NLog.LogLevel.Error);
                         goto case "error";
                     case "error":
-                        DisableLoggingLevel(LogLevel.Warn);
+                        DisableLoggingLevel(NLog.LogLevel.Warn);
                         goto case "warn";
                     case "warn":
-                        DisableLoggingLevel(LogLevel.Info);
+                        DisableLoggingLevel(NLog.LogLevel.Info);
                         goto case "info";
                     case "info":
-                        DisableLoggingLevel(LogLevel.Debug);
+                        DisableLoggingLevel(NLog.LogLevel.Debug);
                         goto case "debug";
                     case "debug":
-                        DisableLoggingLevel(LogLevel.Trace);
+                        DisableLoggingLevel(NLog.LogLevel.Trace);
                         goto case "trace";
                     case "trace":
                         break;
@@ -300,7 +297,7 @@ namespace OpenIIoT.Core
         /// <param name="key">The setting to update.</param>
         /// <param name="value">The value to which the setting should be set.</param>
         /// <exception cref="ArgumentException">Thrown when the specified key can not be found in the configuration.</exception>
-        [ExcludeFromCodeCoverage]
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         public static void UpdateSetting(string key, string value)
         {
             try
