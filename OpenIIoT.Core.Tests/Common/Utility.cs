@@ -204,7 +204,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void SetLoggingLevelBad()
         {
-            Assert.Throws<Exception>(() => Core.Utility.SetLoggingLevel("bad"));
+            Exception ex = Record.Exception(() => Core.Utility.SetLoggingLevel("bad"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
         }
 
         /// <summary>
@@ -213,7 +216,43 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void UpdateSettingBad()
         {
-            Assert.Throws<ArgumentException>(() => Core.Utility.UpdateSetting("key", "value"));
+            Exception ex = Record.Exception(() => Core.Utility.UpdateSetting("key", "value"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> method with a known good url.
+        /// </summary>
+        [Fact]
+        public void VerifySSLCertificate()
+        {
+            bool result = Core.Utility.VerifySSLCertificate("https://www.google.com");
+
+            Assert.True(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> method with a known bad url.
+        /// </summary>
+        [Fact]
+        public void VerifySSLCertificateBadCertificate()
+        {
+            bool result = Core.Utility.VerifySSLCertificate("https://revoked.badssl.com/");
+
+            Assert.False(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> with an invalid url string.
+        /// </summary>
+        [Fact]
+        public void VerifySSLCertificateBadUrl()
+        {
+            bool result = Core.Utility.VerifySSLCertificate(string.Empty);
+
+            Assert.False(result);
         }
 
         #endregion Public Methods

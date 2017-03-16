@@ -55,7 +55,7 @@ namespace OpenIIoT.SDK.Platform
         /// <summary>
         ///     A Dictionary containing all of the application directories, loaded from the App.config.
         /// </summary>
-        IPlatformDirectories Directories { get; }
+        IDirectories Directories { get; }
 
         /// <summary>
         ///     Gets the Item Provider for the Platform.
@@ -215,10 +215,10 @@ namespace OpenIIoT.SDK.Platform
         IResult<string[]> ReadFileLines(string file);
 
         /// <summary>
-        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IPlatformDirectories"/>.
+        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IDirectories"/>.
         /// </summary>
         /// <param name="directories">The value to which the <see cref="Directories"/> properties is set.</param>
-        void SetDirectories(IPlatformDirectories directories);
+        void SetDirectories(IDirectories directories);
 
         /// <summary>
         ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.

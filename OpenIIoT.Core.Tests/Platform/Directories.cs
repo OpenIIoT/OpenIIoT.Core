@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄                                                                      ████████▄
-      █     ███    ███                                                                      ███   ▀███
-      █     ███    ███  █         ▄█████      ██       ▄█████  ██████     █████    ▄▄██▄▄▄  ███    ███  █     █████    ▄█████  ▄██████     ██     ██████     █████  █     ▄█████   ▄█████
-      █     ███    ███ ██         ██   ██ ▀███████▄   ██   ▀█ ██    ██   ██  ██  ▄█▀▀██▀▀█▄ ███    ███ ██    ██  ██   ██   █  ██    ██ ▀███████▄ ██    ██   ██  ██ ██    ██   █    ██  ▀
-      █   ▀█████████▀  ██         ██   ██     ██  ▀  ▄██▄▄    ██    ██  ▄██▄▄█▀  ██  ██  ██ ███    ███ ██▌  ▄██▄▄█▀  ▄██▄▄    ██    ▀      ██  ▀ ██    ██  ▄██▄▄█▀ ██▌  ▄██▄▄      ██
-      █     ███        ██       ▀████████     ██    ▀▀██▀▀    ██    ██ ▀███████  ██  ██  ██ ███    ███ ██  ▀███████ ▀▀██▀▀    ██    ▄      ██    ██    ██ ▀███████ ██  ▀▀██▀▀    ▀███████
-      █     ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██ ███   ▄███ ██    ██  ██   ██   █  ██    ██     ██    ██    ██   ██  ██ ██    ██   █     ▄  ██
-      █    ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █  ████████▀  █     ██  ██   ███████ ██████▀     ▄██▀    ██████    ██  ██ █     ███████  ▄████▀
+      █   ████████▄
+      █   ███   ▀███
+      █   ███    ███  █     █████    ▄█████  ▄██████     ██     ██████     █████  █     ▄█████   ▄█████
+      █   ███    ███ ██    ██  ██   ██   █  ██    ██ ▀███████▄ ██    ██   ██  ██ ██    ██   █    ██  ▀
+      █   ███    ███ ██▌  ▄██▄▄█▀  ▄██▄▄    ██    ▀      ██  ▀ ██    ██  ▄██▄▄█▀ ██▌  ▄██▄▄      ██
+      █   ███    ███ ██  ▀███████ ▀▀██▀▀    ██    ▄      ██    ██    ██ ▀███████ ██  ▀▀██▀▀    ▀███████
+      █   ███   ▄███ ██    ██  ██   ██   █  ██    ██     ██    ██    ██   ██  ██ ██    ██   █     ▄  ██
+      █   ████████▀  █     ██  ██   ███████ ██████▀     ▄██▀    ██████    ██  ██ █     ███████  ▄████▀
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the PlatformDirectories class.
+      █  Unit tests for the Directories class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -56,10 +56,10 @@ using Xunit;
 namespace OpenIIoT.Core.Tests
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Platform.PlatformDirectories"/> class.
+    ///     Unit tests for the <see cref="Platform.Directories"/> class.
     /// </summary>
-    [Collection("PlatformDirectories")]
-    public class PlatformDirectories
+    [Collection("Directories")]
+    public class Directories
     {
         #region Private Fields
 
@@ -78,9 +78,9 @@ namespace OpenIIoT.Core.Tests
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PlatformDirectories"/> class.
+        ///     Initializes a new instance of the <see cref="Directories"/> class.
         /// </summary>
-        public PlatformDirectories()
+        public Directories()
         {
             goodDirs = new Dictionary<string, string>();
 
@@ -107,13 +107,13 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Constructor()
         {
-            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
-            Assert.IsType<Core.Platform.PlatformDirectories>(test);
+            Core.Platform.Directories test = new Core.Platform.Directories(goodDirs);
+            Assert.IsType<Core.Platform.Directories>(test);
 
-            test = new Core.Platform.PlatformDirectories();
-            Assert.IsType<Core.Platform.PlatformDirectories>(test);
+            test = new Core.Platform.Directories();
+            Assert.IsType<Core.Platform.Directories>(test);
 
-            Assert.Throws<DirectoryConfigurationException>(() => new Core.Platform.PlatformDirectories(badDirs));
+            Assert.Throws<DirectoryConfigurationException>(() => new Core.Platform.Directories(badDirs));
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Properties()
         {
-            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
+            Core.Platform.Directories test = new Core.Platform.Directories(goodDirs);
 
             Assert.Equal(FullDir("Data"), test.Data);
             Assert.Equal(FullDir("Packages"), test.Packages);
@@ -139,7 +139,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void ToDictionary()
         {
-            Core.Platform.PlatformDirectories test = new Core.Platform.PlatformDirectories(goodDirs);
+            Core.Platform.Directories test = new Core.Platform.Directories(goodDirs);
 
             Assert.Equal(FullDir("Data"), test.Data);
             Assert.Equal(FullDir("Packages"), test.Packages);

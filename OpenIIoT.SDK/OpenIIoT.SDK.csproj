@@ -95,12 +95,16 @@
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
     <Compile Include="Package\IPackageManager.cs" />
+    <Compile Include="Package\Manifest\PackageManifest.cs" />
+    <Compile Include="Package\Manifest\PackageManifestContent.cs" />
+    <Compile Include="Package\Manifest\PackageManifestContentItem.cs" />
+    <Compile Include="Package\Manifest\PackageManifestSignature.cs" />
     <Compile Include="Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
     <Compile Include="Platform\IPlatform.cs" />
     <Compile Include="Platform\IPlatformManager.cs" />
-    <Compile Include="Platform\IPlatformDirectories.cs" />
+    <Compile Include="Platform\IDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
     <Compile Include="Package\IInvalidPackage.cs" />
     <Compile Include="Package\IPackage.cs" />

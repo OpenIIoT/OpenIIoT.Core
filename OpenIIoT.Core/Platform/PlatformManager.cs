@@ -299,16 +299,16 @@ namespace OpenIIoT.Core.Platform
         /// <returns>
         ///     A Result containing the result of the operation along with a ProgramDirectories instance containing the directories.
         /// </returns>
-        private PlatformDirectories LoadDirectories(string directories)
+        private Directories LoadDirectories(string directories)
         {
             logger.EnterMethod(xLogger.Params(directories));
-            PlatformDirectories retVal = default(PlatformDirectories);
+            Directories retVal = default(Directories);
 
             try
             {
                 // try to set all of the directories from the deserialized config json. if anything goes wrong an exception will be
                 // thrown and we'll handle it.
-                retVal = new PlatformDirectories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
+                retVal = new Directories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
             }
             catch (Exception ex)
             {

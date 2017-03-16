@@ -77,7 +77,7 @@ namespace OpenIIoT.Core.Platform
     ///         while Version is informational.
     ///     </para>
     ///     <para>
-    ///         The <see cref="Directories"/> property is set to an instance of the <see cref="PlatformDirectories"/> class. This
+    ///         The <see cref="Directories"/> property is set to an instance of the <see cref="Core.Platform.Directories"/> class. This
     ///         class serves as a container for the various directories in which the application stores files. The instance is
     ///         passed via the constructor.
     ///     </para>
@@ -121,7 +121,7 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     Gets a Dictionary containing all of the application directories, loaded from the App.config.
         /// </summary>
-        public IPlatformDirectories Directories { get; private set; }
+        public IDirectories Directories { get; private set; }
 
         /// <summary>
         ///     Gets or sets the accompanying Item Provider for the Platform.
@@ -600,10 +600,10 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IPlatformDirectories"/>.
+        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IDirectories"/>.
         /// </summary>
         /// <param name="directories">The value to which the <see cref="Directories"/> properties is set.</param>
-        public void SetDirectories(IPlatformDirectories directories)
+        public void SetDirectories(IDirectories directories)
         {
             Directories = directories;
         }
