@@ -289,56 +289,57 @@ namespace OpenIIoT.Core
             System.Net.HttpWebResponse response;
             System.Security.Cryptography.X509Certificates.X509Certificate2 certificate;
 
-            //try
-            //{
-            // execute a basic request and fetch the response
-            request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
-            response = (System.Net.HttpWebResponse)request.GetResponse();
-            response.Close();
-
-            // extract the certificate obtained from the response. will throw an exception for non-secure urls.
-            certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(request.ServicePoint.Certificate);
-
-            // build a new x509 change with which to verify the certificate
-            System.Security.Cryptography.X509Certificates.X509Chain chain = new System.Security.Cryptography.X509Certificates.X509Chain()
+            try
             {
-                ChainPolicy = new System.Security.Cryptography.X509Certificates.X509ChainPolicy()
+                // execute a basic request and fetch the response
+                request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+                response = (System.Net.HttpWebResponse)request.GetResponse();
+                response.Close();
+
+                // extract the certificate obtained from the response. will throw an exception for non-secure urls.
+                certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(request.ServicePoint.Certificate);
+
+                // build a new x509 change with which to verify the certificate
+                System.Security.Cryptography.X509Certificates.X509Chain chain = new System.Security.Cryptography.X509Certificates.X509Chain()
                 {
-                    RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck,
-                    RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.EntireChain,
-                    UrlRetrievalTimeout = new TimeSpan(0, 1, 0),
-                    VerificationFlags = System.Security.Cryptography.X509Certificates.X509VerificationFlags.NoFlag
-                }
-            };
-
-            // build the chain. if the build succeeds, the certificate is valid.
-            if (chain.Build(certificate))
-            {
-                return true;
-            }
-            else
-            {
-                for (int i = 0; i < chain.ChainElements.Count; i++)
-                {
-                    System.Security.Cryptography.X509Certificates.X509ChainElement element = chain.ChainElements[i];
-
-                    if (element.ChainElementStatus.Length != 0)
+                    ChainPolicy = new System.Security.Cryptography.X509Certificates.X509ChainPolicy()
                     {
-                        Console.WriteLine($"Error at depth {i}: {element.Certificate.Subject}");
+                        RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck,
+                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.EntireChain,
+                        UrlRetrievalTimeout = new TimeSpan(0, 1, 0),
+                        VerificationFlags = System.Security.Cryptography.X509Certificates.X509VerificationFlags.NoFlag
+                    }
+                };
 
-                        foreach (var status in element.ChainElementStatus)
+                // build the chain. if the build succeeds, the certificate is valid.
+                if (chain.Build(certificate))
+                {
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Failed to build the certificate.");
+                    for (int i = 0; i < chain.ChainElements.Count; i++)
+                    {
+                        System.Security.Cryptography.X509Certificates.X509ChainElement element = chain.ChainElements[i];
+
+                        if (element.ChainElementStatus.Length != 0)
                         {
-                            Console.WriteLine($"  {status.Status}: {status.StatusInformation}}}");
+                            Console.WriteLine($"Error at depth {i}: {element.Certificate.Subject}");
+
+                            foreach (var status in element.ChainElementStatus)
+                            {
+                                Console.WriteLine($"  {status.Status}: {status.StatusInformation}}}");
+                            }
                         }
                     }
+                    return false;
                 }
+            }
+            catch (Exception)
+            {
                 return false;
             }
-            //}
-            //catch (Exception)
-            //{
-            //    return false;
-            //}
         }
 
         #endregion Public Methods
