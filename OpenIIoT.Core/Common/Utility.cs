@@ -298,7 +298,14 @@ namespace OpenIIoT.Core
 
                 certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(request.ServicePoint.Certificate);
 
-                System.Security.Cryptography.X509Certificates.X509Chain chain = new System.Security.Cryptography.X509Certificates.X509Chain();
+                System.Security.Cryptography.X509Certificates.X509Chain chain = new System.Security.Cryptography.X509Certificates.X509Chain()
+                {
+                    ChainPolicy = new System.Security.Cryptography.X509Certificates.X509ChainPolicy()
+                    {
+                        RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.Online,
+                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.EntireChain
+                    }
+                };
 
                 try
                 {
