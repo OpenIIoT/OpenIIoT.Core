@@ -204,7 +204,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void SetLoggingLevelBad()
         {
-            Assert.Throws<Exception>(() => Core.Utility.SetLoggingLevel("bad"));
+            Exception ex = Record.Exception(() => Core.Utility.SetLoggingLevel("bad"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
         }
 
         /// <summary>
@@ -213,7 +216,10 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void UpdateSettingBad()
         {
-            Assert.Throws<ArgumentException>(() => Core.Utility.UpdateSetting("key", "value"));
+            Exception ex = Record.Exception(() => Core.Utility.UpdateSetting("key", "value"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
         }
 
         /// <summary>

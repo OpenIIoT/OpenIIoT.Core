@@ -282,7 +282,7 @@ namespace OpenIIoT.Core
                         break;
 
                     default:
-                        throw new Exception();
+                        throw new ArgumentException();
                 }
             }
             catch (Exception ex)
