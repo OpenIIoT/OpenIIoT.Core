@@ -303,7 +303,7 @@ namespace OpenIIoT.Core
                     ChainPolicy = new System.Security.Cryptography.X509Certificates.X509ChainPolicy()
                     {
                         RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.Online,
-                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.EntireChain
+                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.ExcludeRoot
                     }
                 };
 
@@ -313,12 +313,17 @@ namespace OpenIIoT.Core
                     Console.WriteLine(string.Format("Chain building status: {0}", chainBuilt));
 
                     if (chainBuilt == false)
+                    {
                         foreach (System.Security.Cryptography.X509Certificates.X509ChainStatus chainStatus in chain.ChainStatus)
                             Console.WriteLine(string.Format("Chain error: {0} {1}", chainStatus.Status, chainStatus.StatusInformation));
+
+                        throw new Exception();
+                    }
                 }
                 catch (Exception ex)
                 {
                     System.Diagnostics.Debug.WriteLine(ex.ToString());
+                    throw ex;
                 }
             }
             catch (Exception)
@@ -326,14 +331,7 @@ namespace OpenIIoT.Core
                 return false;
             }
 
-            // verify the certificate the code is unlikely to get this far, as most (if not all) certificate errors will be caught
-            // in the request above.
-            if (certificate.Verify())
-            {
-                return true;
-            }
-
-            return false;
+            return true;
         }
 
         #endregion Public Methods
