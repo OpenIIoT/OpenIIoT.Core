@@ -303,35 +303,38 @@ namespace OpenIIoT.Core
                     ChainPolicy = new System.Security.Cryptography.X509Certificates.X509ChainPolicy()
                     {
                         RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.Online,
-                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.ExcludeRoot
+                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.ExcludeRoot,
+                        VerificationFlags = System.Security.Cryptography.X509Certificates.X509VerificationFlags.NoFlag
                     }
                 };
 
-                try
+                if (chain.Build(certificate))
                 {
-                    var chainBuilt = chain.Build(certificate);
-                    Console.WriteLine(string.Format("Chain building status: {0}", chainBuilt));
-
-                    if (chainBuilt == false)
-                    {
-                        foreach (System.Security.Cryptography.X509Certificates.X509ChainStatus chainStatus in chain.ChainStatus)
-                            Console.WriteLine(string.Format("Chain error: {0} {1}", chainStatus.Status, chainStatus.StatusInformation));
-
-                        throw new Exception();
-                    }
+                    return true;
                 }
-                catch (Exception ex)
+                else
                 {
-                    System.Diagnostics.Debug.WriteLine(ex.ToString());
-                    throw ex;
+                    for (int i = 0; i < chain.ChainElements.Count; i++)
+                    {
+                        System.Security.Cryptography.X509Certificates.X509ChainElement element = chain.ChainElements[i];
+
+                        if (element.ChainElementStatus.Length != 0)
+                        {
+                            Console.WriteLine($"Error at depth {i}: {element.Certificate.Subject}");
+
+                            foreach (var status in element.ChainElementStatus)
+                            {
+                                Console.WriteLine($"  {status.Status}: {status.StatusInformation}}}");
+                            }
+                        }
+                    }
+                    return false;
                 }
             }
             catch (Exception)
             {
                 return false;
             }
-
-            return true;
         }
 
         #endregion Public Methods
