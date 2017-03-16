@@ -318,6 +318,20 @@ namespace OpenIIoT.Core
                 }
                 else
                 {
+                    for (int i = 0; i < chain.ChainElements.Count; i++)
+                    {
+                        System.Security.Cryptography.X509Certificates.X509ChainElement element = chain.ChainElements[i];
+
+                        if (element.ChainElementStatus.Length != 0)
+                        {
+                            Console.WriteLine($"Error at depth {i}: {element.Certificate.Subject}");
+
+                            foreach (var status in element.ChainElementStatus)
+                            {
+                                Console.WriteLine($"  {status.Status}: {status.StatusInformation}}}");
+                            }
+                        }
+                    }
                     return false;
                 }
             }
