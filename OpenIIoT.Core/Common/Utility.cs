@@ -302,8 +302,8 @@ namespace OpenIIoT.Core
                 {
                     ChainPolicy = new System.Security.Cryptography.X509Certificates.X509ChainPolicy()
                     {
-                        RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.Online,
-                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.ExcludeRoot,
+                        RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.Offline,
+                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.EntireChain,
                         VerificationFlags = System.Security.Cryptography.X509Certificates.X509VerificationFlags.NoFlag
                     }
                 };
