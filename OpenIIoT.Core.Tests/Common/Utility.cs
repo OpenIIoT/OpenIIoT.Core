@@ -233,27 +233,38 @@ namespace OpenIIoT.Core.Tests
             Assert.True(result);
         }
 
-        ///// <summary>
-        /////     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> method with a known bad url.
-        ///// </summary>
-        //[Fact]
-        //public void VerifySSLCertificateBadCertificate()
-        //{
-        //    bool result = Core.Utility.VerifySSLCertificate("https://revoked.badssl.com/");
+        /// <summary>
+        ///     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> method with a known bad url.
+        /// </summary>
+        [Fact]
+        public void VerifySSLCertificateBadCertificate()
+        {
+            bool result = Core.Utility.VerifySSLCertificate("https://revoked.badssl.com/");
 
-        //    Assert.False(result);
-        //}
+            Assert.False(result);
+        }
 
-        ///// <summary>
-        /////     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> with an invalid url string.
-        ///// </summary>
-        //[Fact]
-        //public void VerifySSLCertificateBadUrl()
-        //{
-        //    bool result = Core.Utility.VerifySSLCertificate(string.Empty);
+        /// <summary>
+        ///     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> with an invalid url string.
+        /// </summary>
+        [Fact]
+        public void VerifySSLCertificateBadUrl()
+        {
+            bool result = Core.Utility.VerifySSLCertificate(string.Empty);
 
-        //    Assert.False(result);
-        //}
+            Assert.False(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> with a non-secure url.
+        /// </summary>
+        [Fact]
+        public void VerifySSLNonSSLUrl()
+        {
+            bool result = Core.Utility.VerifySSLCertificate("http://www.google.com");
+
+            Assert.False(result);
+        }
 
         #endregion Public Methods
     }
