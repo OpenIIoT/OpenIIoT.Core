@@ -296,9 +296,23 @@ namespace OpenIIoT.Core
                 response = (System.Net.HttpWebResponse)request.GetResponse();
                 response.Close();
 
-                // if an exception is thrown when instantiating the certificate, the specified url is not secured.
-                //byte[] certBytes = request.ServicePoint.Certificate.GetRawCertData();
-                certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(request.ServicePoint.Certificate.GetRawCertData(), string.Empty);
+                certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(request.ServicePoint.Certificate);
+
+                System.Security.Cryptography.X509Certificates.X509Chain chain = new System.Security.Cryptography.X509Certificates.X509Chain();
+
+                try
+                {
+                    var chainBuilt = chain.Build(certificate);
+                    Console.WriteLine(string.Format("Chain building status: {0}", chainBuilt));
+
+                    if (chainBuilt == false)
+                        foreach (System.Security.Cryptography.X509Certificates.X509ChainStatus chainStatus in chain.ChainStatus)
+                            Console.WriteLine(string.Format("Chain error: {0} {1}", chainStatus.Status, chainStatus.StatusInformation));
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Debug.WriteLine(ex.ToString());
+                }
             }
             catch (Exception)
             {
