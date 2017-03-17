@@ -1,9 +1,10 @@
+os:
+  - linux
+  - osx
 language: csharp
 solution: OpenIIoT.Core.sln
 install:
   - nuget restore OpenIIoT.Core.sln
-dist: trusty
-sudo: required
 script:
   - xbuild /p:Configuration=Release OpenIIoT.Core.sln
   - mono ./packages/xunit.runner.console.2.1.0/tools/xunit.console.exe ./OpenIIoT.Core.Tests/bin/Release/OpenIIoT.Core.Tests.dll
