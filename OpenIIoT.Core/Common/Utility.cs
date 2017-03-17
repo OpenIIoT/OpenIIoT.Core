@@ -53,42 +53,6 @@ namespace OpenIIoT.Core
         #region Public Methods
 
         /// <summary>
-        ///     Connects to the specified url and verifies the validity of the SSL certificate returned.
-        /// </summary>
-        /// <param name="url">The url for which the validity of the SSL certificate is to be verified.</param>
-        /// <returns>A value indicating whether the specified url contains a valid SSL certificate</returns>
-        public static bool VerifySSLCertificate(string url)
-        {
-            System.Net.HttpWebRequest request;
-            System.Net.HttpWebResponse response;
-            System.Security.Cryptography.X509Certificates.X509Certificate2 certificate;
-
-            try
-            {
-                // if an exception is thrown when creating the request or fetching the response, the certificate is likely not valid.
-                request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
-                response = (System.Net.HttpWebResponse)request.GetResponse();
-                response.Close();
-
-                // if an exception is thrown when instantiating the certificate, the specified url is not secured.
-                certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(request.ServicePoint.Certificate);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            // verify the certificate the code is unlikely to get this far, as most (if not all) certificate errors will be caught
-            // in the request above.
-            if (certificate.Verify())
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         ///     Disables the specified logging level within the LogManager.
         /// </summary>
         /// <param name="level">The level to disable.</param>
