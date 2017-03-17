@@ -255,6 +255,17 @@ namespace OpenIIoT.Core.Tests
             Assert.False(result);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Utility.VerifySSLCertificate(string)"/> with a non-secure url.
+        /// </summary>
+        [Fact]
+        public void VerifySSLNonSSLUrl()
+        {
+            bool result = Core.Utility.VerifySSLCertificate("http://www.google.com");
+
+            Assert.False(result);
+        }
+
         #endregion Public Methods
     }
 }

@@ -53,42 +53,6 @@ namespace OpenIIoT.Core
         #region Public Methods
 
         /// <summary>
-        ///     Connects to the specified url and verifies the validity of the SSL certificate returned.
-        /// </summary>
-        /// <param name="url">The url for which the validity of the SSL certificate is to be verified.</param>
-        /// <returns>A value indicating whether the specified url contains a valid SSL certificate</returns>
-        public static bool VerifySSLCertificate(string url)
-        {
-            System.Net.HttpWebRequest request;
-            System.Net.HttpWebResponse response;
-            System.Security.Cryptography.X509Certificates.X509Certificate2 certificate;
-
-            try
-            {
-                // if an exception is thrown when creating the request or fetching the response, the certificate is likely not valid.
-                request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
-                response = (System.Net.HttpWebResponse)request.GetResponse();
-                response.Close();
-
-                // if an exception is thrown when instantiating the certificate, the specified url is not secured.
-                certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(request.ServicePoint.Certificate);
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-
-            // verify the certificate the code is unlikely to get this far, as most (if not all) certificate errors will be caught
-            // in the request above.
-            if (certificate.Verify())
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         ///     Disables the specified logging level within the LogManager.
         /// </summary>
         /// <param name="level">The level to disable.</param>
@@ -311,6 +275,70 @@ namespace OpenIIoT.Core
             catch (NullReferenceException)
             {
                 throw new ArgumentException("The specified key could not be found in the configuration.");
+            }
+        }
+
+        /// <summary>
+        ///     Connects to the specified url and verifies the validity of the SSL certificate returned.
+        /// </summary>
+        /// <param name="url">The url for which the validity of the SSL certificate is to be verified.</param>
+        /// <returns>A value indicating whether the specified url contains a valid SSL certificate</returns>
+        public static bool VerifySSLCertificate(string url)
+        {
+            System.Net.HttpWebRequest request;
+            System.Net.HttpWebResponse response;
+            System.Security.Cryptography.X509Certificates.X509Certificate2 certificate;
+
+            try
+            {
+                // execute a basic request and fetch the response
+                request = (System.Net.HttpWebRequest)System.Net.WebRequest.Create(url);
+                response = (System.Net.HttpWebResponse)request.GetResponse();
+                response.Close();
+
+                // extract the certificate obtained from the response. will throw an exception for non-secure urls.
+                certificate = new System.Security.Cryptography.X509Certificates.X509Certificate2(request.ServicePoint.Certificate);
+
+                // build a new x509 change with which to verify the certificate
+                System.Security.Cryptography.X509Certificates.X509Chain chain = new System.Security.Cryptography.X509Certificates.X509Chain()
+                {
+                    ChainPolicy = new System.Security.Cryptography.X509Certificates.X509ChainPolicy()
+                    {
+                        RevocationMode = System.Security.Cryptography.X509Certificates.X509RevocationMode.NoCheck,
+                        RevocationFlag = System.Security.Cryptography.X509Certificates.X509RevocationFlag.ExcludeRoot,
+                        UrlRetrievalTimeout = new TimeSpan(0, 1, 0),
+                        VerificationFlags = System.Security.Cryptography.X509Certificates.X509VerificationFlags.NoFlag
+                    }
+                };
+
+                // build the chain. if the build succeeds, the certificate is valid.
+                if (chain.Build(certificate))
+                {
+                    return true;
+                }
+                else
+                {
+                    Console.WriteLine("Failed to build the certificate.");
+                    for (int i = 0; i < chain.ChainElements.Count; i++)
+                    {
+                        System.Security.Cryptography.X509Certificates.X509ChainElement element = chain.ChainElements[i];
+
+                        if (element.ChainElementStatus.Length != 0)
+                        {
+                            Console.WriteLine($"Error at depth {i}: {element.Certificate.Subject}");
+
+                            foreach (var status in element.ChainElementStatus)
+                            {
+                                Console.WriteLine($"  {status.Status}: {status.StatusInformation}}}");
+                            }
+                        }
+                    }
+                    return false;
+                }
+            }
+            catch (Exception)
+            {
+                return false;
             }
         }
 
