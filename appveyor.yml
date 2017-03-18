@@ -1,4 +1,4 @@
-version: 0.5.0.{build}
+version: 0.5.{build}
 before_build:
 - cmd: nuget restore
 build:
