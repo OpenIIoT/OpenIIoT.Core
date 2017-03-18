@@ -18,7 +18,7 @@
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
       █
-      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
+      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
       █
       █  This program is free software: you can redistribute it and/or modify
       █  it under the terms of the GNU Affero General Public License as published by
@@ -47,7 +47,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OpenIIoT")]
-[assembly: AssemblyCopyright("Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)")]
+[assembly: AssemblyCopyright("Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: ComVisible(false)]
