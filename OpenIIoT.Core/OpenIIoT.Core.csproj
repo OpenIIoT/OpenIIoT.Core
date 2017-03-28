@@ -260,16 +260,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenIIoT.SDK.Tests\OpenIIoT.SDK.Tests.csproj">
-      <Project>{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}</Project>
-      <Name>OpenIIoT.SDK.Tests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\OpenIIoT.SDK\OpenIIoT.SDK.csproj">
       <Project>{9c220b49-76ac-4ef5-b385-906ac84d5da2}</Project>
       <Name>OpenIIoT.SDK</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
