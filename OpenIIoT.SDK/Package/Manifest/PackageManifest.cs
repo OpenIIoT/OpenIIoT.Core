@@ -40,19 +40,21 @@
                                                                                                    ▀▀                            */
 
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
     public class PackageManifest
     {
         [JsonProperty(Order = 1)]
-        public string Namespace { get; set; }
+        public string Title { get; set; }
 
         [JsonProperty(Order = 2)]
         public string Version { get; set; }
 
         [JsonProperty(Order = 3)]
-        public string Title { get; set; }
+        public string Namespace { get; set; }
 
         [JsonProperty(Order = 4)]
         public string Description { get; set; }
@@ -73,6 +75,6 @@ namespace OpenIIoT.SDK.Package.Manifest
         public PackageManifestSignature Signature { get; set; }
 
         [JsonProperty(Order = 10)]
-        public string[] Content { get; set; }
+        public PackageManifestFile Content { get; set; }
     }
 }

@@ -8,7 +8,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         public string Digest { get; set; }
 
         [JsonProperty(Order = 2)]
-        public string PublicKeyUrl { get; set; }
+        public string Key { get; set; }
 
         [JsonProperty(Order = 3)]
         public string Trust { get; set; }

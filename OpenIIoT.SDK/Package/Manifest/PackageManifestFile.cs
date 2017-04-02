@@ -2,12 +2,12 @@
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
-    internal class PackageManifestContentItem
+    public class PackageManifestFile
     {
         [JsonProperty(Order = 1)]
-        private string Name { get; set; }
+        private string File { get; set; }
 
         [JsonProperty(Order = 2)]
-        private string Path { get; set; }
+        private string Hash { get; set; }
     }
 }
