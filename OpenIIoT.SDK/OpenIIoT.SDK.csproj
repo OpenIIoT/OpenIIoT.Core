@@ -96,6 +96,8 @@
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
     <Compile Include="Package\IPackageManager.cs" />
     <Compile Include="Package\Manifest\IPackageManifest.cs" />
+    <Compile Include="Package\Manifest\IPackageManifestBuilder.cs" />
+    <Compile Include="Package\Manifest\PackageManifestBuilder.cs" />
     <Compile Include="Package\Manifest\PackageManifestFileType.cs" />
     <Compile Include="Package\Manifest\PackageManifest.cs" />
     <Compile Include="Package\Manifest\IPackageManifestFile.cs" />
