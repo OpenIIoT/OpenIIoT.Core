@@ -40,6 +40,7 @@
                                                                                                    ▀▀                            */
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
@@ -66,6 +67,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         ///     Gets or sets the file type.
         /// </summary>
         [JsonProperty(Order = 2)]
+        [JsonConverter(typeof(StringEnumConverter))]
         public PackageManifestFileType Type { get; set; }
 
         #endregion Private Properties
