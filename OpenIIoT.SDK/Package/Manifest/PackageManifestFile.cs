@@ -3,17 +3,17 @@
       █
       █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄                                                                   ▄████████
       █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄                                                                ███    ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██      ███    █▀   █     ▄████▄  ██▄▄▄▄    ▄█████      ██    ██   █     █████    ▄█████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄   ███        ██    ██    ▀  ██▀▀▀█▄   ██   ██ ▀███████▄ ██   ██   ██  ██   ██   █
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀ ▀███████████ ██▌  ▄██       ██   ██   ██   ██     ██  ▀ ██   ██  ▄██▄▄█▀  ▄██▄▄
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██             ███ ██  ▀▀██ ███▄  ██   ██ ▀████████     ██    ██   ██ ▀███████ ▀▀██▀▀
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██       ▄█    ███ ██    ██    ██ ██   ██   ██   ██     ██    ██   ██   ██  ██   ██   █
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀    ▄████████▀  █     ██████▀   █   █    ██   █▀    ▄██▀   ██████    ██  ██   ███████
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██      ███    █▀   █   █          ▄█████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄  ▄███▄▄▄     ██  ██         ██   █
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀ ▀▀███▀▀▀     ██▌ ██        ▄██▄▄
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██      ███        ██  ██       ▀▀██▀▀
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██      ███        ██  ██▌    ▄   ██   █
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀     ███        █   ████▄▄██   ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Contains the digital signature for a Package file.
+      █  Represents a single file contained within a PackageManifest.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -40,34 +40,36 @@
                                                                                                    ▀▀                            */
 
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
     /// <summary>
-    ///     Contains the digital signature information for a <see cref="Package"/> file.
+    ///     Represents a single file contained within a <see cref="PackageManifest"/> .
     /// </summary>
-    public class PackageManifestSignature : IPackageManifestSignature
+    public class PackageManifestFile : IPackageManifestFile
     {
-        #region Public Properties
+        #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the PGP signature of the <see cref="Package"/> .
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        public string Digest { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the PGP public key used to verify the <see cref="Digest"/>.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        public string Key { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the PGP signature used to establish a trust for the <see cref="Package"/> .
+        ///     Gets or sets the optional SHA512 hash of the file specified in the <see cref="Source"/> property.
         /// </summary>
         [JsonProperty(Order = 3)]
-        public string Trust { get; set; }
+        public string Hash { get; set; }
 
-        #endregion Public Properties
+        /// <summary>
+        ///     Gets or sets the source of the file, relative to the package payload root.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public string Source { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the file type.
+        /// </summary>
+        [JsonProperty(Order = 2)]
+        [JsonConverter(typeof(StringEnumConverter))]
+        public PackageManifestFileType Type { get; set; }
+
+        #endregion Private Properties
     }
 }

@@ -45,39 +45,39 @@ using System.Collections.ObjectModel;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
-    public class PackageManifest : IPackageManifest
+    public interface IPackageManifest
     {
         #region Public Properties
 
         [JsonProperty(Order = 6)]
-        public string Copyright { get; set; }
+        string Copyright { get; set; }
 
         [JsonProperty(Order = 4)]
-        public string Description { get; set; }
+        string Description { get; set; }
 
         [JsonProperty(Order = 10)]
-        public IList<IPackageManifestFile> Files { get; set; }
+        IList<IPackageManifestFile> Files { get; set; }
 
         [JsonProperty(Order = 7)]
-        public string License { get; set; }
+        string License { get; set; }
 
         [JsonProperty(Order = 3)]
-        public string Namespace { get; set; }
+        string Namespace { get; set; }
 
         [JsonProperty(Order = 5)]
-        public string Publisher { get; set; }
+        string Publisher { get; set; }
 
         [JsonProperty(Order = 9)]
-        public IPackageManifestSignature Signature { get; set; }
+        IPackageManifestSignature Signature { get; set; }
 
         [JsonProperty(Order = 1)]
-        public string Title { get; set; }
+        string Title { get; set; }
 
         [JsonProperty(Order = 8)]
-        public string Url { get; set; }
+        string Url { get; set; }
 
         [JsonProperty(Order = 2)]
-        public string Version { get; set; }
+        string Version { get; set; }
 
         #endregion Public Properties
     }
