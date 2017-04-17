@@ -56,7 +56,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         public string Description { get; set; }
 
         [JsonProperty(Order = 10)]
-        public IList<IPackageManifestFile> Files { get; set; }
+        public IDictionary<PackageManifestFileType, IList<IPackageManifestFile>> Files { get; set; }
 
         [JsonProperty(Order = 7)]
         public string License { get; set; }

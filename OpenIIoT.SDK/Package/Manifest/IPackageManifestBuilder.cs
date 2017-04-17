@@ -13,19 +13,25 @@ namespace OpenIIoT.SDK.Package.Manifest
 
         #region Public Methods
 
-        PackageManifestBuilder AddFile(IPackageManifestFile file);
+        PackageManifestBuilder AddFile(PackageManifestFileType type, IPackageManifestFile file);
+
+        PackageManifestBuilder BuildDefault();
+
+        PackageManifestBuilder ClearFiles();
 
         PackageManifestBuilder Copyright(string copyright);
 
         PackageManifestBuilder Description(string description);
 
-        PackageManifestBuilder Files(List<IPackageManifestFile> files);
+        PackageManifestBuilder Files(IDictionary<PackageManifestFileType, IList<IPackageManifestFile>> files);
 
         PackageManifestBuilder License(string license);
 
         PackageManifestBuilder Namespace(string ns);
 
         PackageManifestBuilder Publisher(string publisher);
+
+        PackageManifestBuilder RemoveFile(PackageManifestFileType type, IPackageManifestFile file);
 
         PackageManifestBuilder Signature(IPackageManifestSignature signature);
 
@@ -34,12 +40,6 @@ namespace OpenIIoT.SDK.Package.Manifest
         PackageManifestBuilder Url(string url);
 
         PackageManifestBuilder Version(string version);
-
-        PackageManifestBuilder BuildDefault(IList<IPackageManifestFile> files);
-
-        PackageManifestBuilder ClearFiles();
-
-        PackageManifestBuilder RemoveFile(IPackageManifestFile file);
 
         #endregion Public Methods
     }

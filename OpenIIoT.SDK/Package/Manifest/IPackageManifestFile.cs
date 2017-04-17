@@ -62,12 +62,6 @@ namespace OpenIIoT.SDK.Package.Manifest
         [JsonProperty(Order = 1)]
         string Source { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the file type.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        PackageManifestFileType Type { get; set; }
-
         #endregion Private Properties
     }
 }
