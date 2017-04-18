@@ -46,7 +46,7 @@ namespace OpenIIoT.SDK.Package.Manifest
     /// <summary>
     ///     Contains the digital signature information for a <see cref="Package"/> file.
     /// </summary>
-    public class PackageManifestSignature : IPackageManifestSignature
+    public class PackageManifestSignature
     {
         #region Public Properties
 

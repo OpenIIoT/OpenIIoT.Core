@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
-    public class PackageManifestBuilder : IPackageManifestBuilder
+    public class PackageManifestBuilder
     {
         #region Public Constructors
 
@@ -25,16 +25,16 @@ namespace OpenIIoT.SDK.Package.Manifest
 
         #region Public Methods
 
-        public PackageManifestBuilder AddFile(PackageManifestFileType type, IPackageManifestFile file)
+        public PackageManifestBuilder AddFile(PackageManifestFileType type, PackageManifestFile file)
         {
-            if (Manifest.Files == default(IDictionary<PackageManifestFileType, IList<IPackageManifestFile>>))
+            if (Manifest.Files == default(IDictionary<PackageManifestFileType, IList<PackageManifestFile>>))
             {
-                Manifest.Files = new Dictionary<PackageManifestFileType, IList<IPackageManifestFile>>();
+                Manifest.Files = new Dictionary<PackageManifestFileType, IList<PackageManifestFile>>();
             }
 
             if (!Manifest.Files.ContainsKey(type))
             {
-                Manifest.Files.Add(type, new List<IPackageManifestFile>());
+                Manifest.Files.Add(type, new List<PackageManifestFile>());
             }
 
             Manifest.Files[type].Add(file);
@@ -58,7 +58,7 @@ namespace OpenIIoT.SDK.Package.Manifest
 
         public PackageManifestBuilder ClearFiles()
         {
-            if (Manifest.Files != default(IList<IPackageManifestFile>))
+            if (Manifest.Files != default(IList<PackageManifestFile>))
             {
                 Manifest.Files.Clear();
             }
@@ -78,7 +78,7 @@ namespace OpenIIoT.SDK.Package.Manifest
             return this;
         }
 
-        public PackageManifestBuilder Files(IDictionary<PackageManifestFileType, IList<IPackageManifestFile>> files)
+        public PackageManifestBuilder Files(IDictionary<PackageManifestFileType, IList<PackageManifestFile>> files)
         {
             Manifest.Files = files;
             return this;
@@ -102,9 +102,9 @@ namespace OpenIIoT.SDK.Package.Manifest
             return this;
         }
 
-        public PackageManifestBuilder RemoveFile(PackageManifestFileType type, IPackageManifestFile file)
+        public PackageManifestBuilder RemoveFile(PackageManifestFileType type, PackageManifestFile file)
         {
-            if (Manifest.Files != default(IDictionary<PackageManifestFileType, IList<IPackageManifestFile>>))
+            if (Manifest.Files != default(IDictionary<PackageManifestFileType, IList<PackageManifestFile>>))
             {
                 if (Manifest.Files.ContainsKey(type))
                 {
@@ -115,7 +115,7 @@ namespace OpenIIoT.SDK.Package.Manifest
             return this;
         }
 
-        public PackageManifestBuilder Signature(IPackageManifestSignature signature)
+        public PackageManifestBuilder Signature(PackageManifestSignature signature)
         {
             Manifest.Signature = signature;
             return this;

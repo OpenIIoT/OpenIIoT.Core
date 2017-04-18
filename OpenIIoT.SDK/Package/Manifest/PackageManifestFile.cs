@@ -47,7 +47,7 @@ namespace OpenIIoT.SDK.Package.Manifest
     /// <summary>
     ///     Represents a single file contained within a <see cref="PackageManifest"/> .
     /// </summary>
-    public class PackageManifestFile : IPackageManifestFile
+    public class PackageManifestFile
     {
         #region Private Properties
 
