@@ -210,6 +210,9 @@ namespace OpenIIoT.Core.Tests.Configuration
             Core.Configuration.ConfigurationManager.Terminate();
 
             manager.Start();
+
+            Assert.Equal(State.Running, manager.State);
+
             IResult result = manager.Stop();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
