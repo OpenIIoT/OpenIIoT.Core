@@ -124,7 +124,7 @@ namespace OpenIIoT.Core.Tests.Platform
         {
             IResult result = manager.Start();
 
-            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.NotEqual(ResultCode.Failure, result.ResultCode);
             Assert.Equal(State.Running, manager.State);
         }
 
