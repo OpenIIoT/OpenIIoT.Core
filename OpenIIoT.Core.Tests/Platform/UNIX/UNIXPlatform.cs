@@ -68,7 +68,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Constructor()
         {
-            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform();
+            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform(new Core.Platform.Directories());
             Assert.IsAssignableFrom<Core.Platform.UNIX.UNIXPlatform>(platform);
         }
 
@@ -78,7 +78,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Properties()
         {
-            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform();
+            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform(new Core.Platform.Directories());
             Assert.IsAssignableFrom<IItemProvider>(platform.ItemProvider);
             Assert.Equal(PlatformType.UNIX, platform.PlatformType);
             Assert.NotNull(platform.Version);

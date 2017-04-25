@@ -127,22 +127,6 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.Equal(State.Running, manager.State);
         }
 
-        ///// <summary>
-        /////     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method with a bad instance of Directories via
-        /////     <see cref="SDK.Common.Manager.Start()"/> .
-        ///// </summary>
-        //[Fact]
-        //public void StartBadDirectories()
-        //{
-        //    Core.Platform.PlatformManager.Terminate();
-
-        // manager.Platform.SetDirectories(new Core.Platform.Directories());
-
-        // IResult result = manager.Start();
-
-        //    Assert.Equal(ResultCode.Failure, result.ResultCode);
-        //}
-
         /// <summary>
         ///     Tests the <see cref="Core.Platform.PlatformManager.Shutdown(StopType)"/> method via
         ///     <see cref="SDK.Common.Manager.Stop(StopType)"/> .

@@ -56,7 +56,7 @@ namespace OpenIIoT.Core.Platform.Windows
         /// <summary>
         ///     Initializes a new instance of the <see cref="WindowsPlatform"/> class.
         /// </summary>
-        public WindowsPlatform()
+        public WindowsPlatform(IDirectories directories) : base(directories)
         {
             PlatformType = PlatformType.Windows;
             Version = Environment.OSVersion.VersionString;
