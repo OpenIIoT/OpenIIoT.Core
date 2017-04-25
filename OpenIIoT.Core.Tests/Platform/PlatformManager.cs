@@ -107,6 +107,21 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Instantiate(IApplicationManager)"/> method.
+        /// </summary>
+        [Fact]
+        public void Instantiate()
+        {
+            applicationManager = new Mock<IApplicationManager>();
+            applicationManager.Setup(a => a.State).Returns(State.Running);
+            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            Core.Platform.PlatformManager.Terminate();
+
+            manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Platform.PlatformManager.Setup"/> method using reflection.
         /// </summary>
         [Fact]
