@@ -103,6 +103,9 @@ namespace OpenIIoT.Core.Tests
             Core.Utility.EnableLoggingLevel(LogLevel.Info);
 
             Assert.True(logger.IsInfoEnabled);
+
+            // disable the logger to prevent CI from erroring
+            Core.Utility.DisableLoggingLevel(LogLevel.Info);
         }
 
         /// <summary>
