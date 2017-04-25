@@ -88,6 +88,8 @@ namespace OpenIIoT.Core.Tests.Platform
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
+            Core.Platform.PlatformManager.Terminate();
+
             manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
         }
 
