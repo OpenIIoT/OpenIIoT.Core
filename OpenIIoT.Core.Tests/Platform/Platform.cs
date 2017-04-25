@@ -92,7 +92,7 @@ namespace OpenIIoT.Core.Tests.Platform
         /// </summary>
         public Platform()
         {
-            platformMock = new PlatformMock();
+            platformMock = new PlatformMock(new Core.Platform.Directories());
 
             // set test directory = application directory + a new Guid
             string root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
@@ -810,21 +810,6 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
-        /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.SetDirectories(IDirectories)"/> method.
-        /// </summary>
-        [Fact]
-        public void SetDirectories()
-        {
-            IDirectories pd = new Core.Platform.Directories();
-
-            Assert.NotEqual(pd, platformMock.Directories);
-
-            platformMock.SetDirectories(pd);
-
-            Assert.Equal(pd, platformMock.Directories);
-        }
-
         #endregion Public Methods
     }
 
@@ -842,7 +827,7 @@ namespace OpenIIoT.Core.Tests.Platform
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlatformMock"/> class.
         /// </summary>
-        public PlatformMock() : base()
+        public PlatformMock(IDirectories directories) : base(directories)
         {
             PlatformType = PlatformType.Unknown;
             Version = "1.0";

@@ -47,7 +47,7 @@ namespace OpenIIoT.SDK.Package.Manifest
     /// <summary>
     ///     Represents a single file contained within a <see cref="PackageManifest"/> .
     /// </summary>
-    public class PackageManifestFile : IPackageManifestFile
+    public class PackageManifestFile
     {
         #region Private Properties
 
@@ -62,13 +62,6 @@ namespace OpenIIoT.SDK.Package.Manifest
         /// </summary>
         [JsonProperty(Order = 1)]
         public string Source { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the file type.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public PackageManifestFileType Type { get; set; }
 
         #endregion Private Properties
     }

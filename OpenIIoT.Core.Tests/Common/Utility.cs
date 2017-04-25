@@ -75,6 +75,8 @@ namespace OpenIIoT.Core.Tests
 
             Logger logger = LogManager.GetLogger("test");
 
+            Core.Utility.EnableLoggingLevel(LogLevel.Info);
+
             Assert.True(logger.IsInfoEnabled);
 
             Core.Utility.DisableLoggingLevel(LogLevel.Info);
@@ -90,15 +92,20 @@ namespace OpenIIoT.Core.Tests
         {
             Target target = new ConsoleTarget();
             LogManager.Configuration.AddTarget("test", target);
-            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Debug, target);
+            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
 
             Logger logger = LogManager.GetLogger("test");
+
+            Core.Utility.DisableLoggingLevel(LogLevel.Info);
 
             Assert.False(logger.IsInfoEnabled);
 
             Core.Utility.EnableLoggingLevel(LogLevel.Info);
 
             Assert.True(logger.IsInfoEnabled);
+
+            // disable the logger to prevent CI from erroring
+            Core.Utility.DisableLoggingLevel(LogLevel.Info);
         }
 
         /// <summary>

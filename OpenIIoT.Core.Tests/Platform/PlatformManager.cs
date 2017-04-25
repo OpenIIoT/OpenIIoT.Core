@@ -88,6 +88,8 @@ namespace OpenIIoT.Core.Tests.Platform
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
+            Core.Platform.PlatformManager.Terminate();
+
             manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
         }
 
@@ -102,6 +104,21 @@ namespace OpenIIoT.Core.Tests.Platform
         public void Constructor()
         {
             Assert.IsType<Core.Platform.PlatformManager>(manager);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Instantiate(IApplicationManager)"/> method.
+        /// </summary>
+        [Fact]
+        public void Instantiate()
+        {
+            applicationManager = new Mock<IApplicationManager>();
+            applicationManager.Setup(a => a.State).Returns(State.Running);
+            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            Core.Platform.PlatformManager.Terminate();
+
+            manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
         }
 
         /// <summary>
@@ -122,22 +139,8 @@ namespace OpenIIoT.Core.Tests.Platform
         {
             IResult result = manager.Start();
 
-            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.NotEqual(ResultCode.Failure, result.ResultCode);
             Assert.Equal(State.Running, manager.State);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method with a bad instance of Directories via
-        ///     <see cref="SDK.Common.Manager.Start()"/> .
-        /// </summary>
-        [Fact]
-        public void StartBadDirectories()
-        {
-            manager.Platform.SetDirectories(new Core.Platform.Directories());
-
-            IResult result = manager.Start();
-
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>

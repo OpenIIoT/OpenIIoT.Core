@@ -77,8 +77,8 @@ namespace OpenIIoT.Core.Platform
     ///         while Version is informational.
     ///     </para>
     ///     <para>
-    ///         The <see cref="Directories"/> property is set to an instance of the <see cref="Core.Platform.Directories"/> class. This
-    ///         class serves as a container for the various directories in which the application stores files. The instance is
+    ///         The <see cref="Directories"/> property is set to an instance of the <see cref="Core.Platform.Directories"/> class.
+    ///         This class serves as a container for the various directories in which the application stores files. The instance is
     ///         passed via the constructor.
     ///     </para>
     ///     <para>
@@ -110,8 +110,9 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     Initializes a new instance of the <see cref="Platform"/> class.
         /// </summary>
-        public Platform()
+        public Platform(IDirectories directories)
         {
+            Directories = directories;
         }
 
         #endregion Public Constructors
@@ -597,15 +598,6 @@ namespace OpenIIoT.Core.Platform
             retVal.LogResult(logger.Trace);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
-        }
-
-        /// <summary>
-        ///     Sets the value of the <see cref="Directories"/> property to the specified instance of <see cref="IDirectories"/>.
-        /// </summary>
-        /// <param name="directories">The value to which the <see cref="Directories"/> properties is set.</param>
-        public void SetDirectories(IDirectories directories)
-        {
-            Directories = directories;
         }
 
         /// <summary>

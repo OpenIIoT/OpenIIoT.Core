@@ -45,7 +45,7 @@ using System.Collections.ObjectModel;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
-    public class PackageManifest : IPackageManifest
+    public class PackageManifest
     {
         #region Public Properties
 
@@ -56,7 +56,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         public string Description { get; set; }
 
         [JsonProperty(Order = 10)]
-        public IList<IPackageManifestFile> Files { get; set; }
+        public IDictionary<PackageManifestFileType, IList<PackageManifestFile>> Files { get; set; }
 
         [JsonProperty(Order = 7)]
         public string License { get; set; }
@@ -68,7 +68,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         public string Publisher { get; set; }
 
         [JsonProperty(Order = 9)]
-        public IPackageManifestSignature Signature { get; set; }
+        public PackageManifestSignature Signature { get; set; }
 
         [JsonProperty(Order = 1)]
         public string Title { get; set; }

@@ -68,7 +68,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Constructor()
         {
-            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform();
+            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories());
             Assert.IsAssignableFrom<Core.Platform.Windows.WindowsPlatform>(platform);
         }
 
@@ -78,7 +78,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Properties()
         {
-            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform();
+            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories());
             Assert.IsAssignableFrom<IItemProvider>(platform.ItemProvider);
             Assert.Equal(PlatformType.Windows, platform.PlatformType);
             Assert.NotNull(platform.Version);

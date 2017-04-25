@@ -108,11 +108,11 @@ namespace OpenIIoT.Core.Platform
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
-                    Platform = new Windows.WindowsPlatform();
+                    Platform = new Windows.WindowsPlatform(LoadDirectories(GetDirectories()));
                     break;
 
                 case PlatformType.UNIX:
-                    Platform = new UNIX.UNIXPlatform();
+                    Platform = new UNIX.UNIXPlatform(LoadDirectories(GetDirectories()));
                     break;
 
                 default:
@@ -215,15 +215,6 @@ namespace OpenIIoT.Core.Platform
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
-
-            // Populate the ProgramDirectories list
-            logger.Debug("Loading application directories...");
-
-            // fetch the directory list from .exe.config file
-            string directoryList = GetDirectories();
-            Platform.SetDirectories(LoadDirectories(directoryList));
-
-            logger.Checkpoint("Directory configuration loaded", guid);
 
             // Check to ensure all directories exist. If not, create them.
             logger.Debug("Checking directories...");

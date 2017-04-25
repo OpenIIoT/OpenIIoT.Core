@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
-    public class PackageManifestBuilder : IPackageManifestBuilder
+    public class PackageManifestBuilder
     {
         #region Public Constructors
 
@@ -25,7 +25,24 @@ namespace OpenIIoT.SDK.Package.Manifest
 
         #region Public Methods
 
-        public PackageManifestBuilder BuildDefault(IList<IPackageManifestFile> files = default(IList<IPackageManifestFile>))
+        public PackageManifestBuilder AddFile(PackageManifestFileType type, PackageManifestFile file)
+        {
+            if (Manifest.Files == default(IDictionary<PackageManifestFileType, IList<PackageManifestFile>>))
+            {
+                Manifest.Files = new Dictionary<PackageManifestFileType, IList<PackageManifestFile>>();
+            }
+
+            if (!Manifest.Files.ContainsKey(type))
+            {
+                Manifest.Files.Add(type, new List<PackageManifestFile>());
+            }
+
+            Manifest.Files[type].Add(file);
+
+            return this;
+        }
+
+        public PackageManifestBuilder BuildDefault()
         {
             this.Title("DefaultPlugin")
                 .Version("1.0.0")
@@ -36,42 +53,12 @@ namespace OpenIIoT.SDK.Package.Manifest
                 .License("AGPLv3")
                 .Url("http://github.com/openiiot");
 
-            if (files != default(IList<IPackageManifestFile>))
-            {
-                foreach (IPackageManifestFile file in files)
-                {
-                    this.AddFile(file);
-                }
-            }
-
-            return this;
-        }
-
-        public PackageManifestBuilder AddFile(IPackageManifestFile file)
-        {
-            if (Manifest.Files == default(IList<IPackageManifestFile>))
-            {
-                Manifest.Files = new List<IPackageManifestFile>();
-            }
-
-            Manifest.Files.Add(file);
-
-            return this;
-        }
-
-        public PackageManifestBuilder RemoveFile(IPackageManifestFile file)
-        {
-            if (Manifest.Files != default(IList<IPackageManifestFile>) && Manifest.Files.Contains(file))
-            {
-                Manifest.Files.Remove(file);
-            }
-
             return this;
         }
 
         public PackageManifestBuilder ClearFiles()
         {
-            if (Manifest.Files != default(IList<IPackageManifestFile>))
+            if (Manifest.Files != default(IList<PackageManifestFile>))
             {
                 Manifest.Files.Clear();
             }
@@ -91,7 +78,7 @@ namespace OpenIIoT.SDK.Package.Manifest
             return this;
         }
 
-        public PackageManifestBuilder Files(List<IPackageManifestFile> files)
+        public PackageManifestBuilder Files(IDictionary<PackageManifestFileType, IList<PackageManifestFile>> files)
         {
             Manifest.Files = files;
             return this;
@@ -115,7 +102,20 @@ namespace OpenIIoT.SDK.Package.Manifest
             return this;
         }
 
-        public PackageManifestBuilder Signature(IPackageManifestSignature signature)
+        public PackageManifestBuilder RemoveFile(PackageManifestFileType type, PackageManifestFile file)
+        {
+            if (Manifest.Files != default(IDictionary<PackageManifestFileType, IList<PackageManifestFile>>))
+            {
+                if (Manifest.Files.ContainsKey(type))
+                {
+                    Manifest.Files[type].Remove(file);
+                }
+            }
+
+            return this;
+        }
+
+        public PackageManifestBuilder Signature(PackageManifestSignature signature)
         {
             Manifest.Signature = signature;
             return this;

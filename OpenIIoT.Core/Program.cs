@@ -66,7 +66,7 @@ using OpenIIoT.SDK.Plugin;
 namespace OpenIIoT.Core
 {
     /// <summary>
-    ///     The main Application class
+    ///     The main Application class.
     /// </summary>
     /// <remarks>
     ///     <para>
