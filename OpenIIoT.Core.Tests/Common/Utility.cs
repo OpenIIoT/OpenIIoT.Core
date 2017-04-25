@@ -73,7 +73,7 @@ namespace OpenIIoT.Core.Tests
             LogManager.Configuration.AddTarget("test", target);
             LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
 
-            Logger logger = LogManager.GetLogger("test");
+            Logger logger = LogManager.GetLogger("testdisable");
 
             Assert.True(logger.IsInfoEnabled);
 
@@ -92,7 +92,7 @@ namespace OpenIIoT.Core.Tests
             LogManager.Configuration.AddTarget("test", target);
             LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Debug, target);
 
-            Logger logger = LogManager.GetLogger("test");
+            Logger logger = LogManager.GetLogger("testenable");
 
             Assert.False(logger.IsInfoEnabled);
 

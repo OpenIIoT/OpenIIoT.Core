@@ -207,6 +207,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void Stop()
         {
+            Core.Configuration.ConfigurationManager.Terminate();
+
             manager.Start();
             IResult result = manager.Stop();
 
