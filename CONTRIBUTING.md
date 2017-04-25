@@ -7,38 +7,17 @@ mirror that of the ```OpenIIoT.Core``` project.
 
 Classes relating to the core application, including all Manager classes, must reside in the ```OpenIIoT.Core``` project.  Managers must have a corresponding interface in the ```OpenIIoT.SDK``` project to allow usage from plugins without a reference to the core binary.
 
-## Testing
-
-All projects containing source code must have an accompanying Unit Test project named ```<project>.Tests``` where the project under test precedes the final period in the project name.  For example,
-the project ```OpenIIoT.SDK``` must have a Unit Test project named ```OpenIIoT.SDK.Tests``` within the same solution.
-
-Test project organization must mirror the project under test, and test classes must mirror the names of the classes being tested.  The file header for the Unit Test class must match that of the class under test followed by
-the word "Test" on a new line under the name of the class.  The verbiage of the class description must be ```Unit tests for the <class> class.```, where ```<class>``` is the name of the class under test.
-
-Unit tests classes must share the name of the class under test, and each class must include the "Collection" attribute, assigning the name of the unit test class as the collection name.  The summary documentation for unit test classes must follow the following pattern, where ```<class name>``` is substituted for the name of the class under test:
-
-```Unit tests for the <see cref="<class name>"> class.```
-
-The [xUnit](https://xunit.github.io/) framework must be used for all unit tests.  Runners for Visual Studio and the Console should also be installed.  
-
-[OpenCover](https://github.com/OpenCover/opencover) is required to support CI via Appveyor as well as the optional but recommended [OpenCover.UI](https://marketplace.visualstudio.com/items?itemName=jamdagni86.OpenCoverUI)
-coverage extension for Visual Studio.
-
-The code coverage target for all classes is _95%_ or above, preferably 100%.  Classes failing to reach 95% coverage must be refactored such that the target may be reached.
-
-The [Moq](https://github.com/moq/moq) mocking framework must be used to mock any non-trivial objects required for unit testing, where practical.  If a test must use a concrete mockup, the code for the mockup must be included
-within the file in which it is used.  The rationale explaining why a mocking framework must be included in the remarks section of the XML documentation for the class, and any unit test dependent upon the mockup must state the dependency
-in the remarks section of the XML documentation for that unit test.
-
-## Coding Standards and Styling
-
-### Namespaces
+## Namespaces
 
 The root namespace of the application must remain ```OpenIIoT.Core```.  Additional namespaces within the root application namespace must be accompanied by a project
 folder of the same name.  All namespaces are to be in Pascal Case.  Conversely, all project folders must contain code with a namespace corresponding 
 to the folder name.  The only exception is the ```Common``` folder in which miscellaneous files within the ```OpenIIoT.Core``` namespace are stored.
 
 Plugin namespaces must begin with ```OpenIIoT.Plugin```.  Currently the third tuple of the namespace must match the plugin type, e.g. ```OpenIIoT.Plugin.Connector```, however this is subject to change.  The final tuple must match the plugin name, however, regardless of the presence of the plugin type.
+
+
+## Coding Standards and Styling
+
 
 ### StyleCop
 
@@ -91,6 +70,8 @@ Any non-trivial method which has been specifically designed or otherwise known t
 
 Trivial or "utility" code must implement XML documentation in order to satisfy StyleCop, however the inclusion of rationale and the level of verbosity is at the author's discretion.
 
+No header is to be used for AssemblyInfo.cs files, and the automatically generated comments must be removed.
+
 ### General Code Standards
 
 The contents of classes and interfaces must be organized according to StyleCop rules, which are described [here](http://stackoverflow.com/questions/150479/order-of-items-in-classes-fields-properties-constructors-methods/310967#310967).
@@ -117,7 +98,30 @@ The following rules should be followed, with few exceptions:
 * Avoid enumerations within classes (preference is a separate file).
 * Avoid nested classes (preference is a separate file).
 
-### Logging
+## Testing
+
+All projects containing source code must have an accompanying Unit Test project named ```<project>.Tests``` where the project under test precedes the final period in the project name.  For example,
+the project ```OpenIIoT.SDK``` must have a Unit Test project named ```OpenIIoT.SDK.Tests``` within the same solution.
+
+Test project organization must mirror the project under test, and test classes must mirror the names of the classes being tested.  The file header for the Unit Test class must match that of the class under test followed by
+the word "Test" on a new line under the name of the class.  The verbiage of the class description must be ```Unit tests for the <class> class.```, where ```<class>``` is the name of the class under test.
+
+Unit tests classes must share the name of the class under test, and each class must include the "Collection" attribute, assigning the name of the unit test class as the collection name.  The summary documentation for unit test classes must follow the following pattern, where ```<class name>``` is substituted for the name of the class under test:
+
+```Unit tests for the <see cref="<class name>"> class.```
+
+The [xUnit](https://xunit.github.io/) framework must be used for all unit tests.  Runners for Visual Studio and the Console should also be installed.  
+
+[OpenCover](https://github.com/OpenCover/opencover) is required to support CI via Appveyor as well as the optional but recommended [OpenCover.UI](https://marketplace.visualstudio.com/items?itemName=jamdagni86.OpenCoverUI)
+coverage extension for Visual Studio.
+
+The code coverage target for all classes is _95%_ or above, preferably 100%.  Classes failing to reach 95% coverage must be refactored such that the target may be reached.
+
+The [Moq](https://github.com/moq/moq) mocking framework must be used to mock any non-trivial objects required for unit testing, where practical.  If a test must use a concrete mockup, the code for the mockup must be included
+within the file in which it is used.  The rationale explaining why a mocking framework must be included in the remarks section of the XML documentation for the class, and any unit test dependent upon the mockup must state the dependency
+in the remarks section of the XML documentation for that unit test.
+
+## Logging
 
 [NLog](http://nlog-project.org/) is used for all logging within the application.  The [NLog.xLogger](https://github.com/jpdillingham/NLog.xLogger) extension is mandatory for the ```OpenIIoT.Core``` and ```OpenIIoT.SDK``` projects and preferred
 but not required for all other projects.
@@ -128,7 +132,7 @@ and reading and writing of the application model and model items.
 Log messages and the logging level at which they are logged are discretionary.  Developers are encouraged to review the messages at the ```Trace```, ```Debug``` and ```Info``` logging levels for overall style and "fit" with
 the whole of the application.  In general, messages logged with the ```Info``` level should be targeted to a semi-technical person.
 
-### Exceptions
+## Exceptions
 
 Only exceptions which should stop the application may be thrown explicitly.  Thrown exceptions should attempt to use a framework defined exception type at the site of the exception, if one is applicable.  If not, custom
 exceptions must be created and stored in a single file named ```<namespace|subject>Exceptions.cs``` where the containing namespace or subject of the exceptions is contained within the name.  For example, exceptions relating to the application Model
@@ -151,13 +155,11 @@ re-throw the lower exception as a ```ConfigurationLoadException``` with the init
 
 This strategy should aid in debugging and support as the application scales.
 
-### Operation Results
+## Operation Results
 
 Methods which need to return status information or errors, other than fatal exceptions, must have a return type of [Operation Result](https://github.com/jpdillingham/OperationResult).  Methods returning values must use the generic variant ```Result<T>```.
 
 The usage of this class allows the application to gracefully handle recoverable errors without the expense of exceptions, and eliminates the need for sentinel values in return types.
-
-
 
 
 
