@@ -120,7 +120,6 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Start()
         {
-            Core.Platform.PlatformManager.Terminate();
             IResult result = manager.Start();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
