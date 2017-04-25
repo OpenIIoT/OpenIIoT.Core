@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("OpenIIoT.Core.Tests")]
-[assembly: AssemblyDescription("Unit tests for the OpenIIoT Core project")]
+[assembly: AssemblyDescription("Unit tests for OpenIIoT.Core.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("OpenIIoT")]
 [assembly: AssemblyProduct("OpenIIoT.Core.Tests")]
