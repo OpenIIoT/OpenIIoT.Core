@@ -1,24 +1,24 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄
-      █    ▄██▀▀▀███▀▀▀██▄
-      █    ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██
-      █    ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄
-      █    ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀
-      █    ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██
-      █    ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██
-      █     ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀
+      █   ▄████████
+      █   ███    ███
+      █   ███    █▀   ██████  ██▄▄▄▄    ▄█████     ██      ▄█████  ██▄▄▄▄      ██      ▄█████
+      █   ███        ██    ██ ██▀▀▀█▄   ██  ▀  ▀███████▄   ██   ██ ██▀▀▀█▄ ▀███████▄   ██  ▀
+      █   ███        ██    ██ ██   ██   ██         ██  ▀   ██   ██ ██   ██     ██  ▀   ██
+      █   ███    █▄  ██    ██ ██   ██ ▀███████     ██    ▀████████ ██   ██     ██    ▀███████
+      █   ███    ███ ██    ██ ██   ██    ▄  ██     ██      ██   ██ ██   ██     ██       ▄  ██
+      █   ████████▀   ██████   █   █   ▄████▀     ▄██▀     ██   █▀  █   █     ▄██▀    ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █
+      █  Constants for the Package namespace.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
       █
-      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
+      █  Copyright (C) 2016 JP Dillingham (jp@dillingham.ws)
       █
       █  This program is free software: you can redistribute it and/or modify
       █  it under the terms of the GNU Affero General Public License as published by
@@ -39,49 +39,30 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
-namespace OpenIIoT.SDK.Package.Manifest
+namespace OpenIIoT.SDK.Package
 {
-    public class PackageManifest
+    /// <summary>
+    ///     Constants for the Package namespace.
+    /// </summary>
+    public static class Constants
     {
-        #region Public Properties
+        #region Public Fields
 
-        [JsonProperty(Order = 6)]
-        public string Copyright { get; set; }
+        /// <summary>
+        ///     The standard name of Package manifest files.
+        /// </summary>
+        public const string ManifestFilename = "manifest.json";
 
-        [JsonProperty(Order = 4)]
-        public string Description { get; set; }
+        /// <summary>
+        ///     The standard name of compressed Package payloads.
+        /// </summary>
+        public const string PayloadArchiveName = "files.zip";
 
-        [JsonProperty(Order = 11)]
-        public IDictionary<PackageManifestFileType, IList<PackageManifestFile>> Files { get; set; }
+        /// <summary>
+        ///     The standard name of Package payload directories.
+        /// </summary>
+        public const string PayloadDirectoryName = "files";
 
-        [JsonProperty(Order = 10)]
-        public string Hash { get; set; }
-
-        [JsonProperty(Order = 7)]
-        public string License { get; set; }
-
-        [JsonProperty(Order = 3)]
-        public string Namespace { get; set; }
-
-        [JsonProperty(Order = 5)]
-        public string Publisher { get; set; }
-
-        [JsonProperty(Order = 9)]
-        public PackageManifestSignature Signature { get; set; }
-
-        [JsonProperty(Order = 1)]
-        public string Title { get; set; }
-
-        [JsonProperty(Order = 8)]
-        public string Url { get; set; }
-
-        [JsonProperty(Order = 2)]
-        public string Version { get; set; }
-
-        #endregion Public Properties
+        #endregion Public Fields
     }
 }
