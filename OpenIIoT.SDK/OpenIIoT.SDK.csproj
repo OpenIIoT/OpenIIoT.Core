@@ -94,6 +94,7 @@
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
+    <Compile Include="Package\Constants.cs" />
     <Compile Include="Package\IPackageManager.cs" />
     <Compile Include="Package\Manifest\PackageManifestBuilder.cs" />
     <Compile Include="Package\Manifest\PackageManifestFileType.cs" />
