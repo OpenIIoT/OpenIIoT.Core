@@ -56,12 +56,12 @@ namespace OpenIIoT.SDK.Package
         /// <summary>
         ///     The standard name of compressed Package payloads.
         /// </summary>
-        public const string PayloadArchiveName = "payload.zip";
+        public const string PayloadArchiveName = "files.zip";
 
         /// <summary>
         ///     The standard name of Package payload directories.
         /// </summary>
-        public const string PayloadDirectoryName = "payload";
+        public const string PayloadDirectoryName = "files";
 
         #endregion Public Fields
     }
