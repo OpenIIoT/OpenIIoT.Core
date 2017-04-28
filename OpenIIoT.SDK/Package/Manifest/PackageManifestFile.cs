@@ -40,7 +40,6 @@
                                                                                                    ▀▀                            */
 
 using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
@@ -54,8 +53,8 @@ namespace OpenIIoT.SDK.Package.Manifest
         /// <summary>
         ///     Gets or sets the optional SHA512 hash of the file specified in the <see cref="Source"/> property.
         /// </summary>
-        [JsonProperty(Order = 3)]
-        public string Hash { get; set; }
+        [JsonProperty(Order = 2)]
+        public string Checksum { get; set; }
 
         /// <summary>
         ///     Gets or sets the source of the file, relative to the package payload root.

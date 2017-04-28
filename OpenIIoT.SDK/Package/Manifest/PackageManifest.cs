@@ -58,8 +58,8 @@ namespace OpenIIoT.SDK.Package.Manifest
         [JsonProperty(Order = 11)]
         public IDictionary<PackageManifestFileType, IList<PackageManifestFile>> Files { get; set; }
 
-        [JsonProperty(Order = 10)]
-        public string Hash { get; set; }
+        [JsonProperty(Order = 9)]
+        public string Checksum { get; set; }
 
         [JsonProperty(Order = 7)]
         public string License { get; set; }
@@ -70,7 +70,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         [JsonProperty(Order = 5)]
         public string Publisher { get; set; }
 
-        [JsonProperty(Order = 9)]
+        [JsonProperty(Order = 10)]
         public PackageManifestSignature Signature { get; set; }
 
         [JsonProperty(Order = 1)]
