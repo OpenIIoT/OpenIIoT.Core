@@ -57,15 +57,15 @@ namespace OpenIIoT.SDK.Package.Packager
     /// </summary>
     public static class PackageCreator
     {
-        public static event EventHandler<PackagerUpdateEventArgs> StatusChanged;
+        public static event EventHandler<PackagerUpdateEventArgs> Updated;
 
         #region Public Methods
 
-        private static void OnUpdate(string message)
+        private static void OnUpdated(string message)
         {
-            if (StatusChanged != null)
+            if (Updated != null)
             {
-                StatusChanged(null, new PackagerUpdateEventArgs(PackagerOperation.Package, message));
+                Updated(null, new PackagerUpdateEventArgs(PackagerOperation.Package, message));
             }
         }
 
@@ -109,29 +109,29 @@ namespace OpenIIoT.SDK.Package.Packager
 
             try
             {
-                OnUpdate($"Creating temporary directory '{tempDirectory}'...");
+                OnUpdated($"Creating temporary directory '{tempDirectory}'...");
                 Directory.CreateDirectory(tempDirectory);
-                OnUpdate(" √ Directory created.");
+                OnUpdated(" √ Directory created.");
 
-                OnUpdate($"Copying input directory '{inputDirectory}' to '{payloadDirectory}'...");
+                OnUpdated($"Copying input directory '{inputDirectory}' to '{payloadDirectory}'...");
                 Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(inputDirectory, payloadDirectory);
-                OnUpdate(" √ Directory copied successfully.");
+                OnUpdated(" √ Directory copied successfully.");
 
-                OnUpdate($"Validating manifest '{manifestFile}' and generating SHA512 hashes...");
+                OnUpdated($"Validating manifest '{manifestFile}' and generating SHA512 hashes...");
                 ValidateManifestAndGenerateHashes(manifest, payloadDirectory);
-                OnUpdate(" √ Manifest validated and hashes written.");
+                OnUpdated(" √ Manifest validated and hashes written.");
 
-                OnUpdate($"Compressing payload into '{payloadArchiveName}'...");
+                OnUpdated($"Compressing payload into '{payloadArchiveName}'...");
                 ZipFile.CreateFromDirectory(payloadDirectory, payloadArchiveName);
-                OnUpdate(" √ Successfully compressed payload.");
+                OnUpdated(" √ Successfully compressed payload.");
 
-                OnUpdate($"Deleting temporary payload directory '{payloadDirectory}...");
+                OnUpdated($"Deleting temporary payload directory '{payloadDirectory}...");
                 Directory.Delete(payloadDirectory, true);
-                OnUpdate(" √ Successfully deleted temporary payload directory.");
+                OnUpdated(" √ Successfully deleted temporary payload directory.");
 
-                OnUpdate("Updating manifest with SHA512 hash of payload archive...");
+                OnUpdated("Updating manifest with SHA512 hash of payload archive...");
                 manifest.Checksum = Common.Utility.ComputeFileSHA512Hash(payloadArchiveName);
-                OnUpdate($" √ Hash computed successfully: {manifest.Checksum}.");
+                OnUpdated($" √ Hash computed successfully: {manifest.Checksum}.");
 
                 if (signPackage)
                 {
@@ -141,28 +141,28 @@ namespace OpenIIoT.SDK.Package.Packager
                     }
                     catch (Exception ex)
                     {
-                        OnUpdate($"Error signing Package: {ex.GetType().Name}: {ex.Message}");
+                        OnUpdated($"Error signing Package: {ex.GetType().Name}: {ex.Message}");
                         throw;
                     }
                 }
 
-                OnUpdate($"Writing manifest to 'manifest.json' in '{tempDirectory}'...");
+                OnUpdated($"Writing manifest to 'manifest.json' in '{tempDirectory}'...");
                 WriteManifest(manifest, tempDirectory);
-                OnUpdate(" √ Manifest written successfully.");
+                OnUpdated(" √ Manifest written successfully.");
 
-                OnUpdate($"Packaging manifest and payload into '{packageFile}'...");
+                OnUpdated($"Packaging manifest and payload into '{packageFile}'...");
                 ZipFile.CreateFromDirectory(tempDirectory, packageFile);
-                OnUpdate(" √ Package created successfully!");
+                OnUpdated(" √ Package created successfully!");
             }
             catch (Exception ex)
             {
-                OnUpdate($"Error creating Package: {ex.Message}");
+                OnUpdated($"Error creating Package: {ex.Message}");
             }
             finally
             {
-                OnUpdate("Deleting temporary files...");
+                OnUpdated("Deleting temporary files...");
                 Directory.Delete(tempDirectory, true);
-                OnUpdate(" √ Temporary files deleted successfully.");
+                OnUpdated(" √ Temporary files deleted successfully.");
             }
         }
 
@@ -182,7 +182,7 @@ namespace OpenIIoT.SDK.Package.Packager
         /// <returns>The signed manifest.</returns>
         private static PackageManifest SignManifest(PackageManifest manifest, string privateKeyFile, string passphrase, string keybaseUsername)
         {
-            OnUpdate("Digitally signing manifest...");
+            OnUpdated("Digitally signing manifest...");
 
             // insert a signature into the manifest. the signer must be included in the hash to prevent tampering.
             PackageManifestSignature signature = new PackageManifestSignature();
@@ -191,24 +191,24 @@ namespace OpenIIoT.SDK.Package.Packager
             signature.PublicKeyUrl = FetchPublicKeyForUser(keybaseUsername);
             manifest.Signature = signature;
 
-            OnUpdate("Creating SHA512 hash of serialized manifest...");
+            OnUpdated("Creating SHA512 hash of serialized manifest...");
             string manifestHash = Common.Utility.ComputeSHA512Hash(manifest.ToJson());
-            OnUpdate($" √ Hash computed successfully: {manifestHash}.");
+            OnUpdated($" √ Hash computed successfully: {manifestHash}.");
 
-            OnUpdate("Reading keys from disk...");
+            OnUpdated("Reading keys from disk...");
             string privateKey = File.ReadAllText(privateKeyFile);
-            OnUpdate(" √ Keys read successfully.");
+            OnUpdated(" √ Keys read successfully.");
 
             byte[] manifestBytes = Encoding.ASCII.GetBytes(manifest.ToJson());
-            OnUpdate("Creating digest...");
+            OnUpdated("Creating digest...");
             byte[] digestBytes = PGPSignature.Sign(manifestBytes, privateKey, passphrase);
-            OnUpdate(" √ Digest created successfully.");
+            OnUpdated(" √ Digest created successfully.");
 
             File.WriteAllBytes(@"c:\pkg\digest.txt", digestBytes);
 
-            OnUpdate("Adding signature to manifest...");
+            OnUpdated("Adding signature to manifest...");
             manifest.Signature.Digest = Encoding.ASCII.GetString(digestBytes);
-            OnUpdate(" √ Manifest signed successfully.");
+            OnUpdated(" √ Manifest signed successfully.");
 
             return manifest;
         }
@@ -411,7 +411,7 @@ namespace OpenIIoT.SDK.Package.Packager
         {
             string url = Constants.KeyUrlBase.Replace(Constants.KeyUrlPlaceholder, username);
 
-            OnUpdate($"Fetching PGP key information from {url}...");
+            OnUpdated($"Fetching PGP key information from {url}...");
 
             try
             {
@@ -419,7 +419,7 @@ namespace OpenIIoT.SDK.Package.Packager
                 {
                     string content = client.DownloadString(url);
 
-                    OnUpdate($"Key information fetched.  Parsing primary public key...");
+                    OnUpdated($"Key information fetched.  Parsing primary public key...");
 
                     JObject key = JObject.Parse(content);
                     string publicKey = key["them"]["public_keys"]["primary"]["bundle"].ToString();
@@ -429,7 +429,7 @@ namespace OpenIIoT.SDK.Package.Packager
                         throw new InvalidDataException($"The length of the retrieved key was not long enough (expected: >= {Constants.KeyMinimumLength}, actual: {publicKey.Length}) to be a valid PGP public key.");
                     }
 
-                    OnUpdate($"Public key fetched successfully.");
+                    OnUpdated($"Public key fetched successfully.");
 
                     return publicKey;
                 }
