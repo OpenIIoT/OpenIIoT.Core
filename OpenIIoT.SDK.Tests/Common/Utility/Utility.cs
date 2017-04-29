@@ -116,18 +116,12 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void ComputeHash()
         {
-            string unsaltedResult = "982d9e3eb996f559e633f4d194def3761d909f5a3b647d1a851fead67c32c9d1";
-            string saltedResult = "3353e16497ad272fea4382119ff2801e54f0a4cf2057f4e32d00317bda5126c3";
+            string unsaltedResult = "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF";
 
-            string unsaltedHash = SDK.Common.Utility.ComputeHash("text");
+            string unsaltedHash = SDK.Common.Utility.ComputeSHA512Hash("text");
 
-            Assert.Equal(64, unsaltedHash.Length);
+            Assert.Equal(128, unsaltedHash.Length);
             Assert.Equal(unsaltedResult, unsaltedHash);
-
-            string saltedHash = SDK.Common.Utility.ComputeHash("text", "salt");
-
-            Assert.Equal(64, saltedHash.Length);
-            Assert.Equal(saltedResult, saltedHash);
         }
 
         /// <summary>
