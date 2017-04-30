@@ -44,6 +44,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Newtonsoft.Json.Linq;
+using System.Text;
+using System.Security.Cryptography;
+using Newtonsoft.Json;
+using System.IO;
 
 namespace OpenIIoT.SDK.Common
 {
@@ -66,45 +70,95 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Computes a cryptographic hash of the provided text using the provided salt.
+        ///     Computes and returns the SHA512 hash of the contents of the specified file.
         /// </summary>
-        /// <param name="text">The text to hash.</param>
-        /// <param name="salt">The salt with which to seed the hash function.</param>
-        /// <returns>The computed hash.</returns>
-        public static string ComputeHash(string text, string salt = "")
+        /// <param name="file">The file for which the SHA512 hash is to be computed.</param>
+        /// <returns>The SHA512 hash of the specified file.</returns>
+        public static string ComputeFileSHA512Hash(string file)
         {
-            byte[] binText = System.Text.Encoding.ASCII.GetBytes(text);
-            byte[] binSalt = System.Text.Encoding.ASCII.GetBytes(salt);
-            byte[] binSaltedText;
-
-            if (binSalt.Length > 0)
+            if (File.Exists(file))
             {
-                binSaltedText = new byte[binText.Length + binSalt.Length];
-
-                for (int i = 0; i < binText.Length; i++)
-                {
-                    binSaltedText[i] = binText[i];
-                }
-
-                for (int i = 0; i < binSalt.Length; i++)
-                {
-                    binSaltedText[binText.Length + i] = binSalt[i];
-                }
+                return ComputeSHA512Hash(File.ReadAllBytes(file));
             }
             else
             {
-                binSaltedText = binText;
+                throw new FileNotFoundException($"The file {file} could not be found.");
             }
+        }
 
-            byte[] checksum = System.Security.Cryptography.SHA256.Create().ComputeHash(binSaltedText);
+        /// <summary>
+        ///     Computes and returns the SHA512 hash of the specified string.
+        /// </summary>
+        /// <param name="content">The string for which the SHA512 hash is to be computed.</param>
+        /// <returns>The SHA512 hash of the specified string.</returns>
+        public static string ComputeSHA512Hash(string content)
+        {
+            return ComputeSHA512Hash(Encoding.ASCII.GetBytes(content));
+        }
 
-            System.Text.StringBuilder builtString = new System.Text.StringBuilder();
-            foreach (byte b in checksum)
+        /// <summary>
+        ///     Computes and returns the SHA512 hash of the specified byte array.
+        /// </summary>
+        /// <param name="content">The byte array for which the SHA512 hash is to be computed.</param>
+        /// <returns>The SHA512 hash of the specified byte array.</returns>
+        public static string ComputeSHA512Hash(byte[] content)
+        {
+            byte[] hash;
+
+            using (SHA512 sha512 = new SHA512Managed())
             {
-                builtString.Append(b.ToString("x2"));
+                hash = sha512.ComputeHash(content);
             }
 
-            return builtString.ToString();
+            StringBuilder stringBuilder = new StringBuilder(128);
+
+            foreach (byte b in hash)
+            {
+                stringBuilder.Append(b.ToString("X2"));
+            }
+
+            return stringBuilder.ToString();
+        }
+
+        ///// <summary>
+        /////     Computes a cryptographic hash of the provided text using the provided salt.
+        ///// </summary>
+        ///// <param name="text">The text to hash.</param>
+        ///// <param name="salt">The salt with which to seed the hash function.</param>
+        ///// <returns>The computed hash.</returns>
+        //public static string ComputeHash(string text, string salt = "")
+        //{
+        //    byte[] binText = System.Text.Encoding.ASCII.GetBytes(text);
+        //    byte[] binSalt = System.Text.Encoding.ASCII.GetBytes(salt);
+        //    byte[] binSaltedText;
+
+        // if (binSalt.Length > 0) { binSaltedText = new byte[binText.Length + binSalt.Length];
+
+        // for (int i = 0; i < binText.Length; i++) { binSaltedText[i] = binText[i]; }
+
+        // for (int i = 0; i < binSalt.Length; i++) { binSaltedText[binText.Length + i] = binSalt[i]; } } else { binSaltedText =
+        // binText; }
+
+        // byte[] checksum = System.Security.Cryptography.SHA256.Create().ComputeHash(binSaltedText);
+
+        // System.Text.StringBuilder builtString = new System.Text.StringBuilder(); foreach (byte b in checksum) {
+        // builtString.Append(b.ToString("x2")); }
+
+        //    return builtString.ToString();
+        //}
+
+        /// <summary>
+        ///     Serializes and returns as json the specified object.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
+        /// <returns>The serialized object.</returns>
+        public static string ToJson(this object obj)
+        {
+            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore,
+            });
         }
 
         /// <summary>

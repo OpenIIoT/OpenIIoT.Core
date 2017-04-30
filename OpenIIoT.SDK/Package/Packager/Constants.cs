@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄
-      █    ▄██▀▀▀███▀▀▀██▄
-      █    ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██
-      █    ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄
-      █    ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀
-      █    ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██
-      █    ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██
-      █     ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀
+      █   ▄████████
+      █   ███    ███
+      █   ███    █▀   ██████  ██▄▄▄▄    ▄█████     ██      ▄█████  ██▄▄▄▄      ██      ▄█████
+      █   ███        ██    ██ ██▀▀▀█▄   ██  ▀  ▀███████▄   ██   ██ ██▀▀▀█▄ ▀███████▄   ██  ▀
+      █   ███        ██    ██ ██   ██   ██         ██  ▀   ██   ██ ██   ██     ██  ▀   ██
+      █   ███    █▄  ██    ██ ██   ██ ▀███████     ██    ▀████████ ██   ██     ██    ▀███████
+      █   ███    ███ ██    ██ ██   ██    ▄  ██     ██      ██   ██ ██   ██     ██       ▄  ██
+      █   ████████▀   ██████   █   █   ▄████▀     ▄██▀     ██   █▀  █   █     ▄██▀    ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █
+      █  Constants for the Packager application.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,49 +39,39 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-
-namespace OpenIIoT.SDK.Package.Manifest
+namespace OpenIIoT.SDK.Package.Packager
 {
-    public class PackageManifest
+    /// <summary>
+    ///     Constants for the Packager application.
+    /// </summary>
+    public static class Constants
     {
-        #region Public Properties
+        #region Public Fields
 
-        [JsonProperty(Order = 6)]
-        public string Copyright { get; set; }
+        /// <summary>
+        ///     The issuer or originator of the PGP keys used to generate the Package digest.
+        /// </summary>
+        public const string KeyIssuer = "Keybase.io";
 
-        [JsonProperty(Order = 4)]
-        public string Description { get; set; }
+        /// <summary>
+        ///     The minimum length for any valid PGP public key retrieved from the keybase.io API.
+        /// </summary>
+        /// <remarks>
+        ///     This value is based on a few arbitrary examples rather than hard logic. Header information varies from key to key,
+        ///     and the encryption scheme used to create the key may also vary.
+        /// </remarks>
+        public const int KeyMinimumLength = 4000;
 
-        [JsonProperty(Order = 11)]
-        public IDictionary<PackageManifestFileType, IList<PackageManifestFile>> Files { get; set; }
+        /// <summary>
+        ///     The base url for retrieval of PGP public key information.
+        /// </summary>
+        public const string KeyUrlBase = "https://keybase.io/_/api/1.0/user/lookup.json?username=$";
 
-        [JsonProperty(Order = 9)]
-        public string Checksum { get; set; }
+        /// <summary>
+        ///     The username placeholder token for <see cref="KeyUrlBase"/>.
+        /// </summary>
+        public const string KeyUrlPlaceholder = "$";
 
-        [JsonProperty(Order = 7)]
-        public string License { get; set; }
-
-        [JsonProperty(Order = 3)]
-        public string Namespace { get; set; }
-
-        [JsonProperty(Order = 5)]
-        public string Publisher { get; set; }
-
-        [JsonProperty(Order = 10)]
-        public PackageManifestSignature Signature { get; set; }
-
-        [JsonProperty(Order = 1)]
-        public string Title { get; set; }
-
-        [JsonProperty(Order = 8)]
-        public string Url { get; set; }
-
-        [JsonProperty(Order = 2)]
-        public string Version { get; set; }
-
-        #endregion Public Properties
+        #endregion Public Fields
     }
 }
