@@ -57,17 +57,13 @@ namespace OpenIIoT.SDK.Package.Packager
     /// </summary>
     public static class PackageCreator
     {
+        #region Public Events
+
         public static event EventHandler<PackagerUpdateEventArgs> Updated;
 
-        #region Public Methods
+        #endregion Public Events
 
-        private static void OnUpdated(string message)
-        {
-            if (Updated != null)
-            {
-                Updated(null, new PackagerUpdateEventArgs(PackagerTool.CreatePackage, message));
-            }
-        }
+        #region Public Methods
 
         /// <summary>
         ///     Creates a Package file with the specified filename from the specified input directory using the specified manifest.
@@ -166,9 +162,56 @@ namespace OpenIIoT.SDK.Package.Packager
             }
         }
 
+        /// <summary>
+        ///     Fetches the PGP public key for the specified keybase.io username from the keybase.io API.
+        /// </summary>
+        /// <param name="username">The keybase.io username of the user for which the PGP public key is to be fetched..</param>
+        /// <returns>The fetched PGP public key.</returns>
+        /// <exception cref="WebException">Thrown when an error occurs fetching the key.</exception>
+        public static string FetchPublicKeyForUser(string username)
+        {
+            string url = Constants.KeyUrlBase.Replace(Constants.KeyUrlPlaceholder, username);
+
+            OnUpdated($"Fetching PGP key information from {url}...");
+
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    string content = client.DownloadString(url);
+
+                    OnUpdated($"Key information fetched.  Parsing primary public key...");
+
+                    JObject key = JObject.Parse(content);
+                    string publicKey = key["them"]["public_keys"]["primary"]["bundle"].ToString();
+
+                    if (publicKey.Length < Constants.KeyMinimumLength)
+                    {
+                        throw new InvalidDataException($"The length of the retrieved key was not long enough (expected: >= {Constants.KeyMinimumLength}, actual: {publicKey.Length}) to be a valid PGP public key.");
+                    }
+
+                    OnUpdated($"Public key fetched successfully.");
+
+                    return publicKey;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new WebException($"Failed to fetch the object from '{url}': {ex.Message}");
+            }
+        }
+
         #endregion Public Methods
 
         #region Private Methods
+
+        private static void OnUpdated(string message)
+        {
+            if (Updated != null)
+            {
+                Updated(null, new PackagerUpdateEventArgs(PackagerOperation.Package, message));
+            }
+        }
 
         /// <summary>
         ///     Digitally signs the specified manifest, adds the signature to the manifest, and returns it.
@@ -399,45 +442,6 @@ namespace OpenIIoT.SDK.Package.Packager
             string contents = manifest.ToJson();
 
             File.WriteAllText(destinationFile, contents);
-        }
-
-        /// <summary>
-        ///     Fetches the PGP public key for the specified keybase.io username from the keybase.io API.
-        /// </summary>
-        /// <param name="username">The keybase.io username of the user for which the PGP public key is to be fetched..</param>
-        /// <returns>The fetched PGP public key.</returns>
-        /// <exception cref="WebException">Thrown when an error occurs fetching the key.</exception>
-        public static string FetchPublicKeyForUser(string username)
-        {
-            string url = Constants.KeyUrlBase.Replace(Constants.KeyUrlPlaceholder, username);
-
-            OnUpdated($"Fetching PGP key information from {url}...");
-
-            try
-            {
-                using (WebClient client = new WebClient())
-                {
-                    string content = client.DownloadString(url);
-
-                    OnUpdated($"Key information fetched.  Parsing primary public key...");
-
-                    JObject key = JObject.Parse(content);
-                    string publicKey = key["them"]["public_keys"]["primary"]["bundle"].ToString();
-
-                    if (publicKey.Length < Constants.KeyMinimumLength)
-                    {
-                        throw new InvalidDataException($"The length of the retrieved key was not long enough (expected: >= {Constants.KeyMinimumLength}, actual: {publicKey.Length}) to be a valid PGP public key.");
-                    }
-
-                    OnUpdated($"Public key fetched successfully.");
-
-                    return publicKey;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new WebException($"Failed to fetch the object from '{url}': {ex.Message}");
-            }
         }
 
         #endregion Private Methods

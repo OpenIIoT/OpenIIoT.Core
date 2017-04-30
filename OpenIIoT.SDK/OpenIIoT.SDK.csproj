@@ -115,7 +115,9 @@
     <Compile Include="Package\Manifest\PackageManifestFile.cs" />
     <Compile Include="Package\Manifest\PackageManifestSignature.cs" />
     <Compile Include="Package\Packager\PackagerUpdateEventArgs.cs" />
-    <Compile Include="Package\Packager\PackagerTool.cs" />
+    <Compile Include="Package\Packager\PackagerOperation.cs" />
+    <Compile Include="Package\Packager\PackageTruster.cs" />
+    <Compile Include="Package\Packager\PackageValidator.cs" />
     <Compile Include="Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
