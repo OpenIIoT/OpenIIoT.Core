@@ -65,7 +65,7 @@ namespace OpenIIoT.SDK.Package.Packager
         {
             if (Updated != null)
             {
-                Updated(null, new PackagerUpdateEventArgs(PackagerOperation.Package, message));
+                Updated(null, new PackagerUpdateEventArgs(PackagerTool.CreatePackage, message));
             }
         }
 

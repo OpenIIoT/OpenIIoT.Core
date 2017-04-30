@@ -6,10 +6,11 @@ using System.Threading.Tasks;
 
 namespace OpenIIoT.SDK.Package.Packager
 {
-    public enum PackagerOperation
+    public enum PackagerTool
     {
-        Package,
-        Trust,
+        GenerateManifest,
+        CreatePackage,
+        AddTrust,
         Validate
     }
 }
