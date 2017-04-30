@@ -5,6 +5,6 @@
         GenerateManifest,
         Package,
         Trust,
-        Validate
+        Verify
     }
 }

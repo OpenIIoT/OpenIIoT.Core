@@ -2,7 +2,7 @@
 
 namespace OpenIIoT.SDK.Package.Packager
 {
-    public static class PackageValidator
+    public static class PackageVerifier
     {
         #region Public Events
 
@@ -10,7 +10,7 @@ namespace OpenIIoT.SDK.Package.Packager
 
         #endregion Public Events
 
-        public static void ValidatePackage(string packageFile)
+        public static void VerifyPackage(string packageFile)
         {
             OnUpdated("Not yet implemented.");
         }
@@ -19,7 +19,7 @@ namespace OpenIIoT.SDK.Package.Packager
         {
             if (Updated != null)
             {
-                Updated(null, new PackagerUpdateEventArgs(PackagerOperation.Validate, message));
+                Updated(null, new PackagerUpdateEventArgs(PackagerOperation.Verify, message));
             }
         }
     }
