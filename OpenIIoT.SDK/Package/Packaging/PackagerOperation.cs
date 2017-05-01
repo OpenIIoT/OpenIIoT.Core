@@ -2,7 +2,7 @@
 {
     public enum PackagingOperation
     {
-        GenerateManifest,
+        Manifest,
         Package,
         Trust,
         Verify

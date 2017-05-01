@@ -171,7 +171,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         {
             if (Updated != null)
             {
-                Updated(null, new PackagingUpdateEventArgs(PackagingOperation.GenerateManifest, message));
+                Updated(null, new PackagingUpdateEventArgs(PackagingOperation.Manifest, message));
             }
         }
 
