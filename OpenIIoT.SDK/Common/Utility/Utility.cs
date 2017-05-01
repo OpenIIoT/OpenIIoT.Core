@@ -120,45 +120,20 @@ namespace OpenIIoT.SDK.Common
             return stringBuilder.ToString();
         }
 
-        ///// <summary>
-        /////     Computes a cryptographic hash of the provided text using the provided salt.
-        ///// </summary>
-        ///// <param name="text">The text to hash.</param>
-        ///// <param name="salt">The salt with which to seed the hash function.</param>
-        ///// <returns>The computed hash.</returns>
-        //public static string ComputeHash(string text, string salt = "")
-        //{
-        //    byte[] binText = System.Text.Encoding.ASCII.GetBytes(text);
-        //    byte[] binSalt = System.Text.Encoding.ASCII.GetBytes(salt);
-        //    byte[] binSaltedText;
-
-        // if (binSalt.Length > 0) { binSaltedText = new byte[binText.Length + binSalt.Length];
-
-        // for (int i = 0; i < binText.Length; i++) { binSaltedText[i] = binText[i]; }
-
-        // for (int i = 0; i < binSalt.Length; i++) { binSaltedText[binText.Length + i] = binSalt[i]; } } else { binSaltedText =
-        // binText; }
-
-        // byte[] checksum = System.Security.Cryptography.SHA256.Create().ComputeHash(binSaltedText);
-
-        // System.Text.StringBuilder builtString = new System.Text.StringBuilder(); foreach (byte b in checksum) {
-        // builtString.Append(b.ToString("x2")); }
-
-        //    return builtString.ToString();
-        //}
-
         /// <summary>
-        ///     Serializes and returns as json the specified object.
+        ///     Returns the path of the specified file, relative to the specified base directory.
         /// </summary>
-        /// <param name="obj">The object to serialize.</param>
-        /// <returns>The serialized object.</returns>
-        public static string ToJson(this object obj)
+        /// <param name="baseDirectory">The base directory of the relative file reference.</param>
+        /// <param name="file">The file for which the relative path is to be returned.</param>
+        /// <returns>The path of the specified file, relative to the specified base directory.</returns>
+        public static string GetRelativePath(string baseDirectory, string file)
         {
-            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+            if (!baseDirectory.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
-                Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-            });
+                baseDirectory += Path.DirectorySeparatorChar;
+            }
+
+            return file.Replace(baseDirectory, string.Empty);
         }
 
         /// <summary>
@@ -232,6 +207,20 @@ namespace OpenIIoT.SDK.Common
         public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int n)
         {
             return source.Skip(Math.Max(0, source.Count() - n));
+        }
+
+        /// <summary>
+        ///     Serializes and returns as json the specified object.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
+        /// <returns>The serialized object.</returns>
+        public static string ToJson(this object obj)
+        {
+            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore,
+            });
         }
 
         /// <summary>

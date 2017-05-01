@@ -19,7 +19,7 @@ namespace OpenIIoT.Core.Service.Web.API
         private static Item model = manager.GetManager<ModelManager>().Model;
 
         private static List<string> conciseSerializationProperties = new List<string>(new string[] { "FQN", "Children" });
-        private static List<string> verboseSerializationProperties = new List<string>(new string[] { "Parent", "SourceItem", "Guid", "Value" });
+        private static List<string> verboseSerializationProperties = new List<string>(new string[] { "Parent", "SourceItem", "Lock", "HasChildren", "IsOrphaned" });
 
         [Route("api/browse")]
         [HttpGet]

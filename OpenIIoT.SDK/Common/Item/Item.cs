@@ -406,7 +406,11 @@ namespace OpenIIoT.SDK.Common
         /// <summary>
         ///     Gets the Item Provider from which the Item originates.
         /// </summary>
-        public IItemProvider Provider { get; private set; }
+        /// <remarks>
+        ///     This property is only populated if the <see cref="Source"/> of the Item is <see cref="ItemSource.Provider"/>; it is
+        ///     used to facilitate the final read of the <see cref="ReadFromSource"/> chain.
+        /// </remarks>
+        public IItemProvider Provider { get; private set; } // TODO: should this be private?
 
         /// <summary>
         ///     Gets the quality of the <see cref="Item.Value"/> property.

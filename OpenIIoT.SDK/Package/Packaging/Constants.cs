@@ -39,7 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Package.Packager
+namespace OpenIIoT.SDK.Package.Packaging
 {
     /// <summary>
     ///     Constants for the Packager application.
