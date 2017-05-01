@@ -44,7 +44,7 @@ using System.IO;
 using OpenIIoT.SDK.Package.Manifest;
 using OpenIIoT.SDK.Common;
 
-namespace OpenIIoT.SDK.Package.Packager
+namespace OpenIIoT.SDK.Package.Packaging
 {
     /// <summary>
     ///     Generates and populates <see cref="PackageManifest"/> objects.
@@ -53,7 +53,7 @@ namespace OpenIIoT.SDK.Package.Packager
     {
         #region Public Events
 
-        public static event EventHandler<PackagerUpdateEventArgs> Updated;
+        public static event EventHandler<PackagingUpdateEventArgs> Updated;
 
         #endregion Public Events
 
@@ -171,7 +171,7 @@ namespace OpenIIoT.SDK.Package.Packager
         {
             if (Updated != null)
             {
-                Updated(null, new PackagerUpdateEventArgs(PackagerOperation.GenerateManifest, message));
+                Updated(null, new PackagingUpdateEventArgs(PackagingOperation.GenerateManifest, message));
             }
         }
 

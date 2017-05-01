@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace OpenIIoT.SDK.Package.Packager
+namespace OpenIIoT.SDK.Package.Packaging
 {
     public static class PackageTruster
     {
         #region Public Events
 
-        public static event EventHandler<PackagerUpdateEventArgs> Updated;
+        public static event EventHandler<PackagingUpdateEventArgs> Updated;
 
         #endregion Public Events
 
@@ -19,7 +19,7 @@ namespace OpenIIoT.SDK.Package.Packager
         {
             if (Updated != null)
             {
-                Updated(null, new PackagerUpdateEventArgs(PackagerOperation.Trust, message));
+                Updated(null, new PackagingUpdateEventArgs(PackagingOperation.Trust, message));
             }
         }
     }

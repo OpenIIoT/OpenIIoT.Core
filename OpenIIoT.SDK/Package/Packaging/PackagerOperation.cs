@@ -1,6 +1,6 @@
-﻿namespace OpenIIoT.SDK.Package.Packager
+﻿namespace OpenIIoT.SDK.Package.Packaging
 {
-    public enum PackagerOperation
+    public enum PackagingOperation
     {
         GenerateManifest,
         Package,

@@ -50,7 +50,7 @@ using Utility.PGPSignatureTools;
 using Newtonsoft.Json.Linq;
 using System.Net;
 
-namespace OpenIIoT.SDK.Package.Packager
+namespace OpenIIoT.SDK.Package.Packaging
 {
     /// <summary>
     ///     Creates Package files.
@@ -59,7 +59,7 @@ namespace OpenIIoT.SDK.Package.Packager
     {
         #region Public Events
 
-        public static event EventHandler<PackagerUpdateEventArgs> Updated;
+        public static event EventHandler<PackagingUpdateEventArgs> Updated;
 
         #endregion Public Events
 
@@ -209,7 +209,7 @@ namespace OpenIIoT.SDK.Package.Packager
         {
             if (Updated != null)
             {
-                Updated(null, new PackagerUpdateEventArgs(PackagerOperation.Package, message));
+                Updated(null, new PackagingUpdateEventArgs(PackagingOperation.Package, message));
             }
         }
 
