@@ -67,7 +67,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <param name="includeResources">A value indicating whether resource files are to be added to the manifest.</param>
         /// <param name="hashFiles">A value indicating whether files added to the manifest are to include a SHA512 hash.</param>
         /// <param name="manifestFile">The filename of the file to which the manifest is to be saved.</param>
-        public static void GenerateManifest(string inputDirectory, bool includeResources, bool hashFiles, string manifestFile)
+        public static PackageManifest GenerateManifest(string inputDirectory, bool includeResources, bool hashFiles, string manifestFile)
         {
             ValidateInputDirectoryArgument(inputDirectory);
 
@@ -94,7 +94,7 @@ namespace OpenIIoT.SDK.Package.Packaging
             {
                 try
                 {
-                    OnUpdated($"Saving output to file {manifestFile}...");
+                    OnUpdated($"Saving output to file '{manifestFile}'...");
                     File.WriteAllText(manifestFile, manifest.ToJson());
                     OnUpdated(" √ File saved successfully.");
                 }
@@ -103,10 +103,8 @@ namespace OpenIIoT.SDK.Package.Packaging
                     OnUpdated($"Unable to write to output file '{manifestFile}': {ex.Message}");
                 }
             }
-            else
-            {
-                Console.Write("\n" + manifest.ToJson());
-            }
+
+            return manifest;
         }
 
         #endregion Public Methods

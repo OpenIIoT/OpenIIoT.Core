@@ -3,6 +3,7 @@
     public enum PackagingOperation
     {
         Manifest,
+        ManifestExtraction,
         Package,
         Trust,
         Verify
