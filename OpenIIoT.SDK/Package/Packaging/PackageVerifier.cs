@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using OpenIIoT.SDK.Package.Manifest;
 using System;
 using System.IO;
 using System.IO.Compression;
+using System.Net;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
@@ -76,6 +78,45 @@ namespace OpenIIoT.SDK.Package.Packaging
         #endregion Public Methods
 
         #region Private Methods
+
+        /// <summary>
+        ///     Fetches the PGP public key for the specified keybase.io username from the keybase.io API.
+        /// </summary>
+        /// <param name="username">The keybase.io username of the user for which the PGP public key is to be fetched..</param>
+        /// <returns>The fetched PGP public key.</returns>
+        /// <exception cref="WebException">Thrown when an error occurs fetching the key.</exception>
+        public static string FetchPublicKeyForUser(string username)
+        {
+            string url = Constants.KeyUrlBase.Replace(Constants.KeyUrlPlaceholder, username);
+
+            OnUpdated($"Fetching PGP key information from {url}...");
+
+            try
+            {
+                using (WebClient client = new WebClient())
+                {
+                    string content = client.DownloadString(url);
+
+                    OnUpdated($"Key information fetched.  Parsing primary public key...");
+
+                    JObject key = JObject.Parse(content);
+                    string publicKey = key["them"]["public_keys"]["primary"]["bundle"].ToString();
+
+                    if (publicKey.Length < Constants.KeyMinimumLength)
+                    {
+                        throw new InvalidDataException($"The length of the retrieved key was not long enough (expected: >= {Constants.KeyMinimumLength}, actual: {publicKey.Length}) to be a valid PGP public key.");
+                    }
+
+                    OnUpdated($"Public key fetched successfully.");
+
+                    return publicKey;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new WebException($"Failed to fetch the object from '{url}': {ex.Message}");
+            }
+        }
 
         private static void OnUpdated(string message)
         {
