@@ -438,7 +438,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <param name="directory">The directory into which the generated file will be written.</param>
         private static void WriteManifest(PackageManifest manifest, string directory)
         {
-            string destinationFile = Path.Combine(directory, "manifest.json");
+            string destinationFile = Path.Combine(directory, Package.Constants.ManifestFilename);
             string contents = manifest.ToJson();
 
             File.WriteAllText(destinationFile, contents);
