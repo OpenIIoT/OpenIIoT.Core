@@ -39,22 +39,21 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using NLog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK;
 using Newtonsoft.Json;
+using NLog;
 using NLog.xLogger;
-using Utility.OperationResult;
-using OpenIIoT.SDK.Model;
-using OpenIIoT.SDK.Common.Discovery;
+using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
+using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Provider;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
+using OpenIIoT.SDK.Configuration;
+using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Plugin;
-using OpenIIoT.Core.Configuration;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Model
 {
@@ -108,8 +107,6 @@ namespace OpenIIoT.Core.Model
 
         #region Public Properties
 
-        public ProviderRegistry<IItemProvider> ProviderRegistry { get; private set; }
-
         /// <summary>
         ///     The Configuration for the Manager.
         /// </summary>
@@ -138,116 +135,11 @@ namespace OpenIIoT.Core.Model
         [JsonIgnore]
         public Item Model { get; private set; }
 
+        public ProviderRegistry<IItemProvider> ProviderRegistry { get; private set; }
+
         #endregion Public Properties
 
         #region Public Methods
-
-        public Item FindProviderItem(Item item)
-        {
-            return FindProviderItem(item.FQN);
-        }
-
-        public Item FindProviderItem(string fqn)
-        {
-            return FindProviderItem(fqn, false);
-        }
-
-        private Item FindProviderItem(string fqn, bool refreshed = false)
-        {
-            Item foundItem = default(Item);
-
-            foreach (IItemProvider provider in ProviderRegistry.Providers)
-            {
-                foundItem = provider.Find(fqn);
-                if (foundItem != default(Item))
-                {
-                    return foundItem;
-                }
-            }
-
-            if (foundItem == default(Item) && !refreshed)
-            {
-                ProviderRegistry.Discover();
-                return FindProviderItem(fqn, true);
-            }
-            else
-            {
-                return foundItem;
-            }
-        }
-
-        ///// <summary>
-        /////     Returns the root node of the <see cref="Item"/> tree.
-        ///// </summary>
-        ///// <returns>The root node of the Item tree.</returns>
-        //public Item Browse()
-        //{
-        //    return Model;
-        //}
-
-        ///// <summary>
-        /////     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
-        ///// </summary>
-        ///// <param name="root">The Item for which the children are to be returned.</param>
-        ///// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        //public virtual IList<Item> Browse(Item root)
-        //{
-        //    return root == null ? Model.Children : root.Children;
-        //}
-
-        ///// <summary>
-        /////     Asynchronously returns the root node of the <see cref="Item"/> tree.
-        ///// </summary>
-        ///// <returns>The root node of the Item tree.</returns>
-        //public async Task<Item> BrowseAsync()
-        //{
-        //    return await Task.Run(() => Browse());
-        //}
-
-        ///// <summary>
-        /////     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
-        ///// </summary>
-        ///// <param name="root">The Item for which the children are to be returned.</param>
-        ///// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        //public async Task<IList<Item>> BrowseAsync(Item root)
-        //{
-        //    return await Task.Run(() => Browse(root));
-        //}
-
-        ///// <summary>
-        /////     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        ///// <returns>The found Item, or the default(Item) if not found.</returns>
-        //public virtual Item Find(string fqn)
-        //{
-        //    return FindItem(fqn);
-        //}
-
-        ///// <summary>
-        /////     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        ///// <returns>The found Item, or the default(Item) if not found.</returns>
-        //public virtual async Task<Item> FindAsync(string fqn)
-        //{
-        //    return await Task.Run(() => Find(fqn));
-        //}
-
-        //public object Read(Item item)
-        //{
-        //    return item.Read();
-        //}
-
-        ///// <summary>
-        /////     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
-        ///// </summary>
-        ///// <param name="item">The Item to read.</param>
-        ///// <returns>The value of the specified Item.</returns>
-        //public async Task<object> ReadAsync(Item item)
-        //{
-        //    return await Task.Run(() => Read(item));
-        //}
 
         /// <summary>
         ///     Returns the ConfigurationDefinition for the Model Manager.
@@ -264,8 +156,8 @@ namespace OpenIIoT.Core.Model
             config.Items.Add(
                 new ModelManagerConfigurationItem()
                 {
-                    FQN = "",
-                    SourceFQN = ""
+                    FQN = string.Empty,
+                    SourceFQN = string.Empty,
                 });
 
             retVal.DefaultConfiguration = config;
@@ -273,6 +165,15 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
+        ///// <summary>
+        /////     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
+        ///// </summary>
+        ///// <param name="item">The Item to read.</param>
+        ///// <returns>The value of the specified Item.</returns>
+        //public async Task<object> ReadAsync(Item item)
+        //{
+        //    return await Task.Run(() => Read(item));
+        //}
         /// <summary>
         ///     Adds an Item to the ModelManager's instance of Model and Dictionary.
         /// </summary>
@@ -285,12 +186,6 @@ namespace OpenIIoT.Core.Model
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
 
             return AddItem(Model, Dictionary, item);
-        }
-
-        public IList<IItemProvider> DiscoverItemProviders()
-        {
-            ItemProviders = Discoverer.Discover<IItemProvider>(Dependency<IApplicationManager>()).ToList();
-            return ItemProviders;
         }
 
         /// <summary>
@@ -402,7 +297,9 @@ namespace OpenIIoT.Core.Model
                     Configure(createResult.ReturnValue);
                 }
                 else
+                {
                     retVal.Incorporate(createResult);
+                }
             }
 
             retVal.LogResult(logger.Debug);
@@ -473,6 +370,25 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
+        //public object Read(Item item)
+        //{
+        //    return item.Read();
+        //}
+        public IList<IItemProvider> DiscoverItemProviders()
+        {
+            ItemProviders = Discoverer.Discover<IItemProvider>(Dependency<IApplicationManager>()).ToList();
+            return ItemProviders;
+        }
+
+        ///// <summary>
+        /////     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        ///// <returns>The found Item, or the default(Item) if not found.</returns>
+        //public virtual async Task<Item> FindAsync(string fqn)
+        //{
+        //    return await Task.Run(() => Find(fqn));
+        //}
         /// <summary>
         ///     Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
         /// </summary>
@@ -484,6 +400,25 @@ namespace OpenIIoT.Core.Model
             return FindItem(Dictionary, fqn);
         }
 
+        public Item FindProviderItem(Item item)
+        {
+            return FindProviderItem(item.FQN);
+        }
+
+        public Item FindProviderItem(string fqn)
+        {
+            return FindProviderItem(fqn, false);
+        }
+
+        ///// <summary>
+        /////     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        ///// <returns>The found Item, or the default(Item) if not found.</returns>
+        //public virtual Item Find(string fqn)
+        //{
+        //    return FindItem(fqn);
+        //}
         /// <summary>
         ///     Moves the supplied Item from one place in the ModelManager's instances of Model and Dictionary to another based on
         ///     the supplied FQN.
@@ -500,6 +435,15 @@ namespace OpenIIoT.Core.Model
             return MoveItem(Dictionary, item, fqn);
         }
 
+        ///// <summary>
+        /////     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
+        ///// </summary>
+        ///// <param name="root">The Item for which the children are to be returned.</param>
+        ///// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        //public async Task<IList<Item>> BrowseAsync(Item root)
+        //{
+        //    return await Task.Run(() => Browse(root));
+        //}
         /// <summary>
         ///     Adds the specified <see cref="IItemProvider"/> to the list of providers stored in the <see cref="ItemProviders"/> property.
         /// </summary>
@@ -523,6 +467,14 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
+        ///// <summary>
+        /////     Asynchronously returns the root node of the <see cref="Item"/> tree.
+        ///// </summary>
+        ///// <returns>The root node of the Item tree.</returns>
+        //public async Task<Item> BrowseAsync()
+        //{
+        //    return await Task.Run(() => Browse());
+        //}
         /// <summary>
         ///     Removes an Item from the ModelManager's Dictionary and from its parent Item.
         /// </summary>
@@ -537,6 +489,15 @@ namespace OpenIIoT.Core.Model
             return RemoveItem(Dictionary, item);
         }
 
+        ///// <summary>
+        /////     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
+        ///// </summary>
+        ///// <param name="root">The Item for which the children are to be returned.</param>
+        ///// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        //public virtual IList<Item> Browse(Item root)
+        //{
+        //    return root == null ? Model.Children : root.Children;
+        //}
         /// <summary>
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
@@ -553,6 +514,14 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
+        ///// <summary>
+        /////     Returns the root node of the <see cref="Item"/> tree.
+        ///// </summary>
+        ///// <returns>The root node of the Item tree.</returns>
+        //public Item Browse()
+        //{
+        //    return Model;
+        //}
         /// <summary>
         ///     Updates the supplied Item with the supplied Source Item.
         /// </summary>
@@ -564,8 +533,10 @@ namespace OpenIIoT.Core.Model
             logger.Info("Updating Item '" + item.FQN + "'s SourceItem to '" + sourceItem.FQN + "'...");
 
             if (!IsInState(State.Running, State.Starting))
+            {
                 return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+            }
 
             Result<Item> retVal = new Result<Item>();
 
@@ -577,10 +548,36 @@ namespace OpenIIoT.Core.Model
                 retVal.ReturnValue = item;
             }
             else
+            {
                 retVal.AddError("The supplied SourceItem is invalid.");
+            }
 
             retVal.LogResult(logger);
             return retVal;
+        }
+
+        private Item FindProviderItem(string fqn, bool refreshed = false)
+        {
+            Item foundItem = default(Item);
+
+            foreach (IItemProvider provider in ProviderRegistry.Providers)
+            {
+                foundItem = provider.Find(fqn);
+                if (foundItem != default(Item))
+                {
+                    return foundItem;
+                }
+            }
+
+            if (foundItem == default(Item) && !refreshed)
+            {
+                ProviderRegistry.Discover();
+                return FindProviderItem(fqn, true);
+            }
+            else
+            {
+                return foundItem;
+            }
         }
 
         #endregion Public Methods
@@ -695,10 +692,10 @@ namespace OpenIIoT.Core.Model
             string[] retObj = itemFQN.Split('.');
 
             if (retObj.Length > 1)
-                return String.Join(".", retObj.Take(retObj.Count() - 1));
+                return string.Join(".", retObj.Take(retObj.Count() - 1));
 
             // the root item has no path.
-            return "";
+            return string.Empty;
         }
 
         /// <summary>
@@ -728,7 +725,7 @@ namespace OpenIIoT.Core.Model
             string parentFQN = GetParentFQNFromItemFQN(item.FQN);
 
             // if the parent FQN couldn't be parsed, this is the root node so clone it to the existing ModelItem representing the root.
-            if (parentFQN == "")
+            if (parentFQN == string.Empty)
             {
                 //Result<Item> rootSetResult = SetModelRoot(model, dictionary, item);
                 //retVal.Incorporate(rootSetResult);
@@ -888,7 +885,7 @@ namespace OpenIIoT.Core.Model
             {
                 try
                 {
-                    logger.Trace(new String('-', 30));
+                    logger.Trace(new string('-', 30));
 
                     Item newItem;
                     newItem = new Item(instanceName + item.FQN, item.SourceFQN);
@@ -901,7 +898,7 @@ namespace OpenIIoT.Core.Model
 
                     // resolve the SourceFQN of the new item to an existing item ignore items with a blank SourceFQN; add those
                     // directly to the model.
-                    if (newItem.SourceFQN != "")
+                    if (newItem.SourceFQN != string.Empty)
                     {
                         logger.Trace("Attempting to resolve " + newItem.SourceFQN + "...");
 
@@ -1009,7 +1006,7 @@ namespace OpenIIoT.Core.Model
         private Result<Item> CopyItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
             Result<Item> retVal = new Result<Item>();
-            if ((item == null) || (fqn == "")) return retVal;
+            if ((item == null) || (fqn == string.Empty)) return retVal;
 
             logger.Info("Copying Item '" + item.FQN + "' to FQN '" + fqn + "'...");
 
@@ -1226,7 +1223,7 @@ namespace OpenIIoT.Core.Model
         /// <returns>A Result containing the list of saved ConfigurationModelItems.</returns>
         private Result<List<ModelManagerConfigurationItem>> SaveModel(Item itemRoot, Result<List<ModelManagerConfigurationItem>> configuration)
         {
-            configuration.ReturnValue.Add((ModelManagerConfigurationItem)new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<IApplicationManager>().InstanceName, ""), SourceFQN = itemRoot.SourceFQN });
+            configuration.ReturnValue.Add((ModelManagerConfigurationItem)new ModelManagerConfigurationItem() { FQN = itemRoot.FQN.Replace(Dependency<IApplicationManager>().InstanceName, string.Empty), SourceFQN = itemRoot.SourceFQN });
 
             foreach (Item mi in itemRoot.Children)
             {
@@ -1243,7 +1240,7 @@ namespace OpenIIoT.Core.Model
             Result<Item> retVal = new Result<Item>();
 
             // only one root item can be defined.
-            if (model.Name != "")
+            if (model.Name != string.Empty)
             {
                 retVal.AddError("The Model root has already been defined.");
             }

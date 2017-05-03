@@ -1,7 +1,5 @@
 ﻿using OpenIIoT.SDK.Plugin;
 
-using OpenIIoT.SDK.Plugin;
-
 namespace OpenIIoT.Core.Plugin
 {
     /// <summary>
@@ -14,36 +12,7 @@ namespace OpenIIoT.Core.Plugin
     /// </summary>
     public class Plugin : IPlugin
     {
-        /// <summary>
-        ///     The name of the Plugin.
-        /// </summary>
-        public string Name { get; private set; }
-
-        /// <summary>
-        ///     The Fully Qualified Name of the Plugin.
-        /// </summary>
-        public string FQN { get; private set; }
-
-        /// <summary>
-        ///     The version of the Plugin.
-        /// </summary>
-        /// <remarks>
-        ///     Formatting is disretionary. Any comparisons between versions will be "equals" rather than greater than/less than.
-        /// </remarks>
-        public string Version { get; private set; }
-
-        /// <summary>
-        ///     The type of Plugin.
-        /// </summary>
-        public PluginType PluginType { get; private set; }
-
-        /// <summary>
-        ///     The cryptographic fingerprint of the Plugin.
-        /// </summary>
-        /// <remarks>
-        ///     The SHA256 checksum of the Plugin assembly hashed again using the SHA256 algorithm and salted with the FQN + Version.
-        /// </remarks>
-        public string Fingerprint { get; private set; }
+        #region Public Constructors
 
         /// <summary>
         ///     The default constructor.
@@ -62,14 +31,44 @@ namespace OpenIIoT.Core.Plugin
             Fingerprint = fingerprint;
         }
 
+        #endregion Public Constructors
+
+        #region Public Properties
+
         /// <summary>
-        ///     Sets the Fingerprint property to the supplied value.
+        ///     The cryptographic fingerprint of the Plugin.
         /// </summary>
-        /// <param name="fingerprint">The value to which the property should be set.</param>
-        public void SetFingerprint(string fingerprint)
-        {
-            Fingerprint = fingerprint;
-        }
+        /// <remarks>
+        ///     The SHA256 checksum of the Plugin assembly hashed again using the SHA256 algorithm and salted with the FQN + Version.
+        /// </remarks>
+        public string Fingerprint { get; private set; }
+
+        /// <summary>
+        ///     The Fully Qualified Name of the Plugin.
+        /// </summary>
+        public string FQN { get; private set; }
+
+        /// <summary>
+        ///     The name of the Plugin.
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
+        ///     The type of Plugin.
+        /// </summary>
+        public PluginType PluginType { get; private set; }
+
+        /// <summary>
+        ///     The version of the Plugin.
+        /// </summary>
+        /// <remarks>
+        ///     Formatting is disretionary. Any comparisons between versions will be "equals" rather than greater than/less than.
+        /// </remarks>
+        public string Version { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Compares this object to the specified object and returns true if the objects are equal.
@@ -102,5 +101,16 @@ namespace OpenIIoT.Core.Plugin
         {
             return FQN.GetHashCode();
         }
+
+        /// <summary>
+        ///     Sets the Fingerprint property to the supplied value.
+        /// </summary>
+        /// <param name="fingerprint">The value to which the property should be set.</param>
+        public void SetFingerprint(string fingerprint)
+        {
+            Fingerprint = fingerprint;
+        }
+
+        #endregion Public Methods
     }
 }

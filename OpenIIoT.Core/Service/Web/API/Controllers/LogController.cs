@@ -1,23 +1,27 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Web.Http;
+using Newtonsoft.Json;
 using NLog;
 using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Threading.Tasks;
-using System.Web.Http;
 
 namespace OpenIIoT.Core.Service.Web.API
 {
     public class LogController : ApiController, IApiController
     {
-        private static IApplicationManager manager = ApplicationManager.GetInstance();
+        #region Private Fields
+
         private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static IApplicationManager manager = ApplicationManager.GetInstance();
+
+        #endregion Private Fields
 
         //private static List<string> appPackageSerializationProperties = new List<string>(new string[] { "FQN", "FileName", "Version", "AppType", "ConfigurationDefinition" });
+
+        #region Public Methods
 
         [Route("api/log")]
         [HttpGet]
@@ -46,5 +50,7 @@ namespace OpenIIoT.Core.Service.Web.API
 
             return retVal;
         }
+
+        #endregion Public Methods
     }
 }

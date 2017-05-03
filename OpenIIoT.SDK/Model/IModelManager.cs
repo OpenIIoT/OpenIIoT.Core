@@ -39,12 +39,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Common;
-
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using System.Collections.Generic;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Model
@@ -61,18 +58,16 @@ namespace OpenIIoT.SDK.Model
         /// </summary>
         Dictionary<string, Item> Dictionary { get; }
 
+        List<IItemProvider> ItemProviders { get; }
+
         /// <summary>
         ///     The root Item for the model.
         /// </summary>
         Item Model { get; }
 
-        List<IItemProvider> ItemProviders { get; }
-
         #endregion Public Properties
 
         #region Public Methods
-
-        IList<IItemProvider> DiscoverItemProviders();
 
         /// <summary>
         ///     Adds an Item to the ModelManager's instance of Model and Dictionary.
@@ -105,6 +100,8 @@ namespace OpenIIoT.SDK.Model
         /// <param name="provider">The Item Provider to remove.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Result DeRegisterItemProvider(IItemProvider provider);
+
+        IList<IItemProvider> DiscoverItemProviders();
 
         /// <summary>
         ///     Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.

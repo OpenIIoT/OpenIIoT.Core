@@ -50,18 +50,18 @@ using NLog.xLogger;
 using OpenIIoT.Core.Configuration;
 using OpenIIoT.Core.Event;
 using OpenIIoT.Core.Model;
-using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Package;
+using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
+using OpenIIoT.Core.Service;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Platform;
-using OpenIIoT.Core.Service;
-using Utility.OperationResult;
-using OpenIIoT.SDK.Plugin.Connector;
-using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Plugin.Connector;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core
 {
@@ -127,7 +127,7 @@ namespace OpenIIoT.Core
             typeof(PluginManager),
             typeof(ModelManager),
             typeof(ServiceManager),
-            typeof(PackageManager)
+            typeof(PackageManager),
         };
 
         #endregion Private Fields

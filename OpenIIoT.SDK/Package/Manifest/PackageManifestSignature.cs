@@ -53,7 +53,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         /// <summary>
         ///     Gets or sets the PGP signature of the <see cref="Package"/> .
         /// </summary>
-        [JsonProperty(Order = 4)]
+        [JsonProperty(Order = 3)]
         public string Digest { get; set; }
 
         /// <summary>
@@ -61,12 +61,6 @@ namespace OpenIIoT.SDK.Package.Manifest
         /// </summary>
         [JsonProperty(Order = 1)]
         public string Issuer { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Url to the PGP public key used to verify the <see cref="Digest"/> .
-        /// </summary>
-        [JsonProperty(Order = 3)]
-        public string PublicKeyUrl { get; set; }
 
         /// <summary>
         ///     Gets or sets the Keybase.io username associated with the PGP keys used to create the <see cref="Digest"/>.
@@ -77,7 +71,7 @@ namespace OpenIIoT.SDK.Package.Manifest
         /// <summary>
         ///     Gets or sets the PGP signature used to establish a trust for the <see cref="Package"/> .
         /// </summary>
-        [JsonProperty(Order = 5)]
+        [JsonProperty(Order = 4)]
         public string Trust { get; set; }
 
         #endregion Public Properties

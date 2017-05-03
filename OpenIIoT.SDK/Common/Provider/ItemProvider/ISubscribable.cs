@@ -39,7 +39,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
 using Utility.OperationResult;
@@ -72,11 +71,17 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
     /// </remarks>
     public interface ISubscribable
     {
+        #region Public Properties
+
         /// <summary>
         ///     The <see cref="Dictionary{TKey, TValue}"/> keyed on subscribed Item and containing a <see cref="List{T}"/> of the
         ///     <see cref="Action{T}"/> delegates used to update the subscribers.
         /// </summary>
         Dictionary<Item, List<Action<object>>> Subscriptions { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Creates a subscription to the specified Item.
@@ -111,5 +116,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         /// <param name="callback">The callback delegate to be invoked upon change of the subscribed Item.</param>
         /// <returns>A value indicating whether the operation succeeded.</returns>
         bool UnSubscribe(Item item, Action<object> callback);
+
+        #endregion Public Methods
     }
 }

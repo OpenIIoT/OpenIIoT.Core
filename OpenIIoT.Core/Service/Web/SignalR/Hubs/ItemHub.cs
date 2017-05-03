@@ -1,15 +1,12 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNet.SignalR;
-using NLog;
-using Newtonsoft.Json;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-using System;
-using System.Linq;
-using OpenIIoT.Core.Model;
-using Utility.OperationResult;
+using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
+using NLog;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Model;
 
 namespace OpenIIoT.Core.Service.Web.SignalR
 {
@@ -21,9 +18,9 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         #region Variables
 
         /// <summary>
-        ///     The ApplicationManager for the application.
+        ///     The HubManager managing this hub.
         /// </summary>
-        private IApplicationManager manager = ApplicationManager.GetInstance();
+        private static HubHelper hubManager;
 
         /// <summary>
         ///     The Logger for this class.
@@ -31,9 +28,9 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        ///     The HubManager managing this hub.
+        ///     The ApplicationManager for the application.
         /// </summary>
-        private static HubHelper hubManager;
+        private IApplicationManager manager = ApplicationManager.GetInstance();
 
         #endregion Variables
 
@@ -109,6 +106,72 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         }
 
         /// <summary>
+        ///     Subscribes the calling client to the item matching the provided FQN.
+        /// </summary>
+        /// <remarks>
+        ///     Registers an event handler to the Changed event for the item, adds the client to the SignalR group for the item's
+        ///     FQN, Subscribes the client to the item within the HubManager and calls the subscribeSuccess() method on the calling client.
+        /// </remarks>
+        /// <param name="arg">The Fully Qualified name of the Item to which to subscribe.</param>
+        public void Subscribe(object arg)
+        {
+            string castFQN = (string)arg;
+
+            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
+
+            if (foundItem != default(Item))
+            {
+                foundItem.Changed += hubManager.OnChange;
+                Groups.Add(Context.ConnectionId, foundItem.FQN);
+                hubManager.Subscribe(foundItem.FQN, Context.ConnectionId);
+                Clients.Caller.subscribeSuccess(castFQN);
+
+                logger.Info(GetLogPrefix() + "subscribed to '" + foundItem.FQN + "'.");
+
+                logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
+            }
+            else
+            {
+                Clients.Caller.subscribeError(castFQN);
+                logger.Info("Unable to subscribe to '" + castFQN + "'; the Item can't be found.");
+            }
+        }
+
+        /// <summary>
+        ///     Unsubscribes the calling client from the item matching the provided FQN.
+        /// </summary>
+        /// <remarks>
+        ///     Unregisters the event handler for the item, removes the client to the SignalR group for the item's FQN,
+        ///     unsubscribes the client from the item within the HubManager and calls the unsubscribeSuccess() method on the
+        ///     calling client.
+        /// </remarks>
+        /// <param name="arg">the Fully Qualified Name of the item to which the client is to be unsubscribed.</param>
+        public void Unsubscribe(object arg)
+        {
+            string castFQN = (string)arg;
+
+            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
+
+            if (foundItem != default(Item))
+            {
+                foundItem.Changed -= hubManager.OnChange;
+                Groups.Remove(Context.ConnectionId, foundItem.FQN);
+                hubManager.Unsubscribe(foundItem.FQN, Context.ConnectionId);
+                Clients.Caller.unsubscribeSuccess(castFQN);
+
+                logger.Info(GetLogPrefix() + "unsubscribed from '" + foundItem.FQN + "'.");
+                logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
+            }
+            else
+            {
+                Clients.Caller.unsubscribeError(castFQN);
+                logger.Info("Unable to unsubscribe from '" + castFQN + "'; the Item can't be found.");
+            }
+        }
+
+        /// <summary>
         ///     Invoked by clients to update the value of an Item.
         /// </summary>
         /// <remarks>
@@ -178,72 +241,6 @@ namespace OpenIIoT.Core.Service.Web.SignalR
                     Clients.Caller.writeToSourceError(castFQN, args.SubArray(1, args.Length - 1));
                     logger.Info(GetLogPrefix() + "failed to update item source '" + foundItem.FQN + "'.");
                 }
-            }
-        }
-
-        /// <summary>
-        ///     Subscribes the calling client to the item matching the provided FQN.
-        /// </summary>
-        /// <remarks>
-        ///     Registers an event handler to the Changed event for the item, adds the client to the SignalR group for the item's
-        ///     FQN, Subscribes the client to the item within the HubManager and calls the subscribeSuccess() method on the calling client.
-        /// </remarks>
-        /// <param name="arg">The Fully Qualified name of the Item to which to subscribe.</param>
-        public void Subscribe(object arg)
-        {
-            string castFQN = (string)arg;
-
-            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
-            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
-
-            if (foundItem != default(Item))
-            {
-                foundItem.Changed += hubManager.OnChange;
-                Groups.Add(Context.ConnectionId, foundItem.FQN);
-                hubManager.Subscribe(foundItem.FQN, Context.ConnectionId);
-                Clients.Caller.subscribeSuccess(castFQN);
-
-                logger.Info(GetLogPrefix() + "subscribed to '" + foundItem.FQN + "'.");
-
-                logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
-            }
-            else
-            {
-                Clients.Caller.subscribeError(castFQN);
-                logger.Info("Unable to subscribe to '" + castFQN + "'; the Item can't be found.");
-            }
-        }
-
-        /// <summary>
-        ///     Unsubscribes the calling client from the item matching the provided FQN.
-        /// </summary>
-        /// <remarks>
-        ///     Unregisters the event handler for the item, removes the client to the SignalR group for the item's FQN,
-        ///     unsubscribes the client from the item within the HubManager and calls the unsubscribeSuccess() method on the
-        ///     calling client.
-        /// </remarks>
-        /// <param name="arg">the Fully Qualified Name of the item to which the client is to be unsubscribed.</param>
-        public void Unsubscribe(object arg)
-        {
-            string castFQN = (string)arg;
-
-            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
-            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
-
-            if (foundItem != default(Item))
-            {
-                foundItem.Changed -= hubManager.OnChange;
-                Groups.Remove(Context.ConnectionId, foundItem.FQN);
-                hubManager.Unsubscribe(foundItem.FQN, Context.ConnectionId);
-                Clients.Caller.unsubscribeSuccess(castFQN);
-
-                logger.Info(GetLogPrefix() + "unsubscribed from '" + foundItem.FQN + "'.");
-                logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
-            }
-            else
-            {
-                Clients.Caller.unsubscribeError(castFQN);
-                logger.Info("Unable to unsubscribe from '" + castFQN + "'; the Item can't be found.");
             }
         }
 

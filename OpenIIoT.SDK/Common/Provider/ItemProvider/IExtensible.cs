@@ -21,7 +21,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
 using System.Collections.Generic;
 using Utility.OperationResult;
 
@@ -65,6 +64,8 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
     /// </remarks>
     public interface IExtensible
     {
+        #region Public Properties
+
         /// <summary>
         ///     Returns a dictionary of the user defined <see cref="Item"/> s that have been added to the Connector, keyed on the
         ///     Fully Qualified Name of the item and containing the Source Fully Qualified Name as the value.
@@ -83,6 +84,10 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         ///     </para>
         /// </remarks>
         Dictionary<string, string> AddedItems { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Adds a new <see cref="Item"/> with the specified Fully Qualified Name and Fully Qualified Source Name to the
@@ -109,5 +114,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         /// <param name="fqn">The Item to remove.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Result RemoveItem(string fqn);
+
+        #endregion Public Methods
     }
 }

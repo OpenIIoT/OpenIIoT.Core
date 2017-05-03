@@ -1,27 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NLog;
-using Microsoft.Owin.Hosting;
-using Microsoft.AspNet.SignalR;
 using System.Web.Http;
-using Newtonsoft.Json;
+using Microsoft.AspNet.SignalR;
+using Microsoft.Owin.Hosting;
+using NLog;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK;
-using System.Web.Http.Services;
 using Utility.OperationResult;
-using OpenIIoT.Core.Configuration;
 
 namespace OpenIIoT.Core.Service.Web
 {
     public class WebService : IService, IConfigurable<WebServiceConfiguration>
     {
-        private ApplicationManager manager;
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static WebService instance;
-        private static IDisposable server;
+        #region Internal Fields
 
         /// <summary>
         ///     The configuration for this Service.
@@ -30,25 +20,65 @@ namespace OpenIIoT.Core.Service.Web
         [ThreadStatic]
         internal static WebServiceConfiguration configuration;
 
-        public IConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
-        public WebServiceConfiguration Configuration { get; private set; }
-        public bool IsRunning { get { return (server != null); } }
+        #endregion Internal Fields
 
-        public string URL { get; private set; }
+        #region Private Fields
 
-        /// <summary>
-        ///     Provies configuration accessibility to the Owin startup class.
-        /// </summary>
-        internal static WebServiceConfiguration GetConfiguration { get { return configuration; } set { configuration = value; } }
+        private static WebService instance;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static IDisposable server;
+        private ApplicationManager manager;
 
-        public Dictionary<string, Hub> Hubs { get; private set; }
-        public Dictionary<string, ApiController> ApiControllers { get; private set; }
+        #endregion Private Fields
+
+        #region Private Constructors
 
         private WebService(ApplicationManager manager)
         {
             this.manager = manager;
             Hubs = new Dictionary<string, Hub>();
             ApiControllers = new Dictionary<string, ApiController>();
+        }
+
+        #endregion Private Constructors
+
+        #region Public Properties
+
+        public Dictionary<string, ApiController> ApiControllers { get; private set; }
+        public WebServiceConfiguration Configuration { get; private set; }
+        public IConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+        public Dictionary<string, Hub> Hubs { get; private set; }
+        public bool IsRunning { get { return (server != null); } }
+
+        public string URL { get; private set; }
+
+        #endregion Public Properties
+
+        #region Internal Properties
+
+        /// <summary>
+        ///     Provies configuration accessibility to the Owin startup class.
+        /// </summary>
+        internal static WebServiceConfiguration GetConfiguration { get { return configuration; } set { configuration = value; } }
+
+        #endregion Internal Properties
+
+        #region Public Methods
+
+        public static IConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
+            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
+            retVal.Model = typeof(WebServiceConfiguration);
+
+            WebServiceConfiguration config = new WebServiceConfiguration();
+            config.Port = 80;
+            config.Root = string.Empty;
+
+            retVal.DefaultConfiguration = config;
+
+            return retVal;
         }
 
         public static WebService Instance(ApplicationManager manager)
@@ -91,22 +121,6 @@ namespace OpenIIoT.Core.Service.Web
             return manager.GetManager<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration);
         }
 
-        public static IConfigurationDefinition GetConfigurationDefinition()
-        {
-            ConfigurationDefinition retVal = new ConfigurationDefinition();
-            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
-            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
-            retVal.Model = typeof(WebServiceConfiguration);
-
-            WebServiceConfiguration config = new WebServiceConfiguration();
-            config.Port = 80;
-            config.Root = "";
-
-            retVal.DefaultConfiguration = config;
-
-            return retVal;
-        }
-
         public Result Start()
         {
             logger.Info("Starting Web server...");
@@ -145,11 +159,17 @@ namespace OpenIIoT.Core.Service.Web
 
             return retVal;
         }
+
+        #endregion Public Methods
     }
 
     public class WebServiceConfiguration
     {
+        #region Public Properties
+
         public int Port { get; set; }
         public string Root { get; set; }
+
+        #endregion Public Properties
     }
 }

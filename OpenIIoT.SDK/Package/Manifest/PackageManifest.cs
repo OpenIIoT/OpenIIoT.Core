@@ -39,15 +39,18 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace OpenIIoT.SDK.Package.Manifest
 {
     public class PackageManifest
     {
         #region Public Properties
+
+        [JsonProperty(Order = 9)]
+        public string Checksum { get; set; }
 
         [JsonProperty(Order = 6)]
         public string Copyright { get; set; }
@@ -57,9 +60,6 @@ namespace OpenIIoT.SDK.Package.Manifest
 
         [JsonProperty(Order = 11)]
         public IDictionary<PackageManifestFileType, IList<PackageManifestFile>> Files { get; set; }
-
-        [JsonProperty(Order = 9)]
-        public string Checksum { get; set; }
 
         [JsonProperty(Order = 7)]
         public string License { get; set; }

@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using Microsoft.AspNet.SignalR;
-using NLog;
-using Newtonsoft.Json;
+﻿using System;
 using System.Threading.Tasks;
-using System;
-using System.Linq;
+using Microsoft.AspNet.SignalR;
+using Newtonsoft.Json;
+using NLog;
 using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
 
@@ -18,9 +16,9 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         #region Variables
 
         /// <summary>
-        ///     The ApplicationManager for the application.
+        ///     The HubManager managing this hub.
         /// </summary>
-        private IApplicationManager manager = ApplicationManager.GetInstance();
+        private static HubHelper hubManager;
 
         /// <summary>
         ///     The Logger for this class.
@@ -28,9 +26,9 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        ///     The HubManager managing this hub.
+        ///     The ApplicationManager for the application.
         /// </summary>
-        private static HubHelper hubManager;
+        private IApplicationManager manager = ApplicationManager.GetInstance();
 
         #endregion Variables
 
@@ -103,37 +101,6 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         }
 
         /// <summary>
-        ///     Invoked by clients to update the value of an Item.
-        /// </summary>
-        /// <remarks>
-        ///     Invokes the writeSuccess() and writeError() methods on the calling client depending on the outcome of the call.
-        /// </remarks>
-        /// <param name="args">
-        ///     An object array containing the Fully Qualified Name of the Item to update in the first index and an object
-        ///     containing the new value in the second.
-        /// </param>
-        public void Write(object[] args)
-        {
-            Clients.Caller.writeError("Logger", new object[] { "Not implemented." });
-        }
-
-        /// <summary>
-        ///     Invoked by clients to update the value of the SourceItem(s) for an Item. Recursively writes the value all the way
-        ///     down to the origin.
-        /// </summary>
-        /// <remarks>
-        ///     Invokes the writeSuccess() and writeError() methods on the calling client depending on the outcome of the call.
-        /// </remarks>
-        /// <param name="args">
-        ///     An object array containing the Fully Qualified Name of the Item to update in the first index and an object
-        ///     containing the new value in the second.
-        /// </param>
-        public void WriteToSource(object[] args)
-        {
-            Clients.Caller.writeToSourceError("Logger", new object[] { "Not implemented." });
-        }
-
-        /// <summary>
         ///     Subscribes the calling client to the logger.
         /// </summary>
         /// <remarks>
@@ -169,6 +136,37 @@ namespace OpenIIoT.Core.Service.Web.SignalR
             logger.Info(GetLogPrefix() + "unsubscribed from the Logger.");
 
             logger.Info("SignalR Logger now has " + hubManager.GetSubscriptions("Logger").Count + " subscriber(s).");
+        }
+
+        /// <summary>
+        ///     Invoked by clients to update the value of an Item.
+        /// </summary>
+        /// <remarks>
+        ///     Invokes the writeSuccess() and writeError() methods on the calling client depending on the outcome of the call.
+        /// </remarks>
+        /// <param name="args">
+        ///     An object array containing the Fully Qualified Name of the Item to update in the first index and an object
+        ///     containing the new value in the second.
+        /// </param>
+        public void Write(object[] args)
+        {
+            Clients.Caller.writeError("Logger", new object[] { "Not implemented." });
+        }
+
+        /// <summary>
+        ///     Invoked by clients to update the value of the SourceItem(s) for an Item. Recursively writes the value all the way
+        ///     down to the origin.
+        /// </summary>
+        /// <remarks>
+        ///     Invokes the writeSuccess() and writeError() methods on the calling client depending on the outcome of the call.
+        /// </remarks>
+        /// <param name="args">
+        ///     An object array containing the Fully Qualified Name of the Item to update in the first index and an object
+        ///     containing the new value in the second.
+        /// </param>
+        public void WriteToSource(object[] args)
+        {
+            Clients.Caller.writeToSourceError("Logger", new object[] { "Not implemented." });
         }
 
         private string GetLogPrefix()

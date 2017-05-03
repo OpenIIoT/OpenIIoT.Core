@@ -42,9 +42,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Threading.Tasks;
 using NLog.xLogger;
-using System.Linq;
 
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
@@ -53,11 +53,17 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
     /// </summary>
     public abstract class ItemProvider : IItemProvider, ISubscribable
     {
+        #region Protected Fields
+
         /// <summary>
         ///     The Logger for this class.
         /// </summary>
         [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Allows GetCurrentClassLogger() in extension classes.")]
         protected xLogger logger = xLogManager.GetCurrentClassxLogger();
+
+        #endregion Protected Fields
+
+        #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ItemProvider"/> class.
@@ -70,6 +76,8 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 
             Subscriptions = new Dictionary<Item, List<Action<object>>>();
         }
+
+        #endregion Public Constructors
 
         #region Public Properties
 
@@ -96,6 +104,78 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         #endregion Protected Properties
 
         #region Public Methods
+
+        /// <summary>
+        ///     Returns the root node of the <see cref="Item"/> tree.
+        /// </summary>
+        /// <returns>The root node of the Item tree.</returns>
+        public virtual Item Browse()
+        {
+            return ItemRoot;
+        }
+
+        /// <summary>
+        ///     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
+        /// </summary>
+        /// <param name="root">The Item for which the children are to be returned.</param>
+        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        public virtual IList<Item> Browse(Item root)
+        {
+            return root == null ? ItemRoot.Children : root.Children;
+        }
+
+        /// <summary>
+        ///     Asynchronously returns the root node of the <see cref="Item"/> tree.
+        /// </summary>
+        /// <returns>The root node of the Item tree.</returns>
+        public virtual async Task<Item> BrowseAsync()
+        {
+            return await Task.Run(() => Browse());
+        }
+
+        /// <summary>
+        ///     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
+        /// </summary>
+        /// <param name="root">The Item for which the children are to be returned.</param>
+        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
+        public virtual async Task<IList<Item>> BrowseAsync(Item root)
+        {
+            return await Task.Run(() => Browse(root));
+        }
+
+        /// <summary>
+        ///     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        /// <returns>The found Item, or the default(Item) if not found.</returns>
+        public virtual Item Find(string fqn)
+        {
+            return Find(ItemRoot, fqn);
+        }
+
+        /// <summary>
+        ///     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
+        /// <returns>The found Item, or the default(Item) if not found.</returns>
+        public virtual async Task<Item> FindAsync(string fqn)
+        {
+            return await Task.Run(() => Find(fqn));
+        }
+
+        /// <summary>
+        ///     Reads and returns the current value of the specified <see cref="Item"/>.
+        /// </summary>
+        /// <param name="item">The Item to read.</param>
+        /// <returns>The value of the specified Item.</returns>
+        public abstract object Read(Item item);
+
+        /// <summary>
+        ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
+        /// </summary>
+        /// <param name="item">The Item to read.</param>
+        /// <returns>The value of the specified Item.</returns>
+        public abstract Task<object> ReadAsync(Item item);
 
         /// <summary>
         ///     Creates a subscription to the specified Item.
@@ -191,78 +271,6 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
             logger.ExitMethod(retVal);
             return retVal;
         }
-
-        /// <summary>
-        ///     Returns the root node of the <see cref="Item"/> tree.
-        /// </summary>
-        /// <returns>The root node of the Item tree.</returns>
-        public virtual Item Browse()
-        {
-            return ItemRoot;
-        }
-
-        /// <summary>
-        ///     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
-        /// </summary>
-        /// <param name="root">The Item for which the children are to be returned.</param>
-        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        public virtual IList<Item> Browse(Item root)
-        {
-            return root == null ? ItemRoot.Children : root.Children;
-        }
-
-        /// <summary>
-        ///     Asynchronously returns the root node of the <see cref="Item"/> tree.
-        /// </summary>
-        /// <returns>The root node of the Item tree.</returns>
-        public virtual async Task<Item> BrowseAsync()
-        {
-            return await Task.Run(() => Browse());
-        }
-
-        /// <summary>
-        ///     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
-        /// </summary>
-        /// <param name="root">The Item for which the children are to be returned.</param>
-        /// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        public virtual async Task<IList<Item>> BrowseAsync(Item root)
-        {
-            return await Task.Run(() => Browse(root));
-        }
-
-        /// <summary>
-        ///     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        /// <returns>The found Item, or the default(Item) if not found.</returns>
-        public virtual Item Find(string fqn)
-        {
-            return Find(ItemRoot, fqn);
-        }
-
-        /// <summary>
-        ///     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        /// <returns>The found Item, or the default(Item) if not found.</returns>
-        public virtual async Task<Item> FindAsync(string fqn)
-        {
-            return await Task.Run(() => Find(fqn));
-        }
-
-        /// <summary>
-        ///     Reads and returns the current value of the specified <see cref="Item"/>.
-        /// </summary>
-        /// <param name="item">The Item to read.</param>
-        /// <returns>The value of the specified Item.</returns>
-        public abstract object Read(Item item);
-
-        /// <summary>
-        ///     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
-        /// </summary>
-        /// <param name="item">The Item to read.</param>
-        /// <returns>The value of the specified Item.</returns>
-        public abstract Task<object> ReadAsync(Item item);
 
         #endregion Public Methods
 
