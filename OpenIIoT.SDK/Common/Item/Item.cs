@@ -48,8 +48,8 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
-using Utility.OperationResult;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
+using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Common
 {

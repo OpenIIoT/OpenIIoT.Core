@@ -1,6 +1,5 @@
-﻿using OpenIIoT.Core.Package;
+﻿using System.Collections.Generic;
 using OpenIIoT.SDK.Package;
-using System.Collections.Generic;
 using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Package
@@ -16,15 +15,7 @@ namespace OpenIIoT.Core.Package
     /// </summary>
     public class PackageLoadResult : Result, IPackageLoadResult
     {
-        /// <summary>
-        ///     The list of valid Plugin Packages discovered during the load.
-        /// </summary>
-        public IList<IPackage> ValidPackages { get; set; }
-
-        /// <summary>
-        ///     The list of invalid Plugin Packages and the reason they failed validation.
-        /// </summary>
-        public IList<IInvalidPackage> InvalidPackages { get; set; }
+        #region Public Constructors
 
         /// <summary>
         ///     The default constructor.
@@ -34,5 +25,21 @@ namespace OpenIIoT.Core.Package
             ValidPackages = new List<IPackage>();
             InvalidPackages = new List<IInvalidPackage>();
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     The list of invalid Plugin Packages and the reason they failed validation.
+        /// </summary>
+        public IList<IInvalidPackage> InvalidPackages { get; set; }
+
+        /// <summary>
+        ///     The list of valid Plugin Packages discovered during the load.
+        /// </summary>
+        public IList<IPackage> ValidPackages { get; set; }
+
+        #endregion Public Properties
     }
 }

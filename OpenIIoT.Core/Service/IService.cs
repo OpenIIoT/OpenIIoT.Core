@@ -1,19 +1,21 @@
-﻿using OpenIIoT.Core.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Utility.OperationResult;
+﻿using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Service
 {
     public interface IService
     {
+        #region Public Properties
+
         bool IsRunning { get; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         Result Start();
 
         Result Stop();
+
+        #endregion Public Methods
     }
 }

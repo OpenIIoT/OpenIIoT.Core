@@ -193,7 +193,9 @@ namespace OpenIIoT.Core.Package
                     Configure(createResult.ReturnValue);
                 }
                 else
+                {
                     retVal.Incorporate(createResult);
+                }
             }
 
             retVal.LogResult(logger.Debug);

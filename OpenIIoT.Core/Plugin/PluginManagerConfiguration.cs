@@ -1,6 +1,4 @@
-﻿using OpenIIoT.SDK.Plugin;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace OpenIIoT.Core.Plugin
 {
@@ -9,19 +7,31 @@ namespace OpenIIoT.Core.Plugin
     /// </summary>
     public class PluginManagerConfiguration
     {
-        public List<PluginManagerConfigurationPluginInstance> Instances { get; set; }
-        public List<Plugin> InstalledPlugins { get; set; }
+        #region Public Constructors
 
         public PluginManagerConfiguration()
         {
             Instances = new List<PluginManagerConfigurationPluginInstance>();
             InstalledPlugins = new List<Plugin>();
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        public List<Plugin> InstalledPlugins { get; set; }
+        public List<PluginManagerConfigurationPluginInstance> Instances { get; set; }
+
+        #endregion Public Properties
     }
 
     public class PluginManagerConfigurationPluginInstance
     {
-        public string InstanceName { get; set; }
+        #region Public Properties
+
         public string AssemblyName { get; set; }
+        public string InstanceName { get; set; }
+
+        #endregion Public Properties
     }
 }

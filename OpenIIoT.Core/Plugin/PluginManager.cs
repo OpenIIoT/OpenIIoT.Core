@@ -45,20 +45,18 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using NLog;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK;
 using NLog.xLogger;
-using Utility.OperationResult;
-using OpenIIoT.SDK.Plugin;
-using OpenIIoT.SDK.Plugin.Connector;
-using OpenIIoT.SDK.Platform;
+using OpenIIoT.Core.Package;
+using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Plugin.Endpoint;
+using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Package;
-using OpenIIoT.Core.Package;
-
+using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Plugin.Connector;
+using OpenIIoT.SDK.Plugin.Endpoint;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Plugin
 {

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using NLog;
 using NLog.xLogger;
-using Utility.OperationResult;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Configuration;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Service
 {
@@ -13,8 +13,8 @@ namespace OpenIIoT.Core.Service
     {
         #region Variables
 
-        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
         private static ServiceManager instance;
+        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         #endregion Variables
 
@@ -55,6 +55,17 @@ namespace OpenIIoT.Core.Service
 
         #region Instance Methods
 
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        {
+            Guid guid = logger.EnterMethod(true);
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+            Result retVal = new Result();
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(guid);
+            return retVal;
+        }
+
         protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);
@@ -81,45 +92,6 @@ namespace OpenIIoT.Core.Service
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
-            return retVal;
-        }
-
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
-        {
-            Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
-            Result retVal = new Result();
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(guid);
-            return retVal;
-        }
-
-        private Result<Dictionary<string, Type>> RegisterServices()
-        {
-            logger.Debug("Registering Service types...");
-            Result<Dictionary<string, Type>> retVal = RegisterServices(Dependency<IConfigurationManager>());
-            retVal.LogResult(logger.Debug);
-            return retVal;
-        }
-
-        private Result<Dictionary<string, Type>> RegisterServices(IConfigurationManager configurationManager)
-        {
-            logger.Trace("Registering Service types...");
-            Result<Dictionary<string, Type>> retVal = new Result<Dictionary<string, Type>>();
-            retVal.ReturnValue = new Dictionary<string, Type>();
-
-            try
-            {
-                logger.Trace("Registering Web Services...");
-                retVal.ReturnValue.Add("Web Services", typeof(Web.WebService));
-                configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(Web.WebService));
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError("Exception thrown while registering Service types: " + ex);
-            }
-
             return retVal;
         }
 
@@ -153,6 +125,34 @@ namespace OpenIIoT.Core.Service
             catch (Exception ex)
             {
                 retVal.AddError("Exception thrown while instantiating Service types: " + ex);
+            }
+
+            return retVal;
+        }
+
+        private Result<Dictionary<string, Type>> RegisterServices()
+        {
+            logger.Debug("Registering Service types...");
+            Result<Dictionary<string, Type>> retVal = RegisterServices(Dependency<IConfigurationManager>());
+            retVal.LogResult(logger.Debug);
+            return retVal;
+        }
+
+        private Result<Dictionary<string, Type>> RegisterServices(IConfigurationManager configurationManager)
+        {
+            logger.Trace("Registering Service types...");
+            Result<Dictionary<string, Type>> retVal = new Result<Dictionary<string, Type>>();
+            retVal.ReturnValue = new Dictionary<string, Type>();
+
+            try
+            {
+                logger.Trace("Registering Web Services...");
+                retVal.ReturnValue.Add("Web Services", typeof(Web.WebService));
+                configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(Web.WebService));
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Exception thrown while registering Service types: " + ex);
             }
 
             return retVal;

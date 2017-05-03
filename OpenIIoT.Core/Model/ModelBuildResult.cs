@@ -1,8 +1,6 @@
-﻿using OpenIIoT.SDK;
-using OpenIIoT.SDK.Model;
-using System.Collections.Generic;
-using Utility.OperationResult;
+﻿using System.Collections.Generic;
 using OpenIIoT.SDK.Common;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Model
 {
@@ -18,31 +16,7 @@ namespace OpenIIoT.Core.Model
     /// </summary>
     public class ModelBuildResult : Result
     {
-        /// <summary>
-        ///     The Item model created by the build result.
-        /// </summary>
-        public Item Model { get; set; }
-
-        /// <summary>
-        ///     The dictionary of model items and FQNs created by the build result.
-        /// </summary>
-        public Dictionary<string, Item> Dictionary { get; set; }
-
-        /// <summary>
-        ///     The list of model items that were resolved during the build.
-        /// </summary>
-        public List<ModelManagerConfigurationItem> ResolvedList { get; set; }
-
-        /// <summary>
-        ///     The list of model items that couldn't be resolved during the build.
-        /// </summary>
-        public List<ModelManagerConfigurationItem> UnresolvedList { get; set; }
-
-        /// <summary>
-        ///     The list of model items that were defferred during the build. This occurs if the item's SourceFQN is a model item
-        ///     (instead of a plugin item) and it is at a greater depth in the model than the item itself.
-        /// </summary>
-        public List<Item> DeferredList { get; set; }
+        #region Public Constructors
 
         /// <summary>
         ///     The default constructor.
@@ -55,5 +29,37 @@ namespace OpenIIoT.Core.Model
             UnresolvedList = new List<ModelManagerConfigurationItem>();
             DeferredList = new List<Item>();
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     The list of model items that were defferred during the build. This occurs if the item's SourceFQN is a model item
+        ///     (instead of a plugin item) and it is at a greater depth in the model than the item itself.
+        /// </summary>
+        public List<Item> DeferredList { get; set; }
+
+        /// <summary>
+        ///     The dictionary of model items and FQNs created by the build result.
+        /// </summary>
+        public Dictionary<string, Item> Dictionary { get; set; }
+
+        /// <summary>
+        ///     The Item model created by the build result.
+        /// </summary>
+        public Item Model { get; set; }
+
+        /// <summary>
+        ///     The list of model items that were resolved during the build.
+        /// </summary>
+        public List<ModelManagerConfigurationItem> ResolvedList { get; set; }
+
+        /// <summary>
+        ///     The list of model items that couldn't be resolved during the build.
+        /// </summary>
+        public List<ModelManagerConfigurationItem> UnresolvedList { get; set; }
+
+        #endregion Public Properties
     }
 }

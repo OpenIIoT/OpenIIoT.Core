@@ -1,25 +1,30 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Web.Http;
+using Newtonsoft.Json;
 using NLog;
 using OpenIIoT.Core.Model;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
-using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Web.Http;
 
 namespace OpenIIoT.Core.Service.Web.API
 {
     public class BrowseController : ApiController
     {
-        private static IApplicationManager manager = ApplicationManager.GetInstance();
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static Item model = manager.GetManager<ModelManager>().Model;
+        #region Private Fields
 
         private static List<string> conciseSerializationProperties = new List<string>(new string[] { "FQN", "Children" });
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static IApplicationManager manager = ApplicationManager.GetInstance();
+        private static Item model = manager.GetManager<ModelManager>().Model;
         private static List<string> verboseSerializationProperties = new List<string>(new string[] { "Parent", "SourceItem", "Lock", "HasChildren", "IsOrphaned" });
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         [Route("api/browse")]
         [HttpGet]
@@ -52,6 +57,10 @@ namespace OpenIIoT.Core.Service.Web.API
             return Request.CreateResponse(HttpStatusCode.OK, result, formatter);
         }
 
+        #endregion Public Methods
+
+        #region Private Methods
+
         private static JsonMediaTypeFormatter JsonFormatter()
         {
             return JsonFormatter(verboseSerializationProperties, ContractResolverType.OptOut);
@@ -71,5 +80,7 @@ namespace OpenIIoT.Core.Service.Web.API
 
             return retVal;
         }
+
+        #endregion Private Methods
     }
 }

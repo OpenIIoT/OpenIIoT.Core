@@ -21,8 +21,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
 using System.Threading.Tasks;
+using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
@@ -43,6 +43,8 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
     /// </remarks>
     public interface IWriteable
     {
+        #region Public Methods
+
         /// <summary>
         ///     Writes the specified value to the specified <see cref="Item"/>.
         /// </summary>
@@ -58,5 +60,7 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
         /// <param name="value">The value to write to the <see cref="Item"/>.</param>
         /// <returns>A value indicating whether the write operation succeeded.</returns>
         Task<bool> WriteAsync(Item item, object value);
+
+        #endregion Public Methods
     }
 }

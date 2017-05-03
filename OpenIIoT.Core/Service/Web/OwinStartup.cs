@@ -1,21 +1,31 @@
-﻿using Microsoft.Owin;
-using Owin;
-using Microsoft.Owin.Cors;
-using Microsoft.Owin.StaticFiles;
-using Microsoft.Owin.FileSystems;
-using System.Web.Http;
+﻿using System.Web.Http;
 using Microsoft.AspNet.SignalR;
-using Swashbuckle.Application;
+using Microsoft.Owin;
+using Microsoft.Owin.Cors;
+using Microsoft.Owin.FileSystems;
+using Microsoft.Owin.StaticFiles;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK;
+using Owin;
+using Swashbuckle.Application;
 
 namespace OpenIIoT.Core.Service.Web
 {
     public class OwinStartup
     {
+        #region Private Fields
+
         private IApplicationManager manager = ApplicationManager.GetInstance();
 
+        #endregion Private Fields
+
+        #region Private Properties
+
         private WebServiceConfiguration WebServiceConfiguration { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
 
         public void Configuration(IAppBuilder app)
         {
@@ -24,7 +34,7 @@ namespace OpenIIoT.Core.Service.Web
 
             app.UseCors(CorsOptions.AllowAll);
 
-            app.MapSignalR((webRoot.Length > 0 ? "/" : "") + webRoot + "/signalr", new HubConfiguration());
+            app.MapSignalR((webRoot.Length > 0 ? "/" : string.Empty) + webRoot + "/signalr", new HubConfiguration());
 
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
@@ -34,7 +44,7 @@ namespace OpenIIoT.Core.Service.Web
 
             //config.Routes.MapHttpRoute(
             //    name: "DefaultApi",
-            //    routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : "") + "api/{controller}/{id}",
+            //    routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : string.Empty) + "api/{controller}/{id}",
             //    defaults: new { id = RouteParameter.Optional }
             //);
 
@@ -49,8 +59,10 @@ namespace OpenIIoT.Core.Service.Web
             app.UseFileServer(new FileServerOptions()
             {
                 FileSystem = new PhysicalFileSystem(manager.GetManager<PlatformManager>().Platform.Directories.Web),
-                RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : "") + webRoot)
+                RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : string.Empty) + webRoot),
             });
         }
+
+        #endregion Public Methods
     }
 }

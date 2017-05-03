@@ -131,107 +131,6 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/> method.
-        /// </summary>
-        [Fact]
-        public void Subscribe()
-        {
-            SDK.Common.Item item = new SDK.Common.Item("test");
-
-            Action<object> action = delegate (object obj) { };
-
-            Assert.Empty(itemProvider.Object.Subscriptions);
-
-            bool result = itemProvider.Object.Subscribe(item, action);
-
-            Assert.True(result);
-            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
-            Assert.Equal(1, itemProvider.Object.Subscriptions[item].Count);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/>
-        ///     with a second subscription to a previously subscribed Item.
-        /// </summary>
-        [Fact]
-        public void SubscribeSecondSubscriber()
-        {
-            SDK.Common.Item item = new SDK.Common.Item("test");
-
-            Action<object> action1 = delegate (object obj) { };
-            Action<object> action2 = delegate (object obj) { };
-
-            Assert.Empty(itemProvider.Object.Subscriptions);
-
-            bool result = itemProvider.Object.Subscribe(item, action1);
-
-            Assert.True(result);
-            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
-
-            result = itemProvider.Object.Subscribe(item, action2);
-
-            Assert.True(result);
-            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
-            Assert.Equal(2, itemProvider.Object.Subscriptions[item].Count);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/>
-        ///     method with a duplicate subscription.
-        /// </summary>
-        [Fact]
-        public void SubscribeDuplicateSubscription()
-        {
-            SDK.Common.Item item = new SDK.Common.Item("test");
-            Action<object> action = delegate (object obj) { };
-
-            Assert.Empty(itemProvider.Object.Subscriptions);
-
-            bool result = itemProvider.Object.Subscribe(item, action);
-
-            Assert.True(result);
-
-            result = itemProvider.Object.Subscribe(item, action);
-
-            Assert.False(result);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/> method.
-        /// </summary>
-        [Fact]
-        public void UnSubscribe()
-        {
-            SDK.Common.Item item = new SDK.Common.Item("test");
-
-            Action<object> action = delegate (object obj) { };
-
-            itemProvider.Object.Subscribe(item, action);
-
-            Assert.NotEmpty(itemProvider.Object.Subscriptions);
-
-            itemProvider.Object.UnSubscribe(item, action);
-
-            Assert.Empty(itemProvider.Object.Subscriptions);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/>
-        ///     method with an Item to which there are no subscriptions.
-        /// </summary>
-        [Fact]
-        public void UnSubscribeNotSubscribed()
-        {
-            SDK.Common.Item item = new SDK.Common.Item("test");
-
-            Action<object> action = delegate (object obj) { };
-
-            itemProvider.Object.UnSubscribe(item, action);
-
-            Assert.Empty(itemProvider.Object.Subscriptions);
-        }
-
-        /// <summary>
         ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Browse(SDK.Common.Item)"/> method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
@@ -312,12 +211,113 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/> method.
+        /// </summary>
+        [Fact]
+        public void Subscribe()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("test");
+
+            Action<object> action = (object obj) => { };
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+
+            bool result = itemProvider.Object.Subscribe(item, action);
+
+            Assert.True(result);
+            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+            Assert.Equal(1, itemProvider.Object.Subscriptions[item].Count);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/>
+        ///     method with a duplicate subscription.
+        /// </summary>
+        [Fact]
+        public void SubscribeDuplicateSubscription()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("test");
+            Action<object> action = (object obj) => { };
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+
+            bool result = itemProvider.Object.Subscribe(item, action);
+
+            Assert.True(result);
+
+            result = itemProvider.Object.Subscribe(item, action);
+
+            Assert.False(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/>
+        ///     with a second subscription to a previously subscribed Item.
+        /// </summary>
+        [Fact]
+        public void SubscribeSecondSubscriber()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("test");
+
+            Action<object> action1 = (object obj) => { };
+            Action<object> action2 = (object obj) => { };
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+
+            bool result = itemProvider.Object.Subscribe(item, action1);
+
+            Assert.True(result);
+            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+
+            result = itemProvider.Object.Subscribe(item, action2);
+
+            Assert.True(result);
+            Assert.Equal(1, itemProvider.Object.Subscriptions.Count);
+            Assert.Equal(2, itemProvider.Object.Subscriptions[item].Count);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscriptions"/> property.
         /// </summary>
         [Fact]
         public void Subscriptions()
         {
             Assert.IsType<Dictionary<SDK.Common.Item, List<Action<object>>>>(itemProvider.Object.Subscriptions);
+            Assert.Empty(itemProvider.Object.Subscriptions);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/> method.
+        /// </summary>
+        [Fact]
+        public void UnSubscribe()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("test");
+
+            Action<object> action = (object obj) => { };
+
+            itemProvider.Object.Subscribe(item, action);
+
+            Assert.NotEmpty(itemProvider.Object.Subscriptions);
+
+            itemProvider.Object.UnSubscribe(item, action);
+
+            Assert.Empty(itemProvider.Object.Subscriptions);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/>
+        ///     method with an Item to which there are no subscriptions.
+        /// </summary>
+        [Fact]
+        public void UnSubscribeNotSubscribed()
+        {
+            SDK.Common.Item item = new SDK.Common.Item("test");
+
+            Action<object> action = (object obj) => { };
+
+            itemProvider.Object.UnSubscribe(item, action);
+
             Assert.Empty(itemProvider.Object.Subscriptions);
         }
 

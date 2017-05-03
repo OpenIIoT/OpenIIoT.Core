@@ -1,25 +1,29 @@
-﻿using Newtonsoft.Json;
-using NLog;
-using OpenIIoT.Core.Configuration;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
+using Newtonsoft.Json;
+using NLog;
+using OpenIIoT.Core.Configuration;
+using OpenIIoT.SDK;
+using OpenIIoT.SDK.Configuration;
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Service.Web.API
 {
     public class ConfigurationController : ApiController
     {
-        private static IApplicationManager manager = ApplicationManager.GetInstance();
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-        private static IConfiguration configuration = manager.GetManager<ConfigurationManager>().Configuration;
+        #region Private Fields
 
+        private static IConfiguration configuration = manager.GetManager<ConfigurationManager>().Configuration;
+        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static IApplicationManager manager = ApplicationManager.GetInstance();
         private static List<string> serializationProperties = new List<string>(new string[] { });
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         [Route("api/configuration")]
         [HttpGet]
@@ -27,6 +31,10 @@ namespace OpenIIoT.Core.Service.Web.API
         {
             return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration, JsonFormatter(serializationProperties, ContractResolverType.OptOut));
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
         {
@@ -42,5 +50,7 @@ namespace OpenIIoT.Core.Service.Web.API
 
             return retVal;
         }
+
+        #endregion Private Methods
     }
 }

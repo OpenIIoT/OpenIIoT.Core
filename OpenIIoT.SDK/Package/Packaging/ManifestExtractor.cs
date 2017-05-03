@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package.Manifest;
-using System;
+﻿using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using Newtonsoft.Json;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Package.Manifest;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {

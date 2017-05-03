@@ -1,9 +1,9 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Runtime.CompilerServices;
-using System;
 using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Service.Web
@@ -14,22 +14,24 @@ namespace OpenIIoT.Core.Service.Web
     /// <typeparam name="T">The type of the Result object.</typeparam>
     public class ApiResult<T> : Result<T>
     {
-        #region Properties
+        #region Public Constructors
 
         /// <summary>
-        ///     The HttpRequestMessage that originated the API request.
+        ///     Initializes a new instance of the <see cref="ApiResult{T}"/> class using the specified request, a new ShortGuid and
+        ///     with a StatusCode of 200/OK.
         /// </summary>
-        public HttpRequestMessage Request { get; private set; }
+        /// <param name="request">The invoking request.</param>
+        public ApiResult(HttpRequestMessage request)
+            : base()
+        {
+            Request = request;
+            ShortGuid = SDK.Common.Utility.ShortGuid();
+            StatusCode = HttpStatusCode.OK;
+        }
 
-        /// <summary>
-        ///     A shortened Guid for the request. The lifespan of the request is such that a full length Guid is not necessary.
-        /// </summary>
-        public string ShortGuid { get; private set; }
+        #endregion Public Constructors
 
-        /// <summary>
-        ///     The route of the original request.
-        /// </summary>
-        public string Route { get { return Request.RequestUri.PathAndQuery; } }
+        #region Public Properties
 
         /// <summary>
         ///     The remote IP address of the original request.
@@ -37,33 +39,44 @@ namespace OpenIIoT.Core.Service.Web
         public string RemoteIP { get { return Request.GetOwinContext().Request.RemoteIpAddress; } }
 
         /// <summary>
-        ///     The HttpStatusCode to return to the requestor.
+        ///     The HttpRequestMessage that originated the API request.
         /// </summary>
-        public HttpStatusCode StatusCode { get; set; }
+        public HttpRequestMessage Request { get; private set; }
 
         /// <summary>
         ///     The HttpResponseMessage to return to the requestor.
         /// </summary>
         public HttpResponseMessage Response { get; private set; }
 
-        #endregion Properties
-
-        #region Constructors
+        /// <summary>
+        ///     The route of the original request.
+        /// </summary>
+        public string Route { get { return Request.RequestUri.PathAndQuery; } }
 
         /// <summary>
-        ///     Constructs a new APIResult using the supplied request, a new ShortGuid and with a StatusCode of 200/OK.
+        ///     A shortened Guid for the request. The lifespan of the request is such that a full length Guid is not necessary.
         /// </summary>
-        /// <param name="request"></param>
-        public ApiResult(HttpRequestMessage request) : base()
+        public string ShortGuid { get; private set; }
+
+        /// <summary>
+        ///     The HttpStatusCode to return to the requestor.
+        /// </summary>
+        public HttpStatusCode StatusCode { get; set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Generates an HttpResponseMessage using the StatusCode, Result object and the supplied JsonMediaTypeFormatter.
+        /// </summary>
+        /// <param name="jsonFormatter">The JsonMediaTypeFormatter instance to use to serialize the response.</param>
+        /// <returns>The generated HttpResponseMessage.</returns>
+        public HttpResponseMessage CreateResponse(JsonMediaTypeFormatter jsonFormatter)
         {
-            Request = request;
-            ShortGuid = SDK.Common.Utility.ShortGuid();
-            StatusCode = HttpStatusCode.OK;
+            Response = Request.CreateResponse(StatusCode, ReturnValue, jsonFormatter);
+            return Response;
         }
-
-        #endregion Constructors
-
-        #region Instance Methods
 
         /// <summary>
         ///     Logs information about the API request to the supplied logger using the supplied log level.
@@ -104,17 +117,6 @@ namespace OpenIIoT.Core.Service.Web
             return this;
         }
 
-        /// <summary>
-        ///     Generates an HttpResponseMessage using the StatusCode, Result object and the supplied JsonMediaTypeFormatter.
-        /// </summary>
-        /// <param name="jsonFormatter">The JsonMediaTypeFormatter instance to use to serialize the response.</param>
-        /// <returns>The generated HttpResponseMessage.</returns>
-        public HttpResponseMessage CreateResponse(JsonMediaTypeFormatter jsonFormatter)
-        {
-            Response = Request.CreateResponse(StatusCode, ReturnValue, jsonFormatter);
-            return Response;
-        }
-
-        #endregion Instance Methods
+        #endregion Public Methods
     }
 }

@@ -1,9 +1,6 @@
-﻿using OpenIIoT.SDK.Plugin;
-
-using OpenIIoT.SDK.Plugin;
-
-using System;
+﻿using System;
 using System.Reflection;
+using OpenIIoT.SDK.Plugin;
 
 namespace OpenIIoT.Core.Plugin
 {
@@ -12,46 +9,7 @@ namespace OpenIIoT.Core.Plugin
     /// </summary>
     public class PluginAssembly : IPlugin, IPluginAssembly
     {
-        /// <summary>
-        ///     The name of the Plugin.
-        /// </summary>
-        public string Name { get; private set; }
-
-        /// <summary>
-        ///     The Fully Qualified Name of the Plugin.
-        /// </summary>
-        public string FQN { get; private set; }
-
-        /// <summary>
-        ///     The version of the Plugin.
-        /// </summary>
-        /// <remarks>
-        ///     Formatting is discretionary. Any comparisons between versions will be "equals" rather than greater than/less than.
-        /// </remarks>
-        public string Version { get; private set; }
-
-        /// <summary>
-        ///     The type of Plugin.
-        /// </summary>
-        public PluginType PluginType { get; private set; }
-
-        /// <summary>
-        ///     The cryptographic fingerprint of the Plugin.
-        /// </summary>
-        /// <remarks>
-        ///     The SHA256 checksum of the Plugin assembly hashed again using the SHA256 algorithm and salted with the FQN + Version.
-        /// </remarks>
-        public string Fingerprint { get; private set; }
-
-        /// <summary>
-        ///     The Type of the Plugin contained within the Plugin assembly.
-        /// </summary>
-        public Type Type { get; private set; }
-
-        /// <summary>
-        ///     The Plugin assembly.
-        /// </summary>
-        public Assembly Assembly { get; private set; }
+        #region Public Constructors
 
         /// <summary>
         ///     The default constructor.
@@ -74,9 +32,60 @@ namespace OpenIIoT.Core.Plugin
             Assembly = assembly;
         }
 
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     The Plugin assembly.
+        /// </summary>
+        public Assembly Assembly { get; private set; }
+
+        /// <summary>
+        ///     The cryptographic fingerprint of the Plugin.
+        /// </summary>
+        /// <remarks>
+        ///     The SHA256 checksum of the Plugin assembly hashed again using the SHA256 algorithm and salted with the FQN + Version.
+        /// </remarks>
+        public string Fingerprint { get; private set; }
+
+        /// <summary>
+        ///     The Fully Qualified Name of the Plugin.
+        /// </summary>
+        public string FQN { get; private set; }
+
+        /// <summary>
+        ///     The name of the Plugin.
+        /// </summary>
+        public string Name { get; private set; }
+
+        /// <summary>
+        ///     The type of Plugin.
+        /// </summary>
+        public PluginType PluginType { get; private set; }
+
+        /// <summary>
+        ///     The Type of the Plugin contained within the Plugin assembly.
+        /// </summary>
+        public Type Type { get; private set; }
+
+        /// <summary>
+        ///     The version of the Plugin.
+        /// </summary>
+        /// <remarks>
+        ///     Formatting is discretionary. Any comparisons between versions will be "equals" rather than greater than/less than.
+        /// </remarks>
+        public string Version { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
         public void SetFingerprint(string fingerprint)
         {
             Fingerprint = fingerprint;
         }
+
+        #endregion Public Methods
     }
 }

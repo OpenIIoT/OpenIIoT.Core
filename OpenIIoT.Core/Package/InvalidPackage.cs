@@ -1,9 +1,4 @@
 ﻿using OpenIIoT.SDK.Package;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Package
 {
@@ -12,10 +7,7 @@ namespace OpenIIoT.Core.Package
     /// </summary>
     public class InvalidPackage : Package, IInvalidPackage
     {
-        /// <summary>
-        ///     A string containing the reason the Plugin Package is invalid.
-        /// </summary>
-        public string Message { get; private set; }
+        #region Public Constructors
 
         /// <summary>
         ///     Constructs a new InvalidPackage and sets the Message property to the provided string.
@@ -26,5 +18,16 @@ namespace OpenIIoT.Core.Package
         {
             Message = message;
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     A string containing the reason the Plugin Package is invalid.
+        /// </summary>
+        public string Message { get; private set; }
+
+        #endregion Public Properties
     }
 }

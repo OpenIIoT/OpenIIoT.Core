@@ -52,10 +52,10 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
 using Xunit;
-using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Tests
 {
@@ -103,6 +103,17 @@ namespace OpenIIoT.Core.Tests
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerNotInitializedException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="IApplicationManager.InstanceName"/> property.
+        /// </summary>
+        [Fact]
+        public void InstanceName()
+        {
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+
+            Assert.NotNull(manager.InstanceName);
         }
 
         /// <summary>
@@ -214,6 +225,19 @@ namespace OpenIIoT.Core.Tests
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerTypeListException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="IApplicationManager.Managers"/> property.
+        /// </summary>
+        [Fact]
+        public void Managers()
+        {
+            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+
+            Assert.Equal(2, manager.Managers.Count);
+            Assert.Equal(manager.Managers[0].GetType(), typeof(Core.ApplicationManager));
+            Assert.Equal(manager.Managers[1].GetType(), typeof(MockManager));
         }
 
         /// <summary>
@@ -343,30 +367,6 @@ namespace OpenIIoT.Core.Tests
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerStopException>(ex);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="IApplicationManager.InstanceName"/> property.
-        /// </summary>
-        [Fact]
-        public void InstanceName()
-        {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-
-            Assert.NotNull(manager.InstanceName);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="IApplicationManager.Managers"/> property.
-        /// </summary>
-        [Fact]
-        public void Managers()
-        {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-
-            Assert.Equal(2, manager.Managers.Count);
-            Assert.Equal(manager.Managers[0].GetType(), typeof(Core.ApplicationManager));
-            Assert.Equal(manager.Managers[1].GetType(), typeof(MockManager));
         }
 
         #endregion Public Methods

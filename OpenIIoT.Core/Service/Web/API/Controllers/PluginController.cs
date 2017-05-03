@@ -1,11 +1,4 @@
-﻿using Newtonsoft.Json;
-using NLog;
-using OpenIIoT.Core.Platform;
-using OpenIIoT.Core.Plugin;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Plugin;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,9 +6,15 @@ using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Utility.OperationResult;
+using Newtonsoft.Json;
+using NLog;
+using OpenIIoT.Core.Platform;
+using OpenIIoT.Core.Plugin;
+using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package;
-using OpenIIoT.Core.Package;
+using OpenIIoT.SDK.Plugin;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Service.Web.API
 {
@@ -32,54 +31,36 @@ namespace OpenIIoT.Core.Service.Web.API
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
         /// <summary>
-        ///     The ApplicationManager for the application.
-        /// </summary>
-        private IApplicationManager manager = ApplicationManager.GetInstance();
-
-        /// <summary>
         ///     The default serialization properties for an AppPackage.
         /// </summary>
         private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { });
+
+        /// <summary>
+        ///     The ApplicationManager for the application.
+        /// </summary>
+        private IApplicationManager manager = ApplicationManager.GetInstance();
 
         #endregion Variables
 
         #region Instance Methods
 
-        /// <summary>
-        ///     Returns the list of available AppPackages.
-        /// </summary>
-        /// <returns>The list of available AppPackages.</returns>
-        [Route("api/plugin/archive")]
+        [Route("api/plugin/archive/{fileName}/download")]
         [HttpGet]
-        public HttpResponseMessage ListPackages()
+        public HttpResponseMessage DownloadPackage(string fileName)
         {
-            ApiResult<IList<IPackage>> retVal = new ApiResult<IList<IPackage>>(Request);
+            ApiResult<bool> retVal = new ApiResult<bool>(Request);
             retVal.LogRequest(logger.Info);
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().Packages;
+            string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
+
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+
+            result.Content = new StreamContent(new System.IO.FileStream(pluginPackage, System.IO.FileMode.Open));
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = System.IO.Path.GetFileName(pluginPackage) };
 
             retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
-        }
-
-        /// <summary>
-        ///     Reloads the list of Packages from disk and returns the list.
-        /// </summary>
-        /// <returns>The reloaded list of available Packages.</returns>
-        [Route("api/plugin/archive/reload")]
-        [HttpGet]
-        public HttpResponseMessage ReloadPackages()
-        {
-            ApiResult<IPackageLoadResult> retVal = new ApiResult<IPackageLoadResult>(Request);
-            retVal.LogRequest(logger.Info);
-
-            retVal.ReturnValue = manager.GetManager<PluginManager>().ReloadPackages();
-
-            if (retVal.ReturnValue.ResultCode == ResultCode.Failure)
-                retVal.StatusCode = HttpStatusCode.InternalServerError;
-
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+            return result;
         }
 
         /// <summary>
@@ -124,56 +105,6 @@ namespace OpenIIoT.Core.Service.Web.API
             return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
 
-        [Route("api/plugin")]
-        [HttpGet]
-        public HttpResponseMessage ListPlugins()
-        {
-            ApiResult<List<IPlugin>> retVal = new ApiResult<List<IPlugin>>(Request);
-            retVal.LogRequest(logger.Info);
-
-            retVal.ReturnValue = manager.GetManager<PluginManager>().Configuration.InstalledPlugins.ToList<IPlugin>();
-
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
-        }
-
-        /// <summary>
-        ///     Uninstalls the supplied Plugin.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Plugin to uninstall.</param>
-        /// <returns>An ApiResult containing the result of the operation.</returns>
-        [Route("api/plugin/{fqn}/uninstall")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> UninstallPlugin(string fqn)
-        {
-            ApiResult<Result> retVal = new ApiResult<Result>(Request);
-            retVal.LogRequest(logger.Info);
-
-            retVal.ReturnValue = await manager.GetManager<PluginManager>().UninstallPluginAsync(manager.GetManager<PluginManager>().FindPlugin(fqn));
-
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
-        }
-
-        [Route("api/plugin/archive/{fileName}/download")]
-        [HttpGet]
-        public HttpResponseMessage DownloadPackage(string fileName)
-        {
-            ApiResult<bool> retVal = new ApiResult<bool>(Request);
-            retVal.LogRequest(logger.Info);
-
-            string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
-
-            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
-
-            result.Content = new StreamContent(new System.IO.FileStream(pluginPackage, System.IO.FileMode.Open));
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = System.IO.Path.GetFileName(pluginPackage) };
-
-            retVal.LogResult(logger);
-            return result;
-        }
-
         /// <summary>
         ///     Returns the JsonMediaTypeFormatter to use with this controller.
         /// </summary>
@@ -200,6 +131,74 @@ namespace OpenIIoT.Core.Service.Web.API
             retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             return retVal;
+        }
+
+        /// <summary>
+        ///     Returns the list of available AppPackages.
+        /// </summary>
+        /// <returns>The list of available AppPackages.</returns>
+        [Route("api/plugin/archive")]
+        [HttpGet]
+        public HttpResponseMessage ListPackages()
+        {
+            ApiResult<IList<IPackage>> retVal = new ApiResult<IList<IPackage>>(Request);
+            retVal.LogRequest(logger.Info);
+
+            retVal.ReturnValue = manager.GetManager<PluginManager>().Packages;
+
+            retVal.LogResult(logger);
+            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+        }
+
+        [Route("api/plugin")]
+        [HttpGet]
+        public HttpResponseMessage ListPlugins()
+        {
+            ApiResult<List<IPlugin>> retVal = new ApiResult<List<IPlugin>>(Request);
+            retVal.LogRequest(logger.Info);
+
+            retVal.ReturnValue = manager.GetManager<PluginManager>().Configuration.InstalledPlugins.ToList<IPlugin>();
+
+            retVal.LogResult(logger);
+            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+        }
+
+        /// <summary>
+        ///     Reloads the list of Packages from disk and returns the list.
+        /// </summary>
+        /// <returns>The reloaded list of available Packages.</returns>
+        [Route("api/plugin/archive/reload")]
+        [HttpGet]
+        public HttpResponseMessage ReloadPackages()
+        {
+            ApiResult<IPackageLoadResult> retVal = new ApiResult<IPackageLoadResult>(Request);
+            retVal.LogRequest(logger.Info);
+
+            retVal.ReturnValue = manager.GetManager<PluginManager>().ReloadPackages();
+
+            if (retVal.ReturnValue.ResultCode == ResultCode.Failure)
+                retVal.StatusCode = HttpStatusCode.InternalServerError;
+
+            retVal.LogResult(logger);
+            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+        }
+
+        /// <summary>
+        ///     Uninstalls the supplied Plugin.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Plugin to uninstall.</param>
+        /// <returns>An ApiResult containing the result of the operation.</returns>
+        [Route("api/plugin/{fqn}/uninstall")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> UninstallPlugin(string fqn)
+        {
+            ApiResult<Result> retVal = new ApiResult<Result>(Request);
+            retVal.LogRequest(logger.Info);
+
+            retVal.ReturnValue = await manager.GetManager<PluginManager>().UninstallPluginAsync(manager.GetManager<PluginManager>().FindPlugin(fqn));
+
+            retVal.LogResult(logger);
+            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
 
         #endregion Instance Methods
