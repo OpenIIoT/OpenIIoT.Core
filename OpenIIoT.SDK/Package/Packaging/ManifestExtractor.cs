@@ -1,7 +1,10 @@
-﻿using OpenIIoT.SDK.Common;
+﻿using Newtonsoft.Json;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package.Manifest;
 using System;
 using System.IO;
+using System.IO.Compression;
+using System.Linq;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
@@ -21,7 +24,40 @@ namespace OpenIIoT.SDK.Package.Packaging
 
             PackageManifest manifest = new PackageManifest();
 
-            // TODO: implement this
+            OnUpdated($"Extracting manifest '{Package.Constants.ManifestFilename}' from package '{packageFile}'...");
+
+            try
+            {
+                OnUpdated($"Locating manifest...");
+
+                ZipArchiveEntry zippedManifestFile = ZipFile.OpenRead(packageFile).Entries.Where(e => e.Name == Package.Constants.ManifestFilename).FirstOrDefault();
+                string manifestString;
+
+                if (zippedManifestFile != default(ZipArchiveEntry))
+                {
+                    OnUpdated(" √ Manifest located successfully.");
+
+                    OnUpdated("Reading manifest from package...");
+                    manifestString = new StreamReader(zippedManifestFile.Open()).ReadToEnd();
+                    OnUpdated(" √ Manifest read successfully.");
+                }
+                else
+                {
+                    throw new FileNotFoundException($"The package '{Path.GetFileName(packageFile)}' does not contain a manifest.");
+                }
+
+                OnUpdated("Deserializing manifest...");
+                manifest = JsonConvert.DeserializeObject<PackageManifest>(manifestString);
+                OnUpdated(" √ Manifest deserialized successfully.");
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidDataException($"The manifest within package '{Path.GetFileName(packageFile)}' is malformed: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new InvalidDataException($"Error extracting manifest from package '{Path.GetFileName(packageFile)}': {ex.Message}");
+            }
 
             OnUpdated(" √ Manifest extracted.");
 
@@ -29,13 +65,13 @@ namespace OpenIIoT.SDK.Package.Packaging
             {
                 try
                 {
-                    OnUpdated($"Saving output to file '{manifestFile}'...");
+                    OnUpdated($"Saving extracted manifest to file '{manifestFile}'...");
                     File.WriteAllText(manifestFile, manifest.ToJson());
                     OnUpdated(" √ File saved successfully.");
                 }
                 catch (Exception ex)
                 {
-                    OnUpdated($"Unable to write to output file '{manifestFile}': {ex.Message}");
+                    OnUpdated($"Unable to write to manifest file '{manifestFile}': {ex.Message}");
                 }
             }
 
