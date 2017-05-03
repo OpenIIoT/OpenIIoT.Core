@@ -164,7 +164,8 @@ AppPackages/
 
 # Others
 ClientBin/
-[Ss]tyle[Cc]op.*
+[Ss]tyle[Cc]op.cache
+[Ss]ettings.[Ss]tyle[Cc]op
 ~$*
 *~
 *.dbmdl
