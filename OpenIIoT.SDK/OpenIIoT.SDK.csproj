@@ -116,6 +116,7 @@
     <Compile Include="Package\Manifest\PackageManifestFile.cs" />
     <Compile Include="Package\Manifest\PackageManifestSignature.cs" />
     <Compile Include="Package\Packaging\ManifestExtractor.cs" />
+    <Compile Include="Package\Packaging\PackageExtractor.cs" />
     <Compile Include="Package\Packaging\PackagingUpdateEventArgs.cs" />
     <Compile Include="Package\Packaging\PackagingOperation.cs" />
     <Compile Include="Package\Packaging\PackageTruster.cs" />
