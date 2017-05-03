@@ -17,7 +17,7 @@ namespace OpenIIoT.SDK.Package.Packaging
 
         #region Public Methods
 
-        public static void ExtractPackage(string packageFile, string directory)
+        public static void ExtractPackage(string packageFile, string outputDirectory)
         {
             ValidatePackageFileArgument(packageFile);
 
@@ -33,6 +33,19 @@ namespace OpenIIoT.SDK.Package.Packaging
             if (Updated != null)
             {
                 Updated(null, new PackagingUpdateEventArgs(PackagingOperation.ManifestExtraction, message));
+            }
+        }
+
+        private static void ValidateOutputDirectoryArgument(string outputDirectory)
+        {
+            if (string.IsNullOrEmpty(outputDirectory))
+            {
+                throw new ArgumentException($"The required argument 'directory' (-d) was not supplied.");
+            }
+
+            if (Directory.Exists(outputDirectory))
+            {
+                throw new InvalidOperationException($"The specified directory '{outputDirectory}' exists; packages must be extracted to a new directory.");
             }
         }
 
