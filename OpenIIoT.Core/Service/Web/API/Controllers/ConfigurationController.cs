@@ -7,8 +7,8 @@ using Newtonsoft.Json;
 using NLog;
 using OpenIIoT.Core.Configuration;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Configuration;
 
 namespace OpenIIoT.Core.Service.Web.API
 {

@@ -236,7 +236,7 @@ namespace OpenIIoT.SDK.Tests.Common
 
             Assert.Equal(new List<SDK.Common.Item>(), item.Children);
             Assert.Equal("Root.Child.Name", item.FQN);
-            Assert.Equal(new Guid().ToString().Length, item.Guid.ToString().Length);
+            Assert.Equal(Guid.NewGuid().ToString().Length, item.Guid.ToString().Length);
             Assert.Equal(false, item.HasChildren);
             Assert.Equal(true, item.IsOrphaned);
             Assert.Equal(false, item.IsSubscribedToSource);
@@ -325,7 +325,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Item.ReadFromSource"/> method when the <see cref="SDK.Common.Item.Source"/> is <see cref="SDK.Common.ItemSource.ItemProvider"/>.
+        ///     Tests the <see cref="SDK.Common.Item.ReadFromSource"/> method when the <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.Provider"/>.
         /// </summary>
         [Fact]
         public void ReadFromSourceProvider()
@@ -347,7 +347,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Item.ReadFromSource"/> method when the <see cref="SDK.Common.Item.Source"/> is <see cref="SDK.Common.ItemSource.ItemProvider"/>.
+        ///     Tests the <see cref="SDK.Common.Item.ReadFromSource"/> method when the <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.Provider"/>.
         /// </summary>
         [Fact]
         public void ReadFromSourceProviderBad()
@@ -481,7 +481,7 @@ namespace OpenIIoT.SDK.Tests.Common
 
         /// <summary>
         ///     Tests the <see cref="SDK.Common.Item.SubscribeToSource"/> method with an Item whose
-        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.ItemProvider"/>.
+        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.Provider"/>.
         /// </summary>
         [Fact]
         public void SubscribeToSourceProvider()
@@ -503,7 +503,7 @@ namespace OpenIIoT.SDK.Tests.Common
 
         /// <summary>
         ///     Tests the <see cref="SDK.Common.Item.SubscribeToSource"/> method with an Item whose
-        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.ItemProvider"/> and where the
+        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.Provider"/> and where the
         ///     <see cref="SDK.Common.Item.Provider"/> does not implement <see cref="ISubscribable"/>.
         /// </summary>
         [Fact]
@@ -613,7 +613,7 @@ namespace OpenIIoT.SDK.Tests.Common
 
         /// <summary>
         ///     Tests the <see cref="SDK.Common.Item.UnsubscribeFromSource"/> method with an Item whose
-        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.ItemProvider"/>.
+        ///     <see cref="SDK.Common.Item.Source"/> is <see cref="ItemSource.Provider"/>.
         /// </summary>
         [Fact]
         public void UnSubscribeFromSourceProvider()

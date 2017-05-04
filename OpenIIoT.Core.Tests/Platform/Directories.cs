@@ -56,7 +56,7 @@ using Xunit;
 namespace OpenIIoT.Core.Tests
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Platform.Directories"/> class.
+    ///     Unit tests for the <see cref="Core.Platform.Directories"/> class.
     /// </summary>
     [Collection("Directories")]
     public class Directories

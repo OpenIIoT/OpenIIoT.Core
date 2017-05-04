@@ -13,7 +13,7 @@ namespace OpenIIoT.Core.Service.Web.SignalR
     /// <remarks>SignalR hubs are unable to persist data across instances because a new instance is created for each invocation.</remarks>
     public class HubHelper
     {
-        #region Variables
+        #region Private Fields
 
         /// <summary>
         ///     The Logger for this class.
@@ -25,26 +25,12 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         /// </summary>
         private IApplicationManager manager;
 
-        #endregion Variables
+        #endregion Private Fields
 
-        #region Properties
-
-        /// <summary>
-        ///     The hub being managed by the HubManager.
-        /// </summary>
-        public IHub Hub { get; private set; }
+        #region Public Constructors
 
         /// <summary>
-        ///     A dictionary containing all of the subscribed objects along with a list of clients subscribed to each object.
-        /// </summary>
-        public Dictionary<object, List<string>> Subscriptions { get; private set; }
-
-        #endregion Properties
-
-        #region Constructors
-
-        /// <summary>
-        ///     The default constructor. Creates a new instance of HubManager to manage the supplied hub with the supplied ApplicationManager.
+        ///     Initializes a new instance of the <see cref="HubHelper"/> class with the supplied ApplicationManager.
         /// </summary>
         /// <param name="manager">The ApplicationManager for the application.</param>
         /// <param name="hub">The hub to be managed by the HubManager.</param>
@@ -55,9 +41,23 @@ namespace OpenIIoT.Core.Service.Web.SignalR
             Subscriptions = new Dictionary<object, List<string>>();
         }
 
-        #endregion Constructors
+        #endregion Public Constructors
 
-        #region Instance Methods
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the hub being managed by the HubManager.
+        /// </summary>
+        public IHub Hub { get; private set; }
+
+        /// <summary>
+        ///     Gets a dictionary containing all of the subscribed objects along with a list of clients subscribed to each object.
+        /// </summary>
+        public Dictionary<object, List<string>> Subscriptions { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Returns a list of subscribed items for the supplied client using the default dictionary.
@@ -88,6 +88,7 @@ namespace OpenIIoT.Core.Service.Web.SignalR
                     retVal.Add(key);
                 }
             }
+
             return retVal;
         }
 
@@ -156,7 +157,9 @@ namespace OpenIIoT.Core.Service.Web.SignalR
                 dictionary.TryGetValue(key, out subs);
 
                 if (subs == default(List<string>))
+                {
                     subs = new List<string>();
+                }
 
                 subs.Add(client);
 
@@ -198,15 +201,18 @@ namespace OpenIIoT.Core.Service.Web.SignalR
                 dictionary.TryGetValue(key, out subs);
 
                 if (subs != default(List<string>))
+                {
                     subs.Remove(client);
+                }
             }
             catch (Exception ex)
             {
                 retVal.AddError("Exception thrown adding the subscription to the dictionary: " + ex.Message);
             }
+
             return retVal;
         }
 
-        #endregion Instance Methods
+        #endregion Public Methods
     }
 }

@@ -54,7 +54,7 @@ namespace OpenIIoT.Core
     /// </summary>
     /// <remarks>Designer generated class.</remarks>
     [ExcludeFromCodeCoverage]
-    partial class WindowsService : ServiceBase
+    public partial class WindowsService : ServiceBase
     {
         #region Public Constructors
 

@@ -799,7 +799,6 @@ namespace OpenIIoT.Core.Plugin
 
             // re-initialize/nullify all properties
             PluginAssemblies = new List<IPluginAssembly>();
-            //PluginInstances = new Dictionary<string, IPluginInstance>();
             PluginInstances = new List<IPluginInstance>();
             Plugins = null;
             Packages = null;
@@ -916,10 +915,6 @@ namespace OpenIIoT.Core.Plugin
                 logger.Info("Plugin Instances:");
             }
 
-            //foreach (string key in PluginInstances.Keys)
-            //{
-            //    logger.Info(new string(' ', 5) + key + " (" + PluginInstances[key].FQN + ")");
-            //}
             foreach (IPluginInstance plugin in PluginInstances)
             {
                 logger.Info(new string(' ', 5) + plugin.InstanceName + " (" + plugin.GetType().FullName + ")");

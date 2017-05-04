@@ -97,7 +97,8 @@ namespace OpenIIoT.Core.Platform.Windows
         ///     Initializes a new instance of the <see cref="WindowsPlatformItemProvider"/> class.
         /// </summary>
         /// <param name="itemProviderName">The name of the Item Provider.</param>
-        public WindowsPlatformItemProvider(string itemProviderName) : base(itemProviderName)
+        public WindowsPlatformItemProvider(string itemProviderName)
+            : base(itemProviderName)
         {
             actions = new Dictionary<string, Func<object>>();
 

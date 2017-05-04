@@ -73,14 +73,14 @@ namespace OpenIIoT.Core.Model
         /// <summary>
         ///     The Logger for this class.
         /// </summary>
-        new private xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
         #endregion Private Fields
 
         #region Private Constructors
 
         /// <summary>
-        ///     Private constructor, only called by Instance()
+        ///     Initializes a new instance of the <see cref="ModelManager"/> class.
         /// </summary>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
@@ -108,17 +108,17 @@ namespace OpenIIoT.Core.Model
         #region Public Properties
 
         /// <summary>
-        ///     The Configuration for the Manager.
+        ///     Gets the Configuration for the Manager.
         /// </summary>
         public ModelManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
-        ///     The ConfigurationDefinition for the Manager.
+        ///     Gets the ConfigurationDefinition for the Manager.
         /// </summary>
-        public IConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+        public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
         /// <summary>
-        ///     A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
+        ///     Gets a dictionary containing the Fully Qualified Names and references to all of the Items in the model.
         /// </summary>
         [JsonIgnore]
         public Dictionary<string, Item> Dictionary { get; private set; }
@@ -130,7 +130,7 @@ namespace OpenIIoT.Core.Model
         public List<IItemProvider> ItemProviders { get; private set; }
 
         /// <summary>
-        ///     The root Item for the model.
+        ///     Gets the root Item for the model.
         /// </summary>
         [JsonIgnore]
         public Item Model { get; private set; }
@@ -174,6 +174,7 @@ namespace OpenIIoT.Core.Model
         //{
         //    return await Task.Run(() => Read(item));
         //}
+
         /// <summary>
         ///     Adds an Item to the ModelManager's instance of Model and Dictionary.
         /// </summary>
@@ -182,8 +183,10 @@ namespace OpenIIoT.Core.Model
         public Result<Item> AddItem(Item item)
         {
             if (!IsInState(State.Running, State.Starting))
+            {
                 return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+            }
 
             return AddItem(Model, Dictionary, item);
         }
@@ -260,8 +263,14 @@ namespace OpenIIoT.Core.Model
                 retVal.ReturnValue = default(Item);
             }
 
-            if (Dependency<IApplicationManager>().State != State.Starting) retVal.LogResult(logger);
-            else retVal.LogResult(logger.Debug);
+            if (Dependency<IApplicationManager>().State != State.Starting)
+            {
+                retVal.LogResult(logger);
+            }
+            else
+            {
+                retVal.LogResult(logger.Debug);
+            }
 
             return retVal;
         }
@@ -286,9 +295,9 @@ namespace OpenIIoT.Core.Model
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
                 Configure(fetchResult.ReturnValue);
             }
-            // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
+                // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
                 IResult<ModelManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<ModelManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
@@ -340,8 +349,10 @@ namespace OpenIIoT.Core.Model
         public Result<Item> CopyItem(Item item, string fqn)
         {
             if (!IsInState(State.Running, State.Starting))
+            {
                 return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+            }
 
             return CopyItem(Model, Dictionary, item, fqn);
         }
@@ -380,15 +391,6 @@ namespace OpenIIoT.Core.Model
             return ItemProviders;
         }
 
-        ///// <summary>
-        /////     Asynchronously finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        ///// <returns>The found Item, or the default(Item) if not found.</returns>
-        //public virtual async Task<Item> FindAsync(string fqn)
-        //{
-        //    return await Task.Run(() => Find(fqn));
-        //}
         /// <summary>
         ///     Returns the ModelItem from the Dictionary belonging to the ModelManager instance matching the supplied key.
         /// </summary>
@@ -410,15 +412,6 @@ namespace OpenIIoT.Core.Model
             return FindProviderItem(fqn, false);
         }
 
-        ///// <summary>
-        /////     Finds and returns the <see cref="Item"/> matching the specified Fully Qualified Name.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Item to return.</param>
-        ///// <returns>The found Item, or the default(Item) if not found.</returns>
-        //public virtual Item Find(string fqn)
-        //{
-        //    return FindItem(fqn);
-        //}
         /// <summary>
         ///     Moves the supplied Item from one place in the ModelManager's instances of Model and Dictionary to another based on
         ///     the supplied FQN.
@@ -429,21 +422,14 @@ namespace OpenIIoT.Core.Model
         public Result<Item> MoveItem(Item item, string fqn)
         {
             if (!IsInState(State.Running, State.Starting))
+            {
                 return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+            }
 
             return MoveItem(Dictionary, item, fqn);
         }
 
-        ///// <summary>
-        /////     Asynchronously returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
-        ///// </summary>
-        ///// <param name="root">The Item for which the children are to be returned.</param>
-        ///// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        //public async Task<IList<Item>> BrowseAsync(Item root)
-        //{
-        //    return await Task.Run(() => Browse(root));
-        //}
         /// <summary>
         ///     Adds the specified <see cref="IItemProvider"/> to the list of providers stored in the <see cref="ItemProviders"/> property.
         /// </summary>
@@ -467,14 +453,6 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
-        ///// <summary>
-        /////     Asynchronously returns the root node of the <see cref="Item"/> tree.
-        ///// </summary>
-        ///// <returns>The root node of the Item tree.</returns>
-        //public async Task<Item> BrowseAsync()
-        //{
-        //    return await Task.Run(() => Browse());
-        //}
         /// <summary>
         ///     Removes an Item from the ModelManager's Dictionary and from its parent Item.
         /// </summary>
@@ -483,21 +461,14 @@ namespace OpenIIoT.Core.Model
         public Result<Item> RemoveItem(Item item)
         {
             if (!IsInState(State.Running, State.Starting))
+            {
                 return (Result<Item>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+            }
 
             return RemoveItem(Dictionary, item);
         }
 
-        ///// <summary>
-        /////     Returns a list of the children <see cref="Item"/> instances for the specified Item within the Item tree.
-        ///// </summary>
-        ///// <param name="root">The Item for which the children are to be returned.</param>
-        ///// <returns>A List of type Item containing all of the specified Item's children.</returns>
-        //public virtual IList<Item> Browse(Item root)
-        //{
-        //    return root == null ? Model.Children : root.Children;
-        //}
         /// <summary>
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
@@ -514,14 +485,6 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
-        ///// <summary>
-        /////     Returns the root node of the <see cref="Item"/> tree.
-        ///// </summary>
-        ///// <returns>The root node of the Item tree.</returns>
-        //public Item Browse()
-        //{
-        //    return Model;
-        //}
         /// <summary>
         ///     Updates the supplied Item with the supplied Source Item.
         /// </summary>
@@ -556,30 +519,6 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
-        private Item FindProviderItem(string fqn, bool refreshed = false)
-        {
-            Item foundItem = default(Item);
-
-            foreach (IItemProvider provider in ProviderRegistry.Providers)
-            {
-                foundItem = provider.Find(fqn);
-                if (foundItem != default(Item))
-                {
-                    return foundItem;
-                }
-            }
-
-            if (foundItem == default(Item) && !refreshed)
-            {
-                ProviderRegistry.Discover();
-                return FindProviderItem(fqn, true);
-            }
-            else
-            {
-                return foundItem;
-            }
-        }
-
         #endregion Public Methods
 
         #region Internal Methods
@@ -599,7 +538,9 @@ namespace OpenIIoT.Core.Model
         internal static ModelManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager, IPluginManager pluginManager)
         {
             if (instance == null)
+            {
                 instance = new ModelManager(manager, configurationManager, pluginManager);
+            }
 
             return instance;
         }
@@ -630,38 +571,37 @@ namespace OpenIIoT.Core.Model
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            //--------------- - - -
             // Configure the Manager
             IResult configureResult = Configure();
 
             if (configureResult.ResultCode == ResultCode.Failure)
+            {
                 throw new Exception("Failed to configure the Model Manager: " + configureResult.GetLastError());
+            }
 
             retVal.Incorporate(configureResult);
-            //--------------------------------  -
 
-            //--  -  -- ---------------  -
             // Build the model
             ModelBuildResult modelBuildResult = BuildModel(Dependency<IApplicationManager>().InstanceName, Configuration.Items);
 
             if (modelBuildResult.ResultCode == ResultCode.Failure)
+            {
                 throw new Exception("Failed to build the model: " + modelBuildResult.GetLastError());
+            }
 
             retVal.Incorporate(modelBuildResult);
 
             logger.Checkpoint("Model Built", xLogger.Vars(modelBuildResult.Dictionary.Count, modelBuildResult.Model.FQN, modelBuildResult.Model.Children.Count), xLogger.Names("Dictionary Count", "Root FQN", "Root Children Count"));
 
-            //--- - ------------
-
-            //------------------------------   -
             // Attach the newly built model to the Model Manager
             Result attachResult = AttachModel(modelBuildResult);
 
             if (attachResult.ResultCode == ResultCode.Failure)
+            {
                 throw new Exception("Failed to attach the model to the Model Manager: " + attachResult.GetLastError());
+            }
 
             retVal.Incorporate(attachResult);
-            //---- - ------------  -
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -692,7 +632,9 @@ namespace OpenIIoT.Core.Model
             string[] retObj = itemFQN.Split('.');
 
             if (retObj.Length > 1)
+            {
                 return string.Join(".", retObj.Take(retObj.Count() - 1));
+            }
 
             // the root item has no path.
             return string.Empty;
@@ -760,12 +702,21 @@ namespace OpenIIoT.Core.Model
                         }
                     }
                     else
+                    {
                         retVal.AddError("The parent for item '" + item.FQN + " ('" + parentFQN + "') could not be found.");
+                    }
                 }
             }
 
-            if (Dependency<IApplicationManager>().State != State.Starting) retVal.LogResult(logger);
-            else retVal.LogResult(logger.Debug);
+            if (Dependency<IApplicationManager>().State != State.Starting)
+            {
+                retVal.LogResult(logger);
+            }
+            else
+            {
+                retVal.LogResult(logger.Debug);
+            }
+
             logger.ExitMethod();
             return retVal;
         }
@@ -780,7 +731,9 @@ namespace OpenIIoT.Core.Model
             logger.Info("Attaching Model...");
 
             if (!IsInState(State.Running, State.Starting))
+            {
                 return new Result().AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Starting states (it is currently in the " + State + " state).");
+            }
 
             Result retVal = new Result();
 
@@ -792,7 +745,9 @@ namespace OpenIIoT.Core.Model
                 Dictionary = modelBuildResult.Dictionary;
             }
             else
+            {
                 retVal.AddError("Unable to attach a model that failed to build.");
+            }
 
             retVal.LogResult(logger);
             return retVal;
@@ -806,7 +761,9 @@ namespace OpenIIoT.Core.Model
         private ModelBuildResult BuildModel()
         {
             if (!IsInState(State.Running, State.Starting))
+            {
                 return (ModelBuildResult)new Result().AddError("The current operation is invalid in the current state (it is currently in the " + State + " state).");
+            }
 
             return BuildModel(Dependency<IApplicationManager>().InstanceName, Configuration.Items);
         }
@@ -838,7 +795,9 @@ namespace OpenIIoT.Core.Model
                 {
                     logger.Info("Unresolved Item(s):");
                     foreach (ModelManagerConfigurationItem mi in retVal.UnresolvedList)
+                    {
                         logger.Info("\t" + mi.FQN);
+                    }
                 }
             }
 
@@ -912,6 +871,7 @@ namespace OpenIIoT.Core.Model
                             logger.Info("Deferring the resolution of the SourceFQN for '" + newItem.FQN + "'.");
                             result.DeferredList.Add(newItem);
                         }
+
                         // the sourceitem is either not a model item or is at a shallower depth than the current item, so it is
                         // safe to resolve.
                         else
@@ -920,7 +880,9 @@ namespace OpenIIoT.Core.Model
                             Item resolvedItem = FindProviderItem(newItem.SourceFQN);
 
                             if (resolvedItem == default(Item))
+                            {
                                 result.AddWarning("The Source FQN '" + newItem.SourceFQN + "' for item '" + newItem.FQN + "' could not be found.");
+                            }
                             else
                             {
                                 newItem.SourceItem = resolvedItem;
@@ -962,10 +924,12 @@ namespace OpenIIoT.Core.Model
 
             // if at least one item was processed at this depth, recursively call this method one level deeper
             if (items.Count() > 0)
+            {
                 BuildModel(instanceName, itemList, result, depth + 1);
-            // if nothing was processed at this depth the model is fully built. resolve the source FQNs of any deferred items
+            }
             else
             {
+                // if nothing was processed at this depth the model is fully built. resolve the source FQNs of any deferred items
                 if (result.DeferredList.Count() > 0)
                 {
                     logger.Info("Resolving the SourceFQN of " + result.DeferredList.Count() + " deferred Item(s)...");
@@ -984,10 +948,14 @@ namespace OpenIIoT.Core.Model
                                 logger.Info("Resolved the SourceFQN of '" + item.FQN + "' to '" + result.Dictionary[item.FQN].SourceItem.FQN + "'.");
                             }
                             else
+                            {
                                 result.AddWarning("The Source FQN '" + item.SourceFQN + "' for item '" + item.FQN + "' could not be found.");
+                            }
                         }
                         else
+                        {
                             result.AddWarning("Item '" + item.FQN + "' was deferred for source resolution but can't be found in the model.");
+                        }
                     }
                 }
             }
@@ -1006,14 +974,19 @@ namespace OpenIIoT.Core.Model
         private Result<Item> CopyItem(Item model, Dictionary<string, Item> dictionary, Item item, string fqn)
         {
             Result<Item> retVal = new Result<Item>();
-            if ((item == null) || (fqn == string.Empty)) return retVal;
+            if ((item == null) || (fqn == string.Empty))
+            {
+                return retVal;
+            }
 
             logger.Info("Copying Item '" + item.FQN + "' to FQN '" + fqn + "'...");
 
             Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
 
             if (parent == default(Item))
+            {
                 retVal.AddError("The parent item '" + GetParentFQNFromItemFQN(fqn) + "' was not found in the model.");
+            }
             else
             {
                 // create a clone of the item we are copying
@@ -1057,6 +1030,30 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
+        private Item FindProviderItem(string fqn, bool refreshed = false)
+        {
+            Item foundItem = default(Item);
+
+            foreach (IItemProvider provider in ProviderRegistry.Providers)
+            {
+                foundItem = provider.Find(fqn);
+                if (foundItem != default(Item))
+                {
+                    return foundItem;
+                }
+            }
+
+            if (foundItem == default(Item) && !refreshed)
+            {
+                ProviderRegistry.Discover();
+                return FindProviderItem(fqn, true);
+            }
+            else
+            {
+                return foundItem;
+            }
+        }
+
         /// <summary>
         ///     Moves the supplied Item from one place in the supplied Model and Dictionary to another based on the supplied FQN.
         /// </summary>
@@ -1073,7 +1070,9 @@ namespace OpenIIoT.Core.Model
             Item parent = FindItem(dictionary, GetParentFQNFromItemFQN(fqn));
 
             if (parent == default(Item))
+            {
                 retVal.AddError("The parent item '" + GetParentFQNFromItemFQN(fqn) + "' was not found in the model.");
+            }
             else
             {
                 // copy the item to the new location
@@ -1100,9 +1099,13 @@ namespace OpenIIoT.Core.Model
         private Result<Item> RemoveItem(Dictionary<string, Item> dictionary, Item item)
         {
             if (item != default(Item))
+            {
                 logger.Info("Removing Item '" + item.FQN + "' from the model...");
+            }
             else
+            {
                 return new Result<Item>().AddError("The specified Item is null.");
+            }
 
             Result<Item> retVal = new Result<Item>();
             retVal.ReturnValue = item;
@@ -1195,8 +1198,10 @@ namespace OpenIIoT.Core.Model
             logger.Info("Saving Model...");
 
             if (!IsInState(State.Running, State.Stopping))
+            {
                 return (Result<List<ModelManagerConfigurationItem>>)new Result()
                     .AddError("The current operation is invalid when the " + ManagerName + " is not in the Running or Stopping states (it is currently in the " + State + " state).");
+            }
 
             Result<List<ModelManagerConfigurationItem>> configuration = new Result<List<ModelManagerConfigurationItem>>();
             configuration.ReturnValue = new List<ModelManagerConfigurationItem>();
@@ -1250,7 +1255,6 @@ namespace OpenIIoT.Core.Model
 
             logger.Checkpoint("Root item", xLogger.Params(item));
 
-            //model.Clone(item);
             model = item;
 
             logger.Checkpoint("root set", xLogger.Params(model));
@@ -1266,16 +1270,4 @@ namespace OpenIIoT.Core.Model
 
         #endregion Private Methods
     }
-
-    /// <summary>
-    ///     The Model namespace encapsulates the model for the application. The model consists of two collections of Items; a
-    ///     parent/child tree of Items that implements the composite design pattern, and a dictionary keyed on the FQN of Items and
-    ///     containing a reference to the keyed Item.
-    ///
-    ///     The Item composite allows for logical management and retrieval of data from the model, while the dictionary provides
-    ///     fast lookups of model items.
-    /// </summary>
-    [System.Runtime.CompilerServices.CompilerGenerated]
-    internal class NamespaceDoc
-    { }
 }

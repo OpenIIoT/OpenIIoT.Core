@@ -45,13 +45,18 @@ namespace OpenIIoT.Core.Service.Web.API
         public HttpResponseMessage Browse(string fqn, string verbosity = "verbose")
         {
             List<Item> result = new List<Item>();
-            //result.Add(manager.ProviderRegistry.FindItem(fqn));
             result.Add(manager.GetManager<IModelManager>().FindItem(fqn));
 
             JsonMediaTypeFormatter formatter;
 
-            if (verbosity == "concise") formatter = JsonFormatter(conciseSerializationProperties, ContractResolverType.OptIn);
-            else formatter = JsonFormatter();
+            if (verbosity == "concise")
+            {
+                formatter = JsonFormatter(conciseSerializationProperties, ContractResolverType.OptIn);
+            }
+            else
+            {
+                formatter = JsonFormatter();
+            }
 
             logger.Info("API request; FQN:" + fqn + "; Verbosity: " + verbosity + ". Remote IP: " + Request.GetOwinContext().Request.RemoteIpAddress + "; returning HTTP 200/OK");
             return Request.CreateResponse(HttpStatusCode.OK, result, formatter);

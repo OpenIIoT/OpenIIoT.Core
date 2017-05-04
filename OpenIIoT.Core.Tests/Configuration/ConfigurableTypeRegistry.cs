@@ -78,7 +78,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ConfigurationRegistry"/> class.
+        ///     Initializes a new instance of the <see cref="ConfigurableTypeRegistry"/> class.
         /// </summary>
         public ConfigurableTypeRegistry()
         {

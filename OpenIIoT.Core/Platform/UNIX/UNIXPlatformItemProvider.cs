@@ -97,7 +97,8 @@ namespace OpenIIoT.Core.Platform.UNIX
         ///     Initializes a new instance of the <see cref="UNIXPlatformItemProvider"/> class.
         /// </summary>
         /// <param name="itemProviderName">The name of the Item Provider.</param>
-        public UNIXPlatformItemProvider(string itemProviderName) : base(itemProviderName)
+        public UNIXPlatformItemProvider(string itemProviderName)
+            : base(itemProviderName)
         {
             actions = new Dictionary<string, Func<object>>();
 

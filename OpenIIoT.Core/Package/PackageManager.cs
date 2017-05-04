@@ -44,10 +44,10 @@ using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
+using OpenIIoT.SDK.Configuration;
+using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Package;
-using OpenIIoT.SDK.Configuration;
 
 namespace OpenIIoT.Core.Package
 {
@@ -182,9 +182,9 @@ namespace OpenIIoT.Core.Package
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
                 Configure(fetchResult.ReturnValue);
             }
-            // if the fetch failed, add a new default instance to the configuration and try again.
             else
             {
+                // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
                 IResult<PackageManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<PackageManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)

@@ -37,14 +37,16 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         #region Constructors
 
         /// <summary>
-        ///     Constructs a new instance of the hub with the supplied ApplicationManager.
+        ///     Initializes a new instance of the <see cref="ItemHub"/> class with the supplied ApplicationManager.
         /// </summary>
         public ItemHub()
         {
             // if hubManager is null, create a new instance. this ensures that there is only one copy for the hub regardless of the
             // number of instances.
             if (hubManager == default(HubHelper))
+            {
                 hubManager = new HubHelper(manager, this);
+            }
         }
 
         #endregion Constructors
@@ -224,7 +226,6 @@ namespace OpenIIoT.Core.Service.Web.SignalR
 
             string castFQN = (string)args[0];
 
-            //Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
             Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
 
             if (foundItem != default(Item))
