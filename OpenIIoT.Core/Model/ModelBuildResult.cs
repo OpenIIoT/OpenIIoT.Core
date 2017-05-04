@@ -19,9 +19,10 @@ namespace OpenIIoT.Core.Model
         #region Public Constructors
 
         /// <summary>
-        ///     The default constructor.
+        ///     Initializes a new instance of the <see cref="ModelBuildResult"/> class.
         /// </summary>
-        public ModelBuildResult() : base()
+        public ModelBuildResult()
+            : base()
         {
             Model = new Item();
             Dictionary = new Dictionary<string, Item>();
@@ -35,28 +36,28 @@ namespace OpenIIoT.Core.Model
         #region Public Properties
 
         /// <summary>
-        ///     The list of model items that were defferred during the build. This occurs if the item's SourceFQN is a model item
-        ///     (instead of a plugin item) and it is at a greater depth in the model than the item itself.
+        ///     Gets or sets the list of model items that were defferred during the build. This occurs if the item's SourceFQN is a
+        ///     model item (instead of a plugin item) and it is at a greater depth in the model than the item itself.
         /// </summary>
         public List<Item> DeferredList { get; set; }
 
         /// <summary>
-        ///     The dictionary of model items and FQNs created by the build result.
+        ///     Gets or sets the dictionary of model items and FQNs created by the build result.
         /// </summary>
         public Dictionary<string, Item> Dictionary { get; set; }
 
         /// <summary>
-        ///     The Item model created by the build result.
+        ///     Gets or sets the Item model created by the build result.
         /// </summary>
         public Item Model { get; set; }
 
         /// <summary>
-        ///     The list of model items that were resolved during the build.
+        ///     Gets or sets the list of model items that were resolved during the build.
         /// </summary>
         public List<ModelManagerConfigurationItem> ResolvedList { get; set; }
 
         /// <summary>
-        ///     The list of model items that couldn't be resolved during the build.
+        ///     Gets or sets the list of model items that couldn't be resolved during the build.
         /// </summary>
         public List<ModelManagerConfigurationItem> UnresolvedList { get; set; }
 

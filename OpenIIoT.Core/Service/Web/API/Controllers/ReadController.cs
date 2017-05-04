@@ -73,11 +73,12 @@ namespace OpenIIoT.Core.Service.Web.API
 
             fqn = fqn.Replace("%25", "%");
 
-            //Item foundItem = manager.ProviderRegistry.FindItem(fqn);
             Item foundItem = manager.GetManager<IModelManager>().FindItem(fqn);
 
             if (fromSource)
+            {
                 foundItem.ReadFromSource();
+            }
 
             retVal.ReturnValue.Add(foundItem);
 

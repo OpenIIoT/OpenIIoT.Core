@@ -11,21 +11,14 @@ namespace OpenIIoT.Core.Service
 {
     public class ServiceManager : Manager, IManager
     {
-        #region Variables
+        #region Private Fields
 
         private static ServiceManager instance;
-        new private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
-        #endregion Variables
+        #endregion Private Fields
 
-        #region Properties
-
-        public Dictionary<string, IService> Services { get; private set; }
-        public Dictionary<string, Type> ServiceTypes { get; private set; }
-
-        #endregion Properties
-
-        #region Constructors
+        #region Private Constructors
 
         private ServiceManager(IApplicationManager manager, IConfigurationManager configurationManager)
         {
@@ -43,17 +36,31 @@ namespace OpenIIoT.Core.Service
             ServiceTypes = new Dictionary<string, Type>();
         }
 
+        #endregion Private Constructors
+
+        #region Public Properties
+
+        public Dictionary<string, IService> Services { get; private set; }
+
+        public Dictionary<string, Type> ServiceTypes { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
+
         public static ServiceManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             if (instance == null)
+            {
                 instance = new ServiceManager(manager, configurationManager);
+            }
 
             return instance;
         }
 
-        #endregion Constructors
+        #endregion Public Methods
 
-        #region Instance Methods
+        #region Protected Methods
 
         protected override Result Shutdown(StopType stopType = StopType.Stop)
         {
@@ -83,10 +90,14 @@ namespace OpenIIoT.Core.Service
                     retVal = StartServices();
                 }
                 else
+                {
                     retVal.AddError("Failed to instantiate Services. " + retVal.GetLastError());
+                }
             }
             else
+            {
                 retVal.AddError("Failed to register Service types. " + retVal.GetLastError());
+            }
 
             retVal.Incorporate(registerResult);
 
@@ -94,6 +105,10 @@ namespace OpenIIoT.Core.Service
             logger.ExitMethod(guid);
             return retVal;
         }
+
+        #endregion Protected Methods
+
+        #region Private Methods
 
         private Result<Dictionary<string, IService>> InstantiateServices()
         {
@@ -117,9 +132,13 @@ namespace OpenIIoT.Core.Service
                     IService serviceInstance = (IService)serviceTypes[serviceType].GetMethod("Instance").Invoke(null, new object[] { Dependency<IApplicationManager>() });
 
                     if (serviceInstance != default(IService))
+                    {
                         retVal.ReturnValue.Add(serviceType, serviceInstance);
+                    }
                     else
+                    {
                         retVal.AddWarning("Unable to instantiate service '" + serviceType + "'.");
+                    }
                 }
             }
             catch (Exception ex)
@@ -182,25 +201,33 @@ namespace OpenIIoT.Core.Service
                     Result startResult = service.Start();
 
                     if (startResult.ResultCode == ResultCode.Failure)
+                    {
                         retVal.AddWarning("Failed to start service '" + serviceName + "'.");
+                    }
                     else
                     {
                         logger.Info("Started service '" + serviceName + "'.");
 
                         if (startResult.ResultCode == ResultCode.Warning)
+                        {
                             startResult.LogAllMessages(logger.Debug, "The following warnings were generated when starting '" + serviceName + "':");
+                        }
                     }
+
                     if (!service.IsRunning)
+                    {
                         retVal.AddWarning("The '" + serviceName + "' service started successfully and then immediately stopped.");
+                    }
                 }
                 catch (Exception ex)
                 {
                     throw new Exception("Exception thrown while starting services: " + ex);
                 }
             }
+
             return retVal;
         }
 
-        #endregion Instance Methods
+        #endregion Private Methods
     }
 }

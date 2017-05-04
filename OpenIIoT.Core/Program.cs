@@ -495,8 +495,6 @@ namespace OpenIIoT.Core
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.Binary.DynamicImage").SubscribeToSource();
                 subscribe.LogResult(logger.Info);
 
-                //Result subscribe2 = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.System.Platform.Memory.Available").SubscribeToSource();
-
                 applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
             }
             catch (Exception ex)

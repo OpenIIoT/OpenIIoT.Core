@@ -64,7 +64,7 @@ namespace OpenIIoT.Core.Tests
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.Utility.DisableLoggingLevel(LogLevel)"/> method.
+        ///     Tests the <see cref="Core.Utility.DisableLoggingLevel(NLog.LogLevel)"/> method.
         /// </summary>
         [Fact]
         public void DisableLoggingLevel()
@@ -85,7 +85,7 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Utility.EnableLoggingLevel(LogLevel)"/> method.
+        ///     Tests the <see cref="Core.Utility.EnableLoggingLevel(NLog.LogLevel)"/> method.
         /// </summary>
         [Fact]
         public void EnableLoggingLevel()

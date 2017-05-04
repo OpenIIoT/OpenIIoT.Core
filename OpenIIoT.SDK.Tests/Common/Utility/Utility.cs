@@ -111,7 +111,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.ComputeHash(string, string)"/> method.
+        ///     Tests the <see cref="SDK.Common.Utility.ComputeSHA512Hash(string)"/> method.
         /// </summary>
         [Fact]
         public void ComputeSHA512Hash()
@@ -125,7 +125,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.HasCustomAttribute{T}(object)"/> extension method.
+        ///     Tests the <see cref="SDK.Common.Utility.HasCustomAttribute{T}(System.Reflection.MemberInfo)"/> extension method.
         /// </summary>
         [Fact]
         public void HasAttribute()

@@ -84,7 +84,7 @@ namespace OpenIIoT.Core.Configuration
     ///         can load and save configuration data.
     ///         <para></para>
     ///         Before any Type can use the Configuration Manager, the method
-    ///         <see cref="SDK.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method within the
+    ///         <see cref="IConfigurableTypeRegistry.RegisterType(Type, bool)"/> method within the
     ///         <see cref="ConfigurableTypeRegistry"/> must be called and passed the Type of that class. This method fetches the
     ///         ConfigurationDefinition for the Type from the static method GetConfigurationDefinition and stores the Type and the
     ///         ConfigurationDefinition in the RegisteredTypes dictionary.

@@ -8,18 +8,10 @@ namespace OpenIIoT.Core.Package
     /// </summary>
     public class Package : IPackage
     {
-        /// <summary>
-        ///     The fully qualified filename of the file.
-        /// </summary>
-        public string FileName { get; private set; }
+        #region Public Constructors
 
         /// <summary>
-        ///     The Plugin contained within the archive.
-        /// </summary>
-        public IPlugin Plugin { get; private set; }
-
-        /// <summary>
-        ///     The default constructor.
+        ///     Initializes a new instance of the <see cref="Package"/> class.
         /// </summary>
         /// <param name="fileName">The fully qualified filename of the file.</param>
         /// <param name="checksum">The checksum of the file.</param>
@@ -29,6 +21,24 @@ namespace OpenIIoT.Core.Package
             FileName = fileName;
             Plugin = plugin;
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the fully qualified filename of the file.
+        /// </summary>
+        public string FileName { get; private set; }
+
+        /// <summary>
+        ///     Gets the Plugin contained within the archive.
+        /// </summary>
+        public IPlugin Plugin { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Sets the FileName property to the provided value.
@@ -47,5 +57,7 @@ namespace OpenIIoT.Core.Package
         {
             Plugin = plugin;
         }
+
+        #endregion Public Methods
     }
 }

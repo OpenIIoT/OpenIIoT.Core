@@ -74,7 +74,8 @@ namespace OpenIIoT.Core.Configuration
         ///     Initializes a new instance of the <see cref="Configuration"/> class with the specified Type registry.
         /// </summary>
         /// <param name="registry">The Type registry with which to initialize the configuration.</param>
-        public Configuration(IConfigurableTypeRegistry registry) : this(registry, new Dictionary<string, Dictionary<string, object>>())
+        public Configuration(IConfigurableTypeRegistry registry)
+            : this(registry, new Dictionary<string, Dictionary<string, object>>())
         {
         }
 

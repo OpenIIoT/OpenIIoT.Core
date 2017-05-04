@@ -8,26 +8,26 @@ namespace OpenIIoT.Core.Model
     /// </summary>
     public class ModelManagerConfiguration
     {
-        #region Properties
+        #region Public Constructors
 
         /// <summary>
-        ///     The list of Items contained within the model.
-        /// </summary>
-        public List<ModelManagerConfigurationItem> Items { get; set; }
-
-        #endregion Properties
-
-        #region Constructors
-
-        /// <summary>
-        ///     Default constructor.
+        ///     Initializes a new instance of the <see cref="ModelManagerConfiguration"/> class.
         /// </summary>
         public ModelManagerConfiguration()
         {
             Items = new List<ModelManagerConfigurationItem>();
         }
 
-        #endregion Constructors
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets the list of Items contained within the model.
+        /// </summary>
+        public List<ModelManagerConfigurationItem> Items { get; set; }
+
+        #endregion Public Properties
     }
 
     /// <summary>
@@ -35,23 +35,21 @@ namespace OpenIIoT.Core.Model
     /// </summary>
     public class ModelManagerConfigurationItem : ICloneable
     {
-        #region Properties
+        #region Public Properties
 
         /// <summary>
-        ///     The FQN of the item.
+        ///     Gets or sets the FQN of the item.
         /// </summary>
         public string FQN { get; set; }
 
         /// <summary>
-        ///     The FQN of the source item.
+        ///     Gets or sets the FQN of the source item.
         /// </summary>
         public string SourceFQN { get; set; }
 
-        #endregion Properties
+        #endregion Public Properties
 
-        #region Instance Methods
-
-        #region ICloneable Implementation
+        #region Public Methods
 
         /// <summary>
         ///     Creates a new copy of this item.
@@ -61,8 +59,6 @@ namespace OpenIIoT.Core.Model
         {
             return new ModelManagerConfigurationItem() { FQN = this.FQN, SourceFQN = this.SourceFQN };
         }
-
-        #endregion ICloneable Implementation
 
         /// <summary>
         ///     Returns true if the provided object is equal to this object, false otherwise.
@@ -82,7 +78,7 @@ namespace OpenIIoT.Core.Model
                 return false;
             }
 
-            return (this.FQN == rightSide.FQN);
+            return FQN == rightSide.FQN;
         }
 
         /// <summary>
@@ -103,6 +99,6 @@ namespace OpenIIoT.Core.Model
             return "FQN = " + FQN + "; SourceFQN = " + SourceFQN;
         }
 
-        #endregion Instance Methods
+        #endregion Public Methods
     }
 }

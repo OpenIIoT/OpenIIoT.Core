@@ -12,7 +12,7 @@ namespace OpenIIoT.Core.Plugin
         #region Public Constructors
 
         /// <summary>
-        ///     The default constructor.
+        ///     Initializes a new instance of the <see cref="PluginAssembly"/> class.
         /// </summary>
         /// <param name="name">The name of the Plugin.</param>
         /// <param name="fqn">The Fully Qualified Name of the Plugin.</param>
@@ -37,12 +37,12 @@ namespace OpenIIoT.Core.Plugin
         #region Public Properties
 
         /// <summary>
-        ///     The Plugin assembly.
+        ///     Gets the Plugin assembly.
         /// </summary>
         public Assembly Assembly { get; private set; }
 
         /// <summary>
-        ///     The cryptographic fingerprint of the Plugin.
+        ///     Gets the cryptographic fingerprint of the Plugin.
         /// </summary>
         /// <remarks>
         ///     The SHA256 checksum of the Plugin assembly hashed again using the SHA256 algorithm and salted with the FQN + Version.
@@ -50,27 +50,27 @@ namespace OpenIIoT.Core.Plugin
         public string Fingerprint { get; private set; }
 
         /// <summary>
-        ///     The Fully Qualified Name of the Plugin.
+        ///     Gets the Fully Qualified Name of the Plugin.
         /// </summary>
         public string FQN { get; private set; }
 
         /// <summary>
-        ///     The name of the Plugin.
+        ///     Gets the name of the Plugin.
         /// </summary>
         public string Name { get; private set; }
 
         /// <summary>
-        ///     The type of Plugin.
+        ///     Gets the type of Plugin.
         /// </summary>
         public PluginType PluginType { get; private set; }
 
         /// <summary>
-        ///     The Type of the Plugin contained within the Plugin assembly.
+        ///     Gets the Type of the Plugin contained within the Plugin assembly.
         /// </summary>
         public Type Type { get; private set; }
 
         /// <summary>
-        ///     The version of the Plugin.
+        ///     Gets the version of the Plugin.
         /// </summary>
         /// <remarks>
         ///     Formatting is discretionary. Any comparisons between versions will be "equals" rather than greater than/less than.

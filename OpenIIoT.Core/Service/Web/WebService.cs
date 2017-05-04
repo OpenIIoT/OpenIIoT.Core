@@ -18,15 +18,18 @@ namespace OpenIIoT.Core.Service.Web
         /// </summary>
         /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
         [ThreadStatic]
-        internal static WebServiceConfiguration configuration;
+        private static WebServiceConfiguration configuration;
 
         #endregion Internal Fields
 
         #region Private Fields
 
         private static WebService instance;
+
         private static Logger logger = LogManager.GetCurrentClassLogger();
+
         private static IDisposable server;
+
         private ApplicationManager manager;
 
         #endregion Private Fields
@@ -45,10 +48,14 @@ namespace OpenIIoT.Core.Service.Web
         #region Public Properties
 
         public Dictionary<string, ApiController> ApiControllers { get; private set; }
+
         public WebServiceConfiguration Configuration { get; private set; }
-        public IConfigurationDefinition ConfigurationDefinition { get { return GetConfigurationDefinition(); } }
+
+        public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
+
         public Dictionary<string, Hub> Hubs { get; private set; }
-        public bool IsRunning { get { return (server != null); } }
+
+        public bool IsRunning => server != null;
 
         public string URL { get; private set; }
 
@@ -59,7 +66,18 @@ namespace OpenIIoT.Core.Service.Web
         /// <summary>
         ///     Provies configuration accessibility to the Owin startup class.
         /// </summary>
-        internal static WebServiceConfiguration GetConfiguration { get { return configuration; } set { configuration = value; } }
+        internal static WebServiceConfiguration GetConfiguration
+        {
+            get
+            {
+                return configuration;
+            }
+
+            set
+            {
+                configuration = value;
+            }
+        }
 
         #endregion Internal Properties
 
@@ -84,7 +102,9 @@ namespace OpenIIoT.Core.Service.Web
         public static WebService Instance(ApplicationManager manager)
         {
             if (instance == null)
+            {
                 instance = new WebService(manager);
+            }
 
             return instance;
         }
@@ -97,13 +117,17 @@ namespace OpenIIoT.Core.Service.Web
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
+            {
                 Configure(fetchResult.ReturnValue);
-            // if the fetch failed, add a new default instance to the configuration and try again.
+            }
             else
             {
+                // if the fetch failed, add a new default instance to the configuration and try again.
                 IResult<WebServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstance<WebServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
+                {
                     Configure(createResult.ReturnValue);
+                }
             }
 
             return Configure(manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebServiceConfiguration>(this.GetType()).ReturnValue);
@@ -168,6 +192,7 @@ namespace OpenIIoT.Core.Service.Web
         #region Public Properties
 
         public int Port { get; set; }
+
         public string Root { get; set; }
 
         #endregion Public Properties

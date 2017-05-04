@@ -303,7 +303,8 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <typeparam name="T">The Type of the Manager to return.</typeparam>
         /// <returns>The requested Manager.</returns>
-        public T GetManager<T>() where T : IManager
+        public T GetManager<T>()
+            where T : IManager
         {
             return ManagerInstances.OfType<T>().FirstOrDefault();
         }
@@ -376,7 +377,8 @@ namespace OpenIIoT.Core
         /// <exception cref="ManagerDependencyException">
         ///     Thrown when an exception is caught while retrieving the dependencies for the specified Type.
         /// </exception>
-        private List<Type> GetManagerDependencies<T>() where T : IManager
+        private List<Type> GetManagerDependencies<T>()
+            where T : IManager
         {
             logger.EnterMethod(xLogger.TypeParams(typeof(T)));
             logger.Trace("Retrieving dependencies for '" + typeof(T).Name + "'...");
@@ -428,7 +430,8 @@ namespace OpenIIoT.Core
         /// <exception cref="ManagerInstantiationException">
         ///     Thrown when an error is encountered while instantiating the specified Manager Type.
         /// </exception>
-        private T InstantiateManager<T>() where T : IManager
+        private T InstantiateManager<T>()
+            where T : IManager
         {
             logger.EnterMethod(xLogger.TypeParams(typeof(T)));
             logger.Trace("Creating new instance of '" + typeof(T).Name + "'...");
@@ -552,7 +555,8 @@ namespace OpenIIoT.Core
         /// </param>
         /// <param name="parameters">Optional parameters to be included with the method invocation.</param>
         /// <returns>The value returned by the method invocation.</returns>
-        private T InvokeMethod<T>(MethodInfo method, Type type, Type exceptionType, string exceptionMessage, object[] parameters = null) where T : IManager
+        private T InvokeMethod<T>(MethodInfo method, Type type, Type exceptionType, string exceptionMessage, object[] parameters = null)
+            where T : IManager
         {
             logger.EnterMethod(xLogger.Params(method, type, exceptionType, exceptionMessage, parameters));
 
@@ -577,7 +581,8 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <typeparam name="T">The Manager Type to check.</typeparam>
         /// <returns>A value indicating whether the specified Manager has been registered.</returns>
-        private bool IsManagerRegistered<T>() where T : IManager
+        private bool IsManagerRegistered<T>()
+            where T : IManager
         {
             return ManagerInstances.OfType<T>().Count() > 0;
         }
@@ -600,7 +605,8 @@ namespace OpenIIoT.Core
         /// <param name="manager">The Manager to register.</param>
         /// <returns>The registered Manager.</returns>
         /// <exception cref="ManagerRegistrationException">Thrown when an error is encountered during registration.</exception>
-        private T RegisterManager<T>(IManager manager) where T : IManager
+        private T RegisterManager<T>(IManager manager)
+            where T : IManager
         {
             logger.EnterMethod(xLogger.TypeParams(typeof(T)), xLogger.Params(manager));
             logger.Trace("Registering Manager '" + manager.GetType().Name + "'...");
@@ -645,7 +651,8 @@ namespace OpenIIoT.Core
         /// <exception cref="ManagerDependencyException">
         ///     Thrown when an exception is caught while resolving the dependencies for the specified Manager Type.
         /// </exception>
-        private List<IManager> ResolveManagerDependencies<T>() where T : IManager
+        private List<IManager> ResolveManagerDependencies<T>()
+            where T : IManager
         {
             logger.EnterMethod(xLogger.TypeParams(typeof(T)));
             logger.Trace("Resolving dependencies for '" + typeof(T).Name + "'...");

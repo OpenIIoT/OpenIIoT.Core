@@ -20,6 +20,7 @@ namespace OpenIIoT.Core.Plugin
         #region Public Properties
 
         public List<Plugin> InstalledPlugins { get; set; }
+
         public List<PluginManagerConfigurationPluginInstance> Instances { get; set; }
 
         #endregion Public Properties
@@ -30,6 +31,7 @@ namespace OpenIIoT.Core.Plugin
         #region Public Properties
 
         public string AssemblyName { get; set; }
+
         public string InstanceName { get; set; }
 
         #endregion Public Properties

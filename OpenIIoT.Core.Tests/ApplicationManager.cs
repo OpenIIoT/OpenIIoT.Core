@@ -310,7 +310,7 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Start()"/> and <see cref="Manager.Stop()"/>
+        ///     Tests <see cref="Manager.Start()"/> and <see cref="Manager.Stop(StopType)"/>
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManager"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -330,7 +330,7 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Stop()"/> with a Manager known to return a failed Result from shutdown.
+        ///     Tests <see cref="Manager.Stop(StopType)"/> with a Manager known to return a failed Result from shutdown.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManagerStopBadReturn"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -350,7 +350,7 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="Manager.Stop()"/> with a Manager known to throw an exception during shutdown.
+        ///     Tests <see cref="Manager.Stop(StopType)"/> with a Manager known to throw an exception during shutdown.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManagerStopFail"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -496,7 +496,7 @@ namespace OpenIIoT.Core.Tests
     }
 
     /// <summary>
-    ///     Mocks a Manager that is missing the implementation not inherited from the base <see cref="Core.Manager"/> class.
+    ///     Mocks a Manager that is missing the implementation not inherited from the base <see cref="Manager"/> class.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the need to remove the Instantiate() method to
@@ -511,8 +511,8 @@ namespace OpenIIoT.Core.Tests
     ///     Mocks a Manager that throws an exception within the <see cref="Manager.Setup()"/> method.
     /// </summary>
     /// <remarks>
-    ///     It is not feasible to use a mocking framework for this mockup due to the <see cref="protected"/> access level of the
-    ///     <see cref="Manager.Setup()"/> method.
+    ///     It is not feasible to use a mocking framework for this mockup due to the <see langword="protected"/> access level of
+    ///     the <see cref="Manager.Setup()"/> method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class MockManagerBroken : SDK.Common.Manager

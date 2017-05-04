@@ -35,7 +35,7 @@ namespace OpenIIoT.Core.Service.Web.SignalR
         #region Constructors
 
         /// <summary>
-        ///     Constructs a new instance of the hub with the supplied ApplicationManager.
+        ///     Initializes a new instance of the <see cref="LogHub"/> class with the supplied ApplicationManager.
         /// </summary>
         public LogHub()
         {

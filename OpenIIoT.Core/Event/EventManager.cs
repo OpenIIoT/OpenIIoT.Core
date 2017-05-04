@@ -44,13 +44,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using NLog;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Event;
-using OpenIIoT.SDK;
 using NLog.xLogger;
-using Utility.OperationResult;
+using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
+using OpenIIoT.SDK.Configuration;
+using OpenIIoT.SDK.Event;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Event
 {
@@ -76,7 +76,7 @@ namespace OpenIIoT.Core.Event
         #region Private Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the EventManager class.
+        ///     Initializes a new instance of the <see cref="EventManager"/> class.
         /// </summary>
         /// <remarks>
         ///     This constructor is marked private and is intended to be called from the

@@ -827,7 +827,8 @@ namespace OpenIIoT.Core.Tests.Platform
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlatformMock"/> class.
         /// </summary>
-        public PlatformMock(IDirectories directories) : base(directories)
+        public PlatformMock(IDirectories directories)
+            : base(directories)
         {
             PlatformType = PlatformType.Unknown;
             Version = "1.0";

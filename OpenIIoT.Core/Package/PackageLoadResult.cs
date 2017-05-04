@@ -18,9 +18,10 @@ namespace OpenIIoT.Core.Package
         #region Public Constructors
 
         /// <summary>
-        ///     The default constructor.
+        ///     Initializes a new instance of the <see cref="PackageLoadResult"/> class.
         /// </summary>
-        public PackageLoadResult() : base()
+        public PackageLoadResult()
+            : base()
         {
             ValidPackages = new List<IPackage>();
             InvalidPackages = new List<IInvalidPackage>();
@@ -31,12 +32,12 @@ namespace OpenIIoT.Core.Package
         #region Public Properties
 
         /// <summary>
-        ///     The list of invalid Plugin Packages and the reason they failed validation.
+        ///     Gets or sets the list of invalid Plugin Packages and the reason they failed validation.
         /// </summary>
         public IList<IInvalidPackage> InvalidPackages { get; set; }
 
         /// <summary>
-        ///     The list of valid Plugin Packages discovered during the load.
+        ///     Gets or sets the list of valid Plugin Packages discovered during the load.
         /// </summary>
         public IList<IPackage> ValidPackages { get; set; }
 

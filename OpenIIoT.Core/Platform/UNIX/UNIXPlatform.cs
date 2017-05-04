@@ -56,7 +56,8 @@ namespace OpenIIoT.Core.Platform.UNIX
         /// <summary>
         ///     Initializes a new instance of the <see cref="UNIXPlatform"/> class.
         /// </summary>
-        public UNIXPlatform(IDirectories directories) : base(directories)
+        public UNIXPlatform(IDirectories directories)
+            : base(directories)
         {
             PlatformType = PlatformType.UNIX;
             Version = Environment.OSVersion.VersionString;
