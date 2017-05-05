@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,11 +18,21 @@ namespace OpenIIoT.SDK.Package.Packaging
 
         #region Public Methods
 
-        public static void ExtractPackage(string packageFile, string outputDirectory)
+        public static void ExtractPackage(string packageFile, string outputDirectory, bool skipVerification = false)
         {
             ValidatePackageFileArgument(packageFile);
+            ValidateOutputDirectoryArgument(outputDirectory);
 
-            OnUpdated("Not yet implemented.");
+            if (!skipVerification)
+            {
+                PackageVerifier.VerifyPackage(packageFile);
+            }
+            else
+            {
+                OnUpdated("Package verification skipped.");
+            }
+
+            ZipFile.ExtractToDirectory(packageFile, outputDirectory);
         }
 
         #endregion Public Methods

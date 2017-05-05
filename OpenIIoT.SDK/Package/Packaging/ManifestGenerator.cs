@@ -41,8 +41,8 @@
 
 using System;
 using System.IO;
-using OpenIIoT.SDK.Package.Manifest;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Package.Manifest;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
@@ -53,6 +53,9 @@ namespace OpenIIoT.SDK.Package.Packaging
     {
         #region Public Events
 
+        /// <summary>
+        ///     Raised when a new status message is generated.
+        /// </summary>
         public static event EventHandler<PackagingUpdateEventArgs> Updated;
 
         #endregion Public Events
@@ -67,7 +70,8 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <param name="includeResources">A value indicating whether resource files are to be added to the manifest.</param>
         /// <param name="hashFiles">A value indicating whether files added to the manifest are to include a SHA512 hash.</param>
         /// <param name="manifestFile">The filename of the file to which the manifest is to be saved.</param>
-        public static PackageManifest GenerateManifest(string inputDirectory, bool includeResources, bool hashFiles, string manifestFile)
+        /// <returns>The generated manifest.</returns>
+        public static PackageManifest GenerateManifest(string inputDirectory, bool includeResources = false, bool hashFiles = false, string manifestFile = "")
         {
             ValidateInputDirectoryArgument(inputDirectory);
 
@@ -75,7 +79,7 @@ namespace OpenIIoT.SDK.Package.Packaging
 
             PackageManifestBuilder builder = new PackageManifestBuilder();
 
-            OnUpdated("Generating new manifest...");
+            OnUpdated($"Generating manifest for directory '{inputDirectory}'...");
 
             builder.BuildDefault();
 
@@ -126,7 +130,7 @@ namespace OpenIIoT.SDK.Package.Packaging
 
             if (type == PackageManifestFileType.Binary || type == PackageManifestFileType.WebIndex || (type == PackageManifestFileType.Resource && includeResources))
             {
-                OnUpdated($"Adding '{file}'...");
+                OnUpdated($"Adding file '{file}'...");
                 PackageManifestFile newFile = new PackageManifestFile();
 
                 newFile.Source = Common.Utility.GetRelativePath(directory, file);
@@ -165,6 +169,10 @@ namespace OpenIIoT.SDK.Package.Packaging
             }
         }
 
+        /// <summary>
+        ///     Raises the <see cref="Updated"/> event with the specified message.
+        /// </summary>
+        /// <param name="message">The message to send.</param>
         private static void OnUpdated(string message)
         {
             if (Updated != null)
@@ -177,7 +185,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         ///     Validates the inputDirectory argument for <see cref="GenerateManifest(string, bool, bool, string)"/>.
         /// </summary>
         /// <param name="inputDirectory">The value specified for the inputDirectory argument.</param>
-        /// <exception cref="ArgumentException">Thrown when the directory is a default or null string.</exception>
+        /// <exception cref="ArgumentException">Thrown when the directory is an empty or null string.</exception>
         /// <exception cref="DirectoryNotFoundException">
         ///     Thrown when the directory can not be found on the local file system.
         /// </exception>
