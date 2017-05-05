@@ -98,7 +98,7 @@ namespace OpenIIoT.SDK.Package.Packaging
 
             PackageManifest manifest = ValidateManifestFileArgumentAndRetrieveManifest(manifestFile);
 
-            OnUpdated($"Creating package {Path.GetFileName(packageFile)} from {inputDirectory} using manifest file {Path.GetFileName(manifestFile)}...");
+            OnUpdated($"Creating package '{Path.GetFileName(packageFile)}' from directory '{inputDirectory}' using manifest file '{Path.GetFileName(manifestFile)}'...");
 
             if (signPackage)
             {
@@ -239,7 +239,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         {
             if (inputDirectory == default(string) || inputDirectory == string.Empty)
             {
-                throw new ArgumentException($"The required argument 'directory' (-d) was not supplied.");
+                throw new ArgumentException($"The required argument 'directory' was not supplied.");
             }
 
             if (!Directory.Exists(inputDirectory))
@@ -298,7 +298,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         {
             if (manifestFile == default(string) || manifestFile == string.Empty)
             {
-                throw new ArgumentException("The required argument 'manifest' (-m) was not supplied.");
+                throw new ArgumentException("The required argument 'manifest' was not supplied.");
             }
 
             if (!File.Exists(manifestFile))
@@ -310,7 +310,7 @@ namespace OpenIIoT.SDK.Package.Packaging
 
             if (manifestContents.Length == 0)
             {
-                throw new InvalidDataException($"The specified manifests file '{manifestFile}' is empty.");
+                throw new InvalidDataException($"The specified manifest file '{manifestFile}' is empty.");
             }
 
             // fetch and deserialize the PackageManifest from the specified file
@@ -338,7 +338,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         {
             if (packageFile == default(string) || packageFile == string.Empty)
             {
-                throw new ArgumentException($"The required argument 'package' (-p|--package) was not supplied.");
+                throw new ArgumentException($"The required argument 'package' was not supplied.");
             }
 
             try
@@ -359,7 +359,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// </summary>
         /// <param name="signPackage">The value specified for the signPackage argument.</param>
         /// <param name="privateKeyFile">The value specified for the privateKeyFile argument.</param>
-        /// <param name="password">the value specified for the privateKeyPassword argument.</param>
+        /// <param name="passphrase">the value specified for the privateKeyPassphrase argument.</param>
         /// <param name="keybaseUsername">
         ///     The Keybase.io username of the account hosting the PGP public key used for digest verification.
         /// </param>
@@ -370,13 +370,13 @@ namespace OpenIIoT.SDK.Package.Packaging
         ///     Thrown when the private or public key files can not be found on the local file system.
         /// </exception>
         /// <exception cref="InvalidDataException">Thrown when the private or public key files are empty.</exception>
-        private static void ValidateSignatureArguments(bool signPackage, string privateKeyFile, string password, string keybaseUsername)
+        private static void ValidateSignatureArguments(bool signPackage, string privateKeyFile, string passphrase, string keybaseUsername)
         {
             if (signPackage)
             {
                 if (privateKeyFile == default(string) || privateKeyFile == string.Empty)
                 {
-                    throw new ArgumentException($"The required argument 'private-key' (-r) was not supplied.");
+                    throw new ArgumentException($"The required argument 'private key' was not supplied.");
                 }
 
                 if (!File.Exists(privateKeyFile))
@@ -384,19 +384,30 @@ namespace OpenIIoT.SDK.Package.Packaging
                     throw new FileNotFoundException($"The specified private key file '{privateKeyFile}' could not be found.");
                 }
 
-                if (File.ReadAllText(privateKeyFile).Length == 0)
+                string key = File.ReadAllText(privateKeyFile);
+
+                if (key.Length == 0)
                 {
                     throw new InvalidDataException($"The specified private key file '{privateKeyFile}' is empty.");
                 }
 
-                if (password == default(string) || password == string.Empty)
+                if (passphrase == default(string) || passphrase == string.Empty)
                 {
-                    throw new ArgumentException($"The required argument 'private-key-password' (-r) was not supplied.");
+                    throw new ArgumentException($"The required argument 'private key passphrase' was not supplied.");
+                }
+
+                try
+                {
+                    byte[] testSignature = PGPSignature.Sign(new byte[] { }, key, passphrase);
+                }
+                catch (Exception ex)
+                {
+                    throw new ArgumentException($"There is a problem with either the specified private key file or passphrase: {ex.GetType().Name}: {ex.Message}.");
                 }
 
                 if (keybaseUsername == default(string) || keybaseUsername == string.Empty)
                 {
-                    throw new ArgumentException($"The required argument 'keybase-username' (-u) was not supplied.");
+                    throw new ArgumentException($"The required argument 'keybase username' was not supplied.");
                 }
             }
         }

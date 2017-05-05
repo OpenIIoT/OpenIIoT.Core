@@ -159,7 +159,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         {
             if (string.IsNullOrEmpty(packageFile))
             {
-                throw new ArgumentException($"The required argument 'package' (-p|--package) was not supplied.");
+                throw new ArgumentException($"The required argument 'package' was not supplied.");
             }
 
             if (!File.Exists(packageFile))

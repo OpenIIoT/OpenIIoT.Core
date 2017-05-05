@@ -191,7 +191,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         {
             if (inputDirectory == default(string) || inputDirectory == string.Empty)
             {
-                throw new ArgumentException($"The required argument 'directory' (-d) was not supplied.");
+                throw new ArgumentException($"The required argument 'directory' was not supplied.");
             }
 
             if (!Directory.Exists(inputDirectory))
