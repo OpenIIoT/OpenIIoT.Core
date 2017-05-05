@@ -80,9 +80,7 @@ namespace OpenIIoT.SDK.Package.Packaging
             PackageManifestBuilder builder = new PackageManifestBuilder();
 
             OnUpdated($"Generating manifest for directory '{inputDirectory}'...");
-
             builder.BuildDefault();
-
             OnUpdated($"Adding files from '{inputDirectory}'...");
 
             foreach (string file in files)
@@ -91,7 +89,6 @@ namespace OpenIIoT.SDK.Package.Packaging
             }
 
             PackageManifest manifest = builder.Manifest;
-
             OnUpdated(" √ Manifest generated.");
 
             if (manifestFile != default(string))

@@ -57,6 +57,9 @@ namespace OpenIIoT.SDK.Package.Packaging
     {
         #region Public Events
 
+        /// <summary>
+        ///     Raised when a new status message is generated.
+        /// </summary>
         public static event EventHandler<PackagingUpdateEventArgs> Updated;
 
         #endregion Public Events
@@ -94,6 +97,13 @@ namespace OpenIIoT.SDK.Package.Packaging
             ValidateSignatureArguments(signPackage, privateKeyFile, passphrase, keybaseUsername);
 
             PackageManifest manifest = ValidateManifestFileArgumentAndRetrieveManifest(manifestFile);
+
+            OnUpdated($"Creating package {Path.GetFileName(packageFile)} from {inputDirectory} using manifest file {Path.GetFileName(manifestFile)}...");
+
+            if (signPackage)
+            {
+                OnUpdated($"Package will be signed using PGP private key file {Path.GetFileName(packageFile)} as keybase.io user {keybaseUsername}.");
+            }
 
             // looks like: temp\OpenIIoT.SDK\<Guid>\
             string tempDirectory = Path.Combine(Path.GetTempPath(), System.Reflection.Assembly.GetEntryAssembly().GetName().Name, Guid.NewGuid().ToString());
@@ -164,6 +174,10 @@ namespace OpenIIoT.SDK.Package.Packaging
 
         #region Private Methods
 
+        /// <summary>
+        ///     Raises the <see cref="Updated"/> event with the specified message.
+        /// </summary>
+        /// <param name="message">The message to send.</param>
         private static void OnUpdated(string message)
         {
             if (Updated != null)
