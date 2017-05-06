@@ -102,7 +102,7 @@ namespace OpenIIoT.SDK.Package.Packaging
 
             if (signPackage)
             {
-                OnUpdated($"Package will be signed using PGP private key file {Path.GetFileName(packageFile)} as keybase.io user {keybaseUsername}.");
+                OnUpdated($"Package will be signed using PGP private key file '{Path.GetFileName(privateKeyFile)}' as keybase.io user '{keybaseUsername}'.");
             }
 
             // looks like: temp\OpenIIoT.SDK\<Guid>\
@@ -402,7 +402,7 @@ namespace OpenIIoT.SDK.Package.Packaging
                 }
                 catch (Exception ex)
                 {
-                    throw new ArgumentException($"There is a problem with either the specified private key file or passphrase: {ex.GetType().Name}: {ex.Message}.");
+                    throw new ArgumentException($"Error opening the specified private key with the specified passphrase: {ex.GetType().Name}: {ex.Message}.");
                 }
 
                 if (keybaseUsername == default(string) || keybaseUsername == string.Empty)
