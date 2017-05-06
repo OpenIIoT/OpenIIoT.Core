@@ -5,6 +5,7 @@
         Manifest,
         ManifestExtraction,
         Package,
+        PackageExtraction,
         Trust,
         Verify
     }

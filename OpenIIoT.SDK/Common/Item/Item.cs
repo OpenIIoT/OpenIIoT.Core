@@ -283,7 +283,7 @@ namespace OpenIIoT.SDK.Common
         #region Public Events
 
         /// <summary>
-        ///     Fires when the <see cref="Value"/> property changes.
+        ///     Raised when the <see cref="Value"/> property changes.
         /// </summary>
         public virtual event EventHandler<ItemChangedEventArgs> Changed;
 

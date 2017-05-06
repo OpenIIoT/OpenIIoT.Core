@@ -1,4 +1,45 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █      ▄▄▄▄███▄▄▄▄                                                                   ▄████████
+      █    ▄██▀▀▀███▀▀▀██▄                                                                ███    ███
+      █    ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██      ███    █▀  ▀███  ▐██▀     ██       █████   ▄█████   ▄██████     ██     ██████     █████
+      █    ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄  ▄███▄▄▄       ██  ██   ▀███████▄   ██  ██   ██   ██ ██    ██ ▀███████▄ ██    ██   ██  ██
+      █    ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀ ▀▀███▀▀▀        ████▀       ██  ▀  ▄██▄▄█▀   ██   ██ ██    ▀      ██  ▀ ██    ██  ▄██▄▄█▀
+      █    ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██      ███    █▄     ████        ██    ▀███████ ▀████████ ██    ▄      ██    ██    ██ ▀███████
+      █    ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██      ███    ███  ▄██ ▀██       ██      ██  ██   ██   ██ ██    ██     ██    ██    ██   ██  ██
+      █     ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀     ██████████ ███    ██▄    ▄██▀     ██  ██   ██   █▀ ██████▀     ▄██▀    ██████    ██  ██
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █  Extracts PackageManifest objects from Packages.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
+                                                                                                   ▀▀                            */
+
+using System;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -8,17 +49,29 @@ using OpenIIoT.SDK.Package.Manifest;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
+    /// <summary>
+    ///     Extracts <see cref="PackageManifest"/> objects from Packages.
+    /// </summary>
     public static class ManifestExtractor
     {
         #region Public Events
 
+        /// <summary>
+        ///     Raised when a new status message is generated.
+        /// </summary>
         public static event EventHandler<PackagingUpdateEventArgs> Updated;
 
         #endregion Public Events
 
         #region Public Methods
 
-        public static PackageManifest ExtractManifest(string packageFile, string manifestFile)
+        /// <summary>
+        ///     Extracts the <see cref="PackageManifest"/> object from the specified Package file.
+        /// </summary>
+        /// <param name="packageFile">The Package from which the manifest is to be extracted.</param>
+        /// <param name="manifestFile">The filename of the file to which the manifest is to be saved.</param>
+        /// <returns>The extracted manifest object.</returns>
+        public static PackageManifest ExtractManifest(string packageFile, string manifestFile = "")
         {
             ValidatePackageFileArgument(packageFile);
 
@@ -28,7 +81,7 @@ namespace OpenIIoT.SDK.Package.Packaging
 
             try
             {
-                OnUpdated($"Locating manifest...");
+                OnUpdated($"Locating manifest inside of package...");
 
                 ZipArchiveEntry zippedManifestFile = ZipFile.OpenRead(packageFile).Entries.Where(e => e.Name == Package.Constants.ManifestFilename).FirstOrDefault();
                 string manifestString;
@@ -82,6 +135,10 @@ namespace OpenIIoT.SDK.Package.Packaging
 
         #region Private Methods
 
+        /// <summary>
+        ///     Raises the <see cref="Updated"/> event with the specified message.
+        /// </summary>
+        /// <param name="message">The message to send.</param>
         private static void OnUpdated(string message)
         {
             if (Updated != null)
@@ -90,11 +147,19 @@ namespace OpenIIoT.SDK.Package.Packaging
             }
         }
 
+        /// <summary>
+        ///     Validates the packageFile argument for <see cref="ExtractManifest(string, string)"/>.
+        /// </summary>
+        /// <param name="packageFile">The value specified for the packageFile argument.</param>
+        /// <exception cref="ArgumentException">Thrown when the package is an empty or null string.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the package can not be found on the local file system.</exception>
+        /// <exception cref="InvalidDataException">Thrown when the package contains no files.</exception>
+        /// <exception cref="IOException">Thrown when the package can not be read.</exception>
         private static void ValidatePackageFileArgument(string packageFile)
         {
             if (string.IsNullOrEmpty(packageFile))
             {
-                throw new ArgumentException($"The required argument 'package' (-p|--package) was not supplied.");
+                throw new ArgumentException($"The required argument 'package' was not supplied.");
             }
 
             if (!File.Exists(packageFile))
