@@ -5,6 +5,8 @@ using System.Net;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using OpenIIoT.SDK.Package.Manifest;
+using Utility.PGPSignatureTools;
+using System.Text;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
@@ -29,22 +31,33 @@ namespace OpenIIoT.SDK.Package.Packaging
                 ZipFile.ExtractToDirectory(packageFile, tempDirectory);
                 OnUpdated(" √ Package extracted successfully.");
 
+                OnUpdated("Checking extracted files...");
+
                 string manifestFilename = Path.Combine(tempDirectory, Package.Constants.ManifestFilename);
                 if (!File.Exists(manifestFilename))
                 {
-                    throw new FileNotFoundException($"it does not contain a manifest.");
+                    throw new FileNotFoundException("it does not contain a manifest.");
                 }
 
+                string payloadFilename = Path.Combine(tempDirectory, Package.Constants.PayloadArchiveName);
+                if (!File.Exists(payloadFilename))
+                {
+                    throw new FileNotFoundException("it does not contain a payload archive.");
+                }
+
+                OnUpdated(" √ Manifest and Payload Archive extracted successfully.");
+                OnUpdated("Extracting Payload Archive...");
+
+                ZipFile.ExtractToDirectory(payloadFilename, Path.Combine(tempDirectory, Package.Constants.PayloadDirectoryName));
+
+                OnUpdated(" √ Payload Archive extracted successfully.");
                 OnUpdated("Checking extracted files...");
 
                 string payloadDirectory = Path.Combine(tempDirectory, Package.Constants.PayloadDirectoryName);
-                if (!Directory.Exists(payloadDirectory))
+
+                if (Directory.GetFiles(payloadDirectory).Length == 0)
                 {
-                    throw new DirectoryNotFoundException($"it does not contain a payload directory.");
-                }
-                else if (Directory.GetFiles(payloadDirectory).Length == 0)
-                {
-                    throw new FileNotFoundException($"the payload directory does not contain any files.");
+                    throw new FileNotFoundException("the payload directory does not contain any files.");
                 }
 
                 OnUpdated(" √ Extracted files validated successfully.");
@@ -55,7 +68,33 @@ namespace OpenIIoT.SDK.Package.Packaging
 
                 if (!string.IsNullOrEmpty(manifest.Signature.Trust))
                 {
-                    // TODO: validate trust
+                    OnUpdated("Verifying the Manifest Trust...");
+
+                    if (string.IsNullOrEmpty(manifest.Signature.Digest))
+                    {
+                        throw new InvalidDataException("the manifest is trusted but it contains no digest to trust.");
+                    }
+
+                    byte[] trustBytes = Encoding.ASCII.GetBytes(manifest.Signature.Trust);
+                    byte[] verifiedDigestBytes;
+
+                    try
+                    {
+                        verifiedDigestBytes = PGPSignature.Verify(trustBytes, SDK.Constants.PGPPublicKey);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new InvalidDataException($"an Exception was thrown while verifying the Trust: {ex.Message}");
+                    }
+
+                    string verifiedDigest = Encoding.ASCII.GetString(verifiedDigestBytes);
+
+                    if (manifest.Signature.Digest != verifiedDigest)
+                    {
+                        throw new InvalidDataException("the manifest trust is not valid.");
+                    }
+
+                    OnUpdated(" √ Trust verified successfully.");
                 }
 
                 if (!string.IsNullOrEmpty(manifest.Signature.Digest))
