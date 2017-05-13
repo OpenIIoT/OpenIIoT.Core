@@ -1,4 +1,10 @@
-﻿using System;
+﻿using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Package.Manifest;
+using System;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using Utility.PGPSignatureTools;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
@@ -10,10 +16,27 @@ namespace OpenIIoT.SDK.Package.Packaging
 
         #endregion Public Events
 
+        #region Public Methods
+
         public static void TrustPackage(string packageFile, string privateKeyFile, string passphrase)
         {
-            OnUpdated("Not yet implemented.");
+            PackageManifest manifest = ManifestExtractor.ExtractManifest(packageFile);
+
+            byte[] digestBytes = Encoding.ASCII.GetBytes(manifest.Signature.Digest);
+            string privateKey = File.ReadAllText(privateKeyFile);
+
+            byte[] trustBytes = PGPSignature.Sign(digestBytes, privateKey, passphrase);
+
+            string trust = Encoding.ASCII.GetString(trustBytes);
+
+            manifest.Signature.Trust = trust;
+
+            File.WriteAllText(@"c:\pkg\manifest.json", manifest.ToJson());
         }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         private static void OnUpdated(string message)
         {
@@ -22,5 +45,7 @@ namespace OpenIIoT.SDK.Package.Packaging
                 Updated(null, new PackagingUpdateEventArgs(PackagingOperation.Trust, message));
             }
         }
+
+        #endregion Private Methods
     }
 }
