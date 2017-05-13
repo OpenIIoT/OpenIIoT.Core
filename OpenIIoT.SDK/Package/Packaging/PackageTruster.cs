@@ -31,7 +31,13 @@ namespace OpenIIoT.SDK.Package.Packaging
 
             manifest.Signature.Trust = trust;
 
+            ZipArchive package = ZipFile.Open(packageFile, ZipArchiveMode.Update);
+
+            package.GetEntry(Package.Constants.ManifestFilename).Delete();
+
             File.WriteAllText(@"c:\pkg\manifest.json", manifest.ToJson());
+            package.CreateEntryFromFile(@"c:\pkg\manifest.json", Package.Constants.ManifestFilename);
+            package.Dispose();
         }
 
         #endregion Public Methods
