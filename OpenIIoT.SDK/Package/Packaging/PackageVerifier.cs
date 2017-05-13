@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using OpenIIoT.SDK.Package.Manifest;
 using Utility.PGPSignatureTools;
 using System.Text;
+using OpenIIoT.SDK.Properties;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
@@ -76,15 +77,19 @@ namespace OpenIIoT.SDK.Package.Packaging
                     }
 
                     byte[] trustBytes = Encoding.ASCII.GetBytes(manifest.Signature.Trust);
+
+                    File.WriteAllBytes(@"C:\pkg\trust.txt", trustBytes);
+                    File.WriteAllText(@"C:\pkg\key.txt", Resources.PGPPublicKey);
+
                     byte[] verifiedDigestBytes;
 
                     try
                     {
-                        verifiedDigestBytes = PGPSignature.Verify(trustBytes, SDK.Constants.PGPPublicKey);
+                        verifiedDigestBytes = PGPSignature.Verify(trustBytes, Resources.PGPPublicKey);
                     }
                     catch (Exception ex)
                     {
-                        throw new InvalidDataException($"an Exception was thrown while verifying the Trust: {ex.Message}");
+                        throw new InvalidDataException($"an Exception was thrown while verifying the Trust: {ex}");
                     }
 
                     string verifiedDigest = Encoding.ASCII.GetString(verifiedDigestBytes);
