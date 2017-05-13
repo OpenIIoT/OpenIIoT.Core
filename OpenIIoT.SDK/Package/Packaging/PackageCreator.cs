@@ -92,8 +92,8 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// </param>
         public static void CreatePackage(string inputDirectory, string manifestFile, string packageFile, bool signPackage, string privateKeyFile, string passphrase, string keybaseUsername)
         {
-            ValidateInputDirectoryArgument(inputDirectory);
-            ValidatePackageFileArgument(packageFile);
+            ArgumentValidator.ValidateInputDirectoryArgument(inputDirectory);
+            ArgumentValidator.ValidatePackageFileArgument(packageFile);
             ValidateSignatureArguments(signPackage, privateKeyFile, passphrase, keybaseUsername);
 
             PackageManifest manifest = ValidateManifestFileArgumentAndRetrieveManifest(manifestFile);
@@ -175,6 +175,81 @@ namespace OpenIIoT.SDK.Package.Packaging
         #region Private Methods
 
         /// <summary>
+        ///     Compares the specified manifest to the contents of the specified directory and hashes any files that had been
+        ///     deferred for hashing in the manifest.
+        /// </summary>
+        /// <param name="manifest">The manifest for which validation and hash generation is to be performed.</param>
+        /// <param name="directory">The directory containing payload files.</param>
+        internal static void ValidateManifestAndGenerateHashes(PackageManifest manifest, string directory)
+        {
+            foreach (PackageManifestFileType type in manifest.Files.Keys)
+            {
+                foreach (PackageManifestFile file in manifest.Files[type])
+                {
+                    // determine the absolute path for the file we need to examine
+                    string fileToCheck = Path.Combine(directory, file.Source);
+
+                    if (!File.Exists(fileToCheck))
+                    {
+                        throw new FileNotFoundException($"The file '{file.Source}' is listed in the manifest but is not found on disk.");
+                    }
+
+                    if (file.Checksum != default(string))
+                    {
+                        file.Checksum = Common.Utility.ComputeFileSHA512Hash(fileToCheck);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        ///     Validates the manifestFile argument for
+        ///     <see cref="CreatePackage(string, string, string, bool, string, string, string)"/> and, if valid, retrieves the
+        ///     <see cref="PackageManifest"/> from the file and returns it.
+        /// </summary>
+        /// <param name="manifestFile">The value specified for the manifestFile argument.</param>
+        /// <returns>The PackageManifest file retrieved from the file specified in the manifestFile argument.</returns>
+        /// <exception cref="ArgumentException">Thrown when the manifest file is a default or null string.</exception>
+        /// <exception cref="FileNotFoundException">
+        ///     Thrown when the manifest file can not be found on the local file system.
+        /// </exception>
+        /// <exception cref="InvalidDataException">Thrown when the manifest file is empty.</exception>
+        /// <exception cref="FileLoadException">Thrown when the manifest file fails to be loaded or deserialized.</exception>
+        internal static PackageManifest ValidateManifestFileArgumentAndRetrieveManifest(string manifestFile)
+        {
+            if (manifestFile == default(string) || manifestFile == string.Empty)
+            {
+                throw new ArgumentException("The required argument 'manifest' was not supplied.");
+            }
+
+            if (!File.Exists(manifestFile))
+            {
+                throw new FileNotFoundException($"The specified manifest file '{manifestFile}' could not be found.");
+            }
+
+            string manifestContents = File.ReadAllText(manifestFile);
+
+            if (manifestContents.Length == 0)
+            {
+                throw new InvalidDataException($"The specified manifest file '{manifestFile}' is empty.");
+            }
+
+            // fetch and deserialize the PackageManifest from the specified file
+            PackageManifest manifest;
+
+            try
+            {
+                manifest = JsonConvert.DeserializeObject<PackageManifest>(manifestContents);
+            }
+            catch (Exception ex)
+            {
+                throw new FileLoadException($"The specified manifest file '{manifestFile}' could not be opened: {ex.Message}");
+            }
+
+            return manifest;
+        }
+
+        /// <summary>
         ///     Raises the <see cref="Updated"/> event with the specified message.
         /// </summary>
         /// <param name="message">The message to send.</param>
@@ -224,132 +299,6 @@ namespace OpenIIoT.SDK.Package.Packaging
             OnUpdated(" √ Manifest signed successfully.");
 
             return manifest;
-        }
-
-        /// <summary>
-        ///     Validates the inputDirectory argument for <see cref="CreatePackage(string, string, string, bool, string, string, string)"/>.
-        /// </summary>
-        /// <param name="inputDirectory">The value specified for the inputDirectory argument.</param>
-        /// <exception cref="ArgumentException">Thrown when the directory is a default or null string.</exception>
-        /// <exception cref="DirectoryNotFoundException">
-        ///     Thrown when the directory can not be found on the local file system.
-        /// </exception>
-        /// <exception cref="FileNotFoundException">Thrown when the directory contains no files.</exception>
-        private static void ValidateInputDirectoryArgument(string inputDirectory)
-        {
-            if (inputDirectory == default(string) || inputDirectory == string.Empty)
-            {
-                throw new ArgumentException($"The required argument 'directory' was not supplied.");
-            }
-
-            if (!Directory.Exists(inputDirectory))
-            {
-                throw new DirectoryNotFoundException($"The specified directory '{inputDirectory}' could not be found.");
-            }
-
-            if (Directory.GetFiles(inputDirectory, "*", SearchOption.AllDirectories).Length == 0)
-            {
-                throw new FileNotFoundException($"The specified directory '{inputDirectory}' is empty; Packages must contain at least one file.");
-            }
-        }
-
-        /// <summary>
-        ///     Compares the specified manifest to the contents of the specified directory and hashes any files that had been
-        ///     deferred for hashing in the manifest.
-        /// </summary>
-        /// <param name="manifest">The manifest for which validation and hash generation is to be performed.</param>
-        /// <param name="directory">The directory containing payload files.</param>
-        private static void ValidateManifestAndGenerateHashes(PackageManifest manifest, string directory)
-        {
-            foreach (PackageManifestFileType type in manifest.Files.Keys)
-            {
-                foreach (PackageManifestFile file in manifest.Files[type])
-                {
-                    // determine the absolute path for the file we need to examine
-                    string fileToCheck = Path.Combine(directory, file.Source);
-
-                    if (!File.Exists(fileToCheck))
-                    {
-                        throw new FileNotFoundException($"The file '{file.Source}' is listed in the manifest but is not found on disk.");
-                    }
-
-                    if (file.Checksum != default(string))
-                    {
-                        file.Checksum = Common.Utility.ComputeFileSHA512Hash(fileToCheck);
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Validates the manifestFile argument for
-        ///     <see cref="CreatePackage(string, string, string, bool, string, string, string)"/> and, if valid, retrieves the
-        ///     <see cref="PackageManifest"/> from the file and returns it.
-        /// </summary>
-        /// <param name="manifestFile">The value specified for the manifestFile argument.</param>
-        /// <returns>The PackageManifest file retrieved from the file specified in the manifestFile argument.</returns>
-        /// <exception cref="ArgumentException">Thrown when the manifest file is a default or null string.</exception>
-        /// <exception cref="FileNotFoundException">
-        ///     Thrown when the manifest file can not be found on the local file system.
-        /// </exception>
-        /// <exception cref="InvalidDataException">Thrown when the manifest file is empty.</exception>
-        /// <exception cref="FileLoadException">Thrown when the manifest file fails to be loaded or deserialized.</exception>
-        private static PackageManifest ValidateManifestFileArgumentAndRetrieveManifest(string manifestFile)
-        {
-            if (manifestFile == default(string) || manifestFile == string.Empty)
-            {
-                throw new ArgumentException("The required argument 'manifest' was not supplied.");
-            }
-
-            if (!File.Exists(manifestFile))
-            {
-                throw new FileNotFoundException($"The specified manifest file '{manifestFile}' could not be found.");
-            }
-
-            string manifestContents = File.ReadAllText(manifestFile);
-
-            if (manifestContents.Length == 0)
-            {
-                throw new InvalidDataException($"The specified manifest file '{manifestFile}' is empty.");
-            }
-
-            // fetch and deserialize the PackageManifest from the specified file
-            PackageManifest manifest;
-
-            try
-            {
-                manifest = JsonConvert.DeserializeObject<PackageManifest>(manifestContents);
-            }
-            catch (Exception ex)
-            {
-                throw new FileLoadException($"The specified manifest file '{manifestFile}' could not be opened: {ex.Message}");
-            }
-
-            return manifest;
-        }
-
-        /// <summary>
-        ///     Validates the packageFile argument for <see cref="CreatePackage(string, string, string, bool, string, string, string)"/>.
-        /// </summary>
-        /// <param name="packageFile">The value specified for the packageFile argument.</param>
-        /// <exception cref="ArgumentException">Thrown when the package file is a default or null string.</exception>
-        /// <exception cref="Exception">Thrown when the package file can not be written.</exception>
-        private static void ValidatePackageFileArgument(string packageFile)
-        {
-            if (packageFile == default(string) || packageFile == string.Empty)
-            {
-                throw new ArgumentException($"The required argument 'package' was not supplied.");
-            }
-
-            try
-            {
-                File.WriteAllText(packageFile, "Hello World!");
-                File.Delete(packageFile);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"The specified package file '{packageFile}' could not be written: {ex.Message}");
-            }
         }
 
         /// <summary>

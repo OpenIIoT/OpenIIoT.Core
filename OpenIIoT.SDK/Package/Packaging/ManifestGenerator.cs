@@ -73,7 +73,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <returns>The generated manifest.</returns>
         public static PackageManifest GenerateManifest(string inputDirectory, bool includeResources = false, bool hashFiles = false, string manifestFile = "")
         {
-            ValidateInputDirectoryArgument(inputDirectory);
+            ArgumentValidator.ValidateInputDirectoryArgument(inputDirectory);
 
             string[] files = Directory.GetFiles(inputDirectory, "*", SearchOption.AllDirectories);
 
@@ -175,33 +175,6 @@ namespace OpenIIoT.SDK.Package.Packaging
             if (Updated != null)
             {
                 Updated(null, new PackagingUpdateEventArgs(PackagingOperation.Manifest, message));
-            }
-        }
-
-        /// <summary>
-        ///     Validates the inputDirectory argument for <see cref="GenerateManifest(string, bool, bool, string)"/>.
-        /// </summary>
-        /// <param name="inputDirectory">The value specified for the inputDirectory argument.</param>
-        /// <exception cref="ArgumentException">Thrown when the directory is an empty or null string.</exception>
-        /// <exception cref="DirectoryNotFoundException">
-        ///     Thrown when the directory can not be found on the local file system.
-        /// </exception>
-        /// <exception cref="FileNotFoundException">Thrown when the directory contains no files.</exception>
-        private static void ValidateInputDirectoryArgument(string inputDirectory)
-        {
-            if (inputDirectory == default(string) || inputDirectory == string.Empty)
-            {
-                throw new ArgumentException($"The required argument 'directory' was not supplied.");
-            }
-
-            if (!Directory.Exists(inputDirectory))
-            {
-                throw new DirectoryNotFoundException($"The specified directory '{inputDirectory}' could not be found.");
-            }
-
-            if (Directory.GetFiles(inputDirectory, "*", SearchOption.AllDirectories).Length == 0)
-            {
-                throw new FileNotFoundException($"The specified directory '{inputDirectory}' is empty; Packages must contain at least one file.");
             }
         }
 

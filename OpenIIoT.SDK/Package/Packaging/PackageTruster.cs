@@ -1,27 +1,84 @@
-﻿using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package.Manifest;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █      ▄███████▄                                                                  ███
+      █     ███    ███                                                              ▀█████████▄
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████    ▀███▀▀██    █████ ██   █    ▄█████     ██       ▄█████    █████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █      ███   ▀   ██  ██ ██   ██   ██  ▀  ▀███████▄   ██   █    ██  ██
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄        ███      ▄██▄▄█▀ ██   ██   ██         ██  ▀  ▄██▄▄     ▄██▄▄█▀
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀        ███     ▀███████ ██   ██ ▀███████     ██    ▀▀██▀▀    ▀███████
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █      ███       ██  ██ ██   ██    ▄  ██     ██      ██   █    ██  ██
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████    ▄████▀     ██  ██ ██████   ▄████▀     ▄██▀     ███████   ██  ██
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █  Adds a Trust to the PackageManifest of Packages.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
+                                                                                                   ▀▀                            */
+
 using System;
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Package.Manifest;
 using Utility.PGPSignatureTools;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
+    /// <summary>
+    ///     Adds a Trust to the <see cref="PackageManifest"/> of Packages.
+    /// </summary>
     public static class PackageTruster
     {
         #region Public Events
 
+        /// <summary>
+        ///     Raised when a new status message is generated.
+        /// </summary>
         public static event EventHandler<PackagingUpdateEventArgs> Updated;
 
         #endregion Public Events
 
         #region Public Methods
 
+        /// <summary>
+        ///     Adds a Trust to the <see cref="PackageManifest"/> within the specified package using the PGP private key in the
+        ///     specified file and the specified passphrase.
+        /// </summary>
+        /// <param name="packageFile">The Package for which the Trust is to be added.</param>
+        /// <param name="privateKeyFile">The filename of the file containing the ASCII armored PGP private key.</param>
+        /// <param name="passphrase">The passphrase for the specified PGP private key.</param>
         public static void TrustPackage(string packageFile, string privateKeyFile, string passphrase)
         {
+            OnUpdated($"Adding Trust to Package '{Path.GetFileName(packageFile)}'...");
+
             PackageManifest manifest = ManifestExtractor.ExtractManifest(packageFile);
 
+            OnUpdated("Computing Trust...");
             byte[] digestBytes = Encoding.ASCII.GetBytes(manifest.Signature.Digest);
             string privateKey = File.ReadAllText(privateKeyFile);
 
@@ -37,6 +94,18 @@ namespace OpenIIoT.SDK.Package.Packaging
         #endregion Public Methods
 
         #region Private Methods
+
+        /// <summary>
+        ///     Raises the <see cref="Updated"/> event with the specified message.
+        /// </summary>
+        /// <param name="message">The message to send.</param>
+        private static void OnUpdated(string message)
+        {
+            if (Updated != null)
+            {
+                Updated(null, new PackagingUpdateEventArgs(PackagingOperation.Trust, message));
+            }
+        }
 
         private static void UpdatePackageManifest(string packageFile, PackageManifest manifest)
         {
@@ -77,14 +146,6 @@ namespace OpenIIoT.SDK.Package.Packaging
                 OnUpdated("Deleting temporary files...");
                 Directory.Delete(tempDirectory, true);
                 OnUpdated(" √ Temporary files deleted successfully.");
-            }
-        }
-
-        private static void OnUpdated(string message)
-        {
-            if (Updated != null)
-            {
-                Updated(null, new PackagingUpdateEventArgs(PackagingOperation.Trust, message));
             }
         }
 

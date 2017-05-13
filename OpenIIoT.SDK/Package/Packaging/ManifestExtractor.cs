@@ -73,7 +73,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <returns>The extracted manifest object.</returns>
         public static PackageManifest ExtractManifest(string packageFile, string manifestFile = "")
         {
-            ValidatePackageFileArgument(packageFile);
+            ArgumentValidator.ValidatePackageFileArgument(packageFile);
 
             PackageManifest manifest = new PackageManifest();
 
@@ -144,37 +144,6 @@ namespace OpenIIoT.SDK.Package.Packaging
             if (Updated != null)
             {
                 Updated(null, new PackagingUpdateEventArgs(PackagingOperation.ManifestExtraction, message));
-            }
-        }
-
-        /// <summary>
-        ///     Validates the packageFile argument for <see cref="ExtractManifest(string, string)"/>.
-        /// </summary>
-        /// <param name="packageFile">The value specified for the packageFile argument.</param>
-        /// <exception cref="ArgumentException">Thrown when the package is an empty or null string.</exception>
-        /// <exception cref="FileNotFoundException">Thrown when the package can not be found on the local file system.</exception>
-        /// <exception cref="InvalidDataException">Thrown when the package contains no files.</exception>
-        /// <exception cref="IOException">Thrown when the package can not be read.</exception>
-        private static void ValidatePackageFileArgument(string packageFile)
-        {
-            if (string.IsNullOrEmpty(packageFile))
-            {
-                throw new ArgumentException($"The required argument 'package' was not supplied.");
-            }
-
-            if (!File.Exists(packageFile))
-            {
-                throw new FileNotFoundException($"The specified package file '{packageFile}' could not be found.");
-            }
-
-            if (new FileInfo(packageFile).Length == 0)
-            {
-                throw new InvalidDataException($"The specified package file '{packageFile}' is empty.");
-            }
-
-            if (!File.OpenRead(packageFile).CanRead)
-            {
-                throw new IOException($"The specified package file '{packageFile}' could not be opened for reading.  It may be open in another process, or you may have insufficient rights.");
             }
         }
 

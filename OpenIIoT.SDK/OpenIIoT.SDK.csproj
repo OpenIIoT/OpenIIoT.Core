@@ -108,6 +108,7 @@
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
     <Compile Include="Package\Constants.cs" />
+    <Compile Include="Package\Packaging\ArgumentValidator.cs" />
     <Compile Include="Package\Packaging\Constants.cs" />
     <Compile Include="Package\Packaging\ManifestGenerator.cs" />
     <Compile Include="Package\Packaging\PackageCreator.cs" />

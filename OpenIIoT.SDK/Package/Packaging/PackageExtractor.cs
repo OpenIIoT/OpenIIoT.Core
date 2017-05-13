@@ -71,8 +71,8 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <param name="skipVerification">A value indicating whether the verification prior to extraction is to be skipped.</param>
         public static void ExtractPackage(string packageFile, string outputDirectory, bool overwrite = false, bool skipVerification = false)
         {
-            ValidatePackageFileArgument(packageFile);
-            ValidateOutputDirectoryArgument(outputDirectory, overwrite);
+            ArgumentValidator.ValidatePackageFileArgument(packageFile);
+            ArgumentValidator.ValidateOutputDirectoryArgument(outputDirectory, overwrite);
 
             OnUpdated($"Extracting package '{Path.GetFileName(packageFile)}' to directory '{outputDirectory}'...");
 
@@ -129,62 +129,6 @@ namespace OpenIIoT.SDK.Package.Packaging
             if (Updated != null)
             {
                 Updated(null, new PackagingUpdateEventArgs(PackagingOperation.ManifestExtraction, message));
-            }
-        }
-
-        /// <summary>
-        ///     Validates the outputDirectory and overwrite arguments for <see cref="ExtractPackage(string, string, bool, bool)"/>.
-        /// </summary>
-        /// <param name="outputDirectory">The value specified for the outputDirectory argument.</param>
-        /// <param name="overwrite">The value specified for the overwrite argument.</param>
-        /// <exception cref="ArgumentException">Thrown when the package is an empty or null string.</exception>
-        /// <exception cref="InvalidOperationException">
-        ///     Thrown when the output directory exists and is not empty but the overwrite argument is false.
-        /// </exception>
-        private static void ValidateOutputDirectoryArgument(string outputDirectory, bool overwrite)
-        {
-            if (string.IsNullOrEmpty(outputDirectory))
-            {
-                throw new ArgumentException("The required argument 'directory' was not supplied.");
-            }
-
-            if (Directory.Exists(outputDirectory) && !overwrite)
-            {
-                if (Directory.GetFiles(outputDirectory).Length > 0)
-                {
-                    throw new InvalidOperationException($"The directory '{outputDirectory}' exists and is not empty.");
-                }
-            }
-        }
-
-        /// <summary>
-        ///     Validates the packageFile argument for <see cref="ExtractPackage(string, string, bool, bool)"/>.
-        /// </summary>
-        /// <param name="packageFile">The value specified for the packageFile argument.</param>
-        /// <exception cref="ArgumentException">Thrown when the package is an empty or null string.</exception>
-        /// <exception cref="FileNotFoundException">Thrown when the package can not be found on the local file system.</exception>
-        /// <exception cref="InvalidDataException">Thrown when the package contains no files.</exception>
-        /// <exception cref="IOException">Thrown when the package can not be read.</exception>
-        private static void ValidatePackageFileArgument(string packageFile)
-        {
-            if (string.IsNullOrEmpty(packageFile))
-            {
-                throw new ArgumentException("The required argument 'package' was not supplied.");
-            }
-
-            if (!File.Exists(packageFile))
-            {
-                throw new FileNotFoundException($"The specified package file '{packageFile}' could not be found.");
-            }
-
-            if (new FileInfo(packageFile).Length == 0)
-            {
-                throw new InvalidDataException($"The specified package file '{packageFile}' is empty.");
-            }
-
-            if (!File.OpenRead(packageFile).CanRead)
-            {
-                throw new IOException($"The specified package file '{packageFile}' could not be opened for reading.  It may be open in another process, or you may have insufficient rights.");
             }
         }
 
