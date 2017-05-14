@@ -33,10 +33,6 @@
     <CodeAnalysisRuleSet>openiiot.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BouncyCastle.OpenPgp, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
-      <HintPath>..\packages\BouncyCastle.OpenPGP.1.8.1\lib\net20\BouncyCastle.OpenPgp.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -66,10 +62,6 @@
     </Reference>
     <Reference Include="Utility.OperationResult, Version=0.9.0.4, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Utility.OperationResult.0.9.0.13\lib\Utility.OperationResult.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Utility.PGPSignatureTools, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Utility.PGPSignatureTools.1.0.0\lib\Utility.PGPSignatureTools.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -107,23 +99,12 @@
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
-    <Compile Include="Package\Constants.cs" />
-    <Compile Include="Package\Packaging\ArgumentValidator.cs" />
-    <Compile Include="Package\Packaging\Constants.cs" />
-    <Compile Include="Package\Packaging\Operations\ManifestGenerator.cs" />
-    <Compile Include="Package\Packaging\Operations\PackageCreator.cs" />
     <Compile Include="Package\IPackageManager.cs" />
     <Compile Include="Package\Manifest\PackageManifestBuilder.cs" />
     <Compile Include="Package\Manifest\PackageManifestFileType.cs" />
     <Compile Include="Package\Manifest\PackageManifest.cs" />
     <Compile Include="Package\Manifest\PackageManifestFile.cs" />
     <Compile Include="Package\Manifest\PackageManifestSignature.cs" />
-    <Compile Include="Package\Packaging\Operations\ManifestExtractor.cs" />
-    <Compile Include="Package\Packaging\Operations\PackageExtractor.cs" />
-    <Compile Include="Package\Packaging\PackagingUpdateEventArgs.cs" />
-    <Compile Include="Package\Packaging\PackagingOperation.cs" />
-    <Compile Include="Package\Packaging\Operations\PackageTruster.cs" />
-    <Compile Include="Package\Packaging\Operations\PackageVerifier.cs" />
     <Compile Include="Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
