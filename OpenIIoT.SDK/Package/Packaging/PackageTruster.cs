@@ -100,7 +100,7 @@ namespace OpenIIoT.SDK.Package.Packaging
             manifest.Signature.Trust = trust;
 
             UpdatePackageManifest(packageFile, manifest);
-            OnUpdated(" √ Manifest updated successfully.");
+            OnUpdated($" √ Trust added to Package '{Path.GetFileName(packageFile)}' successfully.");
         }
 
         #endregion Public Methods
@@ -135,6 +135,7 @@ namespace OpenIIoT.SDK.Package.Packaging
             try
             {
                 OnUpdated($"Writing Manifest to temp file '{tempFile}'...");
+                Directory.CreateDirectory(tempDirectory);
                 File.WriteAllText(tempFile, manifest.ToJson());
                 OnUpdated(" √ Manifest file written successfully.");
 

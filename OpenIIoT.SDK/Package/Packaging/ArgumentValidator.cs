@@ -129,19 +129,34 @@ namespace OpenIIoT.SDK.Package.Packaging
                 throw new InvalidDataException($"The specified package file '{packageFile}' is empty.");
             }
 
-            if (!File.OpenRead(packageFile).CanRead)
+            FileStream packageStream = default(FileStream);
+
+            try
             {
-                throw new IOException($"The specified package file '{packageFile}' could not be opened for reading.  It may be open in another process, or you may have insufficient rights.");
+                packageStream = File.OpenRead(packageFile);
+
+                if (!packageStream.CanRead)
+                {
+                    throw new IOException($"The specified package file '{packageFile}' could not be opened for reading.  It may be open in another process, or you may have insufficient rights.");
+                }
+            }
+            finally
+            {
+                packageStream.Close();
             }
 
             try
             {
-                File.WriteAllText(packageFile, "Hello World!");
-                File.Delete(packageFile);
+                packageStream = File.OpenWrite(packageFile);
+
+                if (!packageStream.CanWrite)
+                {
+                    throw new Exception($"The specified package file '{packageFile}' could not be opened for writing.");
+                }
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception($"The specified package file '{packageFile}' could not be written: {ex.Message}");
+                packageStream.Close();
             }
         }
 
