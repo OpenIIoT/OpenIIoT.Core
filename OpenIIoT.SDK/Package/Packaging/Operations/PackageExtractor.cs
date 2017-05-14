@@ -43,7 +43,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 
-namespace OpenIIoT.SDK.Package.Packaging.Operation
+namespace OpenIIoT.SDK.Package.Packaging.Operations
 {
     /// <summary>
     ///     Extracts Package files.

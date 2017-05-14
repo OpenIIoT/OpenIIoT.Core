@@ -44,7 +44,7 @@ using System.IO;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package.Manifest;
 
-namespace OpenIIoT.SDK.Package.Packaging.Operation
+namespace OpenIIoT.SDK.Package.Packaging.Operations
 {
     /// <summary>
     ///     Generates and populates <see cref="PackageManifest"/> objects.

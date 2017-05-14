@@ -47,7 +47,7 @@ using Newtonsoft.Json;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package.Manifest;
 
-namespace OpenIIoT.SDK.Package.Packaging.Operation
+namespace OpenIIoT.SDK.Package.Packaging.Operations
 {
     /// <summary>
     ///     Extracts <see cref="PackageManifest"/> objects from Packages.

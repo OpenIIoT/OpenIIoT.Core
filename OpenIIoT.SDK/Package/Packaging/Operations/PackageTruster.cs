@@ -47,7 +47,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package.Manifest;
 using Utility.PGPSignatureTools;
 
-namespace OpenIIoT.SDK.Package.Packaging.Operation
+namespace OpenIIoT.SDK.Package.Packaging.Operations
 {
     /// <summary>
     ///     Adds a Trust to the <see cref="PackageManifest"/> of Packages.
