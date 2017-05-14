@@ -73,7 +73,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <returns>The extracted manifest object.</returns>
         public static PackageManifest ExtractManifest(string packageFile, string manifestFile = "")
         {
-            ArgumentValidator.ValidatePackageFileArgument(packageFile);
+            ArgumentValidator.ValidatePackageFileArgumentForReading(packageFile);
 
             PackageManifest manifest = new PackageManifest();
 

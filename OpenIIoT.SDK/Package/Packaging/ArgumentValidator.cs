@@ -105,19 +105,21 @@ namespace OpenIIoT.SDK.Package.Packaging
         }
 
         /// <summary>
-        ///     Validates the packageFile argument for packaging operations.
+        ///     Validates the packageFile argument for packaging operations which read the specified Package.
         /// </summary>
         /// <param name="packageFile">The value specified for the packageFile argument.</param>
         /// <exception cref="ArgumentException">Thrown when the package is an empty or null string.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the package can not be found on the local file system.</exception>
         /// <exception cref="InvalidDataException">Thrown when the package contains no files.</exception>
         /// <exception cref="IOException">Thrown when the package can not be read.</exception>
-        internal static void ValidatePackageFileArgument(string packageFile)
+        internal static void ValidatePackageFileArgumentForReading(string packageFile)
         {
             if (string.IsNullOrEmpty(packageFile))
             {
                 throw new ArgumentException($"The required argument 'package' was not supplied.");
             }
+
+            FileStream packageStream = default(FileStream);
 
             if (!File.Exists(packageFile))
             {
@@ -128,8 +130,6 @@ namespace OpenIIoT.SDK.Package.Packaging
             {
                 throw new InvalidDataException($"The specified package file '{packageFile}' is empty.");
             }
-
-            FileStream packageStream = default(FileStream);
 
             try
             {
@@ -144,19 +144,28 @@ namespace OpenIIoT.SDK.Package.Packaging
             {
                 packageStream.Close();
             }
+        }
 
-            try
+        /// <summary>
+        ///     Validates the packageFile argument for packaging operations which write the specified Package.
+        /// </summary>
+        /// <param name="packageFile">The value specified for the packageFile argument.</param>
+        /// <param name="overwrite">A value indicating whether the specified package is to be overwritten if it exists.</param>
+        /// <exception cref="ArgumentException">Thrown when the package is an empty or null string.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the package exists and the overwrite option is false.</exception>
+        /// <exception cref="FileNotFoundException">Thrown when the package can not be found on the local file system.</exception>
+        /// <exception cref="InvalidDataException">Thrown when the package contains no files.</exception>
+        /// <exception cref="IOException">Thrown when the package can not be read.</exception>
+        internal static void ValidatePackageFileArgumentForWriting(string packageFile, bool overwrite = false)
+        {
+            if (string.IsNullOrEmpty(packageFile))
             {
-                packageStream = File.OpenWrite(packageFile);
-
-                if (!packageStream.CanWrite)
-                {
-                    throw new Exception($"The specified package file '{packageFile}' could not be opened for writing.");
-                }
+                throw new ArgumentException($"The required argument 'package' was not supplied.");
             }
-            finally
+
+            if (!overwrite && File.Exists(packageFile))
             {
-                packageStream.Close();
+                throw new InvalidOperationException($"The specified package file '{packageFile}' already exists.");
             }
         }
 

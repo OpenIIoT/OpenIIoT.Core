@@ -71,7 +71,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <param name="skipVerification">A value indicating whether the verification prior to extraction is to be skipped.</param>
         public static void ExtractPackage(string packageFile, string outputDirectory, bool overwrite = false, bool skipVerification = false)
         {
-            ArgumentValidator.ValidatePackageFileArgument(packageFile);
+            ArgumentValidator.ValidatePackageFileArgumentForReading(packageFile);
             ArgumentValidator.ValidateOutputDirectoryArgument(outputDirectory, overwrite);
 
             OnUpdated($"Extracting package '{Path.GetFileName(packageFile)}' to directory '{outputDirectory}'...");

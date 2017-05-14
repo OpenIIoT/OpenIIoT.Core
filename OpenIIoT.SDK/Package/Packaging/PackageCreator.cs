@@ -93,7 +93,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         public static void CreatePackage(string inputDirectory, string manifestFile, string packageFile, bool signPackage, string privateKeyFile, string passphrase, string keybaseUsername)
         {
             ArgumentValidator.ValidateInputDirectoryArgument(inputDirectory);
-            ArgumentValidator.ValidatePackageFileArgument(packageFile);
+            ArgumentValidator.ValidatePackageFileArgumentForWriting(packageFile);
 
             if (signPackage)
             {

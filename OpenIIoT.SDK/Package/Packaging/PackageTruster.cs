@@ -74,7 +74,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <param name="passphrase">The passphrase for the specified PGP private key.</param>
         public static void TrustPackage(string packageFile, string privateKeyFile, string passphrase)
         {
-            ArgumentValidator.ValidatePackageFileArgument(packageFile);
+            ArgumentValidator.ValidatePackageFileArgumentForWriting(packageFile, true);
             ArgumentValidator.ValidatePrivateKeyArguments(privateKeyFile, passphrase);
 
             OnUpdated($"Adding Trust to Package '{Path.GetFileName(packageFile)}'...");
