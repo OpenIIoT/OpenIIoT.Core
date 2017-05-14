@@ -94,7 +94,16 @@ namespace OpenIIoT.SDK.Package.Packaging
         {
             ArgumentValidator.ValidateInputDirectoryArgument(inputDirectory);
             ArgumentValidator.ValidatePackageFileArgument(packageFile);
-            ValidateSignatureArguments(signPackage, privateKeyFile, passphrase, keybaseUsername);
+
+            if (signPackage)
+            {
+                ArgumentValidator.ValidatePrivateKeyArguments(privateKeyFile, passphrase);
+
+                if (string.IsNullOrEmpty(keybaseUsername))
+                {
+                    throw new ArgumentException($"The required argument 'keybase username' was not supplied.");
+                }
+            }
 
             PackageManifest manifest = ValidateManifestFileArgumentAndRetrieveManifest(manifestFile);
 
@@ -299,66 +308,6 @@ namespace OpenIIoT.SDK.Package.Packaging
             OnUpdated(" √ Manifest signed successfully.");
 
             return manifest;
-        }
-
-        /// <summary>
-        ///     Validates the signPackage, privateKeyFile and publicKeyFile arguments for
-        ///     <see cref="CreatePackage(string, string, string, bool, string, string, string)"/> and returns a value indicating
-        ///     whether the package should be signed.
-        /// </summary>
-        /// <param name="signPackage">The value specified for the signPackage argument.</param>
-        /// <param name="privateKeyFile">The value specified for the privateKeyFile argument.</param>
-        /// <param name="passphrase">the value specified for the privateKeyPassphrase argument.</param>
-        /// <param name="keybaseUsername">
-        ///     The Keybase.io username of the account hosting the PGP public key used for digest verification.
-        /// </param>
-        /// <exception cref="ArgumentException">
-        ///     Thrown when the privateKeyFile, privateKeyPassword, or publicKeyFile arguments are a default or null string.
-        /// </exception>
-        /// <exception cref="FileNotFoundException">
-        ///     Thrown when the private or public key files can not be found on the local file system.
-        /// </exception>
-        /// <exception cref="InvalidDataException">Thrown when the private or public key files are empty.</exception>
-        private static void ValidateSignatureArguments(bool signPackage, string privateKeyFile, string passphrase, string keybaseUsername)
-        {
-            if (signPackage)
-            {
-                if (privateKeyFile == default(string) || privateKeyFile == string.Empty)
-                {
-                    throw new ArgumentException($"The required argument 'private key' was not supplied.");
-                }
-
-                if (!File.Exists(privateKeyFile))
-                {
-                    throw new FileNotFoundException($"The specified private key file '{privateKeyFile}' could not be found.");
-                }
-
-                string key = File.ReadAllText(privateKeyFile);
-
-                if (key.Length == 0)
-                {
-                    throw new InvalidDataException($"The specified private key file '{privateKeyFile}' is empty.");
-                }
-
-                if (passphrase == default(string) || passphrase == string.Empty)
-                {
-                    throw new ArgumentException($"The required argument 'private key passphrase' was not supplied.");
-                }
-
-                try
-                {
-                    byte[] testSignature = PGPSignature.Sign(new byte[] { }, key, passphrase);
-                }
-                catch (Exception ex)
-                {
-                    throw new ArgumentException($"Error opening the specified private key with the specified passphrase: {ex.GetType().Name}: {ex.Message}.");
-                }
-
-                if (keybaseUsername == default(string) || keybaseUsername == string.Empty)
-                {
-                    throw new ArgumentException($"The required argument 'keybase username' was not supplied.");
-                }
-            }
         }
 
         /// <summary>

@@ -74,16 +74,28 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <param name="passphrase">The passphrase for the specified PGP private key.</param>
         public static void TrustPackage(string packageFile, string privateKeyFile, string passphrase)
         {
+            ArgumentValidator.ValidatePackageFileArgument(packageFile);
+            ArgumentValidator.ValidatePrivateKeyArguments(privateKeyFile, passphrase);
+
             OnUpdated($"Adding Trust to Package '{Path.GetFileName(packageFile)}'...");
 
             PackageManifest manifest = ManifestExtractor.ExtractManifest(packageFile);
 
-            OnUpdated("Computing Trust...");
-            byte[] digestBytes = Encoding.ASCII.GetBytes(manifest.Signature.Digest);
-            string privateKey = File.ReadAllText(privateKeyFile);
+            OnUpdated("Checking Digest...");
 
+            if (string.IsNullOrEmpty(manifest.Signature.Digest))
+            {
+                throw new InvalidOperationException("The Package is not signed and can not be trusted.");
+            }
+
+            OnUpdated(" √ Digest OK.");
+
+            OnUpdated("Signing Digest to create the Trust...");
+            string privateKey = File.ReadAllText(privateKeyFile);
+            byte[] digestBytes = Encoding.ASCII.GetBytes(manifest.Signature.Digest);
             byte[] trustBytes = PGPSignature.Sign(digestBytes, privateKey, passphrase);
             string trust = Encoding.ASCII.GetString(trustBytes);
+            OnUpdated(" √ Trust created successfully.");
 
             manifest.Signature.Trust = trust;
 
@@ -107,6 +119,11 @@ namespace OpenIIoT.SDK.Package.Packaging
             }
         }
 
+        /// <summary>
+        ///     Updates the specified Package, replacing the existing Manifest with the specified Manifest.
+        /// </summary>
+        /// <param name="packageFile">The filename of the Package file to update.</param>
+        /// <param name="manifest">The Manifest with which the Package file will be updated.</param>
         private static void UpdatePackageManifest(string packageFile, PackageManifest manifest)
         {
             // looks like: temp\OpenIIoT.SDK\<Guid>\

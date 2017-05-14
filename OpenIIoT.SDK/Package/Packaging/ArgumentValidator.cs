@@ -1,18 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █     ▄████████                                                                       ▄█    █▄
+      █     ███    ███                                                                     ███    ███
+      █     ███    ███    █████    ▄████▄  ██   █     ▄▄██▄▄▄     ▄█████ ██▄▄▄▄      ██    ███    ███   ▄█████   █        █  ██████▄    ▄█████      ██     ██████     █████
+      █     ███    ███   ██  ██   ██    ▀  ██   ██  ▄█▀▀██▀▀█▄   ██   █  ██▀▀▀█▄ ▀███████▄ ███    ███   ██   ██ ██       ██  ██   ▀██   ██   ██ ▀███████▄ ██    ██   ██  ██
+      █   ▀███████████  ▄██▄▄█▀  ▄██       ██   ██  ██  ██  ██  ▄██▄▄    ██   ██     ██  ▀ ███    ███   ██   ██ ██       ██▌ ██    ██   ██   ██     ██  ▀ ██    ██  ▄██▄▄█▀
+      █     ███    ███ ▀███████ ▀▀██ ███▄  ██   ██  ██  ██  ██ ▀▀██▀▀    ██   ██     ██    ███    ███ ▀████████ ██       ██  ██    ██ ▀████████     ██    ██    ██ ▀███████
+      █     ███    ███   ██  ██   ██    ██ ██   ██  ██  ██  ██   ██   █  ██   ██     ██     ██▄  ▄██    ██   ██ ██▌    ▄ ██  ██   ▄██   ██   ██     ██    ██    ██   ██  ██
+      █     ███    █▀    ██  ██   ██████▀  ██████    █  ██  █    ███████  █   █     ▄██▀     ▀████▀     ██   █▀ ████▄▄██ █   ██████▀    ██   █▀    ▄██▀    ██████    ██  ██
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █  Contains methods used to validate arguments for packaging operations.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
+                                                                                                   ▀▀                            */
+
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Utility.PGPSignatureTools;
 
 namespace OpenIIoT.SDK.Package.Packaging
 {
+    /// <summary>
+    ///     Contains methods used to validate arguments for packaging operations.
+    /// </summary>
     internal static class ArgumentValidator
     {
-        #region Private Methods
+        #region Internal Methods
 
         /// <summary>
-        ///     Validates the inputDirectory argument for packaging commands.
+        ///     Validates the inputDirectory argument for packaging operations.
         /// </summary>
         /// <param name="inputDirectory">The value specified for the inputDirectory argument.</param>
         /// <exception cref="ArgumentException">Thrown when the directory is an empty or null string.</exception>
@@ -39,7 +80,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         }
 
         /// <summary>
-        ///     Validates the outputDirectory and overwrite arguments for packaging commands.
+        ///     Validates the outputDirectory and overwrite arguments for packaging operations.
         /// </summary>
         /// <param name="outputDirectory">The value specified for the outputDirectory argument.</param>
         /// <param name="overwrite">The value specified for the overwrite argument.</param>
@@ -47,7 +88,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         /// <exception cref="InvalidOperationException">
         ///     Thrown when the output directory exists and is not empty but the overwrite argument is false.
         /// </exception>
-        internal static void ValidateOutputDirectoryArgument(string outputDirectory, bool overwrite)
+        internal static void ValidateOutputDirectoryArgument(string outputDirectory, bool overwrite = false)
         {
             if (string.IsNullOrEmpty(outputDirectory))
             {
@@ -64,7 +105,7 @@ namespace OpenIIoT.SDK.Package.Packaging
         }
 
         /// <summary>
-        ///     Validates the packageFile argument for packaging commands.
+        ///     Validates the packageFile argument for packaging operations.
         /// </summary>
         /// <param name="packageFile">The value specified for the packageFile argument.</param>
         /// <exception cref="ArgumentException">Thrown when the package is an empty or null string.</exception>
@@ -104,6 +145,52 @@ namespace OpenIIoT.SDK.Package.Packaging
             }
         }
 
-        #endregion Private Methods
+        /// <summary>
+        ///     Validates the privateKeyFile and passphrase arguments for packaging operations.
+        /// </summary>
+        /// <param name="privateKeyFile">The value specified for the privateKeyFile argument.</param>
+        /// <param name="passphrase">the value specified for the privateKeyPassphrase argument.</param>
+        /// <exception cref="ArgumentException">
+        ///     Thrown when the privateKeyFile, privateKeyPassword, or publicKeyFile arguments are a default or null string.
+        /// </exception>
+        /// <exception cref="FileNotFoundException">
+        ///     Thrown when the private or public key files can not be found on the local file system.
+        /// </exception>
+        /// <exception cref="InvalidDataException">Thrown when the private or public key files are empty.</exception>
+        internal static void ValidatePrivateKeyArguments(string privateKeyFile, string passphrase)
+        {
+            if (privateKeyFile == default(string) || privateKeyFile == string.Empty)
+            {
+                throw new ArgumentException($"The required argument 'private key' was not supplied.");
+            }
+
+            if (!File.Exists(privateKeyFile))
+            {
+                throw new FileNotFoundException($"The specified private key file '{privateKeyFile}' could not be found.");
+            }
+
+            string key = File.ReadAllText(privateKeyFile);
+
+            if (key.Length == 0)
+            {
+                throw new InvalidDataException($"The specified private key file '{privateKeyFile}' is empty.");
+            }
+
+            if (passphrase == default(string) || passphrase == string.Empty)
+            {
+                throw new ArgumentException($"The required argument 'private key passphrase' was not supplied.");
+            }
+
+            try
+            {
+                byte[] testSignature = PGPSignature.Sign(new byte[] { }, key, passphrase);
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException($"Error opening the specified private key with the specified passphrase: {ex.GetType().Name}: {ex.Message}.");
+            }
+        }
+
+        #endregion Internal Methods
     }
 }
