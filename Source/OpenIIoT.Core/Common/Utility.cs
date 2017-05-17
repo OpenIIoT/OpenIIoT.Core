@@ -75,7 +75,9 @@ namespace OpenIIoT.Core
         /// <param name="level">The level to enable.</param>
         public static void EnableLoggingLevel(NLog.LogLevel level)
         {
-            foreach (var rule in NLog.LogManager.Configuration.LoggingRules)
+            IList<NLog.Config.LoggingRule> rules = NLog.LogManager.Configuration.LoggingRules;
+
+            foreach (var rule in rules)
             {
                 rule.EnableLoggingForLevel(level);
             }
