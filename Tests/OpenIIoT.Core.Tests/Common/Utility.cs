@@ -75,13 +75,13 @@ namespace OpenIIoT.Core.Tests
 
             Logger logger = LogManager.GetLogger("test");
 
-            Core.Utility.EnableLoggingLevel(LogLevel.Info);
+            Core.Utility.EnableLoggingLevel(LogLevel.Trace);
 
-            Assert.True(logger.IsInfoEnabled);
+            Assert.True(logger.IsTraceEnabled);
 
-            Core.Utility.DisableLoggingLevel(LogLevel.Info);
+            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
 
-            Assert.False(logger.IsInfoEnabled);
+            Assert.False(logger.IsTraceEnabled);
         }
 
         /// <summary>
@@ -96,16 +96,16 @@ namespace OpenIIoT.Core.Tests
 
             Logger logger = LogManager.GetLogger("test");
 
-            Core.Utility.DisableLoggingLevel(LogLevel.Info);
+            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
 
-            Assert.False(logger.IsInfoEnabled);
+            Assert.False(logger.IsTraceEnabled);
 
-            Core.Utility.EnableLoggingLevel(LogLevel.Info);
+            Core.Utility.EnableLoggingLevel(LogLevel.Trace);
 
-            Assert.True(logger.IsInfoEnabled);
+            Assert.True(logger.IsTraceEnabled);
 
             // disable the logger to prevent CI from erroring
-            Core.Utility.DisableLoggingLevel(LogLevel.Info);
+            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
         }
 
         /// <summary>
