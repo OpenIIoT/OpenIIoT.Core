@@ -40,6 +40,7 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
 using OpenIIoT.SDK.Common;
 using Utility.BigFont;
 
@@ -58,7 +59,9 @@ namespace OpenIIoT.Core
         /// <param name="level">The level to disable.</param>
         public static void DisableLoggingLevel(NLog.LogLevel level)
         {
-            foreach (var rule in NLog.LogManager.Configuration.LoggingRules)
+            IList<NLog.Config.LoggingRule> rules = NLog.LogManager.Configuration.LoggingRules;
+
+            foreach (var rule in rules)
             {
                 rule.DisableLoggingForLevel(level);
             }
