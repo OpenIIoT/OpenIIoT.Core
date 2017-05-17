@@ -107,7 +107,7 @@
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\OpenIIoT.SDK\OpenIIoT.SDK.csproj">
+    <ProjectReference Include="..\..\Source\OpenIIoT.SDK\OpenIIoT.SDK.csproj">
       <Project>{9C220B49-76AC-4EF5-B385-906AC84D5DA2}</Project>
       <Name>OpenIIoT.SDK</Name>
     </ProjectReference>
