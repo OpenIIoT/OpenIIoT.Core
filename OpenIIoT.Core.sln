@@ -5,7 +5,7 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.Core", "OpenIIoT.Core\OpenIIoT.Core.csproj", "{899D0A77-77E8-4BCF-848E-2167C8CC036F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.Core.Tests", "OpenIIoT.Core.Tests\OpenIIoT.Core.Tests.csproj", "{E98779CA-1108-4B80-AD81-40594CCCED82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.Core.Tests", "Tests\OpenIIoT.Core.Tests\OpenIIoT.Core.Tests.csproj", "{E98779CA-1108-4B80-AD81-40594CCCED82}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DEB11300-255C-444F-9E92-D479957A1998}"
 	ProjectSection(SolutionItems) = preProject
@@ -18,7 +18,13 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK", "OpenIIoT.SDK\OpenIIoT.SDK.csproj", "{9C220B49-76AC-4EF5-B385-906AC84D5DA2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK.Tests", "OpenIIoT.SDK.Tests\OpenIIoT.SDK.Tests.csproj", "{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK.Tests", "Tests\OpenIIoT.SDK.Tests\OpenIIoT.SDK.Tests.csproj", "{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK.Packaging", "OpenIIoT.SDK.Packaging\OpenIIoT.SDK.Packaging.csproj", "{6D80D90E-AA21-4557-A319-C7520D9EB8E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK.Packaging.Tests", "Tests\OpenIIoT.SDK.Packaging.Tests\OpenIIoT.SDK.Packaging.Tests.csproj", "{E5D9E56F-A410-473B-9D0F-F6CA0271780E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B66E55C7-FE35-438F-952A-109C35FAA9DE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -42,8 +48,21 @@ Global
 		{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D80D90E-AA21-4557-A319-C7520D9EB8E4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D80D90E-AA21-4557-A319-C7520D9EB8E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D80D90E-AA21-4557-A319-C7520D9EB8E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D80D90E-AA21-4557-A319-C7520D9EB8E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E5D9E56F-A410-473B-9D0F-F6CA0271780E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E5D9E56F-A410-473B-9D0F-F6CA0271780E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E5D9E56F-A410-473B-9D0F-F6CA0271780E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E5D9E56F-A410-473B-9D0F-F6CA0271780E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{E98779CA-1108-4B80-AD81-40594CCCED82} = {B66E55C7-FE35-438F-952A-109C35FAA9DE}
+		{C01490C0-A243-4FB6-B6EF-A5FB534D20F0} = {B66E55C7-FE35-438F-952A-109C35FAA9DE}
+		{E5D9E56F-A410-473B-9D0F-F6CA0271780E} = {B66E55C7-FE35-438F-952A-109C35FAA9DE}
 	EndGlobalSection
 EndGlobal

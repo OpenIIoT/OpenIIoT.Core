@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}</ProjectGuid>
+    <ProjectGuid>{E98779CA-1108-4B80-AD81-40594CCCED82}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OpenIIoT.SDK.Tests</RootNamespace>
-    <AssemblyName>OpenIIoT.SDK.Tests</AssemblyName>
+    <RootNamespace>OpenIIoT.Core.Tests</RootNamespace>
+    <AssemblyName>OpenIIoT.Core.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -29,7 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>openiiot.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Debug\OpenIIoT.SDK.Tests.XML</DocumentationFile>
+    <DocumentationFile>bin\Debug\OpenIIoT.Core.Tests.XML</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -88,27 +88,40 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="Common\Provider\ItemProvider\ItemProvider.cs" />
-    <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
-    <Compile Include="Common\Discovery\Discoverer.cs" />
-    <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
-    <Compile Include="Common\Item\Item.cs" />
-    <Compile Include="Common\Manager\Manager.cs" />
-    <Compile Include="Common\State\StateChangedEventArgs.cs" />
-    <Compile Include="Common\Utility\ContractResolver.cs" />
-    <Compile Include="Common\Utility\Utility.cs" />
-    <Compile Include="Configuration\ConfigurationDefinition.cs" />
+    <Compile Include="ApplicationManager.cs" />
+    <Compile Include="Common\Utility.cs" />
+    <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
+    <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ConfigurationManager.cs" />
+    <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="Platform\PlatformManager.cs" />
+    <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
+    <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />
+    <Compile Include="Platform\Windows\WindowsPlatformItemProvider.cs" />
+    <Compile Include="Platform\Windows\WindowsPlatform.cs" />
+    <Compile Include="Platform\Platform.cs" />
+    <Compile Include="Platform\Directories.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
     <AdditionalFiles Include="OpenIIoT.ruleset" />
     <None Include="packages.config" />
     <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\OpenIIoT.SDK\OpenIIoT.SDK.csproj">
-      <Project>{9C220B49-76AC-4EF5-B385-906AC84D5DA2}</Project>
+    <ProjectReference Include="..\..\OpenIIoT.Core\OpenIIoT.Core.csproj">
+      <Project>{899d0a77-77e8-4bcf-848e-2167c8cc036f}</Project>
+      <Name>OpenIIoT.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\OpenIIoT.SDK\OpenIIoT.SDK.csproj">
+      <Project>{9c220b49-76ac-4ef5-b385-906ac84d5da2}</Project>
       <Name>OpenIIoT.SDK</Name>
     </ProjectReference>
   </ItemGroup>
