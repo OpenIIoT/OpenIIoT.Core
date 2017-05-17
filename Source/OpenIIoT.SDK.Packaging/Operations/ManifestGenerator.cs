@@ -53,7 +53,11 @@ namespace OpenIIoT.SDK.Packaging.Operations
     {
         #region Public Constructors
 
-        public ManifestGenerator() : base(PackagingOperationType.Manifest)
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ManifestGenerator"/> class.
+        /// </summary>
+        public ManifestGenerator()
+            : base(PackagingOperationType.Manifest)
         {
         }
 

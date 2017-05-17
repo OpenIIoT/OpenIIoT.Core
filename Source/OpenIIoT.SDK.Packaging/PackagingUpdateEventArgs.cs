@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █
+      █  Event arguments for the PackagingOperation.Updated event.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -52,11 +52,21 @@ using System;
 
 namespace OpenIIoT.SDK.Packaging
 {
+    /// <summary>
+    ///     Event arguments for the <see cref="PackagingOperation.Updated"/> event.
+    /// </summary>
     public class PackagingUpdateEventArgs : EventArgs
     {
         #region Public Constructors
 
-        public PackagingUpdateEventArgs(PackagingOperationType operation, PackagingUpdateType type, string message) : base()
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PackagingUpdateEventArgs"/> class.
+        /// </summary>
+        /// <param name="operation">The type of the Packaging Operation for which the update is being issued.</param>
+        /// <param name="type">The type of update message.</param>
+        /// <param name="message">The update message.</param>
+        public PackagingUpdateEventArgs(PackagingOperationType operation, PackagingUpdateType type, string message)
+            : base()
         {
             Operation = operation;
             Type = type;
@@ -67,8 +77,19 @@ namespace OpenIIoT.SDK.Packaging
 
         #region Public Properties
 
+        /// <summary>
+        ///     Gets the update message.
+        /// </summary>
         public string Message { get; private set; }
+
+        /// <summary>
+        ///     Gets the type of the Packaging Operation for which the update is being issued.
+        /// </summary>
         public PackagingOperationType Operation { get; private set; }
+
+        /// <summary>
+        ///     Gets the type of update message.
+        /// </summary>
         public PackagingUpdateType Type { get; private set; }
 
         #endregion Public Properties
