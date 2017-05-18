@@ -156,7 +156,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             File.WriteAllText(Path.Combine(TempDirectory, "binary.dll"), " ");
             File.WriteAllText(Path.Combine(TempDirectory, "resource.bmp"), " ");
 
-            Exception ex = Record.Exception(() => Generator.GenerateManifest(TempDirectory, true, true, Path.Combine(TempDirectory, "?")));
+            Exception ex = Record.Exception(() => Generator.GenerateManifest(TempDirectory, true, true, Path.Combine(TempDirectory, "/")));
 
             Assert.NotNull(ex);
             Assert.IsType<IOException>(ex);
