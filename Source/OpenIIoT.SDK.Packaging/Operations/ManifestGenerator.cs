@@ -94,7 +94,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             PackageManifest manifest = builder.Manifest;
             Success("Manifest generated successfully.");
 
-            if (manifestFile != default(string))
+            if (!string.IsNullOrEmpty(manifestFile))
             {
                 try
                 {
@@ -104,7 +104,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Unable to write to output file '{manifestFile}': {ex.Message}");
+                    throw new IOException($"Unable to write to output file '{manifestFile}': {ex.Message}");
                 }
             }
 
@@ -155,7 +155,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// <returns>The type of the specified file.</returns>
         private PackageManifestFileType GetFileType(string file)
         {
-            if (Path.GetExtension(file) == "dll")
+            if (Path.GetExtension(file) == ".dll")
             {
                 return PackageManifestFileType.Binary;
             }

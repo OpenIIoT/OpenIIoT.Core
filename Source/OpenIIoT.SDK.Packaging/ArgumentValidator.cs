@@ -63,7 +63,7 @@ namespace OpenIIoT.SDK.Packaging
         /// <exception cref="FileNotFoundException">Thrown when the directory contains no files.</exception>
         internal static void ValidateInputDirectoryArgument(string inputDirectory)
         {
-            if (inputDirectory == default(string) || inputDirectory == string.Empty)
+            if (string.IsNullOrEmpty(inputDirectory))
             {
                 throw new ArgumentException($"The required argument 'directory' was not supplied.");
             }
