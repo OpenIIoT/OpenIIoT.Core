@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █
+      █  The abstract base class from which Packaging Operations derive.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -43,22 +43,23 @@ using System;
 
 namespace OpenIIoT.SDK.Packaging
 {
+    /// <summary>
+    ///     The abstract base class from which Packaging Operations derive.
+    /// </summary>
     public abstract class PackagingOperation
     {
         #region Public Constructors
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PackagingOperation"/> class.
+        /// </summary>
+        /// <param name="type">The type of the Packaging Operation being initialized.</param>
         public PackagingOperation(PackagingOperationType type)
         {
             Type = type;
         }
 
         #endregion Public Constructors
-
-        #region Private Properties
-
-        private PackagingOperationType Type { get; set; }
-
-        #endregion Private Properties
 
         #region Public Events
 
@@ -68,6 +69,15 @@ namespace OpenIIoT.SDK.Packaging
         public event EventHandler<PackagingUpdateEventArgs> Updated;
 
         #endregion Public Events
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the type of the Packaging Operation.
+        /// </summary>
+        private PackagingOperationType Type { get; set; }
+
+        #endregion Private Properties
 
         #region Protected Methods
 

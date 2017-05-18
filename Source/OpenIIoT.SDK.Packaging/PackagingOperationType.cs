@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █
+      █  Enumeration of the different Packaging Operation types.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -41,13 +41,39 @@
 
 namespace OpenIIoT.SDK.Packaging
 {
+    /// <summary>
+    ///     Enumeration of the different Packaging Operation types.
+    /// </summary>
     public enum PackagingOperationType
     {
+        /// <summary>
+        ///     The Manifest generation operation.
+        /// </summary>
         Manifest,
+
+        /// <summary>
+        ///     The Manifest extraction operation.
+        /// </summary>
         ExtractManifest,
+
+        /// <summary>
+        ///     The Package creation operation.
+        /// </summary>
         Package,
+
+        /// <summary>
+        ///     The Package extraction operation.
+        /// </summary>
         ExtractPackage,
+
+        /// <summary>
+        ///     The Package trust operation.
+        /// </summary>
         Trust,
+
+        /// <summary>
+        ///     The Package verification operation.
+        /// </summary>
         Verify
     }
 }

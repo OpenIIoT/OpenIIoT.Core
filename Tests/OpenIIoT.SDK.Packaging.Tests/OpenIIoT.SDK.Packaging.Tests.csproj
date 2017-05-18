@@ -68,7 +68,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="UnitTest1.cs" />
+    <Compile Include="Operations\ManifestGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +80,16 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Source\OpenIIoT.SDK.Packaging\OpenIIoT.SDK.Packaging.csproj">
+      <Project>{6d80d90e-aa21-4557-a319-c7520d9eb8e4}</Project>
+      <Name>OpenIIoT.SDK.Packaging</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Source\OpenIIoT.SDK\OpenIIoT.SDK.csproj">
+      <Project>{9c220b49-76ac-4ef5-b385-906ac84d5da2}</Project>
+      <Name>OpenIIoT.SDK</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
