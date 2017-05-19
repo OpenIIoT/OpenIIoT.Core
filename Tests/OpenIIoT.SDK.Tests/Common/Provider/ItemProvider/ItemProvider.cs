@@ -95,7 +95,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Browse"/> method.
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Browse(SDK.Common.Item)"/> method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -106,7 +106,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.BrowseAsync"/> method.
+        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.BrowseAsync(SDK.Common.Item)"/> method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -340,7 +340,8 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         ///     Initializes a new instance of the <see cref="MockItemProvider"/> class.
         /// </summary>
         /// <param name="providerName">The name of the Item Provider.</param>
-        public MockItemProvider(string providerName) : base(providerName)
+        public MockItemProvider(string providerName)
+            : base(providerName)
         {
             ItemRoot = new SDK.Common.Item("Root");
             ItemRoot.AddChild(new SDK.Common.Item("Child"));

@@ -39,6 +39,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
+
 namespace OpenIIoT.SDK.Common
 {
     /// <summary>

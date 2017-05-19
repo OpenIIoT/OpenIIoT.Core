@@ -901,7 +901,7 @@ namespace OpenIIoT.Core.Plugin
             // instantiate all of the configured Plugin instances
             logger.SubSubHeading(LogLevel.Debug, "Instances...");
 
-            //Result<Dictionary<string, IPluginInstance>> pluginInstantiationResult = InstantiatePlugins();
+            // Result<Dictionary<string, IPluginInstance>> pluginInstantiationResult = InstantiatePlugins();
             Result<List<IPluginInstance>> pluginInstantiationResult = InstantiatePlugins();
 
             if (pluginInstantiationResult.ResultCode != ResultCode.Failure)
@@ -924,9 +924,8 @@ namespace OpenIIoT.Core.Plugin
 
             logger.Checkpoint("Plugins instantiated", xLogger.Vars(PluginInstances), xLogger.Names("PluginInstances"), guid);
 
-            // TODO: replace this with manual registration somewhere.  probably not anywhere in the Plugin namespace.
-            //PluginInstances.Add("Platform", Dependency<IPlatformManager>().Platform.Connector);
-
+            // TODO: replace this with manual registration somewhere. probably not anywhere in the Plugin namespace.
+            // PluginInstances.Add("Platform", Dependency<IPlatformManager>().Platform.Connector);
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;

@@ -99,6 +99,7 @@ namespace OpenIIoT.Core.Service.Web
         /// <param name="warningLogLevel">The logging level to apply to warning messages.</param>
         /// <param name="failureLogLevel">The logging level to apply to failure messages.</param>
         /// <param name="caller">The name of the method that called this method.</param>
+        /// <returns>This ApiResult.</returns>
         public new ApiResult<T> LogResult(Action<string> successLogLevel, Action<string> warningLogLevel, Action<string> failureLogLevel, [CallerMemberName]string caller = "")
         {
             if (ResultCode != ResultCode.Failure)

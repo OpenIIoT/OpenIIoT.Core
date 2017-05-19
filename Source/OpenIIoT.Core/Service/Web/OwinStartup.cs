@@ -42,16 +42,14 @@ namespace OpenIIoT.Core.Service.Web
                 .EnableSwagger(c => c.SingleApiVersion("v1", "OpenIIoT"))
                 .EnableSwaggerUi();
 
-            //config.Routes.MapHttpRoute(
-            //    name: "DefaultApi",
-            //    routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : string.Empty) + "api/{controller}/{id}",
-            //    defaults: new { id = RouteParameter.Optional }
-            //);
+            // config.Routes.MapHttpRoute(
+            // name: "DefaultApi",
+            // routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : string.Empty) + "api/{controller}/{id}",
+            // defaults: new { id = RouteParameter.Optional } );
 
-            //config.Formatters.Clear();
-            //config.Formatters.Add(new JsonMediaTypeFormatter());
-            //config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings { ContractResolver = new DefaultContractResolver() };
-
+            // config.Formatters.Clear(); config.Formatters.Add(new JsonMediaTypeFormatter());
+            // config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings { ContractResolver = new
+            // DefaultContractResolver() };
             app.UseWebApi(config);
 
             // use Path.Combine to build the path to the filesystem for cross platform compatibility windows uses web\content,

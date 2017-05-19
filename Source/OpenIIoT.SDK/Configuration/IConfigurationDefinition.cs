@@ -52,23 +52,23 @@ namespace OpenIIoT.SDK.Configuration
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the default configuration.
+        ///     Gets the default configuration.
         /// </summary>
         /// <remarks>Must be an instance of the Type specified in the <see cref="Model"/> property.</remarks>
         object DefaultConfiguration { get; }
 
         /// <summary>
-        ///     Gets or sets a string containing a json representation of an HTML configuration form.
+        ///     Gets a string containing a json representation of an HTML configuration form.
         /// </summary>
         string Form { get; }
 
         /// <summary>
-        ///     Gets or sets an object representing the model to be built from the schema.
+        ///     Gets an object representing the model to be built from the schema.
         /// </summary>
         Type Model { get; }
 
         /// <summary>
-        ///     Gets or sets a string containing a json representation of the schema to populate using the form.
+        ///     Gets a string containing a json representation of the schema to populate using the form.
         /// </summary>
         string Schema { get; }
 

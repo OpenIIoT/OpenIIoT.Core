@@ -51,7 +51,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+[module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
 namespace OpenIIoT.SDK.Common.Exceptions
 {
@@ -67,7 +67,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationArgumentException"/> class.
         /// </summary>
-        public ApplicationArgumentException() : base()
+        public ApplicationArgumentException()
+            : base()
         {
         }
 
@@ -75,7 +76,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ApplicationArgumentException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ApplicationArgumentException(string message) : base(message)
+        public ApplicationArgumentException(string message)
+            : base(message)
         {
         }
 
@@ -87,7 +89,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ApplicationArgumentException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationArgumentException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -106,7 +109,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationInitializationException"/> class.
         /// </summary>
-        public ApplicationInitializationException() : base()
+        public ApplicationInitializationException()
+            : base()
         {
         }
 
@@ -114,7 +118,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ApplicationInitializationException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ApplicationInitializationException(string message) : base(message)
+        public ApplicationInitializationException(string message)
+            : base(message)
         {
         }
 
@@ -126,7 +131,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ApplicationInitializationException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationInitializationException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -145,7 +151,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationShutdownRoutineException"/> class.
         /// </summary>
-        public ApplicationShutdownRoutineException() : base()
+        public ApplicationShutdownRoutineException()
+            : base()
         {
         }
 
@@ -153,7 +160,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ApplicationShutdownRoutineException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ApplicationShutdownRoutineException(string message) : base(message)
+        public ApplicationShutdownRoutineException(string message)
+            : base(message)
         {
         }
 
@@ -165,7 +173,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ApplicationShutdownRoutineException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationShutdownRoutineException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -184,7 +193,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class.
         /// </summary>
-        public ApplicationStartException() : base()
+        public ApplicationStartException()
+            : base()
         {
         }
 
@@ -192,7 +202,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ApplicationStartException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ApplicationStartException(string message) : base(message)
+        public ApplicationStartException(string message)
+            : base(message)
         {
         }
 
@@ -204,7 +215,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ApplicationStartException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationStartException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -223,7 +235,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class.
         /// </summary>
-        public ApplicationStartupRoutineException() : base()
+        public ApplicationStartupRoutineException()
+            : base()
         {
         }
 
@@ -231,7 +244,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ApplicationStartupRoutineException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ApplicationStartupRoutineException(string message) : base(message)
+        public ApplicationStartupRoutineException(string message)
+            : base(message)
         {
         }
 
@@ -243,7 +257,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ApplicationStartupRoutineException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationStartupRoutineException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -262,7 +277,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class.
         /// </summary>
-        public ApplicationStopException() : base()
+        public ApplicationStopException()
+            : base()
         {
         }
 
@@ -270,7 +286,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ApplicationStopException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ApplicationStopException(string message) : base(message)
+        public ApplicationStopException(string message)
+            : base(message)
         {
         }
 
@@ -282,7 +299,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ApplicationStopException(string message, Exception innerException) : base(message, innerException)
+        public ApplicationStopException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 

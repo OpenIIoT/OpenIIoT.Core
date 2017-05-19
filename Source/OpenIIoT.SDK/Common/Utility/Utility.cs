@@ -64,7 +64,8 @@ namespace OpenIIoT.SDK.Common
         /// <typeparam name="T">The list type to clone.</typeparam>
         /// <param name="list">The list from which the clone should be created.</param>
         /// <returns>A clone of the supplied list.</returns>
-        public static List<T> Clone<T>(this IList<T> list) where T : ICloneable
+        public static List<T> Clone<T>(this IList<T> list)
+            where T : ICloneable
         {
             return list.Select(i => (T)i.Clone()).ToList();
         }
@@ -142,7 +143,8 @@ namespace OpenIIoT.SDK.Common
         /// <typeparam name="T">The <see cref="Attribute"/> for which to check.</typeparam>
         /// <param name="member">The object instance to check.</param>
         /// <returns>A value indicating whether the specified Type contains the specified Attribute.</returns>
-        public static bool HasCustomAttribute<T>(this MemberInfo member) where T : Attribute
+        public static bool HasCustomAttribute<T>(this MemberInfo member)
+            where T : Attribute
         {
             return Attribute.GetCustomAttribute(member, typeof(T), false) != default(Attribute);
         }

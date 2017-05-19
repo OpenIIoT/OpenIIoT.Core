@@ -79,7 +79,8 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConfigurationDefinition"/> class.
         /// </summary>
-        public ConfigurationDefinition() : this(string.Empty, string.Empty, null, null)
+        public ConfigurationDefinition()
+            : this(string.Empty, string.Empty, null, null)
         {
         }
 

@@ -39,9 +39,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
 using System;
 using System.Collections.Generic;
+using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Event
@@ -54,25 +54,18 @@ namespace OpenIIoT.SDK.Event
         #region Properties
 
         /// <summary>
-        ///     Gets the Dictionary, keyed on Type, of registered Event Provider instances.
-        /// </summary>
-        Dictionary<Type, List<string>> RegisteredProviders { get; }
-
-        /// <summary>
         ///     Gets the Dictionary, keyed on Type, of registered Events.
         /// </summary>
         Dictionary<Type, List<KeyValuePair<string, string>>> RegisteredEvents { get; }
 
+        /// <summary>
+        ///     Gets the Dictionary, keyed on Type, of registered Event Provider instances.
+        /// </summary>
+        Dictionary<Type, List<string>> RegisteredProviders { get; }
+
         #endregion Properties
 
         #region Methods
-
-        /// <summary>
-        ///     Registers each object within the supplied list which implements the IEventProvider interface.
-        /// </summary>
-        /// <param name="registrants">The list of objects to register.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result RegisterProviders(List<object> registrants);
 
         /// <summary>
         ///     Registers the specified object with the Event Manager.
@@ -80,6 +73,13 @@ namespace OpenIIoT.SDK.Event
         /// <param name="registrant">The object to register.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Result RegisterProvider(object registrant);
+
+        /// <summary>
+        ///     Registers each object within the supplied list which implements the IEventProvider interface.
+        /// </summary>
+        /// <param name="registrants">The list of objects to register.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Result RegisterProviders(List<object> registrants);
 
         #endregion Methods
     }

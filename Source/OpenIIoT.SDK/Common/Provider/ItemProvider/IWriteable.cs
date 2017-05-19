@@ -22,7 +22,7 @@
                                                                                                    ▀▀                            */
 
 using System.Threading.Tasks;
-using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider

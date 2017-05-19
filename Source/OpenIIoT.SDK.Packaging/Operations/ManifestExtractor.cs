@@ -108,11 +108,11 @@ namespace OpenIIoT.SDK.Packaging.Operations
             }
             catch (JsonException ex)
             {
-                throw new Exception($"The manifest within package '{Path.GetFileName(packageFile)}' is malformed: {ex.Message}");
+                throw new JsonException($"The manifest within package '{Path.GetFileName(packageFile)}' is malformed: {ex.Message}");
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error extracting manifest from package '{Path.GetFileName(packageFile)}': {ex.Message}");
+                throw new IOException($"Error extracting manifest from package '{Path.GetFileName(packageFile)}': {ex.Message}");
             }
 
             Success("Manifest extracted successfully.");
@@ -127,7 +127,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception($"Unable to write to manifest file '{manifestFile}': {ex.Message}");
+                    throw new IOException($"Unable to write to manifest file '{manifestFile}': {ex.Message}");
                 }
             }
 

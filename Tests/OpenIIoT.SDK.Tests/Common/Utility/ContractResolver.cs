@@ -104,8 +104,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
-        ///     <see cref="SDK.Common.ContractResolverType.OptIn"/> resolver type.
+        ///     Tests the resolver with the <see cref="SDK.Common.ContractResolverType.OptIn"/> resolver type.
         /// </summary>
         [Fact]
         public void OptIn()
@@ -118,8 +117,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method with the
-        ///     <see cref="SDK.Common.ContractResolverType.OptOut"/> resolver type.
+        ///     Tests the resolver with the <see cref="SDK.Common.ContractResolverType.OptOut"/> resolver type.
         /// </summary>
         [Fact]
         public void OptOut()
@@ -132,7 +130,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.ContractResolver.CreateProperties(Type, MemberSerialization)"/> method.
+        ///     Tests resolver.
         /// </summary>
         [Fact]
         public void Resolve()

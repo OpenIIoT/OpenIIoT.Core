@@ -92,7 +92,8 @@ namespace OpenIIoT.SDK.Common
         ///     Initializes a new instance of the <see cref="ContractResolver"/> class with an empty property list, resolver type
         ///     of OptOut and with includeSecondaryTypes = false. Serializes all un-ignored properties in the given class.
         /// </summary>
-        public ContractResolver() : this(new List<string>(), ContractResolverType.OptOut)
+        public ContractResolver()
+            : this(new List<string>(), ContractResolverType.OptOut)
         {
         }
 
@@ -101,7 +102,8 @@ namespace OpenIIoT.SDK.Common
         ///     supplied value for includeSecondaryTypes.
         /// </summary>
         /// <param name="propertyList">A list of properties to include or exclude from serialization.</param>
-        public ContractResolver(List<string> propertyList) : this(propertyList, ContractResolverType.OptIn)
+        public ContractResolver(List<string> propertyList)
+            : this(propertyList, ContractResolverType.OptIn)
         {
         }
 
@@ -113,7 +115,8 @@ namespace OpenIIoT.SDK.Common
         /// <param name="contractResolverType">
         ///     The type of contract resolver; determines whether the supplied list will be included or excluded from serialization.
         /// </param>
-        public ContractResolver(List<string> propertyList, ContractResolverType contractResolverType) : base()
+        public ContractResolver(List<string> propertyList, ContractResolverType contractResolverType)
+            : base()
         {
             this.propertyList = propertyList;
             this.contractResolverType = contractResolverType;

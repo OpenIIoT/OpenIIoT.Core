@@ -66,7 +66,8 @@ namespace OpenIIoT.SDK.Common
         /// <param name="previousValue">The previous value of the Item.</param>
         /// <param name="quality">The quality of the Item.</param>
         /// <param name="previousQuality">The previous quality of the Item.</param>
-        public ItemChangedEventArgs(object value, object previousValue, ItemQuality quality, ItemQuality previousQuality) : base()
+        public ItemChangedEventArgs(object value, object previousValue, ItemQuality quality, ItemQuality previousQuality)
+            : base()
         {
             Value = value;
             PreviousValue = previousValue;

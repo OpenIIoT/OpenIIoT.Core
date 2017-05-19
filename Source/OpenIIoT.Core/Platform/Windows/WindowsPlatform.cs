@@ -56,6 +56,7 @@ namespace OpenIIoT.Core.Platform.Windows
         /// <summary>
         ///     Initializes a new instance of the <see cref="WindowsPlatform"/> class.
         /// </summary>
+        /// <param name="directories">The directories with which the Platform is to be configured.</param>
         public WindowsPlatform(IDirectories directories)
             : base(directories)
         {

@@ -58,7 +58,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
     /// <summary>
     ///     Unit tests for the <see cref="Packaging.Operations.ManifestGenerator"/> class.
     /// </summary>
-    public class ManifestGenerator : IDisposable
+    public sealed class ManifestGenerator : IDisposable
     {
         #region Public Constructors
 

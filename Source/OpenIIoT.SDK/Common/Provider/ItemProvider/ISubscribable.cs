@@ -41,6 +41,7 @@
 
 using System;
 using System.Collections.Generic;
+using OpenIIoT.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
@@ -55,17 +56,17 @@ namespace OpenIIoT.SDK.Common.Provider.ItemProvider
     ///         in the Dictionary represents an Item with at least one active subscriber.
     ///     </para>
     ///     <para>
-    ///         Subscriptions are added via the <see cref="Subscribe(Item)"/> method. If the specified ConnectorItem does not exist
-    ///         in the Dictionary at the time of the method call, the method must add an entry to the Dictionary with value 1. If
-    ///         the specified ConnectorItem exists in the Dictionary, the value must be incremented by 1. The Subscribe() method
-    ///         must return an <see cref="Result"/> containing the result of the operation as well as any informational, warning or
-    ///         error messages that were generated.
+    ///         Subscriptions are added via the <see cref="Subscribe(Item, Action{object})"/> method. If the specified
+    ///         ConnectorItem does not exist in the Dictionary at the time of the method call, the method must add an entry to the
+    ///         Dictionary with value 1. If the specified ConnectorItem exists in the Dictionary, the value must be incremented by
+    ///         1. The Subscribe() method must return an <see cref="Result"/> containing the result of the operation as well as any
+    ///         informational, warning or error messages that were generated.
     ///     </para>
     ///     <para>
-    ///         Subscription are removed via the <see cref="UnSubscribe(Item)"/> method. Assuming the specified ConnectorItem
-    ///         exists in the Dictionary at the time of the method call, the value for the entry must be decremented by 1. If,
-    ///         after the decrement, the value is zero or less, the item must be removed from the Dictionary completely. The
-    ///         UnSubscribe() method must return an Result containing the result of the operation as well as any informational,
+    ///         Subscription are removed via the <see cref="UnSubscribe(Item, Action{object})"/> method. Assuming the specified
+    ///         ConnectorItem exists in the Dictionary at the time of the method call, the value for the entry must be decremented
+    ///         by 1. If, after the decrement, the value is zero or less, the item must be removed from the Dictionary completely.
+    ///         The UnSubscribe() method must return an Result containing the result of the operation as well as any informational,
     ///         warning or error messages that were generated.
     ///     </para>
     /// </remarks>
