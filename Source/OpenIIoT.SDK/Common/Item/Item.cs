@@ -128,7 +128,7 @@ namespace OpenIIoT.SDK.Common
     ///     <para>The implementation of the <see cref="ICloneable"/> interface for this class returns a shallow copy.</para>
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1401:FieldsMustBePrivate", Justification = "Reviewed.")]
-    public class Item : ICloneable
+    public class Item : ICloneable, IDisposable
     {
         #region Protected Fields
 
@@ -598,6 +598,19 @@ namespace OpenIIoT.SDK.Common
             Item retVal = (Item)Clone();
             retVal.FQN = fqn;
             return retVal;
+        }
+
+        /// <summary>
+        ///     Disposes of this <see cref="Item"/>
+        /// </summary>
+        public void Dispose()
+        {
+            childrenLock.Dispose();
+            grandchildrenLock.Dispose();
+            parentLock.Dispose();
+            providerLock.Dispose();
+            sourceItemLock.Dispose();
+            valueLock.Dispose();
         }
 
         /// <summary>

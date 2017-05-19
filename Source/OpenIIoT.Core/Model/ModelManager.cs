@@ -220,6 +220,7 @@ namespace OpenIIoT.Core.Model
 
                 // set the SourceFQN of the new item to the FQN of the original item to create a link
                 retVal.ReturnValue.SourceFQN = item.FQN;
+
                 // retVal.ReturnValue.SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN); retVal.ReturnValue.SourceItem
                 // = Dependency<IApplicationManager>().ProviderRegistry.FindItem(retVal.ReturnValue.SourceFQN);
                 retVal.ReturnValue.SourceItem = FindProviderItem(retVal.ReturnValue.SourceFQN);
@@ -234,9 +235,8 @@ namespace OpenIIoT.Core.Model
 
                 // remove the children from the item (you leave my babies!)
                 retVal.ReturnValue.Children.Clear();
-                // they're my babies now, you commie son of a bitch!
 
-                // add the cloned and cleaned item to the model
+                // they're my babies now, you commie son of a bitch! add the cloned and cleaned item to the model
                 logger.Info("Adding item '" + retVal.ReturnValue.FQN + "' to the model");
                 AddItem(retVal.ReturnValue);
 
@@ -835,9 +835,8 @@ namespace OpenIIoT.Core.Model
 
                     logger.Checkpoint("Created New Item", xLogger.Vars(newItem), xLogger.Names("newItem"));
 
-                    // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem
-                    // this will be set "officially" when SetParent() is called to bind the item to its parent
-                    //newItem.FQN = item.FQN;
+                    // set the FQN of the ModelItem to the FQN of the ConfigurationModelItem this will be set "officially" when
+                    // SetParent() is called to bind the item to its parent newItem.FQN = item.FQN;
 
                     // resolve the SourceFQN of the new item to an existing item ignore items with a blank SourceFQN; add those
                     // directly to the model.

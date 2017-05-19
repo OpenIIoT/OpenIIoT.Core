@@ -57,6 +57,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Platform.UNIX
@@ -65,7 +66,7 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
     ///     Unit tests for the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider"/> class.
     /// </summary>
     [Collection("UNIXPlatformItemProvider")]
-    public class UNIXPlatformItemProvider
+    public class UNIXPlatformItemProvider : IDisposable
     {
         #region Private Fields
 
@@ -100,9 +101,8 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.Dispose()"/> method.
+        ///     Disposes of this <see cref="UNIXPlatformItemProvider"/>.
         /// </summary>
-        [Fact]
         public void Dispose()
         {
             provider.Dispose();
@@ -145,6 +145,15 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
             object result = provider.Read(item);
 
             Assert.Null(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.Dispose()"/> method.
+        /// </summary>
+        [Fact]
+        public void TestDispose()
+        {
+            provider.Dispose();
         }
 
         #endregion Public Methods

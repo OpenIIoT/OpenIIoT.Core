@@ -52,7 +52,8 @@ namespace OpenIIoT.SDK.Common.Provider
     ///     <see cref="Type"/> T contained within the application.
     /// </summary>
     /// <typeparam name="T">The Type of IProvider for which the registry is to manage registration and discovery.</typeparam>
-    public class ProviderRegistry<T> where T : IProvider
+    public class ProviderRegistry<T>
+        where T : IProvider
     {
         #region Private Fields
 

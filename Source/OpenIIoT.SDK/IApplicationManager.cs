@@ -81,7 +81,8 @@ namespace OpenIIoT.SDK
         /// </summary>
         /// <typeparam name="T">The Type of the Manager to return.</typeparam>
         /// <returns>The requested Manager.</returns>
-        T GetManager<T>() where T : IManager;
+        T GetManager<T>()
+            where T : IManager;
 
         #endregion Public Methods
     }
