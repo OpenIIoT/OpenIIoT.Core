@@ -50,7 +50,6 @@ namespace OpenIIoT.Core.Service.Web
             // config.Formatters.Clear(); config.Formatters.Add(new JsonMediaTypeFormatter());
             // config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings { ContractResolver = new
             // DefaultContractResolver() };
-
             app.UseWebApi(config);
 
             // use Path.Combine to build the path to the filesystem for cross platform compatibility windows uses web\content,

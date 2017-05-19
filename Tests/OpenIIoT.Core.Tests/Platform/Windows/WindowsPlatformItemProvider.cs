@@ -57,6 +57,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Platform.Windows
@@ -65,7 +66,7 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
     ///     Unit tests for the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider"/> class.
     /// </summary>
     [Collection("WindowsPlatformItemProvider")]
-    public class WindowsPlatformItemProvider
+    public class WindowsPlatformItemProvider : IDisposable
     {
         #region Private Fields
 
@@ -100,9 +101,8 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider.Dispose()"/> method.
+        ///     Disposes this <see cref="WindowsPlatformItemProvider"/> .
         /// </summary>
-        [Fact]
         public void Dispose()
         {
             provider.Dispose();
@@ -146,6 +146,15 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
             object result = provider.Read(item);
 
             Assert.Null(result);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider.Dispose()"/> method.
+        /// </summary>
+        [Fact]
+        public void TestDispose()
+        {
+            provider.Dispose();
         }
 
         #endregion Public Methods

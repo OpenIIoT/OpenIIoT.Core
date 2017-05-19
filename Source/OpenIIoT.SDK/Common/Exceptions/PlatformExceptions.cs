@@ -51,7 +51,7 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-[assembly: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+[module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
 namespace OpenIIoT.SDK.Common.Exceptions
 {
@@ -67,7 +67,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="DirectoryConfigurationException"/> class.
         /// </summary>
-        public DirectoryConfigurationException() : base()
+        public DirectoryConfigurationException()
+            : base()
         {
         }
 
@@ -75,7 +76,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="DirectoryConfigurationException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public DirectoryConfigurationException(string message) : base(message)
+        public DirectoryConfigurationException(string message)
+            : base(message)
         {
         }
 
@@ -87,7 +89,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public DirectoryConfigurationException(string message, Exception innerException) : base(message, innerException)
+        public DirectoryConfigurationException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -106,7 +109,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="DirectoryException"/> class.
         /// </summary>
-        public DirectoryException() : base()
+        public DirectoryException()
+            : base()
         {
         }
 
@@ -114,7 +118,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="DirectoryException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public DirectoryException(string message) : base(message)
+        public DirectoryException(string message)
+            : base(message)
         {
         }
 
@@ -126,7 +131,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public DirectoryException(string message, Exception innerException) : base(message, innerException)
+        public DirectoryException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -145,7 +151,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlatformException"/> class.
         /// </summary>
-        public PlatformException() : base()
+        public PlatformException()
+            : base()
         {
         }
 
@@ -153,7 +160,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="PlatformException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public PlatformException(string message) : base(message)
+        public PlatformException(string message)
+            : base(message)
         {
         }
 
@@ -165,7 +173,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public PlatformException(string message, Exception innerException) : base(message, innerException)
+        public PlatformException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Web.Http;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 using NLog;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
+
+[module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
 
 namespace OpenIIoT.Core.Service.Web
 {
