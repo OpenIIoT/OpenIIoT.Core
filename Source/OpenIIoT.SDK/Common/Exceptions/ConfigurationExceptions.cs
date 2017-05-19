@@ -109,7 +109,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConfigurationLoadException"/> class.
         /// </summary>
-        public ConfigurationLoadException() : base()
+        public ConfigurationLoadException()
+            : base()
         {
         }
 
@@ -117,7 +118,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ConfigurationLoadException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ConfigurationLoadException(string message) : base(message)
+        public ConfigurationLoadException(string message)
+            : base(message)
         {
         }
 
@@ -129,7 +131,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ConfigurationLoadException(string message, Exception innerException) : base(message, innerException)
+        public ConfigurationLoadException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -148,7 +151,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ConfigurationRegistrationException"/> class.
         /// </summary>
-        public ConfigurationRegistrationException() : base()
+        public ConfigurationRegistrationException()
+            : base()
         {
         }
 
@@ -156,7 +160,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ConfigurationRegistrationException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ConfigurationRegistrationException(string message) : base(message)
+        public ConfigurationRegistrationException(string message)
+            : base(message)
         {
         }
 
@@ -168,7 +173,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ConfigurationRegistrationException(string message, Exception innerException) : base(message, innerException)
+        public ConfigurationRegistrationException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 

@@ -22,6 +22,7 @@
                                                                                                   ▀▀                            */
 
 using System.Threading.Tasks;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
 namespace OpenIIoT.SDK.Plugin.Connector
@@ -43,7 +44,7 @@ namespace OpenIIoT.SDK.Plugin.Connector
     ///         if it exists.
     ///     </para>
     ///     <para>
-    ///         Asynchronous overloads are provided for each of the methods. These are: <see cref="BrowseAsync()"/>,
+    ///         Asynchronous overloads are provided for each of the methods. These are: <see cref=""/>,
     ///         <see cref="BrowseAsync(Item)"/>, and <see cref="FindAsync(string)"/>. Other than enclosing the return type in a
     ///         <see cref="Task{TResult}"/> and executing asynchronously, these methods are identical to their synchronous counterparts.
     ///     </para>

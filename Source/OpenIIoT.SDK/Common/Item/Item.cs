@@ -179,7 +179,8 @@ namespace OpenIIoT.SDK.Common
         ///     Initializes a new instance of the <see cref="Item"/> class with the specified Fully Qualified name.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
-        public Item(string fqn = "") : this(fqn, default(Item), string.Empty, ItemAccessMode.ReadWrite, default(IItemProvider))
+        public Item(string fqn = "")
+            : this(fqn, default(Item), string.Empty, ItemAccessMode.ReadWrite, default(IItemProvider))
         {
         }
 
@@ -189,7 +190,8 @@ namespace OpenIIoT.SDK.Common
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="accessMode">The access mode of the Item.</param>
         /// <param name="provider">The Item Provider from which the Item originates.</param>
-        public Item(string fqn, ItemAccessMode accessMode, IItemProvider provider = default(IItemProvider)) : this(fqn, default(Item), string.Empty, accessMode, provider)
+        public Item(string fqn, ItemAccessMode accessMode, IItemProvider provider = default(IItemProvider))
+            : this(fqn, default(Item), string.Empty, accessMode, provider)
         {
         }
 
@@ -198,7 +200,8 @@ namespace OpenIIoT.SDK.Common
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="provider">The Item Provider from which the Item originates.</param>
-        public Item(string fqn, IItemProvider provider) : this(fqn, default(Item), string.Empty, ItemAccessMode.ReadWrite, provider)
+        public Item(string fqn, IItemProvider provider)
+            : this(fqn, default(Item), string.Empty, ItemAccessMode.ReadWrite, provider)
         {
         }
 
@@ -209,7 +212,8 @@ namespace OpenIIoT.SDK.Common
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceItem">The source Item.</param>
         /// <param name="provider">The Item Provider from which the Item originates.</param>
-        public Item(string fqn, Item sourceItem, IItemProvider provider) : this(fqn, sourceItem, string.Empty, ItemAccessMode.ReadWrite, provider)
+        public Item(string fqn, Item sourceItem, IItemProvider provider)
+            : this(fqn, sourceItem, string.Empty, ItemAccessMode.ReadWrite, provider)
         {
         }
 
@@ -221,7 +225,8 @@ namespace OpenIIoT.SDK.Common
         /// <param name="sourceItem">The source Item.</param>
         /// <param name="accessMode">The access mode of the Item.</param>
         /// <param name="provider">The Item Provider from which the Item originates.</param>
-        public Item(string fqn, Item sourceItem, ItemAccessMode accessMode = ItemAccessMode.ReadWrite, IItemProvider provider = default(IItemProvider)) : this(fqn, sourceItem, string.Empty, accessMode, provider)
+        public Item(string fqn, Item sourceItem, ItemAccessMode accessMode = ItemAccessMode.ReadWrite, IItemProvider provider = default(IItemProvider))
+            : this(fqn, sourceItem, string.Empty, accessMode, provider)
         {
         }
 
@@ -231,7 +236,8 @@ namespace OpenIIoT.SDK.Common
         /// <param name="fqn">The Fully Qualified Name of the Item to create.</param>
         /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
         /// <param name="provider">The Item Provider from which the Item originates.</param>
-        public Item(string fqn, string sourceFQN, IItemProvider provider) : this(fqn, default(Item), sourceFQN, ItemAccessMode.ReadWrite, provider)
+        public Item(string fqn, string sourceFQN, IItemProvider provider)
+            : this(fqn, default(Item), sourceFQN, ItemAccessMode.ReadWrite, provider)
         {
         }
 
@@ -243,7 +249,8 @@ namespace OpenIIoT.SDK.Common
         /// <param name="sourceFQN">The Fully Qualified Name of the source Item.</param>
         /// <param name="accessMode">The access mode of the Item.</param>
         /// <param name="provider">The Item Provider from which the Item originates.</param>
-        public Item(string fqn, string sourceFQN, ItemAccessMode accessMode = ItemAccessMode.ReadWrite, IItemProvider provider = default(IItemProvider)) : this(fqn, default(Item), sourceFQN, accessMode, provider)
+        public Item(string fqn, string sourceFQN, ItemAccessMode accessMode = ItemAccessMode.ReadWrite, IItemProvider provider = default(IItemProvider))
+            : this(fqn, default(Item), sourceFQN, accessMode, provider)
         {
         }
 

@@ -54,14 +54,17 @@ namespace OpenIIoT.SDK.Model
         #region Public Properties
 
         /// <summary>
-        ///     A dictionary containing the Fully Qualified Names and references to all of the Items in the model.
+        ///     Gets a dictionary containing the Fully Qualified Names and references to all of the Items in the model.
         /// </summary>
         Dictionary<string, Item> Dictionary { get; }
 
+        /// <summary>
+        ///     Gets the list of configured Item Providers.
+        /// </summary>
         List<IItemProvider> ItemProviders { get; }
 
         /// <summary>
-        ///     The root Item for the model.
+        ///     Gets the root Item for the model.
         /// </summary>
         Item Model { get; }
 

@@ -59,7 +59,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
     /// <summary>
     ///     Unit tests for the <see cref="Packaging.Operations.ManifestExtractor"/> class.
     /// </summary>
-    public class ManifestExtractor : IDisposable
+    public sealed class ManifestExtractor : IDisposable
     {
         #region Public Constructors
 

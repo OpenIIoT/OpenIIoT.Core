@@ -67,7 +67,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class.
         /// </summary>
-        public DependencyNotResolvedException() : base()
+        public DependencyNotResolvedException()
+            : base()
         {
         }
 
@@ -75,7 +76,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="DependencyNotResolvedException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public DependencyNotResolvedException(string message) : base(message)
+        public DependencyNotResolvedException(string message)
+            : base(message)
         {
         }
 
@@ -87,7 +89,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public DependencyNotResolvedException(string message, Exception innerException) : base(message, innerException)
+        public DependencyNotResolvedException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -106,7 +109,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ManagerException"/> class.
         /// </summary>
-        public ManagerException() : base()
+        public ManagerException()
+            : base()
         {
         }
 
@@ -114,7 +118,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ManagerException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ManagerException(string message) : base(message)
+        public ManagerException(string message)
+            : base(message)
         {
         }
 
@@ -126,7 +131,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ManagerException(string message, Exception innerException) : base(message, innerException)
+        public ManagerException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -145,7 +151,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class.
         /// </summary>
-        public ManagerSetupException() : base()
+        public ManagerSetupException()
+            : base()
         {
         }
 
@@ -153,7 +160,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ManagerSetupException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ManagerSetupException(string message) : base(message)
+        public ManagerSetupException(string message)
+            : base(message)
         {
         }
 
@@ -165,7 +173,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ManagerSetupException(string message, Exception innerException) : base(message, innerException)
+        public ManagerSetupException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -184,7 +193,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ManagerStartException"/> class.
         /// </summary>
-        public ManagerStartException() : base()
+        public ManagerStartException()
+            : base()
         {
         }
 
@@ -192,7 +202,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ManagerStartException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ManagerStartException(string message) : base(message)
+        public ManagerStartException(string message)
+            : base(message)
         {
         }
 
@@ -204,7 +215,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ManagerStartException(string message, Exception innerException) : base(message, innerException)
+        public ManagerStartException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 
@@ -223,7 +235,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <summary>
         ///     Initializes a new instance of the <see cref="ManagerStopException"/> class.
         /// </summary>
-        public ManagerStopException() : base()
+        public ManagerStopException()
+            : base()
         {
         }
 
@@ -231,7 +244,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         ///     Initializes a new instance of the <see cref="ManagerStopException"/> class with a specified error message.
         /// </summary>
         /// <param name="message">The message that describes the error.</param>
-        public ManagerStopException(string message) : base(message)
+        public ManagerStopException(string message)
+            : base(message)
         {
         }
 
@@ -243,7 +257,8 @@ namespace OpenIIoT.SDK.Common.Exceptions
         /// <param name="innerException">
         ///     The exception that is the cause of the current exception, or a null reference if no inner exception is specified.
         /// </param>
-        public ManagerStopException(string message, Exception innerException) : base(message, innerException)
+        public ManagerStopException(string message, Exception innerException)
+            : base(message, innerException)
         {
         }
 

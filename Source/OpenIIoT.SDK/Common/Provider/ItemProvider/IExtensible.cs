@@ -22,6 +22,7 @@
                                                                                                    ▀▀                            */
 
 using System.Collections.Generic;
+using OpenIIoT.SDK.Plugin.Connector;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
