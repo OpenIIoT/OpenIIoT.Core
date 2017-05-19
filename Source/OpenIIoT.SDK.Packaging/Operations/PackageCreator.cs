@@ -289,16 +289,16 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
             Verbose("Creating SHA512 hash of serialized manifest...");
             string manifestHash = Common.Utility.ComputeSHA512Hash(manifest.ToJson());
-            Verbose($" √ Hash computed successfully: {manifestHash}.");
+            Verbose($"Hash computed successfully: {manifestHash}.");
 
             Verbose("Reading keys from disk...");
             string privateKey = File.ReadAllText(privateKeyFile);
-            Verbose(" √ Keys read successfully.");
+            Verbose("Keys read successfully.");
 
             byte[] manifestBytes = Encoding.ASCII.GetBytes(manifest.ToJson());
             Verbose("Creating digest...");
             byte[] digestBytes = PGPSignature.Sign(manifestBytes, privateKey, passphrase);
-            Verbose(" √ Digest created successfully.");
+            Verbose("Digest created successfully.");
 
             Verbose("Adding signature to manifest...");
             manifest.Signature.Digest = Encoding.ASCII.GetString(digestBytes);
