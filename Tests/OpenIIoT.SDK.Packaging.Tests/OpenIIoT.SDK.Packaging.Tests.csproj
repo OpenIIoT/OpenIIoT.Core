@@ -72,6 +72,7 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Operations\PackageVerifier.cs" />
     <Compile Include="Operations\PackageTruster.cs" />
     <Compile Include="Operations\PackageExtractor.cs" />
     <Compile Include="Operations\PackageCreator.cs" />
