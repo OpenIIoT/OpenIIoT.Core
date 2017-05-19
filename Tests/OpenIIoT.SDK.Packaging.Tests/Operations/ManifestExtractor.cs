@@ -50,9 +50,9 @@
 
 using System;
 using System.IO;
+using Newtonsoft.Json;
 using OpenIIoT.SDK.Package.Manifest;
 using Xunit;
-using Newtonsoft.Json;
 
 namespace OpenIIoT.SDK.Packaging.Tests.Operations
 {

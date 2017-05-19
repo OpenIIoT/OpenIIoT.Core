@@ -73,7 +73,7 @@ namespace OpenIIoT.Core
         /// <summary>
         ///     Invoked when the service is started.
         /// </summary>
-        /// <param name="args"></param>
+        /// <param name="args">The command line arguments provided when the application was started.</param>
         protected override void OnStart(string[] args)
         {
             // set the working directory for the application to the location of the executable. if this is not set here, the

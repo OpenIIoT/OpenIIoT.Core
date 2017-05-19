@@ -56,6 +56,7 @@ namespace OpenIIoT.Core.Platform.UNIX
         /// <summary>
         ///     Initializes a new instance of the <see cref="UNIXPlatform"/> class.
         /// </summary>
+        /// <param name="directories">The directories with which the Platform is to be configured.</param>
         public UNIXPlatform(IDirectories directories)
             : base(directories)
         {

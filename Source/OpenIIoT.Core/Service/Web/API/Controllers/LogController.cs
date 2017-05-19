@@ -19,8 +19,6 @@ namespace OpenIIoT.Core.Service.Web.API
 
         #endregion Private Fields
 
-        //private static List<string> appPackageSerializationProperties = new List<string>(new string[] { "FQN", "FileName", "Version", "AppType", "ConfigurationDefinition" });
-
         #region Public Methods
 
         [Route("api/log")]

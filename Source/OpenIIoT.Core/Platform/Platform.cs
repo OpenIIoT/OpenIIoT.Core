@@ -110,6 +110,7 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     Initializes a new instance of the <see cref="Platform"/> class.
         /// </summary>
+        /// <param name="directories">The directories with which the Platform is to be configured.</param>
         public Platform(IDirectories directories)
         {
             Directories = directories;

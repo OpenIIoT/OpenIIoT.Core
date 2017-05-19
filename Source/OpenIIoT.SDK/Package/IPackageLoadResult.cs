@@ -14,14 +14,18 @@ namespace OpenIIoT.SDK.Package
     /// </summary>
     public interface IPackageLoadResult : IResult
     {
+        #region Public Properties
+
         /// <summary>
-        ///     The list of valid Plugin Packages discovered during the load.
+        ///     Gets or sets the list of invalid Plugin Packages and the reason they failed validation.
+        /// </summary>
+        IList<IInvalidPackage> InvalidPackages { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the list of valid Plugin Packages discovered during the load.
         /// </summary>
         IList<IPackage> ValidPackages { get; set; }
 
-        /// <summary>
-        ///     The list of invalid Plugin Packages and the reason they failed validation.
-        /// </summary>
-        IList<IInvalidPackage> InvalidPackages { get; set; }
+        #endregion Public Properties
     }
 }

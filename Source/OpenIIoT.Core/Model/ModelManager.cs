@@ -165,16 +165,6 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
-        ///// <summary>
-        /////     Asynchronously reads and returns the current value of the specified <see cref="Item"/>
-        ///// </summary>
-        ///// <param name="item">The Item to read.</param>
-        ///// <returns>The value of the specified Item.</returns>
-        //public async Task<object> ReadAsync(Item item)
-        //{
-        //    return await Task.Run(() => Read(item));
-        //}
-
         /// <summary>
         ///     Adds an Item to the ModelManager's instance of Model and Dictionary.
         /// </summary>
@@ -225,20 +215,19 @@ namespace OpenIIoT.Core.Model
             {
                 // create a 1:1 clone of the supplied item
 
-                //retVal.ReturnValue = (Item)item.Clone();
+                // retVal.ReturnValue = (Item)item.Clone();
                 retVal.ReturnValue = (Item)item.CloneAs(parentItem.FQN + "." + item.Name);
 
                 // set the SourceFQN of the new item to the FQN of the original item to create a link
                 retVal.ReturnValue.SourceFQN = item.FQN;
-                //retVal.ReturnValue.SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN);
-                //retVal.ReturnValue.SourceItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(retVal.ReturnValue.SourceFQN);
+                // retVal.ReturnValue.SourceItem = FQNResolver.Resolve(retVal.ReturnValue.SourceFQN); retVal.ReturnValue.SourceItem
+                // = Dependency<IApplicationManager>().ProviderRegistry.FindItem(retVal.ReturnValue.SourceFQN);
                 retVal.ReturnValue.SourceItem = FindProviderItem(retVal.ReturnValue.SourceFQN);
 
-                // modify the FQN of the cloned item to reflect it's new path
-                //((Item)retVal.ReturnValue).FQN = parentItem.FQN + "." + retVal.ReturnValue.Name;
-                //retVal.ReturnValue.SetParent(parentItem);
+                // modify the FQN of the cloned item to reflect it's new path ((Item)retVal.ReturnValue).FQN = parentItem.FQN + "."
+                // + retVal.ReturnValue.Name; retVal.ReturnValue.SetParent(parentItem);
 
-                //parentItem.AddChild(retVal.ReturnValue);
+                // parentItem.AddChild(retVal.ReturnValue);
 
                 // create a temporary list of the items children
                 IEnumerable<Item> children = retVal.ReturnValue.Children.Clone<Item>();
@@ -381,10 +370,6 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
-        //public object Read(Item item)
-        //{
-        //    return item.Read();
-        //}
         public IList<IItemProvider> DiscoverItemProviders()
         {
             ItemProviders = Discoverer.Discover<IItemProvider>(Dependency<IApplicationManager>()).ToList();
@@ -669,9 +654,8 @@ namespace OpenIIoT.Core.Model
             // if the parent FQN couldn't be parsed, this is the root node so clone it to the existing ModelItem representing the root.
             if (parentFQN == string.Empty)
             {
-                //Result<Item> rootSetResult = SetModelRoot(model, dictionary, item);
-                //retVal.Incorporate(rootSetResult);
-                //retVal.ReturnValue = rootSetResult.ReturnValue;
+                // Result<Item> rootSetResult = SetModelRoot(model, dictionary, item); retVal.Incorporate(rootSetResult);
+                // retVal.ReturnValue = rootSetResult.ReturnValue;
             }
             else
             {
@@ -876,7 +860,7 @@ namespace OpenIIoT.Core.Model
                         // safe to resolve.
                         else
                         {
-                            //Item resolvedItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(newItem.SourceFQN);
+                            // Item resolvedItem = Dependency<IApplicationManager>().ProviderRegistry.FindItem(newItem.SourceFQN);
                             Item resolvedItem = FindProviderItem(newItem.SourceFQN);
 
                             if (resolvedItem == default(Item))
@@ -896,7 +880,7 @@ namespace OpenIIoT.Core.Model
                     {
                         // the item we are working with has no parent and is therefore the root node of the model.
                         result.Dictionary.Add(newItem.FQN, newItem);
-                        result.Model = newItem; //SetModelRoot(result.Model, result.Dictionary, newItem).ReturnValue;
+                        result.Model = newItem; // SetModelRoot(result.Model, result.Dictionary, newItem).ReturnValue;
                     }
                     else
                     {
@@ -1166,9 +1150,7 @@ namespace OpenIIoT.Core.Model
 
             retVal.ReturnValue = (Item)item.Clone();
 
-            // TODO: fix this?
-            //retVal.ReturnValue.FQN = fqn;
-
+            // TODO: fix this? retVal.ReturnValue.FQN = fqn;
             IEnumerable<Item> childrenToRename = retVal.ReturnValue.Children.Clone();
 
             foreach (Item child in childrenToRename)

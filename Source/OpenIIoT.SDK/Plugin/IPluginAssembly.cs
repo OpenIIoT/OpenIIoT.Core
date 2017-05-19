@@ -8,14 +8,18 @@ namespace OpenIIoT.SDK.Plugin
     /// </summary>
     public interface IPluginAssembly : IPlugin
     {
+        #region Public Properties
+
         /// <summary>
-        ///     The Type of the Plugin contained within the Plugin assembly.
+        ///     Gets the Plugin assembly.
+        /// </summary>
+        Assembly Assembly { get; }
+
+        /// <summary>
+        ///     Gets the Type of the Plugin contained within the Plugin assembly.
         /// </summary>
         Type Type { get; }
 
-        /// <summary>
-        ///     The Plugin assembly.
-        /// </summary>
-        Assembly Assembly { get; }
+        #endregion Public Properties
     }
 }
