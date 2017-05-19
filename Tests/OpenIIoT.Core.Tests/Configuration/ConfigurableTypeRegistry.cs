@@ -338,7 +338,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Mocks a configurable Type with a missing <see cref="ConfigurableMockMissingDefault.GetDefaultDefinition"/> method.
+        ///     Mocks a configurable Type with a missing GetDefaultConfiguration method.
         /// </summary>
         /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
         private class ConfigurableMockMissingDefault : IConfigurable<int>
@@ -401,7 +401,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Mocks a configurable Type with a missing <see cref="ConfigurableMockMissingDefinition.GetConfigurationDefinition"/> method.
+        ///     Mocks a configurable Type with a missing GetConfigurationDefinition method.
         /// </summary>
         /// <remarks>It is not feasible to use a mocking framework for this mockup due to the presence of static methods.</remarks>
         private class ConfigurableMockMissingDefinition : IConfigurable<int>
