@@ -72,6 +72,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Operations\PackageExtractor.cs" />
+    <Compile Include="Operations\PackageCreator.cs" />
     <Compile Include="Operations\ManifestExtractor.cs" />
     <Compile Include="Operations\ManifestGenerator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
