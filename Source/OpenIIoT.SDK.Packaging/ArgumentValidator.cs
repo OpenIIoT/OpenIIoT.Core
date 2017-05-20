@@ -183,7 +183,7 @@ namespace OpenIIoT.SDK.Packaging
         /// <exception cref="InvalidDataException">Thrown when the private or public key files are empty.</exception>
         internal static void ValidatePrivateKeyArguments(string privateKeyFile, string passphrase)
         {
-            if (privateKeyFile == default(string) || privateKeyFile == string.Empty)
+            if (string.IsNullOrEmpty(privateKeyFile))
             {
                 throw new ArgumentException("The required argument 'private key' was not supplied.");
             }
@@ -200,7 +200,7 @@ namespace OpenIIoT.SDK.Packaging
                 throw new InvalidDataException($"The specified private key file '{privateKeyFile}' is empty.");
             }
 
-            if (passphrase == default(string) || passphrase == string.Empty)
+            if (string.IsNullOrEmpty(passphrase))
             {
                 throw new ArgumentException($"The required argument 'private key passphrase' was not supplied.");
             }
