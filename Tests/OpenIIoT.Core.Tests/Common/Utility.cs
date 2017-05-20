@@ -63,50 +63,50 @@ namespace OpenIIoT.Core.Tests
     {
         #region Public Methods
 
-        /// <summary>
-        ///     Tests the <see cref="Core.Utility.DisableLoggingLevel(NLog.LogLevel)"/> method.
-        /// </summary>
-        [Fact]
-        public void DisableLoggingLevel()
-        {
-            Target target = new ConsoleTarget();
-            LogManager.Configuration.AddTarget("test", target);
-            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
+        ///// <summary>
+        /////     Tests the <see cref="Core.Utility.DisableLoggingLevel(NLog.LogLevel)"/> method.
+        ///// </summary>
+        //[Fact]
+        //public void DisableLoggingLevel()
+        //{
+        //    Target target = new ConsoleTarget();
+        //    LogManager.Configuration.AddTarget("test", target);
+        //    LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
 
-            Logger logger = LogManager.GetLogger("test");
+        // Logger logger = LogManager.GetLogger("test");
 
-            Core.Utility.EnableLoggingLevel(LogLevel.Trace);
+        // Core.Utility.EnableLoggingLevel(LogLevel.Trace);
 
-            Assert.True(logger.IsTraceEnabled);
+        // Assert.True(logger.IsTraceEnabled);
 
-            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
+        // Core.Utility.DisableLoggingLevel(LogLevel.Trace);
 
-            Assert.False(logger.IsTraceEnabled);
-        }
+        //    Assert.False(logger.IsTraceEnabled);
+        //}
 
-        /// <summary>
-        ///     Tests the <see cref="Core.Utility.EnableLoggingLevel(NLog.LogLevel)"/> method.
-        /// </summary>
-        [Fact]
-        public void EnableLoggingLevel()
-        {
-            Target target = new ConsoleTarget();
-            LogManager.Configuration.AddTarget("test", target);
-            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
+        ///// <summary>
+        /////     Tests the <see cref="Core.Utility.EnableLoggingLevel(NLog.LogLevel)"/> method.
+        ///// </summary>
+        //[Fact]
+        //public void EnableLoggingLevel()
+        //{
+        //    Target target = new ConsoleTarget();
+        //    LogManager.Configuration.AddTarget("test", target);
+        //    LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
 
-            Logger logger = LogManager.GetLogger("test");
+        // Logger logger = LogManager.GetLogger("test");
 
-            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
+        // Core.Utility.DisableLoggingLevel(LogLevel.Trace);
 
-            Assert.False(logger.IsTraceEnabled);
+        // Assert.False(logger.IsTraceEnabled);
 
-            Core.Utility.EnableLoggingLevel(LogLevel.Trace);
+        // Core.Utility.EnableLoggingLevel(LogLevel.Trace);
 
-            Assert.True(logger.IsTraceEnabled);
+        // Assert.True(logger.IsTraceEnabled);
 
-            // disable the logger to prevent CI from erroring
-            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
-        }
+        //    // disable the logger to prevent CI from erroring
+        //    Core.Utility.DisableLoggingLevel(LogLevel.Trace);
+        //}
 
         /// <summary>
         ///     Tests the <see cref="Core.Utility.GetSetting(string, string)"/> method overloads.
