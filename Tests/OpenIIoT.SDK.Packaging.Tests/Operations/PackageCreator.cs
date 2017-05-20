@@ -281,6 +281,34 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         [Fact]
+        public void CreateSignedPackageNullKeybaseUsername()
+        {
+            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string package = Path.Combine(TempDirectory, "signedpackage.zip");
+            string privateKey = Path.Combine(DataDirectory, "Keys", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
+            string keybaseUsername = null;
+
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
+
+            Assert.NotNull(ex);
+        }
+
+        [Fact]
+        public void CreateSignedPackageBlankKeybaseUsername()
+        {
+            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string package = Path.Combine(TempDirectory, "signedpackage.zip");
+            string privateKey = Path.Combine(DataDirectory, "Keys", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
+            string keybaseUsername = string.Empty;
+
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
+
+            Assert.NotNull(ex);
+        }
+
+        [Fact]
         public void CreateSignedPackageBlankPassphrase()
         {
             string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
