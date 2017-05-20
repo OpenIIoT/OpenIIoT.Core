@@ -77,7 +77,8 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// </summary>
         /// <param name="packageFile">The Package to verify.</param>
         /// <param name="publicKeyFile">The filename of the file containing the ASCII armored PGP private key.</param>
-        public void VerifyPackage(string packageFile, string publicKeyFile = "")
+        /// <returns>A value indicating whether the specified Package was verified successfully.</returns>
+        public bool VerifyPackage(string packageFile, string publicKeyFile = "")
         {
             ArgumentValidator.ValidatePackageFileArgumentForReading(packageFile);
 
@@ -91,7 +92,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             Exception deferredException = default(Exception);
 
             // looks like: temp\OpenIIoT.SDK\<Guid>\
-            string tempDirectory = Path.Combine(Path.GetTempPath(), System.Reflection.Assembly.GetEntryAssembly().GetName().Name, Guid.NewGuid().ToString());
+            string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
 
             try
             {
@@ -228,6 +229,8 @@ namespace OpenIIoT.SDK.Packaging.Operations
                     throw deferredException;
                 }
             }
+
+            return true;
         }
 
         #endregion Public Methods

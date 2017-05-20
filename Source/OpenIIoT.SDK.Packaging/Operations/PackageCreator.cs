@@ -107,19 +107,15 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 {
                     throw new ArgumentException($"The required argument 'keybase username' was not supplied.");
                 }
+
+                Info($"Package will be signed using PGP private key file '{Path.GetFileName(privateKeyFile)}' as keybase.io user '{keybaseUsername}'.");
             }
 
             Exception deferredException = default(Exception);
 
             Info($"Creating package '{Path.GetFileName(packageFile)}' from directory '{inputDirectory}' using manifest file '{Path.GetFileName(manifestFile)}'...");
 
-            if (signPackage)
-            {
-                Info($"Package will be signed using PGP private key file '{Path.GetFileName(privateKeyFile)}' as keybase.io user '{keybaseUsername}'.");
-            }
-            
-            // looks like: temp\OpenIIoT.SDK\<Guid>\
-            string tempDirectory = Path.Combine(Path.GetTempPath(), System.Reflection.Assembly.GetEntryAssembly().GetName().Name, Guid.NewGuid().ToString());
+            string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
             string payloadDirectory = Path.Combine(tempDirectory, PackagingConstants.PayloadDirectoryName);
             string payloadArchiveName = Path.Combine(tempDirectory, PackagingConstants.PayloadArchiveName);
             string tempPackageFileName = Path.Combine(tempDirectory, Path.GetFileName(packageFile));

@@ -216,6 +216,29 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<ArgumentException>(ex);
         }
 
+        [Fact]
+        public void CreatePackage()
+        {
+            string manifest = Path.Combine(DataDirectory, "manifest.json");
+            string package = Path.Combine(TempDirectory, "package.zip");
+
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package));
+
+            Assert.Null(ex);
+
+            bool verified = false;
+
+            ex = Record.Exception(() => verified = new Packaging.Operations.PackageVerifier().VerifyPackage(package));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
+        [Fact]
+        public void CreateSignedPackage()
+        {
+        }
+
         /// <summary>
         ///     Disposes this instance of <see cref="PackageCreator"/>.
         /// </summary>

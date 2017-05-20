@@ -120,7 +120,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             Verbose($"Updating Manifest in Package '{Path.GetFileName(packageFile)}'...");
 
             // looks like: temp\OpenIIoT.SDK\<Guid>\
-            string tempDirectory = Path.Combine(Path.GetTempPath(), System.Reflection.Assembly.GetEntryAssembly().GetName().Name, Guid.NewGuid().ToString());
+            string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
             string tempFile = Path.Combine(tempDirectory, PackagingConstants.ManifestFilename);
 
             Exception deferredException = default(Exception);

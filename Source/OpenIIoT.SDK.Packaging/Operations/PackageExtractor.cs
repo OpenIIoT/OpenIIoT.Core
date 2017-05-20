@@ -90,7 +90,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 Info("Package verification skipped.");
             }
 
-            string tempDirectory = Path.Combine(Path.GetTempPath(), System.Reflection.Assembly.GetEntryAssembly().GetName().Name, Guid.NewGuid().ToString());
+            string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
 
             try
             {
