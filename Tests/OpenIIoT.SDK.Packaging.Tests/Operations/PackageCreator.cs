@@ -103,6 +103,61 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         #region Public Methods
 
         /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     blank directory.
+        /// </summary>
+        [Fact]
+        public void CreatePackageBlankDirectory()
+        {
+            Exception ex = Record.Exception(() => Creator.CreatePackage(string.Empty, string.Empty, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     directory containing no files.
+        /// </summary>
+        [Fact]
+        public void CreatePackageEmptyDirectory()
+        {
+            string directory = Path.Combine(TempDirectory, "empty");
+            Directory.CreateDirectory(directory);
+
+            Exception ex = Record.Exception(() => Creator.CreatePackage(directory, string.Empty, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<FileNotFoundException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     directory which does not exist.
+        /// </summary>
+        [Fact]
+        public void CreatePackageNotFoundDirectory()
+        {
+            Exception ex = Record.Exception(() => Creator.CreatePackage("not found", string.Empty, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<DirectoryNotFoundException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     null directory.
+        /// </summary>
+        [Fact]
+        public void CreatePackageNullDirectory()
+        {
+            Exception ex = Record.Exception(() => Creator.CreatePackage(null, string.Empty, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
         ///     Disposes this instance of <see cref="PackageCreator"/>.
         /// </summary>
         public void Dispose()
