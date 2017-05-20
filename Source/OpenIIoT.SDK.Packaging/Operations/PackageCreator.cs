@@ -148,14 +148,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                 if (signPackage)
                 {
-                    try
-                    {
-                        manifest = SignManifest(manifest, privateKeyFile, passphrase, keybaseUsername);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"Error signing Package: {ex.GetType().Name}: {ex.Message}");
-                    }
+                    manifest = SignManifest(manifest, privateKeyFile, passphrase, keybaseUsername);
                 }
 
                 Verbose($"Writing manifest to 'manifest.json' in '{tempDirectory}'...");
