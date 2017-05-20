@@ -202,6 +202,28 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
         /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     manifest containing no checksum properties for non-binary files.
+        /// </summary>
+        [Fact]
+        public void CreatePackageNoChecksum()
+        {
+            string manifest = Path.Combine(DataDirectory, "Manifests", "nochecksummanifest.json");
+            string package = Path.Combine(TempDirectory, "package.zip");
+
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package));
+
+            Assert.Null(ex);
+
+            bool verified = false;
+
+            ex = Record.Exception(() => verified = new Packaging.Operations.PackageVerifier().VerifyPackage(package));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
         ///     directory which does not exist.
         /// </summary>
         [Fact]
