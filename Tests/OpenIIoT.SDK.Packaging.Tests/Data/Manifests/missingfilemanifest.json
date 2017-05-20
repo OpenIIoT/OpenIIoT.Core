@@ -1,0 +1,34 @@
+{
+  "Title": "DefaultPlugin",
+  "Version": "1.0.0",
+  "Namespace": "OpenIIoT.Plugin",
+  "Description": "Default plugin.",
+  "Publisher": "OpenIIoT Team",
+  "Copyright": "Copyright (c) 2017 OpenIIoT",
+  "License": "AGPLv3",
+  "Url": "http://github.com/openiiot",
+  "Files": {
+    "Binary": [
+      {
+        "Source": "binary.dll",
+        "Checksum": ""
+      },
+      {
+        "Source": "binary2.dll",
+        "Checksum": ""
+      }
+    ],
+    "WebIndex": [
+      {
+        "Source": "index.html",
+        "Checksum": ""
+      }
+    ],
+    "Resource": [
+      {
+        "Source": "resource.dat",
+        "Checksum": ""
+      }
+    ]
+  }
+}
