@@ -91,7 +91,6 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
             Exception deferredException = default(Exception);
 
-            // looks like: temp\OpenIIoT.SDK\<Guid>\
             string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
 
             try
@@ -138,77 +137,80 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 string verifiedTrust = string.Empty;
 
                 // verify Trust
-                if (!string.IsNullOrEmpty(manifest.Signature.Trust))
+                if (manifest.Signature != default(PackageManifestSignature))
                 {
-                    Verbose("Verifying the Manifest Trust...");
-
-                    if (string.IsNullOrEmpty(manifest.Signature.Digest))
+                    if (!string.IsNullOrEmpty(manifest.Signature.Trust))
                     {
-                        throw new InvalidDataException("the Manifest is Trusted but it contains no Digest to trust.");
+                        Verbose("Verifying the Manifest Trust...");
+
+                        if (string.IsNullOrEmpty(manifest.Signature.Digest))
+                        {
+                            throw new InvalidDataException("the Manifest is Trusted but it contains no Digest to trust.");
+                        }
+
+                        byte[] trustBytes = Encoding.ASCII.GetBytes(manifest.Signature.Trust);
+                        byte[] verifiedTrustBytes;
+
+                        try
+                        {
+                            verifiedTrustBytes = PGPSignature.Verify(trustBytes, Resources.PGPPublicKey);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new InvalidDataException($"an Exception was thrown while verifying the Trust: {ex.GetType().Name}: {ex.Message}");
+                        }
+
+                        verifiedTrust = Encoding.ASCII.GetString(verifiedTrustBytes);
+
+                        if (manifest.Signature.Digest != verifiedTrust)
+                        {
+                            throw new InvalidDataException("the Manifest Trust is not valid; the Trusted Digest does not match the Digest in the Manifest.");
+                        }
+
+                        Verbose("Trust verified successfully.");
                     }
 
-                    byte[] trustBytes = Encoding.ASCII.GetBytes(manifest.Signature.Trust);
-                    byte[] verifiedTrustBytes;
+                    // verify Signature. start by determining the public key to use.
+                    string publicKey = string.Empty;
+                    string verifiedDigest = string.Empty;
 
-                    try
+                    if (!string.IsNullOrEmpty(manifest.Signature.Digest))
                     {
-                        verifiedTrustBytes = PGPSignature.Verify(trustBytes, Resources.PGPPublicKey);
+                        if (!string.IsNullOrEmpty(publicKeyFile))
+                        {
+                            publicKey = File.ReadAllText(publicKeyFile);
+                        }
+                        else
+                        {
+                            publicKey = FetchPublicKeyForUser(manifest.Signature.Subject);
+                        }
+
+                        byte[] digestBytes = Encoding.ASCII.GetBytes(manifest.Signature.Digest);
+                        byte[] verifiedDigestBytes;
+
+                        try
+                        {
+                            verifiedDigestBytes = PGPSignature.Verify(digestBytes, publicKey);
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new InvalidDataException($"an Exception was thrown while verifying the Digest: {ex.GetType().Name}: {ex.Message}");
+                        }
+
+                        verifiedDigest = Encoding.ASCII.GetString(verifiedDigestBytes);
+
+                        // remove the digest and trust from the manifest, then serialize it and compare it to the verified digest.
+                        manifest.Signature.Digest = default(string);
+                        manifest.Signature.Trust = default(string);
+
+                        // if the scrubbed manifest and verified digest don't match, something was tampered with.
+                        if (manifest.ToJson() != verifiedDigest)
+                        {
+                            throw new InvalidDataException("the Manifest Digest is not valid; the verified Digest does not match the Manifest.");
+                        }
+
+                        Verbose("Digest verified successfully.");
                     }
-                    catch (Exception ex)
-                    {
-                        throw new InvalidDataException($"an Exception was thrown while verifying the Trust: {ex.GetType().Name}: {ex.Message}");
-                    }
-
-                    verifiedTrust = Encoding.ASCII.GetString(verifiedTrustBytes);
-
-                    if (manifest.Signature.Digest != verifiedTrust)
-                    {
-                        throw new InvalidDataException("the Manifest Trust is not valid; the Trusted Digest does not match the Digest in the Manifest.");
-                    }
-
-                    Verbose("Trust verified successfully.");
-                }
-
-                // verify Signature. start by determining the public key to use.
-                string publicKey = string.Empty;
-                string verifiedDigest = string.Empty;
-
-                if (!string.IsNullOrEmpty(manifest.Signature.Digest))
-                {
-                    if (!string.IsNullOrEmpty(publicKeyFile))
-                    {
-                        publicKey = File.ReadAllText(publicKeyFile);
-                    }
-                    else
-                    {
-                        publicKey = FetchPublicKeyForUser(manifest.Signature.Subject);
-                    }
-
-                    byte[] digestBytes = Encoding.ASCII.GetBytes(manifest.Signature.Digest);
-                    byte[] verifiedDigestBytes;
-
-                    try
-                    {
-                        verifiedDigestBytes = PGPSignature.Verify(digestBytes, publicKey);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new InvalidDataException($"an Exception was thrown while verifying the Digest: {ex.GetType().Name}: {ex.Message}");
-                    }
-
-                    verifiedDigest = Encoding.ASCII.GetString(verifiedDigestBytes);
-
-                    // remove the digest and trust from the manifest, then serialize it and compare it to the verified digest.
-                    manifest.Signature.Digest = default(string);
-                    manifest.Signature.Trust = default(string);
-
-                    // if the scrubbed manifest and verified digest don't match, something was tampered with.
-                    if (manifest.ToJson() != verifiedDigest)
-                    {
-                        throw new InvalidDataException("the Manifest Digest is not valid; the verified Digest does not match the Manifest.");
-                    }
-
-                    Verbose("Digest verified successfully.");
                 }
 
                 // TODO: validate files.

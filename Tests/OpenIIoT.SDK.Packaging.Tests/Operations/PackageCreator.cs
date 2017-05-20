@@ -74,7 +74,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             DataDirectory = Path.Combine(Path.GetDirectoryName(codeBasePath), "Data");
             PayloadDirectory = Path.Combine(DataDirectory, "Payload");
 
-            TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            TempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
 
             Directory.CreateDirectory(TempDirectory);
         }

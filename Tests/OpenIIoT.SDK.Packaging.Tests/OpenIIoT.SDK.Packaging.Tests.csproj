@@ -82,28 +82,34 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Data\badmanifest.zip">
+    <None Include="Data\Packages\badmanifest.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\blankmanifest.json">
+    <None Include="Data\Manifests\blankmanifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\invalidmanifest.json">
+    <None Include="Data\Manifests\invalidmanifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\manifest.json">
+    <None Include="Data\Keys\private.asc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\notapackage.zip">
+    <None Include="Data\Keys\public.asc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\package.zip">
+    <None Include="Data\Manifests\manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\Packages\notapackage.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\Packages\package.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Data\Payload\resource.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\plainzip.zip">
+    <None Include="Data\Packages\plainzip.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <AdditionalFiles Include="OpenIIoT.ruleset" />
@@ -127,6 +133,9 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Data\Keys\password.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Data\Payload\binary.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
