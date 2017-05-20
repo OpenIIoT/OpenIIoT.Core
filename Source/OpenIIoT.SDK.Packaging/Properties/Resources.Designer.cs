@@ -10,8 +10,9 @@
 
 namespace OpenIIoT.SDK.Packaging.Properties {
     using System;
-    
-    
+    using System.Diagnostics.CodeAnalysis;
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -22,6 +23,7 @@ namespace OpenIIoT.SDK.Packaging.Properties {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
+    [ExcludeFromCodeCoverage]
     internal class Resources {
         
         private static global::System.Resources.ResourceManager resourceMan;
