@@ -70,9 +70,9 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
             Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
-            string dirPath = Path.GetDirectoryName(codeBasePath);
 
-            DataDirectory = Path.Combine(dirPath, "Data");
+            DataDirectory = Path.Combine(Path.GetDirectoryName(codeBasePath), "Data");
+            PayloadDirectory = Path.Combine(DataDirectory, "Payload");
 
             TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
@@ -92,6 +92,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         ///     Gets or sets the data directory used for tests.
         /// </summary>
         private string DataDirectory { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the payload directory used for tests.
+        /// </summary>
+        private string PayloadDirectory { get; set; }
 
         /// <summary>
         ///     Gets or sets the temporary directory used for tests.
@@ -133,6 +138,34 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
         /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     manifest containing no data.
+        /// </summary>
+        [Fact]
+        public void CreatePackageEmptyManifest()
+        {
+            string manifest = Path.Combine(DataDirectory, "blankmanifest.json");
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<InvalidDataException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     manifest containing invalid json data.
+        /// </summary>
+        [Fact]
+        public void CreatePackageInvalidManifest()
+        {
+            string manifest = Path.Combine(DataDirectory, "invalidmanifest.json");
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<FileLoadException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
         ///     directory which does not exist.
         /// </summary>
         [Fact]
@@ -146,12 +179,38 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
         /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     manifest which does not exist.
+        /// </summary>
+        [Fact]
+        public void CreatePackageNotFoundManifest()
+        {
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, "not found", string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<FileNotFoundException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
         ///     null directory.
         /// </summary>
         [Fact]
         public void CreatePackageNullDirectory()
         {
             Exception ex = Record.Exception(() => Creator.CreatePackage(null, string.Empty, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string)"/> method with a
+        ///     null manifest argument.
+        /// </summary>
+        [Fact]
+        public void CreatePackageNullManifest()
+        {
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, null, string.Empty));
 
             Assert.NotNull(ex);
             Assert.IsType<ArgumentException>(ex);

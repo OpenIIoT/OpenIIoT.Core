@@ -96,6 +96,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         public void CreatePackage(string inputDirectory, string manifestFile, string packageFile, bool signPackage, string privateKeyFile, string passphrase, string keybaseUsername)
         {
             ArgumentValidator.ValidateInputDirectoryArgument(inputDirectory);
+            PackageManifest manifest = ValidateManifestFileArgumentAndRetrieveManifest(manifestFile);
             ArgumentValidator.ValidatePackageFileArgumentForWriting(packageFile);
 
             if (signPackage)
@@ -116,9 +117,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             {
                 Info($"Package will be signed using PGP private key file '{Path.GetFileName(privateKeyFile)}' as keybase.io user '{keybaseUsername}'.");
             }
-
-            PackageManifest manifest = ValidateManifestFileArgumentAndRetrieveManifest(manifestFile);
-
+            
             // looks like: temp\OpenIIoT.SDK\<Guid>\
             string tempDirectory = Path.Combine(Path.GetTempPath(), System.Reflection.Assembly.GetEntryAssembly().GetName().Name, Guid.NewGuid().ToString());
             string payloadDirectory = Path.Combine(tempDirectory, PackagingConstants.PayloadDirectoryName);
