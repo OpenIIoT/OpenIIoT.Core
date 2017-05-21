@@ -119,8 +119,6 @@ namespace OpenIIoT.SDK.Packaging
                 throw new ArgumentException($"The required argument 'package' was not supplied.");
             }
 
-            FileStream packageStream = default(FileStream);
-
             if (!File.Exists(packageFile))
             {
                 throw new FileNotFoundException($"The specified package file '{packageFile}' could not be found.");
@@ -130,6 +128,8 @@ namespace OpenIIoT.SDK.Packaging
             {
                 throw new InvalidDataException($"The specified package file '{packageFile}' is empty.");
             }
+
+            FileStream packageStream = default(FileStream);
 
             try
             {
@@ -142,7 +142,7 @@ namespace OpenIIoT.SDK.Packaging
             }
             finally
             {
-                packageStream.Close();
+                packageStream?.Close();
             }
         }
 

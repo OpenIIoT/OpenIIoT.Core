@@ -110,6 +110,131 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Directory.Delete(TempDirectory, true);
         }
 
+        [Fact]
+        public void ExtractPackage()
+        {
+            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
+        }
+
+        [Fact]
+        public void ExtractPackageOutputDirectoryBlank()
+        {
+            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        [Fact]
+        public void ExtractPackageOutputDirectoryExistsNoOverwrite()
+        {
+            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            // create the output directory and a file within it
+            Directory.CreateDirectory(output);
+            File.WriteAllText(Path.Combine(output, "file.txt"), string.Empty);
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output));
+
+            Assert.NotNull(ex);
+            Assert.IsType<InvalidOperationException>(ex);
+        }
+
+        [Fact]
+        public void ExtractPackageOutputDirectoryExistsWithOverwrite()
+        {
+            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Directory.CreateDirectory(output);
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output, true));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
+        }
+
+        [Fact]
+        public void ExtractPackageOutputDirectoryNull()
+        {
+            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, null));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        [Fact]
+        public void ExtractPackagePackageBlank()
+        {
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(string.Empty, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        [Fact]
+        public void ExtractPackagePackageEmpty()
+        {
+            string package = Path.Combine(DataDirectory, "empty.txt");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<InvalidDataException>(ex);
+        }
+
+        [Fact]
+        public void ExtractPackagePackageNotFound()
+        {
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage("not found", string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<FileNotFoundException>(ex);
+        }
+
+        [Fact]
+        public void ExtractPackagePackageNotReadable()
+        {
+            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+
+            FileStream stream = default(FileStream);
+
+            try
+            {
+                // open the file for writing to lock it
+                stream = File.OpenWrite(package);
+
+                Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
+
+                Assert.NotNull(ex);
+                Assert.IsType<IOException>(ex);
+            }
+            finally
+            {
+                stream?.Close();
+            }
+        }
+
+        [Fact]
+        public void ExtractPackagePackageNull()
+        {
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(null, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
         #endregion Public Methods
     }
 }
