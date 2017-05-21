@@ -66,7 +66,7 @@ namespace OpenIIoT.Core
                 rule.DisableLoggingForLevel(level);
             }
 
-            NLog.LogManager.ReconfigExistingLoggers();
+            ReconfigLoggers();
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace OpenIIoT.Core
                 rule.EnableLoggingForLevel(level);
             }
 
-            NLog.LogManager.ReconfigExistingLoggers();
+            ReconfigLoggers();
         }
 
         /// <summary>
@@ -280,6 +280,37 @@ namespace OpenIIoT.Core
             catch (NullReferenceException)
             {
                 throw new ArgumentException("The specified key could not be found in the configuration.");
+            }
+        }
+
+        /// <summary>
+        ///     Reconfigures all loggers.
+        /// </summary>
+        /// <remarks>
+        ///     This method is necessary to solve an issue with NLog 4.2x and mono;
+        ///     <see cref="NLog.LogManager.ReconfigExistingLoggers"/> intermittently fails with a "collection changed" exception.
+        /// </remarks>
+        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+        private static void ReconfigLoggers()
+        {
+            int retries = 5;
+
+            while (retries > 0)
+            {
+                try
+                {
+                    NLog.LogManager.ReconfigExistingLoggers();
+                    break;
+                }
+                catch
+                {
+                    retries--;
+                }
+            }
+
+            if (retries == 0)
+            {
+                throw new Exception("ReconfigLoggers() ultimately failed after 5 retries.");
             }
         }
 
