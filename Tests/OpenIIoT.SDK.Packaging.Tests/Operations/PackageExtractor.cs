@@ -110,6 +110,9 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Directory.Delete(TempDirectory, true);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
+        /// </summary>
         [Fact]
         public void ExtractPackage()
         {
@@ -122,6 +125,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.Equal(3, Directory.GetFiles(output).Length);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with an invalid package.
+        /// </summary>
         [Fact]
         public void ExtractPackageBadPackage()
         {
@@ -136,6 +143,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<Exception>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a blank output directory argument.
+        /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryBlank()
         {
@@ -147,6 +158,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<ArgumentException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with an output directory which already exists, and with the overwrite option not used.
+        /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryExistsNoOverwrite()
         {
@@ -163,6 +178,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<InvalidOperationException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with an output directory which already exists, and with the overwrite option set to true.
+        /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryExistsWithOverwrite()
         {
@@ -177,6 +196,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.Equal(3, Directory.GetFiles(output).Length);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a null output directory argument.
+        /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryNull()
         {
@@ -188,6 +211,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<ArgumentException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a blank output directory argument.
+        /// </summary>
         [Fact]
         public void ExtractPackagePackageBlank()
         {
@@ -197,6 +224,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<ArgumentException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a package file argument which contains an empty (zero byte) file.
+        /// </summary>
         [Fact]
         public void ExtractPackagePackageEmpty()
         {
@@ -208,15 +239,23 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<InvalidDataException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a package file argument which can not be found on the local file system.
+        /// </summary>
         [Fact]
         public void ExtractPackagePackageNotFound()
         {
-            Exception ex = Record.Exception(() => Extractor.ExtractPackage("not found", string.Empty));
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(Guid.NewGuid().ToString(), string.Empty));
 
             Assert.NotNull(ex);
             Assert.IsType<FileNotFoundException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a package file argument which contains a file that can not be read.
+        /// </summary>
         [Fact]
         public void ExtractPackagePackageNotReadable()
         {
@@ -242,6 +281,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             }
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a null package argument.
+        /// </summary>
         [Fact]
         public void ExtractPackagePackageNull()
         {
@@ -251,6 +294,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<ArgumentException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with the skip verification option set to true.
+        /// </summary>
         [Fact]
         public void ExtractPackageSkipVerification()
         {

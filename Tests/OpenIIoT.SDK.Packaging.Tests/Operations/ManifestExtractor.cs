@@ -171,7 +171,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractManifestNotFoundPackage()
         {
-            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "not found")));
+            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, Guid.NewGuid().ToString())));
 
             Assert.NotNull(ex);
             Assert.IsType<FileNotFoundException>(ex);
