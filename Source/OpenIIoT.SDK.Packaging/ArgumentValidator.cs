@@ -119,8 +119,6 @@ namespace OpenIIoT.SDK.Packaging
                 throw new ArgumentException($"The required argument 'package' was not supplied.");
             }
 
-            FileStream packageStream = default(FileStream);
-
             if (!File.Exists(packageFile))
             {
                 throw new FileNotFoundException($"The specified package file '{packageFile}' could not be found.");
@@ -131,18 +129,19 @@ namespace OpenIIoT.SDK.Packaging
                 throw new InvalidDataException($"The specified package file '{packageFile}' is empty.");
             }
 
+            FileStream packageStream = default(FileStream);
+
             try
             {
                 packageStream = File.OpenRead(packageFile);
-
-                if (!packageStream.CanRead)
-                {
-                    throw new IOException($"The specified package file '{packageFile}' could not be opened for reading.  It may be open in another process, or you may have insufficient rights.");
-                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"The specified package file '{packageFile}' could not be opened for reading: {ex.Message}");
             }
             finally
             {
-                packageStream.Close();
+                packageStream?.Close();
             }
         }
 
@@ -183,7 +182,7 @@ namespace OpenIIoT.SDK.Packaging
         /// <exception cref="InvalidDataException">Thrown when the private or public key files are empty.</exception>
         internal static void ValidatePrivateKeyArguments(string privateKeyFile, string passphrase)
         {
-            if (privateKeyFile == default(string) || privateKeyFile == string.Empty)
+            if (string.IsNullOrEmpty(privateKeyFile))
             {
                 throw new ArgumentException("The required argument 'private key' was not supplied.");
             }
@@ -200,7 +199,7 @@ namespace OpenIIoT.SDK.Packaging
                 throw new InvalidDataException($"The specified private key file '{privateKeyFile}' is empty.");
             }
 
-            if (passphrase == default(string) || passphrase == string.Empty)
+            if (string.IsNullOrEmpty(passphrase))
             {
                 throw new ArgumentException($"The required argument 'private key passphrase' was not supplied.");
             }

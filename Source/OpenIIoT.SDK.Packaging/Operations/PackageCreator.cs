@@ -75,9 +75,10 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// <param name="inputDirectory">The directory containing the Package contents.</param>
         /// <param name="manifestFile">The PackageManifest file for the Package.</param>
         /// <param name="packageFile">The filename to which the Package file will be saved.</param>
-        public void CreatePackage(string inputDirectory, string manifestFile, string packageFile)
+        /// <param name="overwrite">A value indicating whether the Package file will be overwritten if it exists.</param>
+        public void CreatePackage(string inputDirectory, string manifestFile, string packageFile, bool overwrite = false)
         {
-            CreatePackage(inputDirectory, manifestFile, packageFile, false, string.Empty, string.Empty, string.Empty);
+            CreatePackage(inputDirectory, manifestFile, packageFile, false, string.Empty, string.Empty, string.Empty, overwrite);
         }
 
         /// <summary>
@@ -93,11 +94,12 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// <param name="keybaseUsername">
         ///     The Keybase.io username of the account hosting the PGP public key used for digest verification.
         /// </param>
-        public void CreatePackage(string inputDirectory, string manifestFile, string packageFile, bool signPackage, string privateKeyFile, string passphrase, string keybaseUsername)
+        /// <param name="overwrite">A value indicating whether the Package file will be overwritten if it exists.</param>
+        public void CreatePackage(string inputDirectory, string manifestFile, string packageFile, bool signPackage, string privateKeyFile, string passphrase, string keybaseUsername, bool overwrite = false)
         {
             ArgumentValidator.ValidateInputDirectoryArgument(inputDirectory);
             PackageManifest manifest = ValidateManifestFileArgumentAndRetrieveManifest(manifestFile);
-            ArgumentValidator.ValidatePackageFileArgumentForWriting(packageFile);
+            ArgumentValidator.ValidatePackageFileArgumentForWriting(packageFile, overwrite);
 
             if (signPackage)
             {
@@ -107,19 +109,15 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 {
                     throw new ArgumentException($"The required argument 'keybase username' was not supplied.");
                 }
+
+                Info($"Package will be signed using PGP private key file '{Path.GetFileName(privateKeyFile)}' as keybase.io user '{keybaseUsername}'.");
             }
 
             Exception deferredException = default(Exception);
 
             Info($"Creating package '{Path.GetFileName(packageFile)}' from directory '{inputDirectory}' using manifest file '{Path.GetFileName(manifestFile)}'...");
 
-            if (signPackage)
-            {
-                Info($"Package will be signed using PGP private key file '{Path.GetFileName(privateKeyFile)}' as keybase.io user '{keybaseUsername}'.");
-            }
-            
-            // looks like: temp\OpenIIoT.SDK\<Guid>\
-            string tempDirectory = Path.Combine(Path.GetTempPath(), System.Reflection.Assembly.GetEntryAssembly().GetName().Name, Guid.NewGuid().ToString());
+            string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
             string payloadDirectory = Path.Combine(tempDirectory, PackagingConstants.PayloadDirectoryName);
             string payloadArchiveName = Path.Combine(tempDirectory, PackagingConstants.PayloadArchiveName);
             string tempPackageFileName = Path.Combine(tempDirectory, Path.GetFileName(packageFile));
@@ -152,19 +150,17 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                 if (signPackage)
                 {
-                    try
-                    {
-                        manifest = SignManifest(manifest, privateKeyFile, passphrase, keybaseUsername);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception($"Error signing Package: {ex.GetType().Name}: {ex.Message}");
-                    }
+                    manifest = SignManifest(manifest, privateKeyFile, passphrase, keybaseUsername);
                 }
 
                 Verbose($"Writing manifest to 'manifest.json' in '{tempDirectory}'...");
                 WriteManifest(manifest, tempDirectory);
                 Verbose("Manifest written successfully.");
+
+                if (File.Exists(packageFile))
+                {
+                    File.Delete(packageFile);
+                }
 
                 Verbose($"Packaging manifest and payload into '{packageFile}'...");
                 ZipFile.CreateFromDirectory(tempDirectory, packageFile);
@@ -221,8 +217,8 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
         /// <summary>
         ///     Validates the manifestFile argument for
-        ///     <see cref="CreatePackage(string, string, string, bool, string, string, string)"/> and, if valid, retrieves the
-        ///     <see cref="PackageManifest"/> from the file and returns it.
+        ///     <see cref="CreatePackage(string, string, string, bool, string, string, string, bool)"/> and, if valid, retrieves
+        ///     the <see cref="PackageManifest"/> from the file and returns it.
         /// </summary>
         /// <param name="manifestFile">The value specified for the manifestFile argument.</param>
         /// <returns>The PackageManifest file retrieved from the file specified in the manifestFile argument.</returns>
@@ -234,7 +230,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// <exception cref="FileLoadException">Thrown when the manifest file fails to be loaded or deserialized.</exception>
         internal PackageManifest ValidateManifestFileArgumentAndRetrieveManifest(string manifestFile)
         {
-            if (manifestFile == default(string) || manifestFile == string.Empty)
+            if (string.IsNullOrEmpty(manifestFile))
             {
                 throw new ArgumentException("The required argument 'manifest' was not supplied.");
             }

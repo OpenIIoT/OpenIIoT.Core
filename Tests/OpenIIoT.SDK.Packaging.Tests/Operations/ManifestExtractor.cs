@@ -118,7 +118,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractManifest()
         {
-            PackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "package.zip"));
+            PackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "package.zip"));
 
             Assert.NotNull(manifest);
             Assert.Equal("DefaultPlugin", manifest.Title);
@@ -132,7 +132,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractManifestBadManifest()
         {
-            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "badmanifest.zip")));
+            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "badmanifest.zip")));
 
             Assert.NotNull(ex);
             Assert.IsType<JsonException>(ex);
@@ -158,10 +158,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractManifestNotAPackage()
         {
-            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "notapackage.zip")));
+            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "notapackage.zip")));
 
             Assert.NotNull(ex);
-            Assert.IsType<InvalidDataException>(ex);
+            Assert.IsType<IOException>(ex);
         }
 
         /// <summary>
@@ -171,7 +171,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractManifestNotFoundPackage()
         {
-            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "not found")));
+            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, Guid.NewGuid().ToString())));
 
             Assert.NotNull(ex);
             Assert.IsType<FileNotFoundException>(ex);
@@ -197,7 +197,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractManifestPlainZip()
         {
-            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "plainzip.zip")));
+            Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "plainzip.zip")));
 
             Assert.NotNull(ex);
             Assert.IsType<IOException>(ex);
@@ -210,7 +210,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractManifestToBadFile()
         {
-            string inputFile = Path.Combine(DataDirectory, "package.zip");
+            string inputFile = Path.Combine(DataDirectory, "Package", "package.zip");
 
             Exception ex = Record.Exception(() => Extractor.ExtractManifest(inputFile, "/"));
 
@@ -225,7 +225,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractManifestToFile()
         {
-            string inputFile = Path.Combine(DataDirectory, "package.zip");
+            string inputFile = Path.Combine(DataDirectory, "Package", "package.zip");
             string outputFile = Path.Combine(TempDirectory, "manifest.json");
 
             PackageManifest manifest = Extractor.ExtractManifest(inputFile, outputFile);

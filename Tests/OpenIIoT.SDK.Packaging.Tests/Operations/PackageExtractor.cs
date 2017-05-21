@@ -110,6 +110,206 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Directory.Delete(TempDirectory, true);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
+        /// </summary>
+        [Fact]
+        public void ExtractPackage()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with an invalid package.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageBadPackage()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "notapackage.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Directory.CreateDirectory(output);
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output, true, true));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a blank output directory argument.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageOutputDirectoryBlank()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with an output directory which already exists, and with the overwrite option not used.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageOutputDirectoryExistsNoOverwrite()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            // create the output directory and a file within it
+            Directory.CreateDirectory(output);
+            File.WriteAllText(Path.Combine(output, "file.txt"), string.Empty);
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output));
+
+            Assert.NotNull(ex);
+            Assert.IsType<InvalidOperationException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with an output directory which already exists, and with the overwrite option set to true.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageOutputDirectoryExistsWithOverwrite()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Directory.CreateDirectory(output);
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output, true));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a null output directory argument.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageOutputDirectoryNull()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, null));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a blank output directory argument.
+        /// </summary>
+        [Fact]
+        public void ExtractPackagePackageBlank()
+        {
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(string.Empty, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a package file argument which contains an empty (zero byte) file.
+        /// </summary>
+        [Fact]
+        public void ExtractPackagePackageEmpty()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "emptypackage.zip");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<InvalidDataException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a package file argument which can not be found on the local file system.
+        /// </summary>
+        [Fact]
+        public void ExtractPackagePackageNotFound()
+        {
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(Guid.NewGuid().ToString(), string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<FileNotFoundException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a package file argument which contains a file that can not be read.
+        /// </summary>
+        [Fact]
+        public void ExtractPackagePackageNotReadable()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string temp = Path.Combine(TempDirectory, "package.zip");
+
+            FileStream stream = default(FileStream);
+
+            try
+            {
+                File.Copy(package, temp);
+
+                stream = File.OpenWrite(temp);
+
+                Exception ex = Record.Exception(() => Extractor.ExtractPackage(temp, string.Empty));
+
+                Assert.NotNull(ex);
+                Assert.IsType<IOException>(ex);
+            }
+            finally
+            {
+                stream?.Close();
+            }
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with a null package argument.
+        /// </summary>
+        [Fact]
+        public void ExtractPackagePackageNull()
+        {
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(null, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with the skip verification option set to true.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageSkipVerification()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output, true, true));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
+        }
+
         #endregion Public Methods
     }
 }
