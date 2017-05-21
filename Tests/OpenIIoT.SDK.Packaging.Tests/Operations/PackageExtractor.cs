@@ -116,7 +116,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackage()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
             string output = Path.Combine(TempDirectory, "output");
 
             Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output));
@@ -132,7 +132,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackageBadPackage()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "notapackage.zip");
+            string package = Path.Combine(DataDirectory, "Package", "notapackage.zip");
             string output = Path.Combine(TempDirectory, "output");
 
             Directory.CreateDirectory(output);
@@ -150,7 +150,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackageOutputDirectoryBlank()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
 
             Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
 
@@ -165,7 +165,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackageOutputDirectoryExistsNoOverwrite()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
             string output = Path.Combine(TempDirectory, "output");
 
             // create the output directory and a file within it
@@ -185,7 +185,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackageOutputDirectoryExistsWithOverwrite()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
             string output = Path.Combine(TempDirectory, "output");
 
             Directory.CreateDirectory(output);
@@ -203,7 +203,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackageOutputDirectoryNull()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
 
             Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, null));
 
@@ -231,7 +231,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackagePackageEmpty()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "emptypackage.zip");
+            string package = Path.Combine(DataDirectory, "Package", "emptypackage.zip");
 
             Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
 
@@ -259,7 +259,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackagePackageNotReadable()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
             string temp = Path.Combine(TempDirectory, "package.zip");
 
             FileStream stream = default(FileStream);
@@ -301,7 +301,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackageSkipVerification()
         {
-            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
             string output = Path.Combine(TempDirectory, "output");
 
             Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output, true, true));

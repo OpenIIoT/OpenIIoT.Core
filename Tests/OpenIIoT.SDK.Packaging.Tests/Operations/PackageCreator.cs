@@ -113,7 +113,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackage()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "package.zip");
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package));
@@ -190,7 +190,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackageManifestEmpty()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "blankmanifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "blankmanifest.json");
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, string.Empty));
 
             Assert.NotNull(ex);
@@ -204,7 +204,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackageManifestInvalid()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "invalidmanifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "invalidmanifest.json");
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, string.Empty));
 
             Assert.NotNull(ex);
@@ -244,7 +244,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackageMissingFile()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "missingfilemanifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "missingfilemanifest.json");
             string package = Path.Combine(TempDirectory, "package.zip");
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package));
@@ -259,7 +259,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackageNoChecksum()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "nochecksummanifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "nochecksummanifest.json");
             string package = Path.Combine(TempDirectory, "package.zip");
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package));
@@ -281,7 +281,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackagePackageBlank()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = string.Empty;
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package));
@@ -297,7 +297,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackagePackageExists()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "package.zip");
 
             File.WriteAllText(package, string.Empty);
@@ -315,7 +315,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackagePackageExistsOverwrite()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "package.zip");
 
             File.WriteAllText(package, string.Empty);
@@ -339,7 +339,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreatePackagePackageNull()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = null;
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package));
@@ -356,11 +356,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackage()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
-            string privateKey = Path.Combine(DataDirectory, "Keys", "private.asc");
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
-            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "keybaseUsername.txt"));
+            string privateKey = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Key", "keybaseUsername.txt"));
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
 
@@ -382,10 +382,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackageKeybaseUsernameBlank()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
-            string privateKey = Path.Combine(DataDirectory, "Keys", "private.asc");
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
+            string privateKey = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
             string keybaseUsername = string.Empty;
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
@@ -401,10 +401,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackageKeybaseUsernameNull()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
-            string privateKey = Path.Combine(DataDirectory, "Keys", "private.asc");
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
+            string privateKey = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
             string keybaseUsername = null;
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
@@ -420,11 +420,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackagePassphraseBlank()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
-            string privateKey = Path.Combine(DataDirectory, "Keys", "private.asc");
+            string privateKey = Path.Combine(DataDirectory, "Key", "private.asc");
             string passphrase = string.Empty;
-            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "keybaseUsername.txt"));
+            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Key", "keybaseUsername.txt"));
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
 
@@ -439,11 +439,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackagePassphraseIncorrect()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
-            string privateKey = Path.Combine(DataDirectory, "Keys", "private.asc");
+            string privateKey = Path.Combine(DataDirectory, "Key", "private.asc");
             string passphrase = "incorrect";
-            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "keybaseUsername.txt"));
+            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Key", "keybaseUsername.txt"));
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
 
@@ -458,11 +458,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackagePassphraseNull()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
-            string privateKey = Path.Combine(DataDirectory, "Keys", "private.asc");
+            string privateKey = Path.Combine(DataDirectory, "Key", "private.asc");
             string passphrase = null;
-            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "keybaseUsername.txt"));
+            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Key", "keybaseUsername.txt"));
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
 
@@ -477,11 +477,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackagePrivateKeyBlank()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
             string privateKey = string.Empty;
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
-            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "keybaseUsername.txt"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Key", "keybaseUsername.txt"));
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
 
@@ -496,11 +496,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackagePrivateKeyEmptyFile()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
             string privateKey = Path.Combine(DataDirectory, "empty.txt");
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
-            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "keybaseUsername.txt"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Key", "keybaseUsername.txt"));
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
 
@@ -515,11 +515,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackagePrivateKeyNotFound()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
-            string privateKey = Path.Combine(DataDirectory, "Keys", Guid.NewGuid().ToString());
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
-            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "keybaseUsername.txt"));
+            string privateKey = Path.Combine(DataDirectory, "Key", Guid.NewGuid().ToString());
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Key", "keybaseUsername.txt"));
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
 
@@ -534,11 +534,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void CreateSignedPackagePrivateKeyNull()
         {
-            string manifest = Path.Combine(DataDirectory, "Manifests", "manifest.json");
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
             string package = Path.Combine(TempDirectory, "signedpackage.zip");
             string privateKey = null;
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "passphrase.txt"));
-            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Keys", "keybaseUsername.txt"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string keybaseUsername = File.ReadAllText(Path.Combine(DataDirectory, "Key", "keybaseUsername.txt"));
 
             Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package, true, privateKey, passphrase, keybaseUsername));
 
