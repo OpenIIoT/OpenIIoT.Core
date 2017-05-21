@@ -82,43 +82,43 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Data\Manifests\manifest.json">
+    <None Include="Data\Manifest\manifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Manifests\missingfilemanifest.json">
+    <None Include="Data\Manifest\missingfilemanifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Packages\badmanifest.zip">
+    <None Include="Data\Package\badmanifest.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Manifests\blankmanifest.json">
+    <None Include="Data\Manifest\blankmanifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Manifests\invalidmanifest.json">
+    <None Include="Data\Manifest\invalidmanifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Keys\private.asc">
+    <None Include="Data\Key\private.asc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Keys\public.asc">
+    <None Include="Data\Key\public.asc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Manifests\nochecksummanifest.json">
+    <None Include="Data\Manifest\nochecksummanifest.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Packages\emptypackage.zip">
+    <None Include="Data\Package\emptypackage.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Packages\notapackage.zip">
+    <None Include="Data\Package\notapackage.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Packages\package.zip">
+    <None Include="Data\Package\package.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Data\Payload\resource.dat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Packages\plainzip.zip">
+    <None Include="Data\Package\plainzip.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <AdditionalFiles Include="OpenIIoT.ruleset" />
@@ -145,10 +145,10 @@
     <Content Include="Data\empty.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Keys\keybaseUsername.txt">
+    <Content Include="Data\Key\keybaseUsername.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Keys\passphrase.txt">
+    <Content Include="Data\Key\passphrase.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Payload\binary.dll">
