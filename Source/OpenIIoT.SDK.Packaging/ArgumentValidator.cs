@@ -134,11 +134,10 @@ namespace OpenIIoT.SDK.Packaging
             try
             {
                 packageStream = File.OpenRead(packageFile);
-
-                if (!packageStream.CanRead)
-                {
-                    throw new IOException($"The specified package file '{packageFile}' could not be opened for reading.  It may be open in another process, or you may have insufficient rights.");
-                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"The specified package file '{packageFile}' could not be opened for reading: {ex.Message}");
             }
             finally
             {

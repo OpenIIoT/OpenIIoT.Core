@@ -123,6 +123,20 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         [Fact]
+        public void ExtractPackageBadPackage()
+        {
+            string package = Path.Combine(DataDirectory, "Packages", "notapackage.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Directory.CreateDirectory(output);
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output, true, true));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+        }
+
+        [Fact]
         public void ExtractPackageOutputDirectoryBlank()
         {
             string package = Path.Combine(DataDirectory, "Packages", "package.zip");
@@ -186,7 +200,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void ExtractPackagePackageEmpty()
         {
-            string package = Path.Combine(DataDirectory, "empty.txt");
+            string package = Path.Combine(DataDirectory, "Packages", "emptypackage.zip");
 
             Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
 
@@ -207,15 +221,17 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         public void ExtractPackagePackageNotReadable()
         {
             string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string temp = Path.Combine(TempDirectory, "package.zip");
 
             FileStream stream = default(FileStream);
 
             try
             {
-                // open the file for writing to lock it
-                stream = File.OpenWrite(package);
+                File.Copy(package, temp);
 
-                Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, string.Empty));
+                stream = File.OpenWrite(temp);
+
+                Exception ex = Record.Exception(() => Extractor.ExtractPackage(temp, string.Empty));
 
                 Assert.NotNull(ex);
                 Assert.IsType<IOException>(ex);
@@ -233,6 +249,18 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
             Assert.NotNull(ex);
             Assert.IsType<ArgumentException>(ex);
+        }
+
+        [Fact]
+        public void ExtractPackageSkipVerification()
+        {
+            string package = Path.Combine(DataDirectory, "Packages", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output, true, true));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
         }
 
         #endregion Public Methods

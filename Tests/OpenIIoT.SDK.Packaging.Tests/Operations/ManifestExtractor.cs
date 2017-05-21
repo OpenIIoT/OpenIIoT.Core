@@ -161,7 +161,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Exception ex = Record.Exception(() => Extractor.ExtractManifest(Path.Combine(DataDirectory, "Packages", "notapackage.zip")));
 
             Assert.NotNull(ex);
-            Assert.IsType<InvalidDataException>(ex);
+            Assert.IsType<IOException>(ex);
         }
 
         /// <summary>

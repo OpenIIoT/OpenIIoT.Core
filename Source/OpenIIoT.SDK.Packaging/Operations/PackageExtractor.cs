@@ -91,6 +91,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             }
 
             string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
+            Directory.CreateDirectory(tempDirectory);
 
             try
             {
