@@ -326,7 +326,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                     string checksum = Common.Utility.ComputeFileSHA512Hash(fileToCheck);
 
-                    if (file.Checksum != checksum)
+                    if (file.Checksum != default(string) && file.Checksum != checksum)
                     {
                         throw new InvalidDataException($"The file '{file.Source}' is invalid; the computed checksum, {checksum}, does not match the checksum in the Manifest, {file.Checksum}.");
                     }
