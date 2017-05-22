@@ -293,6 +293,7 @@ namespace OpenIIoT.Core
         [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
         private static void ReconfigLoggers()
         {
+            // TODO: remove this once the NLog bug is fixed.
             int retries = 5;
 
             while (retries > 0)
