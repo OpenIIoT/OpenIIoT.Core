@@ -66,7 +66,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         /// </summary>
         public PackageVerifier()
         {
-            Truster = new Packaging.Operations.PackageVerifier();
+            Verifier = new Packaging.Operations.PackageVerifier();
 
             Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
@@ -96,7 +96,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         /// <summary>
         ///     Gets or sets the Package Verifier to test.
         /// </summary>
-        private Packaging.Operations.PackageVerifier Truster { get; set; }
+        private Packaging.Operations.PackageVerifier Verifier { get; set; }
 
         #endregion Private Properties
 
