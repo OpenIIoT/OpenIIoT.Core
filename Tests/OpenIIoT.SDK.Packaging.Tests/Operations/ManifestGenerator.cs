@@ -226,6 +226,28 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
         /// <summary>
         ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, bool, string)"/>
+        ///     method with a directory containing three files; one of each type with the Update event bound.
+        /// </summary>
+        [Fact]
+        public void GenerateManifestWithUpdate()
+        {
+            Generator.Updated += Generator_Updated;
+
+            File.WriteAllText(Path.Combine(TempDirectory, "index.html"), " ");
+            File.WriteAllText(Path.Combine(TempDirectory, "binary.dll"), " ");
+            File.WriteAllText(Path.Combine(TempDirectory, "resource.bmp"), " ");
+
+            PackageManifest manifest = Generator.GenerateManifest(TempDirectory);
+
+            Assert.NotEmpty(manifest.Files);
+            Assert.Equal(2, manifest.Files.Keys.Count);
+            Assert.Equal("index.html", manifest.Files[PackageManifestFileType.WebIndex][0].Source);
+            Assert.Equal("binary.dll", manifest.Files[PackageManifestFileType.Binary][0].Source);
+            Assert.NotNull(manifest.Files[PackageManifestFileType.Binary][0].Checksum);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, bool, string)"/>
         ///     method with a directory which does not exist.
         /// </summary>
         [Fact]
@@ -251,5 +273,18 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event args.</param>
+        private void Generator_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        {
+        }
+
+        #endregion Private Methods
     }
 }

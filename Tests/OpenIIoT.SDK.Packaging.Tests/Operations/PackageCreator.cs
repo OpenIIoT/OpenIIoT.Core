@@ -349,6 +349,30 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method with
+        ///     the Update event bound.
+        /// </summary>
+        [Fact]
+        public void CreatePackageWithUpdate()
+        {
+            Creator.Updated += Creator_Updated;
+
+            string manifest = Path.Combine(DataDirectory, "Manifest", "manifest.json");
+            string package = Path.Combine(TempDirectory, "package.zip");
+
+            Exception ex = Record.Exception(() => Creator.CreatePackage(PayloadDirectory, manifest, package));
+
+            Assert.Null(ex);
+
+            bool verified = false;
+
+            ex = Record.Exception(() => verified = new Packaging.Operations.PackageVerifier().VerifyPackage(package));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
+        /// <summary>
         ///     Tests the
         ///     <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with arguments required to create a signed package.
@@ -554,5 +578,18 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event args.</param>
+        private void Creator_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        {
+        }
+
+        #endregion Private Methods
     }
 }
