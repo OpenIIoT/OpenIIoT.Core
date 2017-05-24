@@ -78,6 +78,7 @@
     <Compile Include="Operations\PackageCreator.cs" />
     <Compile Include="Operations\ManifestExtractor.cs" />
     <Compile Include="Operations\ManifestGenerator.cs" />
+    <Compile Include="PackagingUpdateEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
