@@ -310,6 +310,37 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.Equal(3, Directory.GetFiles(output).Length);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
+        ///     with the Update event bound.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageWithUpdate()
+        {
+            Extractor.Updated += Extractor_Updated;
+
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
+        }
+
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event args.</param>
+        private void Extractor_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        {
+        }
+
+        #endregion Private Methods
     }
 }
