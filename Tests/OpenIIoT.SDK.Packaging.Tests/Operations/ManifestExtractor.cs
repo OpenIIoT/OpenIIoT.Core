@@ -233,6 +233,35 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.True(File.Exists(outputFile));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with the
+        ///     Update event bound.
+        /// </summary>
+        [Fact]
+        public void ExtractManifestWithUpdate()
+        {
+            Extractor.Updated += Extractor_Updated;
+
+            PackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "package.zip"));
+
+            Assert.NotNull(manifest);
+            Assert.Equal("DefaultPlugin", manifest.Title);
+            Assert.Equal(3, manifest.Files.Count);
+        }
+
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event args.</param>
+        private void Extractor_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        {
+        }
+
+        #endregion Private Methods
     }
 }
