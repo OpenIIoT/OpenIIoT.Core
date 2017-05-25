@@ -110,6 +110,28 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Directory.Delete(TempDirectory, true);
         }
 
+        [Fact]
+        public void TrustPackage()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string temp = Path.Combine(TempDirectory, "signedpackage.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+
+            File.Copy(package, temp);
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(temp, key, passphrase));
+
+            Assert.Null(ex);
+
+            bool verified = false;
+
+            ex = Record.Exception(() => verified = new Packaging.Operations.PackageVerifier().VerifyPackage(temp));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
         #endregion Public Methods
     }
 }

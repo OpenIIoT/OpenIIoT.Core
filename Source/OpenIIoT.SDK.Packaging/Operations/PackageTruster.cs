@@ -86,7 +86,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
             Verbose("Checking (but not validating) Digest...");
 
-            if (string.IsNullOrEmpty(manifest.Signature.Digest))
+            if (manifest.Signature == default(PackageManifestSignature) || string.IsNullOrEmpty(manifest.Signature.Digest))
             {
                 throw new InvalidOperationException("The Package is not signed and can not be trusted.");
             }
