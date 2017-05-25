@@ -110,6 +110,9 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Directory.Delete(TempDirectory, true);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method.
+        /// </summary>
         [Fact]
         public void TrustPackage()
         {
@@ -117,6 +120,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             string temp = Path.Combine(TempDirectory, "signedpackage.zip");
             string key = Path.Combine(DataDirectory, "Key", "private.asc");
             string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
 
             File.Copy(package, temp);
 
@@ -126,7 +130,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
             bool verified = false;
 
-            ex = Record.Exception(() => verified = new Packaging.Operations.PackageVerifier().VerifyPackage(temp));
+            Packaging.Operations.PackageVerifier verifier = new Packaging.Operations.PackageVerifier();
+            verifier.TrustPGPPublicKey = publicKey;
+
+            ex = Record.Exception(() => verified = verifier.VerifyPackage(temp));
 
             Assert.Null(ex);
             Assert.True(verified);
