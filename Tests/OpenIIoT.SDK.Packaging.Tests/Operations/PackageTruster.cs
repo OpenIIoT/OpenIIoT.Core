@@ -139,6 +139,51 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.True(verified);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with the
+        ///     Update event bound.
+        /// </summary>
+        [Fact]
+        public void TrustPackageWithUpdate()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string temp = Path.Combine(TempDirectory, "signedpackage.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+
+            File.Copy(package, temp);
+
+            Truster.Updated += Truster_Updated;
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(temp, key, passphrase));
+
+            Assert.Null(ex);
+
+            bool verified = false;
+
+            Packaging.Operations.PackageVerifier verifier = new Packaging.Operations.PackageVerifier();
+            verifier.TrustPGPPublicKey = publicKey;
+
+            ex = Record.Exception(() => verified = verifier.VerifyPackage(temp));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event args.</param>
+        private void Truster_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        {
+        }
+
+        #endregion Private Methods
     }
 }
