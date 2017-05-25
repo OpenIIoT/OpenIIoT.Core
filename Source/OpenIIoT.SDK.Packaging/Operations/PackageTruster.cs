@@ -120,18 +120,19 @@ namespace OpenIIoT.SDK.Packaging.Operations
             Verbose($"Updating Manifest in Package '{Path.GetFileName(packageFile)}'...");
 
             string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
-            string tempManifest = Path.Combine(tempDirectory, PackagingConstants.ManifestFilename);
+            string tempPackageDirectory = Path.Combine(tempDirectory, "package");
+            string tempManifest = Path.Combine(tempPackageDirectory, PackagingConstants.ManifestFilename);
             string tempPackage = Path.Combine(tempDirectory, Path.GetFileName(packageFile));
 
             Exception deferredException = default(Exception);
 
             try
             {
-                ZipFile.ExtractToDirectory(packageFile, Path.Combine(tempDirectory, "package"));
+                ZipFile.ExtractToDirectory(packageFile, tempPackageDirectory);
                 File.Delete(tempManifest);
                 File.WriteAllText(tempManifest, manifest.ToJson());
 
-                ZipFile.CreateFromDirectory(Path.Combine(tempDirectory, "package"), tempPackage);
+                ZipFile.CreateFromDirectory(tempPackageDirectory, tempPackage);
 
                 File.Copy(tempPackage, packageFile, true);
 
