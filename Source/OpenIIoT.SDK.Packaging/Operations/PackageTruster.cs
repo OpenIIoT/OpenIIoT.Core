@@ -133,7 +133,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 Verbose("Manifest file written successfully.");
 
                 Verbose($"Opening Package file '{Path.GetFileName(packageFile)}'...");
-                ZipArchive package = ZipFile.Open(packageFile, ZipArchiveMode.Update);
+                ZipArchive package = ZipFile.Open(packageFile, ZipArchiveMode.Update | ZipArchiveMode.Read);
                 Verbose("Package file opened successfully.");
 
                 Verbose("Deleting existing Manifest file...");
@@ -150,7 +150,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             }
             catch (Exception ex)
             {
-                deferredException = new Exception($"Error updating Manifest in Package '{Path.GetFileName(packageFile)}: {ex.Message}'");
+                deferredException = new Exception($"Error updating Manifest in Package '{Path.GetFileName(packageFile)}': {ex.Message}'");
             }
             finally
             {
