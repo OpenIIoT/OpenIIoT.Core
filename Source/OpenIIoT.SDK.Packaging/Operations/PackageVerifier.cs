@@ -66,9 +66,20 @@ namespace OpenIIoT.SDK.Packaging.Operations
         public PackageVerifier()
             : base(PackagingOperationType.Verify)
         {
+            TrustPGPPublicKey = Resources.PGPPublicKey;
         }
 
         #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets or sets the PGP Public Key to use when verifying a Package Trust.
+        /// </summary>
+        /// <remarks>Defaults to the embedded PGP Public Key.</remarks>
+        public string TrustPGPPublicKey { get; set; }
+
+        #endregion Public Properties
 
         #region Public Methods
 
@@ -362,7 +373,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                 try
                 {
-                    verifiedTrustBytes = PGPSignature.Verify(trustBytes, Resources.PGPPublicKey);
+                    verifiedTrustBytes = PGPSignature.Verify(trustBytes, TrustPGPPublicKey);
                 }
                 catch (Exception ex)
                 {
