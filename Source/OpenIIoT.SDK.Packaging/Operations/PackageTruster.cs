@@ -128,34 +128,22 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
             try
             {
+                Verbose($"Extracting Package to '{tempPackageDirectory}'...");
                 ZipFile.ExtractToDirectory(packageFile, tempPackageDirectory);
+                Verbose("Package extracted successfully.");
+
+                Verbose($"Replacing Manifest file...");
                 File.Delete(tempManifest);
                 File.WriteAllText(tempManifest, manifest.ToJson());
+                Verbose("Manifest file replaced successfully.");
 
+                Verbose($"Compressing Package...");
                 ZipFile.CreateFromDirectory(tempPackageDirectory, tempPackage);
+                Verbose("Package compressed successfully.");
 
+                Verbose($"Overwriting original Package...");
                 File.Copy(tempPackage, packageFile, true);
-
-                //Verbose($"Writing Manifest to temp file '{tempFile}'...");
-                //Directory.CreateDirectory(tempDirectory);
-                //File.WriteAllText(tempFile, manifest.ToJson());
-                //Verbose("Manifest file written successfully.");
-
-                //Verbose($"Opening Package file '{Path.GetFileName(packageFile)}'...");
-                //ZipArchive package = ZipFile.Open(packageFile, ZipArchiveMode.Update | ZipArchiveMode.Read);
-                //Verbose("Package file opened successfully.");
-
-                //Verbose("Deleting existing Manifest file...");
-                //package.GetEntry(PackagingConstants.ManifestFilename).Delete();
-                //Verbose("Deleted existing Manifest file successfully.");
-
-                //Verbose("Adding updated Manfiest file...");
-                //package.CreateEntryFromFile(tempFile, PackagingConstants.ManifestFilename);
-                //Verbose("Manifest updated successfully.");
-
-                //Verbose("Saving Package...");
-                //package.Dispose();
-                //Verbose("Package saved successfully.");
+                Verbose("Package overwritten successfully.");
             }
             catch (Exception ex)
             {

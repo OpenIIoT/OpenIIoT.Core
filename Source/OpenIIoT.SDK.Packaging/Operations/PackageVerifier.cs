@@ -286,6 +286,8 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
 
                 verifiedDigest = Encoding.ASCII.GetString(verifiedDigestBytes);
+
+                // deserialize the verified manifest to work around text formatting differences on various platforms
                 PackageManifest verifiedManifest = JsonConvert.DeserializeObject<PackageManifest>(verifiedDigest);
 
                 // remove the digest and trust from the manifest, then serialize it and compare it to the verified digest.
