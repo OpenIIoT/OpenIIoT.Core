@@ -292,7 +292,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 manifest.Signature.Trust = default(string);
 
                 // if the scrubbed manifest and verified digest don't match, something was tampered with.
-                if (manifest.ToJson() != verifiedDigest)
+                if (manifest.ToJson().Replace(Environment.NewLine, string.Empty) != verifiedDigest.Replace(Environment.NewLine, string.Empty))
                 {
                     Console.WriteLine(manifest.ToJson().Length + ", " + verifiedDigest.Length);
                     Console.WriteLine("manifest: " + manifest.ToJson());
