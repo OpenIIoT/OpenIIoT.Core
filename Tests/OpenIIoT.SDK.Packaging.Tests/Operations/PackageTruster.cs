@@ -140,6 +140,154 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with an
+        ///     empty package argument.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePackageEmpty()
+        {
+            Exception ex = Record.Exception(() => Truster.TrustPackage(string.Empty, "key", "passphrase"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
+        ///     package argument which can't be found on the local filesystem.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePackageNotFound()
+        {
+            Exception ex = Record.Exception(() => Truster.TrustPackage("not found", "key", "passphrase"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<FileNotFoundException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a null
+        ///     package argument.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePackageNull()
+        {
+            Exception ex = Record.Exception(() => Truster.TrustPackage(null, "key", "passphrase"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with an
+        ///     empty passphrase argument.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePassphraseEmpty()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(package, key, string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
+        ///     passphrase which does not match the key.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePassphraseMismatch()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(package, key, "mismatch"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a null
+        ///     passphrase argument.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePassphraseNull()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(package, key, null));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
+        ///     private key file which is empty.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePrivateKeyEmpty()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(package, string.Empty, "passphrase"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with an
+        ///     empty private key argument.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePrivateKeyEmptyFile()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string key = Path.Combine(DataDirectory, "empty.txt");
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(package, key, "passphrase"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<InvalidDataException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
+        ///     private key argument which can not be found on the local filesystem.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePrivateKeyNotFound()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(package, "not found", "passphrase"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a null
+        ///     private key file.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePrivateKeyNull()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(package, null, "passphrase"));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with the
         ///     Update event bound.
         /// </summary>
