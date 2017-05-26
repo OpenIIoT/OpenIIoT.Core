@@ -286,13 +286,14 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
 
                 verifiedDigest = Encoding.ASCII.GetString(verifiedDigestBytes);
+                PackageManifest verifiedManifest = JsonConvert.DeserializeObject<PackageManifest>(verifiedDigest);
 
                 // remove the digest and trust from the manifest, then serialize it and compare it to the verified digest.
                 manifest.Signature.Digest = default(string);
                 manifest.Signature.Trust = default(string);
 
                 // if the scrubbed manifest and verified digest don't match, something was tampered with.
-                if (manifest.ToJson().Replace(Environment.NewLine, string.Empty) != verifiedDigest.Replace(Environment.NewLine, string.Empty))
+                if (manifest.ToJson() != verifiedManifest.ToJson())
                 {
                     Console.WriteLine(manifest.ToJson().Length + ", " + verifiedDigest.Length);
                     Console.WriteLine("manifest: " + manifest.ToJson());
