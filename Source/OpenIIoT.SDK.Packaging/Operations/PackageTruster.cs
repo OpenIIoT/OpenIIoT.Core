@@ -119,38 +119,35 @@ namespace OpenIIoT.SDK.Packaging.Operations
         {
             Verbose($"Updating Manifest in Package '{Path.GetFileName(packageFile)}'...");
 
-            // looks like: temp\OpenIIoT.SDK\<Guid>\
             string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
-            string tempFile = Path.Combine(tempDirectory, PackagingConstants.ManifestFilename);
+            string tempPackageDirectory = Path.Combine(tempDirectory, "package");
+            string tempManifest = Path.Combine(tempPackageDirectory, PackagingConstants.ManifestFilename);
+            string tempPackage = Path.Combine(tempDirectory, Path.GetFileName(packageFile));
 
             Exception deferredException = default(Exception);
 
             try
             {
-                Verbose($"Writing Manifest to temp file '{tempFile}'...");
-                Directory.CreateDirectory(tempDirectory);
-                File.WriteAllText(tempFile, manifest.ToJson());
-                Verbose("Manifest file written successfully.");
+                Verbose($"Extracting Package to '{tempPackageDirectory}'...");
+                ZipFile.ExtractToDirectory(packageFile, tempPackageDirectory);
+                Verbose("Package extracted successfully.");
 
-                Verbose($"Opening Package file '{Path.GetFileName(packageFile)}'...");
-                ZipArchive package = ZipFile.Open(packageFile, ZipArchiveMode.Update);
-                Verbose("Package file opened successfully.");
+                Verbose($"Replacing Manifest file...");
+                File.Delete(tempManifest);
+                File.WriteAllText(tempManifest, manifest.ToJson());
+                Verbose("Manifest file replaced successfully.");
 
-                Verbose("Deleting existing Manifest file...");
-                package.GetEntry(PackagingConstants.ManifestFilename).Delete();
-                Verbose("Deleted existing Manifest file successfully.");
+                Verbose($"Compressing Package...");
+                ZipFile.CreateFromDirectory(tempPackageDirectory, tempPackage);
+                Verbose("Package compressed successfully.");
 
-                Verbose("Adding updated Manfiest file...");
-                package.CreateEntryFromFile(tempFile, PackagingConstants.ManifestFilename);
-                Verbose("Manifest updated successfully.");
-
-                Verbose("Saving Package...");
-                package.Dispose();
-                Verbose("Package saved successfully.");
+                Verbose($"Overwriting original Package...");
+                File.Copy(tempPackage, packageFile, true);
+                Verbose("Package overwritten successfully.");
             }
             catch (Exception ex)
             {
-                deferredException = new Exception($"Error updating Manifest in Package '{Path.GetFileName(packageFile)}: {ex.Message}'");
+                deferredException = new Exception($"Error updating Manifest in Package '{Path.GetFileName(packageFile)}': {ex.Message}'");
             }
             finally
             {
