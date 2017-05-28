@@ -269,7 +269,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Exception ex = Record.Exception(() => Truster.TrustPackage(package, Guid.NewGuid().ToString(), "passphrase"));
 
             Assert.NotNull(ex);
-            Assert.IsType<ArgumentException>(ex);
+            Assert.IsType<FileNotFoundException>(ex);
         }
 
         /// <summary>
