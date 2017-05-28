@@ -82,11 +82,15 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
             PackageManifest manifest = new PackageManifest();
 
+            ZipArchive archive = default(ZipArchive);
+            StreamReader reader = default(StreamReader);
+
             try
             {
                 Verbose($"Locating manifest inside of package...");
 
-                ZipArchiveEntry zippedManifestFile = ZipFile.OpenRead(packageFile).Entries.Where(e => e.Name == PackagingConstants.ManifestFilename).FirstOrDefault();
+                archive = ZipFile.OpenRead(packageFile);
+                ZipArchiveEntry zippedManifestFile = archive.Entries.Where(e => e.Name == PackagingConstants.ManifestFilename).FirstOrDefault();
                 string manifestString;
 
                 if (zippedManifestFile != default(ZipArchiveEntry))
@@ -94,7 +98,8 @@ namespace OpenIIoT.SDK.Packaging.Operations
                     Verbose("Manifest located successfully.");
 
                     Verbose("Reading manifest from package...");
-                    manifestString = new StreamReader(zippedManifestFile.Open()).ReadToEnd();
+                    reader = new StreamReader(zippedManifestFile.Open());
+                    manifestString = reader.ReadToEnd();
                     Verbose("Manifest read successfully.");
                 }
                 else
@@ -113,6 +118,11 @@ namespace OpenIIoT.SDK.Packaging.Operations
             catch (Exception ex)
             {
                 throw new IOException($"Error extracting manifest from package '{Path.GetFileName(packageFile)}': {ex.Message}");
+            }
+            finally
+            {
+                archive?.Dispose();
+                reader?.Close();
             }
 
             Success("Manifest extracted successfully.");

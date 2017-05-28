@@ -48,6 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Newtonsoft.Json;
 using System;
 using System.IO;
 using Xunit;
@@ -140,6 +141,27 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
+        ///     package which contains a bad manifest.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePackageBadManifest()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "badmanifest.zip");
+            string temp = Path.Combine(TempDirectory, "package.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+
+            File.Copy(package, temp);
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(temp, key, passphrase));
+
+            Assert.NotNull(ex);
+            Assert.IsType<JsonException>(ex);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with an
         ///     empty package argument.
         /// </summary>
@@ -154,6 +176,52 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
         /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
+        ///     package which is in use.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePackageInUse()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string temp = Path.Combine(TempDirectory, "signedpackage.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+
+            File.Copy(package, temp);
+
+            FileStream stream = File.OpenRead(temp);
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(temp, key, passphrase));
+
+            Assert.NotNull(ex);
+            Assert.IsType<IOException>(ex);
+
+            stream?.Close();
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
+        ///     package which is not a valid package.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePackageNotAPackage()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "notapackage.zip");
+            string temp = Path.Combine(TempDirectory, "package.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+
+            File.Copy(package, temp);
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(temp, key, passphrase));
+
+            Assert.NotNull(ex);
+            Assert.IsType<IOException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
         ///     package argument which can't be found on the local filesystem.
         /// </summary>
         [Fact]
@@ -163,6 +231,27 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
             Assert.NotNull(ex);
             Assert.IsType<FileNotFoundException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
+        ///     package which has not been signed.
+        /// </summary>
+        [Fact]
+        public void TrustPackagePackageNotSigned()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string temp = Path.Combine(TempDirectory, "package.zip");
+            string key = Path.Combine(DataDirectory, "Key", "private.asc");
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+
+            File.Copy(package, temp);
+
+            Exception ex = Record.Exception(() => Truster.TrustPackage(temp, key, passphrase));
+
+            Assert.NotNull(ex);
+            Assert.IsType<InvalidOperationException>(ex);
         }
 
         /// <summary>

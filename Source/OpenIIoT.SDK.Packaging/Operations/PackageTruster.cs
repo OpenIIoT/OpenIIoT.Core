@@ -147,7 +147,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             }
             catch (Exception ex)
             {
-                deferredException = new Exception($"Error updating Manifest in Package '{Path.GetFileName(packageFile)}': {ex.Message}'");
+                deferredException = new IOException($"Error updating Manifest in Package '{Path.GetFileName(packageFile)}': {ex.Message}'");
             }
             finally
             {
