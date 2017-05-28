@@ -82,27 +82,55 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
             Info($"Adding Trust to Package '{Path.GetFileName(packageFile)}'...");
 
-            PackageManifest manifest = new ManifestExtractor().ExtractManifest(packageFile);
+            Exception deferredException = default(Exception);
 
-            Verbose("Checking (but not validating) Digest...");
+            string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
 
-            if (manifest.Signature == default(PackageManifestSignature) || string.IsNullOrEmpty(manifest.Signature.Digest))
+            try
             {
-                throw new InvalidOperationException("The Package is not signed and can not be trusted.");
+                PackageManifest manifest = new ManifestExtractor().ExtractManifest(packageFile);
+
+                Verbose("Checking (but not validating) Digest...");
+
+                if (manifest.Signature == default(PackageManifestSignature) || string.IsNullOrEmpty(manifest.Signature.Digest))
+                {
+                    throw new InvalidOperationException("The Package is not signed and can not be trusted.");
+                }
+
+                Verbose("Digest OK.");
+
+                Verbose("Signing Digest to create the Trust...");
+                string privateKey = File.ReadAllText(privateKeyFile);
+                byte[] digestBytes = Encoding.ASCII.GetBytes(manifest.Signature.Digest);
+                byte[] trustBytes = PGPSignature.Sign(digestBytes, privateKey, passphrase);
+                string trust = Encoding.ASCII.GetString(trustBytes);
+                Verbose("Trust created successfully.");
+
+                manifest.Signature.Trust = trust;
+
+                UpdatePackageManifest(packageFile, manifest, tempDirectory);
+            }
+            catch (Exception ex)
+            {
+                deferredException = ex;
+            }
+            finally
+            {
+                Verbose("Deleting temporary files...");
+
+                if (Directory.Exists(tempDirectory))
+                {
+                    Directory.Delete(tempDirectory, true);
+                }
+
+                Verbose("Temporary files deleted successfully.");
+
+                if (deferredException != default(Exception))
+                {
+                    throw deferredException;
+                }
             }
 
-            Verbose("Digest OK.");
-
-            Verbose("Signing Digest to create the Trust...");
-            string privateKey = File.ReadAllText(privateKeyFile);
-            byte[] digestBytes = Encoding.ASCII.GetBytes(manifest.Signature.Digest);
-            byte[] trustBytes = PGPSignature.Sign(digestBytes, privateKey, passphrase);
-            string trust = Encoding.ASCII.GetString(trustBytes);
-            Verbose("Trust created successfully.");
-
-            manifest.Signature.Trust = trust;
-
-            UpdatePackageManifest(packageFile, manifest);
             Success($"Trust added to Package '{Path.GetFileName(packageFile)}' successfully.");
         }
 
@@ -115,51 +143,31 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// </summary>
         /// <param name="packageFile">The filename of the Package file to update.</param>
         /// <param name="manifest">The Manifest with which the Package file will be updated.</param>
-        private void UpdatePackageManifest(string packageFile, PackageManifest manifest)
+        /// <param name="tempDirectory">The path to the temporary directory to use for file operations.</param>
+        private void UpdatePackageManifest(string packageFile, PackageManifest manifest, string tempDirectory)
         {
             Verbose($"Updating Manifest in Package '{Path.GetFileName(packageFile)}'...");
 
-            string tempDirectory = Path.Combine(Path.GetTempPath(), GetType().Namespace.Split('.')[0], Guid.NewGuid().ToString());
             string tempPackageDirectory = Path.Combine(tempDirectory, "package");
             string tempManifest = Path.Combine(tempPackageDirectory, PackagingConstants.ManifestFilename);
             string tempPackage = Path.Combine(tempDirectory, Path.GetFileName(packageFile));
 
-            Exception deferredException = default(Exception);
+            Verbose($"Extracting Package to '{tempPackageDirectory}'...");
+            ZipFile.ExtractToDirectory(packageFile, tempPackageDirectory);
+            Verbose("Package extracted successfully.");
 
-            try
-            {
-                Verbose($"Extracting Package to '{tempPackageDirectory}'...");
-                ZipFile.ExtractToDirectory(packageFile, tempPackageDirectory);
-                Verbose("Package extracted successfully.");
+            Verbose($"Replacing Manifest file...");
+            File.Delete(tempManifest);
+            File.WriteAllText(tempManifest, manifest.ToJson());
+            Verbose("Manifest file replaced successfully.");
 
-                Verbose($"Replacing Manifest file...");
-                File.Delete(tempManifest);
-                File.WriteAllText(tempManifest, manifest.ToJson());
-                Verbose("Manifest file replaced successfully.");
+            Verbose($"Compressing Package...");
+            ZipFile.CreateFromDirectory(tempPackageDirectory, tempPackage);
+            Verbose("Package compressed successfully.");
 
-                Verbose($"Compressing Package...");
-                ZipFile.CreateFromDirectory(tempPackageDirectory, tempPackage);
-                Verbose("Package compressed successfully.");
-
-                Verbose($"Overwriting original Package...");
-                File.Copy(tempPackage, packageFile, true);
-                Verbose("Package overwritten successfully.");
-            }
-            catch (Exception ex)
-            {
-                deferredException = new IOException($"Error updating Manifest in Package '{Path.GetFileName(packageFile)}': {ex.Message}'");
-            }
-            finally
-            {
-                Verbose("Deleting temporary files...");
-                Directory.Delete(tempDirectory, true);
-                Verbose("Temporary files deleted successfully.");
-
-                if (deferredException != default(Exception))
-                {
-                    throw deferredException;
-                }
-            }
+            Verbose($"Overwriting original Package...");
+            File.Copy(tempPackage, packageFile, true);
+            Verbose("Package overwritten successfully.");
         }
 
         #endregion Private Methods
