@@ -159,7 +159,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         [Fact]
         public void TrustPackagePackageNotFound()
         {
-            Exception ex = Record.Exception(() => Truster.TrustPackage("not found", "key", "passphrase"));
+            Exception ex = Record.Exception(() => Truster.TrustPackage(Guid.NewGuid().ToString(), "key", "passphrase"));
 
             Assert.NotNull(ex);
             Assert.IsType<FileNotFoundException>(ex);
@@ -266,7 +266,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         {
             string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
 
-            Exception ex = Record.Exception(() => Truster.TrustPackage(package, "not found", "passphrase"));
+            Exception ex = Record.Exception(() => Truster.TrustPackage(package, Guid.NewGuid().ToString(), "passphrase"));
 
             Assert.NotNull(ex);
             Assert.IsType<ArgumentException>(ex);
