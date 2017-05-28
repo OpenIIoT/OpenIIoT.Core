@@ -189,7 +189,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
             File.Copy(package, temp);
 
-            FileStream stream = File.OpenRead(temp);
+            FileStream stream = File.OpenWrite(temp);
 
             Exception ex = Record.Exception(() => Truster.TrustPackage(temp, key, passphrase));
 
