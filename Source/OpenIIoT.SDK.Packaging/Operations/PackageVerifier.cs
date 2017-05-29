@@ -227,11 +227,6 @@ namespace OpenIIoT.SDK.Packaging.Operations
                     JObject key = JObject.Parse(content);
                     string publicKey = key["them"]["public_keys"]["primary"]["bundle"].ToString();
 
-                    if (publicKey.Length < PackagingConstants.KeyMinimumLength)
-                    {
-                        throw new InvalidDataException($"The length of the retrieved key was not long enough (expected: >= {PackagingConstants.KeyMinimumLength}, actual: {publicKey.Length}) to be a valid PGP public key.");
-                    }
-
                     Verbose($"Public key fetched successfully.");
 
                     return publicKey;
@@ -328,11 +323,6 @@ namespace OpenIIoT.SDK.Packaging.Operations
         private void VerifyPayloadFiles(PackageManifest manifest, string payloadDirectory)
         {
             Verbose("Checking extracted files...");
-
-            if (Directory.GetFiles(payloadDirectory).Length == 0)
-            {
-                throw new FileNotFoundException("the payload directory does not contain any files.");
-            }
 
             foreach (PackageManifestFileType type in manifest.Files.Keys)
             {

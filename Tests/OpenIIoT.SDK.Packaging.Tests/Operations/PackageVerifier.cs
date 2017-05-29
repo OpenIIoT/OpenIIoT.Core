@@ -50,6 +50,7 @@
 
 using System;
 using System.IO;
+using System.Net;
 using Xunit;
 
 namespace OpenIIoT.SDK.Packaging.Tests.Operations
@@ -212,6 +213,22 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
         /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing an empty payload.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageEmptyPayload()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "emptypayload.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
         ///     file containing an invalid digest.
         /// </summary>
         [Fact]
@@ -224,6 +241,54 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.NotNull(ex);
             Assert.IsType<Exception>(ex);
             Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing a file which does not match it's manifest checksum.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageBadFileChecksum()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "badfilechecksum.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file signed with an invalid keybase username.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageInvalidKeybaseUsername()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "invalidkeybaseusername.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<WebException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing which is missing a file from the manifest.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageMissingFile()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "missingfile.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<FileNotFoundException>(ex.InnerException);
         }
 
         /// <summary>
