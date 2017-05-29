@@ -244,6 +244,73 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
         /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing a blank trust.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageBlankTrust()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "blanktrust.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing a trust which is valid but does not match the digest.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageTrustDigestMismatch()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustdigestmismatch.zip");
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+
+            Verifier.TrustPGPPublicKey = publicKey;
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing an invalid trust.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageBadTrust()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "badtrust.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file which is trusted but contains a blank digest.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageTrustedBlankDigest()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustednodigest.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
         ///     file containing a digest which does not match the manifest.
         /// </summary>
         [Fact]

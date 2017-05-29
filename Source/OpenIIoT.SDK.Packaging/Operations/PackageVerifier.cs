@@ -137,7 +137,10 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 {
                     Verbose("Verifying the Manifest Signature...");
 
-                    VerifyTrust(manifest);
+                    if (manifest.Signature.Trust != default(string))
+                    {
+                        VerifyTrust(manifest);
+                    }
 
                     string publicKey = string.Empty;
 
@@ -369,7 +372,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         {
             string verifiedTrust = string.Empty;
 
-            if (!string.IsNullOrEmpty(manifest.Signature.Trust))
+            if (manifest.Signature.Trust != string.Empty)
             {
                 Verbose("Verifying the Manifest Trust...");
 
@@ -398,6 +401,10 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
 
                 Verbose("Trust verified successfully.");
+            }
+            else
+            {
+                throw new InvalidDataException("the Manifest Trust is empty.");
             }
         }
 
