@@ -129,6 +129,31 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.True(verified);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an
+        ///     explicitly defined public key.
+        /// </summary>
+        [Fact]
+        public void VerifyPackageExplicitPublicKey()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
+            string publicKeyFile = Path.Combine(DataDirectory, "Key", "public.asc");
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+
+            bool verified = false;
+
+            Verifier.TrustPGPPublicKey = publicKey;
+
+            Exception ex = Record.Exception(() => verified = Verifier.VerifyPackage(package, publicKeyFile));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
+        ///     package argument.
+        /// </summary>
         [Fact]
         public void VerifyPackagePackageEmpty()
         {
@@ -138,15 +163,51 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<ArgumentException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
+        ///     package file.
+        /// </summary>
         [Fact]
-        public void VerifyPackagePackagefileEmpty()
+        public void VerifyPackagePackageFileEmpty()
         {
             string package = Path.Combine(DataDirectory, "Package", "emptypackage.zip");
 
-            Exception ex = Record.Exception(() => Verifier.VerifyPackage(string.Empty));
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
 
             Assert.NotNull(ex);
-            Assert.IsType<ArgumentException>(ex);
+            Assert.IsType<InvalidDataException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing a payload and manifest with mismatched checksums.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageBadChecksum()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "badchecksum.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file without a manifest.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageNoManifest()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "plainzip.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<FileNotFoundException>(ex.InnerException);
         }
 
         /// <summary>
@@ -165,6 +226,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<FileNotFoundException>(ex.InnerException);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     argument containing a file which can not be found on the local filesystem.
+        /// </summary>
         [Fact]
         public void VerifyPackagePackageNotFound()
         {
@@ -174,6 +239,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<FileNotFoundException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a null
+        ///     package argument.
+        /// </summary>
         [Fact]
         public void VerifyPackagePackageNull()
         {
@@ -184,7 +253,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method.
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with the Update
+        ///     event bound.
         /// </summary>
         [Fact]
         public void VerifyPackageWithUpdate()
