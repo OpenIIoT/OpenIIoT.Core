@@ -282,7 +282,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidDataException($"an Exception was thrown while verifying the Digest: {ex.GetType().Name}: {ex.Message}");
+                    throw new InvalidDataException($"an Exception was thrown while verifying the Digest: {ex.GetType().Name}: {ex.Message}", ex);
                 }
 
                 verifiedDigest = Encoding.ASCII.GetString(verifiedDigestBytes);

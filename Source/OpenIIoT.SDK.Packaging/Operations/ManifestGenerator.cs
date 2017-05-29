@@ -104,7 +104,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
                 catch (Exception ex)
                 {
-                    throw new IOException($"Unable to write to output file '{manifestFile}': {ex.Message}");
+                    throw new Exception($"Unable to write to output file '{manifestFile}': {ex.Message}", ex);
                 }
             }
 
