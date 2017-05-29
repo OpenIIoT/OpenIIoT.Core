@@ -126,6 +126,40 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageOutputDirectoryExistsButEmptyWithOverwrite()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Directory.CreateDirectory(output);
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output, true));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
+        /// </summary>
+        [Fact]
+        public void ExtractPackageOutputDirectoryExistsButEmptyNoOverwrite()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "package.zip");
+            string output = Path.Combine(TempDirectory, "output");
+
+            Directory.CreateDirectory(output);
+
+            Exception ex = Record.Exception(() => Extractor.ExtractPackage(package, output));
+
+            Assert.Null(ex);
+            Assert.Equal(3, Directory.GetFiles(output).Length);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
         ///     with an invalid package.
         /// </summary>
