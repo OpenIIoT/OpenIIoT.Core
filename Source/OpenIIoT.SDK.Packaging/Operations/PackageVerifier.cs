@@ -295,9 +295,6 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 // if the scrubbed manifest and verified digest don't match, something was tampered with.
                 if (manifest.ToJson() != verifiedManifest.ToJson())
                 {
-                    Console.WriteLine(manifest.ToJson().Length + ", " + verifiedDigest.Length);
-                    Console.WriteLine("manifest: " + manifest.ToJson());
-                    Console.WriteLine("verified" + verifiedDigest);
                     throw new InvalidDataException("the Manifest Digest is not valid; the verified Digest does not match the Manifest.");
                 }
 
