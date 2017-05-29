@@ -137,7 +137,10 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 {
                     Verbose("Verifying the Manifest Signature...");
 
-                    VerifyTrust(manifest);
+                    if (manifest.Signature.Trust != default(string))
+                    {
+                        VerifyTrust(manifest);
+                    }
 
                     string publicKey = string.Empty;
 
@@ -180,7 +183,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             }
             catch (Exception ex)
             {
-                deferredException = new Exception($"Package '{packageFile}' is invalid: {ex.Message}");
+                deferredException = new Exception($"Package '{packageFile}' is invalid: {ex.Message}", ex);
             }
             finally
             {
@@ -223,11 +226,6 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                     JObject key = JObject.Parse(content);
                     string publicKey = key["them"]["public_keys"]["primary"]["bundle"].ToString();
-
-                    if (publicKey.Length < PackagingConstants.KeyMinimumLength)
-                    {
-                        throw new InvalidDataException($"The length of the retrieved key was not long enough (expected: >= {PackagingConstants.KeyMinimumLength}, actual: {publicKey.Length}) to be a valid PGP public key.");
-                    }
 
                     Verbose($"Public key fetched successfully.");
 
@@ -282,7 +280,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidDataException($"an Exception was thrown while verifying the Digest: {ex.GetType().Name}: {ex.Message}");
+                    throw new InvalidDataException($"an Exception was thrown while verifying the Digest: {ex.GetType().Name}: {ex.Message}", ex);
                 }
 
                 verifiedDigest = Encoding.ASCII.GetString(verifiedDigestBytes);
@@ -305,6 +303,10 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                 Verbose("Digest verified successfully.");
             }
+            else
+            {
+                throw new InvalidDataException("the Manifest Digest is null or empty.");
+            }
         }
 
         /// <summary>
@@ -321,11 +323,6 @@ namespace OpenIIoT.SDK.Packaging.Operations
         private void VerifyPayloadFiles(PackageManifest manifest, string payloadDirectory)
         {
             Verbose("Checking extracted files...");
-
-            if (Directory.GetFiles(payloadDirectory).Length == 0)
-            {
-                throw new FileNotFoundException("the payload directory does not contain any files.");
-            }
 
             foreach (PackageManifestFileType type in manifest.Files.Keys)
             {
@@ -365,7 +362,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         {
             string verifiedTrust = string.Empty;
 
-            if (!string.IsNullOrEmpty(manifest.Signature.Trust))
+            if (manifest.Signature.Trust != string.Empty)
             {
                 Verbose("Verifying the Manifest Trust...");
 
@@ -394,6 +391,10 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 }
 
                 Verbose("Trust verified successfully.");
+            }
+            else
+            {
+                throw new InvalidDataException("the Manifest Trust is empty.");
             }
         }
 

@@ -215,7 +215,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Exception ex = Record.Exception(() => Extractor.ExtractManifest(inputFile, "/"));
 
             Assert.NotNull(ex);
-            Assert.IsType<IOException>(ex);
+            Assert.IsType<Exception>(ex);
         }
 
         /// <summary>

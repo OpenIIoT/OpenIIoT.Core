@@ -112,7 +112,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             }
             catch (Exception ex)
             {
-                deferredException = new Exception($"Error extracting Package: {ex.Message}");
+                deferredException = new Exception($"Error extracting Package: {ex.Message}", ex);
             }
             finally
             {

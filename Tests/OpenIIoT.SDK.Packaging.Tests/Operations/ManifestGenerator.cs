@@ -159,7 +159,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Exception ex = Record.Exception(() => Generator.GenerateManifest(TempDirectory, true, true, Path.Combine(TempDirectory, "/")));
 
             Assert.NotNull(ex);
-            Assert.IsType<IOException>(ex);
+            Assert.IsType<Exception>(ex);
         }
 
         /// <summary>

@@ -168,7 +168,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             }
             catch (Exception ex)
             {
-                deferredException = new Exception($"Error creating Package: {ex.Message}");
+                deferredException = new Exception($"Error creating Package: {ex.Message}", ex);
             }
             finally
             {
