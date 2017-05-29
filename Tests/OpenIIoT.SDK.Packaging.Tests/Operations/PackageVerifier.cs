@@ -152,6 +152,64 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an
+        ///     explicitly defined public key which can not be found on the local filesystem.
+        /// </summary>
+        [Fact]
+        public void VerifyPackageExplicitPublicKeyNotFound()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package, Guid.NewGuid().ToString()));
+
+            Assert.NotNull(ex);
+            Assert.IsType<FileNotFoundException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an
+        ///     explicitly defined public key which is an empty file.
+        /// </summary>
+        [Fact]
+        public void VerifyPackageExplicitPublicKeyFileEmpty()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
+            string publicKeyFile = Path.Combine(DataDirectory, "empty.txt");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package, publicKeyFile));
+
+            Assert.NotNull(ex);
+            Assert.IsType<InvalidDataException>(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an
+        ///     explicitly defined public key which is in use by another process.
+        /// </summary>
+        [Fact]
+        public void VerifyPackageExplicitPublicKeyCanNotRead()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
+            string publicKeyFile = Path.Combine(DataDirectory, "Key", "public.asc");
+
+            FileStream stream = default(FileStream);
+
+            try
+            {
+                stream = File.Open(publicKeyFile, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+                Exception ex = Record.Exception(() => Verifier.VerifyPackage(package, publicKeyFile));
+
+                Assert.NotNull(ex);
+                Assert.IsType<IOException>(ex);
+            }
+            finally
+            {
+                stream?.Close();
+            }
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
         ///     package argument.
         /// </summary>

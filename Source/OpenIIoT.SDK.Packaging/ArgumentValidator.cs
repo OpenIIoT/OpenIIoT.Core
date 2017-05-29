@@ -226,11 +226,6 @@ namespace OpenIIoT.SDK.Packaging
         /// <exception cref="IOException">Thrown when the public key file can not be read.</exception>
         internal static void ValidatePublicKeyArgument(string publicKeyFile)
         {
-            if (string.IsNullOrEmpty(publicKeyFile))
-            {
-                throw new ArgumentException("The required argument 'public key' was not supplied.");
-            }
-
             if (!File.Exists(publicKeyFile))
             {
                 throw new FileNotFoundException($"The specified public key file '{publicKeyFile}' could not be found.");
@@ -246,15 +241,14 @@ namespace OpenIIoT.SDK.Packaging
             try
             {
                 publicKeyStream = File.OpenRead(publicKeyFile);
-
-                if (!publicKeyStream.CanRead)
-                {
-                    throw new IOException($"The specified public key file '{publicKeyFile}' could not be opened for reading.  It may be open in another process, or you may have insufficient rights.");
-                }
+            }
+            catch (Exception ex)
+            {
+                throw new IOException($"The specified public key file '{publicKeyFile}' could not be opened for reading.  It may be open in another process, or you may have insufficient rights.", ex);
             }
             finally
             {
-                publicKeyStream.Close();
+                publicKeyStream?.Close();
             }
         }
 
