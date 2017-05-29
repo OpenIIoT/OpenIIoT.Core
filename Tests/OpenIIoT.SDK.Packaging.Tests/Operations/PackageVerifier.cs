@@ -196,6 +196,70 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
         /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing a malformed manifest.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageBadManifest()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "badmanifest.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing an invalid digest.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageBadDigest()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "baddigest.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing a blank digest.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageBlankDigest()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "blankdigest.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
+        ///     file containing a digest which does not match the manifest.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageManifestDigestMismatch()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "manifestdigestmismatch.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
         ///     file without a manifest.
         /// </summary>
         [Fact]

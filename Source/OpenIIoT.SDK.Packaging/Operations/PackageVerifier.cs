@@ -305,6 +305,10 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                 Verbose("Digest verified successfully.");
             }
+            else
+            {
+                throw new InvalidDataException("the Manifest Digest is null or empty.");
+            }
         }
 
         /// <summary>
