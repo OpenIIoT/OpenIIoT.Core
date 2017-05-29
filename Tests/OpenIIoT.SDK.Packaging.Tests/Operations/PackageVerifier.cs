@@ -149,6 +149,22 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.IsType<ArgumentException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a plain zip
+        ///     file not containing a manifest or payload.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageNoPayload()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "nopayload.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<FileNotFoundException>(ex.InnerException);
+        }
+
         [Fact]
         public void VerifyPackagePackageNotFound()
         {

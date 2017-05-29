@@ -180,7 +180,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             }
             catch (Exception ex)
             {
-                deferredException = new Exception($"Package '{packageFile}' is invalid: {ex.Message}");
+                deferredException = new Exception($"Package '{packageFile}' is invalid: {ex.Message}", ex);
             }
             finally
             {
