@@ -117,9 +117,31 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         public void VerifyPackage()
         {
             string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
-            string publicKey = Path.Combine(DataDirectory, "Key", "public.asc");
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
 
             bool verified = false;
+
+            Verifier.TrustPGPPublicKey = publicKey;
+
+            Exception ex = Record.Exception(() => verified = Verifier.VerifyPackage(package));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void VerifyPackageWithUpdate()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+
+            bool verified = false;
+
+            Verifier.TrustPGPPublicKey = publicKey;
+            Verifier.Updated += Verifier_Updated;
 
             Exception ex = Record.Exception(() => verified = Verifier.VerifyPackage(package));
 
@@ -128,5 +150,18 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event args.</param>
+        private void Verifier_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        {
+        }
+
+        #endregion Private Methods
     }
 }
