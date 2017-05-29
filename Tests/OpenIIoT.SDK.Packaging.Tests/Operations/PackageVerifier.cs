@@ -129,6 +129,44 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Assert.True(verified);
         }
 
+        [Fact]
+        public void VerifyPackagePackageEmpty()
+        {
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        [Fact]
+        public void VerifyPackagePackagefileEmpty()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "emptypackage.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(string.Empty));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
+        [Fact]
+        public void VerifyPackagePackageNotFound()
+        {
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(Guid.NewGuid().ToString()));
+
+            Assert.NotNull(ex);
+            Assert.IsType<FileNotFoundException>(ex);
+        }
+
+        [Fact]
+        public void VerifyPackagePackageNull()
+        {
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(null));
+
+            Assert.NotNull(ex);
+            Assert.IsType<ArgumentException>(ex);
+        }
+
         /// <summary>
         ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method.
         /// </summary>
