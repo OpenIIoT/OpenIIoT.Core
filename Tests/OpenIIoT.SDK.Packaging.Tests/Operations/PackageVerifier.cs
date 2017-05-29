@@ -110,6 +110,23 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
             Directory.Delete(TempDirectory, true);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void VerifyPackage()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
+            string publicKey = Path.Combine(DataDirectory, "Key", "public.asc");
+
+            bool verified = false;
+
+            Exception ex = Record.Exception(() => verified = Verifier.VerifyPackage(package));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
         #endregion Public Methods
     }
 }
