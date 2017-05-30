@@ -43,7 +43,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using Newtonsoft.Json;
 
-namespace OpenIIoT.SDK.Package.Manifest
+namespace OpenIIoT.SDK.Packaging.Manifest
 {
     public class PackageManifest
     {

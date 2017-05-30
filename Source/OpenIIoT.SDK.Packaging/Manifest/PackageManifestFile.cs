@@ -41,7 +41,7 @@
 
 using Newtonsoft.Json;
 
-namespace OpenIIoT.SDK.Package.Manifest
+namespace OpenIIoT.SDK.Packaging.Manifest
 {
     /// <summary>
     ///     Represents a single file contained within a <see cref="PackageManifest"/> .

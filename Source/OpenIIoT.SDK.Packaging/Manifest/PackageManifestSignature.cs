@@ -41,7 +41,7 @@
 
 using Newtonsoft.Json;
 
-namespace OpenIIoT.SDK.Package.Manifest
+namespace OpenIIoT.SDK.Packaging.Manifest
 {
     /// <summary>
     ///     Contains the digital signature information for a <see cref="Package"/> file.

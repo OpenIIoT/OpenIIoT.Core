@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace OpenIIoT.SDK.Package.Manifest
+namespace OpenIIoT.SDK.Packaging.Manifest
 {
     public class PackageManifestBuilder
     {

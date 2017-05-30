@@ -44,7 +44,7 @@ using System.IO;
 using System.IO.Compression;
 using System.Text;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package.Manifest;
+using OpenIIoT.SDK.Packaging.Manifest;
 using Utility.PGPSignatureTools;
 
 namespace OpenIIoT.SDK.Packaging.Operations
