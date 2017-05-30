@@ -50,7 +50,7 @@
 
 using System;
 using System.IO;
-using OpenIIoT.SDK.Package.Manifest;
+using OpenIIoT.SDK.Packaging.Manifest;
 using Xunit;
 
 namespace OpenIIoT.SDK.Packaging.Tests.Operations

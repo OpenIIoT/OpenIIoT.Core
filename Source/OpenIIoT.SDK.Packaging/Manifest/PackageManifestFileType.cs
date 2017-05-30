@@ -39,7 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Package.Manifest
+namespace OpenIIoT.SDK.Packaging.Manifest
 {
     /// <summary>
     ///     Enumeration of the different types of <see cref="PackageManifestFile"/> .
