@@ -41,7 +41,6 @@
 
 using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
 using System.ServiceProcess;
 using System.Text.RegularExpressions;
@@ -61,6 +60,7 @@ using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Plugin;
 using OpenIIoT.SDK.Plugin.Connector;
+using Utility.CommandLine;
 using Utility.OperationResult;
 
 namespace OpenIIoT.Core
@@ -131,6 +131,24 @@ namespace OpenIIoT.Core
         };
 
         #endregion Private Fields
+
+        /// <summary>
+        ///     Gets or sets the logging level for the application.
+        /// </summary>
+        [Argument('l', "loglevel")]
+        private static string LoggingLevel { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the Windows Service should be installed.
+        /// </summary>
+        [Argument('i', "install-service")]
+        private static bool InstallService { get; set; }
+
+        /// <summary>
+        ///     Gets or sets a value indicating whether the Windows Service should be uninstalled.
+        /// </summary>
+        [Argument('u', "uninstall-service")]
+        private static bool UninstallService { get; set; }
 
         #region Internal Methods
 
@@ -362,52 +380,48 @@ namespace OpenIIoT.Core
             logger.EnterMethod(xLogger.Params(args));
             logger.Debug("Processing program arguments...");
 
+            Arguments.Populate();
+
             bool retVal = false;
 
-            if (args.Length > 0)
+            if (InstallService ^ UninstallService)
             {
-                try
+                logger.Info($"Attempting to {(InstallService ? "install" : "uninstall")} Windows Service...");
+
+                if (InstallService)
                 {
-                    // check to see if logger arguments were supplied
-                    string logarg = args.Where(a => Regex.IsMatch(a, "^((?i)-logLevel:)((?i)trace|debug|info|warn|error|fatal)$")).FirstOrDefault();
-                    if (logarg != default(string))
+                    Utility.ModifyService("install");
+                }
+                else
+                {
+                    Utility.ModifyService("uninstall");
+                }
+
+                logger.Info($"Successfully {(InstallService ? "installed" : "uninstalled")} Windows Service.");
+                retVal = true;
+            }
+            else if (InstallService && UninstallService)
+            {
+                throw new ArgumentException("The InstallService and UninstallService arguments can not be used at the same time.");
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(LoggingLevel))
+                {
+                    if (Regex.IsMatch(LoggingLevel, "^((?i)trace|debug|info|warn|error|fatal)$"))
                     {
                         // reconfigure the logger based on the command line arguments. valid values are "fatal" "error" "warn"
                         // "info" "debug" and "trace" supplying any value will disable logging for any level beneath that level,
                         // from left to right as positioned above
-                        logger.Info($"Reconfiguring logger to log level '{logarg.Split(':')[1]}'...");
-                        Utility.SetLoggingLevel(logarg.Split(':')[1]);
+                        logger.Info($"Reconfiguring logger to log level '{LoggingLevel}'...");
+                        Utility.SetLoggingLevel(LoggingLevel);
                         logger.Info("Successfully reconfigured logger.");
                     }
-
-                    // check to see if service install/uninstall arguments were supplied
-                    string servicearg = args.Where(a => Regex.IsMatch(a, "^(?i)(-(un)?install-service)$")).FirstOrDefault();
-                    if (servicearg != default(string))
+                    else
                     {
-                        string action = servicearg.Split('-')[1];
-                        logger.Info($"Attempting to {action} Windows Service...");
-
-                        if (Utility.ModifyService(action))
-                        {
-                            logger.Info($"Successfully {action}ed Windows Service.");
-                        }
-                        else
-                        {
-                            logger.Error($"Failed to {action} Windows Service.");
-                        }
-
-                        retVal = true;
+                        throw new ArgumentException("The value specified for the LogLevel argument is invalid.  Valid values are 'fatal', 'error', 'warn', 'info', 'debug', and 'trace'.");
                     }
                 }
-                catch (Exception ex)
-                {
-                    logger.Exception(ex);
-                    throw new ApplicationArgumentException("Error parsing command line arguments.  See the inner exception for details.", ex);
-                }
-            }
-            else
-            {
-                logger.Debug("No arguments provided.");
             }
 
             logger.ExitMethod(retVal);
