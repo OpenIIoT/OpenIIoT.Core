@@ -112,9 +112,9 @@ namespace OpenIIoT.Core
             // 
             // serviceInstaller
             // 
-            this.serviceInstaller.Description = "OpenIIoT";
-            this.serviceInstaller.DisplayName = "OpenIIoT";
-            this.serviceInstaller.ServiceName = "WindowsService";
+            this.serviceInstaller.Description = "OpenIIoT Application Platform Core";
+            this.serviceInstaller.DisplayName = "OpenIIoT Core";
+            this.serviceInstaller.ServiceName = "OpenIIoT";
             this.serviceInstaller.StartType = System.ServiceProcess.ServiceStartMode.Automatic;
             // 
             // ProjectInstaller
