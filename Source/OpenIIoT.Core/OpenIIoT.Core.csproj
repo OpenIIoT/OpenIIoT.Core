@@ -269,6 +269,9 @@
     <EmbeddedResource Include="ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="WindowsService.resx">
+      <DependentUpon>WindowsService.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenIIoT.SDK\OpenIIoT.SDK.csproj">

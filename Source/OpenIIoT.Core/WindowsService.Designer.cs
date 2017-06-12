@@ -91,8 +91,11 @@ namespace OpenIIoT.Core
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
-            this.ServiceName = "WindowsService";
+            // 
+            // WindowsService
+            // 
+            this.ServiceName = "OpenIIoT";
+
         }
 
         #endregion Private Methods
