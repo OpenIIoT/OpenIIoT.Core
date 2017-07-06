@@ -307,18 +307,5 @@ namespace OpenIIoT.Core.Package
         }
 
         #endregion Protected Methods
-
-        #region Private Methods
-
-        /// <summary>
-        ///     Returns the fully qualified path to the configuration file including file name and extension.
-        /// </summary>
-        /// <returns>The fully qualified path, filename and extension of the configuration file.</returns>
-        private static string GetConfigurationFileName()
-        {
-            return Utility.GetSetting("ConfigurationFileName", "OpenIIoT.json").Replace('|', System.IO.Path.DirectorySeparatorChar);
-        }
-
-        #endregion Private Methods
     }
 }
