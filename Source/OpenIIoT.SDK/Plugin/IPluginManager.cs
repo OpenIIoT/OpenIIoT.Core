@@ -56,11 +56,6 @@ namespace OpenIIoT.SDK.Plugin
         #region Properties
 
         /// <summary>
-        ///     Gets a list of all invalid Plugin Packages.
-        /// </summary>
-        IList<IInvalidPackage> InvalidPackages { get; }
-
-        /// <summary>
         ///     Gets a list of all Plugin Packages.
         /// </summary>
         IList<IPackage> Packages { get; }
@@ -164,12 +159,6 @@ namespace OpenIIoT.SDK.Plugin
         /// <param name="plugin">The Plugin to reinstall.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Task<Result> ReinstallPluginAsync(IPlugin plugin);
-
-        /// <summary>
-        ///     Refreshes the lists of valid and invalid Plugin Packages.
-        /// </summary>
-        /// <returns>An instance of PackageLoadResult.</returns>
-        IPackageLoadResult ReloadPackages();
 
         /// <summary>
         ///     Uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the

@@ -127,11 +127,6 @@ namespace OpenIIoT.Core.Plugin
         public PluginManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
-        ///     Gets a list of all invalid Plugin Packages.
-        /// </summary>
-        public IList<IInvalidPackage> InvalidPackages { get; private set; }
-
-        /// <summary>
         ///     Gets a list of all Plugin Packages.
         /// </summary>
         public IList<IPackage> Packages { get; private set; }
@@ -641,28 +636,6 @@ namespace OpenIIoT.Core.Plugin
         }
 
         /// <summary>
-        ///     Refreshes the lists of valid and invalid Plugin Packages.
-        /// </summary>
-        /// <returns>An instance of PackageLoadResult.</returns>
-        public IPackageLoadResult ReloadPackages()
-        {
-            Guid guid = logger.EnterMethod(true);
-
-            logger.Info("Reloading Plugin Packages...");
-            IPackageLoadResult retVal = LoadPackages();
-
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                Packages = retVal.ValidPackages;
-                InvalidPackages = retVal.InvalidPackages;
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -802,7 +775,6 @@ namespace OpenIIoT.Core.Plugin
             PluginInstances = new List<IPluginInstance>();
             Plugins = null;
             Packages = null;
-            InvalidPackages = null;
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -832,44 +804,6 @@ namespace OpenIIoT.Core.Plugin
 
             retVal.Incorporate(configureResult);
             logger.Checkpoint("Configured the Plugin Manager", guid);
-
-            // generate a list of valid archive files in the archive directory
-            logger.SubSubHeading(LogLevel.Debug, "Packages...");
-
-            IPackageLoadResult pluginPackageLoadResult = LoadPackages();
-
-            if (pluginPackageLoadResult.ResultCode != ResultCode.Failure)
-            {
-                Packages = pluginPackageLoadResult.ValidPackages;
-                InvalidPackages = pluginPackageLoadResult.InvalidPackages;
-            }
-
-            retVal.Incorporate(pluginPackageLoadResult);
-
-            // print the lists of valid and invalid archives
-            if (Packages.Count > 0)
-            {
-                logger.Info("Valid Plugin Packages:");
-            }
-
-            foreach (Package.Package archive in Packages)
-            {
-                logger.Info("\t" + System.IO.Path.GetFileName(archive.FileName) + " (" + archive.Plugin.FQN + ")");
-            }
-
-            if (InvalidPackages.Count > 0)
-            {
-                logger.Info("Invalid Plugin Packages:");
-            }
-
-            foreach (InvalidPackage invalidPackage in InvalidPackages)
-            {
-                logger.Info(new string(' ', 5) + System.IO.Path.GetFileName(invalidPackage.FileName) + " (" + invalidPackage.Message + ")");
-            }
-
-            logger.Info(Packages.Count + " Plugin " + (Packages.Count == 1 ? "Package" : "Packages") + " loaded.");
-
-            logger.Checkpoint("Plugin Packages loaded", xLogger.Vars(Packages, InvalidPackages), xLogger.Names("Packages", "InvalidPackages"), guid);
 
             // load installed plugin assemblies into memory and register them with the configuration manager
             logger.SubSubHeading(LogLevel.Debug, "Assemblies...");
@@ -1196,65 +1130,6 @@ namespace OpenIIoT.Core.Plugin
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Loads all valid Plugin Packages in the archive directory into a list of type Package and returns it.
-        /// </summary>
-        /// <returns>An instance of PackageLoadResult.</returns>
-        private IPackageLoadResult LoadPackages()
-        {
-            return LoadPackages(Dependency<IPlatformManager>().Platform.Directories.Packages, GetPackageExtension());
-        }
-
-        /// <summary>
-        ///     Loads all valid Plugin Packages matching the supplied searchPattern in the supplied directory using the supplied
-        ///     IPlatform into a list of type Package and returns it.
-        /// </summary>
-        /// <param name="directory">The directory to search.</param>
-        /// <param name="searchPattern">The file extension of Plugin Packages.</param>
-        /// <returns>An instance of PackageLoadResult.</returns>
-        private IPackageLoadResult LoadPackages(string directory, string searchPattern)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(directory, searchPattern), true);
-
-            logger.Info("Loading Plugin Packages...");
-            IPackageLoadResult retVal = new PackageLoadResult();
-
-            IPlatform platform = Dependency<IPlatformManager>().Platform;
-
-            // retrieve a list of probable plugin archive files from the configured plugin archive directory
-            logger.Trace("Listing matching files...");
-            IResult<IList<string>> searchResult = platform.ListFiles(directory, searchPattern);
-            logger.Debug("Found " + searchResult.ReturnValue.Count + " Packages.");
-
-            retVal.Incorporate(searchResult);
-
-            // iterate over the list of found files
-            foreach (string fileName in searchResult.ReturnValue)
-            {
-                logger.SubSubHeading(LogLevel.Debug, "Package: .." + string.Join(".", System.IO.Path.GetFileName(fileName).Split('.').TakeLast(2).ToArray()));
-                logger.Debug("Parsing Package file '" + fileName + "'...");
-
-                // parse the current plugin archive file
-                Result<Package.Package> parseResult = ParsePackage(fileName);
-
-                if (parseResult.ResultCode != ResultCode.Failure)
-                {
-                    parseResult.ReturnValue.SetFileName(System.IO.Path.GetFileName(fileName));
-                    retVal.ValidPackages.Add(parseResult.ReturnValue);
-                }
-                else
-                {
-                    retVal.InvalidPackages.Add(new InvalidPackage(System.IO.Path.GetFileName(fileName), parseResult.GetLastError()));
-                }
-
-                parseResult.LogResult(logger.Debug, "ParsePackage");
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
             return retVal;
         }
 
