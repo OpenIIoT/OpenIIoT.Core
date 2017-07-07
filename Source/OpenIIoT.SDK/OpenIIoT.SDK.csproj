@@ -33,6 +33,10 @@
     <CodeAnalysisRuleSet>openiiot.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.OpenPgp, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BouncyCastle.OpenPGP.1.8.1\lib\net20\BouncyCastle.OpenPgp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -46,8 +50,8 @@
       <HintPath>..\..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.1.26849, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.1.26849-beta\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
+    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.2.33203, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.2.33203-beta\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
