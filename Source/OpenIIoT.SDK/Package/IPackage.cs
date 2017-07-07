@@ -1,4 +1,4 @@
-﻿using OpenIIoT.SDK.Plugin;
+﻿using OpenIIoT.SDK.Packaging.Manifest;
 
 namespace OpenIIoT.SDK.Package
 {
@@ -7,26 +7,28 @@ namespace OpenIIoT.SDK.Package
     /// </summary>
     public interface IPackage
     {
+        #region Public Properties
+
         /// <summary>
-        ///     The fully qualified filename of the file.
+        ///     Gets the fully qualified filename of the file.
         /// </summary>
         string FileName { get; }
 
         /// <summary>
-        ///     The Plugin contained within the archive.
+        ///     Gets the Fully Qualified Name of the package.
         /// </summary>
-        IPlugin Plugin { get; }
+        string FQN { get; }
 
         /// <summary>
-        ///     Sets the FileName property to the provided value.
+        ///     Gets a value indicating whether the Package is installed.
         /// </summary>
-        /// <param name="fileName">The value with which to set the FileName property.</param>
-        void SetFileName(string fileName);
+        bool Installed { get; }
 
         /// <summary>
-        ///     Sets the Plugin property to the provided value.
+        ///     Gets the Manifest for the package.
         /// </summary>
-        /// <param name="plugin">The value with which to set the Plugin property.</param>
-        void SetPlugin(IPlugin plugin);
+        PackageManifest Manifest { get; }
+
+        #endregion Public Properties
     }
 }

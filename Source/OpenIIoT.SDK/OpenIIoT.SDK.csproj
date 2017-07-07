@@ -46,6 +46,10 @@
       <HintPath>..\..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.1.26849, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.1.26849-beta\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
@@ -108,9 +112,7 @@
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\IDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Package\IInvalidPackage.cs" />
     <Compile Include="Package\IPackage.cs" />
-    <Compile Include="Package\IPackageLoadResult.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Common\Provider\ItemProvider\IExtensible.cs" />
     <Compile Include="Common\Provider\ItemProvider\ISubscribable.cs" />

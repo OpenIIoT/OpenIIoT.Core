@@ -50,15 +50,6 @@ namespace OpenIIoT.SDK.Package
     /// </summary>
     public interface IPackageManager : IManager
     {
-        #region Public Fields
-
-        public Event PackagesChangedEventArgs
-
-
-#endregion Public Fields
-
-        PackagesChanged;
-
         #region Public Properties
 
         IReadOnlyList<IPackage> Packages { get; }
@@ -67,23 +58,23 @@ namespace OpenIIoT.SDK.Package
 
         #region Public Methods
 
+        IResult<IPackage> AddPackage(string fileName);
+
         IResult DeletePackage(IPackage package);
 
         IResult<IPackage> FindPackage(string fileName);
 
         IResult InstallPackage(IPackage package);
 
+        IResult<IReadOnlyList<IPackage>> RefreshPackages();
+
         IResult ReinstallPackage(IPackage package);
-
-        IResult<IReadOnlyList<IPackage>> ReLoadPackages();
-
-        IResult<IPackage> SavePackage(string fileName, byte[] data);
 
         IResult UninstallPackage(IPackage package);
 
-        IResult VerifyPackage(IPackage package);
+        IResult VerifyPackage(string package, string publicKey = "");
 
-        IResult VerifyPackage(IPackage package, string publicKey);
+        IResult VerifyPackage(IPackage package, string publicKey = "");
 
         #endregion Public Methods
     }
