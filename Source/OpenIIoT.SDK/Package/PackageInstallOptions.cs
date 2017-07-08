@@ -1,0 +1,15 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace OpenIIoT.SDK.Package
+{
+    [Flags]
+    public enum PackageInstallOptions
+    {
+        SkipVerification = 0,
+        Upgrade = 1
+    }
+}

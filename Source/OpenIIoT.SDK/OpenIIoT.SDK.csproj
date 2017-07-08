@@ -108,6 +108,7 @@
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
     <Compile Include="Package\IPackageManager.cs" />
+    <Compile Include="Package\PackageInstallOptions.cs" />
     <Compile Include="Plugin\PluginAttribute.cs" />
     <Compile Include="Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
