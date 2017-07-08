@@ -43,7 +43,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NLog.xLogger;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Plugin

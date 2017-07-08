@@ -121,8 +121,8 @@
       <HintPath>..\..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.2.33203, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.2.33203-beta\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
+    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.3.14175, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.3.14175-beta\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -198,12 +198,11 @@
     <Compile Include="Configuration\ConfigurationLoader.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
-    <Compile Include="Package\PackageManagerConfiguration.cs" />
-    <Compile Include="Package\PackageManager.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
+    <Compile Include="Plugin\Package.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
