@@ -233,11 +233,9 @@
     <Compile Include="Service\Web\API\Controllers\LogController.cs" />
     <Compile Include="Model\API\ReadController.cs" />
     <Compile Include="Model\API\ValuesController.cs" />
-    <Compile Include="Service\Web\SignalR\HubHelper.cs" />
     <Compile Include="Service\Web\SignalR\Hubs\LogHub.cs" />
     <Compile Include="Model\API\ItemHub.cs" />
     <Compile Include="Service\Web\OwinStartup.cs" />
-    <Compile Include="Service\Web\SignalR\IHub.cs" />
     <Compile Include="Service\Web\WebService.cs" />
     <Compile Include="WindowsService.cs">
       <SubType>Component</SubType>

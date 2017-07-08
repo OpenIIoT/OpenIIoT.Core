@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.Core.Service.Web.SignalR
+namespace OpenIIoT.SDK.Common.Web
 {
     /// <summary>
     ///     The IHub interface defines characteristics of a Hub.

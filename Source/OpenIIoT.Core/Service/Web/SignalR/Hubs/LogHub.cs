@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using NLog;
 using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common.Web;
 
 namespace OpenIIoT.Core.Service.Web.SignalR
 {

@@ -5,7 +5,7 @@ using NLog;
 using OpenIIoT.SDK;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Service.Web.SignalR
+namespace OpenIIoT.SDK.Common.Web
 {
     /// <summary>
     ///     The HubHelper acts as a static subscription and event manager for SignalR hubs.

@@ -92,6 +92,8 @@
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
+    <Compile Include="Common\Web\HubHelper.cs" />
+    <Compile Include="Common\Web\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />
@@ -142,9 +144,7 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Common\Web\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
