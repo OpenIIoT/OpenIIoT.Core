@@ -230,10 +230,10 @@
     <Compile Include="Plugin\API\PluginController.cs" />
     <Compile Include="Model\API\BrowseController.cs" />
     <Compile Include="Configuration\API\ConfigurationController.cs" />
-    <Compile Include="Service\Web\API\Controllers\LogController.cs" />
+    <Compile Include="Common\API\LogController.cs" />
     <Compile Include="Model\API\ReadController.cs" />
     <Compile Include="Model\API\ValuesController.cs" />
-    <Compile Include="Service\Web\SignalR\Hubs\LogHub.cs" />
+    <Compile Include="Common\API\LogHub.cs" />
     <Compile Include="Model\API\ItemHub.cs" />
     <Compile Include="Service\Web\OwinStartup.cs" />
     <Compile Include="Service\Web\WebService.cs" />

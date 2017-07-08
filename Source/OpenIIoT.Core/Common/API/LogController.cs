@@ -7,8 +7,9 @@ using NLog;
 using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.Core.Common.Web;
 
-namespace OpenIIoT.Core.Service.Web.API
+namespace OpenIIoT.Core.Common.API
 {
     public class LogController : ApiController
     {
