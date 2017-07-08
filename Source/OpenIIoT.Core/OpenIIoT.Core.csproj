@@ -233,7 +233,6 @@
     <Compile Include="Service\Web\API\Controllers\LogController.cs" />
     <Compile Include="Model\API\ReadController.cs" />
     <Compile Include="Model\API\ValuesController.cs" />
-    <Compile Include="Service\Web\API\IApiController.cs" />
     <Compile Include="Service\Web\SignalR\HubHelper.cs" />
     <Compile Include="Service\Web\SignalR\Hubs\LogHub.cs" />
     <Compile Include="Model\API\ItemHub.cs" />
