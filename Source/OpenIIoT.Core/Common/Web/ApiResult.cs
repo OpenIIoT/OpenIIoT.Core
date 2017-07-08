@@ -6,7 +6,7 @@ using System.Net.Http.Formatting;
 using System.Runtime.CompilerServices;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Service.Web
+namespace OpenIIoT.Core.Common.Web
 {
     /// <summary>
     ///     Encapsulates the result of an API operation.

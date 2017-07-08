@@ -193,6 +193,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Utility.cs" />
+    <Compile Include="Common\Web\ApiResult.cs" />
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
@@ -226,7 +227,6 @@
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\Web\API\ApiOperationResult.cs" />
     <Compile Include="Plugin\API\PluginController.cs" />
     <Compile Include="Model\API\BrowseController.cs" />
     <Compile Include="Configuration\API\ConfigurationController.cs" />
