@@ -10,13 +10,12 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
 
-namespace OpenIIoT.Core.Service.Web.API
+namespace OpenIIoT.Core.Configuration.API
 {
     public class ConfigurationController : ApiController
     {
         #region Private Fields
 
-        private static IConfiguration configuration = manager.GetManager<ConfigurationManager>().Configuration;
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static IApplicationManager manager = ApplicationManager.GetInstance();
         private static List<string> serializationProperties = new List<string>(new string[] { });
@@ -29,7 +28,12 @@ namespace OpenIIoT.Core.Service.Web.API
         [HttpGet]
         public HttpResponseMessage GetConfiguration()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, manager.GetManager<ConfigurationManager>().Configuration, JsonFormatter(serializationProperties, ContractResolverType.OptOut));
+            ApiResult<IConfiguration> retVal = new ApiResult<IConfiguration>(Request);
+
+            retVal.ReturnValue = manager.GetManager<ConfigurationManager>().Configuration;
+
+            retVal.LogResult(logger);
+            return retVal.CreateResponse(JsonFormatter(serializationProperties, ContractResolverType.OptOut));
         }
 
         #endregion Public Methods

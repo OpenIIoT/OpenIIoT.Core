@@ -14,13 +14,14 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
 using Utility.OperationResult;
+using OpenIIoT.Core.Service.Web;
 
-namespace OpenIIoT.Core.Service.Web.API
+namespace OpenIIoT.Core.Plugin.API
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>
-    public class PluginController : ApiController, IApiController
+    public class PluginController : ApiController
     {
         #region Variables
 

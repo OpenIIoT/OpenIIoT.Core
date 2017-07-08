@@ -10,9 +10,9 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
 
-namespace OpenIIoT.Core.Service.Web.API
+namespace OpenIIoT.Core.Model.API
 {
-    public class ReadController : ApiController, IApiController
+    public class ReadController : ApiController
     {
         #region Private Fields
 

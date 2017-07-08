@@ -10,7 +10,7 @@ using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.Core.Service.Web.API
 {
-    public class LogController : ApiController, IApiController
+    public class LogController : ApiController
     {
         #region Private Fields
 
