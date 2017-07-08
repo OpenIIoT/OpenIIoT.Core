@@ -56,11 +56,6 @@ namespace OpenIIoT.SDK.Plugin
         #region Properties
 
         /// <summary>
-        ///     Gets a list of all Plugin Packages.
-        /// </summary>
-        IList<IPackage> Packages { get; }
-
-        /// <summary>
         ///     Gets a list of currently loaded plugin assemblies.
         /// </summary>
         IList<IPluginAssembly> PluginAssemblies { get; }

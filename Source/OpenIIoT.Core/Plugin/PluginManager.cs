@@ -127,11 +127,6 @@ namespace OpenIIoT.Core.Plugin
         public PluginManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
-        ///     Gets a list of all Plugin Packages.
-        /// </summary>
-        public IList<IPackage> Packages { get; private set; }
-
-        /// <summary>
         ///     Gets a list of currently loaded plugin assemblies.
         /// </summary>
         public IList<IPluginAssembly> PluginAssemblies { get; private set; }
@@ -424,7 +419,6 @@ namespace OpenIIoT.Core.Plugin
             PluginAssemblies = new List<IPluginAssembly>();
             PluginInstances = new List<IPluginInstance>();
             Plugins = null;
-            Packages = null;
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
