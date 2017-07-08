@@ -51,11 +51,19 @@ namespace OpenIIoT.SDK.Package
     /// </summary>
     public interface IPackageManager : IManager
     {
+        #region Public Properties
+
+        IList<Package> Packages { get; }
+
+        #endregion Public Properties
+
         #region Public Methods
 
-        IResult<PackageManifest> ExtractPackageManifest(string package);
+        IResult InstallPackage(string package, string publicKey = "");
 
-        IResult InstallPackage(string package, PackageInstallOptions options, string publicKey = "");
+        IResult InstallPackage(string package, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
+
+        IResult<Package> ReadPackage(string package);
 
         IResult UninstallPackage(string package);
 

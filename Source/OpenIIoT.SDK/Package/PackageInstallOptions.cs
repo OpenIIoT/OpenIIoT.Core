@@ -9,7 +9,8 @@ namespace OpenIIoT.SDK.Package
     [Flags]
     public enum PackageInstallOptions
     {
-        SkipVerification = 0,
-        Upgrade = 1
+        None = 0,
+        SkipVerification = 2,
+        Upgrade = 2
     }
 }

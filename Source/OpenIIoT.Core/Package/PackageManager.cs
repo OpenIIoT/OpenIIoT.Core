@@ -229,6 +229,16 @@ namespace OpenIIoT.Core.Package
             return retVal;
         }
 
+        public IResult InstallPackage(string package, PackageInstallOptions options)
+        {
+            return new Result();
+        }
+
+        public IResult InstallPackage(string package, PackageInstallOptions options, string publicKey = "")
+        {
+            return new Result();
+        }
+
         /// <summary>
         ///     Saves the <see cref="Configuration"/> to the <see cref="IConfigurationManager"/> .
         /// </summary>
@@ -243,6 +253,16 @@ namespace OpenIIoT.Core.Package
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
+        }
+
+        public IResult UninstallPackage(string package)
+        {
+            return new Result();
+        }
+
+        public IResult VerifyPackage(string package, string publicKey = "")
+        {
+            return new Result();
         }
 
         #endregion Public Methods

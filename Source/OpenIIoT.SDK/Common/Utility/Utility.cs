@@ -176,6 +176,24 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
+        ///     Maps the values of the public properties of the specified base object to the specified derived object's properties.
+        /// </summary>
+        /// <typeparam name="Tderived">The Type of the derived class.</typeparam>
+        /// <typeparam name="Tbase">The Type of the base class.</typeparam>
+        /// <param name="derivedObject">The instance of the derived class into which values are to be mapped.</param>
+        /// <param name="baseObject">The instance of the base class from whihc values are to be copied.</param>
+        public static void MapFrom<Tderived, Tbase>(this Tderived derivedObject, Tbase baseObject)
+            where Tderived : Tbase
+        {
+            PropertyInfo[] properties = typeof(Tbase).GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+            foreach (PropertyInfo property in properties)
+            {
+                typeof(Tderived).GetProperty(property.Name).SetValue(derivedObject, property.GetValue(baseObject));
+            }
+        }
+
+        /// <summary>
         ///     Returns a truncated GUID.
         /// </summary>
         /// <returns>A truncated GUID.</returns>

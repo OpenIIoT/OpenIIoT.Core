@@ -107,6 +107,7 @@
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
+    <Compile Include="Package\Package.cs" />
     <Compile Include="Package\IPackageManager.cs" />
     <Compile Include="Package\PackageInstallOptions.cs" />
     <Compile Include="Plugin\PluginAttribute.cs" />
@@ -117,7 +118,6 @@
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\IDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Package\IPackage.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Common\Provider\ItemProvider\IExtensible.cs" />
     <Compile Include="Common\Provider\ItemProvider\ISubscribable.cs" />
