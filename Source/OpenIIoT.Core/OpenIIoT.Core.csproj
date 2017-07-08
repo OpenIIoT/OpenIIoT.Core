@@ -204,9 +204,6 @@
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
-    <Compile Include="Package\InvalidPackage.cs" />
-    <Compile Include="Package\Package.cs" />
-    <Compile Include="Package\PackageLoadResult.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
