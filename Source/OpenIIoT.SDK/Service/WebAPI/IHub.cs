@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.SDK.Common.Web
+namespace OpenIIoT.SDK.Service.WebAPI
 {
     /// <summary>
     ///     The IHub interface defines characteristics of a Hub.

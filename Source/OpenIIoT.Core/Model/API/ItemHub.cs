@@ -7,7 +7,7 @@ using NLog;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
-using OpenIIoT.SDK.Common.Web;
+using OpenIIoT.SDK.Service.WebAPI;
 
 namespace OpenIIoT.Core.Model.API
 {

@@ -92,8 +92,8 @@
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
-    <Compile Include="Common\Web\HubHelper.cs" />
-    <Compile Include="Common\Web\IHub.cs" />
+    <Compile Include="Service\WebAPI\HubHelper.cs" />
+    <Compile Include="Service\WebAPI\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />

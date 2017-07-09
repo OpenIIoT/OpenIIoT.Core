@@ -5,7 +5,7 @@ using Newtonsoft.Json;
 using NLog;
 using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common.Web;
+using OpenIIoT.SDK.Service.WebAPI;
 
 namespace OpenIIoT.Core.Common.WebAPI
 {
