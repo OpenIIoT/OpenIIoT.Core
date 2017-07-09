@@ -10,7 +10,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
 
-namespace OpenIIoT.Core.Service.Web.API
+namespace OpenIIoT.Core.Model.API
 {
     public class BrowseController : ApiController
     {

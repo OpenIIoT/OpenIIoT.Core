@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.Core.Service.Web.SignalR
+namespace OpenIIoT.SDK.Service.WebAPI
 {
     /// <summary>
     ///     The IHub interface defines characteristics of a Hub.
     /// </summary>
     public interface IHub
     {
+        // TODO: reevaluate the use case beyond Item read/writes. Do other hub implementations require the same methods?
+
         #region Public Methods
 
         /// <summary>

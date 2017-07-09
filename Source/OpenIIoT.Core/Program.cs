@@ -49,7 +49,6 @@ using NLog.xLogger;
 using OpenIIoT.Core.Configuration;
 using OpenIIoT.Core.Event;
 using OpenIIoT.Core.Model;
-using OpenIIoT.Core.Package;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
 using OpenIIoT.Core.Service;
@@ -127,16 +126,11 @@ namespace OpenIIoT.Core
             typeof(PluginManager),
             typeof(ModelManager),
             typeof(ServiceManager),
-            typeof(PackageManager),
         };
 
         #endregion Private Fields
 
-        /// <summary>
-        ///     Gets or sets the logging level for the application.
-        /// </summary>
-        [Argument('l', "loglevel")]
-        private static string LoggingLevel { get; set; }
+        #region Private Properties
 
         /// <summary>
         ///     Gets or sets a value indicating whether the Windows Service should be installed.
@@ -145,10 +139,18 @@ namespace OpenIIoT.Core
         private static bool InstallService { get; set; }
 
         /// <summary>
+        ///     Gets or sets the logging level for the application.
+        /// </summary>
+        [Argument('l', "loglevel")]
+        private static string LoggingLevel { get; set; }
+
+        /// <summary>
         ///     Gets or sets a value indicating whether the Windows Service should be uninstalled.
         /// </summary>
         [Argument('u', "uninstall-service")]
         private static bool UninstallService { get; set; }
+
+        #endregion Private Properties
 
         #region Internal Methods
 

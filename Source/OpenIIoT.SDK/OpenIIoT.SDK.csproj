@@ -33,6 +33,10 @@
     <CodeAnalysisRuleSet>openiiot.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.OpenPgp, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BouncyCastle.OpenPGP.1.8.1\lib\net20\BouncyCastle.OpenPgp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -44,6 +48,10 @@
     </Reference>
     <Reference Include="NLog.xLogger, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.3.14175, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.3.14175-beta\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -84,6 +92,8 @@
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
+    <Compile Include="Service\WebAPI\HubHelper.cs" />
+    <Compile Include="Service\WebAPI\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfigurationDefinition.cs" />
     <Compile Include="Configuration\IConfiguration.cs" />
@@ -99,7 +109,8 @@
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
-    <Compile Include="Package\IPackageManager.cs" />
+    <Compile Include="Plugin\IPackage.cs" />
+    <Compile Include="Plugin\PluginAttribute.cs" />
     <Compile Include="Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
     <Compile Include="Model\IModelManager.cs" />
@@ -107,9 +118,6 @@
     <Compile Include="Platform\IPlatformManager.cs" />
     <Compile Include="Platform\IDirectories.cs" />
     <Compile Include="Platform\PlatformType.cs" />
-    <Compile Include="Package\IInvalidPackage.cs" />
-    <Compile Include="Package\IPackage.cs" />
-    <Compile Include="Package\IPackageLoadResult.cs" />
     <Compile Include="Plugin\Connector\IConnector.cs" />
     <Compile Include="Common\Provider\ItemProvider\IExtensible.cs" />
     <Compile Include="Common\Provider\ItemProvider\ISubscribable.cs" />
@@ -136,6 +144,7 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

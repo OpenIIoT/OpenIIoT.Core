@@ -5,7 +5,7 @@ using NLog;
 using OpenIIoT.SDK;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Service.Web.SignalR
+namespace OpenIIoT.SDK.Service.WebAPI
 {
     /// <summary>
     ///     The HubHelper acts as a static subscription and event manager for SignalR hubs.
@@ -13,6 +13,8 @@ namespace OpenIIoT.Core.Service.Web.SignalR
     /// <remarks>SignalR hubs are unable to persist data across instances because a new instance is created for each invocation.</remarks>
     public class HubHelper
     {
+        // TODO: evaluate whether this makes sense to non-core hubs. Would a plugin based hub use this?
+
         #region Private Fields
 
         /// <summary>

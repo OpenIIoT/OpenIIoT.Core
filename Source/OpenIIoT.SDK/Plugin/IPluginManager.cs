@@ -43,7 +43,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using NLog.xLogger;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Plugin
@@ -54,16 +53,6 @@ namespace OpenIIoT.SDK.Plugin
     public interface IPluginManager : IManager
     {
         #region Properties
-
-        /// <summary>
-        ///     Gets a list of all invalid Plugin Packages.
-        /// </summary>
-        IList<IInvalidPackage> InvalidPackages { get; }
-
-        /// <summary>
-        ///     Gets a list of all Plugin Packages.
-        /// </summary>
-        IList<IPackage> Packages { get; }
 
         /// <summary>
         ///     Gets a list of currently loaded plugin assemblies.
@@ -116,21 +105,6 @@ namespace OpenIIoT.SDK.Plugin
         Item FindPluginItem(string fqn);
 
         /// <summary>
-        ///     Installs the Plugin contained within the supplied Package.
-        /// </summary>
-        /// <param name="archive">The Package from which the Plugin is to be installed.</param>
-        /// <param name="updatePlugin">When true, bypasses checks that prevent</param>
-        /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        Result<IPlugin> InstallPlugin(IPackage archive, bool updatePlugin = false);
-
-        /// <summary>
-        ///     Asynchronously installs the Plugin contained within the supplied Package.
-        /// </summary>
-        /// <param name="archive">The Package from which the Plugin is to be installed.</param>
-        /// <returns>A Result containing the result of the operation and the installed Plugin.</returns>
-        Task<Result<IPlugin>> InstallPluginAsync(IPackage archive);
-
-        /// <summary>
         ///     Creates and returns an instance of the specified plugin type with the specified name
         /// </summary>
         /// <remarks>
@@ -150,56 +124,6 @@ namespace OpenIIoT.SDK.Plugin
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
         /// <returns>A Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
         Result<IPluginAssembly> LoadPluginAssembly(IPlugin plugin);
-
-        /// <summary>
-        ///     Reinstalls the specified Plugin by uninstalling, then installing from the original archive.
-        /// </summary>
-        /// <param name="plugin">The Plugin to reinstall.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result ReinstallPlugin(IPlugin plugin);
-
-        /// <summary>
-        ///     Asynchronously reinstalls the specified Plugin by uninstalling, then installing from the original archive.
-        /// </summary>
-        /// <param name="plugin">The Plugin to reinstall.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Task<Result> ReinstallPluginAsync(IPlugin plugin);
-
-        /// <summary>
-        ///     Refreshes the lists of valid and invalid Plugin Packages.
-        /// </summary>
-        /// <returns>An instance of PackageLoadResult.</returns>
-        IPackageLoadResult ReloadPackages();
-
-        /// <summary>
-        ///     Uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes it from the
-        ///     default PluginManagerConfiguration.
-        /// </summary>
-        /// <param name="plugin">The Plugin to uninstall.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Result UninstallPlugin(IPlugin plugin);
-
-        /// <summary>
-        ///     Asynchronously uninstalls the supplied plugin by deleting the directory using the default IPlatform, then removes
-        ///     it from the default PluginManagerConfiguration.
-        /// </summary>
-        /// <param name="plugin">The Plugin to uninstall.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Task<Result> UninstallPluginAsync(IPlugin plugin);
-
-        /// <summary>
-        ///     Updates the Plugin contained within the specified Package.
-        /// </summary>
-        /// <param name="archive">The Package to use for the update.</param>
-        /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        Result<IPlugin> UpdatePlugin(IPackage archive);
-
-        /// <summary>
-        ///     Asynchronously Updates the Plugin contained within the specified Package.
-        /// </summary>
-        /// <param name="archive">The Package to use for the update.</param>
-        /// <returns>A Result containing the result of the operation and the updated Plugin.</returns>
-        Task<Result<IPlugin>> UpdatePluginAsync(IPackage archive);
 
         #endregion Instance Methods
     }

@@ -5,8 +5,9 @@ using Newtonsoft.Json;
 using NLog;
 using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Service.WebAPI;
 
-namespace OpenIIoT.Core.Service.Web.SignalR
+namespace OpenIIoT.Core.Common.WebAPI
 {
     /// <summary>
     ///     The LogHub provides realtime read access to logs.

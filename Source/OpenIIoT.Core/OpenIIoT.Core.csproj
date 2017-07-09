@@ -57,6 +57,10 @@
     <StartupObject>OpenIIoT.Core.Program</StartupObject>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.OpenPgp, Version=1.8.1.0, Culture=neutral, PublicKeyToken=0e99375e54769942, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\BouncyCastle.OpenPGP.1.8.1\lib\net20\BouncyCastle.OpenPgp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.AspNet.SignalR.Core, Version=2.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.AspNet.SignalR.Core.2.2.2\lib\net45\Microsoft.AspNet.SignalR.Core.dll</HintPath>
       <Private>True</Private>
@@ -115,6 +119,10 @@
     </Reference>
     <Reference Include="NLog.xLogger, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.3.14175, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.3.14175-beta\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
@@ -190,15 +198,11 @@
     <Compile Include="Configuration\ConfigurationLoader.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
-    <Compile Include="Package\PackageManagerConfiguration.cs" />
-    <Compile Include="Package\PackageManager.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
-    <Compile Include="Package\InvalidPackage.cs" />
-    <Compile Include="Package\Package.cs" />
-    <Compile Include="Package\PackageLoadResult.cs" />
+    <Compile Include="Plugin\Package.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
@@ -222,20 +226,16 @@
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service\Web\API\ApiOperationResult.cs" />
-    <Compile Include="Service\Web\API\Controllers\PluginController.cs" />
-    <Compile Include="Service\Web\API\Controllers\BrowseController.cs" />
-    <Compile Include="Service\Web\API\Controllers\ConfigurationController.cs" />
-    <Compile Include="Service\Web\API\Controllers\LogController.cs" />
-    <Compile Include="Service\Web\API\Controllers\ReadController.cs" />
-    <Compile Include="Service\Web\API\Controllers\ValuesController.cs" />
-    <Compile Include="Service\Web\API\IApiController.cs" />
-    <Compile Include="Service\Web\SignalR\HubHelper.cs" />
-    <Compile Include="Service\Web\SignalR\Hubs\LogHub.cs" />
-    <Compile Include="Service\Web\SignalR\Hubs\ItemHub.cs" />
-    <Compile Include="Service\Web\OwinStartup.cs" />
-    <Compile Include="Service\Web\SignalR\IHub.cs" />
-    <Compile Include="Service\Web\WebService.cs" />
+    <Compile Include="Plugin\WebAPI\PluginController.cs" />
+    <Compile Include="Model\API\BrowseController.cs" />
+    <Compile Include="Configuration\WebAPI\ConfigurationController.cs" />
+    <Compile Include="Common\WebAPI\LogController.cs" />
+    <Compile Include="Model\API\ReadController.cs" />
+    <Compile Include="Model\API\ValuesController.cs" />
+    <Compile Include="Common\WebAPI\LogHub.cs" />
+    <Compile Include="Model\API\ItemHub.cs" />
+    <Compile Include="Service\WebAPI\OwinStartup.cs" />
+    <Compile Include="Service\WebAPI\WebAPIService.cs" />
     <Compile Include="WindowsService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -250,8 +250,6 @@
     <AdditionalFiles Include="OpenIIoT.ruleset" />
     <None Include="packages.config" />
     <AdditionalFiles Include="stylecop.json" />
-    <None Include="Scripts\jquery-3.1.1.min.map" />
-    <None Include="Scripts\jquery-3.1.1.slim.min.map" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -283,15 +281,6 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Scripts\jquery-3.1.1.intellisense.js" />
-    <Content Include="Scripts\jquery-3.1.1.js" />
-    <Content Include="Scripts\jquery-3.1.1.min.js" />
-    <Content Include="Scripts\jquery-3.1.1.slim.js" />
-    <Content Include="Scripts\jquery-3.1.1.slim.min.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.2.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.2.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

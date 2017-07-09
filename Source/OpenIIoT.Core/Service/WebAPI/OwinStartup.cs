@@ -9,7 +9,7 @@ using OpenIIoT.SDK;
 using Owin;
 using Swashbuckle.Application;
 
-namespace OpenIIoT.Core.Service.Web
+namespace OpenIIoT.Core.Service.WebAPI
 {
     public class OwinStartup
     {
@@ -21,7 +21,7 @@ namespace OpenIIoT.Core.Service.Web
 
         #region Private Properties
 
-        private WebServiceConfiguration WebServiceConfiguration { get; set; }
+        private WebAPIServiceConfiguration WebServiceConfiguration { get; set; }
 
         #endregion Private Properties
 
@@ -29,7 +29,7 @@ namespace OpenIIoT.Core.Service.Web
 
         public void Configuration(IAppBuilder app)
         {
-            WebServiceConfiguration = WebService.GetConfiguration;
+            WebServiceConfiguration = WebAPIService.GetConfiguration;
             string webRoot = WebServiceConfiguration.Root;
 
             app.UseCors(CorsOptions.AllowAll);
