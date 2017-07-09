@@ -10,9 +10,9 @@ using Utility.OperationResult;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
 
-namespace OpenIIoT.Core.Service.Web
+namespace OpenIIoT.Core.Service.WebAPI
 {
-    public class WebService : IService, IConfigurable<WebServiceConfiguration>
+    public class WebAPIService : IService, IConfigurable<WebAPIServiceConfiguration>
     {
         #region Internal Fields
 
@@ -21,13 +21,13 @@ namespace OpenIIoT.Core.Service.Web
         /// </summary>
         /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
         [ThreadStatic]
-        private static WebServiceConfiguration configuration;
+        private static WebAPIServiceConfiguration configuration;
 
         #endregion Internal Fields
 
         #region Private Fields
 
-        private static WebService instance;
+        private static WebAPIService instance;
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -39,7 +39,7 @@ namespace OpenIIoT.Core.Service.Web
 
         #region Private Constructors
 
-        private WebService(ApplicationManager manager)
+        private WebAPIService(ApplicationManager manager)
         {
             this.manager = manager;
             Hubs = new Dictionary<string, Hub>();
@@ -52,7 +52,7 @@ namespace OpenIIoT.Core.Service.Web
 
         public Dictionary<string, ApiController> ApiControllers { get; private set; }
 
-        public WebServiceConfiguration Configuration { get; private set; }
+        public WebAPIServiceConfiguration Configuration { get; private set; }
 
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
@@ -69,7 +69,7 @@ namespace OpenIIoT.Core.Service.Web
         /// <summary>
         ///     Provies configuration accessibility to the Owin startup class.
         /// </summary>
-        internal static WebServiceConfiguration GetConfiguration
+        internal static WebAPIServiceConfiguration GetConfiguration
         {
             get
             {
@@ -91,9 +91,9 @@ namespace OpenIIoT.Core.Service.Web
             ConfigurationDefinition retVal = new ConfigurationDefinition();
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
-            retVal.Model = typeof(WebServiceConfiguration);
+            retVal.Model = typeof(WebAPIServiceConfiguration);
 
-            WebServiceConfiguration config = new WebServiceConfiguration();
+            WebAPIServiceConfiguration config = new WebAPIServiceConfiguration();
             config.Port = 80;
             config.Root = string.Empty;
 
@@ -102,11 +102,11 @@ namespace OpenIIoT.Core.Service.Web
             return retVal;
         }
 
-        public static WebService Instance(ApplicationManager manager)
+        public static WebAPIService Instance(ApplicationManager manager)
         {
             if (instance == null)
             {
-                instance = new WebService(manager);
+                instance = new WebAPIService(manager);
             }
 
             return instance;
@@ -116,7 +116,7 @@ namespace OpenIIoT.Core.Service.Web
         {
             Result retVal = new Result();
 
-            IResult<WebServiceConfiguration> fetchResult = manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebServiceConfiguration>(GetType());
+            IResult<WebAPIServiceConfiguration> fetchResult = manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebAPIServiceConfiguration>(GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -126,17 +126,17 @@ namespace OpenIIoT.Core.Service.Web
             else
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
-                IResult<WebServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstance<WebServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                IResult<WebAPIServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstance<WebAPIServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     Configure(createResult.ReturnValue);
                 }
             }
 
-            return Configure(manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebServiceConfiguration>(this.GetType()).ReturnValue);
+            return Configure(manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebAPIServiceConfiguration>(this.GetType()).ReturnValue);
         }
 
-        public IResult Configure(WebServiceConfiguration configuration)
+        public IResult Configure(WebAPIServiceConfiguration configuration)
         {
             Configuration = configuration;
             GetConfiguration = configuration;
@@ -190,7 +190,7 @@ namespace OpenIIoT.Core.Service.Web
         #endregion Public Methods
     }
 
-    public class WebServiceConfiguration
+    public class WebAPIServiceConfiguration
     {
         #region Public Properties
 

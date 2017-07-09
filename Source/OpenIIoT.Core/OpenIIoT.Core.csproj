@@ -226,16 +226,16 @@
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Plugin\API\PluginController.cs" />
+    <Compile Include="Plugin\WebAPI\PluginController.cs" />
     <Compile Include="Model\API\BrowseController.cs" />
-    <Compile Include="Configuration\API\ConfigurationController.cs" />
-    <Compile Include="Common\API\LogController.cs" />
+    <Compile Include="Configuration\WebAPI\ConfigurationController.cs" />
+    <Compile Include="Common\WebAPI\LogController.cs" />
     <Compile Include="Model\API\ReadController.cs" />
     <Compile Include="Model\API\ValuesController.cs" />
-    <Compile Include="Common\API\LogHub.cs" />
+    <Compile Include="Common\WebAPI\LogHub.cs" />
     <Compile Include="Model\API\ItemHub.cs" />
-    <Compile Include="Service\Web\OwinStartup.cs" />
-    <Compile Include="Service\Web\WebService.cs" />
+    <Compile Include="Service\WebAPI\OwinStartup.cs" />
+    <Compile Include="Service\WebAPI\WebAPIService.cs" />
     <Compile Include="WindowsService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -250,8 +250,6 @@
     <AdditionalFiles Include="OpenIIoT.ruleset" />
     <None Include="packages.config" />
     <AdditionalFiles Include="stylecop.json" />
-    <None Include="Scripts\jquery-3.1.1.min.map" />
-    <None Include="Scripts\jquery-3.1.1.slim.min.map" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">
@@ -283,15 +281,6 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\Newtonsoft.Json.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Scripts\jquery-3.1.1.intellisense.js" />
-    <Content Include="Scripts\jquery-3.1.1.js" />
-    <Content Include="Scripts\jquery-3.1.1.min.js" />
-    <Content Include="Scripts\jquery-3.1.1.slim.js" />
-    <Content Include="Scripts\jquery-3.1.1.slim.min.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.2.js" />
-    <Content Include="Scripts\jquery.signalR-2.2.2.min.js" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -11,6 +11,8 @@ namespace OpenIIoT.SDK.Common.Web
     /// </summary>
     public interface IHub
     {
+        // TODO: reevaluate the use case beyond Item read/writes. Do other hub implementations require the same methods?
+
         #region Public Methods
 
         /// <summary>

@@ -13,6 +13,8 @@ namespace OpenIIoT.SDK.Common.Web
     /// <remarks>SignalR hubs are unable to persist data across instances because a new instance is created for each invocation.</remarks>
     public class HubHelper
     {
+        // TODO: evaluate whether this makes sense to non-core hubs. Would a plugin based hub use this?
+
         #region Private Fields
 
         /// <summary>

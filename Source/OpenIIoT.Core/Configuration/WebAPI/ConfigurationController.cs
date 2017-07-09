@@ -1,37 +1,43 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
 using Newtonsoft.Json;
 using NLog;
-using NLog.RealtimeLogger;
+using OpenIIoT.Core.Configuration;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using System.Net;
+using OpenIIoT.SDK.Configuration;
 
-namespace OpenIIoT.Core.Common.API
+namespace OpenIIoT.Core.Configuration.WebAPI
 {
-    public class LogController : ApiController
+    public class ConfigurationController : ApiController
     {
         #region Private Fields
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static IApplicationManager manager = ApplicationManager.GetInstance();
+        private static List<string> serializationProperties = new List<string>(new string[] { });
 
         #endregion Private Fields
 
         #region Public Methods
 
-        [Route("api/log")]
+        [Route("api/configuration")]
         [HttpGet]
-        public HttpResponseMessage GetLog()
+        public HttpResponseMessage GetConfiguration()
         {
-            var log = RealtimeLogger.LogHistory.ToArray();
+            IConfiguration configuration = manager.GetManager<ConfigurationManager>().Configuration;
 
-            return Request.CreateResponse(HttpStatusCode.OK, log, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, configuration, JsonFormatter(serializationProperties, ContractResolverType.OptOut));
         }
 
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 
@@ -46,6 +52,6 @@ namespace OpenIIoT.Core.Common.API
             return retVal;
         }
 
-        #endregion Public Methods
+        #endregion Private Methods
     }
 }
