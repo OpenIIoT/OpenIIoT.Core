@@ -66,11 +66,7 @@ namespace OpenIIoT.Core.Model.API
         [HttpGet]
         public HttpResponseMessage Read(string fqn, bool fromSource)
         {
-            ApiResult<List<Item>> retVal = new ApiResult<List<Item>>(Request);
-            retVal.ReturnValue = new List<Item>();
-
-            retVal.LogRequest(logger.Info);
-
+            // TODO: Fix this so all url encodings are translated
             fqn = fqn.Replace("%25", "%");
 
             Item foundItem = manager.GetManager<IModelManager>().FindItem(fqn);
@@ -80,10 +76,7 @@ namespace OpenIIoT.Core.Model.API
                 foundItem.ReadFromSource();
             }
 
-            retVal.ReturnValue.Add(foundItem);
-
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { "FQN", "Timestamp", "Quality", "Value", "Children" }), ContractResolverType.OptIn));
+            return Request.CreateResponse(HttpStatusCode.OK, foundItem.Value, JsonFormatter(new List<string>(new string[] { "FQN", "Timestamp", "Quality", "Value", "Children" }), ContractResolverType.OptIn));
         }
 
         #endregion Public Methods
