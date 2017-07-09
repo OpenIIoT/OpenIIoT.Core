@@ -48,9 +48,6 @@ namespace OpenIIoT.Core.Plugin.API
         [HttpGet]
         public HttpResponseMessage DownloadPackage(string fileName)
         {
-            ApiResult<bool> retVal = new ApiResult<bool>(Request);
-            retVal.LogRequest(logger.Info);
-
             string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
 
             HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
@@ -59,7 +56,6 @@ namespace OpenIIoT.Core.Plugin.API
             result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
             result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = System.IO.Path.GetFileName(pluginPackage) };
 
-            retVal.LogResult(logger);
             return result;
         }
 
@@ -72,18 +68,14 @@ namespace OpenIIoT.Core.Plugin.API
         [HttpGet]
         public HttpResponseMessage GetPackage(string fileName)
         {
-            ApiResult<IPackage> retVal = new ApiResult<IPackage>(Request);
-            retVal.LogRequest(logger.Info);
+            IPackage package = manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault();
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault();
-
-            if (retVal.ReturnValue == default(Package))
+            if (package == default(Package))
             {
-                retVal.StatusCode = HttpStatusCode.NotFound;
+                return Request.CreateResponse(HttpStatusCode.NotFound);
             }
 
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, package, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
 
         /// <summary>
@@ -95,7 +87,7 @@ namespace OpenIIoT.Core.Plugin.API
         [HttpGet]
         public async Task<HttpResponseMessage> InstallPlugin(string fileName)
         {
-            return new ApiResult<bool>(Request).CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return Request.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
 
         /// <summary>
@@ -131,26 +123,18 @@ namespace OpenIIoT.Core.Plugin.API
         [HttpGet]
         public HttpResponseMessage ListPackages()
         {
-            ApiResult<IList<IPackage>> retVal = new ApiResult<IList<IPackage>>(Request);
-            retVal.LogRequest(logger.Info);
+            IList<IPackage> packageList = manager.GetManager<PluginManager>().Packages;
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().Packages;
-
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, packageList, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         [Route("api/plugin")]
         [HttpGet]
         public HttpResponseMessage ListPlugins()
         {
-            ApiResult<List<IPlugin>> retVal = new ApiResult<List<IPlugin>>(Request);
-            retVal.LogRequest(logger.Info);
+            IList<IPlugin> pluginList = manager.GetManager<PluginManager>().Configuration.InstalledPlugins.ToList<IPlugin>();
 
-            retVal.ReturnValue = manager.GetManager<PluginManager>().Configuration.InstalledPlugins.ToList<IPlugin>();
-
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, pluginList, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         /// <summary>
@@ -161,7 +145,7 @@ namespace OpenIIoT.Core.Plugin.API
         [HttpGet]
         public HttpResponseMessage ReloadPackages()
         {
-            return new ApiResult<bool>(Request).CreateResponse(JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         #endregion Instance Methods
