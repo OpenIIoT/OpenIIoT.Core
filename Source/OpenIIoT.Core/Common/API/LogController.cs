@@ -7,6 +7,7 @@ using NLog;
 using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using System.Net;
 
 namespace OpenIIoT.Core.Common.API
 {
@@ -25,13 +26,9 @@ namespace OpenIIoT.Core.Common.API
         [HttpGet]
         public HttpResponseMessage GetLog()
         {
-            ApiResult<RealtimeLoggerEventArgs[]> retVal = new ApiResult<RealtimeLoggerEventArgs[]>(Request);
-            retVal.LogRequest(logger.Info);
+            var log = RealtimeLogger.LogHistory.ToArray();
 
-            retVal.ReturnValue = RealtimeLogger.LogHistory.ToArray();
-
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, log, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
 
         public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
