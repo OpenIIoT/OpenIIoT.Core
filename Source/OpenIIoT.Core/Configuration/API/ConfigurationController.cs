@@ -28,12 +28,9 @@ namespace OpenIIoT.Core.Configuration.API
         [HttpGet]
         public HttpResponseMessage GetConfiguration()
         {
-            ApiResult<IConfiguration> retVal = new ApiResult<IConfiguration>(Request);
+            IConfiguration configuration = manager.GetManager<ConfigurationManager>().Configuration;
 
-            retVal.ReturnValue = manager.GetManager<ConfigurationManager>().Configuration;
-
-            retVal.LogResult(logger);
-            return retVal.CreateResponse(JsonFormatter(serializationProperties, ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, configuration, JsonFormatter(serializationProperties, ContractResolverType.OptOut));
         }
 
         #endregion Public Methods
