@@ -54,15 +54,7 @@ namespace OpenIIoT.SDK.Plugin
     {
         #region Properties
 
-        /// <summary>
-        ///     Gets a list of currently loaded plugin assemblies.
-        /// </summary>
-        IList<IPluginAssembly> PluginAssemblies { get; }
-
-        /// <summary>
-        ///     Gets a Dictionary of all Plugin Instances, keyed by instance name.
-        /// </summary>
-        IList<IPluginInstance> PluginInstances { get; }
+        IList<IPackage> Packages { get; }
 
         /// <summary>
         ///     Gets a list of installed plugins.
@@ -124,6 +116,10 @@ namespace OpenIIoT.SDK.Plugin
         /// <param name="plugin">The Plugin to which the Plugin Assembly to load belongs.</param>
         /// <returns>A Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
         Result<IPluginAssembly> LoadPluginAssembly(IPlugin plugin);
+
+        IResult<IList<IPackage>> ReloadPackages();
+
+        IResult<IList<IPackage>> ReloadPlugins();
 
         #endregion Instance Methods
     }
