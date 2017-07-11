@@ -55,6 +55,8 @@ using OpenIIoT.SDK.Plugin;
 using OpenIIoT.SDK.Plugin.Connector;
 using OpenIIoT.SDK.Plugin.Endpoint;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Packaging.Operations;
+using OpenIIoT.SDK.Packaging.Manifest;
 
 namespace OpenIIoT.Core.Plugin
 {
@@ -68,7 +70,14 @@ namespace OpenIIoT.Core.Plugin
 
         public IResult<IList<IPackage>> ReloadPackages()
         {
-            return new Result<IList<IPackage>>();
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
+
+            return new PackageLister(platform).List();
+        }
+
+        public async Task<IResult<IList<IPackage>>> ReloadPackagesAsync()
+        {
+            return await Task.Run(() => ReloadPackages());
         }
 
         public IResult<IList<IPackage>> ReloadPlugins()
