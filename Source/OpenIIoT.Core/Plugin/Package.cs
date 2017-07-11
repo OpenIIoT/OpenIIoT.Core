@@ -9,10 +9,6 @@ namespace OpenIIoT.Core.Plugin
     {
         #region Public Constructors
 
-        public Package()
-        {
-        }
-
         public Package(string fileName, DateTime modifiedOn, PackageManifest manifest)
         {
             this.MapFrom(manifest);
