@@ -70,9 +70,21 @@ namespace OpenIIoT.Core.Plugin
 
         public IResult<IList<IPackage>> ReloadPackages()
         {
-            IPlatform platform = Dependency<IPlatformManager>().Platform;
+            Guid guid = logger.EnterMethod();
 
-            return new PackageLister(platform).List();
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>(ResultCode.Failure);
+
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
+            IResult<IList<string>> files = platform.ListFiles(platform.Directories.Packages);
+
+            if (files.ResultCode != ResultCode.Failure)
+            {
+                retVal = new PackageLister(files.ReturnValue).List();
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+            return retVal;
         }
 
         public async Task<IResult<IList<IPackage>>> ReloadPackagesAsync()
