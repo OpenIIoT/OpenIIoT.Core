@@ -6,6 +6,7 @@ using System.IO;
 using Utility.OperationResult;
 using System.Collections.Generic;
 using OpenIIoT.SDK.Plugin;
+using System.Linq;
 
 namespace OpenIIoT.Core.Tests.Plugin
 {
@@ -18,28 +19,17 @@ namespace OpenIIoT.Core.Tests.Plugin
             Temp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
             Directory.CreateDirectory(Temp);
-
-            Mock<IDirectories> directories = new Mock<IDirectories>();
-            directories.Setup(s => s.Packages).Returns(Temp);
-
-            Mock<IPlatform> platform = new Mock<IPlatform>();
-            platform.Setup(p => p.Directories).Returns(directories.Object);
-            platform.Setup(p => p.ListDirectories(It.IsAny<string>(), It.IsAny<string>()).Returns();
-
-            Platform = platform.Object;
-
-            Lister = new Core.Plugin.PackageLister(Platform);
         }
 
-        private Core.Plugin.PackageLister Lister { get; set; }
-        private IPlatform Platform { get; set; }
         private string Temp { get; set; }
 
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<Core.Plugin.PackageLister>(Lister);
-            Assert.NotNull(Lister.Directory);
+            Core.Plugin.PackageLister lister = new Core.Plugin.PackageLister(Directory.EnumerateFiles(Temp).ToList());
+
+            Assert.IsType<Core.Plugin.PackageLister>(lister);
+            Assert.NotNull(lister.FileList);
         }
 
         public void Dispose()
@@ -50,7 +40,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void ListEmptyDirectory()
         {
-            IResult<IList<IPackage>> list = Lister.List();
+            Core.Plugin.PackageLister lister = new Core.Plugin.PackageLister(Directory.EnumerateFiles(Temp).ToList());
+
+            IResult<IList<IPackage>> list = lister.List();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
 
@@ -63,11 +55,15 @@ namespace OpenIIoT.Core.Tests.Plugin
         {
             File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
 
-            IResult<IList<IPackage>> list = Lister.List();
+            Core.Plugin.PackageLister lister = new Core.Plugin.PackageLister(Directory.EnumerateFiles(Temp).ToList());
+
+            IResult<IList<IPackage>> list = lister.List();
 
             Assert.Equal(ResultCode.Warning, list.ResultCode);
             Assert.Equal(0, list.ReturnValue.Count);
         }
+
+        [Fact]
 
         #endregion Public Methods
     }
