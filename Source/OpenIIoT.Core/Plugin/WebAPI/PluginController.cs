@@ -33,7 +33,7 @@ namespace OpenIIoT.Core.Plugin.WebAPI
         /// <summary>
         ///     The default serialization properties for an AppPackage.
         /// </summary>
-        private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { });
+        private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { "Files" });
 
         /// <summary>
         ///     The ApplicationManager for the application.
@@ -64,11 +64,11 @@ namespace OpenIIoT.Core.Plugin.WebAPI
         /// </summary>
         /// <param name="fileName">The Fully Qualified Name of the Package to return.</param>
         /// <returns>The matching Package.</returns>
-        [Route("api/plugin/archive/{fileName}")]
+        [Route("api/plugin/package/{fqn}")]
         [HttpGet]
-        public HttpResponseMessage GetPackage(string fileName)
+        public HttpResponseMessage GetPackage(string fqn)
         {
-            IPackage package = manager.GetManager<PluginManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault();
+            IPackage package = manager.GetManager<PluginManager>().Packages.Where(p => p.FQN == fqn).FirstOrDefault();
 
             if (package == default(Package))
             {
@@ -76,6 +76,15 @@ namespace OpenIIoT.Core.Plugin.WebAPI
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, package, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+        }
+
+        [Route("api/plugin/package")]
+        [HttpGet]
+        public HttpResponseMessage GetPackages()
+        {
+            IList<IPackage> packages = manager.GetManager<PluginManager>().Packages;
+
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
         }
 
         /// <summary>
@@ -141,11 +150,13 @@ namespace OpenIIoT.Core.Plugin.WebAPI
         ///     Reloads the list of Packages from disk and returns the list.
         /// </summary>
         /// <returns>The reloaded list of available Packages.</returns>
-        [Route("api/plugin/archive/reload")]
+        [Route("api/plugin/package/scan")]
         [HttpGet]
-        public HttpResponseMessage ReloadPackages()
+        public async Task<HttpResponseMessage> ScanPackages()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+            IResult<IList<IPackage>> packages = await manager.GetManager<IPluginManager>().ScanPackagesAsync();
+
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         #endregion Instance Methods

@@ -68,7 +68,12 @@ namespace OpenIIoT.Core.Plugin
     {
         #region Private Methods
 
-        public IResult<IList<IPackage>> ReloadPackages()
+        public IResult<IList<IPackage>> ReloadPlugins()
+        {
+            return new Result<IList<IPackage>>();
+        }
+
+        public IResult<IList<IPackage>> ScanPackages()
         {
             Guid guid = logger.EnterMethod();
 
@@ -89,14 +94,9 @@ namespace OpenIIoT.Core.Plugin
             return retVal;
         }
 
-        public async Task<IResult<IList<IPackage>>> ReloadPackagesAsync()
+        public async Task<IResult<IList<IPackage>>> ScanPackagesAsync()
         {
-            return await Task.Run(() => ReloadPackages());
-        }
-
-        public IResult<IList<IPackage>> ReloadPlugins()
-        {
-            return new Result<IList<IPackage>>();
+            return await Task.Run(() => ScanPackages());
         }
 
         #endregion Private Methods
