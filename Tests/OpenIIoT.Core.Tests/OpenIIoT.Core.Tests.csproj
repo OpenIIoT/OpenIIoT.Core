@@ -101,6 +101,7 @@
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
+    <Compile Include="Plugin\PackageLister.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
