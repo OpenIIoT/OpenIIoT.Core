@@ -79,6 +79,10 @@ namespace OpenIIoT.Core.Tests.Plugin
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
             Assert.Equal(3, list.ReturnValue.Count);
+
+            // spot check a few Manifest fields to see if the manifest was fetched properly
+            Assert.NotNull(list.ReturnValue[0].FQN);
+            Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
         }
 
         #endregion Public Methods

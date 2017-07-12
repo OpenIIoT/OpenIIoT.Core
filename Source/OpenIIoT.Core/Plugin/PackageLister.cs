@@ -40,12 +40,6 @@ namespace OpenIIoT.Core.Plugin
 
         #endregion Public Constructors
 
-        #region Private Properties
-
-        private IPlatform Platform { get; set; }
-
-        #endregion Private Properties
-
         #region Public Methods
 
         public IResult<IList<IPackage>> List()
