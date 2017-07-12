@@ -25,11 +25,17 @@ namespace OpenIIoT.Core.Plugin
 
         #endregion Private Fields
 
+        #region Public Properties
+
+        public IList<string> FileList { get; set; }
+
+        #endregion Public Properties
+
         #region Public Constructors
 
-        public PackageLister(IPlatform platform)
+        public PackageLister(IList<string> fileList)
         {
-            Platform = platform;
+            FileList = fileList;
         }
 
         #endregion Public Constructors
@@ -49,27 +55,21 @@ namespace OpenIIoT.Core.Plugin
             IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
             retVal.ReturnValue = new List<IPackage>();
 
-            IResult<IList<string>> listFiles = Platform.ListFiles(Platform.Directories.Packages);
-            retVal.Incorporate(listFiles);
+            ManifestExtractor extractor = new ManifestExtractor();
 
-            if (retVal.ResultCode != ResultCode.Failure)
+            foreach (string file in FileList)
             {
-                ManifestExtractor extractor = new ManifestExtractor();
+                PackageManifest manifest;
 
-                foreach (string file in listFiles.ReturnValue)
+                try
                 {
-                    PackageManifest manifest;
+                    manifest = extractor.ExtractManifest(file);
 
-                    try
-                    {
-                        manifest = extractor.ExtractManifest(file);
-
-                        retVal.ReturnValue.Add(GetPackage(file, manifest));
-                    }
-                    catch (Exception ex)
-                    {
-                        retVal.AddWarning($"The package file '{System.IO.Path.GetFileName(file)}' is not valid; the Manifest could not be extracted: {ex.Message}");
-                    }
+                    retVal.ReturnValue.Add(GetPackage(file, manifest));
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddWarning($"The package file '{Path.GetFileName(file)}' is not valid; the Manifest could not be extracted: {ex.Message}");
                 }
             }
 

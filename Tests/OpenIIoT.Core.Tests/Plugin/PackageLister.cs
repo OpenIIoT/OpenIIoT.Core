@@ -3,6 +3,9 @@ using Moq;
 using OpenIIoT.SDK.Platform;
 using System;
 using System.IO;
+using Utility.OperationResult;
+using System.Collections.Generic;
+using OpenIIoT.SDK.Plugin;
 
 namespace OpenIIoT.Core.Tests.Plugin
 {
@@ -21,6 +24,7 @@ namespace OpenIIoT.Core.Tests.Plugin
 
             Mock<IPlatform> platform = new Mock<IPlatform>();
             platform.Setup(p => p.Directories).Returns(directories.Object);
+            platform.Setup(p => p.ListDirectories(It.IsAny<string>(), It.IsAny<string>()).Returns();
 
             Platform = platform.Object;
 
@@ -35,6 +39,7 @@ namespace OpenIIoT.Core.Tests.Plugin
         public void Constructor()
         {
             Assert.IsType<Core.Plugin.PackageLister>(Lister);
+            Assert.NotNull(Lister.Directory);
         }
 
         public void Dispose()
@@ -45,6 +50,23 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void ListEmptyDirectory()
         {
+            IResult<IList<IPackage>> list = Lister.List();
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+
+            Assert.NotNull(list.ReturnValue);
+            Assert.Equal(0, list.ReturnValue.Count);
+        }
+
+        [Fact]
+        public void ListNoPackages()
+        {
+            File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
+
+            IResult<IList<IPackage>> list = Lister.List();
+
+            Assert.Equal(ResultCode.Warning, list.ResultCode);
+            Assert.Equal(0, list.ReturnValue.Count);
         }
 
         #endregion Public Methods
