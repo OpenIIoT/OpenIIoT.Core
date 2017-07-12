@@ -30,6 +30,7 @@
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>openiiot.ruleset</CodeAnalysisRuleSet>
     <DocumentationFile>bin\Debug\OpenIIoT.Core.Tests.XML</DocumentationFile>
+    <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -115,6 +116,15 @@
     <AdditionalFiles Include="OpenIIoT.ruleset" />
     <None Include="packages.config" />
     <AdditionalFiles Include="stylecop.json" />
+    <None Include="Plugin\Data\Package\badpackage.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugin\Data\Package\package.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Plugin\Data\Package\signedpackage.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Source\OpenIIoT.Core\OpenIIoT.Core.csproj">

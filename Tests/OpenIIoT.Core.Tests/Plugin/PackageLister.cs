@@ -19,8 +19,15 @@ namespace OpenIIoT.Core.Tests.Plugin
             Temp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
             Directory.CreateDirectory(Temp);
+
+            Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
+            string dirPath = Path.GetDirectoryName(codeBasePath);
+
+            Data = Path.Combine(dirPath, "Plugin", "Data", "Package");
         }
 
+        private string Data { get; set; }
         private string Temp { get; set; }
 
         [Fact]
@@ -64,6 +71,15 @@ namespace OpenIIoT.Core.Tests.Plugin
         }
 
         [Fact]
+        public void ListPackages()
+        {
+            Core.Plugin.PackageLister lister = new Core.Plugin.PackageLister(Directory.EnumerateFiles(Data).ToList());
+
+            IResult<IList<IPackage>> list = lister.List();
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+            Assert.Equal(3, list.ReturnValue.Count);
+        }
 
         #endregion Public Methods
     }
