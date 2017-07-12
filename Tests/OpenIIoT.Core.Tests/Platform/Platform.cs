@@ -176,7 +176,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests all constructor.
+        ///     Tests the constructor.
         /// </summary>
         [Fact]
         public void Constructor()

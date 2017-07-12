@@ -55,6 +55,8 @@ using OpenIIoT.SDK.Plugin;
 using OpenIIoT.SDK.Plugin.Connector;
 using OpenIIoT.SDK.Plugin.Endpoint;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Packaging.Operations;
+using OpenIIoT.SDK.Packaging.Manifest;
 
 namespace OpenIIoT.Core.Plugin
 {
@@ -64,6 +66,41 @@ namespace OpenIIoT.Core.Plugin
     [Discoverable]
     public class PluginManager : Manager, IStateful, IManager, IConfigurable<PluginManagerConfiguration>, IPluginManager
     {
+        #region Private Methods
+
+        public IResult<IList<IPackage>> ReloadPackages()
+        {
+            Guid guid = logger.EnterMethod();
+
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>(ResultCode.Failure);
+
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
+            IResult<IList<string>> files = platform.ListFiles(platform.Directories.Packages);
+
+            if (files.ResultCode != ResultCode.Failure)
+            {
+                retVal = new PackageScanner(files.ReturnValue).Scan();
+            }
+
+            Packages = retVal.ReturnValue;
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+            return retVal;
+        }
+
+        public async Task<IResult<IList<IPackage>>> ReloadPackagesAsync()
+        {
+            return await Task.Run(() => ReloadPackages());
+        }
+
+        public IResult<IList<IPackage>> ReloadPlugins()
+        {
+            return new Result<IList<IPackage>>();
+        }
+
+        #endregion Private Methods
+
         #region Private Fields
 
         /// <summary>
