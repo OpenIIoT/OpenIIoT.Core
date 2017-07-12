@@ -79,8 +79,10 @@ namespace OpenIIoT.Core.Plugin
 
             if (files.ResultCode != ResultCode.Failure)
             {
-                retVal = new PackageLister(files.ReturnValue).List();
+                retVal = new PackageScanner(files.ReturnValue).Scan();
             }
+
+            Packages = retVal.ReturnValue;
 
             retVal.LogResult(logger);
             logger.ExitMethod(guid);

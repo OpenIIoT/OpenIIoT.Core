@@ -10,11 +10,11 @@ using System.Linq;
 
 namespace OpenIIoT.Core.Tests.Plugin
 {
-    public class PackageLister : IDisposable
+    public class PackageScanner : IDisposable
     {
         #region Public Methods
 
-        public PackageLister()
+        public PackageScanner()
         {
             Temp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
@@ -33,10 +33,10 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void Constructor()
         {
-            Core.Plugin.PackageLister lister = new Core.Plugin.PackageLister(Directory.EnumerateFiles(Temp).ToList());
+            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
 
-            Assert.IsType<Core.Plugin.PackageLister>(lister);
-            Assert.NotNull(lister.FileList);
+            Assert.IsType<Core.Plugin.PackageScanner>(scanner);
+            Assert.NotNull(scanner.FileList);
         }
 
         public void Dispose()
@@ -47,9 +47,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void ListEmptyDirectory()
         {
-            Core.Plugin.PackageLister lister = new Core.Plugin.PackageLister(Directory.EnumerateFiles(Temp).ToList());
+            Core.Plugin.PackageScanner lister = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
 
-            IResult<IList<IPackage>> list = lister.List();
+            IResult<IList<IPackage>> list = lister.Scan();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
 
@@ -62,9 +62,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         {
             File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
 
-            Core.Plugin.PackageLister lister = new Core.Plugin.PackageLister(Directory.EnumerateFiles(Temp).ToList());
+            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
 
-            IResult<IList<IPackage>> list = lister.List();
+            IResult<IList<IPackage>> list = scanner.Scan();
 
             Assert.Equal(ResultCode.Warning, list.ResultCode);
             Assert.Equal(0, list.ReturnValue.Count);
@@ -73,9 +73,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void ListPackages()
         {
-            Core.Plugin.PackageLister lister = new Core.Plugin.PackageLister(Directory.EnumerateFiles(Data).ToList());
+            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Data).ToList());
 
-            IResult<IList<IPackage>> list = lister.List();
+            IResult<IList<IPackage>> list = scanner.Scan();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
             Assert.Equal(3, list.ReturnValue.Count);
