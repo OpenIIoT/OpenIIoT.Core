@@ -105,7 +105,7 @@ namespace OpenIIoT.Core.Package
 
         #region Private Properties
 
-        private IList<IPackage> Packages { get; private set; }
+        public IList<IPackage> Packages { get; private set; }
 
         #endregion Private Properties
 
@@ -140,19 +140,39 @@ namespace OpenIIoT.Core.Package
             instance = null;
         }
 
+        public IResult DeletePackage(string FQN)
+        {
+            return new Result();
+        }
+
+        public IResult InstallPackage(string FQN, string publicKey = "")
+        {
+            return new Result();
+        }
+
+        public IResult InstallPackage(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
+        {
+            return new Result();
+        }
+
         public IResult InstallPackage(string package, PackageInstallOptions options)
         {
             return new Result();
         }
 
-        public IResult InstallPackage(string package, PackageInstallOptions options, string publicKey = "")
+        public IResult<IPackage> SavePackage(string fileName, byte[] data)
         {
-            return new Result();
+            return new Result<IPackage>();
         }
 
-        public IResult VerifyPackage(string package, string publicKey = "")
+        public IResult<IList<IPackage>> ScanPackages()
         {
-            return new Result();
+            return new Result<IList<IPackage>>();
+        }
+
+        public IResult<bool> VerifyPackage(string FQN, string publicKey = "")
+        {
+            return new Result<bool>();
         }
 
         #endregion Public Methods
