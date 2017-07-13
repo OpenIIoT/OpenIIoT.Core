@@ -40,16 +40,15 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Package
 {
@@ -80,12 +79,11 @@ namespace OpenIIoT.Core.Package
         /// </summary>
         /// <remarks>
         ///     This constructor is marked private and is intended to be called from the
-        ///     <see cref="Instantiate(IApplicationManager, IPlatformManager, IConfigurationManager)"/> method exclusively in order
-        ///     to implement the Singleton design pattern.
+        ///     <see cref="Instantiate(IApplicationManager, IPlatformManager)"/> method exclusively in order to implement the
+        ///     Singleton design pattern.
         /// </remarks>
         /// <param name="manager">The <see cref="IApplicationManager"/> instance for the application.</param>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
-        /// <param name="configurationManager">The <see cref="IConfigurationManager"/> instance for the application.</param>
         private PackageManager(IApplicationManager manager, IPlatformManager platformManager)
         {
             base.logger = logger;
@@ -106,6 +104,9 @@ namespace OpenIIoT.Core.Package
 
         #region Public Properties
 
+        /// <summary>
+        ///     Gets the list of Packages available for installation.
+        /// </summary>
         public IList<IPackage> Packages { get; private set; }
 
         #endregion Public Properties
