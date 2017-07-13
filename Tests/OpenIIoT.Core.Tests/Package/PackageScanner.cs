@@ -78,7 +78,7 @@ namespace OpenIIoT.Core.Tests.Plugin
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
             string dirPath = Path.GetDirectoryName(codeBasePath);
 
-            Data = Path.Combine(dirPath, "Plugin", "Data", "Package");
+            Data = Path.Combine(dirPath, "Package", "Data", "Package");
         }
 
         #endregion Public Constructors
