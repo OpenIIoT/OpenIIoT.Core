@@ -42,6 +42,7 @@
 using System.Collections.Generic;
 using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
+using System.Threading.Tasks;
 
 namespace OpenIIoT.SDK.Package
 {
@@ -60,15 +61,27 @@ namespace OpenIIoT.SDK.Package
 
         IResult DeletePackage(string FQN);
 
+        Task<IResult> DeletePackageAsync(string FQN);
+
         IResult InstallPackage(string FQN, string publicKey = "");
 
         IResult InstallPackage(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
 
+        Task<IResult> InstallPackageAsync(string FQN, string publicKey = "");
+
+        Task<IResult> InstallPackageAsync(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
+
         IResult<IPackage> SavePackage(string fileName, byte[] data);
+
+        Task<IResult> SavePackageAsync(string fileName, byte[] data);
 
         IResult<IList<IPackage>> ScanPackages();
 
+        Task<IResult<IList<IPackage>>> ScanPackagesAsync();
+
         IResult<bool> VerifyPackage(string FQN, string publicKey = "");
+
+        Task<IResult<bool>> VerifyPackageAsync(string FQN, string publicKey = "");
 
         #endregion Public Methods
     }
