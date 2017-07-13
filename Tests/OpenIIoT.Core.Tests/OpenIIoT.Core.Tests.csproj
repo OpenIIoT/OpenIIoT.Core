@@ -110,7 +110,7 @@
     <Compile Include="Platform\Windows\WindowsPlatform.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
-    <Compile Include="Plugin\PackageScanner.cs" />
+    <Compile Include="Package\PackageScanner.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -124,13 +124,13 @@
     <AdditionalFiles Include="OpenIIoT.ruleset" />
     <None Include="packages.config" />
     <AdditionalFiles Include="stylecop.json" />
-    <None Include="Plugin\Data\Package\badpackage.zip">
+    <None Include="Package\Data\Package\badpackage.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Plugin\Data\Package\package.zip">
+    <None Include="Package\Data\Package\package.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Plugin\Data\Package\signedpackage.zip">
+    <None Include="Package\Data\Package\signedpackage.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

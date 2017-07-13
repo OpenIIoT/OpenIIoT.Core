@@ -52,14 +52,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Package;
 using Utility.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Plugin
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Plugin.PackageScanner"/> class.
+    ///     Unit tests for the <see cref="Core.Package.PackageScanner"/> class.
     /// </summary>
     public class PackageScanner : IDisposable
     {
@@ -105,9 +105,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void Constructor()
         {
-            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
 
-            Assert.IsType<Core.Plugin.PackageScanner>(scanner);
+            Assert.IsType<Core.Package.PackageScanner>(scanner);
             Assert.NotNull(scanner.FileList);
         }
 
@@ -120,12 +120,12 @@ namespace OpenIIoT.Core.Tests.Plugin
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Plugin.PackageScanner.Scan"/> method with an empty directory.
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan"/> method with an empty directory.
         /// </summary>
         [Fact]
         public void ListEmptyDirectory()
         {
-            Core.Plugin.PackageScanner lister = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            Core.Package.PackageScanner lister = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
 
             IResult<IList<IPackage>> list = lister.Scan();
 
@@ -136,14 +136,14 @@ namespace OpenIIoT.Core.Tests.Plugin
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Plugin.PackageScanner.Scan"/> method with a directory containing files but no Packages.
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan"/> method with a directory containing files but no Packages.
         /// </summary>
         [Fact]
         public void ListNoPackages()
         {
             File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
 
-            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
 
             IResult<IList<IPackage>> list = scanner.Scan();
 
@@ -152,12 +152,12 @@ namespace OpenIIoT.Core.Tests.Plugin
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Plugin.PackageScanner.Scan"/> method with a directory containing Package files.
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan"/> method with a directory containing Package files.
         /// </summary>
         [Fact]
         public void ListPackages()
         {
-            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Data).ToList());
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Data).ToList());
 
             IResult<IList<IPackage>> list = scanner.Scan();
 
