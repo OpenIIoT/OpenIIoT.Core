@@ -49,7 +49,7 @@ using OpenIIoT.SDK.Packaging.Manifest;
 using OpenIIoT.SDK.Packaging.Operations;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Plugin
+namespace OpenIIoT.Core.Package
 {
     /// <summary>
     ///     Scans a given list of files for Packages and generates and returns a list of found <see cref="IPackage"/> instances.
