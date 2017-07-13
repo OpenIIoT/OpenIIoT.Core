@@ -48,6 +48,7 @@ using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using System.Collections.Generic;
 
 namespace OpenIIoT.Core.Package
 {
@@ -55,7 +56,7 @@ namespace OpenIIoT.Core.Package
     ///     The Package Manager manages the installation and uninstallation of software packages used to extend the functionality
     ///     of the application.
     /// </summary>
-    public sealed class PackageManager : Manager, IPackageManager, IConfigurable<PackageManagerConfiguration>
+    public sealed class PackageManager : Manager, IPackageManager
     {
         #region Private Fields
 
@@ -84,7 +85,7 @@ namespace OpenIIoT.Core.Package
         /// <param name="manager">The <see cref="IApplicationManager"/> instance for the application.</param>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
         /// <param name="configurationManager">The <see cref="IConfigurationManager"/> instance for the application.</param>
-        private PackageManager(IApplicationManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
+        private PackageManager(IApplicationManager manager, IPlatformManager platformManager)
         {
             base.logger = logger;
             logger.EnterMethod();
@@ -94,7 +95,6 @@ namespace OpenIIoT.Core.Package
             // register dependencies
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
-            RegisterDependency<IConfigurationManager>(configurationManager);
 
             ChangeState(State.Initialized);
 
@@ -103,32 +103,13 @@ namespace OpenIIoT.Core.Package
 
         #endregion Private Constructors
 
-        #region Public Properties
+        #region Private Properties
 
-        public PackageManagerConfiguration Configuration { get; private set; }
+        private IList<IPackage> Packages { get; private set; }
 
-        #endregion Public Properties
+        #endregion Private Properties
 
         #region Public Methods
-
-        /// <summary>
-        ///     Returns the <see cref="IConfigurationDefinition"/> for the <see cref="IManager"/>.
-        /// </summary>
-        /// <returns>The <see cref="IConfigurationDefinition"/> for the <see cref="IManager"/>.</returns>
-        public static IConfigurationDefinition GetConfigurationDefinition()
-        {
-            ConfigurationDefinition retVal = new ConfigurationDefinition();
-            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
-            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
-            retVal.Model = typeof(PackageManagerConfiguration);
-
-            PackageManagerConfiguration config = new PackageManagerConfiguration();
-            config.Number = 1;
-
-            retVal.DefaultConfiguration = config;
-
-            return retVal;
-        }
 
         /// <summary>
         ///     Instantiates and/or returns the <see cref="IPackageManager"/> instance.
@@ -140,13 +121,12 @@ namespace OpenIIoT.Core.Package
         /// </remarks>
         /// <param name="manager">The <see cref="IApplicationManager"/> instance for the application.</param>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
-        /// <param name="configurationManager">The <see cref="IConfigurationManager"/> instance for the application.</param>
         /// <returns>The Singleton instance of the <see cref="IManager"/>.</returns>
-        public static IPackageManager Instantiate(IApplicationManager manager, IPlatformManager platformManager, IConfigurationManager configurationManager)
+        public static IPackageManager Instantiate(IApplicationManager manager, IPlatformManager platformManager)
         {
             if (instance == null)
             {
-                instance = new PackageManager(manager, platformManager, configurationManager);
+                instance = new PackageManager(manager, platformManager);
             }
 
             return instance;
@@ -160,102 +140,12 @@ namespace OpenIIoT.Core.Package
             instance = null;
         }
 
-        /// <summary>
-        ///     Configures this <see cref="IManager"/> using the configuration stored in the <see cref="IConfigurationManager"/>,
-        ///     or, failing that, using the default configuration from the
-        ///     <see cref="ConfigurationDefinition.DefaultConfiguration"/> property of the <see cref="ConfigurationDefinition"/>
-        ///     retrieved from the <see cref="GetConfigurationDefinition"/> method.
-        /// </summary>
-        /// <returns>An <see cref="IResult"/> containing the result of the operation.</returns>
-        public IResult Configure()
-        {
-            logger.EnterMethod();
-
-            logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
-            Result retVal = new Result();
-
-            IResult<PackageManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<PackageManagerConfiguration>(this.GetType());
-
-            // if the fetch succeeded, configure this instance with the result.
-            if (fetchResult.ResultCode != ResultCode.Failure)
-            {
-                logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
-                Configure(fetchResult.ReturnValue);
-            }
-            else
-            {
-                // if the fetch failed, add a new default instance to the configuration and try again.
-                logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                IResult<PackageManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<PackageManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
-                if (createResult.ResultCode != ResultCode.Failure)
-                {
-                    logger.Debug("Successfully added the configuration.  Configuring...");
-                    Configure(createResult.ReturnValue);
-                }
-                else
-                {
-                    retVal.Incorporate(createResult);
-                }
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Configures this <see cref="IManager"/> using the supplied configuration, then saves the configuration to the
-        ///     <see cref="IConfigurationManager"/> .
-        /// </summary>
-        /// <param name="configuration">
-        ///     The <see cref="PackageManagerConfiguration"/> with which this <see cref="IManager"/> is to be configured.
-        /// </param>
-        /// <returns>An <see cref="IResult"/> containing the result of the operation.</returns>
-        public IResult Configure(PackageManagerConfiguration configuration)
-        {
-            logger.EnterMethod(xLogger.Params(configuration));
-            Result retVal = new Result();
-
-            // update the configuration
-            Configuration = configuration;
-            logger.Debug("Successfully configured the Manager.");
-
-            // save it
-            logger.Debug("Saving the new configuration...");
-            retVal.Incorporate(SaveConfiguration());
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
         public IResult InstallPackage(string package, PackageInstallOptions options)
         {
             return new Result();
         }
 
         public IResult InstallPackage(string package, PackageInstallOptions options, string publicKey = "")
-        {
-            return new Result();
-        }
-
-        /// <summary>
-        ///     Saves the <see cref="Configuration"/> to the <see cref="IConfigurationManager"/> .
-        /// </summary>
-        /// <returns>An <see cref="IResult"/> containing the result of the operation.</returns>
-        public IResult SaveConfiguration()
-        {
-            logger.EnterMethod();
-            Result retVal = new Result();
-
-            retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration));
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        public IResult UninstallPackage(string package)
         {
             return new Result();
         }
@@ -297,7 +187,7 @@ namespace OpenIIoT.Core.Package
 
             if (!stopType.HasFlag(StopType.Exception))
             {
-                SaveConfiguration();
+                Packages = default(IList<IPackage>);
             }
 
             retVal.LogResult(logger.Debug);
@@ -319,7 +209,7 @@ namespace OpenIIoT.Core.Package
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            retVal.Incorporate(Configure());
+            retVal.Incorporate(ScanPackages());
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
