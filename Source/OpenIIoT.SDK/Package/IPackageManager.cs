@@ -73,7 +73,7 @@ namespace OpenIIoT.SDK.Package
 
         IResult<IPackage> SavePackage(string fileName, byte[] data);
 
-        Task<IResult> SavePackageAsync(string fileName, byte[] data);
+        Task<IResult<IPackage>> SavePackageAsync(string fileName, byte[] data);
 
         IResult<IList<IPackage>> ScanPackages();
 

@@ -146,6 +146,11 @@ namespace OpenIIoT.Core.Package
             return new Result();
         }
 
+        public async Task<IResult> DeletePackageAsync(string FQN)
+        {
+            return await Task.Run(() => DeletePackage(FQN));
+        }
+
         public IResult InstallPackage(string FQN, string publicKey = "")
         {
             return new Result();
@@ -156,14 +161,24 @@ namespace OpenIIoT.Core.Package
             return new Result();
         }
 
-        public IResult InstallPackage(string package, PackageInstallOptions options)
+        public async Task<IResult> InstallPackageAsync(string FQN, string publicKey = "")
         {
-            return new Result();
+            return await Task.Run(() => InstallPackageAsync(FQN, publicKey));
+        }
+
+        public async Task<IResult> InstallPackageAsync(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
+        {
+            return await Task.Run(() => InstallPackage(FQN, options, publicKey));
         }
 
         public IResult<IPackage> SavePackage(string fileName, byte[] data)
         {
             return new Result<IPackage>();
+        }
+
+        public async Task<IResult<IPackage>> SavePackageAsync(string fileName, byte[] data)
+        {
+            return await Task.Run(() => SavePackage(fileName, data));
         }
 
         public IResult<IList<IPackage>> ScanPackages()
@@ -195,6 +210,11 @@ namespace OpenIIoT.Core.Package
         public IResult<bool> VerifyPackage(string FQN, string publicKey = "")
         {
             return new Result<bool>();
+        }
+
+        public async Task<IResult<bool>> VerifyPackageAsync(string FQN, string publicKey = "")
+        {
+            return await Task.Run(() => VerifyPackage(FQN, publicKey));
         }
 
         #endregion Public Methods
