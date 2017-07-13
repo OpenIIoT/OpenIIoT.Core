@@ -54,8 +54,6 @@ namespace OpenIIoT.SDK.Plugin
     {
         #region Properties
 
-        IList<IPackage> Packages { get; }
-
         /// <summary>
         ///     Gets a list of installed plugins.
         /// </summary>

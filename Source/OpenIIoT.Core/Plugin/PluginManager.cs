@@ -64,15 +64,6 @@ namespace OpenIIoT.Core.Plugin
     [Discoverable]
     public class PluginManager : Manager, IStateful, IManager, IConfigurable<PluginManagerConfiguration>, IPluginManager
     {
-        #region Private Methods
-
-        public IResult<IList<IPackage>> ReloadPlugins()
-        {
-            return new Result<IList<IPackage>>();
-        }
-
-        #endregion Private Methods
-
         #region Private Fields
 
         /// <summary>
@@ -132,11 +123,6 @@ namespace OpenIIoT.Core.Plugin
         ///     Gets the Configuration for the Manager.
         /// </summary>
         public PluginManagerConfiguration Configuration { get; private set; }
-
-        /// <summary>
-        ///     Gets a list of available Packages.
-        /// </summary>
-        public IList<IPackage> Packages { get; private set; }
 
         /// <summary>
         ///     Gets a list of currently loaded plugin assemblies.
