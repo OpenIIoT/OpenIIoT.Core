@@ -12,16 +12,15 @@ using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Plugin;
 using Utility.OperationResult;
-using OpenIIoT.Core.Service.Web;
+using OpenIIoT.SDK.Package;
 
-namespace OpenIIoT.Core.Plugin.WebAPI
+namespace OpenIIoT.Core.Package.WebAPI
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>
-    public class PluginController : ApiController
+    public class PackageController : ApiController
     {
         #region Variables
 
@@ -44,12 +43,55 @@ namespace OpenIIoT.Core.Plugin.WebAPI
 
         #region Instance Methods
 
+        [Route("api/package/{fileName}/download")]
+        [HttpGet]
+        public HttpResponseMessage DownloadPackage(string fileName)
+        {
+            string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<IPackageManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
+
+            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+
+            result.Content = new StreamContent(new System.IO.FileStream(pluginPackage, System.IO.FileMode.Open));
+            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = System.IO.Path.GetFileName(pluginPackage) };
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Returns the Package from the list of available Packages that matches the supplied filename.
+        /// </summary>
+        /// <param name="fileName">The Fully Qualified Name of the Package to return.</param>
+        /// <returns>The matching Package.</returns>
+        [Route("api/package/{fqn}")]
+        [HttpGet]
+        public HttpResponseMessage GetPackage(string fqn)
+        {
+            IPackage package = manager.GetManager<IPackageManager>().Packages.Where(p => p.FQN == fqn).FirstOrDefault();
+
+            if (package == default(Package))
+            {
+                return Request.CreateResponse(HttpStatusCode.NotFound);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, package, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+        }
+
+        [Route("api/package")]
+        [HttpGet]
+        public HttpResponseMessage GetPackages()
+        {
+            IList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
+
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+        }
+
         /// <summary>
         ///     Installs the supplied Package.
         /// </summary>
         /// <param name="fileName">The filename of the Plugin Package to install.</param>
         /// <returns>The App instance resulting from the installation.</returns>
-        [Route("api/plugin/archive/{fileName}/install")]
+        [Route("api/package/{fileName}/install")]
         [HttpGet]
         public async Task<HttpResponseMessage> InstallPlugin(string fileName)
         {
@@ -81,13 +123,17 @@ namespace OpenIIoT.Core.Plugin.WebAPI
             return retVal;
         }
 
-        [Route("api/plugin")]
+        /// <summary>
+        ///     Reloads the list of Packages from disk and returns the list.
+        /// </summary>
+        /// <returns>The reloaded list of available Packages.</returns>
+        [Route("api/package/scan")]
         [HttpGet]
-        public HttpResponseMessage ListPlugins()
+        public async Task<HttpResponseMessage> ScanPackages()
         {
-            IList<IPlugin> pluginList = manager.GetManager<PluginManager>().Configuration.InstalledPlugins.ToList<IPlugin>();
+            IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
 
-            return Request.CreateResponse(HttpStatusCode.OK, pluginList, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
         }
 
         #endregion Instance Methods
