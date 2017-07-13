@@ -71,32 +71,6 @@ namespace OpenIIoT.Core.Plugin
             return new Result<IList<IPackage>>();
         }
 
-        public IResult<IList<IPackage>> ScanPackages()
-        {
-            Guid guid = logger.EnterMethod();
-
-            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>(ResultCode.Failure);
-
-            IPlatform platform = Dependency<IPlatformManager>().Platform;
-            IResult<IList<string>> files = platform.ListFiles(platform.Directories.Packages);
-
-            if (files.ResultCode != ResultCode.Failure)
-            {
-                retVal = new PackageScanner(files.ReturnValue).Scan();
-            }
-
-            Packages = retVal.ReturnValue;
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
-            return retVal;
-        }
-
-        public async Task<IResult<IList<IPackage>>> ScanPackagesAsync()
-        {
-            return await Task.Run(() => ScanPackages());
-        }
-
         #endregion Private Methods
 
         #region Private Fields

@@ -49,6 +49,7 @@ using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Package
 {
@@ -103,11 +104,11 @@ namespace OpenIIoT.Core.Package
 
         #endregion Private Constructors
 
-        #region Private Properties
+        #region Public Properties
 
         public IList<IPackage> Packages { get; private set; }
 
-        #endregion Private Properties
+        #endregion Public Properties
 
         #region Public Methods
 
@@ -167,7 +168,28 @@ namespace OpenIIoT.Core.Package
 
         public IResult<IList<IPackage>> ScanPackages()
         {
-            return new Result<IList<IPackage>>();
+            Guid guid = logger.EnterMethod();
+
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>(ResultCode.Failure);
+
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
+            IResult<IList<string>> files = platform.ListFiles(platform.Directories.Packages);
+
+            if (files.ResultCode != ResultCode.Failure)
+            {
+                retVal = new PackageScanner(files.ReturnValue).Scan();
+            }
+
+            Packages = retVal.ReturnValue;
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+            return retVal;
+        }
+
+        public async Task<IResult<IList<IPackage>>> ScanPackagesAsync()
+        {
+            return await Task.Run(() => ScanPackages());
         }
 
         public IResult<bool> VerifyPackage(string FQN, string publicKey = "")
