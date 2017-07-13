@@ -39,9 +39,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging.Manifest;
 using System.Collections.Generic;
+using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Package
@@ -53,21 +52,23 @@ namespace OpenIIoT.SDK.Package
     {
         #region Public Properties
 
-        IList<Package> Packages { get; }
+        IList<IPackage> Packages { get; }
 
         #endregion Public Properties
 
         #region Public Methods
 
-        IResult InstallPackage(string package, string publicKey = "");
+        IResult DeletePackage(string FQN);
 
-        IResult InstallPackage(string package, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
+        IResult InstallPackage(string FQN, string publicKey = "");
 
-        IResult<Package> ReadPackage(string package);
+        IResult InstallPackage(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
 
-        IResult UninstallPackage(string package);
+        IResult<IPackage> SavePackage(string fileName, byte[] data);
 
-        IResult VerifyPackage(string package, string publicKey = "");
+        IResult<IList<IPackage>> ScanPackages();
+
+        IResult<bool> VerifyPackage(string FQN, string publicKey = "");
 
         #endregion Public Methods
     }
