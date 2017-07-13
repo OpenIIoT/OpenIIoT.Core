@@ -117,12 +117,6 @@ namespace OpenIIoT.SDK.Plugin
         /// <returns>A Result containing the result of the operation and the newly created PluginAssembly instance.</returns>
         Result<IPluginAssembly> LoadPluginAssembly(IPlugin plugin);
 
-        IResult<IList<IPackage>> ReloadPlugins();
-
-        IResult<IList<IPackage>> ScanPackages();
-
-        Task<IResult<IList<IPackage>>> ScanPackagesAsync();
-
         #endregion Instance Methods
     }
 }
