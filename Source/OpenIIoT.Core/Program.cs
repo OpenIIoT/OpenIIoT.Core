@@ -49,6 +49,7 @@ using NLog.xLogger;
 using OpenIIoT.Core.Configuration;
 using OpenIIoT.Core.Event;
 using OpenIIoT.Core.Model;
+using OpenIIoT.Core.Package;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
 using OpenIIoT.Core.Service;
@@ -126,6 +127,7 @@ namespace OpenIIoT.Core
             typeof(PluginManager),
             typeof(ModelManager),
             typeof(ServiceManager),
+            typeof(PackageManager),
         };
 
         #endregion Private Fields

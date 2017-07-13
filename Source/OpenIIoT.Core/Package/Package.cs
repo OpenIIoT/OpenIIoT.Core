@@ -1,9 +1,9 @@
 ﻿using System;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Packaging.Manifest;
-using OpenIIoT.SDK.Plugin;
 
-namespace OpenIIoT.Core.Plugin
+namespace OpenIIoT.Core.Package
 {
     public class Package : PackageManifest, IPackage
     {
@@ -22,9 +22,13 @@ namespace OpenIIoT.Core.Plugin
         #region Public Properties
 
         public string FileName { get; }
+
         public string FQN => Namespace + "." + Title;
+
         public bool IsSigned => Signature?.Digest != default(string);
+
         public bool IsTrusted => Signature?.Trust != default(string);
+
         public DateTime ModifiedOn { get; }
 
         #endregion Public Properties

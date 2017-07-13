@@ -10,19 +10,10 @@
       █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █     ▄█    ███ ██    ██   ██   ██ ██   ██ ██   ██   ██   █    ██  ██
       █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████  ▄████████▀  ██████▀    ██   █▀  █   █   █   █    ███████   ██  ██
       █
-      █       ███
-      █   ▀█████████▄
-      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
-      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
-      █       ███      ▄██▄▄      ██         ██  ▀   ██
-      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
-      █       ███       ██   █     ▄  ██     ██       ▄  ██
-      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
-      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the PackageScanner class.
+      █  Scans a given list of files for Packages and generates and returns a list of found IPackage instances.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -51,124 +42,107 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using OpenIIoT.SDK.Plugin;
+using NLog;
+using NLog.xLogger;
+using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Packaging.Manifest;
+using OpenIIoT.SDK.Packaging.Operations;
 using Utility.OperationResult;
-using Xunit;
 
-namespace OpenIIoT.Core.Tests.Plugin
+namespace OpenIIoT.Core.Package
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Plugin.PackageScanner"/> class.
+    ///     Scans a given list of files for Packages and generates and returns a list of found <see cref="IPackage"/> instances.
     /// </summary>
-    public class PackageScanner : IDisposable
+    public class PackageScanner
     {
+        #region Private Fields
+
+        /// <summary>
+        ///     The Logger for this class.
+        /// </summary>
+        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+
+        #endregion Private Fields
+
         #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PackageScanner"/> class.
         /// </summary>
-        public PackageScanner()
+        /// <param name="fileList">The list of filenames to scan.</param>
+        public PackageScanner(IList<string> fileList)
         {
-            Temp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-
-            Directory.CreateDirectory(Temp);
-
-            Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
-            string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
-            string dirPath = Path.GetDirectoryName(codeBasePath);
-
-            Data = Path.Combine(dirPath, "Plugin", "Data", "Package");
+            FileList = fileList;
         }
 
         #endregion Public Constructors
 
-        #region Private Properties
+        #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the test data directory.
+        ///     Gets or sets the list of filenames to scan.
         /// </summary>
-        private string Data { get; set; }
+        public IList<string> FileList { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the temporary data directory.
-        /// </summary>
-        private string Temp { get; set; }
-
-        #endregion Private Properties
+        #endregion Public Properties
 
         #region Public Methods
 
         /// <summary>
-        ///     Tests the constructor and all properties.
+        ///     Scans the list of files defined within <see cref="FileList"/> and generates a list of <see cref="IPackage"/>
+        ///     instances containing found Packages.
         /// </summary>
-        [Fact]
-        public void Constructor()
+        /// <returns>A Result containing the result of the operation and the list of found IPackage instances.</returns>
+        public IResult<IList<IPackage>> Scan()
         {
-            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            Guid guid = logger.EnterMethod(true);
 
-            Assert.IsType<Core.Plugin.PackageScanner>(scanner);
-            Assert.NotNull(scanner.FileList);
-        }
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
+            retVal.ReturnValue = new List<IPackage>();
 
-        /// <summary>
-        ///     Disposes of this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Directory.Delete(Temp, true);
-        }
+            ManifestExtractor extractor = new ManifestExtractor();
 
-        /// <summary>
-        ///     Tests the <see cref="Core.Plugin.PackageScanner.Scan"/> method with an empty directory.
-        /// </summary>
-        [Fact]
-        public void ListEmptyDirectory()
-        {
-            Core.Plugin.PackageScanner lister = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            foreach (string file in FileList)
+            {
+                PackageManifest manifest;
 
-            IResult<IList<IPackage>> list = lister.Scan();
+                try
+                {
+                    manifest = extractor.ExtractManifest(file);
 
-            Assert.Equal(ResultCode.Success, list.ResultCode);
+                    retVal.ReturnValue.Add(GetPackage(file, manifest));
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddWarning($"The package file '{Path.GetFileName(file)}' is not valid; the Manifest could not be extracted: {ex.Message}");
+                }
+            }
 
-            Assert.NotNull(list.ReturnValue);
-            Assert.Equal(0, list.ReturnValue.Count);
-        }
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
 
-        /// <summary>
-        ///     Tests the <see cref="Core.Plugin.PackageScanner.Scan"/> method with a directory containing files but no Packages.
-        /// </summary>
-        [Fact]
-        public void ListNoPackages()
-        {
-            File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
-
-            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
-
-            IResult<IList<IPackage>> list = scanner.Scan();
-
-            Assert.Equal(ResultCode.Warning, list.ResultCode);
-            Assert.Equal(0, list.ReturnValue.Count);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Plugin.PackageScanner.Scan"/> method with a directory containing Package files.
-        /// </summary>
-        [Fact]
-        public void ListPackages()
-        {
-            Core.Plugin.PackageScanner scanner = new Core.Plugin.PackageScanner(Directory.EnumerateFiles(Data).ToList());
-
-            IResult<IList<IPackage>> list = scanner.Scan();
-
-            Assert.Equal(ResultCode.Success, list.ResultCode);
-            Assert.Equal(3, list.ReturnValue.Count);
-
-            // spot check a few Manifest fields to see if the manifest was fetched properly
-            Assert.NotNull(list.ReturnValue[0].FQN);
-            Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
+            return retVal;
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Creates a <see cref="Package"/> instance with file metadata from the given file and the given
+        ///     <see cref="PackageManifest"/> .
+        /// </summary>
+        /// <param name="fileName">The filename from which to retrieve the Package metadata.</param>
+        /// <param name="manifest">The Manifest with which to initialize the <see cref="Package"/> instance.</param>
+        /// <returns>The created Package.</returns>
+        private IPackage GetPackage(string fileName, PackageManifest manifest)
+        {
+            FileInfo info = new FileInfo(fileName);
+
+            return new Package(fileName, info.LastWriteTime, manifest);
+        }
+
+        #endregion Private Methods
     }
 }

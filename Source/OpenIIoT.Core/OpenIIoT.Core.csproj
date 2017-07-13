@@ -200,10 +200,12 @@
     <Compile Include="Event\EventManagerConfiguration.cs" />
     <Compile Include="Model\ModelBuildResult.cs" />
     <Compile Include="Model\ModelManagerConfiguration.cs" />
+    <Compile Include="Package\PackageManager.cs" />
+    <Compile Include="Package\WebAPI\PackageController.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
-    <Compile Include="Plugin\Package.cs" />
-    <Compile Include="Plugin\PackageScanner.cs" />
+    <Compile Include="Package\Package.cs" />
+    <Compile Include="Package\PackageScanner.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />

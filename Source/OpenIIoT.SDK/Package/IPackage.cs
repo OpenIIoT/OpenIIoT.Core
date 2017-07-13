@@ -1,7 +1,7 @@
 ﻿using System;
 using OpenIIoT.SDK.Packaging.Manifest;
 
-namespace OpenIIoT.SDK.Plugin
+namespace OpenIIoT.SDK.Package
 {
     public interface IPackage : IPackageManifest
     {
