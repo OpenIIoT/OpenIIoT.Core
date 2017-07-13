@@ -1,9 +1,9 @@
 ﻿using System;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Packaging.Manifest;
-using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Package;
 
-namespace OpenIIoT.Core.Plugin
+namespace OpenIIoT.Core.Package
 {
     public class Package : PackageManifest, IPackage
     {

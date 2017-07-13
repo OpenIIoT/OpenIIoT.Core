@@ -46,7 +46,7 @@ using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK.Packaging.Manifest;
 using OpenIIoT.SDK.Packaging.Operations;
-using OpenIIoT.SDK.Plugin;
+using OpenIIoT.SDK.Package;
 using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Plugin
