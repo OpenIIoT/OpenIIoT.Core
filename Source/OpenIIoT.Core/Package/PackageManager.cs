@@ -141,34 +141,34 @@ namespace OpenIIoT.Core.Package
             instance = null;
         }
 
-        public IResult DeletePackage(string FQN)
+        public IResult DeletePackage(string fqn)
         {
             return new Result();
         }
 
-        public async Task<IResult> DeletePackageAsync(string FQN)
+        public async Task<IResult> DeletePackageAsync(string fqn)
         {
-            return await Task.Run(() => DeletePackage(FQN));
+            return await Task.Run(() => DeletePackage(fqn));
         }
 
-        public IResult InstallPackage(string FQN, string publicKey = "")
+        public IResult InstallPackage(string fqn, string publicKey = "")
         {
             return new Result();
         }
 
-        public IResult InstallPackage(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
+        public IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
         {
             return new Result();
         }
 
-        public async Task<IResult> InstallPackageAsync(string FQN, string publicKey = "")
+        public async Task<IResult> InstallPackageAsync(string fqn, string publicKey = "")
         {
-            return await Task.Run(() => InstallPackageAsync(FQN, publicKey));
+            return await Task.Run(() => InstallPackageAsync(fqn, publicKey));
         }
 
-        public async Task<IResult> InstallPackageAsync(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
+        public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
         {
-            return await Task.Run(() => InstallPackage(FQN, options, publicKey));
+            return await Task.Run(() => InstallPackage(fqn, options, publicKey));
         }
 
         public IResult<IPackage> SavePackage(string fileName, byte[] data)
@@ -207,14 +207,14 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => ScanPackages());
         }
 
-        public IResult<bool> VerifyPackage(string FQN, string publicKey = "")
+        public IResult<bool> VerifyPackage(string fqn, string publicKey = "")
         {
             return new Result<bool>();
         }
 
-        public async Task<IResult<bool>> VerifyPackageAsync(string FQN, string publicKey = "")
+        public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "")
         {
-            return await Task.Run(() => VerifyPackage(FQN, publicKey));
+            return await Task.Run(() => VerifyPackage(fqn, publicKey));
         }
 
         #endregion Public Methods

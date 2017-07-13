@@ -59,17 +59,17 @@ namespace OpenIIoT.SDK.Package
 
         #region Public Methods
 
-        IResult DeletePackage(string FQN);
+        IResult DeletePackage(string fqn);
 
-        Task<IResult> DeletePackageAsync(string FQN);
+        Task<IResult> DeletePackageAsync(string fqn);
 
-        IResult InstallPackage(string FQN, string publicKey = "");
+        IResult InstallPackage(string fqn, string publicKey = "");
 
-        IResult InstallPackage(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
+        IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
 
-        Task<IResult> InstallPackageAsync(string FQN, string publicKey = "");
+        Task<IResult> InstallPackageAsync(string fqn, string publicKey = "");
 
-        Task<IResult> InstallPackageAsync(string FQN, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
+        Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
 
         IResult<IPackage> SavePackage(string fileName, byte[] data);
 
@@ -79,9 +79,9 @@ namespace OpenIIoT.SDK.Package
 
         Task<IResult<IList<IPackage>>> ScanPackagesAsync();
 
-        IResult<bool> VerifyPackage(string FQN, string publicKey = "");
+        IResult<bool> VerifyPackage(string fqn, string publicKey = "");
 
-        Task<IResult<bool>> VerifyPackageAsync(string FQN, string publicKey = "");
+        Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "");
 
         #endregion Public Methods
     }
