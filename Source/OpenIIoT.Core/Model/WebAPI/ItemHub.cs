@@ -100,7 +100,7 @@ namespace OpenIIoT.Core.Model.WebAPI
         {
             Item item = (Item)sender;
 
-            string itemJson = item.ToJson(new ContractResolver(new List<string>(new string[] { "FQN", "Value", "Quality", "Timestamp", "Children" }), ContractResolverType.OptIn));
+            string itemJson = item.ToJson(new ContractResolver(ContractResolverType.OptIn, "FQN", "Value", "Quality", "Timestamp", "Children"));
             string valueJson = JsonConvert.SerializeObject(item.Read());
 
             logger.Trace("SignalR Item '" + item.FQN + "' changed.  Sending data to subscribed clients.");

@@ -38,10 +38,15 @@ namespace OpenIIoT.Core.Service.WebAPI
             retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
             retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(properties.ToList(), resolverType);
+            retVal.SerializerSettings.ContractResolver = new ContractResolver(resolverType, properties);
             retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             return retVal;
+        }
+
+        public JsonMediaTypeFormatter JsonFormatter(params string[] properties)
+        {
+            return JsonFormatter(ContractResolverType.OptIn, properties);
         }
 
         public JsonMediaTypeFormatter JsonFormatter()
