@@ -74,6 +74,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\ContractResolver.cs" />
     <Compile Include="Common\Exceptions\ConfigurationExceptions.cs" />
     <Compile Include="Common\Item\ItemQuality.cs" />
     <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
@@ -83,7 +84,6 @@
     <Compile Include="Common\Provider\ItemProvider\ItemProvider.cs" />
     <Compile Include="Common\Provider\ItemProvider\IItemProvider.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
-    <Compile Include="Common\Utility\ContractResolver.cs" />
     <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
     <Compile Include="Common\Manager\IManager.cs" />

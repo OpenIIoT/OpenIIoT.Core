@@ -68,24 +68,6 @@ namespace OpenIIoT.SDK.Common
     /// </summary>
     public class ContractResolver : DefaultContractResolver
     {
-        #region Private Fields
-
-        /// <summary>
-        ///     Enumeration representing the type of contract resolver to use; OptIn or OptOut.
-        /// </summary>
-        /// <remarks>
-        ///     The OptIn type includes only the properties listed in propertyList while OptOut includes all properties except
-        ///     those listed.
-        /// </remarks>
-        private ContractResolverType contractResolverType;
-
-        /// <summary>
-        ///     The list of properties to either include or exclude, depending on contractResolverType.
-        /// </summary>
-        private List<string> propertyList;
-
-        #endregion Private Fields
-
         #region Public Constructors
 
         /// <summary>
@@ -93,7 +75,7 @@ namespace OpenIIoT.SDK.Common
         ///     of OptOut and with includeSecondaryTypes = false. Serializes all un-ignored properties in the given class.
         /// </summary>
         public ContractResolver()
-            : this(new List<string>(), ContractResolverType.OptOut)
+            : this(ContractResolverType.OptOut)
         {
         }
 
@@ -101,9 +83,9 @@ namespace OpenIIoT.SDK.Common
         ///     Initializes a new instance of the <see cref="ContractResolver"/> class with the supplied properties list and the
         ///     supplied value for includeSecondaryTypes.
         /// </summary>
-        /// <param name="propertyList">A list of properties to include or exclude from serialization.</param>
-        public ContractResolver(List<string> propertyList)
-            : this(propertyList, ContractResolverType.OptIn)
+        /// <param name="properties">A list of properties to include or exclude from serialization.</param>
+        public ContractResolver(params string[] properties)
+            : this(ContractResolverType.OptIn, properties)
         {
         }
 
@@ -111,18 +93,36 @@ namespace OpenIIoT.SDK.Common
         ///     Initializes a new instance of the <see cref="ContractResolver"/> class with the supplied properties list, resolver
         ///     type and includeSecondaryTypes value.
         /// </summary>
-        /// <param name="propertyList">A list of properties to include or exclude from serialization.</param>
-        /// <param name="contractResolverType">
+        /// <param name="resolverType">
         ///     The type of contract resolver; determines whether the supplied list will be included or excluded from serialization.
         /// </param>
-        public ContractResolver(List<string> propertyList, ContractResolverType contractResolverType)
+        /// <param name="properties">A list of properties to include or exclude from serialization.</param>
+        public ContractResolver(ContractResolverType resolverType, params string[] properties)
             : base()
         {
-            this.propertyList = propertyList;
-            this.contractResolverType = contractResolverType;
+            Properties = properties;
+            ResolverType = resolverType;
         }
 
         #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the list of properties to either include or exclude, depending on contractResolverType.
+        /// </summary>
+        private string[] Properties { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the enumeration representing the type of contract resolver to use; OptIn or OptOut.
+        /// </summary>
+        /// <remarks>
+        ///     The OptIn type includes only the properties listed in propertyList while OptOut includes all properties except
+        ///     those listed.
+        /// </remarks>
+        private ContractResolverType ResolverType { get; set; }
+
+        #endregion Private Properties
 
         #region Protected Methods
 
@@ -139,14 +139,14 @@ namespace OpenIIoT.SDK.Common
             IEnumerable<JsonProperty> resolvedProperties = new List<JsonProperty>();
 
             // if the resolver type is OptIn, filter baseProperties of any fields that don't appear in the supplied list of properties
-            if (this.contractResolverType == ContractResolverType.OptIn)
+            if (ResolverType == ContractResolverType.OptIn)
             {
-                resolvedProperties = baseProperties.Where(p => this.propertyList.Contains(p.PropertyName)).ToList();
+                resolvedProperties = baseProperties.Where(p => Properties.Contains(p.PropertyName)).ToList();
             }
             else
             {
                 // if the resolver type is OptOut, filter baseProperties of any fields that appear in the supplied list of properties
-                resolvedProperties = baseProperties.Where(p => !this.propertyList.Contains(p.PropertyName)).ToList();
+                resolvedProperties = baseProperties.Where(p => !Properties.Contains(p.PropertyName)).ToList();
             }
 
             return resolvedProperties.ToList();
