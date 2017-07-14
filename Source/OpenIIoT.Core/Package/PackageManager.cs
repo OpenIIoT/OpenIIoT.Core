@@ -181,27 +181,9 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => DeletePackage(fqn));
         }
 
-        public IResult<IPackage> FindPackage(string fqn, bool rescan = false)
+        public IResult<IPackage> FindPackage(string fqn)
         {
-            logger.EnterMethod(xLogger.Params(fqn));
-            IResult<IPackage> retVal = new Result<IPackage>();
-
-            retVal.ReturnValue = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
-
-            if (retVal.ReturnValue == default(IPackage))
-            {
-                if (rescan)
-                {
-                    ScanPackages();
-                    return FindPackage(fqn, false);
-                }
-
-                retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-            return retVal;
+            return FindPackage(fqn);
         }
 
         public async Task<IResult<IPackage>> FindPackageAsync(string fqn)
@@ -273,6 +255,29 @@ namespace OpenIIoT.Core.Package
         public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "")
         {
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
+        }
+
+        private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound = false)
+        {
+            logger.EnterMethod(xLogger.Params(fqn));
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            retVal.ReturnValue = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
+
+            if (retVal.ReturnValue == default(IPackage))
+            {
+                if (rescanOnNotFound)
+                {
+                    ScanPackages();
+                    return FindPackage(fqn, false);
+                }
+
+                retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         #endregion Public Methods
