@@ -65,12 +65,12 @@ namespace OpenIIoT.Core.Package.WebAPI
         /// <returns>The matching Package.</returns>
         [Route("api/package/{fqn}")]
         [HttpGet]
-        public HttpResponseMessage FindPackage(string fqn)
+        public async Task<HttpResponseMessage> FindPackage(string fqn)
         {
             HttpResponseMessage retVal;
-            IResult<IPackage> findResult = manager.GetManager<IPackageManager>().FindPackage(fqn);
+            IResult<IPackage> findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
-            retVal = Request.CreateResponse(HttpStatusCode.OK, findResult.ReturnValue, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(new List<string>(new string[] { "Files" }), ContractResolverType.OptOut));
 
             return retVal;
         }
