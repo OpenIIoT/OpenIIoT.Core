@@ -31,7 +31,7 @@ namespace OpenIIoT.Core.Configuration.WebAPI
         {
             IConfiguration configuration = manager.GetManager<ConfigurationManager>().Configuration;
 
-            return Request.CreateResponse(HttpStatusCode.OK, configuration, JsonFormatter(serializationProperties, ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, configuration, JsonFormatter(ContractResolverType.OptOut, serializationProperties));
         }
 
         #endregion Public Methods

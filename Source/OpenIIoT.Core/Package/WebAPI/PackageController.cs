@@ -71,7 +71,7 @@ namespace OpenIIoT.Core.Package.WebAPI
             HttpResponseMessage retVal;
             IResult<IPackage> findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
-            retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(new List<string>(new string[] { "Files" }), ContractResolverType.OptOut));
+            retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(ContractResolverType.OptOut, "Files"));
 
             return retVal;
         }
@@ -82,7 +82,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             IList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
 
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
         }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         [HttpGet]
         public async Task<HttpResponseMessage> InstallPlugin(string fileName)
         {
-            return Request.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return Request.CreateResponse(JsonFormatter());
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
 
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
         }
 
         #endregion Instance Methods

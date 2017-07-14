@@ -52,7 +52,7 @@ namespace OpenIIoT.Core.Model.WebAPI
 
             if (verbosity == "concise")
             {
-                formatter = JsonFormatter(conciseSerializationProperties, ContractResolverType.OptIn);
+                formatter = JsonFormatter(ContractResolverType.OptIn, conciseSerializationProperties);
             }
             else
             {

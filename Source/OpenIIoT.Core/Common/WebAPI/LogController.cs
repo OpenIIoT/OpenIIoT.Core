@@ -29,7 +29,7 @@ namespace OpenIIoT.Core.Common.WebAPI
         {
             var log = RealtimeLogger.LogHistory.ToArray();
 
-            return Request.CreateResponse(HttpStatusCode.OK, log, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, log, JsonFormatter());
         }
 
         #endregion Public Methods
