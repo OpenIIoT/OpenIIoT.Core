@@ -9,10 +9,11 @@ using OpenIIoT.Core.Configuration;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
+using OpenIIoT.Core.Service.WebAPI;
 
 namespace OpenIIoT.Core.Configuration.WebAPI
 {
-    public class ConfigurationController : ApiController
+    public class ConfigurationController : ApiBaseController
     {
         #region Private Fields
 
@@ -34,24 +35,5 @@ namespace OpenIIoT.Core.Configuration.WebAPI
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
-        {
-            JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
-
-            retVal.SerializerSettings = new JsonSerializerSettings();
-
-            retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-            retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
-            retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-            return retVal;
-        }
-
-        #endregion Private Methods
     }
 }
