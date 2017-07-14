@@ -145,6 +145,35 @@ namespace OpenIIoT.Core.Package
 
         public IResult DeletePackage(string fqn)
         {
+            logger.EnterMethod(xLogger.Params(fqn));
+            IResult retVal = new Result();
+
+            logger.Info($"Deleting Package {fqn}...");
+            logger.Debug($"Locating Package '{fqn}'...");
+
+            IResult<IPackage> findResult = FindPackage(fqn);
+            retVal.Incorporate(findResult);
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                string fileName = findResult.ReturnValue.FileName;
+
+                IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
+                retVal.Incorporate(deleteResult);
+            }
+            else
+            {
+                retVal.AddError("The Package could not be found.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                logger.Info($"Failed to delete Package '{fqn}': {retVal.GetLastError()}.");
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public async Task<IResult> DeletePackageAsync(string fqn)
