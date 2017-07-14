@@ -14,13 +14,14 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Package;
+using OpenIIoT.Core.Service.WebAPI;
 
 namespace OpenIIoT.Core.Package.WebAPI
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>
-    public class PackageController : ApiController
+    public class PackageController : ApiBaseController
     {
         #region Variables
 
@@ -94,31 +95,6 @@ namespace OpenIIoT.Core.Package.WebAPI
         public async Task<HttpResponseMessage> InstallPlugin(string fileName)
         {
             return Request.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
-        }
-
-        /// <summary>
-        ///     Returns the JsonMediaTypeFormatter to use with this controller.
-        /// </summary>
-        /// <param name="serializationProperties">
-        ///     A list of properties to exclude or include, depending on the ContractResolverType, in the serialized result.
-        /// </param>
-        /// <param name="contractResolverType">
-        ///     A ContractResolverType representing the desired behavior of serializationProperties, OptIn or OptOut.
-        /// </param>
-        /// <returns>A configured instance of JsonMediaTypeFormatter</returns>
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
-        {
-            JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
-
-            retVal.SerializerSettings = new JsonSerializerSettings();
-
-            retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-            retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
-            retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-            return retVal;
         }
 
         /// <summary>

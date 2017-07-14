@@ -237,6 +237,7 @@
     <Compile Include="Model\API\ValuesController.cs" />
     <Compile Include="Common\WebAPI\LogHub.cs" />
     <Compile Include="Model\API\ItemHub.cs" />
+    <Compile Include="Service\WebAPI\ApiBaseController.cs" />
     <Compile Include="Service\WebAPI\OwinStartup.cs" />
     <Compile Include="Service\WebAPI\WebAPIService.cs" />
     <Compile Include="WindowsService.cs">
