@@ -40,16 +40,16 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace OpenIIoT.Core.Package
 {
@@ -80,12 +80,11 @@ namespace OpenIIoT.Core.Package
         /// </summary>
         /// <remarks>
         ///     This constructor is marked private and is intended to be called from the
-        ///     <see cref="Instantiate(IApplicationManager, IPlatformManager, IConfigurationManager)"/> method exclusively in order
-        ///     to implement the Singleton design pattern.
+        ///     <see cref="Instantiate(IApplicationManager, IPlatformManager)"/> method exclusively in order to implement the
+        ///     Singleton design pattern.
         /// </remarks>
         /// <param name="manager">The <see cref="IApplicationManager"/> instance for the application.</param>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
-        /// <param name="configurationManager">The <see cref="IConfigurationManager"/> instance for the application.</param>
         private PackageManager(IApplicationManager manager, IPlatformManager platformManager)
         {
             base.logger = logger;
@@ -106,6 +105,9 @@ namespace OpenIIoT.Core.Package
 
         #region Public Properties
 
+        /// <summary>
+        ///     Gets the list of Packages available for installation.
+        /// </summary>
         public IList<IPackage> Packages { get; private set; }
 
         #endregion Public Properties
@@ -143,12 +145,50 @@ namespace OpenIIoT.Core.Package
 
         public IResult DeletePackage(string fqn)
         {
-            return new Result();
+            logger.EnterMethod(xLogger.Params(fqn));
+            IResult retVal = new Result();
+
+            logger.Info($"Deleting Package {fqn}...");
+            logger.Debug($"Locating Package '{fqn}'...");
+
+            IResult<IPackage> findResult = FindPackage(fqn);
+            retVal.Incorporate(findResult);
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                string fileName = findResult.ReturnValue.FileName;
+
+                IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
+                retVal.Incorporate(deleteResult);
+            }
+            else
+            {
+                retVal.AddError("The Package could not be found.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                logger.Info($"Failed to delete Package '{fqn}': {retVal.GetLastError()}.");
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public async Task<IResult> DeletePackageAsync(string fqn)
         {
             return await Task.Run(() => DeletePackage(fqn));
+        }
+
+        public IResult<IPackage> FindPackage(string fqn)
+        {
+            return FindPackage(fqn, false);
+        }
+
+        public async Task<IResult<IPackage>> FindPackageAsync(string fqn)
+        {
+            return await Task.Run(() => FindPackage(fqn));
         }
 
         public IResult InstallPackage(string fqn, string publicKey = "")
@@ -215,6 +255,29 @@ namespace OpenIIoT.Core.Package
         public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "")
         {
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
+        }
+
+        private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound)
+        {
+            logger.EnterMethod(xLogger.Params(fqn));
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            retVal.ReturnValue = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
+
+            if (retVal.ReturnValue == default(IPackage))
+            {
+                if (rescanOnNotFound)
+                {
+                    ScanPackages();
+                    return FindPackage(fqn, false);
+                }
+
+                retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         #endregion Public Methods
