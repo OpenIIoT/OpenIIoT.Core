@@ -169,6 +169,11 @@ namespace OpenIIoT.Core.Package
             return retVal;
         }
 
+        public async Task<IResult<IPackage>> FindPackageAsync(string fqn)
+        {
+            return await Task.Run(() => FindPackage(fqn));
+        }
+
         public IResult InstallPackage(string fqn, string publicKey = "")
         {
             return new Result();
