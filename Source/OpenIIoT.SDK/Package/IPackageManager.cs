@@ -63,6 +63,10 @@ namespace OpenIIoT.SDK.Package
 
         Task<IResult> DeletePackageAsync(string fqn);
 
+        IResult<IPackage> FindPackage(string fqn);
+
+        Task<IResult<IPackage>> FindPackageAsync(string fqn);
+
         IResult InstallPackage(string fqn, string publicKey = "");
 
         IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");

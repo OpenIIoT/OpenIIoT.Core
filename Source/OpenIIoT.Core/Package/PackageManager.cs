@@ -49,6 +49,7 @@ using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using System.Linq;
 
 namespace OpenIIoT.Core.Package
 {
@@ -144,12 +145,28 @@ namespace OpenIIoT.Core.Package
 
         public IResult DeletePackage(string fqn)
         {
-            return new Result();
         }
 
         public async Task<IResult> DeletePackageAsync(string fqn)
         {
             return await Task.Run(() => DeletePackage(fqn));
+        }
+
+        public IResult<IPackage> FindPackage(string fqn)
+        {
+            logger.EnterMethod(xLogger.Params(fqn));
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            retVal.ReturnValue = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
+
+            if (retVal.ReturnValue == default(IPackage))
+            {
+                retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public IResult InstallPackage(string fqn, string publicKey = "")
