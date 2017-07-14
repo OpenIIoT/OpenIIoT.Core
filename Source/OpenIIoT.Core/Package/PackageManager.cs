@@ -183,7 +183,7 @@ namespace OpenIIoT.Core.Package
 
         public IResult<IPackage> FindPackage(string fqn)
         {
-            return FindPackage(fqn);
+            return FindPackage(fqn, false);
         }
 
         public async Task<IResult<IPackage>> FindPackageAsync(string fqn)
@@ -257,7 +257,7 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
         }
 
-        private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound = false)
+        private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound)
         {
             logger.EnterMethod(xLogger.Params(fqn));
             IResult<IPackage> retVal = new Result<IPackage>();
