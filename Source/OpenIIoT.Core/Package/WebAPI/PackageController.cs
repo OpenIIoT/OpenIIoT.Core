@@ -82,7 +82,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             IList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
 
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
         /// <summary>
@@ -107,7 +107,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
 
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
         #endregion Instance Methods
