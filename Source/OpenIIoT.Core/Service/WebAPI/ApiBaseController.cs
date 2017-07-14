@@ -17,14 +17,19 @@ namespace OpenIIoT.Core.Service.WebAPI
         /// <summary>
         ///     Returns the JsonMediaTypeFormatter to use with this controller.
         /// </summary>
-        /// <param name="serializationProperties">
-        ///     A list of properties to exclude or include, depending on the ContractResolverType, in the serialized result.
-        /// </param>
-        /// <param name="contractResolverType">
+        /// <param name="resolverType">
         ///     A ContractResolverType representing the desired behavior of serializationProperties, OptIn or OptOut.
         /// </param>
+        /// <param name="properties">
+        ///     A list of properties to exclude or include, depending on the ContractResolverType, in the serialized result.
+        /// </param>
         /// <returns>A configured instance of JsonMediaTypeFormatter</returns>
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
+        public JsonMediaTypeFormatter JsonFormatter(ContractResolverType resolverType, List<string> properties)
+        {
+            return JsonFormatter(resolverType, properties.ToArray());
+        }
+
+        public JsonMediaTypeFormatter JsonFormatter(ContractResolverType resolverType, params string[] properties)
         {
             JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
 
@@ -33,10 +38,15 @@ namespace OpenIIoT.Core.Service.WebAPI
             retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
             retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
             retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
+            retVal.SerializerSettings.ContractResolver = new ContractResolver(properties.ToList(), resolverType);
             retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
 
             return retVal;
+        }
+
+        public JsonMediaTypeFormatter JsonFormatter()
+        {
+            return JsonFormatter(ContractResolverType.OptOut);
         }
 
         #endregion Public Methods
