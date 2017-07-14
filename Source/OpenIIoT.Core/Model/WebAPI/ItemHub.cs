@@ -9,7 +9,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Service.WebAPI;
 
-namespace OpenIIoT.Core.Model.API
+namespace OpenIIoT.Core.Model.WebAPI
 {
     /// <summary>
     ///     The ItemHub provides realtime data access to Model Items.

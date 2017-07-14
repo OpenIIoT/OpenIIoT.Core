@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Http;
 
-namespace OpenIIoT.Core.Service.Web.API
+namespace OpenIIoT.Core.Service.Web.WebAPI
 {
     public class ValuesController : ApiBaseController
     {

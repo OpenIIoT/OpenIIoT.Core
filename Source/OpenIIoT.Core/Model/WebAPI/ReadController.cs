@@ -11,7 +11,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.Core.Service.WebAPI;
 
-namespace OpenIIoT.Core.Model.API
+namespace OpenIIoT.Core.Model.WebAPI
 {
     public class ReadController : ApiBaseController
     {
