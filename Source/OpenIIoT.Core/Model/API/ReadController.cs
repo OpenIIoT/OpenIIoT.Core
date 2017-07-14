@@ -9,10 +9,11 @@ using OpenIIoT.Core.Model;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
+using OpenIIoT.Core.Service.WebAPI;
 
 namespace OpenIIoT.Core.Model.API
 {
-    public class ReadController : ApiController
+    public class ReadController : ApiBaseController
     {
         #region Private Fields
 
@@ -31,21 +32,6 @@ namespace OpenIIoT.Core.Model.API
         #endregion Private Fields
 
         #region Public Methods
-
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
-        {
-            JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
-
-            retVal.SerializerSettings = new JsonSerializerSettings();
-
-            retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-            retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
-            retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-            return retVal;
-        }
 
         [Route("api/read")]
         [HttpGet]

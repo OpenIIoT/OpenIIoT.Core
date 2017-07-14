@@ -1,10 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using OpenIIoT.Core.Service.WebAPI;
+using System.Collections.Generic;
 using System.Web.Http;
 
 namespace OpenIIoT.Core.Service.Web.API
 {
-    public class ValuesController : ApiController
+    public class ValuesController : ApiBaseController
     {
+        #region Public Methods
+
+        // DELETE api/values/5
+        public void Delete(int id)
+        {
+        }
+
         // GET api/values
         public IEnumerable<string> Get()
         {
@@ -27,9 +35,6 @@ namespace OpenIIoT.Core.Service.Web.API
         {
         }
 
-        // DELETE api/values/5
-        public void Delete(int id)
-        {
-        }
+        #endregion Public Methods
     }
 }
