@@ -59,22 +59,20 @@ namespace OpenIIoT.Core.Package.WebAPI
         }
 
         /// <summary>
-        ///     Returns the Package from the list of available Packages that matches the supplied filename.
+        ///     Returns the Package from the list of available Packages that matches the supplied Fully Qualified Name.
         /// </summary>
-        /// <param name="fileName">The Fully Qualified Name of the Package to return.</param>
+        /// <param name="fqn">The Fully Qualified Name of the Package to return.</param>
         /// <returns>The matching Package.</returns>
         [Route("api/package/{fqn}")]
         [HttpGet]
-        public HttpResponseMessage GetPackage(string fqn)
+        public HttpResponseMessage FindPackage(string fqn)
         {
-            IPackage package = manager.GetManager<IPackageManager>().Packages.Where(p => p.FQN == fqn).FirstOrDefault();
+            HttpResponseMessage retVal;
+            IResult<IPackage> findResult = manager.GetManager<IPackageManager>().FindPackage(fqn);
 
-            if (package == default(Package))
-            {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
-            }
+            retVal = Request.CreateResponse(HttpStatusCode.OK, findResult.ReturnValue, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
 
-            return Request.CreateResponse(HttpStatusCode.OK, package, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return retVal;
         }
 
         [Route("api/package")]

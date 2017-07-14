@@ -181,7 +181,7 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => DeletePackage(fqn));
         }
 
-        public IResult<IPackage> FindPackage(string fqn)
+        public IResult<IPackage> FindPackage(string fqn, bool rescan = false)
         {
             logger.EnterMethod(xLogger.Params(fqn));
             IResult<IPackage> retVal = new Result<IPackage>();
@@ -190,6 +190,12 @@ namespace OpenIIoT.Core.Package
 
             if (retVal.ReturnValue == default(IPackage))
             {
+                if (rescan)
+                {
+                    ScanPackages();
+                    return FindPackage(fqn, false);
+                }
+
                 retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
             }
 
