@@ -143,6 +143,11 @@ namespace OpenIIoT.Core.Package
             instance = null;
         }
 
+        /// <summary>
+        ///     Deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public IResult DeletePackage(string fqn)
         {
             logger.EnterMethod(xLogger.Params(fqn));
@@ -176,6 +181,11 @@ namespace OpenIIoT.Core.Package
             return retVal;
         }
 
+        /// <summary>
+        ///     Asynchronously deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> DeletePackageAsync(string fqn)
         {
             return await Task.Run(() => DeletePackage(fqn));
