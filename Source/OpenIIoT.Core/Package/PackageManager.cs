@@ -296,45 +296,6 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
         }
 
-        /// <summary>
-        ///     <para>
-        ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
-        ///         returns the found Package.
-        ///     </para>
-        ///     <para>
-        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
-        ///         <see cref="Packages"/> list from disk.
-        ///     </para>
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <param name="rescanOnNotFound">
-        ///     A value indicating whether the <see cref="ScanPackages()"/> method is to be invoked on a failure to find the
-        ///     specified Package.
-        /// </param>
-        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
-        private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound)
-        {
-            logger.EnterMethod(xLogger.Params(fqn));
-            IResult<IPackage> retVal = new Result<IPackage>();
-
-            retVal.ReturnValue = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
-
-            if (retVal.ReturnValue == default(IPackage))
-            {
-                if (rescanOnNotFound)
-                {
-                    ScanPackages();
-                    return FindPackage(fqn, false);
-                }
-
-                retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-            return retVal;
-        }
-
         #endregion Public Methods
 
         #region Protected Methods
@@ -387,5 +348,48 @@ namespace OpenIIoT.Core.Package
         }
 
         #endregion Protected Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     <para>
+        ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
+        ///         returns the found Package.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        /// <param name="rescanOnNotFound">
+        ///     A value indicating whether the <see cref="ScanPackages()"/> method is to be invoked on a failure to find the
+        ///     specified Package.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
+        private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound)
+        {
+            logger.EnterMethod(xLogger.Params(fqn));
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            retVal.ReturnValue = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
+
+            if (retVal.ReturnValue == default(IPackage))
+            {
+                if (rescanOnNotFound)
+                {
+                    ScanPackages();
+                    return FindPackage(fqn, false);
+                }
+
+                retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        #endregion Private Methods
     }
 }
