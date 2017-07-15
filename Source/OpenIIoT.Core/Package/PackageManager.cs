@@ -221,27 +221,42 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => SavePackage(fileName, data));
         }
 
+        /// <summary>
+        ///     Scans for and returns a list of all Package files in the configured Package directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
         public IResult<IList<IPackage>> ScanPackages()
         {
             Guid guid = logger.EnterMethod();
-
             IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>(ResultCode.Failure);
 
+            logger.Info("Scanning Packages...");
+
             IPlatform platform = Dependency<IPlatformManager>().Platform;
-            IResult<IList<string>> files = platform.ListFiles(platform.Directories.Packages);
+            IResult<IList<string>> fileResult = platform.ListFiles(platform.Directories.Packages);
 
-            if (files.ResultCode != ResultCode.Failure)
+            if (fileResult.ResultCode != ResultCode.Failure)
             {
-                retVal = new PackageScanner(files.ReturnValue).Scan();
-            }
+                retVal = new PackageScanner(fileResult.ReturnValue).Scan();
 
-            Packages = retVal.ReturnValue;
+                Packages = retVal.ReturnValue;
+
+                logger.Info($"Package scan found {Packages.Count} Packages.");
+            }
+            else
+            {
+                retVal.Incorporate(fileResult);
+            }
 
             retVal.LogResult(logger);
             logger.ExitMethod(guid);
             return retVal;
         }
 
+        /// <summary>
+        ///     Asynchronously scans for and returns a list of all Package files in the configured Package directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
         public async Task<IResult<IList<IPackage>>> ScanPackagesAsync()
         {
             return await Task.Run(() => ScanPackages());
@@ -285,18 +300,6 @@ namespace OpenIIoT.Core.Package
         #region Protected Methods
 
         /// <summary>
-        ///     <para>Executed upon instantiation of all program Managers.</para>
-        ///     <para>Registers all IManagers in the specified list implementing IConfigurable.</para>
-        /// </summary>
-        /// <exception cref="ConfigurationRegistrationException">Thrown when an error is encountered during setup.</exception>
-        protected override void Setup()
-        {
-            logger.EnterMethod();
-            logger.Debug("Performing Setup for '" + GetType().Name + "'...");
-            logger.ExitMethod();
-        }
-
-        /// <summary>
         ///     <para>Executed upon shutdown of the Manager.</para>
         ///     <para>
         ///         If the specified <see cref="StopType"/> is not <see cref="StopType.Exception"/>, saves the configuration to disk.
@@ -307,8 +310,9 @@ namespace OpenIIoT.Core.Package
         protected override Result Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
+
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
 
             if (!stopType.HasFlag(StopType.Exception))
             {
@@ -331,8 +335,9 @@ namespace OpenIIoT.Core.Package
         protected override Result Startup()
         {
             Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
+
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
 
             retVal.Incorporate(ScanPackages());
 
