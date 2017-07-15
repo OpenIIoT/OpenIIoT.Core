@@ -9,10 +9,11 @@ using OpenIIoT.Core.Model;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
+using OpenIIoT.Core.Service.WebAPI;
 
-namespace OpenIIoT.Core.Model.API
+namespace OpenIIoT.Core.Model.WebAPI
 {
-    public class ReadController : ApiController
+    public class ReadController : ApiBaseController
     {
         #region Private Fields
 
@@ -32,27 +33,12 @@ namespace OpenIIoT.Core.Model.API
 
         #region Public Methods
 
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
-        {
-            JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
-
-            retVal.SerializerSettings = new JsonSerializerSettings();
-
-            retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-            retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
-            retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-            return retVal;
-        }
-
         [Route("api/read")]
         [HttpGet]
         public HttpResponseMessage Read()
         {
             IList<Item> result = model.Children;
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(new List<string>(new string[] { "FQN", "Timestamp", "Quality", "Value", "Children" }), ContractResolverType.OptIn));
+            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(ContractResolverType.OptIn, "FQN", "Timestamp", "Quality", "Value", "Children"));
         }
 
         [Route("api/read/{fqn}")]
@@ -76,7 +62,7 @@ namespace OpenIIoT.Core.Model.API
                 foundItem.ReadFromSource();
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, foundItem.Value, JsonFormatter(new List<string>(new string[] { "FQN", "Timestamp", "Quality", "Value", "Children" }), ContractResolverType.OptIn));
+            return Request.CreateResponse(HttpStatusCode.OK, foundItem.Value, JsonFormatter(ContractResolverType.OptIn, "FQN", "Timestamp", "Quality", "Value", "Children"));
         }
 
         #endregion Public Methods

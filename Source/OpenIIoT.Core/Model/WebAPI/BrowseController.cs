@@ -9,10 +9,11 @@ using OpenIIoT.Core.Model;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
+using OpenIIoT.Core.Service.WebAPI;
 
-namespace OpenIIoT.Core.Model.API
+namespace OpenIIoT.Core.Model.WebAPI
 {
-    public class BrowseController : ApiController
+    public class BrowseController : ApiBaseController
     {
         #region Private Fields
 
@@ -51,7 +52,7 @@ namespace OpenIIoT.Core.Model.API
 
             if (verbosity == "concise")
             {
-                formatter = JsonFormatter(conciseSerializationProperties, ContractResolverType.OptIn);
+                formatter = JsonFormatter(ContractResolverType.OptIn, conciseSerializationProperties);
             }
             else
             {
@@ -63,29 +64,5 @@ namespace OpenIIoT.Core.Model.API
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        private static JsonMediaTypeFormatter JsonFormatter()
-        {
-            return JsonFormatter(verboseSerializationProperties, ContractResolverType.OptOut);
-        }
-
-        private static JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
-        {
-            JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
-
-            retVal.SerializerSettings = new JsonSerializerSettings();
-
-            retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-            retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
-            retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-            return retVal;
-        }
-
-        #endregion Private Methods
     }
 }

@@ -8,10 +8,11 @@ using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using System.Net;
+using OpenIIoT.Core.Service.WebAPI;
 
 namespace OpenIIoT.Core.Common.WebAPI
 {
-    public class LogController : ApiController
+    public class LogController : ApiBaseController
     {
         #region Private Fields
 
@@ -28,22 +29,7 @@ namespace OpenIIoT.Core.Common.WebAPI
         {
             var log = RealtimeLogger.LogHistory.ToArray();
 
-            return Request.CreateResponse(HttpStatusCode.OK, log, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
-        }
-
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
-        {
-            JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
-
-            retVal.SerializerSettings = new JsonSerializerSettings();
-
-            retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-            retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
-            retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-            return retVal;
+            return Request.CreateResponse(HttpStatusCode.OK, log, JsonFormatter());
         }
 
         #endregion Public Methods

@@ -96,10 +96,10 @@ namespace OpenIIoT.SDK.Tests.Common
             resolver = new SDK.Common.ContractResolver();
             Assert.IsType<SDK.Common.ContractResolver>(resolver);
 
-            resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { }));
+            resolver = new SDK.Common.ContractResolver();
             Assert.IsType<SDK.Common.ContractResolver>(resolver);
 
-            resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptIn);
+            resolver = new SDK.Common.ContractResolver(ContractResolverType.OptIn);
             Assert.IsType<SDK.Common.ContractResolver>(resolver);
         }
 
@@ -109,7 +109,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void OptIn()
         {
-            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { "Name" }), ContractResolverType.OptIn);
+            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(ContractResolverType.OptIn, "Name");
 
             string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
 
@@ -122,7 +122,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void OptOut()
         {
-            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { "Number", "TrueFalse" }), ContractResolverType.OptOut);
+            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(ContractResolverType.OptOut, "Number", "TrueFalse");
 
             string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
 
@@ -135,7 +135,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void Resolve()
         {
-            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(new List<string>(new string[] { }), ContractResolverType.OptOut);
+            SDK.Common.ContractResolver resolver = new SDK.Common.ContractResolver(ContractResolverType.OptOut);
 
             string json = JsonConvert.SerializeObject(mockup, new JsonSerializerSettings() { ContractResolver = resolver });
 

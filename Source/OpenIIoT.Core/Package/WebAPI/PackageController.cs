@@ -14,13 +14,14 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Package;
+using OpenIIoT.Core.Service.WebAPI;
 
 namespace OpenIIoT.Core.Package.WebAPI
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>
-    public class PackageController : ApiController
+    public class PackageController : ApiBaseController
     {
         #region Variables
 
@@ -70,7 +71,7 @@ namespace OpenIIoT.Core.Package.WebAPI
             HttpResponseMessage retVal;
             IResult<IPackage> findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
-            retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(new List<string>(new string[] { "Files" }), ContractResolverType.OptOut));
+            retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(ContractResolverType.OptOut, "Files"));
 
             return retVal;
         }
@@ -81,7 +82,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             IList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
 
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
         /// <summary>
@@ -93,32 +94,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         [HttpGet]
         public async Task<HttpResponseMessage> InstallPlugin(string fileName)
         {
-            return Request.CreateResponse(JsonFormatter(new List<string>(new string[] { }), ContractResolverType.OptOut));
-        }
-
-        /// <summary>
-        ///     Returns the JsonMediaTypeFormatter to use with this controller.
-        /// </summary>
-        /// <param name="serializationProperties">
-        ///     A list of properties to exclude or include, depending on the ContractResolverType, in the serialized result.
-        /// </param>
-        /// <param name="contractResolverType">
-        ///     A ContractResolverType representing the desired behavior of serializationProperties, OptIn or OptOut.
-        /// </param>
-        /// <returns>A configured instance of JsonMediaTypeFormatter</returns>
-        public JsonMediaTypeFormatter JsonFormatter(List<string> serializationProperties, ContractResolverType contractResolverType)
-        {
-            JsonMediaTypeFormatter retVal = new JsonMediaTypeFormatter();
-
-            retVal.SerializerSettings = new JsonSerializerSettings();
-
-            retVal.SerializerSettings.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-            retVal.SerializerSettings.DateTimeZoneHandling = DateTimeZoneHandling.Utc;
-            retVal.SerializerSettings.Formatting = Formatting.Indented;
-            retVal.SerializerSettings.ContractResolver = new ContractResolver(serializationProperties, contractResolverType);
-            retVal.SerializerSettings.Converters.Add(new Newtonsoft.Json.Converters.StringEnumConverter());
-
-            return retVal;
+            return Request.CreateResponse(JsonFormatter());
         }
 
         /// <summary>
@@ -131,7 +107,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
 
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(pluginPackageSerializationProperties, ContractResolverType.OptOut));
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
         #endregion Instance Methods
