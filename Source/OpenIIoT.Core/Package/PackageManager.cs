@@ -181,11 +181,35 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => DeletePackage(fqn));
         }
 
+        /// <summary>
+        ///     <para>
+        ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
+        ///         returns the found Package.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
         public IResult<IPackage> FindPackage(string fqn)
         {
             return FindPackage(fqn, false);
         }
 
+        /// <summary>
+        ///     <para>
+        ///         Asynchronously scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name
+        ///         and, if found, returns the found Package.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
         public async Task<IResult<IPackage>> FindPackageAsync(string fqn)
         {
             return await Task.Run(() => FindPackage(fqn));
@@ -272,6 +296,22 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
         }
 
+        /// <summary>
+        ///     <para>
+        ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
+        ///         returns the found Package.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        /// <param name="rescanOnNotFound">
+        ///     A value indicating whether the <see cref="ScanPackages()"/> method is to be invoked on a failure to find the
+        ///     specified Package.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
         private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound)
         {
             logger.EnterMethod(xLogger.Params(fqn));
