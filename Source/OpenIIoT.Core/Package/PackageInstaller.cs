@@ -44,6 +44,8 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod(xLogger.Params(package, options, publicKey));
             IResult retVal = new Result();
 
+            logger.Debug($"Installing Package '{package.FQN}'...");
+
             PackageExtractor extractor = new PackageExtractor();
             extractor.Updated += (sender, e) => logger.Debug(e.Message);
 
@@ -54,13 +56,16 @@ namespace OpenIIoT.Core.Package
             bool overwrite = options.HasFlag(PackageInstallOptions.Overwrite);
             bool skipVerification = options.HasFlag(PackageInstallOptions.SkipVerification);
 
+            logger.Debug($"Install directory: '{destination}'; overwrite={overwrite}, skipVerification={skipVerification}");
+
             try
             {
                 extractor.ExtractPackage(package.FileName, destination, overwrite, skipVerification);
             }
             catch (Exception ex)
             {
-                retVal.AddError($"Error installing Package '{fqn}': {ex.Message}");
+                logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError($"Error installing Package '{package.FQN}': {ex.Message}");
             }
 
             retVal.LogResult(logger);

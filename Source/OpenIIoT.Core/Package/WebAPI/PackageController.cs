@@ -98,16 +98,41 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
-        /// <summary>
-        ///     Installs the supplied Package.
-        /// </summary>
-        /// <param name="fileName">The filename of the Plugin Package to install.</param>
-        /// <returns>The App instance resulting from the installation.</returns>
-        [Route("api/package/{fileName}/install")]
+        [Route("api/package/{fqn}/install/{publicKey:string?}")]
         [HttpGet]
-        public async Task<HttpResponseMessage> InstallPlugin(string fileName)
+        public async Task<HttpResponseMessage> InstallPackage(string fqn, string publicKey = "")
         {
-            return Request.CreateResponse(JsonFormatter());
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/{fqn}/install/overwrite/{publicKey:string?}")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> InstallPackageOverwrite(string fqn, string publicKey = "")
+        {
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/{fqn}/install/overwrite/skipverification/{publicKey:string?}")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> InstallPackageOverwriteSkipVerification(string fqn, string publicKey = "")
+        {
+            PackageInstallOptions options = PackageInstallOptions.Overwrite | PackageInstallOptions.SkipVerification;
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/{fqn}/install/skipverification/{publicKey:string?}")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> InstallPackageSkipVerification(string fqn, string publicKey = "")
+        {
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.SkipVerification, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
         /// <summary>
