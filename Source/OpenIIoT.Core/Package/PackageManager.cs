@@ -50,6 +50,7 @@ using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using System.Linq;
+using OpenIIoT.SDK.Packaging.Operations;
 
 namespace OpenIIoT.Core.Package
 {
@@ -288,7 +289,32 @@ namespace OpenIIoT.Core.Package
 
         public IResult<bool> VerifyPackage(string fqn, string publicKey = "")
         {
-            return new Result<bool>();
+            Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
+            IResult<bool> retVal = new Result<bool>();
+
+            logger.Info($"Verifying Package '{fqn}'...");
+
+            IResult<IPackage> findResult = FindPackage(fqn);
+            retVal.Incorporate(findResult);
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                PackageVerifier verifier = new PackageVerifier();
+                verifier.Updated += (sender, e) => logger.Debug(e.Message);
+
+                try
+                {
+                    retVal.ReturnValue = verifier.VerifyPackage(findResult.ReturnValue.FileName);
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError($"Error validating Package '{fqn}': {ex.Message}");
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+            return retVal;
         }
 
         public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "")
