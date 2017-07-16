@@ -103,6 +103,8 @@ namespace OpenIIoT.Core.Package
 
             ManifestExtractor extractor = new ManifestExtractor();
 
+            extractor.Updated += (sender, e) => logger.Debug(e.Message);
+
             foreach (string file in FileList)
             {
                 PackageManifest manifest;
