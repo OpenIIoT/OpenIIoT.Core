@@ -282,7 +282,12 @@ namespace OpenIIoT.Core.Package
 
         public IResult<IPackage> SavePackage(string fileName, byte[] data)
         {
-            return new Result<IPackage>();
+            logger.EnterMethod(xLogger.Params(fileName, xLogger.Exclude()));
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            logger.Info($"Saving new Package to '{fileName}'...");
+
+            //IResult saveResult = Dependency<IPlatformManager>().Platform.WriteFile()
         }
 
         public async Task<IResult<IPackage>> SavePackageAsync(string fileName, byte[] data)
