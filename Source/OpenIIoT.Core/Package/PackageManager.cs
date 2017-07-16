@@ -287,6 +287,12 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => ScanPackages());
         }
 
+        /// <summary>
+        ///     Verifies the specified <see cref="Package"/> using the optionally specified PGP Public Key.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
         public IResult<bool> VerifyPackage(string fqn, string publicKey = "")
         {
             Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
@@ -317,6 +323,12 @@ namespace OpenIIoT.Core.Package
             return retVal;
         }
 
+        /// <summary>
+        ///     Asynchronously verifies the specified <see cref="Package"/> using the optionally specified PGP Public Key.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
         public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "")
         {
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
