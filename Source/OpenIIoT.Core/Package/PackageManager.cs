@@ -288,13 +288,26 @@ namespace OpenIIoT.Core.Package
             logger.Info($"Saving new Package to '{fileName}'...");
 
             IPlatform platform = Dependency<IPlatformManager>().Platform;
-            string tempDestination = Path.Combine(platform.Directories.Temp, fileName);
+            string tempFile = Path.Combine(platform.Directories.Temp, fileName);
 
-            retVal.Incorporate(platform.WriteFileBytes(fileName, data));
+            retVal.Incorporate(platform.WriteFileBytes(tempFile, data));
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                IResult<IPackage> findResult =
+                PackageReader reader = new PackageReader(platform);
+
+                IResult<IPackage> readResult = reader.Read(tempFile);
+
+                retVal.Incorporate(readResult);
+
+                if (retVal.ResultCode != ResultCode.Failure)
+                {
+                    retVal.ReturnValue = readResult.ReturnValue;
+                }
+                else
+                {
+                    retVal.AddError($"Failed to save Package '{fileName}'.");
+                }
             }
 
             retVal.LogResult(logger);
