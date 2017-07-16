@@ -154,7 +154,6 @@ namespace OpenIIoT.Core.Package
             IResult retVal = new Result();
 
             logger.Info($"Deleting Package {fqn}...");
-            logger.Debug($"Locating Package '{fqn}'...");
 
             IResult<IPackage> findResult = FindPackage(fqn);
             retVal.Incorporate(findResult);
@@ -165,15 +164,6 @@ namespace OpenIIoT.Core.Package
 
                 IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
                 retVal.Incorporate(deleteResult);
-            }
-            else
-            {
-                retVal.AddError("The Package could not be found.");
-            }
-
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                logger.Info($"Failed to delete Package '{fqn}': {retVal.GetLastError()}.");
             }
 
             retVal.LogResult(logger);
@@ -275,7 +265,7 @@ namespace OpenIIoT.Core.Package
 
                 Packages = retVal.ReturnValue;
 
-                logger.Info($"Package scan found {Packages.Count} Packages.");
+                logger.Info($"Package scan found {Packages.Count} Package{(Packages.Count == 1 ? string.Empty : "s")}.");
             }
             else
             {

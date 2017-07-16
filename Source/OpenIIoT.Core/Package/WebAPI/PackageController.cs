@@ -44,6 +44,19 @@ namespace OpenIIoT.Core.Package.WebAPI
 
         #region Instance Methods
 
+        [Route("api/package/{fqn}/delete")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> DeletePackage(string fqn)
+        {
+            HttpResponseMessage retVal;
+            HttpStatusCode statusCode = HttpStatusCode.OK;
+
+            IResult deleteResult = await manager.GetManager<IPackageManager>().DeletePackageAsync(fqn);
+
+            retVal = Request.CreateResponse(HttpStatusCode.OK, deleteResult, JsonFormatter());
+            return retVal;
+        }
+
         [Route("api/package/{fileName}/download")]
         [HttpGet]
         public HttpResponseMessage DownloadPackage(string fileName)
