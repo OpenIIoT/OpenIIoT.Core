@@ -631,6 +631,36 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
+        ///     Writes the contents of the supplied byte array into the specified file. If the destination file already exists it
+        ///     is overwritten.
+        /// </summary>
+        /// <param name="file">The file to write.</param>
+        /// <param name="contents">The binary data to write to the file.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
+        public virtual IResult<string> WriteFileBytes(string file, byte[] contents)
+        {
+            logger.EnterMethod(xLogger.Params(file, contents));
+            logger.Trace("Writing binary data to file '" + file + "'...");
+
+            Result<string> retVal = new Result<string>();
+
+            try
+            {
+                File.WriteAllBytes(file, contents);
+                retVal.ReturnValue = file;
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error writing to file '" + file + "': " + ex);
+                logger.Exception(LogLevel.Debug, ex);
+            }
+
+            retVal.LogResult(logger.Trace);
+            logger.ExitMethod(retVal.ResultCode);
+            return retVal;
+        }
+
+        /// <summary>
         ///     Writes the contents of the specified string array into the specified file. If the destination file already exists
         ///     it is overwritten.
         /// </summary>
@@ -669,7 +699,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> WriteFileText(string file, string contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
-            logger.Trace("Writing to file '" + file + "'...");
+            logger.Trace("Writing text to file '" + file + "'...");
 
             Result<string> retVal = new Result<string>();
 
