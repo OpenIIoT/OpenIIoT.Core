@@ -666,7 +666,7 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         /// <param name="file">The file to which the specified contents are written.</param>
         /// <param name="contents">The string array containing the content to write.</param>
-        /// <returns>The fully qualified name of the written file.</returns>
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
         public virtual IResult<string> WriteFileLines(string file, string[] contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));

@@ -233,6 +233,15 @@ namespace OpenIIoT.SDK.Platform
         IResult<string> WriteFileBytes(string file, byte[] contents);
 
         /// <summary>
+        ///     Writes the contents of the specified string array into the specified file. If the destination file already exists
+        ///     it is overwritten.
+        /// </summary>
+        /// <param name="file">The file to which the specified contents are written.</param>
+        /// <param name="contents">The string array containing the content to write.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
+        IResult<string> WriteFileLines(string file, string[] contents);
+
+        /// <summary>
         ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.
         /// </summary>
         /// <param name="file">The file to write.</param>
