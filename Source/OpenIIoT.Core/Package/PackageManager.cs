@@ -51,6 +51,8 @@ using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using System.Linq;
 using OpenIIoT.SDK.Packaging.Operations;
+using System.IO;
+using OpenIIoT.Core.Platform;
 
 namespace OpenIIoT.Core.Package
 {
@@ -218,17 +220,33 @@ namespace OpenIIoT.Core.Package
 
         public IResult InstallPackage(string fqn, string publicKey = "")
         {
-            return new Result();
+            return InstallPackage(fqn, PackageInstallOptions.None, publicKey);
         }
 
         public IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
         {
-            return new Result();
+            logger.EnterMethod(xLogger.Params(fqn, options, publicKey));
+            IResult retVal = new Result();
+
+            logger.Info($"Installing Package '{fqn}'...");
+
+            IResult<IPackage> findResult = FindPackage(fqn);
+            retVal.Incorporate(findResult);
+
+            if (findResult.ResultCode != ResultCode.Failure)
+            {
+                PackageInstaller installer = new PackageInstaller(Dependency<IPlatformManager>().Platform);
+                retVal.Incorporate(installer.InstallPackage(findResult.ReturnValue, options, publicKey));
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public async Task<IResult> InstallPackageAsync(string fqn, string publicKey = "")
         {
-            return await Task.Run(() => InstallPackageAsync(fqn, publicKey));
+            return await Task.Run(() => InstallPackage(fqn, publicKey));
         }
 
         public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")

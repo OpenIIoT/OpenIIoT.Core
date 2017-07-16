@@ -205,6 +205,7 @@
     <Compile Include="Model\WebAPI\ReadController.cs" />
     <Compile Include="Model\WebAPI\ValuesController.cs" />
     <Compile Include="Package\PackageManager.cs" />
+    <Compile Include="Package\PackageInstaller.cs" />
     <Compile Include="Package\WebAPI\PackageController.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
