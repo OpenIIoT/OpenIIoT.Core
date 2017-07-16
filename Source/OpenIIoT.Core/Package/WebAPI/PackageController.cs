@@ -107,16 +107,16 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
-        [Route("api/package/{fqn}/install/overwrite/{publicKey?}")]
+        [Route("api/package/{fqn}/install/overwrite")]
         [HttpGet]
         public async Task<HttpResponseMessage> InstallPackageOverwrite(string fqn, string publicKey = "")
         {
-            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, true, publicKey);
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.Overwrite, publicKey);
 
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
-        [Route("api/package/{fqn}/install/overwrite/skipverification/{publicKey?}")]
+        [Route("api/package/{fqn}/install/overwrite/skipverification")]
         [HttpGet]
         public async Task<HttpResponseMessage> InstallPackageOverwriteSkipVerification(string fqn, string publicKey = "")
         {
@@ -126,7 +126,7 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
-        [Route("api/package/{fqn}/install/skipverification/{publicKey?}")]
+        [Route("api/package/{fqn}/install/skipverification")]
         [HttpGet]
         public async Task<HttpResponseMessage> InstallPackageSkipVerification(string fqn, string publicKey = "")
         {
@@ -148,7 +148,7 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
-        [Route("api/package/{fqn}/verify/{publicKey?}")]
+        [Route("api/package/{fqn}/verify")]
         [HttpGet]
         public async Task<HttpResponseMessage> VerifyPackage(string fqn, string publicKey = "")
         {
