@@ -218,11 +218,24 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => FindPackage(fqn));
         }
 
+        /// <summary>
+        ///     Installs the specified <see cref="Package"/> (extracts it to disk).
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public IResult InstallPackage(string fqn, string publicKey = "")
         {
             return InstallPackage(fqn, PackageInstallOptions.None, publicKey);
         }
 
+        /// <summary>
+        ///     Installs the specified <see cref="Package"/> (extracts it to disk).
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
         {
             logger.EnterMethod(xLogger.Params(fqn, options, publicKey));
@@ -244,11 +257,24 @@ namespace OpenIIoT.Core.Package
             return retVal;
         }
 
+        /// <summary>
+        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk).
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> InstallPackageAsync(string fqn, string publicKey = "")
         {
             return await Task.Run(() => InstallPackage(fqn, publicKey));
         }
 
+        /// <summary>
+        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk).
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
         {
             return await Task.Run(() => InstallPackage(fqn, options, publicKey));
