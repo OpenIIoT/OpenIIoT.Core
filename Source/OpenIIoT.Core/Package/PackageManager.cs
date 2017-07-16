@@ -287,7 +287,19 @@ namespace OpenIIoT.Core.Package
 
             logger.Info($"Saving new Package to '{fileName}'...");
 
-            //IResult saveResult = Dependency<IPlatformManager>().Platform.WriteFile()
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
+            string tempDestination = Path.Combine(platform.Directories.Temp, fileName);
+
+            retVal.Incorporate(platform.WriteFileBytes(fileName, data));
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                IResult<IPackage> findResult =
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public async Task<IResult<IPackage>> SavePackageAsync(string fileName, byte[] data)
