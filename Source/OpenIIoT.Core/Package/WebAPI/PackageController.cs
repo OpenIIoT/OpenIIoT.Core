@@ -123,6 +123,15 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
+        [Route("api/package/{fqn}/verify/{publicKey?}")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> VerifyPackage(string fqn, string publicKey = "")
+        {
+            IResult<bool> verifyResult = await manager.GetManager<IPackageManager>().VerifyPackageAsync(fqn, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, verifyResult, JsonFormatter());
+        }
+
         #endregion Instance Methods
     }
 }
