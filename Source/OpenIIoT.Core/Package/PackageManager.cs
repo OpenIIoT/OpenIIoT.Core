@@ -294,7 +294,7 @@ namespace OpenIIoT.Core.Package
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                PackageReader reader = new PackageReader(platform);
+                PackageReader reader = new PackageReader();
 
                 IResult<IPackage> readResult = reader.Read(tempFile);
 

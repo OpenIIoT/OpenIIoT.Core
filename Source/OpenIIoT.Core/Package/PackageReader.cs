@@ -24,21 +24,11 @@ namespace OpenIIoT.Core.Package
 
         #region Public Constructors
 
-        public PackageReader(IPlatform platform)
+        public PackageReader()
         {
-            Platform = platform;
         }
 
         #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the list of filenames to scan.
-        /// </summary>
-        public IPlatform Platform { get; set; }
-
-        #endregion Public Properties
 
         #region Public Methods
 

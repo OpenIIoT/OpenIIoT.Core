@@ -55,6 +55,8 @@ using System.Linq;
 using OpenIIoT.SDK.Package;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.SDK.Platform;
+using Moq;
 
 namespace OpenIIoT.Core.Tests.Plugin
 {
@@ -79,6 +81,13 @@ namespace OpenIIoT.Core.Tests.Plugin
             string dirPath = Path.GetDirectoryName(codeBasePath);
 
             Data = Path.Combine(dirPath, "Package", "Data", "Package");
+
+            // create a return value for the mocked IPlatform.ListDirectories
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>(), It.IsAny<string>())).Returns(dirResult);
         }
 
         #endregion Public Constructors
@@ -89,6 +98,11 @@ namespace OpenIIoT.Core.Tests.Plugin
         ///     Gets or sets the test data directory.
         /// </summary>
         private string Data { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPlatform instance used for testing.
+        /// </summary>
+        private IPlatform Platform { get; set; }
 
         /// <summary>
         ///     Gets or sets the temporary data directory.
@@ -105,10 +119,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void Constructor()
         {
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Platform);
 
             Assert.IsType<Core.Package.PackageScanner>(scanner);
-            Assert.NotNull(scanner.FileList);
         }
 
         /// <summary>
@@ -125,9 +138,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void ListEmptyDirectory()
         {
-            Core.Package.PackageScanner lister = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            Core.Package.PackageScanner lister = new Core.Package.PackageScanner(Platform);
 
-            IResult<IList<IPackage>> list = lister.Scan();
+            IResult<IList<IPackage>> list = lister.Scan(Data);
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
 
@@ -143,9 +156,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         {
             File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
 
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Platform);
 
-            IResult<IList<IPackage>> list = scanner.Scan();
+            IResult<IList<IPackage>> list = scanner.Scan(Data);
 
             Assert.Equal(ResultCode.Warning, list.ResultCode);
             Assert.Equal(0, list.ReturnValue.Count);
@@ -157,9 +170,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void ListPackages()
         {
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Data).ToList());
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Platform);
 
-            IResult<IList<IPackage>> list = scanner.Scan();
+            IResult<IList<IPackage>> list = scanner.Scan(Data);
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
             Assert.Equal(3, list.ReturnValue.Count);
@@ -170,5 +183,14 @@ namespace OpenIIoT.Core.Tests.Plugin
         }
 
         #endregion Public Methods
+
+        private bool IsUNIX
+        {
+            get
+            {
+                int p = (int)Environment.OSVersion.Platform;
+                return (p == 4) || (p == 6) || (p == 128);
+            }
+        }
     }
 }

@@ -110,7 +110,7 @@ namespace OpenIIoT.Core.Package
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                PackageReader reader = new PackageReader(Platform);
+                PackageReader reader = new PackageReader();
 
                 foreach (string file in fileListResult.ReturnValue)
                 {
