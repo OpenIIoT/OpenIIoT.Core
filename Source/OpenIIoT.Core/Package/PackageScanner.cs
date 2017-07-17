@@ -122,7 +122,7 @@ namespace OpenIIoT.Core.Package
                     }
                     else
                     {
-                        retVal.AddWarning($"The package file '{Path.GetFileName(file)}' is not valid: {readResult.GetLastError()}");
+                        retVal.AddWarning(readResult.GetLastError());
                     }
                 }
             }

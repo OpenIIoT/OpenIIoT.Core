@@ -50,7 +50,7 @@ namespace OpenIIoT.Core.Package
             }
             catch (Exception ex)
             {
-                retVal.AddWarning($"The package file '{Path.GetFileName(file)}' is not valid; the Manifest could not be extracted: {ex.Message}");
+                retVal.AddError($"The package file '{Path.GetFileName(file)}' is not valid; the Manifest could not be extracted: {ex.Message}");
             }
 
             retVal.LogResult(logger);
