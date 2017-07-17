@@ -327,25 +327,15 @@ namespace OpenIIoT.Core.Package
         public IResult<IList<IPackage>> ScanPackages()
         {
             Guid guid = logger.EnterMethod();
-            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>(ResultCode.Failure);
+            IResult<IList<IPackage>> retVal;
 
             logger.Info("Scanning Packages...");
 
             IPlatform platform = Dependency<IPlatformManager>().Platform;
-            IResult<IList<string>> fileResult = platform.ListFiles(platform.Directories.Packages);
 
-            if (fileResult.ResultCode != ResultCode.Failure)
-            {
-                retVal = new PackageScanner(fileResult.ReturnValue).Scan();
+            PackageScanner scanner = new PackageScanner(platform);
 
-                Packages = retVal.ReturnValue;
-
-                logger.Info($"Package scan found {Packages.Count} Package{(Packages.Count == 1 ? string.Empty : "s")}.");
-            }
-            else
-            {
-                retVal.Incorporate(fileResult);
-            }
+            retVal = scanner.Scan(platform.Directories.Packages);
 
             retVal.LogResult(logger);
             logger.ExitMethod(guid);
