@@ -126,11 +126,11 @@ namespace OpenIIoT.Core.Configuration
                 logger.Trace("File '" + fileName + "' was found.  Attempting to read...");
 
                 // read the entirety of the configuration file into configFile
-                IResult<string> readResult = Platform.ReadFile(fileName);
+                IResult<string> readResult = Platform.ReadFileText(fileName);
 
                 if (readResult.ResultCode != ResultCode.Failure)
                 {
-                    string configFile = Platform.ReadFile(fileName).ReturnValue;
+                    string configFile = Platform.ReadFileText(fileName).ReturnValue;
 
                     logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
@@ -168,7 +168,7 @@ namespace OpenIIoT.Core.Configuration
 
             string content = JsonConvert.SerializeObject(configuration, Formatting.Indented, new Newtonsoft.Json.Converters.StringEnumConverter());
 
-            IResult writeResult = Platform.WriteFile(fileName, content);
+            IResult writeResult = Platform.WriteFileText(fileName, content);
 
             retVal.Incorporate(writeResult);
 

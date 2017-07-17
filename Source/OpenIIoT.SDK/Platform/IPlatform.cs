@@ -177,6 +177,24 @@ namespace OpenIIoT.SDK.Platform
         IResult<IList<string>> ListDirectories(string parentDirectory, string searchPattern = "*");
 
         /// <summary>
+        ///     Returns a list of subdirectories within the specified directory.
+        /// </summary>
+        /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
+        /// </returns>
+        IResult<IList<string>> ListDirectories(string parentDirectory);
+
+        /// <summary>
+        ///     Returns a list of files within the specified directory matching the supplied searchPattern.
+        /// </summary>
+        /// <param name="parentDirectory">The directory to search.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
+        /// </returns>
+        IResult<IList<string>> ListFiles(string parentDirectory);
+
+        /// <summary>
         ///     Returns a list of files within the specified directory matching the supplied searchPattern.
         /// </summary>
         /// <param name="parentDirectory">The directory to search.</param>
@@ -197,13 +215,13 @@ namespace OpenIIoT.SDK.Platform
         IResult<IList<string>> ListZipFiles(string zipFile, string searchPattern = "*");
 
         /// <summary>
-        ///     Reads the contents of the specified file into a single string.
+        ///     Reads the contents of the specified file into a byte array.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <returns>
-        ///     A Result containing the result of the operation and a string containing the entire contents of the file.
+        ///     A Result containing the result of the operation and a byte array containing the entire contents of the file.
         /// </returns>
-        IResult<string> ReadFile(string file);
+        IResult<byte[]> ReadFileBytes(string file);
 
         /// <summary>
         ///     Reads the contents of the specified file into a string array.
@@ -215,12 +233,39 @@ namespace OpenIIoT.SDK.Platform
         IResult<string[]> ReadFileLines(string file);
 
         /// <summary>
+        ///     Reads the contents of the specified file into a single string.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a string containing the entire contents of the file.
+        /// </returns>
+        IResult<string> ReadFileText(string file);
+
+        /// <summary>
+        ///     Writes the contents of the supplied byte array into the specified file. If the destination file already exists it
+        ///     is overwritten.
+        /// </summary>
+        /// <param name="file">The file to write.</param>
+        /// <param name="contents">The binary data to write to the file.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
+        IResult<string> WriteFileBytes(string file, byte[] contents);
+
+        /// <summary>
+        ///     Writes the contents of the specified string array into the specified file. If the destination file already exists
+        ///     it is overwritten.
+        /// </summary>
+        /// <param name="file">The file to which the specified contents are written.</param>
+        /// <param name="contents">The string array containing the content to write.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
+        IResult<string> WriteFileLines(string file, string[] contents);
+
+        /// <summary>
         ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.
         /// </summary>
         /// <param name="file">The file to write.</param>
         /// <param name="contents">The text to write to the file.</param>
-        /// <returns>The fully qualified name of the written file.</returns>
-        IResult<string> WriteFile(string file, string contents);
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
+        IResult<string> WriteFileText(string file, string contents);
 
         #endregion Public Methods
     }

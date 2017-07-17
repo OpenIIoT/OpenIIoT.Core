@@ -52,7 +52,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Moq;
 using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
 
@@ -105,10 +107,9 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void Constructor()
         {
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(new Mock<IPlatform>().Object);
 
             Assert.IsType<Core.Package.PackageScanner>(scanner);
-            Assert.NotNull(scanner.FileList);
         }
 
         /// <summary>
@@ -125,9 +126,15 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void ListEmptyDirectory()
         {
-            Core.Package.PackageScanner lister = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
 
-            IResult<IList<IPackage>> list = lister.Scan();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
+
+            Core.Package.PackageScanner lister = new Core.Package.PackageScanner(platformMock.Object);
+
+            IResult<IList<IPackage>> list = lister.Scan(Data);
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
 
@@ -143,9 +150,15 @@ namespace OpenIIoT.Core.Tests.Plugin
         {
             File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
 
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Temp).ToList());
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Temp).ToList();
 
-            IResult<IList<IPackage>> list = scanner.Scan();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(Temp)).Returns(dirResult);
+
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(platformMock.Object);
+
+            IResult<IList<IPackage>> list = scanner.Scan(Temp);
 
             Assert.Equal(ResultCode.Warning, list.ResultCode);
             Assert.Equal(0, list.ReturnValue.Count);
@@ -157,9 +170,15 @@ namespace OpenIIoT.Core.Tests.Plugin
         [Fact]
         public void ListPackages()
         {
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(Directory.EnumerateFiles(Data).ToList());
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
 
-            IResult<IList<IPackage>> list = scanner.Scan();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
+
+            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(platformMock.Object);
+
+            IResult<IList<IPackage>> list = scanner.Scan(Data);
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
             Assert.Equal(3, list.ReturnValue.Count);

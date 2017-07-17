@@ -443,6 +443,18 @@ namespace OpenIIoT.Core.Platform
         ///     Returns a list of subdirectories within the specified directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
+        /// </returns>
+        public virtual IResult<IList<string>> ListDirectories(string parentDirectory)
+        {
+            return ListDirectories(parentDirectory, "*");
+        }
+
+        /// <summary>
+        ///     Returns a list of subdirectories within the specified directory.
+        /// </summary>
+        /// <param name="parentDirectory">The parent directory to search.</param>
         /// <param name="searchPattern">The search pattern to which directory names are compared.</param>
         /// <returns>
         ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
@@ -465,6 +477,18 @@ namespace OpenIIoT.Core.Platform
 
             logger.ExitMethod(retVal);
             return retVal;
+        }
+
+        /// <summary>
+        ///     Returns a list of files within the specified directory matching the supplied searchPattern.
+        /// </summary>
+        /// <param name="parentDirectory">The directory to search.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
+        /// </returns>
+        public virtual IResult<IList<string>> ListFiles(string parentDirectory)
+        {
+            return ListFiles(parentDirectory, "*");
         }
 
         /// <summary>
@@ -544,22 +568,22 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Reads the contents of the specified file into a single string.
+        ///     Reads the contents of the specified file into a byte array.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <returns>
-        ///     A Result containing the result of the operation and a string containing the entire contents of the file.
+        ///     A Result containing the result of the operation and a byte array containing the entire contents of the file.
         /// </returns>
-        public virtual IResult<string> ReadFile(string file)
+        public IResult<byte[]> ReadFileBytes(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Reading contents of file '" + file + "'...");
+            logger.Trace("Reading binary contents of file '" + file + "'...");
 
-            Result<string> retVal = new Result<string>();
+            Result<byte[]> retVal = new Result<byte[]>();
 
             try
             {
-                retVal.ReturnValue = File.ReadAllText(file);
+                retVal.ReturnValue = File.ReadAllBytes(file);
             }
             catch (Exception ex)
             {
@@ -602,21 +626,51 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.
+        ///     Reads the contents of the specified file into a single string.
         /// </summary>
-        /// <param name="file">The file to which the specified contents are written.</param>
-        /// <param name="contents">The string containing the content to write.</param>
-        /// <returns>The fully qualified name of the written file.</returns>
-        public virtual IResult<string> WriteFile(string file, string contents)
+        /// <param name="file">The file to read.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a string containing the entire contents of the file.
+        /// </returns>
+        public virtual IResult<string> ReadFileText(string file)
         {
-            logger.EnterMethod(xLogger.Params(file, contents));
-            logger.Trace("Writing to file '" + file + "'...");
+            logger.EnterMethod(xLogger.Params(file));
+            logger.Trace("Reading text contents of file '" + file + "'...");
 
             Result<string> retVal = new Result<string>();
 
             try
             {
-                File.WriteAllText(file, contents);
+                retVal.ReturnValue = File.ReadAllText(file);
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error reading file '" + file + "': " + ex);
+                logger.Exception(LogLevel.Debug, ex);
+            }
+
+            retVal.LogResult(logger.Trace);
+            logger.ExitMethod(retVal.ResultCode);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Writes the contents of the supplied byte array into the specified file. If the destination file already exists it
+        ///     is overwritten.
+        /// </summary>
+        /// <param name="file">The file to write.</param>
+        /// <param name="contents">The binary data to write to the file.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
+        public virtual IResult<string> WriteFileBytes(string file, byte[] contents)
+        {
+            logger.EnterMethod(xLogger.Params(file, contents));
+            logger.Trace("Writing binary data to file '" + file + "'...");
+
+            Result<string> retVal = new Result<string>();
+
+            try
+            {
+                File.WriteAllBytes(file, contents);
                 retVal.ReturnValue = file;
             }
             catch (Exception ex)
@@ -636,7 +690,7 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         /// <param name="file">The file to which the specified contents are written.</param>
         /// <param name="contents">The string array containing the content to write.</param>
-        /// <returns>The fully qualified name of the written file.</returns>
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
         public virtual IResult<string> WriteFileLines(string file, string[] contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
@@ -647,6 +701,35 @@ namespace OpenIIoT.Core.Platform
             try
             {
                 File.WriteAllLines(file, contents);
+                retVal.ReturnValue = file;
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError("Error writing to file '" + file + "': " + ex);
+                logger.Exception(LogLevel.Debug, ex);
+            }
+
+            retVal.LogResult(logger.Trace);
+            logger.ExitMethod(retVal.ResultCode);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.
+        /// </summary>
+        /// <param name="file">The file to write.</param>
+        /// <param name="contents">The text to write to the file.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified name of the written file.</returns>
+        public virtual IResult<string> WriteFileText(string file, string contents)
+        {
+            logger.EnterMethod(xLogger.Params(file, contents));
+            logger.Trace("Writing text to file '" + file + "'...");
+
+            Result<string> retVal = new Result<string>();
+
+            try
+            {
+                File.WriteAllText(file, contents);
                 retVal.ReturnValue = file;
             }
             catch (Exception ex)

@@ -50,6 +50,9 @@ using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using System.Linq;
+using OpenIIoT.SDK.Packaging.Operations;
+using System.IO;
+using OpenIIoT.Core.Platform;
 
 namespace OpenIIoT.Core.Package
 {
@@ -143,13 +146,17 @@ namespace OpenIIoT.Core.Package
             instance = null;
         }
 
+        /// <summary>
+        ///     Deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public IResult DeletePackage(string fqn)
         {
             logger.EnterMethod(xLogger.Params(fqn));
             IResult retVal = new Result();
 
             logger.Info($"Deleting Package {fqn}...");
-            logger.Debug($"Locating Package '{fqn}'...");
 
             IResult<IPackage> findResult = FindPackage(fqn);
             retVal.Incorporate(findResult);
@@ -161,14 +168,88 @@ namespace OpenIIoT.Core.Package
                 IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
                 retVal.Incorporate(deleteResult);
             }
-            else
-            {
-                retVal.AddError("The Package could not be found.");
-            }
 
-            if (retVal.ResultCode == ResultCode.Failure)
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Asynchronously deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public async Task<IResult> DeletePackageAsync(string fqn)
+        {
+            return await Task.Run(() => DeletePackage(fqn));
+        }
+
+        /// <summary>
+        ///     <para>
+        ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
+        ///         returns the found Package.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
+        public IResult<IPackage> FindPackage(string fqn)
+        {
+            return FindPackage(fqn, false);
+        }
+
+        /// <summary>
+        ///     <para>
+        ///         Asynchronously scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name
+        ///         and, if found, returns the found Package.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
+        public async Task<IResult<IPackage>> FindPackageAsync(string fqn)
+        {
+            return await Task.Run(() => FindPackage(fqn));
+        }
+
+        /// <summary>
+        ///     Installs the specified <see cref="Package"/> (extracts it to disk).
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult InstallPackage(string fqn, string publicKey = "")
+        {
+            return InstallPackage(fqn, PackageInstallOptions.None, publicKey);
+        }
+
+        /// <summary>
+        ///     Installs the specified <see cref="Package"/> (extracts it to disk).
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
+        {
+            logger.EnterMethod(xLogger.Params(fqn, options, publicKey));
+            IResult retVal = new Result();
+
+            logger.Info($"Installing Package '{fqn}'...");
+
+            IResult<IPackage> findResult = FindPackage(fqn);
+            retVal.Incorporate(findResult);
+
+            if (findResult.ResultCode != ResultCode.Failure)
             {
-                logger.Info($"Failed to delete Package '{fqn}': {retVal.GetLastError()}.");
+                PackageInstaller installer = new PackageInstaller(Dependency<IPlatformManager>().Platform);
+                retVal.Incorporate(installer.InstallPackage(findResult.ReturnValue, options, publicKey));
             }
 
             retVal.LogResult(logger);
@@ -176,36 +257,24 @@ namespace OpenIIoT.Core.Package
             return retVal;
         }
 
-        public async Task<IResult> DeletePackageAsync(string fqn)
-        {
-            return await Task.Run(() => DeletePackage(fqn));
-        }
-
-        public IResult<IPackage> FindPackage(string fqn)
-        {
-            return FindPackage(fqn, false);
-        }
-
-        public async Task<IResult<IPackage>> FindPackageAsync(string fqn)
-        {
-            return await Task.Run(() => FindPackage(fqn));
-        }
-
-        public IResult InstallPackage(string fqn, string publicKey = "")
-        {
-            return new Result();
-        }
-
-        public IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
-        {
-            return new Result();
-        }
-
+        /// <summary>
+        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk).
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> InstallPackageAsync(string fqn, string publicKey = "")
         {
-            return await Task.Run(() => InstallPackageAsync(fqn, publicKey));
+            return await Task.Run(() => InstallPackage(fqn, publicKey));
         }
 
+        /// <summary>
+        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk).
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
         {
             return await Task.Run(() => InstallPackage(fqn, options, publicKey));
@@ -213,7 +282,37 @@ namespace OpenIIoT.Core.Package
 
         public IResult<IPackage> SavePackage(string fileName, byte[] data)
         {
-            return new Result<IPackage>();
+            logger.EnterMethod(xLogger.Params(fileName, xLogger.Exclude()));
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            logger.Info($"Saving new Package to '{fileName}'...");
+
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
+            string tempFile = Path.Combine(platform.Directories.Temp, fileName);
+
+            retVal.Incorporate(platform.WriteFileBytes(tempFile, data));
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                PackageReader reader = new PackageReader();
+
+                IResult<IPackage> readResult = reader.Read(tempFile);
+
+                retVal.Incorporate(readResult);
+
+                if (retVal.ResultCode != ResultCode.Failure)
+                {
+                    retVal.ReturnValue = readResult.ReturnValue;
+                }
+                else
+                {
+                    retVal.AddError($"Failed to save Package '{fileName}'.");
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public async Task<IResult<IPackage>> SavePackageAsync(string fileName, byte[] data)
@@ -221,42 +320,155 @@ namespace OpenIIoT.Core.Package
             return await Task.Run(() => SavePackage(fileName, data));
         }
 
+        /// <summary>
+        ///     Scans for and returns a list of all Package files in the configured Package directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
         public IResult<IList<IPackage>> ScanPackages()
         {
             Guid guid = logger.EnterMethod();
+            IResult<IList<IPackage>> retVal;
 
-            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>(ResultCode.Failure);
+            logger.Info("Scanning Packages...");
 
             IPlatform platform = Dependency<IPlatformManager>().Platform;
-            IResult<IList<string>> files = platform.ListFiles(platform.Directories.Packages);
 
-            if (files.ResultCode != ResultCode.Failure)
-            {
-                retVal = new PackageScanner(files.ReturnValue).Scan();
-            }
+            PackageScanner scanner = new PackageScanner(platform);
 
-            Packages = retVal.ReturnValue;
+            retVal = scanner.Scan(platform.Directories.Packages);
 
             retVal.LogResult(logger);
             logger.ExitMethod(guid);
             return retVal;
         }
 
+        /// <summary>
+        ///     Asynchronously scans for and returns a list of all Package files in the configured Package directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
         public async Task<IResult<IList<IPackage>>> ScanPackagesAsync()
         {
             return await Task.Run(() => ScanPackages());
         }
 
+        /// <summary>
+        ///     Verifies the specified <see cref="Package"/> using the optionally specified PGP Public Key.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
         public IResult<bool> VerifyPackage(string fqn, string publicKey = "")
         {
-            return new Result<bool>();
+            Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
+            IResult<bool> retVal = new Result<bool>();
+
+            logger.Info($"Verifying Package '{fqn}'...");
+
+            IResult<IPackage> findResult = FindPackage(fqn);
+            retVal.Incorporate(findResult);
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                PackageVerifier verifier = new PackageVerifier();
+                verifier.Updated += (sender, e) => logger.Debug(e.Message);
+
+                try
+                {
+                    retVal.ReturnValue = verifier.VerifyPackage(findResult.ReturnValue.FileName);
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError($"Error validating Package '{fqn}': {ex.Message}");
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+            return retVal;
         }
 
+        /// <summary>
+        ///     Asynchronously verifies the specified <see cref="Package"/> using the optionally specified PGP Public Key.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
         public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "")
         {
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
         }
 
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     <para>Executed upon shutdown of the Manager.</para>
+        ///     <para>
+        ///         If the specified <see cref="StopType"/> is not <see cref="StopType.Exception"/>, saves the configuration to disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="stopType">The nature of the stoppage.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        {
+            Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
+
+            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+
+            if (!stopType.HasFlag(StopType.Exception))
+            {
+                Packages = default(IList<IPackage>);
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     <para>Executed upon startup of the Manager.</para>
+        ///     <para>
+        ///         Verifies the existence of the configuration file and if missing, builds it using all default options. Loads the
+        ///         configuration, validates it, and, if valid, attaches it to the <see cref="Configuration"/> property.
+        ///     </para>
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        protected override Result Startup()
+        {
+            Guid guid = logger.EnterMethod(true);
+            Result retVal = new Result();
+
+            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
+
+            retVal.Incorporate(ScanPackages());
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal, guid);
+            return retVal;
+        }
+
+        #endregion Protected Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     <para>
+        ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
+        ///         returns the found Package.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        /// <param name="rescanOnNotFound">
+        ///     A value indicating whether the <see cref="ScanPackages()"/> method is to be invoked on a failure to find the
+        ///     specified Package.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
         private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound)
         {
             logger.EnterMethod(xLogger.Params(fqn));
@@ -280,67 +492,6 @@ namespace OpenIIoT.Core.Package
             return retVal;
         }
 
-        #endregion Public Methods
-
-        #region Protected Methods
-
-        /// <summary>
-        ///     <para>Executed upon instantiation of all program Managers.</para>
-        ///     <para>Registers all IManagers in the specified list implementing IConfigurable.</para>
-        /// </summary>
-        /// <exception cref="ConfigurationRegistrationException">Thrown when an error is encountered during setup.</exception>
-        protected override void Setup()
-        {
-            logger.EnterMethod();
-            logger.Debug("Performing Setup for '" + GetType().Name + "'...");
-            logger.ExitMethod();
-        }
-
-        /// <summary>
-        ///     <para>Executed upon shutdown of the Manager.</para>
-        ///     <para>
-        ///         If the specified <see cref="StopType"/> is not <see cref="StopType.Exception"/>, saves the configuration to disk.
-        ///     </para>
-        /// </summary>
-        /// <param name="stopType">The nature of the stoppage.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
-        {
-            Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
-            Result retVal = new Result();
-
-            if (!stopType.HasFlag(StopType.Exception))
-            {
-                Packages = default(IList<IPackage>);
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     <para>Executed upon startup of the Manager.</para>
-        ///     <para>
-        ///         Verifies the existence of the configuration file and if missing, builds it using all default options. Loads the
-        ///         configuration, validates it, and, if valid, attaches it to the <see cref="Configuration"/> property.
-        ///     </para>
-        /// </summary>
-        /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
-        {
-            Guid guid = logger.EnterMethod(true);
-            logger.Debug("Performing Startup for '" + GetType().Name + "'...");
-            Result retVal = new Result();
-
-            retVal.Incorporate(ScanPackages());
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
-        }
-
-        #endregion Protected Methods
+        #endregion Private Methods
     }
 }

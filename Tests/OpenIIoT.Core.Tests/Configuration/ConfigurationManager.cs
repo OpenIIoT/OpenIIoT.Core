@@ -178,7 +178,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             // two return values should force a ConfigurationLoadException
             Mock<IPlatform> platform = new Mock<IPlatform>();
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
-            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>().AddError(string.Empty));
+            platform.Setup(p => p.WriteFileText(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>().AddError(string.Empty));
 
             // inject the platform mockup into the platform manager mockup
             platformManager.Setup(p => p.Platform).Returns(platform.Object);
@@ -205,7 +205,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             // two return values should force a rebuild of the config.
             Mock<IPlatform> platform = new Mock<IPlatform>();
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
-            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.WriteFileText(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
 
             // inject the platform mockup into the platform manager mockup
             platformManager.Setup(p => p.Platform).Returns(platform.Object);

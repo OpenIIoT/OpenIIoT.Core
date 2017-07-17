@@ -615,7 +615,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ReadFile(string)"/> method.
+        ///     Tests the <see cref="Core.Platform.Platform.ReadFileText(string)"/> method.
         /// </summary>
         [Fact]
         public void ReadFile()
@@ -626,7 +626,7 @@ namespace OpenIIoT.Core.Tests.Platform
             File.WriteAllText(file, content);
 
             // read it
-            IResult<string> result = platformMock.ReadFile(file);
+            IResult<string> result = platformMock.ReadFileText(file);
 
             // assert that the contents match
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -634,14 +634,14 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ReadFile(string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Core.Platform.Platform.ReadFileText(string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ReadFileFailure()
         {
             string file = Path.Combine(testDirectory, "null");
 
-            IResult result = platformMock.ReadFile(file);
+            IResult result = platformMock.ReadFileText(file);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -679,7 +679,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFile(string, string)"/> method.
+        ///     Tests the <see cref="Core.Platform.Platform.WriteFileText(string, string)"/> method.
         /// </summary>
         [Fact]
         public void WriteFile()
@@ -692,7 +692,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.False(File.Exists(file));
 
             // write it
-            IResult<string> result = platformMock.WriteFile(file, contents);
+            IResult<string> result = platformMock.WriteFileText(file, contents);
 
             // assert that it was written
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -701,7 +701,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFile(string, string)"/> method by writing an existing file.
+        ///     Tests the <see cref="Core.Platform.Platform.WriteFileText(string, string)"/> method by writing an existing file.
         /// </summary>
         [Fact]
         public void WriteFileExisting()
@@ -711,7 +711,7 @@ namespace OpenIIoT.Core.Tests.Platform
             string contents = "Hello World!";
             string newContents = "The quick brown fox jumped over the lazy dog.";
 
-            IResult<string> result = platformMock.WriteFile(file, contents);
+            IResult<string> result = platformMock.WriteFileText(file, contents);
 
             // assert that it was written
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -719,7 +719,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.True(File.Exists(file));
 
             // write it again with different contents
-            result = platformMock.WriteFile(file, newContents);
+            result = platformMock.WriteFileText(file, newContents);
 
             // assert that it was overwritten
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -732,14 +732,14 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFile(string, string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Core.Platform.Platform.WriteFileText(string, string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void WriteFileFailure()
         {
             string file = Path.Combine(testDirectory, "?/?");
 
-            IResult result = platformMock.WriteFile(file, string.Empty);
+            IResult result = platformMock.WriteFileText(file, string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }

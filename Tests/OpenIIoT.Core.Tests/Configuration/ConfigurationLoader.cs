@@ -103,9 +103,9 @@ namespace OpenIIoT.Core.Tests.Configuration
         public void Load()
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
-            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.WriteFileText(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
-            platform.Setup(p => p.ReadFile(It.IsAny<string>())).Returns(new Result<string>().SetReturnValue("{}"));
+            platform.Setup(p => p.ReadFileText(It.IsAny<string>())).Returns(new Result<string>().SetReturnValue("{}"));
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
@@ -122,7 +122,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         public void LoadFileNotFound()
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
-            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.WriteFileText(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
@@ -140,9 +140,9 @@ namespace OpenIIoT.Core.Tests.Configuration
         public void LoadReadFailure()
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
-            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.WriteFileText(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
-            platform.Setup(p => p.ReadFile(It.IsAny<string>())).Returns(new Result<string>().SetResultCode(ResultCode.Failure));
+            platform.Setup(p => p.ReadFileText(It.IsAny<string>())).Returns(new Result<string>().SetResultCode(ResultCode.Failure));
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
@@ -160,7 +160,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         public void Save()
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
-            platform.Setup(p => p.WriteFile(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
+            platform.Setup(p => p.WriteFileText(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 

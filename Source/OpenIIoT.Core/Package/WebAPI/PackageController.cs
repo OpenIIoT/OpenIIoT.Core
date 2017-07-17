@@ -44,6 +44,19 @@ namespace OpenIIoT.Core.Package.WebAPI
 
         #region Instance Methods
 
+        [Route("api/package/{fqn}/delete")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> DeletePackage(string fqn)
+        {
+            HttpResponseMessage retVal;
+            HttpStatusCode statusCode = HttpStatusCode.OK;
+
+            IResult deleteResult = await manager.GetManager<IPackageManager>().DeletePackageAsync(fqn);
+
+            retVal = Request.CreateResponse(HttpStatusCode.OK, deleteResult, JsonFormatter());
+            return retVal;
+        }
+
         [Route("api/package/{fileName}/download")]
         [HttpGet]
         public HttpResponseMessage DownloadPackage(string fileName)
@@ -85,16 +98,41 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
-        /// <summary>
-        ///     Installs the supplied Package.
-        /// </summary>
-        /// <param name="fileName">The filename of the Plugin Package to install.</param>
-        /// <returns>The App instance resulting from the installation.</returns>
-        [Route("api/package/{fileName}/install")]
+        [Route("api/package/{fqn}/install")]
         [HttpGet]
-        public async Task<HttpResponseMessage> InstallPlugin(string fileName)
+        public async Task<HttpResponseMessage> InstallPackage(string fqn, string publicKey = "")
         {
-            return Request.CreateResponse(JsonFormatter());
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/{fqn}/install/overwrite")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> InstallPackageOverwrite(string fqn, string publicKey = "")
+        {
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.Overwrite, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/{fqn}/install/overwrite/skipverification")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> InstallPackageOverwriteSkipVerification(string fqn, string publicKey = "")
+        {
+            PackageInstallOptions options = PackageInstallOptions.Overwrite | PackageInstallOptions.SkipVerification;
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/{fqn}/install/skipverification")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> InstallPackageSkipVerification(string fqn, string publicKey = "")
+        {
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.SkipVerification, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
         /// <summary>
@@ -108,6 +146,15 @@ namespace OpenIIoT.Core.Package.WebAPI
             IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
 
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
+        }
+
+        [Route("api/package/{fqn}/verify")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> VerifyPackage(string fqn, string publicKey = "")
+        {
+            IResult<bool> verifyResult = await manager.GetManager<IPackageManager>().VerifyPackageAsync(fqn, publicKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, verifyResult, JsonFormatter());
         }
 
         #endregion Instance Methods
