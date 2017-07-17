@@ -443,6 +443,18 @@ namespace OpenIIoT.Core.Platform
         ///     Returns a list of subdirectories within the specified directory.
         /// </summary>
         /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
+        /// </returns>
+        public virtual IResult<IList<string>> ListDirectories(string parentDirectory)
+        {
+            return ListDirectories(parentDirectory, "*");
+        }
+
+        /// <summary>
+        ///     Returns a list of subdirectories within the specified directory.
+        /// </summary>
+        /// <param name="parentDirectory">The parent directory to search.</param>
         /// <param name="searchPattern">The search pattern to which directory names are compared.</param>
         /// <returns>
         ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
@@ -465,6 +477,18 @@ namespace OpenIIoT.Core.Platform
 
             logger.ExitMethod(retVal);
             return retVal;
+        }
+
+        /// <summary>
+        ///     Returns a list of files within the specified directory matching the supplied searchPattern.
+        /// </summary>
+        /// <param name="parentDirectory">The directory to search.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
+        /// </returns>
+        public virtual IResult<IList<string>> ListFiles(string parentDirectory)
+        {
+            return ListFiles(parentDirectory, "*");
         }
 
         /// <summary>

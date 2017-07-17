@@ -177,6 +177,24 @@ namespace OpenIIoT.SDK.Platform
         IResult<IList<string>> ListDirectories(string parentDirectory, string searchPattern = "*");
 
         /// <summary>
+        ///     Returns a list of subdirectories within the specified directory.
+        /// </summary>
+        /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
+        /// </returns>
+        IResult<IList<string>> ListDirectories(string parentDirectory);
+
+        /// <summary>
+        ///     Returns a list of files within the specified directory matching the supplied searchPattern.
+        /// </summary>
+        /// <param name="parentDirectory">The directory to search.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
+        /// </returns>
+        IResult<IList<string>> ListFiles(string parentDirectory);
+
+        /// <summary>
         ///     Returns a list of files within the specified directory matching the supplied searchPattern.
         /// </summary>
         /// <param name="parentDirectory">The directory to search.</param>
