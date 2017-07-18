@@ -117,11 +117,30 @@ namespace OpenIIoT.Core.Tests.Plugin
         /// </summary>
         public void Dispose()
         {
-            Directory.Delete(Temp, true);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan"/> method with an empty directory.
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a bad directory.
+        /// </summary>
+        [Fact]
+        public void ListBadDirectory()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>(ResultCode.Failure);
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
+
+            Core.Package.PackageScanner lister = new Core.Package.PackageScanner(platformMock.Object);
+
+            IResult<IList<IPackage>> list = lister.Scan(Data);
+
+            Assert.Equal(ResultCode.Failure, list.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with an empty directory.
         /// </summary>
         [Fact]
         public void ListEmptyDirectory()
@@ -143,7 +162,7 @@ namespace OpenIIoT.Core.Tests.Plugin
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan"/> method with a directory containing files but no Packages.
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing files but no Packages.
         /// </summary>
         [Fact]
         public void ListNoPackages()
@@ -165,7 +184,7 @@ namespace OpenIIoT.Core.Tests.Plugin
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan"/> method with a directory containing Package files.
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing Package files.
         /// </summary>
         [Fact]
         public void ListPackages()
@@ -189,5 +208,18 @@ namespace OpenIIoT.Core.Tests.Plugin
         }
 
         #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Disposes of this instance.
+        /// </summary>
+        /// <param name="disposing">A value indicating whether this method has been called directly or indirectly from code.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            Directory.Delete(Temp, true);
+        }
+
+        #endregion Protected Methods
     }
 }

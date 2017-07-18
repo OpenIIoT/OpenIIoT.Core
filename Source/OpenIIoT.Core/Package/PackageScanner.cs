@@ -41,7 +41,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK.Package;
