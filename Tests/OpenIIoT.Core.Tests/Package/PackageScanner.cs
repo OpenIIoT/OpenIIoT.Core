@@ -58,7 +58,7 @@ using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
 
-namespace OpenIIoT.Core.Tests.Plugin
+namespace OpenIIoT.Core.Tests.Package
 {
     /// <summary>
     ///     Unit tests for the <see cref="Core.Package.PackageScanner"/> class.

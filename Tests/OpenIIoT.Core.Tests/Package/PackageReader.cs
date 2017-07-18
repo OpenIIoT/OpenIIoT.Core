@@ -10,10 +10,19 @@
       █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █    ███    ███   ██   █    ██   ██ ██   ▄██   ██   █    ██  ██
       █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ███    ███   ███████   ██   █▀ ██████▀    ███████   ██  ██
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Creates an IPackage instance from a given file.
+      █  Unit tests for the PackageReader class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -40,83 +49,57 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
-using NLog;
-using NLog.xLogger;
+using System.Linq;
+using Moq;
 using OpenIIoT.SDK.Package;
-using OpenIIoT.SDK.Packaging.Manifest;
-using OpenIIoT.SDK.Packaging.Operations;
+using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using Xunit;
 
-namespace OpenIIoT.Core.Package
+namespace OpenIIoT.Core.Tests.Package
 {
     /// <summary>
-    ///     Creates an <see cref="IPackage"/> instance from a given file.
+    ///     Unit tests for the <see cref="Core.Package.PackageReader"/> class.
     /// </summary>
     public class PackageReader
     {
-        #region Private Fields
+        #region Public Constructors
 
         /// <summary>
-        ///     The Logger for this class.
+        ///     Initializes a new instance of the <see cref="PackageReader"/> class.
         /// </summary>
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        public PackageReader()
+        {
+            Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
+            string dirPath = Path.GetDirectoryName(codeBasePath);
 
-        #endregion Private Fields
+            Data = Path.Combine(dirPath, "Package", "Data", "Package");
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the test data directory.
+        /// </summary>
+        private string Data { get; set; }
+
+        #endregion Private Properties
 
         #region Public Methods
 
-        /// <summary>
-        ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="IPackage"/> instance
-        ///     from the contents.
-        /// </summary>
-        /// <param name="fileName">The filename of the file to read.</param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public IResult<IPackage> Read(string fileName)
+        [Fact]
+        public void Constructor()
         {
-            logger.EnterMethod(true);
-            IResult<IPackage> retVal = new Result<IPackage>();
+            Core.Package.PackageReader reader = new Core.Package.PackageReader();
 
-            ManifestExtractor extractor = new ManifestExtractor();
-            extractor.Updated += (sender, e) => logger.Debug(e.Message);
-
-            PackageManifest manifest;
-
-            try
-            {
-                manifest = extractor.ExtractManifest(fileName);
-
-                retVal.ReturnValue = GetPackage(fileName, manifest);
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError($"The package file '{Path.GetFileName(fileName)}' is not valid; the Manifest could not be extracted: {ex.Message}");
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-
-            return retVal;
+            Assert.IsType<Core.Package.PackageReader>(reader);
         }
 
         #endregion Public Methods
-
-        #region Private Methods
-
-        /// <summary>
-        ///     Creates a <see cref="Package"/> instance with file metadata from the given file and the given
-        ///     <see cref="PackageManifest"/> .
-        /// </summary>
-        /// <param name="fileName">The filename from which to retrieve the Package metadata.</param>
-        /// <param name="manifest">The Manifest with which to initialize the <see cref="Package"/> instance.</param>
-        /// <returns>The created Package.</returns>
-        private IPackage GetPackage(string fileName, PackageManifest manifest)
-        {
-            FileInfo info = new FileInfo(fileName);
-
-            return new Package(fileName, info.LastWriteTime, manifest);
-        }
-
-        #endregion Private Methods
     }
 }

@@ -103,6 +103,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="Package\PackageReader.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />
