@@ -76,7 +76,7 @@ namespace OpenIIoT.Core.Tests.Package
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
             string dirPath = Path.GetDirectoryName(codeBasePath);
 
-            Data = Path.Combine(dirPath, "Package", "Data", "Package");
+            Data = Path.Combine(dirPath, "Package", "Data");
         }
 
         #endregion Public Constructors
@@ -92,12 +92,43 @@ namespace OpenIIoT.Core.Tests.Package
 
         #region Public Methods
 
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
         [Fact]
         public void Constructor()
         {
             Core.Package.PackageReader reader = new Core.Package.PackageReader();
 
             Assert.IsType<Core.Package.PackageReader>(reader);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageReader.Read(string)"/> method with a known good package.
+        /// </summary>
+        [Fact]
+        public void ReadPackage()
+        {
+            Core.Package.PackageReader reader = new Core.Package.PackageReader();
+
+            IResult<IPackage> result = reader.Read(Path.Combine(Data, "Package", "package.zip"));
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.IsType<Core.Package.Package>(result.ReturnValue);
+            Assert.NotEqual(string.Empty, result.ReturnValue.FQN);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageReader.Read(string)"/> method with a known bad package.
+        /// </summary>
+        [Fact]
+        public void ReadPackageNotAPackage()
+        {
+            Core.Package.PackageReader reader = new Core.Package.PackageReader();
+
+            IResult<IPackage> result = reader.Read(Path.Combine(Data, "notapackage.zip"));
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         #endregion Public Methods
