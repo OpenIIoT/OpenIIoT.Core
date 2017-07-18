@@ -103,6 +103,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="Package\PackageReader.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />
@@ -124,6 +125,9 @@
     <AdditionalFiles Include="OpenIIoT.ruleset" />
     <None Include="packages.config" />
     <AdditionalFiles Include="stylecop.json" />
+    <None Include="Package\Data\notapackage.zip">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Package\Data\Package\badpackage.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
