@@ -49,12 +49,8 @@
                                                                                                    ▀▀                            */
 
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using Moq;
 using OpenIIoT.SDK.Package;
-using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
 
