@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for the Platform Manager.
+      █  Manages the application platform, specifically, the platform-dependent elements of the system.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -44,14 +44,14 @@ using OpenIIoT.SDK.Common;
 namespace OpenIIoT.SDK.Platform
 {
     /// <summary>
-    ///     Defines the interface for the Platform Manager.
+    ///     Manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>
     public interface IPlatformManager : IManager
     {
         #region Public Properties
 
         /// <summary>
-        ///     The current platform.
+        ///     Gets the current platform.
         /// </summary>
         IPlatform Platform { get; }
 

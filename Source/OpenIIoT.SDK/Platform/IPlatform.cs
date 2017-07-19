@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for Platform objects.
+      █  The system Platform upon which the Application runs.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -46,14 +46,14 @@ using Utility.OperationResult;
 namespace OpenIIoT.SDK.Platform
 {
     /// <summary>
-    ///     Defines the interface for Platform objects.
+    ///     The system Platform upon which the Application runs.
     /// </summary>
     public interface IPlatform
     {
         #region Public Properties
 
         /// <summary>
-        ///     A Dictionary containing all of the application directories, loaded from the App.config.
+        ///     Gets a Dictionary containing all of the application directories, loaded from the App.config.
         /// </summary>
         IDirectories Directories { get; }
 

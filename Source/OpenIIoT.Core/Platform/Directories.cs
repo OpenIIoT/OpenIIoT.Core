@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The Directories class encapsulates the filesystem directories needed to run the application.
+      █  Encapsulates the filesystem directories needed to run the application.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -49,7 +49,7 @@ using OpenIIoT.SDK.Platform;
 namespace OpenIIoT.Core.Platform
 {
     /// <summary>
-    ///     The Directories class encapsulates the file system directories needed to run the application.
+    ///     Encapsulates the filesystem directories needed to run the application.
     /// </summary>
     public class Directories : IDirectories
     {
@@ -107,11 +107,6 @@ namespace OpenIIoT.Core.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the archive directory
-        /// </summary>
-        public string Packages { get; private set; }
-
-        /// <summary>
         ///     Gets the data directory
         /// </summary>
         public string Data { get; private set; }
@@ -120,6 +115,11 @@ namespace OpenIIoT.Core.Platform
         ///     Gets the log directory
         /// </summary>
         public string Logs { get; private set; }
+
+        /// <summary>
+        ///     Gets the archive directory
+        /// </summary>
+        public string Packages { get; private set; }
 
         /// <summary>
         ///     Gets the persistence directory
