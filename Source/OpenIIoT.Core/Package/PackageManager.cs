@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The Package Manager manages the installation and uninstallation of software packages used to extend the functionality of the application.
+      █  Handles the installation and file management of the installable extension archives used to extend the functionality of the application.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -57,8 +57,8 @@ using OpenIIoT.Core.Platform;
 namespace OpenIIoT.Core.Package
 {
     /// <summary>
-    ///     The Package Manager manages the installation and uninstallation of software packages used to extend the functionality
-    ///     of the application.
+    ///     Handles the installation and file management of the installable extension archives used to extend the functionality of
+    ///     the application.
     /// </summary>
     public sealed class PackageManager : Manager, IPackageManager
     {
