@@ -94,6 +94,24 @@ namespace OpenIIoT.SDK.Platform
         IResult<string> ComputeFileChecksum(string file);
 
         /// <summary>
+        ///     Copies the specified source file to the specified destination file.
+        /// </summary>
+        /// <param name="sourceFile">The file to copy.</param>
+        /// <param name="destinationFile">The file to which the source file is to be copied.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the created file.</returns>
+        IResult<string> CopyFile(string sourceFile, string destinationFile);
+
+        /// <summary>
+        ///     Copies the specified source file to the specified destination file, overwriting if the destination file exists and
+        ///     the overwrite parameter is true.
+        /// </summary>
+        /// <param name="sourceFile">The file to copy.</param>
+        /// <param name="destinationFile">The file to which the source file is to be copied.</param>
+        /// <param name="overwrite">A value indicating whether the destination file is to be overwritten if it exists.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the created file.</returns>
+        IResult<string> CopyFile(string sourceFile, string destinationFile, bool overwrite);
+
+        /// <summary>
         ///     Creates the supplied directory.
         /// </summary>
         /// <param name="directory">The directory to create.</param>
