@@ -310,7 +310,10 @@ namespace OpenIIoT.Core.Package
 
                 if (retVal.ResultCode != ResultCode.Failure)
                 {
-                    // TODO: copy file from temp to Packages directory
+                    string destinationFile = Path.Combine(platform.Directories.Packages, Path.GetFileName(tempFile));
+
+                    retVal.Incorporate(platform.CopyFile(tempFile, destinationFile, true));
+
                     retVal.ReturnValue = readResult.ReturnValue;
                 }
                 else
