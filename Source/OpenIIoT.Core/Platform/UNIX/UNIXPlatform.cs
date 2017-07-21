@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Extends the Platform class to allow file system I/O abstraction and metrics on UNIX platforms.
+      █  Allows file system I/O abstraction and metrics on UNIX platforms.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -46,7 +46,7 @@ using OpenIIoT.SDK.Platform;
 namespace OpenIIoT.Core.Platform.UNIX
 {
     /// <summary>
-    ///     Extends the Platform class to allow file system I/O abstraction on UNIX platforms.
+    ///     Allows file system I/O abstraction and metrics on UNIX platforms.
     /// </summary>
     [Discoverable]
     public class UNIXPlatform : Platform

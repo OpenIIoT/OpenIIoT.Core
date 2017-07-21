@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for Platform objects.
+      █  The system Platform upon which the Application runs.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -46,14 +46,14 @@ using Utility.OperationResult;
 namespace OpenIIoT.SDK.Platform
 {
     /// <summary>
-    ///     Defines the interface for Platform objects.
+    ///     The system Platform upon which the Application runs.
     /// </summary>
     public interface IPlatform
     {
         #region Public Properties
 
         /// <summary>
-        ///     A Dictionary containing all of the application directories, loaded from the App.config.
+        ///     Gets a Dictionary containing all of the application directories, loaded from the App.config.
         /// </summary>
         IDirectories Directories { get; }
 
@@ -92,6 +92,24 @@ namespace OpenIIoT.SDK.Platform
         /// <param name="file">The file for which the checksum is to be computed.</param>
         /// <returns>A Result containing the result of the operation and the computed checksum.</returns>
         IResult<string> ComputeFileChecksum(string file);
+
+        /// <summary>
+        ///     Copies the specified source file to the specified destination file.
+        /// </summary>
+        /// <param name="sourceFile">The file to copy.</param>
+        /// <param name="destinationFile">The file to which the source file is to be copied.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the created file.</returns>
+        IResult<string> CopyFile(string sourceFile, string destinationFile);
+
+        /// <summary>
+        ///     Copies the specified source file to the specified destination file, overwriting if the destination file exists and
+        ///     the overwrite parameter is true.
+        /// </summary>
+        /// <param name="sourceFile">The file to copy.</param>
+        /// <param name="destinationFile">The file to which the source file is to be copied.</param>
+        /// <param name="overwrite">A value indicating whether the destination file is to be overwritten if it exists.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the created file.</returns>
+        IResult<string> CopyFile(string sourceFile, string destinationFile, bool overwrite);
 
         /// <summary>
         ///     Creates the supplied directory.

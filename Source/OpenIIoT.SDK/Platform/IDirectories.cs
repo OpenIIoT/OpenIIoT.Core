@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for the Directories class.
+      █  Encapsulates the filesystem directories needed to run the application.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -44,16 +44,11 @@ using System.Collections.Generic;
 namespace OpenIIoT.SDK.Platform
 {
     /// <summary>
-    ///     The ProgramDirectories class encapsulates the file system directories needed to run the application.
+    ///     Encapsulates the filesystem directories needed to run the application.
     /// </summary>
     public interface IDirectories
     {
         #region Public Properties
-
-        /// <summary>
-        ///     Gets the Package directory
-        /// </summary>
-        string Packages { get; }
 
         /// <summary>
         ///     Gets the Data directory
@@ -64,6 +59,11 @@ namespace OpenIIoT.SDK.Platform
         ///     Gets the Log directory
         /// </summary>
         string Logs { get; }
+
+        /// <summary>
+        ///     Gets the Package directory
+        /// </summary>
+        string Packages { get; }
 
         /// <summary>
         ///     Gets the Persistence directory

@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Defines the interface for the Configuration Manager.
+      █  Manages the configuration subsystem for the application and all plugins.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -45,21 +45,21 @@ using Utility.OperationResult;
 namespace OpenIIoT.SDK.Configuration
 {
     /// <summary>
-    ///     Defines the interface for the Configuration Manager.
+    ///     Manages the configuration subsystem for the application and all plugins.
     /// </summary>
     public interface IConfigurationManager : IManager
     {
         #region Public Properties
 
         /// <summary>
-        ///     Gets the current configuration.
-        /// </summary>
-        IConfiguration Configuration { get; }
-
-        /// <summary>
         ///     Gets the registry of configurable Types.
         /// </summary>
         IConfigurableTypeRegistry ConfigurableTypeRegistry { get; }
+
+        /// <summary>
+        ///     Gets the current configuration.
+        /// </summary>
+        IConfiguration Configuration { get; }
 
         #endregion Public Properties
 

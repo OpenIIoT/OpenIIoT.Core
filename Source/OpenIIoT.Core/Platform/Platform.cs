@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The abstract base class from which all Platforms inherit.
+      █  The system Platform upon which the Application runs.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -213,6 +213,48 @@ namespace OpenIIoT.Core.Platform
             }
 
             logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Copies the specified source file to the specified destination file.
+        /// </summary>
+        /// <param name="sourceFile">The file to copy.</param>
+        /// <param name="destinationFile">The file to which the source file is to be copied.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the created file.</returns>
+        public virtual IResult<string> CopyFile(string sourceFile, string destinationFile)
+        {
+            return CopyFile(sourceFile, destinationFile, false);
+        }
+
+        /// <summary>
+        ///     Copies the specified source file to the specified destination file, overwriting if the destination file exists and
+        ///     the overwrite parameter is true.
+        /// </summary>
+        /// <param name="sourceFile">The file to copy.</param>
+        /// <param name="destinationFile">The file to which the source file is to be copied.</param>
+        /// <param name="overwrite">A value indicating whether the destination file is to be overwritten if it exists.</param>
+        /// <returns>A Result containing the result of the operation and the fully qualified path to the created file.</returns>
+        public virtual IResult<string> CopyFile(string sourceFile, string destinationFile, bool overwrite)
+        {
+            logger.EnterMethod(xLogger.Params(sourceFile, destinationFile));
+            logger.Trace($"Copying file '{sourceFile}' to '{destinationFile}'");
+
+            IResult<string> retVal = new Result<string>();
+
+            try
+            {
+                File.Copy(sourceFile, destinationFile, overwrite);
+                retVal.ReturnValue = destinationFile;
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError($"Error copying file '{Path.GetFileName(sourceFile)}' to '{Path.GetFileName(destinationFile)}': {ex.Message}");
+                logger.Exception(LogLevel.Debug, ex);
+            }
+
+            retVal.LogResult(logger.Trace);
+            logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
 

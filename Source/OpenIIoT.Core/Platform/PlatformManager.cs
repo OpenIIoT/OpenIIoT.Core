@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       █
-      █  The PlatformManager class manages the application platform, specifically, the platform-dependent elements of the system.
+      █  Manages the application platform, specifically, the platform-dependent elements of the system.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -54,8 +54,7 @@ using Utility.OperationResult;
 namespace OpenIIoT.Core.Platform
 {
     /// <summary>
-    ///     The <see cref="PlatformManager"/> class manages the application platform, specifically, the functionality of the
-    ///     application which relies on the underlying operating system.
+    ///     Manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>
     /// <remarks>
     ///     <para>

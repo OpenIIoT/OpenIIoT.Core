@@ -15,6 +15,8 @@ using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.Core.Service.WebAPI;
+using System.IO;
+using System;
 
 namespace OpenIIoT.Core.Package.WebAPI
 {
@@ -57,19 +59,30 @@ namespace OpenIIoT.Core.Package.WebAPI
             return retVal;
         }
 
-        [Route("api/package/{fileName}/download")]
+        [Route("api/package/{fqn}/download")]
         [HttpGet]
-        public HttpResponseMessage DownloadPackage(string fileName)
+        public async Task<HttpResponseMessage> DownloadPackage(string fqn)
         {
-            string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<IPackageManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
+            HttpResponseMessage retVal;
 
-            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
-            result.Content = new StreamContent(new System.IO.FileStream(pluginPackage, System.IO.FileMode.Open));
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = System.IO.Path.GetFileName(pluginPackage) };
+            if (findResult != default(IPackage))
+            {
+                string packageFile = findResult.FileName;
 
-            return result;
+                retVal = new HttpResponseMessage(HttpStatusCode.OK);
+
+                retVal.Content = new StreamContent(new FileStream(packageFile, FileMode.Open, FileAccess.Read));
+                retVal.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                retVal.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = Path.GetFileName(packageFile) };
+            }
+            else
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.NotFound, findResult, JsonFormatter());
+            }
+
+            return retVal;
         }
 
         /// <summary>
@@ -82,7 +95,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         public async Task<HttpResponseMessage> FindPackage(string fqn)
         {
             HttpResponseMessage retVal;
-            IResult<IPackage> findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
+            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
             retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(ContractResolverType.OptOut, "Files"));
 
@@ -133,6 +146,31 @@ namespace OpenIIoT.Core.Package.WebAPI
             IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.SkipVerification, publicKey);
 
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/save/{fileName}")]
+        [HttpPost]
+        public async Task<HttpResponseMessage> SavePackage([FromBody]object base64Data, string fileName)
+        {
+            IResult retVal = new Result();
+            byte[] data = default(byte[]);
+
+            try
+            {
+                data = Convert.FromBase64String(base64Data.ToString());
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError(ex.Message);
+                retVal.AddError("The provided file data is invalid.");
+            }
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                retVal = await manager.GetManager<IPackageManager>().SavePackageAsync(data, fileName);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, retVal, JsonFormatter());
         }
 
         /// <summary>
