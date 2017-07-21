@@ -16,6 +16,7 @@ using Utility.OperationResult;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.Core.Service.WebAPI;
 using System.IO;
+using System;
 
 namespace OpenIIoT.Core.Package.WebAPI
 {
@@ -147,37 +148,29 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
-        [Route("api/package/save")]
+        [Route("api/package/save/{fileName}")]
         [HttpPost]
-        [ImportFileParamType.SwaggerFormAttribute("ImportImage", "Upload image file")]
-        public async Task<HttpResponseMessage> SavePacakge()
+        public async Task<HttpResponseMessage> SavePackage([FromBody]object base64Data, string fileName)
         {
-            // Check if the request contains multipart/form-data.
-            if (!Request.Content.IsMimeMultipartContent())
-            {
-                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
-            }
-
-            string root = System.Web.HttpContext.Current.Server.MapPath("~/App_Data");
-            var provider = new MultipartFormDataStreamProvider(root);
+            IResult retVal = new Result();
+            byte[] data = default(byte[]);
 
             try
             {
-                // Read the form data.
-                await Request.Content.ReadAsMultipartAsync(provider);
-
-                // This illustrates how to get the file names.
-                foreach (MultipartFileData file in provider.FileData)
-                {
-                    logger.Info(file.Headers.ContentDisposition.FileName);
-                    logger.Info("Server file path: " + file.LocalFileName);
-                }
-                return Request.CreateResponse(HttpStatusCode.OK);
+                data = Convert.FromBase64String(base64Data.ToString());
             }
-            catch (System.Exception e)
+            catch (Exception ex)
             {
-                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
+                retVal.AddError(ex.Message);
+                retVal.AddError("The provided file data is invalid.");
             }
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                retVal = await manager.GetManager<IPackageManager>().SavePackageAsync(data, fileName);
+            }
+
+            return Request.CreateResponse(HttpStatusCode.OK, retVal, JsonFormatter());
         }
 
         /// <summary>
