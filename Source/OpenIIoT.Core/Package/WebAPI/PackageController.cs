@@ -64,11 +64,11 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             HttpResponseMessage retVal;
 
-            IResult<IPackage> findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
+            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
-            if (findResult.ResultCode != ResultCode.Failure)
+            if (findResult != default(IPackage))
             {
-                string packageFile = findResult.ReturnValue.FileName;
+                string packageFile = findResult.FileName;
 
                 retVal = new HttpResponseMessage(HttpStatusCode.OK);
 
@@ -94,7 +94,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         public async Task<HttpResponseMessage> FindPackage(string fqn)
         {
             HttpResponseMessage retVal;
-            IResult<IPackage> findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
+            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
             retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(ContractResolverType.OptOut, "Files"));
 
