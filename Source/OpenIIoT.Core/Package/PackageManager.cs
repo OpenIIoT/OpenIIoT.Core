@@ -157,12 +157,11 @@ namespace OpenIIoT.Core.Package
 
             logger.Info($"Deleting Package {fqn}...");
 
-            IResult<IPackage> findResult = FindPackage(fqn);
-            retVal.Incorporate(findResult);
+            IPackage findResult = FindPackage(fqn);
 
-            if (retVal.ResultCode != ResultCode.Failure)
+            if (findResult != default(IPackage))
             {
-                string fileName = findResult.ReturnValue.FileName;
+                string fileName = findResult.FileName;
 
                 IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
                 retVal.Incorporate(deleteResult);
@@ -194,8 +193,8 @@ namespace OpenIIoT.Core.Package
         ///     </para>
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
-        public IResult<IPackage> FindPackage(string fqn)
+        /// <returns>The result of the operation and the found Package, if applicable.</returns>
+        public IPackage FindPackage(string fqn)
         {
             return FindPackage(fqn, false);
         }
@@ -211,8 +210,8 @@ namespace OpenIIoT.Core.Package
         ///     </para>
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
-        public async Task<IResult<IPackage>> FindPackageAsync(string fqn)
+        /// <returns>The result of the operation and the found Package, if applicable.</returns>
+        public async Task<IPackage> FindPackageAsync(string fqn)
         {
             return await Task.Run(() => FindPackage(fqn));
         }
@@ -242,13 +241,12 @@ namespace OpenIIoT.Core.Package
 
             logger.Info($"Installing Package '{fqn}'...");
 
-            IResult<IPackage> findResult = FindPackage(fqn);
-            retVal.Incorporate(findResult);
+            IPackage findResult = FindPackage(fqn);
 
-            if (findResult.ResultCode != ResultCode.Failure)
+            if (findResult != default(IPackage))
             {
                 PackageInstaller installer = new PackageInstaller(Dependency<IPlatformManager>().Platform);
-                retVal.Incorporate(installer.InstallPackage(findResult.ReturnValue, options, publicKey));
+                retVal.Incorporate(installer.InstallPackage(findResult, options, publicKey));
             }
 
             retVal.LogResult(logger);
@@ -387,17 +385,16 @@ namespace OpenIIoT.Core.Package
 
             logger.Info($"Verifying Package '{fqn}'...");
 
-            IResult<IPackage> findResult = FindPackage(fqn);
-            retVal.Incorporate(findResult);
+            IPackage findResult = FindPackage(fqn);
 
-            if (retVal.ResultCode != ResultCode.Failure)
+            if (retVal != default(IPackage))
             {
                 PackageVerifier verifier = new PackageVerifier();
                 verifier.Updated += (sender, e) => logger.Debug(e.Message);
 
                 try
                 {
-                    retVal.ReturnValue = verifier.VerifyPackage(findResult.ReturnValue.FileName);
+                    retVal.ReturnValue = verifier.VerifyPackage(findResult.FileName);
                 }
                 catch (Exception ex)
                 {
@@ -491,28 +488,23 @@ namespace OpenIIoT.Core.Package
         ///     A value indicating whether the <see cref="ScanPackages()"/> method is to be invoked on a failure to find the
         ///     specified Package.
         /// </param>
-        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
-        private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound)
+        /// <returns>The result of the operation and the found Package, if applicable.</returns>
+        private IPackage FindPackage(string fqn, bool rescanOnNotFound)
         {
             logger.EnterMethod(xLogger.Params(fqn, rescanOnNotFound));
-            IResult<IPackage> retVal = new Result<IPackage>();
+            IPackage retVal;
 
-            logger.Debug($"Searching for Package '{fqn}'...");
+            retVal = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
 
-            retVal.ReturnValue = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
-
-            if (retVal.ReturnValue == default(IPackage))
+            if (retVal == default(IPackage))
             {
                 if (rescanOnNotFound)
                 {
                     ScanPackages();
                     return FindPackage(fqn, false);
                 }
-
-                retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
             }
 
-            retVal.LogResult(logger.Debug);
             logger.ExitMethod();
             return retVal;
         }

@@ -87,8 +87,8 @@ namespace OpenIIoT.SDK.Package
         ///     </para>
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
-        IResult<IPackage> FindPackage(string fqn);
+        /// <returns>The found Package, if applicable.</returns>
+        IPackage FindPackage(string fqn);
 
         /// <summary>
         ///     <para>
@@ -101,8 +101,8 @@ namespace OpenIIoT.SDK.Package
         ///     </para>
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
-        Task<IResult<IPackage>> FindPackageAsync(string fqn);
+        /// <returns>The found Package, if applicable.</returns>
+        Task<IPackage> FindPackageAsync(string fqn);
 
         /// <summary>
         ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
