@@ -15,6 +15,7 @@ using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.Core.Service.WebAPI;
+using System.IO;
 
 namespace OpenIIoT.Core.Package.WebAPI
 {
@@ -57,19 +58,30 @@ namespace OpenIIoT.Core.Package.WebAPI
             return retVal;
         }
 
-        [Route("api/package/{fileName}/download")]
+        [Route("api/package/{fqn}/download")]
         [HttpGet]
-        public HttpResponseMessage DownloadPackage(string fileName)
+        public async Task<HttpResponseMessage> DownloadPackage(string fqn)
         {
-            string pluginPackage = System.IO.Path.Combine(manager.GetManager<PlatformManager>().Platform.Directories.Packages, manager.GetManager<IPackageManager>().Packages.Where(p => p.FileName == fileName).FirstOrDefault().FileName);
+            HttpResponseMessage retVal;
 
-            HttpResponseMessage result = new HttpResponseMessage(HttpStatusCode.OK);
+            IResult<IPackage> findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
-            result.Content = new StreamContent(new System.IO.FileStream(pluginPackage, System.IO.FileMode.Open));
-            result.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-            result.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = System.IO.Path.GetFileName(pluginPackage) };
+            if (findResult.ResultCode != ResultCode.Failure)
+            {
+                string packageFile = findResult.ReturnValue.FileName;
 
-            return result;
+                retVal = new HttpResponseMessage(HttpStatusCode.OK);
+
+                retVal.Content = new StreamContent(new FileStream(packageFile, FileMode.Open, FileAccess.Read));
+                retVal.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+                retVal.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = Path.GetFileName(packageFile) };
+            }
+            else
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.NotFound, findResult, JsonFormatter());
+            }
+
+            return retVal;
         }
 
         /// <summary>
@@ -133,6 +145,39 @@ namespace OpenIIoT.Core.Package.WebAPI
             IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.SkipVerification, publicKey);
 
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/save")]
+        [HttpPost]
+        [ImportFileParamType.SwaggerFormAttribute("ImportImage", "Upload image file")]
+        public async Task<HttpResponseMessage> SavePacakge()
+        {
+            // Check if the request contains multipart/form-data.
+            if (!Request.Content.IsMimeMultipartContent())
+            {
+                throw new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+            }
+
+            string root = System.Web.HttpContext.Current.Server.MapPath("~/App_Data");
+            var provider = new MultipartFormDataStreamProvider(root);
+
+            try
+            {
+                // Read the form data.
+                await Request.Content.ReadAsMultipartAsync(provider);
+
+                // This illustrates how to get the file names.
+                foreach (MultipartFileData file in provider.FileData)
+                {
+                    logger.Info(file.Headers.ContentDisposition.FileName);
+                    logger.Info("Server file path: " + file.LocalFileName);
+                }
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            catch (System.Exception e)
+            {
+                return Request.CreateErrorResponse(HttpStatusCode.InternalServerError, e);
+            }
         }
 
         /// <summary>

@@ -358,6 +358,8 @@ namespace OpenIIoT.Core.Package
 
             retVal = scanner.Scan(platform.Directories.Packages);
 
+            Packages = retVal.ReturnValue;
+
             retVal.LogResult(logger);
             logger.ExitMethod(guid);
             return retVal;
@@ -492,8 +494,10 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the found Package, if applicable.</returns>
         private IResult<IPackage> FindPackage(string fqn, bool rescanOnNotFound)
         {
-            logger.EnterMethod(xLogger.Params(fqn));
+            logger.EnterMethod(xLogger.Params(fqn, rescanOnNotFound));
             IResult<IPackage> retVal = new Result<IPackage>();
+
+            logger.Debug($"Searching for Package '{fqn}'...");
 
             retVal.ReturnValue = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
 
@@ -508,7 +512,7 @@ namespace OpenIIoT.Core.Package
                 retVal.AddError($"Unable to locate Package with FQN '{fqn}'.");
             }
 
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod();
             return retVal;
         }
