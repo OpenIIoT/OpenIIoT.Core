@@ -41,18 +41,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using System.Linq;
-using OpenIIoT.SDK.Packaging.Operations;
-using System.IO;
-using OpenIIoT.Core.Platform;
 
 namespace OpenIIoT.Core.Package
 {
@@ -301,7 +299,6 @@ namespace OpenIIoT.Core.Package
             if (retVal.ResultCode != ResultCode.Failure)
             {
                 PackageReader reader = new PackageReader();
-
                 IResult<IPackage> readResult = reader.Read(tempFile);
 
                 retVal.Incorporate(readResult);
@@ -311,7 +308,6 @@ namespace OpenIIoT.Core.Package
                     string destinationFile = Path.Combine(platform.Directories.Packages, Path.GetFileName(tempFile));
 
                     retVal.Incorporate(platform.CopyFile(tempFile, destinationFile, true));
-
                     retVal.ReturnValue = readResult.ReturnValue;
                 }
                 else
