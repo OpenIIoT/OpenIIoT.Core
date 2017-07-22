@@ -82,6 +82,8 @@ namespace OpenIIoT.Core.Package.WebAPI
             {
                 retVal = Request.CreateResponse(HttpStatusCode.NotFound);
             }
+
+            return retVal;
         }
 
         /// <summary>
