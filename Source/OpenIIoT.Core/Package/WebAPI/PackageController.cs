@@ -143,9 +143,22 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
-        [Route("api/package/save/{fileName}")]
+        /// <summary>
+        ///     Reloads the list of Packages from disk and returns the list.
+        /// </summary>
+        /// <returns>The reloaded list of available Packages.</returns>
+        [Route("api/package/scan")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> ScanPackages()
+        {
+            IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
+
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
+        }
+
+        [Route("api/package/upload/{fileName}")]
         [HttpPost]
-        public async Task<HttpResponseMessage> SavePackage([FromBody]string base64Data, string fileName)
+        public async Task<HttpResponseMessage> UploadPackage([FromBody]string base64Data, string fileName)
         {
             IResult retVal = new Result();
             byte[] data = default(byte[]);
@@ -166,19 +179,6 @@ namespace OpenIIoT.Core.Package.WebAPI
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, retVal, JsonFormatter());
-        }
-
-        /// <summary>
-        ///     Reloads the list of Packages from disk and returns the list.
-        /// </summary>
-        /// <returns>The reloaded list of available Packages.</returns>
-        [Route("api/package/scan")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> ScanPackages()
-        {
-            IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
-
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
         [Route("api/package/{fqn}/verify")]
