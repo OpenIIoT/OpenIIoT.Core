@@ -41,18 +41,16 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using System.Linq;
-using OpenIIoT.SDK.Packaging.Operations;
-using System.IO;
-using OpenIIoT.Core.Platform;
 
 namespace OpenIIoT.Core.Package
 {
@@ -143,6 +141,65 @@ namespace OpenIIoT.Core.Package
         public static void Terminate()
         {
             instance = null;
+        }
+
+        /// <summary>
+        ///     Creates a <see cref="IPackage"/> file with the specified data and filename, relative to the configured Packages directory.
+        /// </summary>
+        /// <param name="data">The data to save.</param>
+        /// <param name="fileName">
+        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
+        public IResult<IPackage> CreatePackage(byte[] data, string fileName)
+        {
+            logger.EnterMethod(xLogger.Params(fileName, xLogger.Exclude()));
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            logger.Info($"Saving new Package to '{fileName}'...");
+
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
+            string tempFile = Path.Combine(platform.Directories.Temp, fileName);
+
+            retVal.Incorporate(platform.WriteFileBytes(tempFile, data));
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                PackageReader reader = new PackageReader();
+                IResult<IPackage> readResult = reader.Read(tempFile);
+
+                retVal.Incorporate(readResult);
+
+                if (retVal.ResultCode != ResultCode.Failure)
+                {
+                    string destinationFile = Path.Combine(platform.Directories.Packages, Path.GetFileName(tempFile));
+
+                    retVal.Incorporate(platform.CopyFile(tempFile, destinationFile, true));
+                    retVal.ReturnValue = readResult.ReturnValue;
+                }
+                else
+                {
+                    retVal.AddError($"Failed to save Package '{fileName}'.");
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Asynchronously creates a <see cref="IPackage"/> file with the specified data and filename, relative to the
+        ///     configured Packages directory.
+        /// </summary>
+        /// <param name="data">The data to save.</param>
+        /// <param name="fileName">
+        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
+        public async Task<IResult<IPackage>> CreatePackageAsync(byte[] data, string fileName)
+        {
+            return await Task.Run(() => CreatePackage(data, fileName));
         }
 
         /// <summary>
@@ -278,45 +335,26 @@ namespace OpenIIoT.Core.Package
         }
 
         /// <summary>
-        ///     Saves the specified binary data to a <see cref="IPackage"/> with the specified filename, relative to the configured
-        ///     Packages directory.
+        ///     Reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
         /// </summary>
-        /// <param name="data">The data to save.</param>
-        /// <param name="fileName">
-        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
-        /// </param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public IResult<IPackage> SavePackage(byte[] data, string fileName)
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        public IResult<byte[]> ReadPackage(string fqn)
         {
-            logger.EnterMethod(xLogger.Params(fileName, xLogger.Exclude()));
-            IResult<IPackage> retVal = new Result<IPackage>();
+            logger.EnterMethod(xLogger.Params(fqn));
+            IResult<byte[]> retVal = new Result<byte[]>();
 
-            logger.Info($"Saving new Package to '{fileName}'...");
+            IPackage findResult = FindPackage(fqn);
 
-            IPlatform platform = Dependency<IPlatformManager>().Platform;
-            string tempFile = Path.Combine(platform.Directories.Temp, fileName);
-
-            retVal.Incorporate(platform.WriteFileBytes(tempFile, data));
-
-            if (retVal.ResultCode != ResultCode.Failure)
+            if (findResult != default(IPackage))
             {
-                PackageReader reader = new PackageReader();
+                IPlatform platform = Dependency<IPlatformManager>().Platform;
 
-                IResult<IPackage> readResult = reader.Read(tempFile);
-
-                retVal.Incorporate(readResult);
-
-                if (retVal.ResultCode != ResultCode.Failure)
+                if (platform.FileExists(findResult.FileName))
                 {
-                    string destinationFile = Path.Combine(platform.Directories.Packages, Path.GetFileName(tempFile));
-
-                    retVal.Incorporate(platform.CopyFile(tempFile, destinationFile, true));
-
+                    IResult<byte[]> readResult = platform.ReadFileBytes(findResult.FileName);
+                    retVal.Incorporate(readResult);
                     retVal.ReturnValue = readResult.ReturnValue;
-                }
-                else
-                {
-                    retVal.AddError($"Failed to save Package '{fileName}'.");
                 }
             }
 
@@ -326,17 +364,14 @@ namespace OpenIIoT.Core.Package
         }
 
         /// <summary>
-        ///     Saves the specified binary data to a <see cref="IPackage"/> with the specified filename, relative to the configured
-        ///     Packages directory.
+        ///     Asynchronously reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
+        ///     binary data.
         /// </summary>
-        /// <param name="data">The data to save.</param>
-        /// <param name="fileName">
-        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
-        /// </param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public async Task<IResult<IPackage>> SavePackageAsync(byte[] data, string fileName)
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        public async Task<IResult<byte[]>> ReadPackageAsync(string fqn)
         {
-            return await Task.Run(() => SavePackage(data, fileName));
+            return await Task.Run(() => ReadPackage(fqn));
         }
 
         /// <summary>

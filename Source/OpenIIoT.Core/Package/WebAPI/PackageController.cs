@@ -28,11 +28,6 @@ namespace OpenIIoT.Core.Package.WebAPI
         #region Variables
 
         /// <summary>
-        ///     The Logger for this class.
-        /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
         ///     The default serialization properties for an AppPackage.
         /// </summary>
         private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { "Files" });
@@ -69,17 +64,23 @@ namespace OpenIIoT.Core.Package.WebAPI
 
             if (findResult != default(IPackage))
             {
-                string packageFile = findResult.FileName;
+                IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().ReadPackageAsync(fqn);
 
-                retVal = new HttpResponseMessage(HttpStatusCode.OK);
-
-                retVal.Content = new StreamContent(new FileStream(packageFile, FileMode.Open, FileAccess.Read));
-                retVal.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                retVal.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = Path.GetFileName(packageFile) };
+                if (readResult.ResultCode != ResultCode.Failure)
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.OK);
+                    retVal.Content = new ByteArrayContent(readResult.ReturnValue);
+                    retVal.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+                    retVal.Content.Headers.ContentDisposition.FileName = Path.GetFileName(findResult.FileName);
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                }
             }
             else
             {
-                retVal = Request.CreateResponse(HttpStatusCode.NotFound, findResult, JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.NotFound);
             }
 
             return retVal;
@@ -148,9 +149,33 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
-        [Route("api/package/save/{fileName}")]
+        [Route("api/package/{fqn}/read")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> ReadPackage(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().ReadPackageAsync(fqn);
+
+            return Request.CreateResponse(HttpStatusCode.OK, readResult, JsonFormatter());
+        }
+
+        /// <summary>
+        ///     Reloads the list of Packages from disk and returns the list.
+        /// </summary>
+        /// <returns>The reloaded list of available Packages.</returns>
+        [Route("api/package/scan")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> ScanPackages()
+        {
+            IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
+
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
+        }
+
+        [Route("api/package/upload/{fileName}")]
         [HttpPost]
-        public async Task<HttpResponseMessage> SavePackage([FromBody]object base64Data, string fileName)
+        public async Task<HttpResponseMessage> UploadPackage([FromBody]string base64Data, string fileName)
         {
             IResult retVal = new Result();
             byte[] data = default(byte[]);
@@ -167,23 +192,10 @@ namespace OpenIIoT.Core.Package.WebAPI
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                retVal = await manager.GetManager<IPackageManager>().SavePackageAsync(data, fileName);
+                retVal = await manager.GetManager<IPackageManager>().CreatePackageAsync(data, fileName);
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, retVal, JsonFormatter());
-        }
-
-        /// <summary>
-        ///     Reloads the list of Packages from disk and returns the list.
-        /// </summary>
-        /// <returns>The reloaded list of available Packages.</returns>
-        [Route("api/package/scan")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> ScanPackages()
-        {
-            IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
-
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
         [Route("api/package/{fqn}/verify")]
