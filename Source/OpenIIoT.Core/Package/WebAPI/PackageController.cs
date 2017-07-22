@@ -60,24 +60,9 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             HttpResponseMessage retVal;
 
-            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
+            IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().ReadPackageAsync(fqn);
 
-            if (findResult != default(IPackage))
-            {
-                string packageFile = findResult.FileName;
-
-                retVal = new HttpResponseMessage(HttpStatusCode.OK);
-
-                retVal.Content = new StreamContent(new FileStream(packageFile, FileMode.Open, FileAccess.Read));
-                retVal.Content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
-                retVal.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment") { FileName = Path.GetFileName(packageFile) };
-            }
-            else
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.NotFound, findResult, JsonFormatter());
-            }
-
-            return retVal;
+            return Request.CreateResponse(HttpStatusCode.OK, readResult, JsonFormatter());
         }
 
         /// <summary>
