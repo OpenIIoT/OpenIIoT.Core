@@ -63,6 +63,27 @@ namespace OpenIIoT.SDK.Package
         #region Public Methods
 
         /// <summary>
+        ///     Creates a <see cref="IPackage"/> file with the specified data and filename, relative to the configured Packages directory.
+        /// </summary>
+        /// <param name="data">The data to save.</param>
+        /// <param name="fileName">
+        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
+        IResult<IPackage> CreatePackage(byte[] data, string fileName);
+
+        /// <summary>
+        ///     Asynchronously creates a <see cref="IPackage"/> file with the specified data and filename, relative to the
+        ///     configured Packages directory.
+        /// </summary>
+        /// <param name="data">The data to save.</param>
+        /// <param name="fileName">
+        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
+        Task<IResult<IPackage>> CreatePackageAsync(byte[] data, string fileName);
+
+        /// <summary>
         ///     Deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to delete.</param>
@@ -139,26 +160,19 @@ namespace OpenIIoT.SDK.Package
         Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
 
         /// <summary>
-        ///     Saves the specified binary data to a <see cref="IPackage"/> with the specified filename, relative to the configured
-        ///     Packages directory.
+        ///     Reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
         /// </summary>
-        /// <param name="data">The data to save.</param>
-        /// <param name="fileName">
-        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
-        /// </param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        IResult<IPackage> SavePackage(byte[] data, string fileName);
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        IResult<byte[]> ReadPackage(string fqn);
 
         /// <summary>
-        ///     Saves the specified binary data to a <see cref="IPackage"/> with the specified filename, relative to the configured
-        ///     Packages directory.
+        ///     Asynchronously reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
+        ///     binary data.
         /// </summary>
-        /// <param name="data">The data to save.</param>
-        /// <param name="fileName">
-        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
-        /// </param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        Task<IResult<IPackage>> SavePackageAsync(byte[] data, string fileName);
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        Task<IResult<IPackage>> ReadPackageAsync(string fqn);
 
         /// <summary>
         ///     Scans for and returns a list of all Package files in the configured Packages directory.
