@@ -172,7 +172,7 @@ namespace OpenIIoT.SDK.Package
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
         /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        Task<IResult<IPackage>> ReadPackageAsync(string fqn);
+        Task<IResult<byte[]>> ReadPackageAsync(string fqn);
 
         /// <summary>
         ///     Scans for and returns a list of all Package files in the configured Packages directory.

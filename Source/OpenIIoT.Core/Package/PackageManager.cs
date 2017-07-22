@@ -335,6 +335,46 @@ namespace OpenIIoT.Core.Package
         }
 
         /// <summary>
+        ///     Reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        public IResult<byte[]> ReadPackage(string fqn)
+        {
+            logger.EnterMethod(xLogger.Params(fqn));
+            IResult<byte[]> retVal = new Result<byte[]>();
+
+            IPackage findResult = FindPackage(fqn);
+
+            if (findResult != default(IPackage))
+            {
+                IPlatform platform = Dependency<IPlatformManager>().Platform;
+
+                if (platform.FileExists(findResult.FileName))
+                {
+                    IResult<byte[]> readResult = platform.ReadFileBytes(findResult.FileName);
+                    retVal.Incorporate(readResult);
+                    retVal.ReturnValue = readResult.ReturnValue;
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Asynchronously reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
+        ///     binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        public async Task<IResult<byte[]>> ReadPackageAsync(string fqn)
+        {
+            return await Task.Run(() => ReadPackage(fqn));
+        }
+
+        /// <summary>
         ///     Scans for and returns a list of all Package files in the configured Packages directory.
         /// </summary>
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>

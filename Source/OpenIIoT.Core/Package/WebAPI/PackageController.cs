@@ -162,7 +162,7 @@ namespace OpenIIoT.Core.Package.WebAPI
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                retVal = await manager.GetManager<IPackageManager>().SavePackageAsync(data, fileName);
+                retVal = await manager.GetManager<IPackageManager>().CreatePackageAsync(data, fileName);
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, retVal, JsonFormatter());
