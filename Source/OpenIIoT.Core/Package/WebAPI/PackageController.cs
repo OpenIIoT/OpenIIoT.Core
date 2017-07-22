@@ -60,9 +60,28 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             HttpResponseMessage retVal;
 
-            IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().ReadPackageAsync(fqn);
+            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
-            return Request.CreateResponse(HttpStatusCode.OK, readResult, JsonFormatter());
+            if (findResult != default(IPackage))
+            {
+                IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().ReadPackageAsync(fqn);
+
+                if (readResult.ResultCode != ResultCode.Failure)
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.OK);
+                    retVal.Content = new ByteArrayContent(readResult.ReturnValue);
+                    retVal.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+                    retVal.Content.Headers.ContentDisposition.FileName = Path.GetFileName(findResult.FileName);
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError);
+                }
+            }
+            else
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+            }
         }
 
         /// <summary>
@@ -126,6 +145,17 @@ namespace OpenIIoT.Core.Package.WebAPI
             IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.SkipVerification, publicKey);
 
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        }
+
+        [Route("api/package/{fqn}/read")]
+        [HttpGet]
+        public async Task<HttpResponseMessage> ReadPackage(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().ReadPackageAsync(fqn);
+
+            return Request.CreateResponse(HttpStatusCode.OK, readResult, JsonFormatter());
         }
 
         /// <summary>
