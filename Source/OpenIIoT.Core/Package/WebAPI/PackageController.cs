@@ -28,11 +28,6 @@ namespace OpenIIoT.Core.Package.WebAPI
         #region Variables
 
         /// <summary>
-        ///     The Logger for this class.
-        /// </summary>
-        private static Logger logger = LogManager.GetCurrentClassLogger();
-
-        /// <summary>
         ///     The default serialization properties for an AppPackage.
         /// </summary>
         private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { "Files" });
