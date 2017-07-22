@@ -145,7 +145,7 @@ namespace OpenIIoT.Core.Package.WebAPI
 
         [Route("api/package/save/{fileName}")]
         [HttpPost]
-        public async Task<HttpResponseMessage> SavePackage([FromBody]object base64Data, string fileName)
+        public async Task<HttpResponseMessage> SavePackage([FromBody]string base64Data, string fileName)
         {
             IResult retVal = new Result();
             byte[] data = default(byte[]);
