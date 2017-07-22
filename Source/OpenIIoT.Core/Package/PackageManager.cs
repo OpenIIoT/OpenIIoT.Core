@@ -144,6 +144,65 @@ namespace OpenIIoT.Core.Package
         }
 
         /// <summary>
+        ///     Creates a <see cref="IPackage"/> file with the specified data and filename, relative to the configured Packages directory.
+        /// </summary>
+        /// <param name="data">The data to save.</param>
+        /// <param name="fileName">
+        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
+        public IResult<IPackage> CreatePackage(byte[] data, string fileName)
+        {
+            logger.EnterMethod(xLogger.Params(fileName, xLogger.Exclude()));
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            logger.Info($"Saving new Package to '{fileName}'...");
+
+            IPlatform platform = Dependency<IPlatformManager>().Platform;
+            string tempFile = Path.Combine(platform.Directories.Temp, fileName);
+
+            retVal.Incorporate(platform.WriteFileBytes(tempFile, data));
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                PackageReader reader = new PackageReader();
+                IResult<IPackage> readResult = reader.Read(tempFile);
+
+                retVal.Incorporate(readResult);
+
+                if (retVal.ResultCode != ResultCode.Failure)
+                {
+                    string destinationFile = Path.Combine(platform.Directories.Packages, Path.GetFileName(tempFile));
+
+                    retVal.Incorporate(platform.CopyFile(tempFile, destinationFile, true));
+                    retVal.ReturnValue = readResult.ReturnValue;
+                }
+                else
+                {
+                    retVal.AddError($"Failed to save Package '{fileName}'.");
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Asynchronously creates a <see cref="IPackage"/> file with the specified data and filename, relative to the
+        ///     configured Packages directory.
+        /// </summary>
+        /// <param name="data">The data to save.</param>
+        /// <param name="fileName">
+        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
+        /// </param>
+        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
+        public async Task<IResult<IPackage>> CreatePackageAsync(byte[] data, string fileName)
+        {
+            return await Task.Run(() => CreatePackage(data, fileName));
+        }
+
+        /// <summary>
         ///     Deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to delete.</param>
@@ -273,66 +332,6 @@ namespace OpenIIoT.Core.Package
         public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
         {
             return await Task.Run(() => InstallPackage(fqn, options, publicKey));
-        }
-
-        /// <summary>
-        ///     Saves the specified binary data to a <see cref="IPackage"/> with the specified filename, relative to the configured
-        ///     Packages directory.
-        /// </summary>
-        /// <param name="data">The data to save.</param>
-        /// <param name="fileName">
-        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
-        /// </param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public IResult<IPackage> SavePackage(byte[] data, string fileName)
-        {
-            logger.EnterMethod(xLogger.Params(fileName, xLogger.Exclude()));
-            IResult<IPackage> retVal = new Result<IPackage>();
-
-            logger.Info($"Saving new Package to '{fileName}'...");
-
-            IPlatform platform = Dependency<IPlatformManager>().Platform;
-            string tempFile = Path.Combine(platform.Directories.Temp, fileName);
-
-            retVal.Incorporate(platform.WriteFileBytes(tempFile, data));
-
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                PackageReader reader = new PackageReader();
-                IResult<IPackage> readResult = reader.Read(tempFile);
-
-                retVal.Incorporate(readResult);
-
-                if (retVal.ResultCode != ResultCode.Failure)
-                {
-                    string destinationFile = Path.Combine(platform.Directories.Packages, Path.GetFileName(tempFile));
-
-                    retVal.Incorporate(platform.CopyFile(tempFile, destinationFile, true));
-                    retVal.ReturnValue = readResult.ReturnValue;
-                }
-                else
-                {
-                    retVal.AddError($"Failed to save Package '{fileName}'.");
-                }
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Saves the specified binary data to a <see cref="IPackage"/> with the specified filename, relative to the configured
-        ///     Packages directory.
-        /// </summary>
-        /// <param name="data">The data to save.</param>
-        /// <param name="fileName">
-        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
-        /// </param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public async Task<IResult<IPackage>> SavePackageAsync(byte[] data, string fileName)
-        {
-            return await Task.Run(() => SavePackage(data, fileName));
         }
 
         /// <summary>
