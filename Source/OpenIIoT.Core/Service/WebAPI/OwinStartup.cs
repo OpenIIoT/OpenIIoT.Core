@@ -8,6 +8,7 @@ using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK;
 using Owin;
 using Swashbuckle.Application;
+using System;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
@@ -39,7 +40,12 @@ namespace OpenIIoT.Core.Service.WebAPI
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
             config
-                .EnableSwagger(c => c.SingleApiVersion("v1", "OpenIIoT"))
+                .EnableSwagger(c =>
+                {
+                    c.SingleApiVersion("v1", manager.ProductName);
+                    c.IncludeXmlComments($"{manager.ProductName}.XML");
+                }
+                )
                 .EnableSwaggerUi();
 
             // config.Routes.MapHttpRoute(
