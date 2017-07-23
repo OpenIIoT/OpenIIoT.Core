@@ -89,24 +89,24 @@ namespace OpenIIoT.Core.Package
         #region Public Methods
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> with the specified <see cref="PackageInstallOptions"/>.
+        ///     Installs the specified <see cref="IPackage"/> with the specified <see cref="PackageInstallationOptions"/>.
         /// </summary>
         /// <param name="package">The Package to install.</param>
         /// <param name="options">The installation options with which the Package is to be installed.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(IPackage package, PackageInstallOptions options)
+        public IResult InstallPackage(IPackage package, PackageInstallationOptions options)
         {
             return InstallPackage(package, options, string.Empty);
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> with the specified <see cref="PackageInstallOptions"/>.
+        ///     Installs the specified <see cref="IPackage"/> with the specified <see cref="PackageInstallationOptions"/>.
         /// </summary>
         /// <param name="package">The Package to install.</param>
         /// <param name="options">The installation options with which the Package is to be installed.</param>
         /// <param name="publicKey">The PGP Public Key to use when verifying the Package prior to installation.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(IPackage package, PackageInstallOptions options, string publicKey)
+        public IResult InstallPackage(IPackage package, PackageInstallationOptions options, string publicKey)
         {
             logger.EnterMethod(xLogger.Params(package, options, publicKey));
             IResult retVal = new Result();
@@ -120,8 +120,8 @@ namespace OpenIIoT.Core.Package
             string destination = Platform.Directories.Plugins;
             destination = Path.Combine(destination, package.FQN);
 
-            bool overwrite = options.HasFlag(PackageInstallOptions.Overwrite);
-            bool skipVerification = options.HasFlag(PackageInstallOptions.SkipVerification);
+            bool overwrite = options.Overwrite;
+            bool skipVerification = options.SkipVerification;
 
             logger.Debug($"Install directory: '{destination}'; overwrite={overwrite}, skipVerification={skipVerification}");
 
