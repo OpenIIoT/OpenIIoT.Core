@@ -63,14 +63,15 @@ namespace OpenIIoT.Core.Package.WebAPI
         public async Task<HttpResponseMessage> DeletePackage(string fqn)
         {
             HttpResponseMessage retVal;
-            IResult result = new Result();
+            Result result = new Result();
 
             IPackage findResult = await PackageManager.FindPackageAsync(fqn);
+            var type = Request.Content.Headers.ContentType;
 
             if (findResult == default(IPackage))
             {
                 result.AddError("A Package with the specified FQN could not be found.");
-                retVal = Request.CreateResponse(HttpStatusCode.NotFound, result);
+                retVal = Request.CreateResponse(HttpStatusCode.NotFound, result, JsonFormatter());
             }
             else
             {
@@ -78,7 +79,7 @@ namespace OpenIIoT.Core.Package.WebAPI
 
                 if (deleteResult.ResultCode != ResultCode.Failure)
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, deleteResult);
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, deleteResult, JsonFormatter());
                 }
                 else
                 {
@@ -86,6 +87,7 @@ namespace OpenIIoT.Core.Package.WebAPI
                 }
             }
 
+            var c = retVal.Content;
             return retVal;
         }
 

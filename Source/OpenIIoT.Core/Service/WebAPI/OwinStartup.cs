@@ -9,6 +9,8 @@ using OpenIIoT.SDK;
 using Owin;
 using Swashbuckle.Application;
 using System;
+using Utility.OperationResult;
+using System.Runtime.Serialization;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
@@ -39,15 +41,15 @@ namespace OpenIIoT.Core.Service.WebAPI
 
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
+
             config
                 .EnableSwagger(c =>
                 {
                     c.SingleApiVersion("v1", manager.ProductName);
                     c.IncludeXmlComments($"{manager.ProductName}.XML");
                     c.DescribeAllEnumsAsStrings();
-                    c.OperationFilter<MimeTypesOperationFilter>();
-                }
-                )
+                    c.OperationFilter<MimeTypeOperationFilter>();
+                })
                 .EnableSwaggerUi();
 
             // config.Routes.MapHttpRoute(
