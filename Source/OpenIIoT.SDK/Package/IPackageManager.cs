@@ -129,35 +129,31 @@ namespace OpenIIoT.SDK.Package
         ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        IResult InstallPackage(string fqn, string publicKey = "");
+        IResult InstallPackage(string fqn);
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
+        IResult InstallPackage(string fqn, PackageInstallationOptions options);
 
         /// <summary>
         ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Task<IResult> InstallPackageAsync(string fqn, string publicKey = "");
+        Task<IResult> InstallPackageAsync(string fqn);
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "");
+        Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options);
 
         /// <summary>
         ///     Reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.

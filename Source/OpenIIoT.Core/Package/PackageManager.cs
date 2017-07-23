@@ -277,23 +277,21 @@ namespace OpenIIoT.Core.Package
         ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(string fqn, string publicKey = "")
+        public IResult InstallPackage(string fqn)
         {
-            return InstallPackage(fqn, PackageInstallOptions.None, publicKey);
+            return InstallPackage(fqn, default(PackageInstallationOptions));
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
+        public IResult InstallPackage(string fqn, PackageInstallationOptions options)
         {
-            logger.EnterMethod(xLogger.Params(fqn, options, publicKey));
+            logger.EnterMethod(xLogger.Params(fqn, options));
             IResult retVal = new Result();
 
             logger.Info($"Installing Package '{fqn}'...");
@@ -303,7 +301,7 @@ namespace OpenIIoT.Core.Package
             if (findResult != default(IPackage))
             {
                 PackageInstaller installer = new PackageInstaller(Dependency<IPlatformManager>().Platform);
-                retVal.Incorporate(installer.InstallPackage(findResult, options, publicKey));
+                retVal.Incorporate(installer.InstallPackage(findResult, options));
             }
 
             retVal.LogResult(logger);
@@ -315,23 +313,21 @@ namespace OpenIIoT.Core.Package
         ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<IResult> InstallPackageAsync(string fqn, string publicKey = "")
+        public async Task<IResult> InstallPackageAsync(string fqn)
         {
-            return await Task.Run(() => InstallPackage(fqn, publicKey));
+            return await Task.Run(() => InstallPackage(fqn));
         }
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallOptions options = PackageInstallOptions.None, string publicKey = "")
+        public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options)
         {
-            return await Task.Run(() => InstallPackage(fqn, options, publicKey));
+            return await Task.Run(() => InstallPackage(fqn, default(PackageInstallationOptions)));
         }
 
         /// <summary>

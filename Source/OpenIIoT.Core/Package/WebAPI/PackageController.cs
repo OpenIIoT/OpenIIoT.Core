@@ -114,9 +114,9 @@ namespace OpenIIoT.Core.Package.WebAPI
 
         [Route("api/package/{fqn}")]
         [HttpPut]
-        public async Task<HttpResponseMessage> InstallPackage(string fqn, [FromBody]InstallationOptions options)
+        public async Task<HttpResponseMessage> InstallPackage(string fqn, [FromBody]PackageInstallationOptions options)
         {
-            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options.Options, options.PublicKey);
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options);
 
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
