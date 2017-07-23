@@ -50,16 +50,15 @@ namespace OpenIIoT.Core.Package.WebAPI
         #region Instance Methods
 
         /// <summary>
-        ///     Deletes the Package.
+        ///     Deletes the specified Package.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        /// <response code="200">The Package was deleted.</response>
-        /// <response code="404">A Package with the specified FQN could not be found.</response>
-        /// <response code="500">An unexpected error was encountered during the operation.</response>
         [HttpDelete]
         [Route("v1/package/{fqn}")]
         [ResponseType(typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package was deleted.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified FQN could not be found.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public async Task<HttpResponseMessage> DeletePackage(string fqn)
         {
@@ -83,7 +82,7 @@ namespace OpenIIoT.Core.Package.WebAPI
                 }
                 else
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, deleteResult);
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, deleteResult, JsonFormatter());
                 }
             }
 

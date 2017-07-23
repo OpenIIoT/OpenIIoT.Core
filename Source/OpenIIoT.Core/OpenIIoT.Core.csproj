@@ -241,6 +241,7 @@
     <Compile Include="Common\WebAPI\LogController.cs" />
     <Compile Include="Common\WebAPI\LogHub.cs" />
     <Compile Include="Service\WebAPI\ApiBaseController.cs" />
+    <Compile Include="Service\WebAPI\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebAPI\OwinStartup.cs" />
     <Compile Include="Service\WebAPI\WebAPIService.cs" />
     <Compile Include="WindowsService.cs">

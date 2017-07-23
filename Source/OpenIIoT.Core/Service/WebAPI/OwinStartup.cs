@@ -45,6 +45,7 @@ namespace OpenIIoT.Core.Service.WebAPI
                     c.SingleApiVersion("v1", manager.ProductName);
                     c.IncludeXmlComments($"{manager.ProductName}.XML");
                     c.DescribeAllEnumsAsStrings();
+                    c.OperationFilter<MimeTypesOperationFilter>();
                 }
                 )
                 .EnableSwaggerUi();
