@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄                                                               ▄█
-      █     ███    ███                                                              ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████ ███▌ ██▄▄▄▄    ▄█████     ██      ▄█████   █        █          ▄█████    █████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █  ███▌ ██▀▀▀█▄   ██  ▀  ▀███████▄   ██   ██ ██       ██         ██   █    ██  ██
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄    ███▌ ██   ██   ██         ██  ▀   ██   ██ ██       ██        ▄██▄▄     ▄██▄▄█▀
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ███  ██   ██ ▀███████     ██    ▀████████ ██       ██       ▀▀██▀▀    ▀███████
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █  ███  ██   ██    ▄  ██     ██      ██   ██ ██▌    ▄ ██▌    ▄   ██   █    ██  ██
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████ █▀    █   █   ▄████▀     ▄██▀     ██   █▀ ████▄▄██ ████▄▄██   ███████   ██  ██
+      █      ▄███████▄                                                              ▄████████
+      █     ███    ███                                                              ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████ ███    █▀     █████    ▄█████   ▄█████      ██     ██████     █████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █  ███          ██  ██   ██   █    ██   ██ ▀███████▄ ██    ██   ██  ██
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄    ███         ▄██▄▄█▀  ▄██▄▄      ██   ██     ██  ▀ ██    ██  ▄██▄▄█▀
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ███    █▄  ▀███████ ▀▀██▀▀    ▀████████     ██    ██    ██ ▀███████
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █  ███    ███   ██  ██   ██   █    ██   ██     ██    ██    ██   ██  ██
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████ ████████▀    ██  ██   ███████   ██   █▀    ▄██▀    ██████    ██  ██
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Installs Package files.
+      █  Creates Package files.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -44,7 +44,6 @@ using System.IO;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK.Package;
-using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 
@@ -98,11 +97,9 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod();
             IResult<IPackage> retVal = new Result<IPackage>();
 
-            string tempFileName = Guid.NewGuid().ToString();
+            string tempFile = Path.Combine(Platform.Directories.Temp, Guid.NewGuid().ToString());
 
-            logger.Info($"Saving new Package to '{tempFileName}'...");
-
-            string tempFile = Path.Combine(Platform.Directories.Temp, tempFileName);
+            logger.Debug($"Saving new Package to '{tempFile}'...");
 
             retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
 
@@ -115,15 +112,11 @@ namespace OpenIIoT.Core.Package
 
                 if (retVal.ResultCode != ResultCode.Failure)
                 {
-                    string finalFileName = readResult.ReturnValue.FQN + "." + readResult.ReturnValue.Version + ".zip";
-                    string destinationFile = Path.Combine(Platform.Directories.Packages, finalFileName);
+                    string destinationFilename = GetPackageFilename(readResult.ReturnValue);
 
-                    retVal.Incorporate(Platform.CopyFile(tempFile, destinationFile, true));
+                    retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
                     retVal.ReturnValue = readResult.ReturnValue;
-                }
-                else
-                {
-                    retVal.AddError($"The specified data does not contain a valid Package.");
+                    retVal.ReturnValue.Filename = destinationFilename;
                 }
             }
 
@@ -136,10 +129,21 @@ namespace OpenIIoT.Core.Package
 
         #region Private Methods
 
-        private string GetPackageFileName(IPackage package)
+        /// <summary>
+        ///     Creates and returns a valid filename for the specified <see cref="IPackage"/>.
+        /// </summary>
+        /// <param name="package">The Package for which the filename is to be created.</param>
+        /// <returns>The created filename.</returns>
+        private string GetPackageFilename(IPackage package)
         {
-            string fileName = package.FQN + "." + package.Version + ".zip";
-            return fileName;
+            string filename = package.FQN + "." + package.Version + PackageConstants.PackageFilenameExtension;
+
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                filename = filename.Replace(c, PackageConstants.PackageFilenameInvalidCharacterSubstitution);
+            }
+
+            return Path.Combine(Platform.Directories.Packages, filename);
         }
 
         #endregion Private Methods

@@ -94,6 +94,7 @@
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
     <Compile Include="Package\IPackageManager.cs" />
+    <Compile Include="Package\PackageConstants.cs" />
     <Compile Include="Package\PackageInstallationOptions.cs" />
     <Compile Include="Service\WebAPI\HubHelper.cs" />
     <Compile Include="Service\WebAPI\IHub.cs" />
