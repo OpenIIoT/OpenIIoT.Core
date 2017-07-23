@@ -17,12 +17,15 @@ using OpenIIoT.SDK.Package;
 using OpenIIoT.Core.Service.WebAPI;
 using System.IO;
 using System;
+using System.Web.Http.Description;
+using Swashbuckle.Swagger.Annotations;
 
 namespace OpenIIoT.Core.Package.WebAPI
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>
+    [RoutePrefix("api")]
     public class PackageController : ApiBaseController
     {
         #region Variables
@@ -37,24 +40,57 @@ namespace OpenIIoT.Core.Package.WebAPI
         /// </summary>
         private IApplicationManager manager = ApplicationManager.GetInstance();
 
+        /// <summary>
+        ///     Gets the PackageManager for the application.
+        /// </summary>
+        private IPackageManager PackageManager => manager.GetManager<IPackageManager>();
+
         #endregion Variables
 
         #region Instance Methods
 
-        [Route("api/package/{fqn}")]
+        /// <summary>
+        ///     Deletes the Package.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        /// <response code="200">The Package was deleted.</response>
+        /// <response code="404">A Package with the specified FQN could not be found.</response>
+        /// <response code="500">An unexpected error was encountered during the operation.</response>
         [HttpDelete]
+        [Route("v1/package/{fqn}")]
+        [ResponseType(typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public async Task<HttpResponseMessage> DeletePackage(string fqn)
         {
             HttpResponseMessage retVal;
-            HttpStatusCode statusCode = HttpStatusCode.OK;
+            IResult result = new Result();
 
-            IResult deleteResult = await manager.GetManager<IPackageManager>().DeletePackageAsync(fqn);
+            IPackage findResult = await PackageManager.FindPackageAsync(fqn);
 
-            retVal = Request.CreateResponse(HttpStatusCode.OK, deleteResult, JsonFormatter());
+            if (findResult == default(IPackage))
+            {
+                result.AddError("A Package with the specified FQN could not be found.");
+                retVal = Request.CreateResponse(HttpStatusCode.NotFound, result);
+            }
+            else
+            {
+                IResult deleteResult = await manager.GetManager<IPackageManager>().DeletePackageAsync(fqn);
+
+                if (deleteResult.ResultCode != ResultCode.Failure)
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, deleteResult);
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, deleteResult);
+                }
+            }
+
             return retVal;
         }
 
-        [Route("api/package/{fqn}/download")]
+        [Route("v1/{fqn}/download")]
         [HttpGet]
         public async Task<HttpResponseMessage> DownloadPackage(string fqn)
         {
@@ -91,9 +127,9 @@ namespace OpenIIoT.Core.Package.WebAPI
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to return.</param>
         /// <returns>The matching Package.</returns>
-        [Route("api/package/{fqn}")]
+        [Route("v1/{fqn}")]
         [HttpGet]
-        public async Task<HttpResponseMessage> FindPackage(string fqn)
+        public async Task<HttpResponseMessage> GetPackage(string fqn)
         {
             HttpResponseMessage retVal;
             IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
@@ -119,45 +155,6 @@ namespace OpenIIoT.Core.Package.WebAPI
             IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options);
 
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        }
-
-        //[Route("api/package/{fqn}/overwrite")]
-        //[HttpPut]
-        //public async Task<HttpResponseMessage> InstallPackageOverwrite(string fqn, string publicKey = "")
-        //{
-        //    IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.Overwrite, publicKey);
-
-        //    return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        //}
-
-        //[Route("api/package/{fqn}/overwrite/skipverification")]
-        //[HttpPut]
-        //public async Task<HttpResponseMessage> InstallPackageOverwriteSkipVerification(string fqn, string publicKey = "")
-        //{
-        //    PackageInstallOptions options = PackageInstallOptions.Overwrite | PackageInstallOptions.SkipVerification;
-        //    IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options, publicKey);
-
-        //    return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        //}
-
-        //[Route("api/package/{fqn}/skipverification")]
-        //[HttpPut]
-        //public async Task<HttpResponseMessage> InstallPackageSkipVerification(string fqn, string publicKey = "")
-        //{
-        //    IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.SkipVerification, publicKey);
-
-        //    return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        //}
-
-        [Route("api/package/{fqn}/read")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> ReadPackage(string fqn)
-        {
-            HttpResponseMessage retVal;
-
-            IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().ReadPackageAsync(fqn);
-
-            return Request.CreateResponse(HttpStatusCode.OK, readResult, JsonFormatter());
         }
 
         /// <summary>
