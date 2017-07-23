@@ -41,8 +41,8 @@ namespace OpenIIoT.Core.Package.WebAPI
 
         #region Instance Methods
 
-        [Route("api/package/{fqn}/delete")]
-        [HttpGet]
+        [Route("api/package/{fqn}")]
+        [HttpDelete]
         public async Task<HttpResponseMessage> DeletePackage(string fqn)
         {
             HttpResponseMessage retVal;
@@ -112,42 +112,42 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
-        [Route("api/package/{fqn}/install")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> InstallPackage(string fqn, string publicKey = "")
+        [Route("api/package/{fqn}")]
+        [HttpPut]
+        public async Task<HttpResponseMessage> InstallPackage(string fqn, [FromBody]InstallationOptions options)
         {
-            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, publicKey);
+            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options.Options, options.PublicKey);
 
             return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
         }
 
-        [Route("api/package/{fqn}/install/overwrite")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> InstallPackageOverwrite(string fqn, string publicKey = "")
-        {
-            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.Overwrite, publicKey);
+        //[Route("api/package/{fqn}/overwrite")]
+        //[HttpPut]
+        //public async Task<HttpResponseMessage> InstallPackageOverwrite(string fqn, string publicKey = "")
+        //{
+        //    IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.Overwrite, publicKey);
 
-            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        }
+        //    return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        //}
 
-        [Route("api/package/{fqn}/install/overwrite/skipverification")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> InstallPackageOverwriteSkipVerification(string fqn, string publicKey = "")
-        {
-            PackageInstallOptions options = PackageInstallOptions.Overwrite | PackageInstallOptions.SkipVerification;
-            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options, publicKey);
+        //[Route("api/package/{fqn}/overwrite/skipverification")]
+        //[HttpPut]
+        //public async Task<HttpResponseMessage> InstallPackageOverwriteSkipVerification(string fqn, string publicKey = "")
+        //{
+        //    PackageInstallOptions options = PackageInstallOptions.Overwrite | PackageInstallOptions.SkipVerification;
+        //    IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options, publicKey);
 
-            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        }
+        //    return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        //}
 
-        [Route("api/package/{fqn}/install/skipverification")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> InstallPackageSkipVerification(string fqn, string publicKey = "")
-        {
-            IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.SkipVerification, publicKey);
+        //[Route("api/package/{fqn}/skipverification")]
+        //[HttpPut]
+        //public async Task<HttpResponseMessage> InstallPackageSkipVerification(string fqn, string publicKey = "")
+        //{
+        //    IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, PackageInstallOptions.SkipVerification, publicKey);
 
-            return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        }
+        //    return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
+        //}
 
         [Route("api/package/{fqn}/read")]
         [HttpGet]
