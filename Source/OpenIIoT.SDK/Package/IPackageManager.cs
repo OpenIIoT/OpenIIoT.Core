@@ -63,25 +63,26 @@ namespace OpenIIoT.SDK.Package
         #region Public Methods
 
         /// <summary>
-        ///     Creates a <see cref="IPackage"/> file with the specified data and filename, relative to the configured Packages directory.
+        ///     Creates a <see cref="IPackage"/> file with the specified data.
         /// </summary>
+        /// <remarks>
+        ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
+        ///     and Version of the Package.
+        /// </remarks>
         /// <param name="data">The data to save.</param>
-        /// <param name="fileName">
-        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
-        /// </param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        IResult<IPackage> CreatePackage(byte[] data, string fileName);
+        IResult<IPackage> CreatePackage(byte[] data);
 
         /// <summary>
-        ///     Asynchronously creates a <see cref="IPackage"/> file with the specified data and filename, relative to the
-        ///     configured Packages directory.
+        ///     Asynchronously creates a <see cref="IPackage"/> file with the specified data.
         /// </summary>
+        /// <remarks>
+        ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
+        ///     and Version of the Package.
+        /// </remarks>
         /// <param name="data">The data to save.</param>
-        /// <param name="fileName">
-        ///     The name of the file to which the data is to be saved, relative to the configured Pacakges directory.
-        /// </param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        Task<IResult<IPackage>> CreatePackageAsync(byte[] data, string fileName);
+        Task<IResult<IPackage>> CreatePackageAsync(byte[] data);
 
         /// <summary>
         ///     Deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.

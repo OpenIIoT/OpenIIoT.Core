@@ -71,7 +71,7 @@ namespace OpenIIoT.Core.Package.WebAPI
             if (findResult == default(IPackage))
             {
                 result.AddError("A Package with the specified FQN could not be found.");
-                retVal = Request.CreateResponse(HttpStatusCode.NotFound, result, JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.NotFound);
             }
             else
             {
@@ -171,9 +171,14 @@ namespace OpenIIoT.Core.Package.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
-        [Route("api/package/upload/{fileName}")]
+        /// <summary>
+        ///     Creates a new Package with the specified filename from the specified base 64 encoded binary data.
+        /// </summary>
+        /// <param name="base64Data">The base 64 encoded binary package data.</param>
+        /// <returns></returns>
+        [Route("v1/package/upload")]
         [HttpPost]
-        public async Task<HttpResponseMessage> UploadPackage([FromBody]string base64Data, string fileName)
+        public async Task<HttpResponseMessage> UploadPackage([FromBody]string base64Data)
         {
             IResult retVal = new Result();
             byte[] data = default(byte[]);
@@ -190,7 +195,7 @@ namespace OpenIIoT.Core.Package.WebAPI
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                retVal = await manager.GetManager<IPackageManager>().CreatePackageAsync(data, fileName);
+                retVal = await manager.GetManager<IPackageManager>().CreatePackageAsync(data);
             }
 
             return Request.CreateResponse(HttpStatusCode.OK, retVal, JsonFormatter());
