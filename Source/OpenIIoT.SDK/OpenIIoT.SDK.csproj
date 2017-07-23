@@ -95,7 +95,6 @@
     <Compile Include="Common\Utility\Utility.cs" />
     <Compile Include="Package\IPackageManager.cs" />
     <Compile Include="Package\PackageInstallationOptions.cs" />
-    <Compile Include="Package\PackageInstallOptions.cs" />
     <Compile Include="Service\WebAPI\HubHelper.cs" />
     <Compile Include="Service\WebAPI\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
