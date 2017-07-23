@@ -8,17 +8,16 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.Core.Package.WebAPI
+namespace OpenIIoT.SDK.Package
 {
-    public class InstallationOptions
+    public class PackageInstallationOptions
     {
         #region Public Properties
 
-        [EnumDataType(typeof(PackageInstallOptions))]
-        [JsonConverter(typeof(StringEnumConverter))]
-        public PackageInstallOptions Options { get; set; }
+        public bool Overwrite { get; set; }
 
         public string PublicKey { get; set; }
+        public bool SkipVerification { get; set; }
 
         #endregion Public Properties
     }

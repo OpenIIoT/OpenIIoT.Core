@@ -209,7 +209,6 @@
     <Compile Include="Package\PackageInstaller.cs" />
     <Compile Include="Package\PackageReader.cs" />
     <Compile Include="Package\WebAPI\PackageController.cs" />
-    <Compile Include="Package\WebAPI\PackageInstallOptions.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
     <Compile Include="Package\Package.cs" />
