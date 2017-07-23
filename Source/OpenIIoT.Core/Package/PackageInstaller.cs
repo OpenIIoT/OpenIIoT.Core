@@ -127,7 +127,7 @@ namespace OpenIIoT.Core.Package
 
             try
             {
-                extractor.ExtractPackage(package.FileName, destination, overwrite, skipVerification);
+                extractor.ExtractPackage(package.Filename, destination, overwrite, skipVerification);
             }
             catch (Exception ex)
             {

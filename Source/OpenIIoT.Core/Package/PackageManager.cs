@@ -196,7 +196,7 @@ namespace OpenIIoT.Core.Package
 
             if (findResult != default(IPackage))
             {
-                string fileName = findResult.FileName;
+                string fileName = findResult.Filename;
 
                 IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
                 retVal.Incorporate(deleteResult);
@@ -324,9 +324,9 @@ namespace OpenIIoT.Core.Package
             {
                 IPlatform platform = Dependency<IPlatformManager>().Platform;
 
-                if (platform.FileExists(findResult.FileName))
+                if (platform.FileExists(findResult.Filename))
                 {
-                    IResult<byte[]> readResult = platform.ReadFileBytes(findResult.FileName);
+                    IResult<byte[]> readResult = platform.ReadFileBytes(findResult.Filename);
                     retVal.Incorporate(readResult);
                     retVal.ReturnValue = readResult.ReturnValue;
                 }
@@ -403,7 +403,7 @@ namespace OpenIIoT.Core.Package
 
                 try
                 {
-                    retVal.ReturnValue = verifier.VerifyPackage(findResult.FileName);
+                    retVal.ReturnValue = verifier.VerifyPackage(findResult.Filename);
                 }
                 catch (Exception ex)
                 {

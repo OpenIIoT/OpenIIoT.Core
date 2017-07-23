@@ -56,8 +56,8 @@ namespace OpenIIoT.Core.Package.WebAPI
         /// <returns>A Result containing the result of the operation.</returns>
         [HttpDelete]
         [Route("v1/package/{fqn}")]
-        [ResponseType(typeof(Result))]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was deleted.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(Result))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified FQN could not be found.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public async Task<HttpResponseMessage> DeletePackage(string fqn)
@@ -65,29 +65,36 @@ namespace OpenIIoT.Core.Package.WebAPI
             HttpResponseMessage retVal;
             Result result = new Result();
 
-            IPackage findResult = await PackageManager.FindPackageAsync(fqn);
-            var type = Request.Content.Headers.ContentType;
-
-            if (findResult == default(IPackage))
+            if (string.IsNullOrEmpty(fqn))
             {
-                result.AddError("A Package with the specified FQN could not be found.");
-                retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                result.AddError("The specified Fully Qualified name is null or empty.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, result, JsonFormatter());
             }
             else
             {
-                IResult deleteResult = await manager.GetManager<IPackageManager>().DeletePackageAsync(fqn);
+                IPackage findResult = await PackageManager.FindPackageAsync(fqn);
+                var type = Request.Content.Headers.ContentType;
 
-                if (deleteResult.ResultCode != ResultCode.Failure)
+                if (findResult == default(IPackage))
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, deleteResult, JsonFormatter());
+                    result.AddError("A Package with the specified FQN could not be found.");
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
                 }
                 else
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, deleteResult, JsonFormatter());
+                    IResult deleteResult = await manager.GetManager<IPackageManager>().DeletePackageAsync(fqn);
+
+                    if (deleteResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.OK, deleteResult, JsonFormatter());
+                    }
+                    else
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, deleteResult, JsonFormatter());
+                    }
                 }
             }
 
-            var c = retVal.Content;
             return retVal;
         }
 
@@ -108,7 +115,7 @@ namespace OpenIIoT.Core.Package.WebAPI
                     retVal = Request.CreateResponse(HttpStatusCode.OK);
                     retVal.Content = new ByteArrayContent(readResult.ReturnValue);
                     retVal.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
-                    retVal.Content.Headers.ContentDisposition.FileName = Path.GetFileName(findResult.FileName);
+                    retVal.Content.Headers.ContentDisposition.FileName = Path.GetFileName(findResult.Filename);
                 }
                 else
                 {
@@ -128,7 +135,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to return.</param>
         /// <returns>The matching Package.</returns>
-        [Route("v1/{fqn}")]
+        [Route("v1/package/{fqn}")]
         [HttpGet]
         public async Task<HttpResponseMessage> GetPackage(string fqn)
         {
@@ -140,8 +147,13 @@ namespace OpenIIoT.Core.Package.WebAPI
             return retVal;
         }
 
-        [Route("api/package")]
+        /// <summary>
+        ///     Returns a list of Packages available for installation.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and a list of Packages.</returns>
+        [Route("v1/package")]
         [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(List<IPackage>))]
         public HttpResponseMessage GetPackages()
         {
             IList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
@@ -175,30 +187,51 @@ namespace OpenIIoT.Core.Package.WebAPI
         ///     Creates a new Package with the specified filename from the specified base 64 encoded binary data.
         /// </summary>
         /// <param name="base64Data">The base 64 encoded binary package data.</param>
-        /// <returns></returns>
-        [Route("v1/package/upload")]
+        /// <returns>A Result containing the result of the operation and the created Package.</returns>
+        [Route("v1/package")]
         [HttpPost]
+        [SwaggerResponse(HttpStatusCode.Created, "The Package was created or overwritten.", typeof(Result<IPackage>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result<IPackage>))]
         public async Task<HttpResponseMessage> UploadPackage([FromBody]string base64Data)
         {
-            IResult retVal = new Result();
+            HttpResponseMessage retVal = default(HttpResponseMessage);
+            IResult<IPackage> result = new Result<IPackage>();
             byte[] data = default(byte[]);
 
-            try
+            if (data.Length == 0)
             {
-                data = Convert.FromBase64String(base64Data.ToString());
+                result.AddError("The data is of zero length.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, result, JsonFormatter());
             }
-            catch (Exception ex)
+            else
             {
-                retVal.AddError(ex.Message);
-                retVal.AddError("The provided file data is invalid.");
+                try
+                {
+                    data = Convert.FromBase64String(base64Data.ToString());
+                }
+                catch (Exception ex)
+                {
+                    result.AddError("The data is not base 64 encoded.");
+                    retVal = Request.CreateResponse(HttpStatusCode.BadRequest, result, JsonFormatter());
+                }
+
+                if (result.ResultCode != ResultCode.Failure)
+                {
+                    result = await manager.GetManager<IPackageManager>().CreatePackageAsync(data);
+
+                    if (result.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.Created, result, JsonFormatter());
+                    }
+                    else
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
             }
 
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                retVal = await manager.GetManager<IPackageManager>().CreatePackageAsync(data);
-            }
-
-            return Request.CreateResponse(HttpStatusCode.OK, retVal, JsonFormatter());
+            return retVal;
         }
 
         [Route("api/package/{fqn}/verify")]
