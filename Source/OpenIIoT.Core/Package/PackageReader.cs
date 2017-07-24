@@ -77,6 +77,8 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod(true);
             IResult<IPackage> retVal = new Result<IPackage>();
 
+            logger.Debug($"Reading Package '{fileName}'...");
+
             ManifestExtractor extractor = new ManifestExtractor();
             extractor.Updated += (sender, e) => logger.Debug(e.Message);
 
@@ -90,10 +92,11 @@ namespace OpenIIoT.Core.Package
             }
             catch (Exception ex)
             {
-                retVal.AddError($"The package file '{Path.GetFileName(fileName)}' is not valid; the Manifest could not be extracted: {ex.Message}");
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Unable to read Package '{Path.GetFileName(fileName)}'.");
             }
 
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod();
 
             return retVal;

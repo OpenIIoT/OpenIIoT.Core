@@ -189,7 +189,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         /// <returns>A Result containing the result of the operation and the created Package.</returns>
         [Route("v1/package")]
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.Created, "The Package was created or overwritten.", typeof(IPackage))]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(IPackage))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public async Task<HttpResponseMessage> UploadPackage([FromBody]string data)
@@ -221,7 +221,7 @@ namespace OpenIIoT.Core.Package.WebAPI
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.InternalServerError, (Result)result, JsonFormatter());
+                return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
             }
         }
 

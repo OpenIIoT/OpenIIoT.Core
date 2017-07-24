@@ -157,6 +157,8 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod();
             IResult<IPackage> retVal = new Result<IPackage>();
 
+            logger.Info("Creating new Package...");
+
             PackageCreator creator = new PackageCreator(Dependency<IPlatformManager>().Platform);
 
             retVal = creator.CreatePackage(data);
