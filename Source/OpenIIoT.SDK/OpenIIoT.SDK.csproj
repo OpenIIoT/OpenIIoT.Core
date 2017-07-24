@@ -55,6 +55,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
@@ -68,8 +69,8 @@
       <HintPath>..\..\packages\Utility.BigFont.2.1.2\lib\Utility.BigFont.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Utility.OperationResult, Version=0.9.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Utility.OperationResult.0.9.0.13\lib\Utility.OperationResult.dll</HintPath>
+    <Reference Include="Utility.OperationResult, Version=1.0.0.23118, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Utility.OperationResult.1.0.0.23118\lib\Utility.OperationResult.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -93,7 +94,8 @@
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
     <Compile Include="Package\IPackageManager.cs" />
-    <Compile Include="Package\PackageInstallOptions.cs" />
+    <Compile Include="Package\PackageConstants.cs" />
+    <Compile Include="Package\PackageInstallationOptions.cs" />
     <Compile Include="Service\WebAPI\HubHelper.cs" />
     <Compile Include="Service\WebAPI\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />

@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄
-      █     ███    ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
+      █      ▄███████▄                                                              ▄████████
+      █     ███    ███                                                              ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████ ███    █▀   ██████  ██▄▄▄▄    ▄█████     ██      ▄█████  ██▄▄▄▄      ██      ▄█████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █  ███        ██    ██ ██▀▀▀█▄   ██  ▀  ▀███████▄   ██   ██ ██▀▀▀█▄ ▀███████▄   ██  ▀
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄    ███        ██    ██ ██   ██   ██         ██  ▀   ██   ██ ██   ██     ██  ▀   ██
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ███    █▄  ██    ██ ██   ██ ▀███████     ██    ▀████████ ██   ██     ██    ▀███████
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █  ███    ███ ██    ██ ██   ██    ▄  ██     ██      ██   ██ ██   ██     ██       ▄  ██
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████ ████████▀   ██████   █   █   ▄████▀     ▄██▀     ██   █▀  █   █     ▄██▀    ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents an installable extension archive.
+      █  Constants for the Package namespace.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,63 +39,25 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package;
-using OpenIIoT.SDK.Packaging.Manifest;
-
-namespace OpenIIoT.Core.Package
+namespace OpenIIoT.SDK.Package
 {
     /// <summary>
-    ///     Represents an installable extension archive.
+    ///     Constants for the Package namespace.
     /// </summary>
-    public class Package : PackageManifest, IPackage
+    public class PackageConstants
     {
-        #region Public Constructors
+        #region Public Fields
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Package"/> class.
+        ///     The file extension for Package filenames.
         /// </summary>
-        /// <param name="filename">The fully qualified filename of the archive file.</param>
-        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
-        /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
-        {
-            this.MapFrom(manifest);
-
-            Filename = filename;
-            ModifiedOn = modifiedOn;
-        }
-
-        #endregion Public Constructors
-
-        #region Public Properties
+        public const string PackageFilenameExtension = ".zip";
 
         /// <summary>
-        ///     Gets or sets the fully qualified filename of the archive file.
+        ///     The character with which invalid filename characters in Package filenames are to be replaced.
         /// </summary>
-        public string Filename { get; set; }
+        public const char PackageFilenameInvalidCharacterSubstitution = '_';
 
-        /// <summary>
-        ///     Gets the Fully Qualified Name of the Package.
-        /// </summary>
-        public string FQN => Namespace + "." + Title;
-
-        /// <summary>
-        ///     Gets a value indicating whether the Package is signed.
-        /// </summary>
-        public bool IsSigned => Signature?.Digest != default(string);
-
-        /// <summary>
-        ///     Gets a value indicating whether the Package is trusted.
-        /// </summary>
-        public bool IsTrusted => Signature?.Trust != default(string);
-
-        /// <summary>
-        ///     Gets the time at which the archive was last modified, according to the host filesystem.
-        /// </summary>
-        public DateTime ModifiedOn { get; }
-
-        #endregion Public Properties
+        #endregion Public Fields
     }
 }

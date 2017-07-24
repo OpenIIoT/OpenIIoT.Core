@@ -130,7 +130,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="Swashbuckle.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cd1bb07a5ac7c7bc, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Swashbuckle.Core.5.5.3\lib\net40\Swashbuckle.Core.dll</HintPath>
+      <HintPath>..\..\packages\Swashbuckle.Core.5.6.0\lib\net40\Swashbuckle.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -138,6 +138,7 @@
       <HintPath>..\..\packages\System.Collections.Immutable.1.3.1\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Configuration.Install" />
     <Reference Include="System.Core" />
@@ -149,6 +150,7 @@
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.Client.5.2.3\lib\net45\System.Net.Http.Formatting.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Cors, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -182,8 +184,8 @@
       <HintPath>..\..\packages\Utility.CommandLine.Arguments.1.3.0\lib\Utility.CommandLine.Arguments.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Utility.OperationResult, Version=0.9.0.4, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\Utility.OperationResult.0.9.0.13\lib\Utility.OperationResult.dll</HintPath>
+    <Reference Include="Utility.OperationResult, Version=1.0.0.23118, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Utility.OperationResult.1.0.0.23118\lib\Utility.OperationResult.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
@@ -204,6 +206,7 @@
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Model\WebAPI\ReadController.cs" />
     <Compile Include="Model\WebAPI\ValuesController.cs" />
+    <Compile Include="Package\PackageCreator.cs" />
     <Compile Include="Package\PackageManager.cs" />
     <Compile Include="Package\PackageInstaller.cs" />
     <Compile Include="Package\PackageReader.cs" />
@@ -240,6 +243,7 @@
     <Compile Include="Common\WebAPI\LogController.cs" />
     <Compile Include="Common\WebAPI\LogHub.cs" />
     <Compile Include="Service\WebAPI\ApiBaseController.cs" />
+    <Compile Include="Service\WebAPI\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebAPI\OwinStartup.cs" />
     <Compile Include="Service\WebAPI\WebAPIService.cs" />
     <Compile Include="WindowsService.cs">

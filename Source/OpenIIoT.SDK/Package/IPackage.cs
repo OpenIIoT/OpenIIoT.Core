@@ -52,9 +52,9 @@ namespace OpenIIoT.SDK.Package
         #region Public Properties
 
         /// <summary>
-        ///     Gets the fully qualified filename of the archive file.
+        ///     Gets or sets the fully qualified filename of the archive file.
         /// </summary>
-        string FileName { get; }
+        string Filename { get; set; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
