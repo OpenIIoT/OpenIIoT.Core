@@ -184,7 +184,7 @@ namespace OpenIIoT.SDK.Common
         ///     Gets the dictionary of IManagers upon which this Manager depends, keyed on Type name.
         /// </summary>
         /// <remarks>Populated in the constructor of extension classes as injected dependencies are resolved.</remarks>
-        private Dictionary<Type, IManager> Dependencies
+        private IDictionary<Type, IManager> Dependencies
         {
             get
             {
@@ -256,7 +256,7 @@ namespace OpenIIoT.SDK.Common
         {
             Guid guid = logger.EnterMethod(true);
             logger.Info("Starting the " + ManagerName + "...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             if (!IsInState(State.Initialized, State.Stopped, State.Faulted))
             {
@@ -308,7 +308,7 @@ namespace OpenIIoT.SDK.Common
         {
             Guid guid = logger.EnterMethod(xLogger.Params(stopType), true);
             logger.Info("Stopping the " + ManagerName + "...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             if (!IsInState(State.Running, State.Faulted))
             {
@@ -419,7 +419,7 @@ namespace OpenIIoT.SDK.Common
         protected Result DependenciesAreAllInState(params State[] states)
         {
             logger.EnterMethod();
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             foreach (Type managerType in Dependencies.Keys)
             {
@@ -494,7 +494,7 @@ namespace OpenIIoT.SDK.Common
         /// </summary>
         /// <param name="stopType">The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected virtual Result Shutdown(StopType stopType = StopType.Stop)
+        protected virtual IResult Shutdown(StopType stopType = StopType.Stop)
         {
             return new Result();
         }
@@ -503,7 +503,7 @@ namespace OpenIIoT.SDK.Common
         ///     Implements the Manager-specific startup procedure.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected virtual Result Startup()
+        protected virtual IResult Startup()
         {
             return new Result();
         }
