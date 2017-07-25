@@ -263,7 +263,7 @@ namespace OpenIIoT.Core.Configuration
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
@@ -287,7 +287,7 @@ namespace OpenIIoT.Core.Configuration
         ///     </para>
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");

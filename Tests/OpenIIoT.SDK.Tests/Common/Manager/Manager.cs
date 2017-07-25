@@ -92,6 +92,18 @@ namespace OpenIIoT.SDK.Tests.Common
         #region Public Methods
 
         /// <summary>
+        ///     Tests the <see cref="SDK.Common.Manager.AutomaticRestartPending"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void AutomaticRestartPending()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(false, test.AutomaticRestartPending);
+        }
+
+        /// <summary>
         ///     Tests the class constructor and property accessors.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
@@ -104,54 +116,6 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.Throws<DependencyNotResolvedException>(() => test.CheckBadDependency());
 
             test.Dispose();
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.EventProviderName"/> property.
-        /// </summary>
-        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
-        [Fact]
-        public void EventProviderName()
-        {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
-
-            Assert.Equal(test.GetType().Name, test.EventProviderName);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.ManagerName"/> property.
-        /// </summary>
-        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
-        [Fact]
-        public void ManagerName()
-        {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
-
-            Assert.Equal("Mock Manager", test.ManagerName);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.State"/> property.
-        /// </summary>
-        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
-        [Fact]
-        public void StateProperty()
-        {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
-
-            Assert.Equal(State.Initialized, test.State);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.AutomaticRestartPending"/> property.
-        /// </summary>
-        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
-        [Fact]
-        public void AutomaticRestartPending()
-        {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
-
-            Assert.Equal(false, test.AutomaticRestartPending);
         }
 
         /// <summary>
@@ -241,6 +205,18 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
+        ///     Tests the <see cref="SDK.Common.Manager.EventProviderName"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void EventProviderName()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(test.GetType().Name, test.EventProviderName);
+        }
+
+        /// <summary>
         ///     Tests the fault handling of the Manager.
         /// </summary>
         [Fact]
@@ -259,6 +235,18 @@ namespace OpenIIoT.SDK.Tests.Common
 
             test.FaultWithRestart();
             Assert.Equal(State.Faulted, test.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Manager.ManagerName"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void ManagerName()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal("Mock Manager", test.ManagerName);
         }
 
         /// <summary>
@@ -366,6 +354,18 @@ namespace OpenIIoT.SDK.Tests.Common
             // start the manager and assert that it is running
             IResult start = test.Start();
             Assert.Equal(ResultCode.Failure, start.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Common.Manager.State"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void StateProperty()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(State.Initialized, test.State);
         }
 
         /// <summary>
@@ -521,7 +521,7 @@ namespace OpenIIoT.SDK.Tests.Common
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             throw new Exception("exception");
         }
@@ -585,7 +585,7 @@ namespace OpenIIoT.SDK.Tests.Common
         ///     Simulates an exception in the startup routine.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             throw new Exception("exception");
         }
@@ -640,7 +640,7 @@ namespace OpenIIoT.SDK.Tests.Common
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             return new Result(ResultCode.Failure);
         }
@@ -694,7 +694,7 @@ namespace OpenIIoT.SDK.Tests.Common
         ///     Simulates a failing startup routine.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             return new Result(ResultCode.Failure);
         }

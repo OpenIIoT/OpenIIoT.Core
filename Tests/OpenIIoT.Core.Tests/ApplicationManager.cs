@@ -439,7 +439,7 @@ namespace OpenIIoT.Core.Tests
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             return new Result();
         }
@@ -448,7 +448,7 @@ namespace OpenIIoT.Core.Tests
         ///     Simulates a normal startup routine.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             return new Result();
         }
@@ -711,7 +711,7 @@ namespace OpenIIoT.Core.Tests
         ///     Simulates a Startup routine returning a failing Result.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             return new Result().AddError(string.Empty);
         }
@@ -765,7 +765,7 @@ namespace OpenIIoT.Core.Tests
         ///     Simulates a failing Startup routine.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             throw new Exception(string.Empty);
         }
@@ -820,7 +820,7 @@ namespace OpenIIoT.Core.Tests
         /// </summary>
         /// <param name="stopType">The nature of the shutdown.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             return new Result().AddError(string.Empty);
         }
@@ -875,7 +875,7 @@ namespace OpenIIoT.Core.Tests
         /// </summary>
         /// <param name="stopType">The nature of the shutdown.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             throw new Exception(string.Empty);
         }

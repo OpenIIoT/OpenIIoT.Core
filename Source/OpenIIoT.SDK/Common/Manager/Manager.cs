@@ -419,7 +419,7 @@ namespace OpenIIoT.SDK.Common
         protected Result DependenciesAreAllInState(params State[] states)
         {
             logger.EnterMethod();
-            IResult retVal = new Result();
+            Result retVal = new Result();
 
             foreach (Type managerType in Dependencies.Keys)
             {

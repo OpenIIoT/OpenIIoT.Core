@@ -261,10 +261,10 @@ namespace OpenIIoT.Core.Platform
         ///     Check each of the directories in the internal directory list and ensures that they exist.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        private Result CheckDirectories()
+        private IResult CheckDirectories()
         {
             logger.EnterMethod();
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             IDictionary<string, string> directories = Platform.Directories.ToDictionary();
 
