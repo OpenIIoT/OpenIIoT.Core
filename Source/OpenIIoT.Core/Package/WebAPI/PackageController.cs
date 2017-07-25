@@ -59,7 +59,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         [SwaggerResponse(HttpStatusCode.OK, "The Package was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified Fully Qualified Name could not be found.")]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(List<Message>))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public async Task<HttpResponseMessage> DeletePackage(string fqn)
         {
             Result result = new Result();
