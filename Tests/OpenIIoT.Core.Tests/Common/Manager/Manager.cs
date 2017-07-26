@@ -56,11 +56,12 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.SDK;
 
-namespace OpenIIoT.SDK.Tests.Common
+namespace OpenIIoT.Core.Tests.Common
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Common.Manager"/> class.
+    ///     Unit tests for the <see cref="Core.Common.Manager"/> class.
     /// </summary>
     [Collection("Manager")]
     public class Manager
@@ -92,6 +93,18 @@ namespace OpenIIoT.SDK.Tests.Common
         #region Public Methods
 
         /// <summary>
+        ///     Tests the <see cref="Core.Common.Manager.AutomaticRestartPending"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void AutomaticRestartPending()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(false, test.AutomaticRestartPending);
+        }
+
+        /// <summary>
         ///     Tests the class constructor and property accessors.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
@@ -104,54 +117,6 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.Throws<DependencyNotResolvedException>(() => test.CheckBadDependency());
 
             test.Dispose();
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.EventProviderName"/> property.
-        /// </summary>
-        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
-        [Fact]
-        public void EventProviderName()
-        {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
-
-            Assert.Equal(test.GetType().Name, test.EventProviderName);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.ManagerName"/> property.
-        /// </summary>
-        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
-        [Fact]
-        public void ManagerName()
-        {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
-
-            Assert.Equal("Mock Manager", test.ManagerName);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.State"/> property.
-        /// </summary>
-        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
-        [Fact]
-        public void StateProperty()
-        {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
-
-            Assert.Equal(State.Initialized, test.State);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.AutomaticRestartPending"/> property.
-        /// </summary>
-        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
-        [Fact]
-        public void AutomaticRestartPending()
-        {
-            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
-
-            Assert.Equal(false, test.AutomaticRestartPending);
         }
 
         /// <summary>
@@ -241,6 +206,18 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Common.Manager.EventProviderName"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void EventProviderName()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(test.GetType().Name, test.EventProviderName);
+        }
+
+        /// <summary>
         ///     Tests the fault handling of the Manager.
         /// </summary>
         [Fact]
@@ -262,7 +239,19 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="SDK.Common.Manager.Restart(StopType)"/>.
+        ///     Tests the <see cref="Core.Common.Manager.ManagerName"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void ManagerName()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal("Mock Manager", test.ManagerName);
+        }
+
+        /// <summary>
+        ///     Tests <see cref="Core.Common.Manager.Restart(StopType)"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -281,12 +270,12 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="SDK.Common.Manager.Restart(StopType)"/> with the manager in the stopped State.
+        ///     Tests <see cref="Core.Common.Manager.Restart(StopType)"/> with the manager in the stopped State.
         /// </summary>
         [Fact]
         public void RestartNotRunning()
         {
-            Mock<SDK.Common.Manager> mock = new Mock<SDK.Common.Manager>();
+            Mock<Core.Common.Manager> mock = new Mock<Core.Common.Manager>();
             mock.CallBase = true;
 
             IResult restart = mock.Object.Restart();
@@ -294,7 +283,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.Shutdown(StopType)"/> method.
+        ///     Tests the <see cref="Core.Common.Manager.Shutdown(StopType)"/> method.
         /// </summary>
         [Fact]
         public void Shutdown()
@@ -317,7 +306,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="SDK.Common.Manager.Start"/>.
+        ///     Tests <see cref="Core.Common.Manager.Start"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -335,7 +324,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Manager.Startup"/> method.
+        ///     Tests the <see cref="Core.Common.Manager.Startup"/> method.
         /// </summary>
         [Fact]
         public void Startup()
@@ -352,7 +341,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="SDK.Common.Manager.Start"/> with a dependency in the stopped State.
+        ///     Tests <see cref="Core.Common.Manager.Start"/> with a dependency in the stopped State.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -369,7 +358,19 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests <see cref="SDK.Common.Manager.Stop(StopType)"/>.
+        ///     Tests the <see cref="Core.Common.Manager.State"/> property.
+        /// </summary>
+        /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
+        [Fact]
+        public void StateProperty()
+        {
+            ManagerMock test = ManagerMock.Instantiate(applicationManagerMock.Object);
+
+            Assert.Equal(State.Initialized, test.State);
+        }
+
+        /// <summary>
+        ///     Tests <see cref="Core.Common.Manager.Stop(StopType)"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="ManagerMock"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -400,7 +401,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMock : SDK.Common.Manager
+    public class ManagerMock : Core.Common.Manager
     {
         #region Private Fields
 
@@ -465,13 +466,13 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Mocks a Manager which throws an exception in the <see cref="SDK.Common.Manager.Shutdown(StopType)"/> method.
+    ///     Mocks a Manager which throws an exception in the <see cref="Core.Common.Manager.Shutdown(StopType)"/> method.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Shutdown() method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockBadShutdown : SDK.Common.Manager
+    public class ManagerMockBadShutdown : Core.Common.Manager
     {
         #region Private Fields
 
@@ -521,7 +522,7 @@ namespace OpenIIoT.SDK.Tests.Common
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             throw new Exception("exception");
         }
@@ -530,13 +531,13 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Mocks a Manager which throws an exception in the <see cref="SDK.Common.Manager.Startup"/> method.
+    ///     Mocks a Manager which throws an exception in the <see cref="Core.Common.Manager.Startup"/> method.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Startup() method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockBadStartup : SDK.Common.Manager
+    public class ManagerMockBadStartup : Core.Common.Manager
     {
         #region Private Fields
 
@@ -585,7 +586,7 @@ namespace OpenIIoT.SDK.Tests.Common
         ///     Simulates an exception in the startup routine.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             throw new Exception("exception");
         }
@@ -594,13 +595,13 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Mocks a Manager which returns a failing Result from the <see cref="SDK.Common.Manager.Shutdown(StopType)"/> method.
+    ///     Mocks a Manager which returns a failing Result from the <see cref="Core.Common.Manager.Shutdown(StopType)"/> method.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Shutdown() method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockFailingShutdown : SDK.Common.Manager
+    public class ManagerMockFailingShutdown : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -640,7 +641,7 @@ namespace OpenIIoT.SDK.Tests.Common
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             return new Result(ResultCode.Failure);
         }
@@ -649,13 +650,13 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Mocks a Manager which returns a failing Result from the <see cref="SDK.Common.Manager.Startup"/> method.
+    ///     Mocks a Manager which returns a failing Result from the <see cref="Core.Common.Manager.Startup"/> method.
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the access level of the Startup() method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockFailingStartup : SDK.Common.Manager
+    public class ManagerMockFailingStartup : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -694,7 +695,7 @@ namespace OpenIIoT.SDK.Tests.Common
         ///     Simulates a failing startup routine.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             return new Result(ResultCode.Failure);
         }
@@ -709,7 +710,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockTwo : SDK.Common.Manager
+    public class ManagerMockTwo : Core.Common.Manager
     {
         #region Private Fields
 
@@ -776,7 +777,7 @@ namespace OpenIIoT.SDK.Tests.Common
     ///     It is not feasible to use a mocking framework for this mockup due to the implementation of the Singleton pattern.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class ManagerMockWithDependency : SDK.Common.Manager
+    public class ManagerMockWithDependency : Core.Common.Manager
     {
         #region Private Fields
 

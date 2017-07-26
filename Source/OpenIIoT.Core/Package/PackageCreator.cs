@@ -97,6 +97,8 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod();
             IResult<IPackage> retVal = new Result<IPackage>();
 
+            logger.Debug($"Creating new Package...");
+
             string tempFile = Path.Combine(Platform.Directories.Temp, Guid.NewGuid().ToString());
 
             logger.Debug($"Saving new Package to '{tempFile}'...");
@@ -115,12 +117,21 @@ namespace OpenIIoT.Core.Package
                     string destinationFilename = GetPackageFilename(readResult.ReturnValue);
 
                     retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
-                    retVal.ReturnValue = readResult.ReturnValue;
-                    retVal.ReturnValue.Filename = destinationFilename;
+
+                    if (retVal.ResultCode != ResultCode.Failure)
+                    {
+                        retVal.ReturnValue = readResult.ReturnValue;
+                        retVal.ReturnValue.Filename = destinationFilename;
+                    }
                 }
             }
 
-            retVal.LogResult(logger);
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("Unable to create Package from supplied data.");
+            }
+
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod();
             return retVal;
         }

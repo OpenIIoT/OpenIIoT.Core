@@ -380,7 +380,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManager : SDK.Common.Manager
+    public class MockManager : Core.Common.Manager
     {
         #region Private Fields
 
@@ -439,7 +439,7 @@ namespace OpenIIoT.Core.Tests
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             return new Result();
         }
@@ -448,7 +448,7 @@ namespace OpenIIoT.Core.Tests
         ///     Simulates a normal startup routine.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             return new Result();
         }
@@ -464,7 +464,7 @@ namespace OpenIIoT.Core.Tests
     ///     <see cref="Instantiate(MockManager)"/> method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBadDependency : SDK.Common.Manager
+    public class MockManagerBadDependency : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -503,7 +503,7 @@ namespace OpenIIoT.Core.Tests
     ///     simulate the behavior under test.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBadInstantiate : SDK.Common.Manager
+    public class MockManagerBadInstantiate : Core.Common.Manager
     {
     }
 
@@ -515,7 +515,7 @@ namespace OpenIIoT.Core.Tests
     ///     the <see cref="Manager.Setup()"/> method.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBroken : SDK.Common.Manager
+    public class MockManagerBroken : Core.Common.Manager
     {
         #region Private Fields
 
@@ -596,7 +596,7 @@ namespace OpenIIoT.Core.Tests
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1642:ConstructorSummaryDocumentationMustBeginWithStandardText", Justification = "Reviewed.")]
-    public class MockManagerNoDependencies : SDK.Common.Manager
+    public class MockManagerNoDependencies : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -632,7 +632,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerRunning : SDK.Common.Manager
+    public class MockManagerRunning : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -673,7 +673,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStartBadReturn : SDK.Common.Manager
+    public class MockManagerStartBadReturn : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -711,7 +711,7 @@ namespace OpenIIoT.Core.Tests
         ///     Simulates a Startup routine returning a failing Result.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             return new Result().AddError(string.Empty);
         }
@@ -727,7 +727,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStartFail : SDK.Common.Manager
+    public class MockManagerStartFail : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -765,7 +765,7 @@ namespace OpenIIoT.Core.Tests
         ///     Simulates a failing Startup routine.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             throw new Exception(string.Empty);
         }
@@ -781,7 +781,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStopBadReturn : SDK.Common.Manager
+    public class MockManagerStopBadReturn : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -820,7 +820,7 @@ namespace OpenIIoT.Core.Tests
         /// </summary>
         /// <param name="stopType">The nature of the shutdown.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             return new Result().AddError(string.Empty);
         }
@@ -836,7 +836,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStopFail : SDK.Common.Manager
+    public class MockManagerStopFail : Core.Common.Manager
     {
         #region Private Constructors
 
@@ -875,7 +875,7 @@ namespace OpenIIoT.Core.Tests
         /// </summary>
         /// <param name="stopType">The nature of the shutdown.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             throw new Exception(string.Empty);
         }

@@ -51,6 +51,7 @@ using OpenIIoT.SDK.Common.Provider.EventProvider;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Event;
 using Utility.OperationResult;
+using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Event
 {
@@ -328,7 +329,7 @@ namespace OpenIIoT.Core.Event
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             return new Result();
         }
@@ -337,7 +338,7 @@ namespace OpenIIoT.Core.Event
         ///     Executed upon startup of the Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             return new Result();
         }

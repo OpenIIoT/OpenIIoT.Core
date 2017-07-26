@@ -54,6 +54,7 @@ using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Plugin;
 using Utility.OperationResult;
+using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Model
 {
@@ -534,11 +535,11 @@ namespace OpenIIoT.Core.Model
 
         #region Protected Methods
 
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             if (!stopType.HasFlag(StopType.Exception))
             {
@@ -550,11 +551,11 @@ namespace OpenIIoT.Core.Model
             return retVal;
         }
 
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             // Configure the Manager
             IResult configureResult = Configure();

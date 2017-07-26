@@ -98,6 +98,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="ApplicationManager.cs" />
+    <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />

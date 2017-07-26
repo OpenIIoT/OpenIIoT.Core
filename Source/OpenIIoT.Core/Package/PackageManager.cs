@@ -51,6 +51,7 @@ using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Package
 {
@@ -156,6 +157,8 @@ namespace OpenIIoT.Core.Package
         {
             logger.EnterMethod();
             IResult<IPackage> retVal = new Result<IPackage>();
+
+            logger.Info("Creating new Package...");
 
             PackageCreator creator = new PackageCreator(Dependency<IPlatformManager>().Platform);
 
@@ -439,10 +442,10 @@ namespace OpenIIoT.Core.Package
         /// </summary>
         /// <param name="stopType">The nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
 
@@ -464,10 +467,10 @@ namespace OpenIIoT.Core.Package
         ///     </para>
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             Guid guid = logger.EnterMethod(true);
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
 

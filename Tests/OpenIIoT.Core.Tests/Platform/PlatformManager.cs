@@ -132,7 +132,8 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method via <see cref="SDK.Common.Manager.Start()"/> .
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method via
+        ///     <see cref="Core.Common.Manager.Start()"/> .
         /// </summary>
         [Fact]
         public void Start()
@@ -145,7 +146,7 @@ namespace OpenIIoT.Core.Tests.Platform
 
         /// <summary>
         ///     Tests the <see cref="Core.Platform.PlatformManager.Shutdown(StopType)"/> method via
-        ///     <see cref="SDK.Common.Manager.Stop(StopType)"/> .
+        ///     <see cref="Core.Common.Manager.Stop(StopType)"/> .
         /// </summary>
         [Fact]
         public void Stop()

@@ -6,6 +6,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
+using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Service
 {
@@ -62,22 +63,22 @@ namespace OpenIIoT.Core.Service
 
         #region Protected Methods
 
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
             return retVal;
         }
 
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             Result<Dictionary<string, Type>> registerResult = RegisterServices();
             if (registerResult.ResultCode != ResultCode.Failure)

@@ -50,6 +50,7 @@ using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Platform
 {
@@ -193,11 +194,11 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         /// <param name="stopType">The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        protected override Result Shutdown(StopType stopType = StopType.Stop)
+        protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -209,15 +210,15 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         /// <exception cref="DirectoryException">Thrown when one or more application directories can not be verified.</exception>
-        protected override Result Startup()
+        protected override IResult Startup()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             // Check to ensure all directories exist. If not, create them.
             logger.Debug("Checking directories...");
-            Result checkResult = CheckDirectories();
+            IResult checkResult = CheckDirectories();
             if (checkResult.ResultCode == ResultCode.Failure)
             {
                 throw new DirectoryException("Failed to verify and/or create one or more required program directories: " + checkResult.GetLastError());
@@ -261,10 +262,10 @@ namespace OpenIIoT.Core.Platform
         ///     Check each of the directories in the internal directory list and ensures that they exist.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
-        private Result CheckDirectories()
+        private IResult CheckDirectories()
         {
             logger.EnterMethod();
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             IDictionary<string, string> directories = Platform.Directories.ToDictionary();
 
