@@ -84,7 +84,6 @@
     <Compile Include="Common\Item\ItemAccessMode.cs" />
     <Compile Include="Common\Provider\ItemProvider\ItemProvider.cs" />
     <Compile Include="Common\Provider\ItemProvider\IItemProvider.cs" />
-    <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Item\Item.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
     <Compile Include="Common\Manager\IManager.cs" />

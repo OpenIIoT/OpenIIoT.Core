@@ -51,7 +51,7 @@ using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Common
+namespace OpenIIoT.Core.Common
 {
     /// <summary>
     ///     The abstract base class from which Managers may inherit.
