@@ -55,6 +55,7 @@ using OpenIIoT.SDK.Plugin;
 using OpenIIoT.SDK.Plugin.Connector;
 using OpenIIoT.SDK.Plugin.Endpoint;
 using Utility.OperationResult;
+using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Plugin
 {

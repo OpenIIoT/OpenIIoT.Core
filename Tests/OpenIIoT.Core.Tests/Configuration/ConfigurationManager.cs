@@ -154,7 +154,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
         /// <summary>
         ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method via
-        ///     <see cref="SDK.Common.Manager.Start()"/> .
+        ///     <see cref="Core.Common.Manager.Start()"/> .
         /// </summary>
         [Fact]
         public void Start()
@@ -221,7 +221,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
         /// <summary>
         ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Shutdown(StopType)"/> method via
-        ///     <see cref="SDK.Common.Manager.Stop(StopType)"/> .
+        ///     <see cref="Core.Common.Manager.Stop(StopType)"/> .
         /// </summary>
         [Fact]
         public void Stop()
