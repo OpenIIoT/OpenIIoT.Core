@@ -153,8 +153,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult ClearDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Debug("Attempting to clear the contents of directory '" + directory + "'...");
-            Result retVal = new Result();
+            logger.Debug($"Clearing the contents of directory '{directory}'...");
+
+            IResult retVal = new Result();
 
             try
             {
@@ -174,7 +175,8 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown while clearing directory '" + directory + "': " + ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to clear directory '{directory}'.");
                 logger.Exception(LogLevel.Debug, ex);
             }
 
@@ -191,7 +193,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> ComputeFileChecksum(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -208,7 +210,8 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown calculating checksum: " + ex.Message);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to compute checksum for file '{file}'.");
                 logger.Exception(LogLevel.Debug, ex);
             }
 
@@ -238,7 +241,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> CopyFile(string sourceFile, string destinationFile, bool overwrite)
         {
             logger.EnterMethod(xLogger.Params(sourceFile, destinationFile));
-            logger.Trace($"Copying file '{sourceFile}' to '{destinationFile}'");
+            logger.Debug($"Copying file '{sourceFile}' to '{destinationFile}'");
 
             IResult<string> retVal = new Result<string>();
 
@@ -249,7 +252,8 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError($"Error copying file '{Path.GetFileName(sourceFile)}' to '{Path.GetFileName(destinationFile)}': {ex.Message}");
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to copy file '{Path.GetFileName(sourceFile)}' to '{Path.GetFileName(destinationFile)}'.");
                 logger.Exception(LogLevel.Debug, ex);
             }
 
@@ -267,7 +271,8 @@ namespace OpenIIoT.Core.Platform
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Debug("Creating directory '" + directory + "'...");
-            Result<string> retVal = new Result<string>();
+
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -295,7 +300,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> CreateZip(string zipFile, string source)
         {
             logger.EnterMethod(xLogger.Params(zipFile, source));
-            logger.Trace("Creating zip file '" + zipFile + "' from directory '" + source + "'...");
+            logger.Debug($"Creating zip file '{zipFile}' from directory '{source}'...");
 
             Result<string> retVal = new Result<string>();
 
