@@ -56,11 +56,12 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.SDK;
 
-namespace OpenIIoT.SDK.Tests.Common
+namespace OpenIIoT.Core.Tests.Common
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Common.Manager"/> class.
+    ///     Unit tests for the <see cref="Core.Common.Manager"/> class.
     /// </summary>
     [Collection("Manager")]
     public class Manager

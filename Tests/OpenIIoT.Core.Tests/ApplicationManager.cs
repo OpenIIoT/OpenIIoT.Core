@@ -380,7 +380,7 @@ namespace OpenIIoT.Core.Tests
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
     [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManager : SDK.Common.Manager
+    public class MockManager : Core.Common.Manager
     {
         #region Private Fields
 

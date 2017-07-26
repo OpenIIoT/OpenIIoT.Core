@@ -93,7 +93,6 @@
     <Compile Include="Common\Discovery\Discoverer.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgs.cs" />
     <Compile Include="Common\Item\Item.cs" />
-    <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\Utility\ContractResolver.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
