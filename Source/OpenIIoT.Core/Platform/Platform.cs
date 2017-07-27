@@ -270,7 +270,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> CreateDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Debug("Creating directory '" + directory + "'...");
+            logger.Debug($"Creating directory '{directory}'...");
 
             IResult<string> retVal = new Result<string>();
 
@@ -280,7 +280,8 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown while creating directory '" + directory + "': " + ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to create directory '{directory}'.");
                 logger.Exception(LogLevel.Debug, ex);
             }
 
@@ -302,7 +303,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(zipFile, source));
             logger.Debug($"Creating zip file '{zipFile}' from directory '{source}'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -331,7 +332,7 @@ namespace OpenIIoT.Core.Platform
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Debug("Attempting to delete directory '" + directory + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             try
             {
@@ -358,7 +359,7 @@ namespace OpenIIoT.Core.Platform
         {
             logger.EnterMethod(xLogger.Params(file));
             logger.Debug("Deleting file '" + file + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             try
             {
@@ -400,7 +401,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(zipFile, destination, clearDestination));
             logger.Trace("Extracting zip file '" + zipFile + "' to destination '" + destination + "'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -449,7 +450,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(zipFile, file, destination, overwrite));
             logger.Trace("Extracting file '" + file + "' from zip file '" + zipFile + "' into directory '" + destination + "'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -509,6 +510,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<IList<string>> ListDirectories(string parentDirectory, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
+
             IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
@@ -626,7 +628,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Reading binary contents of file '" + file + "'...");
 
-            Result<byte[]> retVal = new Result<byte[]>();
+            IResult<byte[]> retVal = new Result<byte[]>();
 
             try
             {
@@ -655,7 +657,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Reading lines from file '" + file + "'...");
 
-            Result<string[]> retVal = new Result<string[]>();
+            IResult<string[]> retVal = new Result<string[]>();
 
             try
             {
@@ -684,7 +686,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(file));
             logger.Trace("Reading text contents of file '" + file + "'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -713,7 +715,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(file, contents));
             logger.Trace("Writing binary data to file '" + file + "'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -743,7 +745,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(file, contents));
             logger.Trace("Writing to file '" + file + "'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -772,7 +774,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod(xLogger.Params(file, contents));
             logger.Trace("Writing text to file '" + file + "'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
