@@ -212,7 +212,7 @@ namespace OpenIIoT.Core.Platform
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to compute checksum for file '{file}'.");
+                retVal.AddError($"Failed to compute checksum for file '{Path.GetFileName(file)}'.");
             }
 
             logger.ExitMethod(retVal);
@@ -313,7 +313,7 @@ namespace OpenIIoT.Core.Platform
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to create zip file '{zipFile}' from directory '{source}'.");
+                retVal.AddError($"Failed to create zip file '{Path.GetFileName(zipFile)}' from directory '{source}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -373,7 +373,7 @@ namespace OpenIIoT.Core.Platform
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to delete file '{file}'.");
+                retVal.AddError($"Failed to delete file '{Path.GetFileName(file)}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -435,7 +435,7 @@ namespace OpenIIoT.Core.Platform
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to extract zip file '{zipFile}' to destination '{destination}'.");
+                retVal.AddError($"Failed to extract zip file '{Path.GetFileName(zipFile)}' to destination '{destination}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -481,7 +481,7 @@ namespace OpenIIoT.Core.Platform
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to extract file '{file}' from zip file '{zipFile}'.");
+                retVal.AddError($"Failed to extract file '{Path.GetFileName(file)}' from zip file '{Path.GetFileName(zipFile)}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -625,7 +625,7 @@ namespace OpenIIoT.Core.Platform
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to list files in zip file '{zipFile}'.");
+                retVal.AddError($"Failed to list files in zip file '{Path.GetFileName(zipFile)}'.");
             }
 
             retVal.LogResult(logger.Trace);
@@ -643,7 +643,7 @@ namespace OpenIIoT.Core.Platform
         public IResult<byte[]> ReadFileBytes(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Debug($"Reading binary contents of file '{file}'...");
+            logger.Debug($"Reading bytes from file '{file}'...");
 
             IResult<byte[]> retVal = new Result<byte[]>();
 
@@ -655,10 +655,10 @@ namespace OpenIIoT.Core.Platform
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to read file '{file}'.");
+                retVal.AddError($"Failed to read bytes from file '{Path.GetFileName(file)}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -673,7 +673,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string[]> ReadFileLines(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Reading lines from file '" + file + "'...");
+            logger.Debug($"Reading lines from file '{file}'...");
 
             IResult<string[]> retVal = new Result<string[]>();
 
@@ -683,11 +683,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error reading lines from file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to read lines from file '{Path.GetFileName(file)}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -702,7 +703,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> ReadFileText(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Reading text contents of file '" + file + "'...");
+            logger.Debug($"Reading text contents of file '{file}'...");
 
             IResult<string> retVal = new Result<string>();
 
@@ -712,8 +713,9 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error reading file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to read text from file '{Path.GetFileName(file)}'.");
             }
 
             retVal.LogResult(logger.Trace);
