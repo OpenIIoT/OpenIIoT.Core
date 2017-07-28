@@ -332,7 +332,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult DeleteDirectory(string directory, bool recursive = true)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Debug("Deleting directory '" + directory + "'...");
+            logger.Debug($"Deleting directory '{directory}'...");
 
             IResult retVal = new Result();
 
@@ -404,7 +404,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> ExtractZip(string zipFile, string destination, bool clearDestination = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, destination, clearDestination));
-            logger.Debug("Extracting zip file '" + zipFile + "' to destination '" + destination + "'...");
+            logger.Debug($"Extracting zip file '{zipFile}' to destination '{destination}'...");
 
             IResult<string> retVal = new Result<string>();
 
@@ -417,13 +417,13 @@ namespace OpenIIoT.Core.Platform
 
                 if (clearDestination)
                 {
-                    logger.Trace("Attempting to clear destination directory '" + destination + "'...");
+                    logger.Trace($"Attempting to clear destination directory '{destination}'...");
 
                     IResult clearResult = ClearDirectory(destination);
 
                     if (clearResult.ResultCode != ResultCode.Success)
                     {
-                        throw new Exception("Error clearing destination directory: " + clearResult.GetLastError());
+                        throw new Exception($"Error clearing destination directory:  {clearResult.GetLastError()}");
                     }
                 }
 
@@ -457,13 +457,13 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, file, destination, overwrite));
-            logger.Debug("Extracting file '" + file + "' from zip file '" + zipFile + "' into directory '" + destination + "'...");
+            logger.Debug($"Extracting file '{file}' from zip file '{zipFile}' into directory '{destination}'...");
 
             IResult<string> retVal = new Result<string>();
 
             try
             {
-                logger.Trace("Opening zip file '" + zipFile + "'...");
+                logger.Trace($"Opening zip file '{zipFile}'...");
 
                 using (ZipArchive archive = ZipFile.Open(zipFile, ZipArchiveMode.Read))
                 {
@@ -471,7 +471,7 @@ namespace OpenIIoT.Core.Platform
 
                     string extractedFile = Path.Combine(destination, entry.Name);
 
-                    logger.Trace("Extracting file '" + file + "'...");
+                    logger.Trace($"Extracting file '{file}'...");
 
                     entry.ExtractToFile(extractedFile, overwrite);
                     retVal.ReturnValue = extractedFile;
@@ -565,6 +565,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<IList<string>> ListFiles(string parentDirectory, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
+
             IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
@@ -599,9 +600,9 @@ namespace OpenIIoT.Core.Platform
             IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
-            logger.Trace("Converting pattern '" + searchPattern + "' to RegEx..");
+            logger.Trace($"Converting pattern '{searchPattern}' to RegEx..");
             Regex regex = new Regex(SDK.Common.Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
-            logger.Trace("Converted pattern to RegEx '" + regex + "'");
+            logger.Trace($"Converted pattern to RegEx '{regex}'");
 
             try
             {
@@ -617,7 +618,7 @@ namespace OpenIIoT.Core.Platform
                         }
                     }
 
-                    logger.Trace(retVal.ReturnValue.Count + " matches for '" + regex + "' found.");
+                    logger.Trace($"{retVal.ReturnValue.Count} matches for '{regex}' found.");
                 }
             }
             catch (Exception ex)
@@ -642,7 +643,7 @@ namespace OpenIIoT.Core.Platform
         public IResult<byte[]> ReadFileBytes(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Reading binary contents of file '" + file + "'...");
+            logger.Debug($"Reading binary contents of file '{file}'...");
 
             IResult<byte[]> retVal = new Result<byte[]>();
 
@@ -652,8 +653,9 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error reading file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to read file '{file}'.");
             }
 
             retVal.LogResult(logger.Trace);
