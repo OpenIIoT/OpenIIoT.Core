@@ -153,8 +153,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult ClearDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Debug("Attempting to clear the contents of directory '" + directory + "'...");
-            Result retVal = new Result();
+            logger.Debug($"Clearing the contents of directory '{directory}'...");
+
+            IResult retVal = new Result();
 
             try
             {
@@ -174,8 +175,9 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown while clearing directory '" + directory + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to clear directory '{directory}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -191,7 +193,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> ComputeFileChecksum(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -208,8 +210,9 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown calculating checksum: " + ex.Message);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to compute checksum for file '{Path.GetFileName(file)}'.");
             }
 
             logger.ExitMethod(retVal);
@@ -238,7 +241,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> CopyFile(string sourceFile, string destinationFile, bool overwrite)
         {
             logger.EnterMethod(xLogger.Params(sourceFile, destinationFile));
-            logger.Trace($"Copying file '{sourceFile}' to '{destinationFile}'");
+            logger.Debug($"Copying file '{sourceFile}' to '{destinationFile}'");
 
             IResult<string> retVal = new Result<string>();
 
@@ -249,11 +252,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError($"Error copying file '{Path.GetFileName(sourceFile)}' to '{Path.GetFileName(destinationFile)}': {ex.Message}");
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to copy file '{Path.GetFileName(sourceFile)}' to '{Path.GetFileName(destinationFile)}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -266,8 +270,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> CreateDirectory(string directory)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Debug("Creating directory '" + directory + "'...");
-            Result<string> retVal = new Result<string>();
+            logger.Debug($"Creating directory '{directory}'...");
+
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -275,8 +280,9 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown while creating directory '" + directory + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to create directory '{directory}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -295,9 +301,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> CreateZip(string zipFile, string source)
         {
             logger.EnterMethod(xLogger.Params(zipFile, source));
-            logger.Trace("Creating zip file '" + zipFile + "' from directory '" + source + "'...");
+            logger.Debug($"Creating zip file '{zipFile}' from directory '{source}'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -305,11 +311,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error creating zip file '" + zipFile + "' from directory '" + source + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to create zip file '{Path.GetFileName(zipFile)}' from directory '{source}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -325,8 +332,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult DeleteDirectory(string directory, bool recursive = true)
         {
             logger.EnterMethod(xLogger.Params(directory));
-            logger.Debug("Attempting to delete directory '" + directory + "'...");
-            Result retVal = new Result();
+            logger.Debug($"Deleting directory '{directory}'...");
+
+            IResult retVal = new Result();
 
             try
             {
@@ -335,8 +343,9 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown while deleting the directory '" + directory + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to delete directory '{directory}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -352,8 +361,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult DeleteFile(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Debug("Deleting file '" + file + "'...");
-            Result retVal = new Result();
+            logger.Debug($"Deleting file '{file}'...");
+
+            IResult retVal = new Result();
 
             try
             {
@@ -361,8 +371,9 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Exception thrown while attempting to delete file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to delete file '{Path.GetFileName(file)}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -393,9 +404,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> ExtractZip(string zipFile, string destination, bool clearDestination = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, destination, clearDestination));
-            logger.Trace("Extracting zip file '" + zipFile + "' to destination '" + destination + "'...");
+            logger.Debug($"Extracting zip file '{zipFile}' to destination '{destination}'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -406,24 +417,28 @@ namespace OpenIIoT.Core.Platform
 
                 if (clearDestination)
                 {
-                    logger.Trace("Attempting to clear destination directory '" + destination + "'...");
+                    logger.Trace($"Attempting to clear destination directory '{destination}'...");
+
                     IResult clearResult = ClearDirectory(destination);
+
                     if (clearResult.ResultCode != ResultCode.Success)
                     {
-                        throw new Exception("Error clearing destination directory: " + clearResult.GetLastError());
+                        throw new Exception($"Error clearing destination directory:  {clearResult.GetLastError()}");
                     }
                 }
 
                 logger.Trace("Extracting file...");
+
                 ZipFile.ExtractToDirectory(zipFile, destination);
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error extracting zip file '" + zipFile + "' to destination '" + destination + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to extract zip file '{Path.GetFileName(zipFile)}' to destination '{destination}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -442,31 +457,34 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> ExtractZipFile(string zipFile, string file, string destination, bool overwrite = true)
         {
             logger.EnterMethod(xLogger.Params(zipFile, file, destination, overwrite));
-            logger.Trace("Extracting file '" + file + "' from zip file '" + zipFile + "' into directory '" + destination + "'...");
+            logger.Debug($"Extracting file '{file}' from zip file '{zipFile}' into directory '{destination}'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
-                logger.Trace("Opening zip file '" + zipFile + "'...");
+                logger.Trace($"Opening zip file '{zipFile}'...");
+
                 using (ZipArchive archive = ZipFile.Open(zipFile, ZipArchiveMode.Read))
                 {
                     ZipArchiveEntry entry = archive.GetEntry(file);
 
                     string extractedFile = Path.Combine(destination, entry.Name);
 
-                    logger.Trace("Extracting file '" + file + "'...");
+                    logger.Trace($"Extracting file '{file}'...");
+
                     entry.ExtractToFile(extractedFile, overwrite);
                     retVal.ReturnValue = extractedFile;
                 }
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error extracting file '" + file + "' from zip file '" + zipFile + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to extract file '{Path.GetFileName(file)}' from zip file '{Path.GetFileName(zipFile)}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -504,6 +522,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<IList<string>> ListDirectories(string parentDirectory, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
+
             IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
@@ -513,10 +532,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (IOException ex)
             {
-                retVal.AddError("Error listing subdirectories for root path '" + parentDirectory + "' using search pattern '" + searchPattern + "': " + ex.Message);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to list subdirectories for root path '{parentDirectory}' using search pattern '{searchPattern}'.");
             }
 
+            retVal.LogResult(logger.Trace);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -544,6 +565,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<IList<string>> ListFiles(string parentDirectory, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
+
             IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
@@ -553,10 +575,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (IOException ex)
             {
-                retVal.AddError("Error listing files for directory '" + parentDirectory + "' using search pattern '" + searchPattern + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to list files for directory '{parentDirectory}' using search pattern '{searchPattern}'.");
             }
 
+            retVal.LogResult(logger.Trace);
             logger.ExitMethod(retVal);
             return retVal;
         }
@@ -572,14 +596,13 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<IList<string>> ListZipFiles(string zipFile, string searchPattern = "*")
         {
             logger.EnterMethod(xLogger.Params(zipFile, searchPattern));
-            logger.Trace("Listing files in zip file '" + zipFile + "' matching searchPattern '" + searchPattern + "'...");
 
             IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
-            logger.Trace("Converting pattern '" + searchPattern + "' to RegEx..");
+            logger.Trace($"Converting pattern '{searchPattern}' to RegEx..");
             Regex regex = new Regex(SDK.Common.Utility.WildcardToRegex(searchPattern), RegexOptions.IgnoreCase);
-            logger.Trace("Converted pattern to RegEx '" + regex + "'");
+            logger.Trace($"Converted pattern to RegEx '{regex}'");
 
             try
             {
@@ -595,13 +618,14 @@ namespace OpenIIoT.Core.Platform
                         }
                     }
 
-                    logger.Trace(retVal.ReturnValue.Count + " matches for '" + regex + "' found.");
+                    logger.Trace($"{retVal.ReturnValue.Count} matches for '{regex}' found.");
                 }
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error listing files in zip file '" + zipFile + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to list files in zip file '{Path.GetFileName(zipFile)}'.");
             }
 
             retVal.LogResult(logger.Trace);
@@ -619,9 +643,9 @@ namespace OpenIIoT.Core.Platform
         public IResult<byte[]> ReadFileBytes(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Reading binary contents of file '" + file + "'...");
+            logger.Debug($"Reading bytes from file '{file}'...");
 
-            Result<byte[]> retVal = new Result<byte[]>();
+            IResult<byte[]> retVal = new Result<byte[]>();
 
             try
             {
@@ -629,11 +653,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error reading file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to read bytes from file '{Path.GetFileName(file)}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -648,9 +673,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string[]> ReadFileLines(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Reading lines from file '" + file + "'...");
+            logger.Debug($"Reading lines from file '{file}'...");
 
-            Result<string[]> retVal = new Result<string[]>();
+            IResult<string[]> retVal = new Result<string[]>();
 
             try
             {
@@ -658,11 +683,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error reading lines from file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to read lines from file '{Path.GetFileName(file)}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -677,9 +703,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> ReadFileText(string file)
         {
             logger.EnterMethod(xLogger.Params(file));
-            logger.Trace("Reading text contents of file '" + file + "'...");
+            logger.Debug($"Reading text contents of file '{file}'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -687,8 +713,9 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error reading file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Failed to read text from file '{Path.GetFileName(file)}'.");
             }
 
             retVal.LogResult(logger.Trace);
@@ -706,9 +733,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> WriteFileBytes(string file, byte[] contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
-            logger.Trace("Writing binary data to file '" + file + "'...");
+            logger.Debug($"Writing bytes to file '{file}'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -717,11 +744,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error writing to file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Error writing bytes to file '{file}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -736,9 +764,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> WriteFileLines(string file, string[] contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
-            logger.Trace("Writing to file '" + file + "'...");
+            logger.Debug($"Writing lines to file '{file}'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -747,11 +775,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error writing to file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Error writing lines to file '{file}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -765,9 +794,9 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> WriteFileText(string file, string contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
-            logger.Trace("Writing text to file '" + file + "'...");
+            logger.Debug($"Writing text to file '{file}'...");
 
-            Result<string> retVal = new Result<string>();
+            IResult<string> retVal = new Result<string>();
 
             try
             {
@@ -776,11 +805,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error writing to file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Error writing text to file '{file}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
