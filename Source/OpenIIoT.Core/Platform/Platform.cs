@@ -733,7 +733,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> WriteFileBytes(string file, byte[] contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
-            logger.Trace("Writing binary data to file '" + file + "'...");
+            logger.Debug($"Writing bytes to file '{file}'...");
 
             IResult<string> retVal = new Result<string>();
 
@@ -744,11 +744,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error writing to file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Error writing bytes to file '{file}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -763,7 +764,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> WriteFileLines(string file, string[] contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
-            logger.Trace("Writing to file '" + file + "'...");
+            logger.Debug($"Writing lines to file '{file}'...");
 
             IResult<string> retVal = new Result<string>();
 
@@ -774,11 +775,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error writing to file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Error writing lines to file '{file}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
@@ -792,7 +794,7 @@ namespace OpenIIoT.Core.Platform
         public virtual IResult<string> WriteFileText(string file, string contents)
         {
             logger.EnterMethod(xLogger.Params(file, contents));
-            logger.Trace("Writing text to file '" + file + "'...");
+            logger.Debug($"Writing text to file '{file}'...");
 
             IResult<string> retVal = new Result<string>();
 
@@ -803,11 +805,12 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                retVal.AddError("Error writing to file '" + file + "': " + ex);
                 logger.Exception(LogLevel.Debug, ex);
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Error writing text to file '{file}'.");
             }
 
-            retVal.LogResult(logger.Trace);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal.ResultCode);
             return retVal;
         }
