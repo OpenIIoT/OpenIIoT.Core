@@ -91,6 +91,54 @@ namespace OpenIIoT.Core.Package
         #region Public Methods
 
         /// <summary>
+        ///     Creates a Package file from the specified binary data.
+        /// </summary>
+        /// <param name="data">The binary data containing the Package.</param>
+        /// <returns>A Result containing the result of the operation and the created Package.</returns>
+        public IResult<IPackage> CreatePackage(byte[] data)
+        {
+            logger.EnterMethod();
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            logger.Debug($"Creating new Package...");
+
+            string tempFile = Path.Combine(Platform.Directories.Temp, Guid.NewGuid().ToString());
+
+            logger.Debug($"Saving new Package to '{tempFile}'...");
+
+            retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                IResult<IPackage> readResult = Read(tempFile);
+
+                retVal.Incorporate(readResult);
+
+                if (retVal.ResultCode != ResultCode.Failure)
+                {
+                    string destinationFilename = GetPackageFilename(readResult.ReturnValue);
+
+                    retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
+
+                    if (retVal.ResultCode != ResultCode.Failure)
+                    {
+                        retVal.ReturnValue = readResult.ReturnValue;
+                        retVal.ReturnValue.Filename = destinationFilename;
+                    }
+                }
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("Unable to create Package from supplied data.");
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
         ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="IPackage"/> instance
         ///     from the contents.
         /// </summary>
@@ -184,6 +232,23 @@ namespace OpenIIoT.Core.Package
             FileInfo info = new FileInfo(fileName);
 
             return new Package(fileName, info.LastWriteTime, manifest);
+        }
+
+        /// <summary>
+        ///     Creates and returns a valid filename for the specified <see cref="IPackage"/>.
+        /// </summary>
+        /// <param name="package">The Package for which the filename is to be created.</param>
+        /// <returns>The created filename.</returns>
+        private string GetPackageFilename(IPackage package)
+        {
+            string filename = package.FQN + "." + package.Version + PackageConstants.PackageFilenameExtension;
+
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                filename = filename.Replace(c, PackageConstants.PackageFilenameInvalidCharacterSubstitution);
+            }
+
+            return Path.Combine(Platform.Directories.Packages, filename);
         }
 
         #endregion Private Methods
