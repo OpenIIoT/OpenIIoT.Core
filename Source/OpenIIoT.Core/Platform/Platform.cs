@@ -121,23 +121,23 @@ namespace OpenIIoT.Core.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets a Dictionary containing all of the application directories, loaded from the App.config.
+        ///     Gets a list containing all of the application directories, loaded from the App.config.
         /// </summary>
         public IDirectories Directories { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the accompanying Item Provider for the Platform.
+        ///     Gets or sets the accompanying <see cref="IItemProvider"/> for the <see cref="Platform"/>.
         /// </summary>
         [Discoverable]
         public IItemProvider ItemProvider { get; protected set; }
 
         /// <summary>
-        ///     Gets or sets the Platform Type.
+        ///     Gets or sets the <see cref="PlatformType"/> of the <see cref="Platform"/>.
         /// </summary>
         public PlatformType PlatformType { get; protected set; }
 
         /// <summary>
-        ///     Gets or sets the Version of the Platform OS.
+        ///     Gets or sets the version of the <see cref="Platform"/> OS.
         /// </summary>
         public string Version { get; protected set; }
 
@@ -146,7 +146,7 @@ namespace OpenIIoT.Core.Platform
         #region Public Methods
 
         /// <summary>
-        ///     Deletes all files and subdirectories within the specified directory.
+        ///     Deletes all files and subdirectories within the specified <paramref name="directory"/>.
         /// </summary>
         /// <param name="directory">The directory to clear.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -186,7 +186,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Computes the SHA256 checksum of the specified file.
+        ///     Computes the SHA256 checksum of the specified <paramref name="file"/>.
         /// </summary>
         /// <param name="file">The file for which the checksum is to be computed.</param>
         /// <returns>A Result containing the result of the operation and the computed checksum.</returns>
@@ -220,7 +220,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Copies the specified source file to the specified destination file.
+        ///     Copies the specified <paramref name="sourceFile"/> to the specified <paramref name="destinationFile"/>.
         /// </summary>
         /// <param name="sourceFile">The file to copy.</param>
         /// <param name="destinationFile">The file to which the source file is to be copied.</param>
@@ -231,8 +231,8 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Copies the specified source file to the specified destination file, overwriting if the destination file exists and
-        ///     the overwrite parameter is true.
+        ///     Copies the specified <paramref name="sourceFile"/> to the specified <paramref name="destinationFile"/>, overwriting
+        ///     if the destination file exists and the <paramref name="overwrite"/> parameter is true.
         /// </summary>
         /// <param name="sourceFile">The file to copy.</param>
         /// <param name="destinationFile">The file to which the source file is to be copied.</param>
@@ -263,7 +263,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Creates the specified directory.
+        ///     Creates the specified <paramref name="directory"/>.
         /// </summary>
         /// <param name="directory">The directory to create.</param>
         /// <returns>A Result containing the result of the operation and the fully qualified path to the created directory.</returns>
@@ -291,29 +291,29 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Creates the specified zip file from the specified directory.
+        ///     Creates the specified <paramref name="zipFile"/> from the specified <paramref name="sourceDirectory"/>.
         /// </summary>
         /// <param name="zipFile">The zip file to which the directory is to be compressed.</param>
-        /// <param name="source">The directory from which the zip file is to be created.</param>
+        /// <param name="sourceDirectory">The directory from which the zip file is to be created.</param>
         /// <returns>
         ///     A Result containing the result of the operation and the fully qualified filename of the created zip file.
         /// </returns>
-        public virtual IResult<string> CreateZip(string zipFile, string source)
+        public virtual IResult<string> CreateZip(string zipFile, string sourceDirectory)
         {
-            logger.EnterMethod(xLogger.Params(zipFile, source));
-            logger.Debug($"Creating zip file '{zipFile}' from directory '{source}'...");
+            logger.EnterMethod(xLogger.Params(zipFile, sourceDirectory));
+            logger.Debug($"Creating zip file '{zipFile}' from directory '{sourceDirectory}'...");
 
             IResult<string> retVal = new Result<string>();
 
             try
             {
-                ZipFile.CreateFromDirectory(source, zipFile);
+                ZipFile.CreateFromDirectory(sourceDirectory, zipFile);
             }
             catch (Exception ex)
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to create zip file '{Path.GetFileName(zipFile)}' from directory '{source}'.");
+                retVal.AddError($"Failed to create zip file '{Path.GetFileName(zipFile)}' from directory '{sourceDirectory}'.");
             }
 
             retVal.LogResult(logger.Debug);
@@ -322,7 +322,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Deletes the specified directory.
+        ///     Deletes the specified <paramref name="directory"/>.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
         /// <param name="recursive">
@@ -354,7 +354,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Deletes the specified file.
+        ///     Deletes the specified <paramref name="file"/>.
         /// </summary>
         /// <param name="file">The file to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -382,7 +382,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Returns true if the specified directory exists, false otherwise.
+        ///     Returns true if the specified <paramref name="directory"/> exists, false otherwise.
         /// </summary>
         /// <param name="directory">The directory to check.</param>
         /// <returns>A value indicating whether the specified directory exists.</returns>
@@ -392,8 +392,8 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Extracts the contents of the specified zip file to the specified destination, clearing the destination first if
-        ///     clearDestination is true.
+        ///     Extracts the contents of the specified <paramref name="zipFile"/> to the specified <paramref name="destination"/>,
+        ///     clearing the destination first if <paramref name="clearDestination"/> is true.
         /// </summary>
         /// <param name="zipFile">The zip file to extract.</param>
         /// <param name="destination">The destination directory.</param>
@@ -444,8 +444,8 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Extracts the specified file from the specified zip file to the specified destination, overwriting the file if
-        ///     overwrite is true.
+        ///     Extracts the specified <paramref name="file"/> from the specified <paramref name="zipFile"/> to the specified
+        ///     <paramref name="destination"/>, overwriting the file if <paramref name="overwrite"/> is true.
         /// </summary>
         /// <param name="zipFile">The zip file from which to extract the file.</param>
         /// <param name="file">The file to extract from the zip file.</param>
@@ -490,7 +490,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Returns true if the specified file exists, false otherwise.
+        ///     Returns true if the specified <paramref name="file"/> exists, false otherwise.
         /// </summary>
         /// <param name="file">The file to check.</param>
         /// <returns>A value indicating whether the specified file exists.</returns>
@@ -500,41 +500,41 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Returns a list of subdirectories within the specified directory.
+        ///     Returns a list of subdirectories within the specified <paramref name="directory"/>.
         /// </summary>
-        /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <param name="directory">The parent directory to search.</param>
         /// <returns>
         ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
         /// </returns>
-        public virtual IResult<IList<string>> ListDirectories(string parentDirectory)
+        public virtual IResult<IList<string>> ListDirectories(string directory)
         {
-            return ListDirectories(parentDirectory, "*");
+            return ListDirectories(directory, "*");
         }
 
         /// <summary>
-        ///     Returns a list of subdirectories within the specified directory.
+        ///     Returns a list of subdirectories within the specified <paramref name="directory"/> matching the specified <paramref name="searchPattern"/>.
         /// </summary>
-        /// <param name="parentDirectory">The parent directory to search.</param>
+        /// <param name="directory">The parent directory to search.</param>
         /// <param name="searchPattern">The search pattern to which directory names are compared.</param>
         /// <returns>
         ///     A Result containing the result of the operation and list containing the fully qualified path of each directory found.
         /// </returns>
-        public virtual IResult<IList<string>> ListDirectories(string parentDirectory, string searchPattern = "*")
+        public virtual IResult<IList<string>> ListDirectories(string directory, string searchPattern = "*")
         {
-            logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
+            logger.EnterMethod(xLogger.Params(directory, searchPattern));
 
             IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
             try
             {
-                retVal.ReturnValue = Directory.EnumerateDirectories(parentDirectory, searchPattern, SearchOption.AllDirectories).ToList<string>();
+                retVal.ReturnValue = Directory.EnumerateDirectories(directory, searchPattern, SearchOption.AllDirectories).ToList<string>();
             }
             catch (IOException ex)
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to list subdirectories for root path '{parentDirectory}' using search pattern '{searchPattern}'.");
+                retVal.AddError($"Failed to list subdirectories for root path '{directory}' using search pattern '{searchPattern}'.");
             }
 
             retVal.LogResult(logger.Trace);
@@ -543,41 +543,41 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Returns a list of files within the specified directory matching the supplied searchPattern.
+        ///     Returns a list of files within the specified <paramref name="directory"/>.
         /// </summary>
-        /// <param name="parentDirectory">The directory to search.</param>
+        /// <param name="directory">The directory to search.</param>
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        public virtual IResult<IList<string>> ListFiles(string parentDirectory)
+        public virtual IResult<IList<string>> ListFiles(string directory)
         {
-            return ListFiles(parentDirectory, "*");
+            return ListFiles(directory, "*");
         }
 
         /// <summary>
-        ///     Returns a list of files within the specified directory matching the supplied searchPattern.
+        ///     Returns a list of files within the specified <paramref name="directory"/> matching the specified <paramref name="searchPattern"/>.
         /// </summary>
-        /// <param name="parentDirectory">The directory to search.</param>
+        /// <param name="directory">The directory to search.</param>
         /// <param name="searchPattern">The search pattern to which file names are compared.</param>
         /// <returns>
         ///     A Result containing the result of the operation and a list containing the fully qualified filename of each file found.
         /// </returns>
-        public virtual IResult<IList<string>> ListFiles(string parentDirectory, string searchPattern = "*")
+        public virtual IResult<IList<string>> ListFiles(string directory, string searchPattern = "*")
         {
-            logger.EnterMethod(xLogger.Params(parentDirectory, searchPattern));
+            logger.EnterMethod(xLogger.Params(directory, searchPattern));
 
             IResult<IList<string>> retVal = new Result<IList<string>>();
             retVal.ReturnValue = new List<string>();
 
             try
             {
-                retVal.ReturnValue = Directory.EnumerateFiles(parentDirectory, searchPattern, SearchOption.AllDirectories).ToList<string>();
+                retVal.ReturnValue = Directory.EnumerateFiles(directory, searchPattern, SearchOption.AllDirectories).ToList<string>();
             }
             catch (IOException ex)
             {
                 logger.Exception(LogLevel.Debug, ex);
                 retVal.AddError(ex.Message);
-                retVal.AddError($"Failed to list files for directory '{parentDirectory}' using search pattern '{searchPattern}'.");
+                retVal.AddError($"Failed to list files for directory '{directory}' using search pattern '{searchPattern}'.");
             }
 
             retVal.LogResult(logger.Trace);
@@ -586,7 +586,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Returns a list of files contained within the specified zip file matching the supplied searchPattern.
+        ///     Returns a list of files contained within the specified <paramref name="zipFile"/> matching the specified <paramref name="searchPattern"/>.
         /// </summary>
         /// <param name="zipFile">The zip file to search.</param>
         /// <param name="searchPattern">The search pattern to match files against.</param>
@@ -634,7 +634,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Reads the contents of the specified file into a byte array.
+        ///     Reads the contents of the specified <paramref name="file"/> into a byte array.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <returns>
@@ -664,7 +664,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Reads the contents of the specified file into a string array.
+        ///     Reads the contents of the specified <paramref name="file"/> into a string array.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <returns>
@@ -694,7 +694,7 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Reads the contents of the specified file into a single string.
+        ///     Reads the contents of the specified <paramref name="file"/> into a single string.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <returns>
@@ -724,8 +724,8 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Writes the contents of the supplied byte array into the specified file. If the destination file already exists it
-        ///     is overwritten.
+        ///     Writes the <paramref name="contents"/> of the specified byte array into the specified <paramref name="file"/>. If
+        ///     the destination file already exists it is overwritten.
         /// </summary>
         /// <param name="file">The file to write.</param>
         /// <param name="contents">The binary data to write to the file.</param>
@@ -755,8 +755,8 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Writes the contents of the specified string array into the specified file. If the destination file already exists
-        ///     it is overwritten.
+        ///     Writes the <paramref name="contents"/> of the specified string array into the specified <paramref name="file"/>. If
+        ///     the destination file already exists it is overwritten.
         /// </summary>
         /// <param name="file">The file to which the specified contents are written.</param>
         /// <param name="contents">The string array containing the content to write.</param>
@@ -786,7 +786,8 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Writes the contents of the supplied string into the specified file. If the destination file already exists it is overwritten.
+        ///     Writes the <paramref name="contents"/> of the specified string into the specified <paramref name="file"/>. If the
+        ///     destination file already exists it is overwritten.
         /// </summary>
         /// <param name="file">The file to write.</param>
         /// <param name="contents">The text to write to the file.</param>
