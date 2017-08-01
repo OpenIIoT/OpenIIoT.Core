@@ -99,10 +99,21 @@ namespace OpenIIoT.Core.Package
 
             ChangeState(State.Initialized);
 
+            Utility = new PackageUtility(platformManager.Platform);
+
             logger.ExitMethod();
         }
 
         #endregion Private Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the PackageUtility used for packaging operations.
+        /// </summary>
+        private PackageUtility Utility { get; set; }
+
+        #endregion Private Properties
 
         #region Public Properties
 
@@ -160,7 +171,7 @@ namespace OpenIIoT.Core.Package
 
             logger.Info("Creating new Package...");
 
-            PackageCreator creator = new PackageCreator(Dependency<IPlatformManager>().Platform);
+            PackageUtility creator = new PackageUtility(Dependency<IPlatformManager>().Platform);
 
             retVal = creator.CreatePackage(data);
 
@@ -281,7 +292,7 @@ namespace OpenIIoT.Core.Package
 
             if (findResult != default(IPackage))
             {
-                PackageInstaller installer = new PackageInstaller(Dependency<IPlatformManager>().Platform);
+                PackageUtility installer = new PackageUtility(Dependency<IPlatformManager>().Platform);
                 retVal.Incorporate(installer.InstallPackage(findResult, options));
             }
 
@@ -364,7 +375,7 @@ namespace OpenIIoT.Core.Package
 
             IPlatform platform = Dependency<IPlatformManager>().Platform;
 
-            PackageScanner scanner = new PackageScanner(platform);
+            PackageUtility scanner = new PackageUtility(platform);
 
             retVal = scanner.Scan(platform.Directories.Packages);
 

@@ -100,7 +100,7 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod();
             IResult<IPackage> retVal = new Result<IPackage>();
 
-            logger.Debug($"Creating new Package...");
+            logger.Info($"Creating new Package...");
 
             string tempFile = Path.Combine(Platform.Directories.Temp, Guid.NewGuid().ToString());
 
@@ -133,7 +133,7 @@ namespace OpenIIoT.Core.Package
                 retVal.AddError("Unable to create Package from supplied data.");
             }
 
-            retVal.LogResult(logger.Debug);
+            retVal.LogResult(logger);
             logger.ExitMethod();
             return retVal;
         }
