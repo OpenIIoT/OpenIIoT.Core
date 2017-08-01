@@ -106,15 +106,6 @@ namespace OpenIIoT.Core.Package
 
         #endregion Private Constructors
 
-        #region Private Properties
-
-        /// <summary>
-        ///     Gets or sets the PackageUtility used for packaging operations.
-        /// </summary>
-        private PackageUtility Utility { get; set; }
-
-        #endregion Private Properties
-
         #region Public Properties
 
         /// <summary>
@@ -123,6 +114,15 @@ namespace OpenIIoT.Core.Package
         public IList<IPackage> Packages { get; private set; }
 
         #endregion Public Properties
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the PackageUtility used for packaging operations.
+        /// </summary>
+        private PackageUtility Utility { get; set; }
+
+        #endregion Private Properties
 
         #region Public Methods
 
@@ -166,18 +166,7 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
         public IResult<IPackage> CreatePackage(byte[] data)
         {
-            logger.EnterMethod();
-            IResult<IPackage> retVal = new Result<IPackage>();
-
-            logger.Info("Creating new Package...");
-
-            PackageUtility creator = new PackageUtility(Dependency<IPlatformManager>().Platform);
-
-            retVal = creator.CreatePackage(data);
-
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-            return retVal;
+            return Utility.CreatePackage(data);
         }
 
         /// <summary>
