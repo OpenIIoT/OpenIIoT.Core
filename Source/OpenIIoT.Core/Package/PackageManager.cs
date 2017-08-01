@@ -166,7 +166,7 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
         public IResult<IPackage> CreatePackage(byte[] data)
         {
-            return Utility.CreatePackage(data);
+            return Utility.Create(data);
         }
 
         /// <summary>
@@ -281,8 +281,11 @@ namespace OpenIIoT.Core.Package
 
             if (findResult != default(IPackage))
             {
-                PackageUtility installer = new PackageUtility(Dependency<IPlatformManager>().Platform);
-                retVal.Incorporate(installer.InstallPackage(findResult, options));
+                retVal.Incorporate(Utility.Install(findResult, options));
+            }
+            else
+            {
+                retVal.AddError($"Failed to install Package '{fqn}'; the package could not be found.");
             }
 
             retVal.LogResult(logger);
@@ -357,21 +360,13 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
         public IResult<IList<IPackage>> ScanPackages()
         {
-            Guid guid = logger.EnterMethod();
-            IResult<IList<IPackage>> retVal;
+            IResult<IList<IPackage>> retVal = Utility.Scan();
 
-            logger.Info("Scanning Packages...");
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                Packages = retVal.ReturnValue;
+            }
 
-            IPlatform platform = Dependency<IPlatformManager>().Platform;
-
-            PackageUtility scanner = new PackageUtility(platform);
-
-            retVal = scanner.Scan(platform.Directories.Packages);
-
-            Packages = retVal.ReturnValue;
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
             return retVal;
         }
 

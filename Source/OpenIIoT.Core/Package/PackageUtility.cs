@@ -45,8 +45,8 @@ using System.IO;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK.Package;
-using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Packaging.Manifest;
+using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 
@@ -95,7 +95,7 @@ namespace OpenIIoT.Core.Package
         /// </summary>
         /// <param name="data">The binary data containing the Package.</param>
         /// <returns>A Result containing the result of the operation and the created Package.</returns>
-        public IResult<IPackage> CreatePackage(byte[] data)
+        public IResult<IPackage> Create(byte[] data)
         {
             logger.EnterMethod();
             IResult<IPackage> retVal = new Result<IPackage>();
@@ -110,7 +110,7 @@ namespace OpenIIoT.Core.Package
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                IResult<IPackage> readResult = Read(tempFile);
+                IResult<IPackage> readResult = ReadPackage(tempFile);
 
                 retVal.Incorporate(readResult);
 
@@ -144,9 +144,9 @@ namespace OpenIIoT.Core.Package
         /// <param name="package">The Package to install.</param>
         /// <param name="options">The installation options with which the Package is to be installed.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(IPackage package, PackageInstallationOptions options)
+        public IResult Install(IPackage package, PackageInstallationOptions options)
         {
-            return InstallPackage(package, options, string.Empty);
+            return Install(package, options, string.Empty);
         }
 
         /// <summary>
@@ -156,7 +156,7 @@ namespace OpenIIoT.Core.Package
         /// <param name="options">The installation options with which the Package is to be installed.</param>
         /// <param name="publicKey">The PGP Public Key to use when verifying the Package prior to installation.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(IPackage package, PackageInstallationOptions options, string publicKey)
+        public IResult Install(IPackage package, PackageInstallationOptions options, string publicKey)
         {
             logger.EnterMethod(xLogger.Params(package, options, publicKey));
             IResult retVal = new Result();
@@ -191,51 +191,16 @@ namespace OpenIIoT.Core.Package
         }
 
         /// <summary>
-        ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="IPackage"/> instance
-        ///     from the contents.
+        ///     Scans the Packages directory and generates a list of found <see cref="IPackage"/> instances.
         /// </summary>
-        /// <param name="fileName">The filename of the file to read.</param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public IResult<IPackage> Read(string fileName)
-        {
-            logger.EnterMethod(true);
-            IResult<IPackage> retVal = new Result<IPackage>();
-
-            logger.Debug($"Reading Package '{fileName}'...");
-
-            ManifestExtractor extractor = new ManifestExtractor();
-            extractor.Updated += (sender, e) => logger.Debug(e.Message);
-
-            PackageManifest manifest;
-
-            try
-            {
-                manifest = extractor.ExtractManifest(fileName);
-
-                retVal.ReturnValue = GetPackage(fileName, manifest);
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError(ex.Message);
-                retVal.AddError($"Unable to read Package '{Path.GetFileName(fileName)}'.");
-            }
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod();
-
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Scans the specified directory and generates a list of found <see cref="IPackage"/> instances.
-        /// </summary>
-        /// <param name="directory">The directory to scan.</param>
         /// <returns>A Result containing the result of the operation and the list of found IPackage instances.</returns>
-        public IResult<IList<IPackage>> Scan(string directory)
+        public IResult<IList<IPackage>> Scan()
         {
             Guid guid = logger.EnterMethod(true);
             IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
             retVal.ReturnValue = new List<IPackage>();
+
+            string directory = Platform.Directories.Packages;
 
             logger.Debug($"Scanning directory '{directory}'...");
 
@@ -249,7 +214,7 @@ namespace OpenIIoT.Core.Package
             {
                 foreach (string file in fileListResult.ReturnValue)
                 {
-                    IResult<IPackage> readResult = Read(file);
+                    IResult<IPackage> readResult = ReadPackage(file);
 
                     if (readResult.ResultCode != ResultCode.Failure)
                     {
@@ -301,6 +266,42 @@ namespace OpenIIoT.Core.Package
             }
 
             return Path.Combine(Platform.Directories.Packages, filename);
+        }
+
+        /// <summary>
+        ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="IPackage"/> instance
+        ///     from the contents.
+        /// </summary>
+        /// <param name="fileName">The filename of the file to read.</param>
+        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
+        private IResult<IPackage> ReadPackage(string fileName)
+        {
+            logger.EnterMethod(true);
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            logger.Debug($"Reading Package '{fileName}'...");
+
+            ManifestExtractor extractor = new ManifestExtractor();
+            extractor.Updated += (sender, e) => logger.Debug(e.Message);
+
+            PackageManifest manifest;
+
+            try
+            {
+                manifest = extractor.ExtractManifest(fileName);
+
+                retVal.ReturnValue = GetPackage(fileName, manifest);
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Unable to read Package '{Path.GetFileName(fileName)}'.");
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod();
+
+            return retVal;
         }
 
         #endregion Private Methods
