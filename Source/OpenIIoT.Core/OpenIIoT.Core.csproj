@@ -211,6 +211,7 @@
     <Compile Include="Package\PackageManager.cs" />
     <Compile Include="Package\PackageInstaller.cs" />
     <Compile Include="Package\PackageReader.cs" />
+    <Compile Include="Package\PackageUtility.cs" />
     <Compile Include="Package\WebAPI\PackageController.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
