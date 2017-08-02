@@ -79,14 +79,14 @@ namespace OpenIIoT.Core.Package
 
         #endregion Public Constructors
 
-        #region Public Properties
+        #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the list of filenames to scan.
+        ///     Gets or sets the <see cref="IPlatform"/> instance with which to carry out operations.
         /// </summary>
-        public IPlatform Platform { get; set; }
+        private IPlatform Platform { get; set; }
 
-        #endregion Public Properties
+        #endregion Private Properties
 
         #region Public Methods
 
