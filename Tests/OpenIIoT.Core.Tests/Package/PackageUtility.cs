@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄                                                                 ▄████████
-      █     ███    ███                                                                ███    ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████   ███    █▀   ▄██████   ▄█████  ██▄▄▄▄  ██▄▄▄▄     ▄█████    █████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █    ███        ██    ██   ██   ██ ██▀▀▀█▄ ██▀▀▀█▄   ██   █    ██  ██
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄    ▀███████████ ██    ▀    ██   ██ ██   ██ ██   ██  ▄██▄▄     ▄██▄▄█▀
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀             ███ ██    ▄  ▀████████ ██   ██ ██   ██ ▀▀██▀▀    ▀███████
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █     ▄█    ███ ██    ██   ██   ██ ██   ██ ██   ██   ██   █    ██  ██
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████  ▄████████▀  ██████▀    ██   █▀  █   █   █   █    ███████   ██  ██
+      █      ▄███████▄                                                              ███    █▄
+      █     ███    ███                                                              ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████ ███    ███     ██     █   █        █      ██    ▄█   ▄
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █  ███    ███ ▀███████▄ ██  ██       ██  ▀███████▄ ██   █▄
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄    ███    ███     ██  ▀ ██▌ ██       ██▌     ██  ▀ ▀▀▀▀▀██
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ███    ███     ██    ██  ██       ██      ██    ▄█   ██
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █  ███    ███     ██    ██  ██▌    ▄ ██      ██    ██   ██
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████ ████████▀     ▄██▀   █   ████▄▄██ █      ▄██▀    █████
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the PackageScanner class.
+      █  Unit tests for the PackageUtility class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -61,16 +61,16 @@ using Xunit;
 namespace OpenIIoT.Core.Tests.Package
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Package.PackageScanner"/> class.
+    ///     Unit tests for the <see cref="Core.Package.PackageUtility"/> class.
     /// </summary>
-    public class PackageScanner : IDisposable
+    public class PackageUtility : IDisposable
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageScanner"/> class.
+        ///     Initializes a new instance of the <see cref="PackageUtility"/> class.
         /// </summary>
-        public PackageScanner()
+        public PackageUtility()
         {
             Temp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
@@ -107,9 +107,9 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void Constructor()
         {
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(new Mock<IPlatform>().Object);
+            Core.Package.PackageUtility test = new Core.Package.PackageUtility(new Mock<IPlatform>().Object);
 
-            Assert.IsType<Core.Package.PackageScanner>(scanner);
+            Assert.IsType<Core.Package.PackageUtility>(test);
         }
 
         /// <summary>
@@ -122,7 +122,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a bad directory.
+        ///     Tests the <see cref="Core.Package.PackageUtility.Scan()"/> method with a bad directory.
         /// </summary>
         [Fact]
         public void ListBadDirectory()
@@ -140,7 +140,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with an empty directory.
+        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with an empty directory.
         /// </summary>
         [Fact]
         public void ListEmptyDirectory()

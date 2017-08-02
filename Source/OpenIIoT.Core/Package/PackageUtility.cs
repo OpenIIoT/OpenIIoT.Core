@@ -232,12 +232,21 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the list of found IPackage instances.</returns>
         public IResult<IList<IPackage>> Scan()
         {
+            return Scan(Platform.Directories.Packages);
+        }
+
+        /// <summary>
+        ///     Scans the specified <paramref name="directory"/> and generates a list of found <see cref="IPackage"/> instances.
+        /// </summary>
+        /// <param name="directory">The directory to scan.</param>
+        /// <returns>A Result containing the result of the operation and the list of found IPackage instances.</returns>
+        public IResult<IList<IPackage>> Scan(string directory)
+        {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Scanning for Packages...");
 
             IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
             retVal.ReturnValue = new List<IPackage>();
-            string directory = Platform.Directories.Packages;
 
             logger.Debug($"Scanning directory '{directory}'...");
 
