@@ -113,6 +113,28 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a known good package payload.
+        /// </summary>
+        [Fact]
+        public void CreatePackage()
+        {
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+            dirMock.Setup(d => d.Temp).Returns(Temp);
+
+            TestPlatform platform = new TestPlatform(dirMock.Object);
+
+            Core.Package.PackageUtility test = new Core.Package.PackageUtility(platform);
+
+            IResult<IPackage> package = test.Create(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+        }
+
+        /// <summary>
         ///     Disposes of this instance.
         /// </summary>
         public void Dispose()
@@ -271,5 +293,31 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         #endregion Protected Methods
+
+        #region Private Classes
+
+        /// <summary>
+        ///     Platform concretion used for testing.
+        /// </summary>
+        /// <remarks>
+        ///     It isn't feasible to mock this object as the required functionality for some operations is difficult to mock.
+        /// </remarks>
+        private class TestPlatform : Core.Platform.Platform
+        {
+            #region Public Constructors
+
+            /// <summary>
+            ///     Initializes a new instance of the <see cref="TestPlatform"/> class.
+            /// </summary>
+            /// <param name="directories">The Directories to use.</param>
+            public TestPlatform(IDirectories directories)
+                : base(directories)
+            {
+            }
+
+            #endregion Public Constructors
+        }
+
+        #endregion Private Classes
     }
 }
