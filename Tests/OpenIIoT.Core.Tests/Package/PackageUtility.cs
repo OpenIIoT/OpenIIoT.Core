@@ -132,7 +132,7 @@ namespace OpenIIoT.Core.Tests.Package
             Mock<IPlatform> platformMock = new Mock<IPlatform>();
             platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
 
-            Core.Package.PackageScanner lister = new Core.Package.PackageScanner(platformMock.Object);
+            Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
 
             IResult<IList<IPackage>> list = lister.Scan(Data);
 
@@ -151,7 +151,7 @@ namespace OpenIIoT.Core.Tests.Package
             Mock<IPlatform> platformMock = new Mock<IPlatform>();
             platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
 
-            Core.Package.PackageScanner lister = new Core.Package.PackageScanner(platformMock.Object);
+            Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
 
             IResult<IList<IPackage>> list = lister.Scan(Data);
 
@@ -175,7 +175,7 @@ namespace OpenIIoT.Core.Tests.Package
             Mock<IPlatform> platformMock = new Mock<IPlatform>();
             platformMock.Setup(p => p.ListFiles(Temp)).Returns(dirResult);
 
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(platformMock.Object);
+            Core.Package.PackageUtility scanner = new Core.Package.PackageUtility(platformMock.Object);
 
             IResult<IList<IPackage>> list = scanner.Scan(Temp);
 
@@ -195,7 +195,7 @@ namespace OpenIIoT.Core.Tests.Package
             Mock<IPlatform> platformMock = new Mock<IPlatform>();
             platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
 
-            Core.Package.PackageScanner scanner = new Core.Package.PackageScanner(platformMock.Object);
+            Core.Package.PackageUtility scanner = new Core.Package.PackageUtility(platformMock.Object);
 
             IResult<IList<IPackage>> list = scanner.Scan(Data);
 
@@ -205,6 +205,34 @@ namespace OpenIIoT.Core.Tests.Package
             // spot check a few Manifest fields to see if the manifest was fetched properly
             Assert.NotNull(list.ReturnValue[0].FQN);
             Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageReader.Read(string)"/> method with a known good package.
+        /// </summary>
+        [Fact]
+        public void ReadPackage()
+        {
+            Core.Package.PackageUtility reader = new Core.Package.PackageUtility(new Mock<IPlatform>().Object);
+
+            IResult<IPackage> result = reader.Read(Path.Combine(Data, "Package", "package.zip"));
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.IsType<Core.Package.Package>(result.ReturnValue);
+            Assert.NotEqual(string.Empty, result.ReturnValue.FQN);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageReader.Read(string)"/> method with a known bad package.
+        /// </summary>
+        [Fact]
+        public void ReadPackageNotAPackage()
+        {
+            Core.Package.PackageUtility reader = new Core.Package.PackageUtility(new Mock<IPlatform>().Object);
+
+            IResult<IPackage> result = reader.Read(Path.Combine(Data, "notapackage.zip"));
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         #endregion Public Methods
