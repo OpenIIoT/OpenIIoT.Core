@@ -41,17 +41,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NLog.xLogger;
+using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Package
 {
@@ -166,7 +165,14 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
         public IResult<IPackage> CreatePackage(byte[] data)
         {
-            return Utility.Create(data);
+            logger.EnterMethod();
+            logger.Info($"Creating new Package...");
+
+            IResult<IPackage> retVal = Utility.Create(data);
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         /// <summary>
@@ -191,10 +197,9 @@ namespace OpenIIoT.Core.Package
         public IResult DeletePackage(string fqn)
         {
             logger.EnterMethod(xLogger.Params(fqn));
-            IResult retVal = new Result();
-
             logger.Info($"Deleting Package {fqn}...");
 
+            IResult retVal = new Result();
             IPackage findResult = FindPackage(fqn);
 
             if (findResult != default(IPackage))
@@ -273,10 +278,9 @@ namespace OpenIIoT.Core.Package
         public IResult InstallPackage(string fqn, PackageInstallationOptions options)
         {
             logger.EnterMethod(xLogger.Params(fqn, options));
-            IResult retVal = new Result();
-
             logger.Info($"Installing Package '{fqn}'...");
 
+            IResult retVal = new Result();
             IPackage findResult = FindPackage(fqn);
 
             if (findResult != default(IPackage))
@@ -322,8 +326,9 @@ namespace OpenIIoT.Core.Package
         public IResult<byte[]> ReadPackage(string fqn)
         {
             logger.EnterMethod(xLogger.Params(fqn));
-            IResult<byte[]> retVal = new Result<byte[]>();
+            logger.Info($"Retrieving Package '{fqn}'...");
 
+            IResult<byte[]> retVal = new Result<byte[]>();
             IPackage findResult = FindPackage(fqn);
 
             if (findResult != default(IPackage))
@@ -360,6 +365,9 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
         public IResult<IList<IPackage>> ScanPackages()
         {
+            logger.EnterMethod();
+            logger.Info("Scanning Package directory...");
+
             IResult<IList<IPackage>> retVal = Utility.Scan();
 
             if (retVal.ResultCode != ResultCode.Failure)
@@ -367,6 +375,8 @@ namespace OpenIIoT.Core.Package
                 Packages = retVal.ReturnValue;
             }
 
+            retVal.LogResult(logger);
+            logger.ExitMethod();
             return retVal;
         }
 
@@ -388,10 +398,9 @@ namespace OpenIIoT.Core.Package
         public IResult<bool> VerifyPackage(string fqn, string publicKey = "")
         {
             Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
-            IResult<bool> retVal = new Result<bool>();
-
             logger.Info($"Verifying Package '{fqn}'...");
 
+            IResult<bool> retVal = new Result<bool>();
             IPackage findResult = FindPackage(fqn);
 
             if (retVal != default(IPackage))
@@ -440,9 +449,9 @@ namespace OpenIIoT.Core.Package
         protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
-            IResult retVal = new Result();
-
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+
+            IResult retVal = new Result();
 
             if (!stopType.HasFlag(StopType.Exception))
             {
@@ -465,9 +474,9 @@ namespace OpenIIoT.Core.Package
         protected override IResult Startup()
         {
             Guid guid = logger.EnterMethod(true);
-            IResult retVal = new Result();
-
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
+
+            IResult retVal = new Result();
 
             retVal.Incorporate(ScanPackages());
 

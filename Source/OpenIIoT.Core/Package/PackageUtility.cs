@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █
+      █  Performs basic Packaging tasks.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -53,7 +53,7 @@ using Utility.OperationResult;
 namespace OpenIIoT.Core.Package
 {
     /// <summary>
-    ///     Scans a given list of files for Packages and generates and returns a list of found <see cref="IPackage"/> instances.
+    ///     Performs basic Packaging tasks.
     /// </summary>
     public class PackageUtility
     {
@@ -98,9 +98,9 @@ namespace OpenIIoT.Core.Package
         public IResult<IPackage> Create(byte[] data)
         {
             logger.EnterMethod();
-            IResult<IPackage> retVal = new Result<IPackage>();
+            logger.Debug($"Creating new Package...");
 
-            logger.Info($"Creating new Package...");
+            IResult<IPackage> retVal = new Result<IPackage>();
 
             string tempFile = Path.Combine(Platform.Directories.Temp, Guid.NewGuid().ToString());
 
@@ -159,11 +159,11 @@ namespace OpenIIoT.Core.Package
         public IResult Install(IPackage package, PackageInstallationOptions options, string publicKey)
         {
             logger.EnterMethod(xLogger.Params(package, options, publicKey));
-            IResult retVal = new Result();
-
             logger.Debug($"Installing Package '{package.FQN}'...");
 
+            IResult retVal = new Result();
             PackageExtractor extractor = new PackageExtractor();
+
             extractor.Updated += (sender, e) => logger.Debug(e.Message);
 
             // determine the installation directory; should look like \path\to\Plugins\FQN\
@@ -199,11 +199,11 @@ namespace OpenIIoT.Core.Package
         public IResult<IPackage> Read(string fileName)
         {
             logger.EnterMethod(true);
-            IResult<IPackage> retVal = new Result<IPackage>();
-
             logger.Debug($"Reading Package '{fileName}'...");
 
+            IResult<IPackage> retVal = new Result<IPackage>();
             ManifestExtractor extractor = new ManifestExtractor();
+
             extractor.Updated += (sender, e) => logger.Debug(e.Message);
 
             PackageManifest manifest;
@@ -233,9 +233,10 @@ namespace OpenIIoT.Core.Package
         public IResult<IList<IPackage>> Scan()
         {
             Guid guid = logger.EnterMethod(true);
+            logger.Debug("Scanning for Packages...");
+
             IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
             retVal.ReturnValue = new List<IPackage>();
-
             string directory = Platform.Directories.Packages;
 
             logger.Debug($"Scanning directory '{directory}'...");
