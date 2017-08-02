@@ -215,7 +215,7 @@ namespace OpenIIoT.Core.Tests.Package
         {
             Core.Package.PackageUtility reader = new Core.Package.PackageUtility(new Mock<IPlatform>().Object);
 
-            IResult<IPackage> result = reader.Read(Path.Combine(Data, "Package", "package.zip"));
+            IResult<IPackage> result = reader.Read(Path.Combine(Data, "package.zip"));
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.IsType<Core.Package.Package>(result.ReturnValue);
