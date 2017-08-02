@@ -41,17 +41,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NLog.xLogger;
+using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Package
 {
@@ -99,6 +98,8 @@ namespace OpenIIoT.Core.Package
 
             ChangeState(State.Initialized);
 
+            Utility = new PackageUtility(platformManager.Platform);
+
             logger.ExitMethod();
         }
 
@@ -112,6 +113,15 @@ namespace OpenIIoT.Core.Package
         public IList<IPackage> Packages { get; private set; }
 
         #endregion Public Properties
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the PackageUtility used for packaging operations.
+        /// </summary>
+        private PackageUtility Utility { get; set; }
+
+        #endregion Private Properties
 
         #region Public Methods
 
@@ -156,13 +166,9 @@ namespace OpenIIoT.Core.Package
         public IResult<IPackage> CreatePackage(byte[] data)
         {
             logger.EnterMethod();
-            IResult<IPackage> retVal = new Result<IPackage>();
+            logger.Info($"Creating new Package...");
 
-            logger.Info("Creating new Package...");
-
-            PackageCreator creator = new PackageCreator(Dependency<IPlatformManager>().Platform);
-
-            retVal = creator.CreatePackage(data);
+            IResult<IPackage> retVal = Utility.Create(data);
 
             retVal.LogResult(logger);
             logger.ExitMethod();
@@ -191,10 +197,9 @@ namespace OpenIIoT.Core.Package
         public IResult DeletePackage(string fqn)
         {
             logger.EnterMethod(xLogger.Params(fqn));
-            IResult retVal = new Result();
-
             logger.Info($"Deleting Package {fqn}...");
 
+            IResult retVal = new Result();
             IPackage findResult = FindPackage(fqn);
 
             if (findResult != default(IPackage))
@@ -273,16 +278,18 @@ namespace OpenIIoT.Core.Package
         public IResult InstallPackage(string fqn, PackageInstallationOptions options)
         {
             logger.EnterMethod(xLogger.Params(fqn, options));
-            IResult retVal = new Result();
-
             logger.Info($"Installing Package '{fqn}'...");
 
+            IResult retVal = new Result();
             IPackage findResult = FindPackage(fqn);
 
             if (findResult != default(IPackage))
             {
-                PackageInstaller installer = new PackageInstaller(Dependency<IPlatformManager>().Platform);
-                retVal.Incorporate(installer.InstallPackage(findResult, options));
+                retVal.Incorporate(Utility.Install(findResult, options));
+            }
+            else
+            {
+                retVal.AddError($"Failed to install Package '{fqn}'; the package could not be found.");
             }
 
             retVal.LogResult(logger);
@@ -319,8 +326,9 @@ namespace OpenIIoT.Core.Package
         public IResult<byte[]> ReadPackage(string fqn)
         {
             logger.EnterMethod(xLogger.Params(fqn));
-            IResult<byte[]> retVal = new Result<byte[]>();
+            logger.Info($"Retrieving Package '{fqn}'...");
 
+            IResult<byte[]> retVal = new Result<byte[]>();
             IPackage findResult = FindPackage(fqn);
 
             if (findResult != default(IPackage))
@@ -357,21 +365,18 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
         public IResult<IList<IPackage>> ScanPackages()
         {
-            Guid guid = logger.EnterMethod();
-            IResult<IList<IPackage>> retVal;
+            logger.EnterMethod();
+            logger.Info("Scanning Package directory...");
 
-            logger.Info("Scanning Packages...");
+            IResult<IList<IPackage>> retVal = Utility.Scan();
 
-            IPlatform platform = Dependency<IPlatformManager>().Platform;
-
-            PackageScanner scanner = new PackageScanner(platform);
-
-            retVal = scanner.Scan(platform.Directories.Packages);
-
-            Packages = retVal.ReturnValue;
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                Packages = retVal.ReturnValue;
+            }
 
             retVal.LogResult(logger);
-            logger.ExitMethod(guid);
+            logger.ExitMethod();
             return retVal;
         }
 
@@ -393,10 +398,9 @@ namespace OpenIIoT.Core.Package
         public IResult<bool> VerifyPackage(string fqn, string publicKey = "")
         {
             Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
-            IResult<bool> retVal = new Result<bool>();
-
             logger.Info($"Verifying Package '{fqn}'...");
 
+            IResult<bool> retVal = new Result<bool>();
             IPackage findResult = FindPackage(fqn);
 
             if (retVal != default(IPackage))
@@ -445,9 +449,9 @@ namespace OpenIIoT.Core.Package
         protected override IResult Shutdown(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(true);
-            IResult retVal = new Result();
-
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+
+            IResult retVal = new Result();
 
             if (!stopType.HasFlag(StopType.Exception))
             {
@@ -470,9 +474,9 @@ namespace OpenIIoT.Core.Package
         protected override IResult Startup()
         {
             Guid guid = logger.EnterMethod(true);
-            IResult retVal = new Result();
-
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
+
+            IResult retVal = new Result();
 
             retVal.Incorporate(ScanPackages());
 
