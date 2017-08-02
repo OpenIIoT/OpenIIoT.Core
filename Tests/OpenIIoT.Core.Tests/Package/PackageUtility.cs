@@ -80,7 +80,8 @@ namespace OpenIIoT.Core.Tests.Package
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
             string dirPath = Path.GetDirectoryName(codeBasePath);
 
-            Data = Path.Combine(dirPath, "Package", "Data", "Package");
+            DataRoot = Path.Combine(dirPath, "Package", "Data");
+            Data = Path.Combine(DataRoot, "Package");
         }
 
         #endregion Public Constructors
@@ -88,9 +89,14 @@ namespace OpenIIoT.Core.Tests.Package
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the test data directory.
+        ///     Gets or sets the package test data directory.
         /// </summary>
         private string Data { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the root test data directory.
+        /// </summary>
+        private string DataRoot { get; set; }
 
         /// <summary>
         ///     Gets or sets the temporary data directory.
@@ -132,6 +138,27 @@ namespace OpenIIoT.Core.Tests.Package
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a known bad package payload.
+        /// </summary>
+        [Fact]
+        public void CreatePackageBadData()
+        {
+            byte[] data = File.ReadAllBytes(Path.Combine(DataRoot, "notapackage.zip"));
+
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+            dirMock.Setup(d => d.Temp).Returns(Temp);
+
+            TestPlatform platform = new TestPlatform(dirMock.Object);
+
+            Core.Package.PackageUtility test = new Core.Package.PackageUtility(platform);
+
+            IResult<IPackage> package = test.Create(data);
+
+            Assert.Equal(ResultCode.Failure, package.ResultCode);
         }
 
         /// <summary>
