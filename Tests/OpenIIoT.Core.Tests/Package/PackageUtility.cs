@@ -130,9 +130,20 @@ namespace OpenIIoT.Core.Tests.Package
             dirMock.Setup(d => d.Packages).Returns(Temp);
             dirMock.Setup(d => d.Temp).Returns(Temp);
 
-            TestPlatform platform = new TestPlatform(dirMock.Object);
+            IResult<string> successResult = new Result<string>();
 
-            Core.Package.PackageUtility test = new Core.Package.PackageUtility(platform);
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            Core.Package.PackageUtility test = new Core.Package.PackageUtility(platformMock.Object);
 
             IResult<IPackage> package = test.Create(data);
 
@@ -152,9 +163,20 @@ namespace OpenIIoT.Core.Tests.Package
             dirMock.Setup(d => d.Packages).Returns(Temp);
             dirMock.Setup(d => d.Temp).Returns(Temp);
 
-            TestPlatform platform = new TestPlatform(dirMock.Object);
+            IResult<string> successResult = new Result<string>();
 
-            Core.Package.PackageUtility test = new Core.Package.PackageUtility(platform);
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            Core.Package.PackageUtility test = new Core.Package.PackageUtility(platformMock.Object);
 
             IResult<IPackage> package = test.Create(data);
 
@@ -322,31 +344,5 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         #endregion Protected Methods
-
-        #region Private Classes
-
-        /// <summary>
-        ///     Platform concretion used for testing.
-        /// </summary>
-        /// <remarks>
-        ///     It isn't feasible to mock this object as the required functionality for some operations is difficult to mock.
-        /// </remarks>
-        private class TestPlatform : Core.Platform.Platform
-        {
-            #region Public Constructors
-
-            /// <summary>
-            ///     Initializes a new instance of the <see cref="TestPlatform"/> class.
-            /// </summary>
-            /// <param name="directories">The Directories to use.</param>
-            public TestPlatform(IDirectories directories)
-                : base(directories)
-            {
-            }
-
-            #endregion Public Constructors
-        }
-
-        #endregion Private Classes
     }
 }
