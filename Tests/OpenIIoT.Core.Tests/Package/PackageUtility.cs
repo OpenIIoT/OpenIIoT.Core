@@ -229,7 +229,9 @@ namespace OpenIIoT.Core.Tests.Package
             platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
 
             IResult<IList<string>> dirResult = new Result<IList<string>>();
-            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
+            dirResult.ReturnValue = new List<string>();
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
 
             Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
 
