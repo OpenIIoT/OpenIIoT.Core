@@ -184,6 +184,35 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a mocked platform simulating a
+        ///     failed file write.
+        /// </summary>
+        [Fact]
+        public void CreatePackageWriteFailed()
+        {
+            byte[] data = new byte[] { };
+
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+            dirMock.Setup(d => d.Temp).Returns(Temp);
+
+            IResult<string> failResult = new Result<string>(ResultCode.Failure);
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(failResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            Core.Package.PackageUtility test = new Core.Package.PackageUtility(platformMock.Object);
+
+            IResult<IPackage> package = test.Create(data);
+
+            Assert.Equal(ResultCode.Failure, package.ResultCode);
+        }
+
+        /// <summary>
         ///     Disposes of this instance.
         /// </summary>
         public void Dispose()
