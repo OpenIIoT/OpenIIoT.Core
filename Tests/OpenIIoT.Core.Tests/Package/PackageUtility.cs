@@ -185,6 +185,41 @@ namespace OpenIIoT.Core.Tests.Package
 
         /// <summary>
         ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a mocked platform simulating a
+        ///     failed file copy.
+        /// </summary>
+        [Fact]
+        public void CreatePackageCopyFailed()
+        {
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+            dirMock.Setup(d => d.Temp).Returns(Temp);
+
+            IResult<string> successResult = new Result<string>();
+            IResult<string> failResult = new Result<string>();
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(failResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            Core.Package.PackageUtility test = new Core.Package.PackageUtility(platformMock.Object);
+
+            IResult<IPackage> package = test.Create(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a mocked platform simulating a
         ///     failed file write.
         /// </summary>
         [Fact]
