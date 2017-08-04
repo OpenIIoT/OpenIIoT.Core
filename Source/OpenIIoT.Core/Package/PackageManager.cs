@@ -403,18 +403,42 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
         public IResult<IList<IPackage>> ScanPackages()
         {
-            logger.EnterMethod();
-            logger.Info("Scanning Package directory...");
+            Guid guid = logger.EnterMethod(true);
+            logger.Info("Scanning for Packages...");
 
-            IResult<IList<IPackage>> retVal = Utility.Scan();
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
+            retVal.ReturnValue = new List<IPackage>();
+
+            string directory = Platform.Directories.Packages;
+
+            logger.Debug($"Scanning directory '{directory}'...");
+
+            ManifestExtractor extractor = new ManifestExtractor();
+            extractor.Updated += (sender, e) => logger.Debug(e.Message);
+
+            IResult<IList<string>> fileListResult = Platform.ListFiles(directory);
+            retVal.Incorporate(fileListResult);
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                Packages = retVal.ReturnValue;
+                foreach (string file in fileListResult.ReturnValue)
+                {
+                    IResult<IPackage> readResult = Read(file);
+
+                    if (readResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal.ReturnValue.Add(readResult.ReturnValue);
+                    }
+                    else
+                    {
+                        retVal.AddWarning(readResult.GetLastError());
+                    }
+                }
             }
 
             retVal.LogResult(logger);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
+
             return retVal;
         }
 
