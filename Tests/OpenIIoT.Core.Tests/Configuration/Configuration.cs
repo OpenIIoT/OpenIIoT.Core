@@ -158,7 +158,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Assert.Empty(test.Instances);
 
             // instantiate a new configuration with a predetermined list of instances
-            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> instances = new Dictionary<string, IDictionary<string, object>>();
             instances.Add("test", new Dictionary<string, object>());
 
             test = new Core.Configuration.Configuration(registry.Object, instances);
@@ -177,7 +177,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Dictionary<string, object> instanceList = new Dictionary<string, object>();
             instanceList.Add(string.Empty, 1);
 
-            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> instances = new Dictionary<string, IDictionary<string, object>>();
             instances.Add(typeof(int).FullName, instanceList);
 
             configuration.LoadInstancesFrom(instances);
@@ -199,7 +199,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Dictionary<string, object> instanceList = new Dictionary<string, object>();
             instanceList.Add(string.Empty, new CircularObject());
 
-            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> instances = new Dictionary<string, IDictionary<string, object>>();
             instances.Add(typeof(CircularObject).FullName, instanceList);
 
             configuration.LoadInstancesFrom(instances);
@@ -231,7 +231,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Dictionary<string, object> instanceList = new Dictionary<string, object>();
             instanceList.Add(string.Empty, 1);
 
-            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> instances = new Dictionary<string, IDictionary<string, object>>();
             instances.Add(typeof(int).FullName, instanceList);
 
             configuration.LoadInstancesFrom(instances);
@@ -253,7 +253,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Dictionary<string, object> instanceList = new Dictionary<string, object>();
             instanceList.Add(string.Empty, 1);
 
-            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> instances = new Dictionary<string, IDictionary<string, object>>();
             instances.Add(typeof(int).FullName, instanceList);
 
             configuration.LoadInstancesFrom(instances);
@@ -284,7 +284,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void LoadInstancesFrom()
         {
-            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> instances = new Dictionary<string, IDictionary<string, object>>();
             instances.Add("test", new Dictionary<string, object>());
             instances.Add("test 2", new Dictionary<string, object>());
 
@@ -307,7 +307,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Dictionary<string, object> instanceList = new Dictionary<string, object>();
             instanceList.Add(string.Empty, 1);
 
-            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> instances = new Dictionary<string, IDictionary<string, object>>();
             instances.Add(typeof(int).FullName, instanceList);
 
             configuration.LoadInstancesFrom(instances);
@@ -342,7 +342,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Dictionary<string, object> instanceList = new Dictionary<string, object>();
             instanceList.Add(string.Empty, 1);
 
-            Dictionary<string, Dictionary<string, object>> instances = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> instances = new Dictionary<string, IDictionary<string, object>>();
             instances.Add(typeof(int).FullName, instanceList);
 
             configuration.LoadInstancesFrom(instances);

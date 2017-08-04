@@ -225,7 +225,8 @@ namespace OpenIIoT.Core.Configuration
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult SaveConfiguration()
         {
-            return ConfigurationLoader.Save(Configuration.Instances, ConfigurationFileName);
+            IDictionary<string, IDictionary<string, object>> instances = Configuration.Instances.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            return ConfigurationLoader.Save(instances, ConfigurationFileName);
         }
 
         #endregion Public Methods
@@ -295,7 +296,7 @@ namespace OpenIIoT.Core.Configuration
             Result retVal = new Result();
 
             logger.Info("Loading application configuration from '" + ConfigurationFileName + "'...");
-            Result<Dictionary<string, Dictionary<string, object>>> loadResult = ConfigurationLoader.Load(ConfigurationFileName);
+            IResult<IDictionary<string, IDictionary<string, object>>> loadResult = ConfigurationLoader.Load(ConfigurationFileName);
 
             if (loadResult.ResultCode == ResultCode.Failure)
             {
@@ -306,7 +307,7 @@ namespace OpenIIoT.Core.Configuration
 
                 // try to save the new configuration to file
                 logger.Info("Saving the new configuration to '" + ConfigurationFileName + "'...");
-                Result saveResult = ConfigurationLoader.Save(loadResult.ReturnValue, ConfigurationFileName);
+                IResult saveResult = ConfigurationLoader.Save(loadResult.ReturnValue, ConfigurationFileName);
 
                 if (saveResult.ResultCode != ResultCode.Failure)
                 {

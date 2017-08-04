@@ -76,11 +76,11 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
-            Result<Dictionary<string, Dictionary<string, object>>> result = loader.BuildNew();
+            IResult<IDictionary<string, IDictionary<string, object>>> result = loader.BuildNew();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.NotNull(result.ReturnValue);
-            Assert.IsType<Dictionary<string, Dictionary<string, object>>>(result.ReturnValue);
+            Assert.IsAssignableFrom<IDictionary<string, IDictionary<string, object>>>(result.ReturnValue);
         }
 
         /// <summary>
@@ -109,7 +109,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
-            Result result = loader.Load("file.ext");
+            IResult result = loader.Load("file.ext");
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
         }
@@ -127,7 +127,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
-            Result result = loader.Load("file.ext");
+            IResult result = loader.Load("file.ext");
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -164,9 +164,9 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
 
-            Dictionary<string, Dictionary<string, object>> configuration = new Dictionary<string, Dictionary<string, object>>();
+            IDictionary<string, IDictionary<string, object>> configuration = new Dictionary<string, IDictionary<string, object>>();
 
-            Result result = loader.Save(configuration, "file.ext");
+            IResult result = loader.Save(configuration, "file.ext");
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
         }
