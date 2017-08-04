@@ -155,7 +155,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(List<IPackage>))]
         public HttpResponseMessage GetPackages()
         {
-            IList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
+            IReadOnlyList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
 
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
