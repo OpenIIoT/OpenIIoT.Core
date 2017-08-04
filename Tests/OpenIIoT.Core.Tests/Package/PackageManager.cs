@@ -50,6 +50,116 @@ namespace OpenIIoT.Core.Tests.Package
 
         #endregion Public Methods
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with a bad directory.
+        /// </summary>
+        [Fact]
+        public void ScanBadDirectory()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>(ResultCode.Failure);
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
+
+            Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
+
+            IResult<IList<IPackage>> list = lister.Scan(Data);
+
+            Assert.Equal(ResultCode.Failure, list.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Scan()"/> method.
+        /// </summary>
+        [Fact]
+        public void ScanDefaultDirectory()
+        {
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            dirMock.Setup(d => d.Packages).Returns(Data);
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+
+            Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
+
+            IResult<IList<IPackage>> list = lister.Scan();
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with an empty directory.
+        /// </summary>
+        [Fact]
+        public void ScanEmptyDirectory()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
+
+            Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
+
+            IResult<IList<IPackage>> list = lister.Scan(Data);
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+
+            Assert.NotNull(list.ReturnValue);
+            Assert.Equal(0, list.ReturnValue.Count);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing files but no Packages.
+        /// </summary>
+        [Fact]
+        public void ScanNoPackages()
+        {
+            File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Temp).ToList();
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(Temp)).Returns(dirResult);
+
+            Core.Package.PackageUtility scanner = new Core.Package.PackageUtility(platformMock.Object);
+
+            IResult<IList<IPackage>> list = scanner.Scan(Temp);
+
+            Assert.Equal(ResultCode.Warning, list.ResultCode);
+            Assert.Equal(0, list.ReturnValue.Count);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing Package files.
+        /// </summary>
+        [Fact]
+        public void ScanPackages()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
+
+            Core.Package.PackageUtility scanner = new Core.Package.PackageUtility(platformMock.Object);
+
+            IResult<IList<IPackage>> list = scanner.Scan(Data);
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+            Assert.Equal(3, list.ReturnValue.Count);
+
+            // spot check a few Manifest fields to see if the manifest was fetched properly
+            Assert.NotNull(list.ReturnValue[0].FQN);
+            Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
+        }
+
         #region Protected Methods
 
         /// <summary>
