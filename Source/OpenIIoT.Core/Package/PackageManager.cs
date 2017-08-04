@@ -102,8 +102,6 @@ namespace OpenIIoT.Core.Package
 
             ChangeState(State.Initialized);
 
-            Utility = new PackageUtility(platformManager.Platform);
-
             logger.ExitMethod();
         }
 
@@ -129,11 +127,6 @@ namespace OpenIIoT.Core.Package
         ///     Gets or sets the list of Packages available for installation.
         /// </summary>
         private IList<IPackage> PackageList { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the PackageUtility used for packaging operations.
-        /// </summary>
-        private PackageUtility Utility { get; set; }
 
         #endregion Private Properties
 
