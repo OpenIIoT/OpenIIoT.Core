@@ -51,6 +51,8 @@ using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
+using System.IO;
+using OpenIIoT.SDK.Packaging.Manifest;
 
 namespace OpenIIoT.Core.Package
 {
@@ -117,6 +119,11 @@ namespace OpenIIoT.Core.Package
         #region Private Properties
 
         /// <summary>
+        ///     Gets the Platform instance with which file operations are carried out.
+        /// </summary>
+        private IPlatform Platform => Dependency<IPlatformManager>().Platform;
+
+        /// <summary>
         ///     Gets or sets the PackageUtility used for packaging operations.
         /// </summary>
         private PackageUtility Utility { get; set; }
@@ -168,7 +175,38 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod();
             logger.Info($"Creating new Package...");
 
-            IResult<IPackage> retVal = Utility.Create(data);
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            string tempFile = Path.Combine(Platform.Directories.Temp, Guid.NewGuid().ToString());
+
+            logger.Debug($"Saving new Package to '{tempFile}'...");
+
+            retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                IResult<IPackage> readResult = Read(tempFile);
+
+                retVal.Incorporate(readResult);
+
+                if (retVal.ResultCode != ResultCode.Failure)
+                {
+                    string destinationFilename = GetPackageFilename(readResult.ReturnValue);
+
+                    retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
+
+                    if (retVal.ResultCode != ResultCode.Failure)
+                    {
+                        retVal.ReturnValue = readResult.ReturnValue;
+                        retVal.ReturnValue.Filename = destinationFilename;
+                    }
+                }
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError("Unable to create Package from supplied data.");
+            }
 
             retVal.LogResult(logger);
             logger.ExitMethod();
@@ -522,6 +560,73 @@ namespace OpenIIoT.Core.Package
             }
 
             logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Creates a <see cref="Package"/> instance with file metadata from the given file and the given
+        ///     <see cref="PackageManifest"/> .
+        /// </summary>
+        /// <param name="fileName">The filename from which to retrieve the Package metadata.</param>
+        /// <param name="manifest">The Manifest with which to initialize the <see cref="Package"/> instance.</param>
+        /// <returns>The created Package.</returns>
+        private IPackage GetPackage(string fileName, PackageManifest manifest)
+        {
+            FileInfo info = new FileInfo(fileName);
+
+            return new Package(fileName, info.LastWriteTime, manifest);
+        }
+
+        /// <summary>
+        ///     Creates and returns a valid filename for the specified <see cref="IPackage"/>.
+        /// </summary>
+        /// <param name="package">The Package for which the filename is to be created.</param>
+        /// <returns>The created filename.</returns>
+        private string GetPackageFilename(IPackage package)
+        {
+            string filename = package.FQN + "." + package.Version + PackageConstants.PackageFilenameExtension;
+
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                filename = filename.Replace(c, PackageConstants.PackageFilenameInvalidCharacterSubstitution);
+            }
+
+            return Path.Combine(Platform.Directories.Packages, filename);
+        }
+
+        /// <summary>
+        ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="IPackage"/> instance
+        ///     from the contents.
+        /// </summary>
+        /// <param name="fileName">The filename of the file to read.</param>
+        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
+        private IResult<IPackage> Read(string fileName)
+        {
+            logger.EnterMethod(true);
+            logger.Debug($"Reading Package '{fileName}'...");
+
+            IResult<IPackage> retVal = new Result<IPackage>();
+            ManifestExtractor extractor = new ManifestExtractor();
+
+            extractor.Updated += (sender, e) => logger.Debug(e.Message);
+
+            PackageManifest manifest;
+
+            try
+            {
+                manifest = extractor.ExtractManifest(fileName);
+
+                retVal.ReturnValue = GetPackage(fileName, manifest);
+            }
+            catch (Exception ex)
+            {
+                retVal.AddError(ex.Message);
+                retVal.AddError($"Unable to read Package '{Path.GetFileName(fileName)}'.");
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod();
+
             return retVal;
         }
 

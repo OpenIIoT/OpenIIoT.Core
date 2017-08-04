@@ -30,7 +30,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>openiiot.ruleset</CodeAnalysisRuleSet>
-    <DocumentationFile>bin\Debug\OpenIIoT.Core.Tests.XML</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -105,6 +106,7 @@
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="Package\PackageManager.cs" />
     <Compile Include="Platform\PlatformManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />

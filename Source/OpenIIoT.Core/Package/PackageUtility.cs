@@ -91,54 +91,6 @@ namespace OpenIIoT.Core.Package
         #region Public Methods
 
         /// <summary>
-        ///     Creates a Package file from the specified binary data.
-        /// </summary>
-        /// <param name="data">The binary data containing the Package.</param>
-        /// <returns>A Result containing the result of the operation and the created Package.</returns>
-        public IResult<IPackage> Create(byte[] data)
-        {
-            logger.EnterMethod();
-            logger.Debug($"Creating new Package...");
-
-            IResult<IPackage> retVal = new Result<IPackage>();
-
-            string tempFile = Path.Combine(Platform.Directories.Temp, Guid.NewGuid().ToString());
-
-            logger.Debug($"Saving new Package to '{tempFile}'...");
-
-            retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
-
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                IResult<IPackage> readResult = Read(tempFile);
-
-                retVal.Incorporate(readResult);
-
-                if (retVal.ResultCode != ResultCode.Failure)
-                {
-                    string destinationFilename = GetPackageFilename(readResult.ReturnValue);
-
-                    retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
-
-                    if (retVal.ResultCode != ResultCode.Failure)
-                    {
-                        retVal.ReturnValue = readResult.ReturnValue;
-                        retVal.ReturnValue.Filename = destinationFilename;
-                    }
-                }
-            }
-
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError("Unable to create Package from supplied data.");
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-            return retVal;
-        }
-
-        /// <summary>
         ///     Installs the specified <see cref="IPackage"/> with the specified <see cref="PackageInstallationOptions"/>.
         /// </summary>
         /// <param name="package">The Package to install.</param>
