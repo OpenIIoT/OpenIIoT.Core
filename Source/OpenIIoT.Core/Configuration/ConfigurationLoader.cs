@@ -92,13 +92,13 @@ namespace OpenIIoT.Core.Configuration
         ///     Manually builds an instance of Configuration with default values.
         /// </summary>
         /// <returns>A Result containing the default instance of a Configuration.</returns>
-        public Result<Dictionary<string, Dictionary<string, object>>> BuildNew()
+        public IResult<IDictionary<string, IDictionary<string, object>>> BuildNew()
         {
             logger.EnterMethod();
             logger.Debug("Building new configuration...");
 
-            Result<Dictionary<string, Dictionary<string, object>>> retVal = new Result<Dictionary<string, Dictionary<string, object>>>();
-            retVal.ReturnValue = new Dictionary<string, Dictionary<string, object>>();
+            IResult<IDictionary<string, IDictionary<string, object>>> retVal = new Result<IDictionary<string, IDictionary<string, object>>>();
+            retVal.ReturnValue = new Dictionary<string, IDictionary<string, object>>();
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod();
@@ -111,11 +111,11 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="fileName">The file to read and deserialize.</param>
         /// <returns>A Result containing the result of the operation and the Configuration instance created from the file.</returns>
         /// <exception cref="ConfigurationLoadException">Thrown when a configuration file exists but can not be read.</exception>
-        public Result<Dictionary<string, Dictionary<string, object>>> Load(string fileName)
+        public IResult<IDictionary<string, IDictionary<string, object>>> Load(string fileName)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(fileName), true);
             logger.Debug("Attempting to load configuration from '" + fileName + "'...");
-            Result<Dictionary<string, Dictionary<string, object>>> retVal = new Result<Dictionary<string, Dictionary<string, object>>>();
+            IResult<IDictionary<string, IDictionary<string, object>>> retVal = new Result<IDictionary<string, IDictionary<string, object>>>();
 
             if (!Platform.FileExists(fileName))
             {
@@ -135,7 +135,7 @@ namespace OpenIIoT.Core.Configuration
                     logger.Trace("Configuration file loaded from '" + fileName + "'.  Attempting to deserialize...");
 
                     // attempt to deserialize the contents of the file to an object of type ApplicationConfiguration
-                    retVal.ReturnValue = JsonConvert.DeserializeObject<Dictionary<string, Dictionary<string, object>>>(configFile);
+                    retVal.ReturnValue = JsonConvert.DeserializeObject<IDictionary<string, IDictionary<string, object>>>(configFile);
 
                     logger.Trace("Successfully deserialized the contents of '" + fileName + "' to a Configuration object.");
                 }
@@ -158,11 +158,11 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="configuration">The Configuration object to serialize and write to disk.</param>
         /// <param name="fileName">The file in which to save the configuration.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public Result Save(IReadOnlyDictionary<string, Dictionary<string, object>> configuration, string fileName)
+        public IResult Save(IDictionary<string, IDictionary<string, object>> configuration, string fileName)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(configuration, fileName), true);
             logger.Debug("Attempting to save configuration to '" + fileName + "'...");
-            Result retVal = new Result();
+            IResult retVal = new Result();
 
             logger.Trace("Serializing configuration...");
 

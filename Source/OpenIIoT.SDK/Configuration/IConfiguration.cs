@@ -55,7 +55,7 @@ namespace OpenIIoT.SDK.Configuration
         /// <summary>
         ///     Gets the collection of instance configurations.
         /// </summary>
-        IReadOnlyDictionary<string, Dictionary<string, object>> Instances { get; }
+        IReadOnlyDictionary<string, IDictionary<string, object>> Instances { get; }
 
         #endregion Public Properties
 
@@ -96,7 +96,7 @@ namespace OpenIIoT.SDK.Configuration
         ///     Sets value of the Instance property to the specified instance configuration collection.
         /// </summary>
         /// <param name="instances">The collection of instance configurations to which the Instances property is to be set.</param>
-        void LoadInstancesFrom(Dictionary<string, Dictionary<string, object>> instances);
+        void LoadInstancesFrom(IDictionary<string, IDictionary<string, object>> instances);
 
         /// <summary>
         ///     Removes the specified instance of the specified type from the configuration.
