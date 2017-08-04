@@ -58,6 +58,7 @@ using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
+using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Tests.Package
 {
@@ -109,7 +110,7 @@ namespace OpenIIoT.Core.Tests.Package
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a known good package payload.
+        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a known good package payload.
         /// </summary>
         [Fact]
         public void CreatePackage()
@@ -145,7 +146,44 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a known bad package payload.
+        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a known good package payload.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
+        [Fact]
+        public async Task CreatePackageAsync()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+            dirMock.Setup(d => d.Temp).Returns(Temp);
+
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IResult<IPackage> package = await test.CreatePackageAsync(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a known bad package payload.
         /// </summary>
         [Fact]
         public void CreatePackageBadData()
@@ -180,8 +218,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a mocked platform simulating a
-        ///     failed file copy.
+        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a mocked platform simulating
+        ///     a failed file copy.
         /// </summary>
         [Fact]
         public void CreatePackageCopyFailed()
@@ -216,8 +254,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Create(byte[])"/> method with a mocked platform simulating a
-        ///     failed file write.
+        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a mocked platform simulating
+        ///     a failed file write.
         /// </summary>
         [Fact]
         public void CreatePackageWriteFailed()
@@ -257,7 +295,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with a bad directory.
+        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with a bad directory.
         /// </summary>
         [Fact]
         public void ScanBadDirectory()
@@ -283,7 +321,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with an empty directory.
+        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with an empty directory.
         /// </summary>
         [Fact]
         public void ScanEmptyDirectory()
@@ -313,7 +351,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing files but no Packages.
+        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with a directory containing files but no Packages.
         /// </summary>
         [Fact]
         public void ScanNoPackages()
@@ -323,10 +361,10 @@ namespace OpenIIoT.Core.Tests.Package
             Mock<IDirectories> dirMock = new Mock<IDirectories>();
             Mock<IPlatform> platformMock = new Mock<IPlatform>();
 
+            File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
+
             IResult<IList<string>> dirResult = new Result<IList<string>>();
             dirResult.ReturnValue = Directory.GetFiles(Temp).ToList();
-
-            File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
 
             dirMock.Setup(d => d.Packages).Returns(Temp);
 
@@ -343,7 +381,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing Package files.
+        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with a directory containing Package files.
         /// </summary>
         [Fact]
         public void ScanPackages()
@@ -365,6 +403,38 @@ namespace OpenIIoT.Core.Tests.Package
 
             IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
             IResult<IList<IPackage>> list = test.ScanPackages();
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+            Assert.Equal(3, list.ReturnValue.Count);
+
+            // spot check a few Manifest fields to see if the manifest was fetched properly
+            Assert.NotNull(list.ReturnValue[0].FQN);
+            Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackagesAsync()"/> method with a directory containing Package files.
+        /// </summary>
+        [Fact]
+        public async Task ScanPackagesAsync()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IResult<IList<IPackage>> list = await test.ScanPackagesAsync();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
             Assert.Equal(3, list.ReturnValue.Count);
