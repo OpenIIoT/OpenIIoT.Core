@@ -178,44 +178,6 @@ namespace OpenIIoT.Core.Package
             return retVal;
         }
 
-        ///// <summary>
-        /////     Scans the Packages directory and generates a list of found <see cref="IPackage"/> instances.
-        ///// </summary>
-        ///// <returns>A Result containing the result of the operation and the list of found IPackage instances.</returns>
-        //public IResult<IList<IPackage>> Scan()
-        //{
-        //    return Scan(Platform.Directories.Packages);
-        //}
-
-        ///// <summary>
-        /////     Scans the specified <paramref name="directory"/> and generates a list of found <see cref="IPackage"/> instances.
-        ///// </summary>
-        ///// <param name="directory">The directory to scan.</param>
-        ///// <returns>A Result containing the result of the operation and the list of found IPackage instances.</returns>
-        //public IResult<IList<IPackage>> Scan(string directory)
-        //{
-        //    Guid guid = logger.EnterMethod(true);
-        //    logger.Debug("Scanning for Packages...");
-
-        // IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>(); retVal.ReturnValue = new List<IPackage>();
-
-        // logger.Debug($"Scanning directory '{directory}'...");
-
-        // ManifestExtractor extractor = new ManifestExtractor(); extractor.Updated += (sender, e) => logger.Debug(e.Message);
-
-        // IResult<IList<string>> fileListResult = Platform.ListFiles(directory); retVal.Incorporate(fileListResult);
-
-        // if (retVal.ResultCode != ResultCode.Failure) { foreach (string file in fileListResult.ReturnValue) { IResult<IPackage>
-        // readResult = Read(file);
-
-        // if (readResult.ResultCode != ResultCode.Failure) { retVal.ReturnValue.Add(readResult.ReturnValue); } else {
-        // retVal.AddWarning(readResult.GetLastError()); } } }
-
-        // retVal.LogResult(logger); logger.ExitMethod(guid);
-
-        //    return retVal;
-        //}
-
         #endregion Public Methods
 
         #region Private Methods
@@ -232,23 +194,6 @@ namespace OpenIIoT.Core.Package
             FileInfo info = new FileInfo(fileName);
 
             return new Package(fileName, info.LastWriteTime, manifest);
-        }
-
-        /// <summary>
-        ///     Creates and returns a valid filename for the specified <see cref="IPackage"/>.
-        /// </summary>
-        /// <param name="package">The Package for which the filename is to be created.</param>
-        /// <returns>The created filename.</returns>
-        private string GetPackageFilename(IPackage package)
-        {
-            string filename = package.FQN + "." + package.Version + PackageConstants.PackageFilenameExtension;
-
-            foreach (char c in Path.GetInvalidFileNameChars())
-            {
-                filename = filename.Replace(c, PackageConstants.PackageFilenameInvalidCharacterSubstitution);
-            }
-
-            return Path.Combine(Platform.Directories.Packages, filename);
         }
 
         #endregion Private Methods
