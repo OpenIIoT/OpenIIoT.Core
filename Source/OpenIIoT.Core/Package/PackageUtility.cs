@@ -91,58 +91,6 @@ namespace OpenIIoT.Core.Package
         #region Public Methods
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> with the specified <see cref="PackageInstallationOptions"/>.
-        /// </summary>
-        /// <param name="package">The Package to install.</param>
-        /// <param name="options">The installation options with which the Package is to be installed.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult Install(IPackage package, PackageInstallationOptions options)
-        {
-            return Install(package, options, string.Empty);
-        }
-
-        /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> with the specified <see cref="PackageInstallationOptions"/>.
-        /// </summary>
-        /// <param name="package">The Package to install.</param>
-        /// <param name="options">The installation options with which the Package is to be installed.</param>
-        /// <param name="publicKey">The PGP Public Key to use when verifying the Package prior to installation.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult Install(IPackage package, PackageInstallationOptions options, string publicKey)
-        {
-            logger.EnterMethod(xLogger.Params(package, options, publicKey));
-            logger.Debug($"Installing Package '{package.FQN}'...");
-
-            IResult retVal = new Result();
-            PackageExtractor extractor = new PackageExtractor();
-
-            extractor.Updated += (sender, e) => logger.Debug(e.Message);
-
-            // determine the installation directory; should look like \path\to\Plugins\FQN\
-            string destination = Platform.Directories.Plugins;
-            destination = Path.Combine(destination, package.FQN);
-
-            bool overwrite = options.Overwrite;
-            bool skipVerification = options.SkipVerification;
-
-            logger.Debug($"Install directory: '{destination}'; overwrite={overwrite}, skipVerification={skipVerification}");
-
-            try
-            {
-                extractor.ExtractPackage(package.Filename, destination, overwrite, skipVerification);
-            }
-            catch (Exception ex)
-            {
-                logger.Exception(LogLevel.Debug, ex);
-                retVal.AddError($"Error installing Package '{package.FQN}': {ex.Message}");
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-            return retVal;
-        }
-
-        /// <summary>
         ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="IPackage"/> instance
         ///     from the contents.
         /// </summary>

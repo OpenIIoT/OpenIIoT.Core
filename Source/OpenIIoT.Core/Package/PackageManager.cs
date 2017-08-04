@@ -54,6 +54,7 @@ using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using System.IO;
 using OpenIIoT.SDK.Packaging.Manifest;
+using NLog;
 
 namespace OpenIIoT.Core.Package
 {
@@ -310,18 +311,31 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult InstallPackage(string fqn)
         {
-            return InstallPackage(fqn, default(PackageInstallationOptions));
+            return InstallPackage(fqn, default(PackageInstallationOptions), string.Empty);
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options.
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult InstallPackage(string fqn, PackageInstallationOptions options)
         {
-            logger.EnterMethod(xLogger.Params(fqn, options));
+            return InstallPackage(fqn, options, string.Empty);
+        }
+
+        /// <summary>
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>
+        ///     and PGP <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="publicKey">The PGP public key with which to install the Package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult InstallPackage(string fqn, PackageInstallationOptions options, string publicKey)
+        {
+            logger.EnterMethod(xLogger.Params(fqn, options, publicKey));
             logger.Info($"Installing Package '{fqn}'...");
 
             IResult retVal = new Result();
@@ -329,7 +343,28 @@ namespace OpenIIoT.Core.Package
 
             if (findResult != default(IPackage))
             {
-                retVal.Incorporate(Utility.Install(findResult, options));
+                PackageExtractor extractor = new PackageExtractor();
+
+                extractor.Updated += (sender, e) => logger.Debug(e.Message);
+
+                // determine the installation directory; should look like \path\to\Plugins\FQN\
+                string destination = Platform.Directories.Plugins;
+                destination = Path.Combine(destination, findResult.FQN);
+
+                bool overwrite = options.Overwrite;
+                bool skipVerification = options.SkipVerification;
+
+                logger.Debug($"Install directory: '{destination}'; overwrite={overwrite}, skipVerification={skipVerification}");
+
+                try
+                {
+                    extractor.ExtractPackage(findResult.Filename, destination, overwrite, skipVerification);
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(LogLevel.Debug, ex);
+                    retVal.AddError($"Error installing Package '{findResult.FQN}': {ex.Message}");
+                }
             }
             else
             {
@@ -348,7 +383,18 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> InstallPackageAsync(string fqn)
         {
-            return await Task.Run(() => InstallPackage(fqn));
+            return await Task.Run(() => InstallPackage(fqn, default(PackageInstallationOptions), string.Empty));
+        }
+
+        /// <summary>
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="options">The installation options for the operation.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options)
+        {
+            return await Task.Run(() => InstallPackage(fqn, options, string.Empty));
         }
 
         /// <summary>
@@ -356,10 +402,11 @@ namespace OpenIIoT.Core.Package
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
+        /// <param name="publicKey">The PGP public key with which to install the Package.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options)
+        public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options, string publicKey)
         {
-            return await Task.Run(() => InstallPackage(fqn, default(PackageInstallationOptions)));
+            return await Task.Run(() => InstallPackage(fqn, options, publicKey));
         }
 
         /// <summary>
