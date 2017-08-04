@@ -64,7 +64,7 @@ namespace OpenIIoT.Core.Configuration
         /// <summary>
         ///     Gets or sets tThe collection of instance configurations.
         /// </summary>
-        private IDictionary<string, IDictionary<string, object>> InstanceList { get; set; }
+        private IDictionary<string, IDictionary<string, object>> InstanceDictionary { get; set; }
 
         #endregion Private Fields
 
@@ -88,7 +88,7 @@ namespace OpenIIoT.Core.Configuration
         public Configuration(IConfigurableTypeRegistry registry, IDictionary<string, IDictionary<string, object>> instances)
         {
             TypeRegistry = registry;
-            InstanceList = instances;
+            InstanceDictionary = instances;
         }
 
         #endregion Public Constructors
@@ -98,7 +98,7 @@ namespace OpenIIoT.Core.Configuration
         /// <summary>
         ///     Gets the collection of instance configurations.
         /// </summary>
-        public IReadOnlyDictionary<string, IDictionary<string, object>> Instances => new ReadOnlyDictionary<string, IDictionary<string, object>>(InstanceList);
+        public IReadOnlyDictionary<string, IDictionary<string, object>> Instances => new ReadOnlyDictionary<string, IDictionary<string, object>>(InstanceDictionary);
 
         #endregion Public Properties
 
@@ -137,13 +137,13 @@ namespace OpenIIoT.Core.Configuration
                 logger.Trace("Inserting configuration into the Configuration dictionary...");
 
                 // if the configuration doesn't contain a section for the type, add it
-                if (!InstanceList.ContainsKey(type.FullName))
+                if (!InstanceDictionary.ContainsKey(type.FullName))
                 {
-                    InstanceList.Add(type.FullName, new Dictionary<string, object>());
+                    InstanceDictionary.Add(type.FullName, new Dictionary<string, object>());
                 }
 
                 // add the default configuration for the requested type/instance to the configuration.
-                InstanceList[type.FullName].Add(instanceName, instanceConfiguration);
+                InstanceDictionary[type.FullName].Add(instanceName, instanceConfiguration);
 
                 retVal.ReturnValue = (T)instanceConfiguration;
 
@@ -183,7 +183,7 @@ namespace OpenIIoT.Core.Configuration
                 {
                     // json.net needs to know the type when it deserializes; we can't cast or convert after the fact. the solution
                     // is to grab our object, serialize it again, then deserialize it into the required type.
-                    var rawObject = InstanceList[type.FullName][instanceName];
+                    var rawObject = InstanceDictionary[type.FullName][instanceName];
                     var newSerializedObject = JsonConvert.SerializeObject(rawObject);
                     var newDeSerializedObject = JsonConvert.DeserializeObject<T>(newSerializedObject);
                     retVal.ReturnValue = newDeSerializedObject;
@@ -214,10 +214,10 @@ namespace OpenIIoT.Core.Configuration
             Result<bool> retVal = new Result<bool>();
 
             // check to see if the type is in the comfiguration
-            if (InstanceList.ContainsKey(type.FullName))
+            if (InstanceDictionary.ContainsKey(type.FullName))
             {
                 // check to see if the specified instance is in the type configuration
-                if (!InstanceList[type.FullName].ContainsKey(instanceName))
+                if (!InstanceDictionary[type.FullName].ContainsKey(instanceName))
                 {
                     retVal.AddError("The specified instance name '" + instanceName + "' wasn't found in the configuration for type '" + type.Name + "'.");
                 }
@@ -242,7 +242,7 @@ namespace OpenIIoT.Core.Configuration
         {
             if (instances != default(IDictionary<string, IDictionary<string, object>>))
             {
-                InstanceList = instances;
+                InstanceDictionary = instances;
             }
         }
 
@@ -261,7 +261,7 @@ namespace OpenIIoT.Core.Configuration
 
             if (IsInstanceConfigured(type, instanceName).ReturnValue)
             {
-                InstanceList[type.FullName].Remove(instanceName);
+                InstanceDictionary[type.FullName].Remove(instanceName);
             }
             else
             {
@@ -289,7 +289,7 @@ namespace OpenIIoT.Core.Configuration
 
             if (IsInstanceConfigured(type, instanceName).ReturnValue)
             {
-                InstanceList[type.FullName][instanceName] = instanceConfiguration;
+                InstanceDictionary[type.FullName][instanceName] = instanceConfiguration;
             }
             else
             {
