@@ -1,19 +1,69 @@
-﻿using Moq;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Package;
-using OpenIIoT.SDK.Platform;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄
+      █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
+      █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █  Unit tests for the PackageManager class.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
+                                                                                                   ▀▀                            */
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using Moq;
+using OpenIIoT.SDK;
+using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Package
 {
+    /// <summary>
+    ///     Unit tests for the <see cref="Core.Package.PackageManager"/> class.
+    /// </summary>
     public class PackageManager : IDisposable
     {
         #region Public Constructors
@@ -36,156 +86,6 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         #endregion Public Constructors
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Disposes of this instance.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion Public Methods
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with a bad directory.
-        /// </summary>
-        [Fact]
-        public void ScanBadDirectory()
-        {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>(ResultCode.Failure);
-
-            dirMock.Setup(d => d.Packages).Returns(Data);
-
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
-
-            IResult<IList<IPackage>> list = test.ScanPackages();
-
-            Assert.Equal(ResultCode.Failure, list.ResultCode);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with an empty directory.
-        /// </summary>
-        [Fact]
-        public void ScanEmptyDirectory()
-        {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = new List<string>();
-
-            dirMock.Setup(d => d.Packages).Returns(Data);
-
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
-
-            IResult<IList<IPackage>> list = test.ScanPackages();
-
-            Assert.Equal(ResultCode.Success, list.ResultCode);
-
-            Assert.NotNull(list.ReturnValue);
-            Assert.Equal(0, list.ReturnValue.Count);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing files but no Packages.
-        /// </summary>
-        [Fact]
-        public void ScanNoPackages()
-        {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
-            File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Temp).ToList();
-
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
-
-            IResult<IList<IPackage>> list = test.ScanPackages();
-
-            Assert.Equal(ResultCode.Warning, list.ResultCode);
-            Assert.Equal(0, list.ReturnValue.Count);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing Package files.
-        /// </summary>
-        [Fact]
-        public void ScanPackages()
-        {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
-
-            IResult<IList<IPackage>> list = test.ScanPackages();
-
-            Assert.Equal(ResultCode.Success, list.ResultCode);
-            Assert.Equal(3, list.ReturnValue.Count);
-
-            // spot check a few Manifest fields to see if the manifest was fetched properly
-            Assert.NotNull(list.ReturnValue[0].FQN);
-            Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
-        }
-
-        #region Protected Methods
-
-        /// <summary>
-        ///     Disposes of this instance.
-        /// </summary>
-        /// <param name="disposing">A value indicating whether this method has been called directly or indirectly from code.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            Directory.Delete(Temp, true);
-
-            Core.Package.PackageManager.Terminate();
-        }
-
-        #endregion Protected Methods
 
         #region Private Properties
 
@@ -354,6 +254,152 @@ namespace OpenIIoT.Core.Tests.Package
             Assert.Equal(ResultCode.Failure, package.ResultCode);
         }
 
+        /// <summary>
+        ///     Disposes of this instance.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with a bad directory.
+        /// </summary>
+        [Fact]
+        public void ScanBadDirectory()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>(ResultCode.Failure);
+
+            dirMock.Setup(d => d.Packages).Returns(Data);
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            IResult<IList<IPackage>> list = test.ScanPackages();
+
+            Assert.Equal(ResultCode.Failure, list.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageUtility.Scan(string)"/> method with an empty directory.
+        /// </summary>
+        [Fact]
+        public void ScanEmptyDirectory()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
+
+            dirMock.Setup(d => d.Packages).Returns(Data);
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            IResult<IList<IPackage>> list = test.ScanPackages();
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+
+            Assert.NotNull(list.ReturnValue);
+            Assert.Equal(0, list.ReturnValue.Count);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing files but no Packages.
+        /// </summary>
+        [Fact]
+        public void ScanNoPackages()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Temp).ToList();
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            IResult<IList<IPackage>> list = test.ScanPackages();
+
+            Assert.Equal(ResultCode.Warning, list.ResultCode);
+            Assert.Equal(0, list.ReturnValue.Count);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageScanner.Scan(string)"/> method with a directory containing Package files.
+        /// </summary>
+        [Fact]
+        public void ScanPackages()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            IResult<IList<IPackage>> list = test.ScanPackages();
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+            Assert.Equal(3, list.ReturnValue.Count);
+
+            // spot check a few Manifest fields to see if the manifest was fetched properly
+            Assert.NotNull(list.ReturnValue[0].FQN);
+            Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
+        }
+
         #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Disposes of this instance.
+        /// </summary>
+        /// <param name="disposing">A value indicating whether this method has been called directly or indirectly from code.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            Directory.Delete(Temp, true);
+
+            Core.Package.PackageManager.Terminate();
+        }
+
+        #endregion Protected Methods
     }
 }
