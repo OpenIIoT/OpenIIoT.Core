@@ -56,7 +56,7 @@ namespace OpenIIoT.SDK.Package
         /// <summary>
         ///     Gets the list of Packages available for installation.
         /// </summary>
-        IList<IPackage> Packages { get; }
+        IReadOnlyList<IPackage> Packages { get; }
 
         #endregion Public Properties
 

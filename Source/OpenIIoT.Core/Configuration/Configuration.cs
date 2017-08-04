@@ -62,9 +62,9 @@ namespace OpenIIoT.Core.Configuration
         private static xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         /// <summary>
-        ///     The collection of instance configurations.
+        ///     Gets or sets tThe collection of instance configurations.
         /// </summary>
-        private IDictionary<string, Dictionary<string, object>> instances;
+        private IDictionary<string, IDictionary<string, object>> InstanceList { get; set; }
 
         #endregion Private Fields
 
@@ -75,7 +75,7 @@ namespace OpenIIoT.Core.Configuration
         /// </summary>
         /// <param name="registry">The Type registry with which to initialize the configuration.</param>
         public Configuration(IConfigurableTypeRegistry registry)
-            : this(registry, new Dictionary<string, Dictionary<string, object>>())
+            : this(registry, new Dictionary<string, IDictionary<string, object>>())
         {
         }
 
@@ -85,10 +85,10 @@ namespace OpenIIoT.Core.Configuration
         /// </summary>
         /// <param name="registry">The Type registry with which to initialize the configuration.</param>
         /// <param name="instances">The collection of instance configurations with which to initialize the configuration.</param>
-        public Configuration(IConfigurableTypeRegistry registry, Dictionary<string, Dictionary<string, object>> instances)
+        public Configuration(IConfigurableTypeRegistry registry, IDictionary<string, IDictionary<string, object>> instances)
         {
             TypeRegistry = registry;
-            this.instances = instances;
+            InstanceList = instances;
         }
 
         #endregion Public Constructors
@@ -98,13 +98,7 @@ namespace OpenIIoT.Core.Configuration
         /// <summary>
         ///     Gets the collection of instance configurations.
         /// </summary>
-        public IReadOnlyDictionary<string, Dictionary<string, object>> Instances
-        {
-            get
-            {
-                return new ReadOnlyDictionary<string, Dictionary<string, object>>(instances);
-            }
-        }
+        public IReadOnlyDictionary<string, IDictionary<string, object>> Instances => new ReadOnlyDictionary<string, IDictionary<string, object>>(InstanceList);
 
         #endregion Public Properties
 

@@ -41,6 +41,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using NLog.xLogger;
@@ -112,7 +113,7 @@ namespace OpenIIoT.Core.Package
         /// <summary>
         ///     Gets the list of Packages available for installation.
         /// </summary>
-        public IList<IPackage> Packages { get; private set; }
+        public IReadOnlyList<IPackage> Packages => ((List<IPackage>)PackageList).AsReadOnly();
 
         #endregion Public Properties
 
@@ -122,6 +123,11 @@ namespace OpenIIoT.Core.Package
         ///     Gets the Platform instance with which file operations are carried out.
         /// </summary>
         private IPlatform Platform => Dependency<IPlatformManager>().Platform;
+
+        /// <summary>
+        ///     Gets or sets the list of Packages available for installation.
+        /// </summary>
+        private IList<IPackage> PackageList { get; set; }
 
         /// <summary>
         ///     Gets or sets the PackageUtility used for packaging operations.
@@ -517,7 +523,7 @@ namespace OpenIIoT.Core.Package
 
             if (!stopType.HasFlag(StopType.Exception))
             {
-                Packages = default(IList<IPackage>);
+                PackageList = default(IList<IPackage>);
             }
 
             retVal.LogResult(logger.Debug);
@@ -572,7 +578,7 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod(xLogger.Params(fqn, rescanOnNotFound));
             IPackage retVal;
 
-            retVal = Packages.Where(p => p.FQN == fqn).FirstOrDefault();
+            retVal = PackageList.Where(p => p.FQN == fqn).FirstOrDefault();
 
             if (retVal == default(IPackage))
             {
