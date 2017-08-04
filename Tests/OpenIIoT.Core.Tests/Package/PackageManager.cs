@@ -56,40 +56,25 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void ScanBadDirectory()
         {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+
             IResult<IList<string>> dirResult = new Result<IList<string>>(ResultCode.Failure);
 
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
-
-            Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
-
-            IResult<IList<IPackage>> list = lister.Scan(Data);
-
-            Assert.Equal(ResultCode.Failure, list.ResultCode);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageUtility.Scan()"/> method.
-        /// </summary>
-        [Fact]
-        public void ScanDefaultDirectory()
-        {
             Mock<IDirectories> dirMock = new Mock<IDirectories>();
             dirMock.Setup(d => d.Packages).Returns(Data);
 
             Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
             platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
 
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = new List<string>();
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
 
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
 
-            Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
+            IResult<IList<IPackage>> list = test.ScanPackages();
 
-            IResult<IList<IPackage>> list = lister.Scan();
-
-            Assert.Equal(ResultCode.Success, list.ResultCode);
+            Assert.Equal(ResultCode.Failure, list.ResultCode);
         }
 
         /// <summary>
@@ -98,15 +83,24 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void ScanEmptyDirectory()
         {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+
             IResult<IList<string>> dirResult = new Result<IList<string>>();
             dirResult.ReturnValue = new List<string>();
 
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            dirMock.Setup(d => d.Packages).Returns(Data);
+
             Mock<IPlatform> platformMock = new Mock<IPlatform>();
-            platformMock.Setup(p => p.ListFiles(Data)).Returns(dirResult);
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
 
-            Core.Package.PackageUtility lister = new Core.Package.PackageUtility(platformMock.Object);
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
 
-            IResult<IList<IPackage>> list = lister.Scan(Data);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            IResult<IList<IPackage>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
 
