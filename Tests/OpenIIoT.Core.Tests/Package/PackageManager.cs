@@ -136,6 +136,10 @@ namespace OpenIIoT.Core.Tests.Package
 
         #region Public Methods
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackageAsync(string, string)"/> 
+        /// </summary>
+        /// <returns></returns>
         [Fact]
         public async Task VerifyPackageAsync()
         {

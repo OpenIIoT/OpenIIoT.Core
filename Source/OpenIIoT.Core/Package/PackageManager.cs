@@ -510,12 +510,22 @@ namespace OpenIIoT.Core.Package
         }
 
         /// <summary>
+        ///     Verifies the specified <see cref="IPackage"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        public IResult<bool> VerifyPackage(string fqn)
+        {
+            return VerifyPackage(fqn, string.Empty);
+        }
+
+        /// <summary>
         ///     Verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        public IResult<bool> VerifyPackage(string fqn, string publicKey = "")
+        public IResult<bool> VerifyPackage(string fqn, string publicKey)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
             logger.Info($"Verifying Package '{fqn}'...");
@@ -552,6 +562,16 @@ namespace OpenIIoT.Core.Package
         public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "")
         {
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
+        }
+
+        /// <summary>
+        ///     Asynchronously verifies the specified <see cref="IPackage"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        public async Task<IResult<bool>> VerifyPackageAsync(string fqn)
+        {
+            return await Task.Run(() => VerifyPackage(fqn, string.Empty));
         }
 
         #endregion Public Methods
