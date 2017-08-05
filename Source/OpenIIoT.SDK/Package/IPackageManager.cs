@@ -184,12 +184,26 @@ namespace OpenIIoT.SDK.Package
         Task<IResult<IList<IPackage>>> ScanPackagesAsync();
 
         /// <summary>
+        ///     Verifies the specified <see cref="IPackage"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        IResult<bool> VerifyPackage(string fqn);
+
+        /// <summary>
         ///     Verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        IResult<bool> VerifyPackage(string fqn, string publicKey = "");
+        IResult<bool> VerifyPackage(string fqn, string publicKey);
+
+        /// <summary>
+        ///     Asynchronously verifies the specified <see cref="IPackage"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        Task<IResult<bool>> VerifyPackageAsync(string fqn);
 
         /// <summary>
         ///     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
@@ -197,7 +211,7 @@ namespace OpenIIoT.SDK.Package
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "");
+        Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey);
 
         #endregion Public Methods
     }
