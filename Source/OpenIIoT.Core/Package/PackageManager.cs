@@ -540,7 +540,7 @@ namespace OpenIIoT.Core.Package
 
                 try
                 {
-                    retVal.ReturnValue = verifier.VerifyPackage(findResult.Filename);
+                    retVal.ReturnValue = verifier.VerifyPackage(findResult.Filename, publicKey);
                 }
                 catch (Exception ex)
                 {
@@ -559,7 +559,7 @@ namespace OpenIIoT.Core.Package
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
         /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey = "")
+        public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey)
         {
             return await Task.Run(() => VerifyPackage(fqn, publicKey));
         }
