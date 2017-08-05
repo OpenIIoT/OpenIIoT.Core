@@ -59,6 +59,8 @@ using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
 using System.Threading.Tasks;
+using OpenIIoT.SDK.Common;
+using System.Reflection;
 
 namespace OpenIIoT.Core.Tests.Package
 {
@@ -295,6 +297,21 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method.
+        /// </summary>
+        [Fact]
+        public void Instantiate()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+
+            managerMock.Setup(a => a.State).Returns(State.Running);
+            managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with a bad directory.
         /// </summary>
         [Fact]
@@ -442,6 +459,79 @@ namespace OpenIIoT.Core.Tests.Package
             // spot check a few Manifest fields to see if the manifest was fetched properly
             Assert.NotNull(list.ReturnValue[0].FQN);
             Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.Setup"/> method using reflection.
+        /// </summary>
+        [Fact]
+        public void Setup()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+
+            managerMock.Setup(a => a.State).Returns(State.Running);
+            managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            MethodInfo setup = typeof(Core.Package.PackageManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
+            setup.Invoke(test, new object[] { });
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.Startup()"/> method via <see cref="Core.Common.Manager.Start()"/> .
+        /// </summary>
+        [Fact]
+        public void Start()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+
+            managerMock.Setup(a => a.State).Returns(State.Running);
+            managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            IResult result = test.Start();
+
+            Assert.NotEqual(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(State.Running, test.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.Shutdown(StopType)"/> method via
+        ///     <see cref="Core.Common.Manager.Stop(StopType)"/> .
+        /// </summary>
+        [Fact]
+        public void Stop()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+
+            managerMock.Setup(a => a.State).Returns(State.Running);
+            managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            IResult result = test.Start();
+
+            Assert.NotEqual(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(State.Running, test.State);
+
+            result = test.Stop();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(State.Stopped, test.State);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.Terminate()"/> method.
+        /// </summary>
+        [Fact]
+        public void Terminate()
+        {
+            Core.Package.PackageManager.Terminate();
         }
 
         #endregion Public Methods
