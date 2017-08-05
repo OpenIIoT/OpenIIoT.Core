@@ -137,9 +137,9 @@ namespace OpenIIoT.Core.Tests.Package
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackageAsync(string, string)"/> 
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackageAsync(string)"/> method with a known good Package.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
         public async Task VerifyPackageAsync()
         {
@@ -173,6 +173,9 @@ namespace OpenIIoT.Core.Tests.Package
             Assert.True(verifyResult.ReturnValue);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a known good Package.
+        /// </summary>
         [Fact]
         public void VerifyPackage()
         {
@@ -206,12 +209,19 @@ namespace OpenIIoT.Core.Tests.Package
             Assert.True(verifyResult.ReturnValue);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a Package FQN which is not in the Package list.
+        /// </summary>
         [Fact]
         public void VerifyPackageNotFound()
         {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
+
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
             PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
@@ -461,9 +471,13 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void DeletePackageNotFound()
         {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
+
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
             PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
