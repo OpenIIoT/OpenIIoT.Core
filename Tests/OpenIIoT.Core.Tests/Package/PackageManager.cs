@@ -487,6 +487,20 @@ namespace OpenIIoT.Core.Tests.Package
         {
             Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
             Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            platformManagerMock.Setup(p => p.State).Returns(State.Running);
+            platformManagerMock.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
 
             managerMock.Setup(a => a.State).Returns(State.Running);
             managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
@@ -508,6 +522,20 @@ namespace OpenIIoT.Core.Tests.Package
         {
             Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
             Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+
+            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            platformManagerMock.Setup(p => p.State).Returns(State.Running);
+            platformManagerMock.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
 
             managerMock.Setup(a => a.State).Returns(State.Running);
             managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
