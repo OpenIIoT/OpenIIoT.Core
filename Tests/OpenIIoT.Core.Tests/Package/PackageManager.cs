@@ -52,15 +52,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Threading.Tasks;
 using Moq;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
-using System.Threading.Tasks;
-using OpenIIoT.SDK.Common;
-using System.Reflection;
 
 namespace OpenIIoT.Core.Tests.Package
 {
@@ -288,6 +288,123 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.DeletePackage(string)"/> method.
+        /// </summary>
+        [Fact]
+        public void DeletePackage()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+            dirMock.Setup(d => d.Temp).Returns(Temp);
+
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            platformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
+                .Returns(successResult)
+                    .Callback<string>(s => File.Delete(s));
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult deleteResult = test.DeletePackage(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, deleteResult.ResultCode);
+            Assert.False(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.DeletePackageAsync(string)"/> method.
+        /// </summary>
+        [Fact]
+        public async Task DeletePackageAsync()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+            dirMock.Setup(d => d.Temp).Returns(Temp);
+
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            platformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
+                .Returns(successResult)
+                    .Callback<string>(s => File.Delete(s));
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult deleteResult = await test.DeletePackageAsync(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, deleteResult.ResultCode);
+            Assert.False(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.DeletePackage(string)"/> method with a Package which does not exist.
+        /// </summary>
+        [Fact]
+        public void DeletePackageNotFound()
+        {
+            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
+            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            Mock<IDirectories> dirMock = new Mock<IDirectories>();
+            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+
+            IResult<string> successResult = new Result<string>();
+
+            dirMock.Setup(d => d.Packages).Returns(Temp);
+            dirMock.Setup(d => d.Temp).Returns(Temp);
+
+            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+
+            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            IResult deleteResult = test.DeletePackage("test");
+
+            Assert.Equal(ResultCode.Failure, deleteResult.ResultCode);
+        }
+
+        /// <summary>
         ///     Disposes of this instance.
         /// </summary>
         public void Dispose()
@@ -432,6 +549,7 @@ namespace OpenIIoT.Core.Tests.Package
         /// <summary>
         ///     Tests the <see cref="Core.Package.PackageManager.ScanPackagesAsync()"/> method with a directory containing Package files.
         /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
         public async Task ScanPackagesAsync()
         {

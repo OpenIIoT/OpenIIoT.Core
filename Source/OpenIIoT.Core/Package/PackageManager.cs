@@ -41,20 +41,19 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Packaging.Manifest;
 using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using System.IO;
-using OpenIIoT.SDK.Packaging.Manifest;
-using NLog;
 
 namespace OpenIIoT.Core.Package
 {
@@ -101,6 +100,8 @@ namespace OpenIIoT.Core.Package
             RegisterDependency<IPlatformManager>(platformManager);
 
             ChangeState(State.Initialized);
+
+            PackageList = new List<IPackage>();
 
             logger.ExitMethod();
         }
@@ -197,6 +198,8 @@ namespace OpenIIoT.Core.Package
 
                     if (retVal.ResultCode != ResultCode.Failure)
                     {
+                        PackageList.Add(readResult.ReturnValue);
+
                         retVal.ReturnValue = readResult.ReturnValue;
                         retVal.ReturnValue.Filename = destinationFilename;
                     }
@@ -205,7 +208,7 @@ namespace OpenIIoT.Core.Package
 
             if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.AddError("Unable to create Package from supplied data.");
+                retVal.AddError("Failed to create Package from supplied data.");
             }
 
             retVal.LogResult(logger);
@@ -246,6 +249,15 @@ namespace OpenIIoT.Core.Package
 
                 IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
                 retVal.Incorporate(deleteResult);
+            }
+            else
+            {
+                retVal.AddError($"Failed to find Package '{fqn}'.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to delete Package '{fqn}'.");
             }
 
             retVal.LogResult(logger);
