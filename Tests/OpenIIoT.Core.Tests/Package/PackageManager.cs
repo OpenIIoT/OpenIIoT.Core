@@ -210,6 +210,79 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a known good, signed Package.
+        /// </summary>
+        [Fact]
+        public void VerifySignedPackage()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "signedpackage.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = test.VerifyPackage(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
+            Assert.True(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string, string)"/> method with a known good, signed Package.
+        /// </summary>
+        [Fact]
+        public void VerifySignedPackageExplicitKey()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "signedpackage.zip"));
+            string key = File.ReadAllText(Path.Combine(DataRoot, "Key", "public.asc"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = test.VerifyPackage(package.ReturnValue.FQN, key);
+
+            Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
+            Assert.True(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a Package FQN which is not in the Package list.
         /// </summary>
         [Fact]

@@ -149,7 +149,7 @@ namespace OpenIIoT.Core.Tests.Common
             Assert.Equal(State.Running, o.State);
 
             // wait 1500ms for the manager to restart (the restart timer is set for 500ms)
-            Thread.Sleep(1000);
+            Thread.Sleep(1500);
 
             // assert that the manager has restarted.
             Assert.Equal(State.Running, test.State);
