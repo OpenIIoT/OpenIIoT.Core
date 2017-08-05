@@ -426,6 +426,8 @@ namespace OpenIIoT.Core.Tests.Package
             managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
             IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+
+            Assert.Equal(0, test.Packages.Count);
         }
 
         /// <summary>
