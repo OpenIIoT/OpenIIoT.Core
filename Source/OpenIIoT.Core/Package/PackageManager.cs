@@ -289,7 +289,7 @@ namespace OpenIIoT.Core.Package
         /// <returns>The result of the operation and the found Package, if applicable.</returns>
         public IPackage FindPackage(string fqn)
         {
-            return FindPackage(fqn, false);
+            return FindPackage(fqn, true);
         }
 
         /// <summary>
