@@ -80,12 +80,17 @@ namespace OpenIIoT.Core.Tests.Package
 
             Directory.CreateDirectory(Temp);
 
-            Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
+            Uri codeBaseUri = new Uri(Assembly.GetExecutingAssembly().CodeBase);
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
             string dirPath = Path.GetDirectoryName(codeBasePath);
 
             DataRoot = Path.Combine(dirPath, "Package", "Data");
             Data = Path.Combine(DataRoot, "Package");
+
+            ManagerMock = new Mock<IApplicationManager>();
+            PlatformManagerMock = new Mock<IPlatformManager>();
+            DirectoryMock = new Mock<IDirectories>();
+            PlatformMock = new Mock<IPlatform>();
         }
 
         #endregion Public Constructors
@@ -103,6 +108,26 @@ namespace OpenIIoT.Core.Tests.Package
         private string DataRoot { get; set; }
 
         /// <summary>
+        ///     Gets or sets the IDirectories mockup for testing.
+        /// </summary>
+        private Mock<IDirectories> DirectoryMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IApplicationManager mockup for testing.
+        /// </summary>
+        private Mock<IApplicationManager> ManagerMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPlatformManager mockup for testing.
+        /// </summary>
+        private Mock<IPlatformManager> PlatformManagerMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPlatform mockup for testing.
+        /// </summary>
+        private Mock<IPlatform> PlatformMock { get; set; }
+
+        /// <summary>
         ///     Gets or sets the temporary data directory.
         /// </summary>
         private string Temp { get; set; }
@@ -117,30 +142,25 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void CreatePackage()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<string> successResult = new Result<string>();
 
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-            dirMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
-            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IPackage> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
@@ -154,30 +174,25 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public async Task CreatePackageAsync()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<string> successResult = new Result<string>();
 
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-            dirMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
-            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IPackage> package = await test.CreatePackageAsync(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
@@ -190,30 +205,21 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void CreatePackageBadData()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<string> successResult = new Result<string>();
 
             byte[] data = File.ReadAllBytes(Path.Combine(DataRoot, "notapackage.zip"));
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-            dirMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
-            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IPackage> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Failure, package.ResultCode);
@@ -226,30 +232,25 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void CreatePackageCopyFailed()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<string> successResult = new Result<string>();
             IResult<string> failResult = new Result<string>(ResultCode.Failure);
 
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-            dirMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
-            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
                 .Returns(failResult);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IPackage> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Failure, package.ResultCode);
@@ -262,26 +263,21 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void CreatePackageWriteFailed()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<string> failResult = new Result<string>(ResultCode.Failure);
 
             byte[] data = new byte[] { };
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-            dirMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(failResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IPackage> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Failure, package.ResultCode);
@@ -293,34 +289,29 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void DeletePackage()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<string> successResult = new Result<string>();
 
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-            dirMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
-            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
-            platformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
+            PlatformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
                 .Returns(successResult)
                     .Callback<string>(s => File.Delete(s));
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IPackage> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
@@ -335,37 +326,33 @@ namespace OpenIIoT.Core.Tests.Package
         /// <summary>
         ///     Tests the <see cref="Core.Package.PackageManager.DeletePackageAsync(string)"/> method.
         /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
         public async Task DeletePackageAsync()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<string> successResult = new Result<string>();
 
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-            dirMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
-            platformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
-            platformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
-            platformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
+            PlatformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
                 .Returns(successResult)
                     .Callback<string>(s => File.Delete(s));
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IPackage> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
@@ -383,21 +370,18 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void DeletePackageNotFound()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
 
-            IResult<string> successResult = new Result<string>();
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
-            dirMock.Setup(d => d.Temp).Returns(Temp);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             IResult deleteResult = test.DeletePackage("test");
 
@@ -414,18 +398,108 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FindPackage(string)"/> method with a known existing Package.
+        /// </summary>
+        [Fact]
+        public void FindPackage()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IPackage foundPackage = test.FindPackage(package.ReturnValue.FQN);
+
+            Assert.Equal(package.ReturnValue, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FindPackageAsync(string)"/> method with a known existing Package.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
+        [Fact]
+        public async Task FindPackageAsync()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IPackage foundPackage = await test.FindPackageAsync(package.ReturnValue.FQN);
+
+            Assert.Equal(package.ReturnValue, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FindPackage(string)"/> method with a known non-existent Package.
+        /// </summary>
+        [Fact]
+        public void FindPackageNotFound()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            Assert.Equal(default(IPackage), test.FindPackage("test"));
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Package.PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method.
         /// </summary>
         [Fact]
         public void Instantiate()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            ManagerMock.Setup(a => a.State).Returns(State.Running);
+            ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            managerMock.Setup(a => a.State).Returns(State.Running);
-            managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             Assert.Equal(0, test.Packages.Count);
         }
@@ -436,21 +510,16 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void ScanBadDirectory()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<IList<string>> dirResult = new Result<IList<string>>(ResultCode.Failure);
 
-            dirMock.Setup(d => d.Packages).Returns(Data);
+            DirectoryMock.Setup(d => d.Packages).Returns(Data);
 
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IList<IPackage>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Failure, list.ResultCode);
@@ -462,22 +531,17 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void ScanEmptyDirectory()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<IList<string>> dirResult = new Result<IList<string>>();
             dirResult.ReturnValue = new List<string>();
 
-            dirMock.Setup(d => d.Packages).Returns(Data);
+            DirectoryMock.Setup(d => d.Packages).Returns(Data);
 
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IList<IPackage>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
@@ -492,24 +556,19 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void ScanNoPackages()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
 
             IResult<IList<string>> dirResult = new Result<IList<string>>();
             dirResult.ReturnValue = Directory.GetFiles(Temp).ToList();
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IList<IPackage>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Warning, list.ResultCode);
@@ -522,22 +581,17 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void ScanPackages()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<IList<string>> dirResult = new Result<IList<string>>();
             dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IList<IPackage>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
@@ -555,22 +609,17 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public async Task ScanPackagesAsync()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<IList<string>> dirResult = new Result<IList<string>>();
             dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult<IList<IPackage>> list = await test.ScanPackagesAsync();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
@@ -587,13 +636,10 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void Setup()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
+            ManagerMock.Setup(a => a.State).Returns(State.Running);
+            ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            managerMock.Setup(a => a.State).Returns(State.Running);
-            managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             MethodInfo setup = typeof(Core.Package.PackageManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
             setup.Invoke(test, new object[] { });
@@ -605,27 +651,22 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void Start()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<IList<string>> dirResult = new Result<IList<string>>();
             dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
-            platformManagerMock.Setup(p => p.State).Returns(State.Running);
-            platformManagerMock.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+            PlatformManagerMock.Setup(p => p.State).Returns(State.Running);
+            PlatformManagerMock.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
 
-            managerMock.Setup(a => a.State).Returns(State.Running);
-            managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            ManagerMock.Setup(a => a.State).Returns(State.Running);
+            ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             IResult result = test.Start();
 
@@ -640,27 +681,22 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void Stop()
         {
-            Mock<IApplicationManager> managerMock = new Mock<IApplicationManager>();
-            Mock<IPlatformManager> platformManagerMock = new Mock<IPlatformManager>();
-            Mock<IDirectories> dirMock = new Mock<IDirectories>();
-            Mock<IPlatform> platformMock = new Mock<IPlatform>();
-
             IResult<IList<string>> dirResult = new Result<IList<string>>();
             dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
 
-            dirMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
-            platformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            platformMock.Setup(p => p.Directories).Returns(dirMock.Object);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
-            platformManagerMock.Setup(p => p.Platform).Returns(platformMock.Object);
-            platformManagerMock.Setup(p => p.State).Returns(State.Running);
-            platformManagerMock.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+            PlatformManagerMock.Setup(p => p.State).Returns(State.Running);
+            PlatformManagerMock.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
 
-            managerMock.Setup(a => a.State).Returns(State.Running);
-            managerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            ManagerMock.Setup(a => a.State).Returns(State.Running);
+            ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(managerMock.Object, platformManagerMock.Object);
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             IResult result = test.Start();
 
@@ -680,6 +716,256 @@ namespace OpenIIoT.Core.Tests.Package
         public void Terminate()
         {
             Core.Package.PackageManager.Terminate();
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a known good Package.
+        /// </summary>
+        [Fact]
+        public void VerifyPackage()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = test.VerifyPackage(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
+            Assert.True(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackageAsync(string)"/> method with a known good Package.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
+        [Fact]
+        public async Task VerifyPackageAsync()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = await test.VerifyPackageAsync(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
+            Assert.True(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackageAsync(string)"/> method with a known good Package and
+        ///     an explicit PGP public key.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
+        [Fact]
+        public async Task VerifyPackageAsyncExplicitKey()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+            string key = File.ReadAllText(Path.Combine(DataRoot, "Key", "public.asc"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = await test.VerifyPackageAsync(package.ReturnValue.FQN, key);
+
+            Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
+            Assert.True(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a Package FQN which is not in
+        ///     the Package list.
+        /// </summary>
+        [Fact]
+        public void VerifyPackageNotFound()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IResult<bool> verifyResult = test.VerifyPackage("test");
+
+            Assert.Equal(ResultCode.Failure, verifyResult.ResultCode);
+            Assert.False(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a known good, signed Package.
+        /// </summary>
+        [Fact]
+        public void VerifySignedPackage()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "signedpackage.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = test.VerifyPackage(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
+            Assert.True(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string, string)"/> method with a known good, signed
+        ///     Package and a bad PGP public key.
+        /// </summary>
+        [Fact]
+        public void VerifySignedPackageBadExplicitKey()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "signedpackage.zip"));
+            string key = "test";
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = test.VerifyPackage(package.ReturnValue.FQN, key);
+
+            Assert.Equal(ResultCode.Failure, verifyResult.ResultCode);
+            Assert.False(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string, string)"/> method with a known good, signed
+        ///     Package and an explicit, known good PGP public key.
+        /// </summary>
+        [Fact]
+        public void VerifySignedPackageExplicitKey()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "signedpackage.zip"));
+            string key = File.ReadAllText(Path.Combine(DataRoot, "Key", "public.asc"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = test.VerifyPackage(package.ReturnValue.FQN, key);
+
+            Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
+            Assert.True(verifyResult.ReturnValue);
         }
 
         #endregion Public Methods
