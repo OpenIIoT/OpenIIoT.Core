@@ -431,12 +431,18 @@ namespace OpenIIoT.Core.Package
             {
                 IPlatform platform = Dependency<IPlatformManager>().Platform;
 
-                if (platform.FileExists(findResult.Filename))
-                {
-                    IResult<byte[]> readResult = platform.ReadFileBytes(findResult.Filename);
-                    retVal.Incorporate(readResult);
-                    retVal.ReturnValue = readResult.ReturnValue;
-                }
+                IResult<byte[]> readResult = platform.ReadFileBytes(findResult.Filename);
+                retVal.Incorporate(readResult);
+                retVal.ReturnValue = readResult.ReturnValue;
+            }
+            else
+            {
+                retVal.AddError($"Failed to locate Package '{fqn}'.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to read Package '{fqn}'");
             }
 
             retVal.LogResult(logger);
