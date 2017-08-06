@@ -217,10 +217,6 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -330,6 +326,7 @@ namespace OpenIIoT.Core.Tests.Package
         /// <summary>
         ///     Tests the <see cref="Core.Package.PackageManager.DeletePackageAsync(string)"/> method.
         /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
         public async Task DeletePackageAsync()
         {
@@ -398,6 +395,99 @@ namespace OpenIIoT.Core.Tests.Package
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FindPackage(string)"/> method with a known existing Package.
+        /// </summary>
+        [Fact]
+        public void FindPackage()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IPackage foundPackage = test.FindPackage(package.ReturnValue.FQN);
+
+            Assert.Equal(package.ReturnValue, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FindPackageAsync(string)"/> method with a known existing Package.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
+        [Fact]
+        public async Task FindPackageAsync()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IPackage foundPackage = await test.FindPackageAsync(package.ReturnValue.FQN);
+
+            Assert.Equal(package.ReturnValue, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FindPackage(string)"/> method with a known non-existent Package.
+        /// </summary>
+        [Fact]
+        public void FindPackageNotFound()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = new List<string>();
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            Assert.Equal(default(IPackage), test.FindPackage("test"));
         }
 
         /// <summary>
@@ -696,6 +786,45 @@ namespace OpenIIoT.Core.Tests.Package
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
 
             IResult<bool> verifyResult = await test.VerifyPackageAsync(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
+            Assert.True(verifyResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackageAsync(string)"/> method with a known good Package and
+        ///     an explicit PGP public key.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
+        [Fact]
+        public async Task VerifyPackageAsyncExplicitKey()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+            string key = File.ReadAllText(Path.Combine(DataRoot, "Key", "public.asc"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<bool> verifyResult = await test.VerifyPackageAsync(package.ReturnValue.FQN, key);
 
             Assert.Equal(ResultCode.Success, verifyResult.ResultCode);
             Assert.True(verifyResult.ReturnValue);
