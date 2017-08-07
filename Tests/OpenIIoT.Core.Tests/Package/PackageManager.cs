@@ -504,6 +504,9 @@ namespace OpenIIoT.Core.Tests.Package
             Assert.Equal(0, test.Packages.Count);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.ReadPackage(string)"/> method with a known good Package.
+        /// </summary>
         [Fact]
         public void ReadPackage()
         {
@@ -547,6 +550,10 @@ namespace OpenIIoT.Core.Tests.Package
             Assert.Equal(data, readResult.ReturnValue);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.ReadPackageAsync(string)"/> method with a known good Package.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
         public async Task ReadPackageAsync()
         {
@@ -590,6 +597,10 @@ namespace OpenIIoT.Core.Tests.Package
             Assert.Equal(data, readResult.ReturnValue);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.ReadPackage(string)"/> method with a file which is in the Packages
+        ///     list but not on disk.
+        /// </summary>
         [Fact]
         public void ReadPackageFileNotFound()
         {
@@ -628,6 +639,9 @@ namespace OpenIIoT.Core.Tests.Package
             Assert.Equal(ResultCode.Failure, readResult.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.ReadPackage(string)"/> method with a Package not in the Packages list.
+        /// </summary>
         [Fact]
         public void ReadPackagePackageNotFound()
         {
