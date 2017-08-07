@@ -276,6 +276,53 @@ namespace OpenIIoT.Core.Package
         }
 
         /// <summary>
+        ///     Fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        public IResult<byte[]> FetchPackage(string fqn)
+        {
+            logger.EnterMethod(xLogger.Params(fqn));
+            logger.Info($"Fetching Package '{fqn}'...");
+
+            IResult<byte[]> retVal = new Result<byte[]>();
+            IPackage findResult = FindPackage(fqn);
+
+            if (findResult != default(IPackage))
+            {
+                IPlatform platform = Dependency<IPlatformManager>().Platform;
+
+                IResult<byte[]> readResult = platform.ReadFileBytes(findResult.Filename);
+                retVal.Incorporate(readResult);
+                retVal.ReturnValue = readResult.ReturnValue;
+            }
+            else
+            {
+                retVal.AddError($"Failed to locate Package '{fqn}'.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to fetch Package '{fqn}'");
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Asynchronously fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
+        ///     binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        public async Task<IResult<byte[]>> FetchPackageAsync(string fqn)
+        {
+            return await Task.Run(() => FetchPackage(fqn));
+        }
+
+        /// <summary>
         ///     <para>
         ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
         ///         returns the found Package.
@@ -412,53 +459,6 @@ namespace OpenIIoT.Core.Package
         public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options, string publicKey)
         {
             return await Task.Run(() => InstallPackage(fqn, options, publicKey));
-        }
-
-        /// <summary>
-        ///     Reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
-        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        public IResult<byte[]> ReadPackage(string fqn)
-        {
-            logger.EnterMethod(xLogger.Params(fqn));
-            logger.Info($"Retrieving Package '{fqn}'...");
-
-            IResult<byte[]> retVal = new Result<byte[]>();
-            IPackage findResult = FindPackage(fqn);
-
-            if (findResult != default(IPackage))
-            {
-                IPlatform platform = Dependency<IPlatformManager>().Platform;
-
-                IResult<byte[]> readResult = platform.ReadFileBytes(findResult.Filename);
-                retVal.Incorporate(readResult);
-                retVal.ReturnValue = readResult.ReturnValue;
-            }
-            else
-            {
-                retVal.AddError($"Failed to locate Package '{fqn}'.");
-            }
-
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to read Package '{fqn}'");
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Asynchronously reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
-        ///     binary data.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
-        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        public async Task<IResult<byte[]>> ReadPackageAsync(string fqn)
-        {
-            return await Task.Run(() => ReadPackage(fqn));
         }
 
         /// <summary>

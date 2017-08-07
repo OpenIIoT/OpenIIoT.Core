@@ -398,6 +398,166 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FetchPackage(string)"/> method with a known good Package.
+        /// </summary>
+        [Fact]
+        public void FetchPackage()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            IResult<byte[]> dataResult = new Result<byte[]>();
+            dataResult.ReturnValue = data;
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(dataResult);
+            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<byte[]> readResult = test.FetchPackage(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, readResult.ResultCode);
+            Assert.Equal(data, readResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FetchPackageAsync(string)"/> method with a known good Package.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
+        [Fact]
+        public async Task FetchPackageAsync()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            IResult<byte[]> dataResult = new Result<byte[]>();
+            dataResult.ReturnValue = data;
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(dataResult);
+            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<byte[]> readResult = await test.FetchPackageAsync(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Success, readResult.ResultCode);
+            Assert.Equal(data, readResult.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FetchPackage(string)"/> method with a file which is in the
+        ///     Packages list but not on disk.
+        /// </summary>
+        [Fact]
+        public void FetchPackageFileNotFound()
+        {
+            IResult<string> successResult = new Result<string>();
+            IResult<byte[]> readByteResult = new Result<byte[]>(ResultCode.Failure);
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
+            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(readByteResult);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult<byte[]> readResult = test.FetchPackage(package.ReturnValue.FQN);
+
+            Assert.Equal(ResultCode.Failure, readResult.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.FetchPackage(string)"/> method with a Package not in the Packages list.
+        /// </summary>
+        [Fact]
+        public void FetchPackagePackageNotFound()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IResult<byte[]> readResult = test.FetchPackage(Guid.NewGuid().ToString());
+
+            Assert.Equal(ResultCode.Failure, readResult.ResultCode);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Package.PackageManager.FindPackage(string)"/> method with a known existing Package.
         /// </summary>
         [Fact]
@@ -502,164 +662,6 @@ namespace OpenIIoT.Core.Tests.Package
             IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             Assert.Equal(0, test.Packages.Count);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ReadPackage(string)"/> method with a known good Package.
-        /// </summary>
-        [Fact]
-        public void ReadPackage()
-        {
-            IResult<string> successResult = new Result<string>();
-
-            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
-
-            IResult<byte[]> dataResult = new Result<byte[]>();
-            dataResult.ReturnValue = data;
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
-            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
-
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(dataResult);
-            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
-
-            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
-
-            Assert.Equal(ResultCode.Success, package.ResultCode);
-            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
-
-            IResult<byte[]> readResult = test.ReadPackage(package.ReturnValue.FQN);
-
-            Assert.Equal(ResultCode.Success, readResult.ResultCode);
-            Assert.Equal(data, readResult.ReturnValue);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ReadPackageAsync(string)"/> method with a known good Package.
-        /// </summary>
-        /// <returns>The Task with which the execution is carried out.</returns>
-        [Fact]
-        public async Task ReadPackageAsync()
-        {
-            IResult<string> successResult = new Result<string>();
-
-            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
-
-            IResult<byte[]> dataResult = new Result<byte[]>();
-            dataResult.ReturnValue = data;
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
-            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
-
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(dataResult);
-            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
-
-            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
-
-            Assert.Equal(ResultCode.Success, package.ResultCode);
-            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
-
-            IResult<byte[]> readResult = await test.ReadPackageAsync(package.ReturnValue.FQN);
-
-            Assert.Equal(ResultCode.Success, readResult.ResultCode);
-            Assert.Equal(data, readResult.ReturnValue);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ReadPackage(string)"/> method with a file which is in the Packages
-        ///     list but not on disk.
-        /// </summary>
-        [Fact]
-        public void ReadPackageFileNotFound()
-        {
-            IResult<string> successResult = new Result<string>();
-
-            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
-            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
-
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
-
-            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
-
-            Assert.Equal(ResultCode.Success, package.ResultCode);
-            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
-
-            IResult<byte[]> readResult = test.ReadPackage(package.ReturnValue.FQN);
-
-            Assert.Equal(ResultCode.Failure, readResult.ResultCode);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ReadPackage(string)"/> method with a Package not in the Packages list.
-        /// </summary>
-        [Fact]
-        public void ReadPackagePackageNotFound()
-        {
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
-
-            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
-
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-
-            IResult<byte[]> readResult = test.ReadPackage(Guid.NewGuid().ToString());
-
-            Assert.Equal(ResultCode.Failure, readResult.ResultCode);
         }
 
         /// <summary>

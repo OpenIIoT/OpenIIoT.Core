@@ -107,7 +107,7 @@ namespace OpenIIoT.Core.Package.WebAPI
 
             if (findResult != default(IPackage))
             {
-                IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().ReadPackageAsync(fqn);
+                IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().FetchPackageAsync(fqn);
 
                 if (readResult.ResultCode != ResultCode.Failure)
                 {
