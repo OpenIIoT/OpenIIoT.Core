@@ -363,7 +363,7 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult InstallPackage(string fqn)
         {
-            return InstallPackage(fqn, default(PackageInstallationOptions), string.Empty);
+            return InstallPackage(fqn, new PackageInstallationOptions(), string.Empty);
         }
 
         /// <summary>
