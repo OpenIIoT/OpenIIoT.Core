@@ -687,6 +687,72 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.PackageManager.InstallPackage(string)"/> method with scenario known to raise an exception.
+        /// </summary>
+        [Fact]
+        public void InstallPackageFailure()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult installResult = test.InstallPackage(package.ReturnValue.FQN);
+
+            Assert.True(Directory.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin")));
+
+            // force the underlying extractor to raise an exception because the destination exists and overwrite = false
+            installResult = test.InstallPackage(package.ReturnValue.FQN, new PackageInstallationOptions() { Overwrite = false });
+
+            Assert.Equal(ResultCode.Failure, installResult.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.PackageManager.InstallPackage(string)"/> method with a Package which does not exist in
+        ///     the collection.
+        /// </summary>
+        [Fact]
+        public void InstallPackageNotFound()
+        {
+            IResult<IList<string>> dirResult = new Result<IList<string>>();
+            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult installResult = test.InstallPackage(Guid.NewGuid().ToString());
+
+            Assert.Equal(ResultCode.Failure, installResult.ResultCode);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Package.PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method.
         /// </summary>
         [Fact]
