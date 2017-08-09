@@ -390,6 +390,11 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod(xLogger.Params(fqn, options, publicKey));
             logger.Info($"Installing Package '{fqn}'...");
 
+            if (options == default(PackageInstallationOptions))
+            {
+                options = new PackageInstallationOptions();
+            }
+
             IResult retVal = new Result();
             IPackage findResult = FindPackage(fqn);
 
@@ -435,7 +440,7 @@ namespace OpenIIoT.Core.Package
         /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> InstallPackageAsync(string fqn)
         {
-            return await Task.Run(() => InstallPackage(fqn, default(PackageInstallationOptions), string.Empty));
+            return await Task.Run(() => InstallPackage(fqn, new PackageInstallationOptions(), string.Empty));
         }
 
         /// <summary>
@@ -450,7 +455,8 @@ namespace OpenIIoT.Core.Package
         }
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options.
+        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified
+        ///     <paramref name="options"/> and PGP <paramref name="publicKey"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
