@@ -390,11 +390,6 @@ namespace OpenIIoT.Core.Package
             logger.EnterMethod(xLogger.Params(fqn, options, publicKey));
             logger.Info($"Installing Package '{fqn}'...");
 
-            if (options == default(PackageInstallationOptions))
-            {
-                options = new PackageInstallationOptions();
-            }
-
             IResult retVal = new Result();
             IPackage findResult = FindPackage(fqn);
 
@@ -408,8 +403,8 @@ namespace OpenIIoT.Core.Package
                 string destination = Platform.Directories.Plugins;
                 destination = Path.Combine(destination, findResult.FQN);
 
-                bool overwrite = options.Overwrite;
-                bool skipVerification = options.SkipVerification;
+                bool overwrite = options?.Overwrite ?? false;
+                bool skipVerification = options?.SkipVerification ?? false;
 
                 logger.Debug($"Install directory: '{destination}'; overwrite={overwrite}, skipVerification={skipVerification}");
 
