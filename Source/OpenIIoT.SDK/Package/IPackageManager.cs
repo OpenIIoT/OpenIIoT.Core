@@ -99,6 +99,21 @@ namespace OpenIIoT.SDK.Package
         Task<IResult> DeletePackageAsync(string fqn);
 
         /// <summary>
+        ///     Fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        IResult<byte[]> FetchPackage(string fqn);
+
+        /// <summary>
+        ///     Asynchronously fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
+        ///     binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
+        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
+        Task<IResult<byte[]>> FetchPackageAsync(string fqn);
+
+        /// <summary>
         ///     <para>
         ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
         ///         returns the found Package.
@@ -142,6 +157,15 @@ namespace OpenIIoT.SDK.Package
         IResult InstallPackage(string fqn, PackageInstallationOptions options);
 
         /// <summary>
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options and PGP public key.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="publicKey">The PGP public key with which to install the Package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult InstallPackage(string fqn, PackageInstallationOptions options, string publicKey);
+
+        /// <summary>
         ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
@@ -157,19 +181,14 @@ namespace OpenIIoT.SDK.Package
         Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options);
 
         /// <summary>
-        ///     Reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
+        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified
+        ///     <paramref name="options"/> and PGP <paramref name="publicKey"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
-        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        IResult<byte[]> ReadPackage(string fqn);
-
-        /// <summary>
-        ///     Asynchronously reads the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
-        ///     binary data.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to read.</param>
-        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        Task<IResult<byte[]>> ReadPackageAsync(string fqn);
+        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="publicKey">The PGP public key with which to install the Package.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options, string publicKey);
 
         /// <summary>
         ///     Scans for and returns a list of all Package files in the configured Packages directory.
