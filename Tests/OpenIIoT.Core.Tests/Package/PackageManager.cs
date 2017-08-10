@@ -725,6 +725,44 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.PackageManager.InstallPackageAsync(string)"/> method with a known good Package and
+        ///     null/default options.
+        /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
+        [Fact]
+        public async Task InstallPackageAsyncWithNullOptions()
+        {
+            IResult<string> successResult = new Result<string>();
+
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
+
+            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IPackage> package = test.CreatePackage(data);
+
+            Assert.Equal(ResultCode.Success, package.ResultCode);
+            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
+
+            IResult installResult = await test.InstallPackageAsync(package.ReturnValue.FQN, default(PackageInstallationOptions));
+
+            Assert.True(Directory.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin")));
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.PackageManager.InstallPackageAsync(string)"/> method with a known good Package and blank options.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
@@ -877,6 +915,25 @@ namespace OpenIIoT.Core.Tests.Package
             IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             Assert.Equal(0, test.Packages.Count);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Package.PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method after
+        ///     having already instantiated the Manager.
+        /// </summary>
+        [Fact]
+        public void InstantiateAlreadyInstantiated()
+        {
+            ManagerMock.Setup(a => a.State).Returns(State.Running);
+            ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+
+            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            Assert.Equal(0, test.Packages.Count);
+
+            IPackageManager test2 = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            Assert.Equal(test, test2);
         }
 
         /// <summary>
