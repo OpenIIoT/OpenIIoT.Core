@@ -545,7 +545,7 @@ namespace OpenIIoT.Core.Package
             IResult<bool> retVal = new Result<bool>();
             IPackage findResult = FindPackage(fqn);
 
-            if (retVal != default(IPackage))
+            if (findResult != default(IPackage))
             {
                 PackageVerifier verifier = new PackageVerifier();
                 verifier.Updated += (sender, e) => logger.Debug(e.Message);
