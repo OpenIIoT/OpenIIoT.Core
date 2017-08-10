@@ -208,7 +208,7 @@ namespace OpenIIoT.Core.Package
 
             if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.AddError("Failed to create Package from supplied data.");
+                retVal.AddError("Failed to create a Package from the supplied data.");
             }
 
             retVal.LogResult(logger);
@@ -298,7 +298,7 @@ namespace OpenIIoT.Core.Package
             }
             else
             {
-                retVal.AddError($"Failed to locate Package '{fqn}'.");
+                retVal.AddError($"Failed to find Package '{fqn}'.");
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
