@@ -415,12 +415,17 @@ namespace OpenIIoT.Core.Package
                 catch (Exception ex)
                 {
                     logger.Exception(LogLevel.Debug, ex);
-                    retVal.AddError($"Error installing Package '{findResult.FQN}': {ex.Message}");
+                    retVal.AddError(ex.Message);
                 }
             }
             else
             {
-                retVal.AddError($"Failed to install Package '{fqn}'; the package could not be found.");
+                retVal.AddError($"Failed to find Package '{fqn}'.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to install Package '{fqn}'.");
             }
 
             retVal.LogResult(logger);
@@ -551,8 +556,18 @@ namespace OpenIIoT.Core.Package
                 }
                 catch (Exception ex)
                 {
-                    retVal.AddError($"Error validating Package '{fqn}': {ex.Message}");
+                    logger.Exception(LogLevel.Debug, ex);
+                    retVal.AddError(ex.Message);
                 }
+            }
+            else
+            {
+                retVal.AddError($"Failed to find Package '{fqn}'.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"The Package '{fqn}' is invalid.");
             }
 
             retVal.LogResult(logger);
@@ -600,10 +615,7 @@ namespace OpenIIoT.Core.Package
 
             IResult retVal = new Result();
 
-            if (!stopType.HasFlag(StopType.Exception))
-            {
-                PackageList = default(IList<IPackage>);
-            }
+            PackageList = default(IList<IPackage>);
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
