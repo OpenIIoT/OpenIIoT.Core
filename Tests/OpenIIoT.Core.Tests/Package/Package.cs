@@ -10,10 +10,19 @@
       █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
       █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents an installable extension archive.
+      █  Unit tests for the Package class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,63 +48,43 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package;
+using Moq;
 using OpenIIoT.SDK.Packaging.Manifest;
+using System;
+using Xunit;
 
-namespace OpenIIoT.Core.Package
+namespace OpenIIoT.Core.Tests.Package
 {
     /// <summary>
-    ///     Represents an installable extension archive.
+    ///     Unit tests for the <see cref="Core.Package.Package"/> class.
     /// </summary>
-    public class Package : PackageManifest, IPackage
+    public class Package
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Package"/> class.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        /// <param name="filename">The fully qualified filename of the archive file.</param>
-        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
-        /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(string filename, DateTime modifiedOn, IPackageManifest manifest)
+        [Fact]
+        public void Constructor()
         {
-            this.MapFrom(manifest);
+            Mock<IPackageManifest> manifestMock = new Mock<IPackageManifest>();
+            manifestMock.Setup(m => m.Namespace).Returns("namespace");
+            manifestMock.Setup(m => m.Title).Returns("title");
 
-            Filename = filename;
-            ModifiedOn = modifiedOn;
+            DateTime now = DateTime.Now;
+
+            Core.Package.Package test = new Core.Package.Package("test", now, manifestMock.Object);
+
+            Assert.IsType<Package>(test);
+
+            Assert.Equal("test", test.Filename);
+            Assert.Equal("namespace.title", test.FQN);
+            Assert.False(test.IsSigned);
+            Assert.False(test.IsTrusted);
+            Assert.Equal(now, test.ModifiedOn);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the fully qualified filename of the archive file.
-        /// </summary>
-        public string Filename { get; set; }
-
-        /// <summary>
-        ///     Gets the Fully Qualified Name of the Package.
-        /// </summary>
-        public string FQN => Namespace + "." + Title;
-
-        /// <summary>
-        ///     Gets a value indicating whether the Package is signed.
-        /// </summary>
-        public bool IsSigned => Signature?.Digest != default(string);
-
-        /// <summary>
-        ///     Gets a value indicating whether the Package is trusted.
-        /// </summary>
-        public bool IsTrusted => Signature?.Trust != default(string);
-
-        /// <summary>
-        ///     Gets the time at which the archive was last modified, according to the host filesystem.
-        /// </summary>
-        public DateTime ModifiedOn { get; }
-
-        #endregion Public Properties
+        #endregion Public Methods
     }
 }
