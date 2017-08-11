@@ -71,7 +71,7 @@ namespace OpenIIoT.SDK.Package
         /// </remarks>
         /// <param name="data">The data to save.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        IResult<IPackage> CreatePackage(byte[] data);
+        IResult<Package> CreatePackage(byte[] data);
 
         /// <summary>
         ///     Asynchronously creates a <see cref="IPackage"/> file with the specified data.
@@ -82,7 +82,7 @@ namespace OpenIIoT.SDK.Package
         /// </remarks>
         /// <param name="data">The data to save.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        Task<IResult<IPackage>> CreatePackageAsync(byte[] data);
+        Task<IResult<Package>> CreatePackageAsync(byte[] data);
 
         /// <summary>
         ///     Deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.

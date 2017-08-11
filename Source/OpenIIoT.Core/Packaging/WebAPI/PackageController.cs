@@ -20,7 +20,7 @@ using System;
 using System.Web.Http.Description;
 using Swashbuckle.Swagger.Annotations;
 
-namespace OpenIIoT.Core.Package.WebAPI
+namespace OpenIIoT.Core.Packaging.WebAPI
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.

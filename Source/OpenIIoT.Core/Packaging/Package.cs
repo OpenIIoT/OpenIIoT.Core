@@ -43,7 +43,7 @@ using System;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Packaging.Manifest;
 
-namespace OpenIIoT.Core.Package
+namespace OpenIIoT.Core.Packaging
 {
     /// <summary>
     ///     Represents an installable extension archive.

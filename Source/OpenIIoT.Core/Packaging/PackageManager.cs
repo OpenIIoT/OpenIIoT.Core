@@ -55,7 +55,7 @@ using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Package
+namespace OpenIIoT.Core.Packaging
 {
     /// <summary>
     ///     Handles the installation and file management of the Packages used to extend the functionality of the application.
