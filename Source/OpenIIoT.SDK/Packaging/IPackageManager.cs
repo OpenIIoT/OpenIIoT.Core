@@ -44,7 +44,7 @@ using System.Threading.Tasks;
 using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Package
+namespace OpenIIoT.SDK.Packaging
 {
     /// <summary>
     ///     Handles the installation and file management of the Pacakges used to extend the functionality of the application.

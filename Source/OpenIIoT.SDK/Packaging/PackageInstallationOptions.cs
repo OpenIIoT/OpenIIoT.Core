@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.SDK.Package
+namespace OpenIIoT.SDK.Packaging
 {
     public class PackageInstallationOptions
     {
