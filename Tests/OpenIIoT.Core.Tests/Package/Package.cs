@@ -48,9 +48,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Moq;
-using OpenIIoT.SDK.Packaging.Manifest;
 using System;
+using OpenIIoT.SDK.Packaging.Manifest;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Package
@@ -68,20 +67,52 @@ namespace OpenIIoT.Core.Tests.Package
         [Fact]
         public void Constructor()
         {
-            Mock<IPackageManifest> manifestMock = new Mock<IPackageManifest>();
-            manifestMock.Setup(m => m.Namespace).Returns("namespace");
-            manifestMock.Setup(m => m.Title).Returns("title");
+            PackageManifest manifest = new PackageManifest()
+            {
+                Namespace = "namespace",
+                Title = "title",
+            };
 
             DateTime now = DateTime.Now;
 
-            Core.Package.Package test = new Core.Package.Package("test", now, manifestMock.Object);
+            Core.Package.Package test = new Core.Package.Package("test", now, manifest);
 
-            Assert.IsType<Package>(test);
+            Assert.IsType<Core.Package.Package>(test);
 
             Assert.Equal("test", test.Filename);
             Assert.Equal("namespace.title", test.FQN);
             Assert.False(test.IsSigned);
             Assert.False(test.IsTrusted);
+            Assert.Equal(now, test.ModifiedOn);
+        }
+
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void ConstructorSignedTrusted()
+        {
+            PackageManifest manifest = new PackageManifest()
+            {
+                Namespace = "namespace",
+                Title = "title",
+                Signature = new PackageManifestSignature()
+                {
+                    Digest = "digest",
+                    Trust = "trust",
+                },
+            };
+
+            DateTime now = DateTime.Now;
+
+            Core.Package.Package test = new Core.Package.Package("test", now, manifest);
+
+            Assert.IsType<Core.Package.Package>(test);
+
+            Assert.Equal("test", test.Filename);
+            Assert.Equal("namespace.title", test.FQN);
+            Assert.True(test.IsSigned);
+            Assert.True(test.IsTrusted);
             Assert.Equal(now, test.ModifiedOn);
         }
 
