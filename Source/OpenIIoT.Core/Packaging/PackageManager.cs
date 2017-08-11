@@ -163,7 +163,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Creates a <see cref="IPackage"/> file with the specified data.
+        ///     Creates a <see cref="Package"/> file with the specified data.
         /// </summary>
         /// <remarks>
         ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
@@ -217,7 +217,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously creates a <see cref="IPackage"/> file with the specified data.
+        ///     Asynchronously creates a <see cref="Package"/> file with the specified data.
         /// </summary>
         /// <remarks>
         ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
@@ -231,9 +231,9 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.
+        ///     Deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to delete.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult DeletePackage(string fqn)
         {
@@ -266,9 +266,9 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.
+        ///     Asynchronously deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to delete.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> DeletePackageAsync(string fqn)
         {
@@ -276,9 +276,9 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
+        ///     Fetches the <see cref="Package"/> file matching the specified Fully Qualified Name and returns the binary data.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to fetch.</param>
         /// <returns>A Result containing the result of the operation and the read binary data.</returns>
         public IResult<byte[]> FetchPackage(string fqn)
         {
@@ -312,10 +312,10 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
+        ///     Asynchronously fetches the <see cref="Package"/> file matching the specified Fully Qualified Name and returns the
         ///     binary data.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to fetch.</param>
         /// <returns>A Result containing the result of the operation and the read binary data.</returns>
         public async Task<IResult<byte[]>> FetchPackageAsync(string fqn)
         {
@@ -357,7 +357,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///     Installs the specified <see cref="Package"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -367,7 +367,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
+        ///     Installs the specified <see cref="Package"/> (extracts it to disk) using the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
@@ -378,7 +378,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>
+        ///     Installs the specified <see cref="Package"/> (extracts it to disk) using the specified <paramref name="options"/>
         ///     and PGP <paramref name="publicKey"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
@@ -434,7 +434,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -444,7 +444,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
+        ///     Installs the specified <see cref="Package"/> (extracts it to disk) using the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
@@ -455,7 +455,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified
+        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk) using the specified
         ///     <paramref name="options"/> and PGP <paramref name="publicKey"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
@@ -522,7 +522,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Verifies the specified <see cref="IPackage"/>.
+        ///     Verifies the specified <see cref="Package"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
@@ -532,7 +532,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
+        ///     Verifies the specified <see cref="Package"/> using the optionally specified PGP Public Key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
@@ -576,7 +576,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
+        ///     Asynchronously verifies the specified <see cref="Package"/> using the optionally specified PGP Public Key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
@@ -587,7 +587,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously verifies the specified <see cref="IPackage"/>.
+        ///     Asynchronously verifies the specified <see cref="Package"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
@@ -699,7 +699,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Creates and returns a valid filename for the specified <see cref="IPackage"/>.
+        ///     Creates and returns a valid filename for the specified <see cref="Package"/>.
         /// </summary>
         /// <param name="package">The Package for which the filename is to be created.</param>
         /// <returns>The created filename.</returns>
@@ -716,7 +716,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="IPackage"/> instance
+        ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="Package"/> instance
         ///     from the contents.
         /// </summary>
         /// <param name="fileName">The filename of the file to read.</param>
