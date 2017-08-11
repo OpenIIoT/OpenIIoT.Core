@@ -49,7 +49,6 @@ using NLog.xLogger;
 using OpenIIoT.Core.Configuration;
 using OpenIIoT.Core.Event;
 using OpenIIoT.Core.Model;
-using OpenIIoT.Core.Package;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
 using OpenIIoT.Core.Service;
@@ -62,6 +61,7 @@ using OpenIIoT.SDK.Plugin;
 using OpenIIoT.SDK.Plugin.Connector;
 using Utility.CommandLine;
 using Utility.OperationResult;
+using OpenIIoT.Core.Packaging;
 
 namespace OpenIIoT.Core
 {

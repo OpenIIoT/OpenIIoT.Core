@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Packaging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;

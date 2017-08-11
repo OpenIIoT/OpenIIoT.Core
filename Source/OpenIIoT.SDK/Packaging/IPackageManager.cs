@@ -56,7 +56,7 @@ namespace OpenIIoT.SDK.Packaging
         /// <summary>
         ///     Gets the list of Packages available for installation.
         /// </summary>
-        IReadOnlyList<IPackage> Packages { get; }
+        IReadOnlyList<Package> Packages { get; }
 
         #endregion Public Properties
 
@@ -125,7 +125,7 @@ namespace OpenIIoT.SDK.Packaging
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
         /// <returns>The found Package, if applicable.</returns>
-        IPackage FindPackage(string fqn);
+        Package FindPackage(string fqn);
 
         /// <summary>
         ///     <para>
@@ -139,7 +139,7 @@ namespace OpenIIoT.SDK.Packaging
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
         /// <returns>The found Package, if applicable.</returns>
-        Task<IPackage> FindPackageAsync(string fqn);
+        Task<Package> FindPackageAsync(string fqn);
 
         /// <summary>
         ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
@@ -194,13 +194,13 @@ namespace OpenIIoT.SDK.Packaging
         ///     Scans for and returns a list of all Package files in the configured Packages directory.
         /// </summary>
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
-        IResult<IList<IPackage>> ScanPackages();
+        IResult<IList<Package>> ScanPackages();
 
         /// <summary>
         ///     Asynchronously scans for and returns a list of all Package files in the configured Package directory.
         /// </summary>
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
-        Task<IResult<IList<IPackage>>> ScanPackagesAsync();
+        Task<IResult<IList<Package>>> ScanPackagesAsync();
 
         /// <summary>
         ///     Verifies the specified <see cref="IPackage"/>.

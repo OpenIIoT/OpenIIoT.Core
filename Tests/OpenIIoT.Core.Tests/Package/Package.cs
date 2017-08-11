@@ -55,7 +55,7 @@ using Xunit;
 namespace OpenIIoT.Core.Tests.Package
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Package.Package"/> class.
+    ///     Unit tests for the <see cref="Core.Packaging.Package"/> class.
     /// </summary>
     public class Package
     {
@@ -75,9 +75,9 @@ namespace OpenIIoT.Core.Tests.Package
 
             DateTime now = DateTime.Now;
 
-            Core.Package.Package test = new Core.Package.Package("test", now, manifest);
+            SDK.Packaging.Package test = new SDK.Packaging.Package("test", now, manifest);
 
-            Assert.IsType<Core.Package.Package>(test);
+            Assert.IsType<SDK.Packaging.Package>(test);
 
             Assert.Equal("test", test.Filename);
             Assert.Equal("namespace.title", test.FQN);
@@ -105,9 +105,9 @@ namespace OpenIIoT.Core.Tests.Package
 
             DateTime now = DateTime.Now;
 
-            Core.Package.Package test = new Core.Package.Package("test", now, manifest);
+            SDK.Packaging.Package test = new SDK.Packaging.Package("test", now, manifest);
 
-            Assert.IsType<Core.Package.Package>(test);
+            Assert.IsType<SDK.Packaging.Package>(test);
 
             Assert.Equal("test", test.Filename);
             Assert.Equal("namespace.title", test.FQN);
