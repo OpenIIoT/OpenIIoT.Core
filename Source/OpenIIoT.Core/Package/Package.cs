@@ -41,7 +41,6 @@
 
 using System;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Packaging.Manifest;
 
 namespace OpenIIoT.Core.Package
@@ -49,7 +48,7 @@ namespace OpenIIoT.Core.Package
     /// <summary>
     ///     Represents an installable extension archive.
     /// </summary>
-    public class Package : PackageManifest, IPackage
+    public class Package : PackageManifest
     {
         #region Public Constructors
 
@@ -59,7 +58,7 @@ namespace OpenIIoT.Core.Package
         /// <param name="filename">The fully qualified filename of the archive file.</param>
         /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
         /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(string filename, DateTime modifiedOn, IPackageManifest manifest)
+        public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
         {
             this.MapFrom(manifest);
 

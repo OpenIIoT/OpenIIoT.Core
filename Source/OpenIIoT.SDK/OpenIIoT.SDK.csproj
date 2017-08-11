@@ -51,8 +51,8 @@
       <HintPath>..\..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.5.33709, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.5.33709\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
+    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.5.40159, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.5.40159\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -113,7 +113,6 @@
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
-    <Compile Include="Package\IPackage.cs" />
     <Compile Include="Plugin\PluginAttribute.cs" />
     <Compile Include="Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
