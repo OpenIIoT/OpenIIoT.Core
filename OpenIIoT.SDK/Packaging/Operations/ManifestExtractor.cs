@@ -44,8 +44,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using Newtonsoft.Json;
-using OpenIIoT.SDK.Packaging.Manifest;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Packaging.Manifest;
 
 namespace OpenIIoT.SDK.Packaging.Operations
 {

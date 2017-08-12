@@ -401,7 +401,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a blank keybaseUsername argument.
         /// </summary>
         [Fact]
@@ -420,7 +420,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a null keybaseUsername argument.
         /// </summary>
         [Fact]
@@ -439,7 +439,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a blank passphrase argument.
         /// </summary>
         [Fact]
@@ -458,7 +458,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a password argument which does not match the specified PGP private key.
         /// </summary>
         [Fact]
@@ -477,7 +477,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a null passphrase argument.
         /// </summary>
         [Fact]

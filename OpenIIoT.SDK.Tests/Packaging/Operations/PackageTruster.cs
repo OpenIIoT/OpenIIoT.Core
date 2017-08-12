@@ -51,8 +51,8 @@
 using System;
 using System.IO;
 using Newtonsoft.Json;
-using Xunit;
 using Org.BouncyCastle.Bcpg.OpenPgp;
+using Xunit;
 
 namespace OpenIIoT.SDK.Packaging.Tests.Operations
 {
