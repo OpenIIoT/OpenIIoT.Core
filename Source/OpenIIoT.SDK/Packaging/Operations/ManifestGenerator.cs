@@ -41,8 +41,8 @@
 
 using System;
 using System.IO;
-using OpenIIoT.SDK.Packaging.Manifest;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Packaging.Manifest;
 
 namespace OpenIIoT.SDK.Packaging.Operations
 {
