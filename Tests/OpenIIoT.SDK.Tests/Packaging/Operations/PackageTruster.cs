@@ -409,11 +409,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         #region Private Methods
 
         /// <summary>
-        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        ///     Handles <see cref="SDK.Packaging.Operations.PackagingOperation.Updated"/> events.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event args.</param>
-        private void Truster_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        private void Truster_Updated(object sender, SDK.Packaging.Operations.PackagingUpdateEventArgs e)
         {
         }
 

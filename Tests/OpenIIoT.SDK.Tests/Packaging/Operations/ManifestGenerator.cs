@@ -54,10 +54,10 @@ using System.Linq;
 using OpenIIoT.SDK.Packaging.Manifest;
 using Xunit;
 
-namespace OpenIIoT.SDK.Packaging.Tests.Operations
+namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Packaging.Operations.ManifestGenerator"/> class.
+    ///     Unit tests for the <see cref="SDK.Packaging.Operations.ManifestGenerator"/> class.
     /// </summary>
     public sealed class ManifestGenerator : IDisposable
     {
@@ -68,7 +68,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         /// </summary>
         public ManifestGenerator()
         {
-            Generator = new Packaging.Operations.ManifestGenerator();
+            Generator = new SDK.Packaging.Operations.ManifestGenerator();
             TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
             Directory.CreateDirectory(TempDirectory);
@@ -81,7 +81,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         /// <summary>
         ///     Gets or sets the Manifest generator to test.
         /// </summary>
-        private Packaging.Operations.ManifestGenerator Generator { get; set; }
+        private SDK.Packaging.Operations.ManifestGenerator Generator { get; set; }
 
         /// <summary>
         ///     Gets or sets the temporary directory used for tests.
@@ -259,11 +259,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         #region Private Methods
 
         /// <summary>
-        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        ///     Handles <see cref="SDK.Packaging.Operations.PackagingOperation.Updated"/> events.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event args.</param>
-        private void Generator_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        private void Generator_Updated(object sender, SDK.Packaging.Operations.PackagingUpdateEventArgs e)
         {
         }
 

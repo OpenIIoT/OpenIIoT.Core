@@ -53,10 +53,10 @@ using System.IO;
 using System.Net;
 using Xunit;
 
-namespace OpenIIoT.SDK.Packaging.Tests.Operations
+namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Packaging.Operations.PackageVerifier"/> class.
+    ///     Unit tests for the <see cref="SDK.Packaging.Operations.PackageVerifier"/> class.
     /// </summary>
     public sealed class PackageVerifier : IDisposable
     {
@@ -67,7 +67,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         /// </summary>
         public PackageVerifier()
         {
-            Verifier = new Packaging.Operations.PackageVerifier();
+            Verifier = new SDK.Packaging.Operations.PackageVerifier();
 
             Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
@@ -97,7 +97,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         /// <summary>
         ///     Gets or sets the Package Verifier to test.
         /// </summary>
-        private Packaging.Operations.PackageVerifier Verifier { get; set; }
+        private SDK.Packaging.Operations.PackageVerifier Verifier { get; set; }
 
         #endregion Private Properties
 
@@ -112,7 +112,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method.
         /// </summary>
         [Fact]
         public void VerifyPackage()
@@ -131,7 +131,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
         ///     public key.
         /// </summary>
         [Fact]
@@ -151,7 +151,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an
         ///     explicitly defined public key.
         /// </summary>
         [Fact]
@@ -172,8 +172,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing a payload and manifest with mismatched checksums.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing a payload and manifest with mismatched checksums.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageBadChecksum()
@@ -188,8 +188,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing an invalid digest.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing an invalid digest.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageBadDigest()
@@ -204,8 +204,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing a file which does not match it's manifest checksum.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing a file which does not match it's manifest checksum.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageBadFileChecksum()
@@ -220,8 +220,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing a malformed manifest.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing a malformed manifest.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageBadManifest()
@@ -236,8 +236,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing an invalid trust.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing an invalid trust.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageBadTrust()
@@ -252,8 +252,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing a blank digest.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing a blank digest.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageBlankDigest()
@@ -268,8 +268,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing a blank trust.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing a blank trust.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageBlankTrust()
@@ -284,7 +284,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
         ///     package argument.
         /// </summary>
         [Fact]
@@ -297,8 +297,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing an empty payload.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing an empty payload.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageEmptyPayload()
@@ -313,7 +313,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with an empty
         ///     package file.
         /// </summary>
         [Fact]
@@ -328,8 +328,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file signed with an invalid keybase username.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file signed with an invalid keybase username.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageInvalidKeybaseUsername()
@@ -344,8 +344,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing a digest which does not match the manifest.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing a digest which does not match the manifest.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageManifestDigestMismatch()
@@ -360,8 +360,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing which is missing a file from the manifest.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing which is missing a file from the manifest.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageMissingFile()
@@ -376,8 +376,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file without a manifest.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file without a manifest.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageNoManifest()
@@ -392,8 +392,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a plain zip
-        ///     file not containing a manifest or payload.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a plain
+        ///     zip file not containing a manifest or payload.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageNoPayload()
@@ -408,8 +408,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     argument containing a file which can not be found on the local filesystem.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package argument containing a file which can not be found on the local filesystem.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageNotFound()
@@ -421,7 +421,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a null
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a null
         ///     package argument.
         /// </summary>
         [Fact]
@@ -434,8 +434,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file containing a trust which is valid but does not match the digest.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file containing a trust which is valid but does not match the digest.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageTrustDigestMismatch()
@@ -453,8 +453,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a package
-        ///     file which is trusted but contains a blank digest.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
+        ///     package file which is trusted but contains a blank digest.
         /// </summary>
         [Fact]
         public void VerifyPackagePackageTrustedBlankDigest()
@@ -469,8 +469,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with the Update
-        ///     event bound.
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with the
+        ///     Update event bound.
         /// </summary>
         [Fact]
         public void VerifyPackageWithUpdate()
@@ -494,11 +494,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         #region Private Methods
 
         /// <summary>
-        ///     Handles <see cref="PackagingOperation.Updated"/> events.
+        ///     Handles <see cref="SDK.Packaging.Operations.PackagingOperation.Updated"/> events.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event args.</param>
-        private void Verifier_Updated(object sender, Packaging.PackagingUpdateEventArgs e)
+        private void Verifier_Updated(object sender, SDK.Packaging.Operations.PackagingUpdateEventArgs e)
         {
         }
 
