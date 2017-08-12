@@ -103,6 +103,10 @@
     <Compile Include="Common\Utility\ContractResolver.cs" />
     <Compile Include="Common\Utility\Utility.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
+    <Compile Include="Packaging\Manifest\PackageManifest.cs" />
+    <Compile Include="Packaging\Manifest\PackageManifestBuilder.cs" />
+    <Compile Include="Packaging\Manifest\PackageManifestFile.cs" />
+    <Compile Include="Packaging\Manifest\PackageManifestSignature.cs" />
     <Compile Include="Packaging\Operations\ManifestExtractor.cs" />
     <Compile Include="Packaging\Operations\ManifestGenerator.cs" />
     <Compile Include="Packaging\Operations\PackageCreator.cs" />
@@ -110,6 +114,7 @@
     <Compile Include="Packaging\Operations\PackageTruster.cs" />
     <Compile Include="Packaging\Operations\PackageVerifier.cs" />
     <Compile Include="Packaging\Operations\PackagingUpdateEventArgs.cs" />
+    <Compile Include="Packaging\Package.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -239,9 +244,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Packaging\Manifest\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

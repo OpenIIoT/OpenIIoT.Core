@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄
-      █     ███    ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
+      █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄
+      █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the Package class.
+      █  Unit tests for the PackageManifest class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,72 +48,50 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Packaging.Manifest;
+using System.Collections.Generic;
 using Xunit;
 
-namespace OpenIIoT.Core.Tests.Package
+namespace OpenIIoT.SDK.Tests.Packaging.Manifest
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Packaging.Package"/> class.
+    ///     Unit tests for the <see cref="SDK.Packaging.Manifest.PackageManifest"/> class.
     /// </summary>
-    public class Package
+    public class PackageManifest
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the constructor and all properties.
+        ///     Tests the Constructor and all properties.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            PackageManifest manifest = new PackageManifest()
-            {
-                Namespace = "namespace",
-                Title = "title",
-            };
+            SDK.Packaging.Manifest.PackageManifest test = new SDK.Packaging.Manifest.PackageManifest();
 
-            DateTime now = DateTime.Now;
+            test.Checksum = "checksum";
+            test.Copyright = "copyright";
+            test.Description = "description";
+            test.Files = new List<SDK.Packaging.Manifest.PackageManifestFile>();
+            test.License = "license";
+            test.Namespace = "namespace";
+            test.Publisher = "publisher";
+            test.Signature = new SDK.Packaging.Manifest.PackageManifestSignature();
+            test.Title = "title";
+            test.Url = "url";
+            test.Version = "version";
 
-            SDK.Packaging.Package test = new SDK.Packaging.Package("test", now, manifest);
-
-            Assert.IsType<SDK.Packaging.Package>(test);
-
-            Assert.Equal("test", test.Filename);
-            Assert.Equal("namespace.title", test.FQN);
-            Assert.False(test.IsSigned);
-            Assert.False(test.IsTrusted);
-            Assert.Equal(now, test.ModifiedOn);
-        }
-
-        /// <summary>
-        ///     Tests the constructor and all properties.
-        /// </summary>
-        [Fact]
-        public void ConstructorSignedTrusted()
-        {
-            PackageManifest manifest = new PackageManifest()
-            {
-                Namespace = "namespace",
-                Title = "title",
-                Signature = new PackageManifestSignature()
-                {
-                    Digest = "digest",
-                    Trust = "trust",
-                },
-            };
-
-            DateTime now = DateTime.Now;
-
-            SDK.Packaging.Package test = new SDK.Packaging.Package("test", now, manifest);
-
-            Assert.IsType<SDK.Packaging.Package>(test);
-
-            Assert.Equal("test", test.Filename);
-            Assert.Equal("namespace.title", test.FQN);
-            Assert.True(test.IsSigned);
-            Assert.True(test.IsTrusted);
-            Assert.Equal(now, test.ModifiedOn);
+            Assert.Equal(test.Checksum, "checksum");
+            Assert.Equal(test.Copyright, "copyright");
+            Assert.Equal(test.Description, "description");
+            Assert.NotNull(test.Files);
+            Assert.Empty(test.Files);
+            Assert.Equal(test.License, "license");
+            Assert.Equal(test.Namespace, "namespace");
+            Assert.Equal(test.Publisher, "publisher");
+            Assert.NotNull(test.Signature);
+            Assert.Equal(test.Title, "title");
+            Assert.Equal(test.Url, "url");
+            Assert.Equal(test.Version, "version");
         }
 
         #endregion Public Methods
