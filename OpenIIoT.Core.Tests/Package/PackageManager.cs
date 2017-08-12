@@ -84,7 +84,7 @@ namespace OpenIIoT.Core.Tests.Package
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
             string dirPath = Path.GetDirectoryName(codeBasePath);
 
-            DataRoot = Path.Combine(dirPath, "Package", "Data");
+            DataRoot = Path.Combine(dirPath, "Data");
             Data = Path.Combine(DataRoot, "Package");
 
             ManagerMock = new Mock<IApplicationManager>();

@@ -123,19 +123,19 @@
     <AdditionalFiles Include="OpenIIoT.ruleset" />
     <None Include="packages.config" />
     <AdditionalFiles Include="stylecop.json" />
-    <None Include="Package\Data\Key\public.asc">
+    <None Include="Data\Key\public.asc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Package\Data\notapackage.zip">
+    <None Include="Data\notapackage.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Package\Data\Package\badpackage.zip">
+    <None Include="Data\Package\badpackage.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Package\Data\Package\package.zip">
+    <None Include="Data\Package\package.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Package\Data\Package\signedpackage.zip">
+    <None Include="Data\Package\signedpackage.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
