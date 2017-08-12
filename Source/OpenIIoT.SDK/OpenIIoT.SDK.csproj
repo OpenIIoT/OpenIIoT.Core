@@ -51,10 +51,6 @@
       <HintPath>..\..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.5.40159, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.5.40159\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
