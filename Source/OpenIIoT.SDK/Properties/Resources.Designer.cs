@@ -59,5 +59,24 @@ namespace OpenIIoT.SDK.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to -----BEGIN PGP PUBLIC KEY BLOCK-----
+        ///Version: Keybase OpenPGP v2.0.64
+        ///Comment: https://keybase.io/crypto
+        ///
+        ///xsFNBFjEkToBEACcLJKyznyRxorenPRskRu+JFhbadQXRj0FxNHfG2dkQChUbkvh
+        ///c6jF4Iycj7UuMshwQhRz/Se5+1vI20wfv1yGeqdNl1/Mg1LleHqxV01PBqCzWEjP
+        ///YNwmN759dL+kX24+iXgGLHg98hdcKVJKbF7tX0zfKNR1WjWsYqlcxO68qWDjHxvh
+        ///xG7ne5ddngLp9KPzNsCMiq5GCeCZ84Rn+L1lI07o3FxIl3PtDmm5mvDmE467UdOS
+        ///gyjnZHMDyGLqn+3xcwXnC9BxVkYJPH2+CVjbVRNzPzO3mg+3U6dX/YyLxIo7TJdO
+        ///9CqOlHI91GeKIBQyTVTU+OJ39MQd+d65av2pXzSZBteiXCJXxTSDj4l/Dp16w+jZ
+        ///hFoHoF [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string PGPPublicKey {
+            get {
+                return ResourceManager.GetString("PGPPublicKey", resourceCulture);
+            }
+        }
     }
 }
