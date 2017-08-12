@@ -1,26 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Newtonsoft.Json;
-using NLog;
-using OpenIIoT.Core.Platform;
-using OpenIIoT.Core.Plugin;
+using OpenIIoT.Core.Service.WebAPI;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using Utility.OperationResult;
-using OpenIIoT.SDK.Package;
-using OpenIIoT.Core.Service.WebAPI;
-using System.IO;
-using System;
-using System.Web.Http.Description;
+using OpenIIoT.SDK.Packaging;
 using Swashbuckle.Swagger.Annotations;
+using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Package.WebAPI
+namespace OpenIIoT.Core.Packaging.WebAPI
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.
@@ -76,10 +70,10 @@ namespace OpenIIoT.Core.Package.WebAPI
             }
 
             // locate the Package
-            IPackage findResult = await PackageManager.FindPackageAsync(fqn);
+            Package findResult = await PackageManager.FindPackageAsync(fqn);
             var type = Request.Content.Headers.ContentType;
 
-            if (findResult == default(IPackage))
+            if (findResult == default(Package))
             {
                 return Request.CreateResponse(HttpStatusCode.NotFound);
             }
@@ -103,9 +97,9 @@ namespace OpenIIoT.Core.Package.WebAPI
         {
             HttpResponseMessage retVal;
 
-            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
+            Package findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
-            if (findResult != default(IPackage))
+            if (findResult != default(Package))
             {
                 IResult<byte[]> readResult = await manager.GetManager<IPackageManager>().FetchPackageAsync(fqn);
 
@@ -139,7 +133,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         public async Task<HttpResponseMessage> GetPackage(string fqn)
         {
             HttpResponseMessage retVal;
-            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
+            Package findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
             retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(ContractResolverType.OptOut, "Files"));
 
@@ -152,10 +146,10 @@ namespace OpenIIoT.Core.Package.WebAPI
         /// <returns>A Result containing the result of the operation and a list of Packages.</returns>
         [Route("v1/package")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(List<IPackage>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(List<Package>))]
         public HttpResponseMessage GetPackages()
         {
-            IReadOnlyList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
+            IReadOnlyList<Package> packages = manager.GetManager<IPackageManager>().Packages;
 
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
@@ -177,7 +171,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         [HttpGet]
         public async Task<HttpResponseMessage> ScanPackages()
         {
-            IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
+            IResult<IList<Package>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
 
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
@@ -189,7 +183,7 @@ namespace OpenIIoT.Core.Package.WebAPI
         /// <returns>A Result containing the result of the operation and the created Package.</returns>
         [Route("v1/package")]
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(IPackage))]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(Package))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public async Task<HttpResponseMessage> UploadPackage([FromBody]string data)
@@ -213,7 +207,7 @@ namespace OpenIIoT.Core.Package.WebAPI
             }
 
             // try to create the Package
-            IResult<IPackage> result = await manager.GetManager<IPackageManager>().CreatePackageAsync(binaryData);
+            IResult<Package> result = await manager.GetManager<IPackageManager>().CreatePackageAsync(binaryData);
 
             if (result.ResultCode != ResultCode.Failure)
             {

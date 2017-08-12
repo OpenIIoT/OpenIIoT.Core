@@ -49,7 +49,7 @@ using NLog.xLogger;
 using OpenIIoT.Core.Configuration;
 using OpenIIoT.Core.Event;
 using OpenIIoT.Core.Model;
-using OpenIIoT.Core.Package;
+using OpenIIoT.Core.Packaging;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.Core.Plugin;
 using OpenIIoT.Core.Service;

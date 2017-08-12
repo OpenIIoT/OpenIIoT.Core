@@ -41,15 +41,14 @@
 
 using System;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package;
 using OpenIIoT.SDK.Packaging.Manifest;
 
-namespace OpenIIoT.Core.Package
+namespace OpenIIoT.SDK.Packaging
 {
     /// <summary>
     ///     Represents an installable extension archive.
     /// </summary>
-    public class Package : PackageManifest, IPackage
+    public class Package : PackageManifest
     {
         #region Public Constructors
 

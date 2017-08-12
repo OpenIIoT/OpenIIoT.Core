@@ -57,7 +57,7 @@ using System.Threading.Tasks;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Package;
+using OpenIIoT.SDK.Packaging;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
@@ -65,7 +65,7 @@ using Xunit;
 namespace OpenIIoT.Core.Tests.Package
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Package.PackageManager"/> class.
+    ///     Unit tests for the <see cref="Core.Packaging.PackageManager"/> class.
     /// </summary>
     public class PackageManager : IDisposable
     {
@@ -137,7 +137,7 @@ namespace OpenIIoT.Core.Tests.Package
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a known good package payload.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.CreatePackage(byte[])"/> method with a known good package payload.
         /// </summary>
         [Fact]
         public void CreatePackage()
@@ -160,15 +160,15 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a known good package payload.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.CreatePackage(byte[])"/> method with a known good package payload.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -192,15 +192,15 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = await test.CreatePackageAsync(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = await test.CreatePackageAsync(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a known bad package payload.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.CreatePackage(byte[])"/> method with a known bad package payload.
         /// </summary>
         [Fact]
         public void CreatePackageBadData()
@@ -219,15 +219,15 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Failure, package.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a mocked platform simulating
-        ///     a failed file copy.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.CreatePackage(byte[])"/> method with a mocked platform
+        ///     simulating a failed file copy.
         /// </summary>
         [Fact]
         public void CreatePackageCopyFailed()
@@ -250,15 +250,15 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Failure, package.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.CreatePackage(byte[])"/> method with a mocked platform simulating
-        ///     a failed file write.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.CreatePackage(byte[])"/> method with a mocked platform
+        ///     simulating a failed file write.
         /// </summary>
         [Fact]
         public void CreatePackageWriteFailed()
@@ -277,14 +277,14 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Failure, package.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.DeletePackage(string)"/> method.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.DeletePackage(string)"/> method.
         /// </summary>
         [Fact]
         public void DeletePackage()
@@ -311,8 +311,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -324,7 +324,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.DeletePackageAsync(string)"/> method.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.DeletePackageAsync(string)"/> method.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -352,8 +352,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -365,7 +365,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.DeletePackage(string)"/> method with a Package which does not exist.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.DeletePackage(string)"/> method with a Package which does not exist.
         /// </summary>
         [Fact]
         public void DeletePackageNotFound()
@@ -381,7 +381,7 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             IResult deleteResult = test.DeletePackage("test");
 
@@ -398,7 +398,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.FetchPackage(string)"/> method with a known good Package.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.FetchPackage(string)"/> method with a known good Package.
         /// </summary>
         [Fact]
         public void FetchPackage()
@@ -431,8 +431,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -444,7 +444,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.FetchPackageAsync(string)"/> method with a known good Package.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.FetchPackageAsync(string)"/> method with a known good Package.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -478,8 +478,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -491,7 +491,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.FetchPackage(string)"/> method with a file which is in the
+        ///     Tests the <see cref="Core.Packaging.PackageManager.FetchPackage(string)"/> method with a file which is in the
         ///     Packages list but not on disk.
         /// </summary>
         [Fact]
@@ -523,8 +523,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -535,7 +535,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.FetchPackage(string)"/> method with a Package not in the Packages list.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.FetchPackage(string)"/> method with a Package not in the
+        ///     Packages list.
         /// </summary>
         [Fact]
         public void FetchPackagePackageNotFound()
@@ -550,7 +551,7 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             IResult<byte[]> readResult = test.FetchPackage(Guid.NewGuid().ToString());
 
@@ -558,7 +559,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.FindPackage(string)"/> method with a known existing Package.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.FindPackage(string)"/> method with a known existing Package.
         /// </summary>
         [Fact]
         public void FindPackage()
@@ -581,19 +582,19 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
 
-            IPackage foundPackage = test.FindPackage(package.ReturnValue.FQN);
+            SDK.Packaging.Package foundPackage = test.FindPackage(package.ReturnValue.FQN);
 
             Assert.Equal(package.ReturnValue, foundPackage);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.FindPackageAsync(string)"/> method with a known existing Package.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.FindPackageAsync(string)"/> method with a known existing Package.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -617,19 +618,19 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
 
-            IPackage foundPackage = await test.FindPackageAsync(package.ReturnValue.FQN);
+            SDK.Packaging.Package foundPackage = await test.FindPackageAsync(package.ReturnValue.FQN);
 
             Assert.Equal(package.ReturnValue, foundPackage);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.FindPackage(string)"/> method with a known non-existent Package.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.FindPackage(string)"/> method with a known non-existent Package.
         /// </summary>
         [Fact]
         public void FindPackageNotFound()
@@ -645,9 +646,9 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            Assert.Equal(default(IPackage), test.FindPackage("test"));
+            Assert.Equal(default(SDK.Packaging.Package), test.FindPackage("test"));
         }
 
         /// <summary>
@@ -675,8 +676,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -713,8 +714,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -751,8 +752,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -788,8 +789,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -826,8 +827,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -862,8 +863,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -897,14 +898,14 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
             IResult installResult = test.InstallPackage(Guid.NewGuid().ToString());
 
             Assert.Equal(ResultCode.Failure, installResult.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method.
         /// </summary>
         [Fact]
         public void Instantiate()
@@ -912,14 +913,14 @@ namespace OpenIIoT.Core.Tests.Package
             ManagerMock.Setup(a => a.State).Returns(State.Running);
             ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             Assert.Equal(0, test.Packages.Count);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method after
-        ///     having already instantiated the Manager.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method
+        ///     after having already instantiated the Manager.
         /// </summary>
         [Fact]
         public void InstantiateAlreadyInstantiated()
@@ -927,17 +928,17 @@ namespace OpenIIoT.Core.Tests.Package
             ManagerMock.Setup(a => a.State).Returns(State.Running);
             ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             Assert.Equal(0, test.Packages.Count);
 
-            IPackageManager test2 = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test2 = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             Assert.Equal(test, test2);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with a bad directory.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.ScanPackages()"/> method with a bad directory.
         /// </summary>
         [Fact]
         public void ScanBadDirectory()
@@ -951,14 +952,14 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IList<IPackage>> list = test.ScanPackages();
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IList<SDK.Packaging.Package>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Failure, list.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with an empty directory.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.ScanPackages()"/> method with an empty directory.
         /// </summary>
         [Fact]
         public void ScanEmptyDirectory()
@@ -973,8 +974,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IList<IPackage>> list = test.ScanPackages();
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IList<SDK.Packaging.Package>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
 
@@ -983,7 +984,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with a directory containing files but no Packages.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.ScanPackages()"/> method with a directory containing files but
+        ///     no Packages.
         /// </summary>
         [Fact]
         public void ScanNoPackages()
@@ -1000,15 +1002,15 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IList<IPackage>> list = test.ScanPackages();
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IList<SDK.Packaging.Package>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Warning, list.ResultCode);
             Assert.Equal(0, list.ReturnValue.Count);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackages()"/> method with a directory containing Package files.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.ScanPackages()"/> method with a directory containing Package files.
         /// </summary>
         [Fact]
         public void ScanPackages()
@@ -1023,8 +1025,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IList<IPackage>> list = test.ScanPackages();
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IList<SDK.Packaging.Package>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
             Assert.Equal(3, list.ReturnValue.Count);
@@ -1035,7 +1037,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.ScanPackagesAsync()"/> method with a directory containing Package files.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.ScanPackagesAsync()"/> method with a directory containing
+        ///     Package files.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -1051,8 +1054,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IList<IPackage>> list = await test.ScanPackagesAsync();
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<IList<SDK.Packaging.Package>> list = await test.ScanPackagesAsync();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
             Assert.Equal(3, list.ReturnValue.Count);
@@ -1063,7 +1066,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.Setup"/> method using reflection.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.Setup"/> method using reflection.
         /// </summary>
         [Fact]
         public void Setup()
@@ -1071,14 +1074,15 @@ namespace OpenIIoT.Core.Tests.Package
             ManagerMock.Setup(a => a.State).Returns(State.Running);
             ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            MethodInfo setup = typeof(Core.Package.PackageManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo setup = typeof(Core.Packaging.PackageManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
             setup.Invoke(test, new object[] { });
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.Startup()"/> method via <see cref="Core.Common.Manager.Start()"/> .
+        ///     Tests the <see cref="Core.Packaging.PackageManager.Startup()"/> method via
+        ///     <see cref="Core.Common.Manager.Start()"/> .
         /// </summary>
         [Fact]
         public void Start()
@@ -1098,7 +1102,7 @@ namespace OpenIIoT.Core.Tests.Package
             ManagerMock.Setup(a => a.State).Returns(State.Running);
             ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             IResult result = test.Start();
 
@@ -1107,7 +1111,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.Shutdown(StopType)"/> method via
+        ///     Tests the <see cref="Core.Packaging.PackageManager.Shutdown(StopType)"/> method via
         ///     <see cref="Core.Common.Manager.Stop(StopType)"/> .
         /// </summary>
         [Fact]
@@ -1128,7 +1132,7 @@ namespace OpenIIoT.Core.Tests.Package
             ManagerMock.Setup(a => a.State).Returns(State.Running);
             ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             IResult result = test.Start();
 
@@ -1142,16 +1146,16 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.Terminate()"/> method.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.Terminate()"/> method.
         /// </summary>
         [Fact]
         public void Terminate()
         {
-            Core.Package.PackageManager.Terminate();
+            Core.Packaging.PackageManager.Terminate();
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a known good Package.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.VerifyPackage(string)"/> method with a known good Package.
         /// </summary>
         [Fact]
         public void VerifyPackage()
@@ -1174,8 +1178,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -1187,7 +1191,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackageAsync(string)"/> method with a known good Package.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.VerifyPackageAsync(string)"/> method with a known good Package.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -1211,8 +1215,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -1224,8 +1228,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackageAsync(string)"/> method with a known good Package and
-        ///     an explicit PGP public key.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.VerifyPackageAsync(string)"/> method with a known good Package
+        ///     and an explicit PGP public key.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -1250,8 +1254,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -1263,8 +1267,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a Package FQN which is not in
-        ///     the Package list.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.VerifyPackage(string)"/> method with a Package FQN which is not
+        ///     in the Package list.
         /// </summary>
         [Fact]
         public void VerifyPackageNotFound()
@@ -1280,7 +1284,7 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             IResult<bool> verifyResult = test.VerifyPackage("test");
 
@@ -1289,7 +1293,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string)"/> method with a known good, signed Package.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.VerifyPackage(string)"/> method with a known good, signed Package.
         /// </summary>
         [Fact]
         public void VerifySignedPackage()
@@ -1312,8 +1316,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -1325,8 +1329,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string, string)"/> method with a known good, signed
-        ///     Package and a bad PGP public key.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.VerifyPackage(string, string)"/> method with a known good,
+        ///     signed Package and a bad PGP public key.
         /// </summary>
         [Fact]
         public void VerifySignedPackageBadExplicitKey()
@@ -1350,8 +1354,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -1363,8 +1367,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Package.PackageManager.VerifyPackage(string, string)"/> method with a known good, signed
-        ///     Package and an explicit, known good PGP public key.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.VerifyPackage(string, string)"/> method with a known good,
+        ///     signed Package and an explicit, known good PGP public key.
         /// </summary>
         [Fact]
         public void VerifySignedPackageExplicitKey()
@@ -1388,8 +1392,8 @@ namespace OpenIIoT.Core.Tests.Package
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
-            IPackageManager test = Core.Package.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackage> package = test.CreatePackage(data);
+            IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+            IResult<SDK.Packaging.Package> package = test.CreatePackage(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
             Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
@@ -1412,7 +1416,7 @@ namespace OpenIIoT.Core.Tests.Package
         {
             Directory.Delete(Temp, true);
 
-            Core.Package.PackageManager.Terminate();
+            Core.Packaging.PackageManager.Terminate();
         }
 
         #endregion Protected Methods

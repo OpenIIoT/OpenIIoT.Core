@@ -51,10 +51,6 @@
       <HintPath>..\..\packages\NLog.xLogger.1.0.0.0\lib\NLog.xLogger.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OpenIIoT.SDK.Packaging, Version=0.9.4.28915, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\OpenIIoT.SDK.Packaging.0.9.4.28915\lib\OpenIIoT.SDK.Packaging.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
@@ -79,6 +75,7 @@
     <Compile Include="Common\ContractResolver.cs" />
     <Compile Include="Common\Exceptions\ConfigurationExceptions.cs" />
     <Compile Include="Common\Item\ItemQuality.cs" />
+    <Compile Include="Common\PGPSignature.cs" />
     <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
     <Compile Include="Common\Provider\IProvider.cs" />
     <Compile Include="Common\Item\ItemSource.cs" />
@@ -92,10 +89,31 @@
     <Compile Include="Common\State\State.cs" />
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\StopType.cs" />
-    <Compile Include="Common\Utility\Utility.cs" />
-    <Compile Include="Package\IPackageManager.cs" />
-    <Compile Include="Package\PackageConstants.cs" />
-    <Compile Include="Package\PackageInstallationOptions.cs" />
+    <Compile Include="Common\Utility.cs" />
+    <Compile Include="Packaging\IPackageManager.cs" />
+    <Compile Include="Packaging\Manifest\PackageManifest.cs" />
+    <Compile Include="Packaging\Manifest\PackageManifestBuilder.cs" />
+    <Compile Include="Packaging\Manifest\PackageManifestFile.cs" />
+    <Compile Include="Packaging\Manifest\PackageManifestSignature.cs" />
+    <Compile Include="Packaging\Operations\ArgumentValidator.cs" />
+    <Compile Include="Packaging\Operations\ManifestExtractor.cs" />
+    <Compile Include="Packaging\Operations\ManifestGenerator.cs" />
+    <Compile Include="Packaging\Operations\PackageCreator.cs" />
+    <Compile Include="Packaging\Operations\PackageExtractor.cs" />
+    <Compile Include="Packaging\Operations\PackageTruster.cs" />
+    <Compile Include="Packaging\Operations\PackageVerifier.cs" />
+    <Compile Include="Packaging\Package.cs" />
+    <Compile Include="Packaging\PackagingConstants.cs" />
+    <Compile Include="Packaging\PackageInstallationOptions.cs" />
+    <Compile Include="Packaging\Operations\PackagingOperation.cs" />
+    <Compile Include="Packaging\Operations\PackagingOperationType.cs" />
+    <Compile Include="Packaging\Operations\PackagingUpdateEventArgs.cs" />
+    <Compile Include="Packaging\Operations\PackagingUpdateType.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Service\WebAPI\HubHelper.cs" />
     <Compile Include="Service\WebAPI\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
@@ -113,7 +131,6 @@
     <Compile Include="Common\Provider\EventProvider\IEventProvider.cs" />
     <Compile Include="Common\Exceptions\PlatformExceptions.cs" />
     <Compile Include="Common\Exceptions\ManagerExceptions.cs" />
-    <Compile Include="Package\IPackage.cs" />
     <Compile Include="Plugin\PluginAttribute.cs" />
     <Compile Include="Plugin\Repository\IRepository.cs" />
     <Compile Include="IApplicationManager.cs" />
@@ -148,7 +165,12 @@
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
