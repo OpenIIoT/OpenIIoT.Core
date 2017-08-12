@@ -41,7 +41,7 @@
 
 using System;
 using System.IO;
-using Utility.PGPSignatureTools;
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Packaging.Operations
 {

@@ -46,10 +46,9 @@ using System.Net;
 using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Packaging.Manifest;
 using OpenIIoT.SDK.Properties;
-using Utility.PGPSignatureTools;
-using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Packaging.Operations
 {
@@ -188,7 +187,8 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                 Verbose("Verifying Manifest and Payload checksums...");
                 Verbose($"Computing SHA512 checksum for the payload file {payloadFilename}...");
-                string checksum = Utility.ComputeFileSHA512Hash(payloadFilename);
+                string checksum = Common.Utility.ComputeFileSHA512Hash(payloadFilename);
+
                 Verbose("Checksum computed successfully.");
 
                 if (manifest.Checksum != checksum)
@@ -329,7 +329,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                     throw new FileNotFoundException($"The file '{file.Source}' is listed in the manifest but is not found on disk.");
                 }
 
-                string checksum = Utility.ComputeFileSHA512Hash(fileToCheck);
+                string checksum = Common.Utility.ComputeFileSHA512Hash(fileToCheck);
 
                 if (file.Checksum != default(string) && file.Checksum != checksum)
                 {

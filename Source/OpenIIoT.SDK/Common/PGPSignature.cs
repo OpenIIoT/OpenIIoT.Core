@@ -55,7 +55,7 @@ using System.Text;
 using Org.BouncyCastle.Bcpg;
 using Org.BouncyCastle.Bcpg.OpenPgp;
 
-namespace Utility.PGPSignatureTools
+namespace OpenIIoT.SDK.Common
 {
     /// <summary>
     ///     Provides methods used to sign and verify payloads using PGP public/private key encryption.

@@ -45,7 +45,7 @@ using System.IO.Compression;
 using System.Text;
 using Newtonsoft.Json;
 using OpenIIoT.SDK.Packaging.Manifest;
-using Utility.PGPSignatureTools;
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Packaging.Operations
 {
@@ -144,7 +144,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 Verbose("Successfully deleted temporary payload directory.");
 
                 Verbose("Updating manifest with SHA512 hash of payload archive...");
-                manifest.Checksum = Utility.ComputeFileSHA512Hash(payloadArchiveName);
+                manifest.Checksum = Common.Utility.ComputeFileSHA512Hash(payloadArchiveName);
                 Verbose($"Hash computed successfully: {manifest.Checksum}.");
 
                 if (signPackage)
@@ -206,7 +206,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
                 if (file.Checksum != default(string))
                 {
-                    file.Checksum = Utility.ComputeFileSHA512Hash(fileToCheck);
+                    file.Checksum = Common.Utility.ComputeFileSHA512Hash(fileToCheck);
                 }
             }
         }
@@ -279,7 +279,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
             manifest.Signature = signature;
 
             Verbose("Creating SHA512 hash of serialized manifest...");
-            string manifestHash = Utility.ComputeSHA512Hash(manifest.ToJson());
+            string manifestHash = Common.Utility.ComputeSHA512Hash(manifest.ToJson());
             Verbose($"Hash computed successfully: {manifestHash}.");
 
             byte[] manifestBytes = Encoding.ASCII.GetBytes(manifest.ToJson());
