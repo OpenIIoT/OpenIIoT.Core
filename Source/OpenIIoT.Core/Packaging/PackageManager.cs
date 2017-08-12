@@ -705,11 +705,11 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>The created filename.</returns>
         private string GetPackageFilename(Package package)
         {
-            string filename = package.FQN + "." + package.Version + PackagingConstants1.PackageFilenameExtension;
+            string filename = package.FQN + "." + package.Version + PackagingConstants.PackageFilenameExtension;
 
             foreach (char c in Path.GetInvalidFileNameChars())
             {
-                filename = filename.Replace(c, SDK.Packaging.PackagingConstants1.PackageFilenameInvalidCharacterSubstitution);
+                filename = filename.Replace(c, SDK.Packaging.PackagingConstants.PackageFilenameInvalidCharacterSubstitution);
             }
 
             return Path.Combine(Platform.Directories.Packages, filename);
