@@ -41,7 +41,7 @@
 
 using System;
 
-namespace OpenIIoT.SDK.Packaging
+namespace OpenIIoT.SDK.Packaging.Operations
 {
     /// <summary>
     ///     The abstract base class from which Packaging Operations derive.

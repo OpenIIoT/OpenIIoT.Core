@@ -39,7 +39,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Packaging
+namespace OpenIIoT.SDK.Packaging.Operations
 {
     /// <summary>
     ///     Enumeration of the different Packaging Operation types.

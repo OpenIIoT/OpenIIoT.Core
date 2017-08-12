@@ -105,10 +105,10 @@
     <Compile Include="Packaging\Package.cs" />
     <Compile Include="Packaging\PackagingConstants.cs" />
     <Compile Include="Packaging\PackageInstallationOptions.cs" />
-    <Compile Include="Packaging\PackagingOperation.cs" />
-    <Compile Include="Packaging\PackagingOperationType.cs" />
-    <Compile Include="Packaging\PackagingUpdateEventArgs.cs" />
-    <Compile Include="Packaging\PackagingUpdateType.cs" />
+    <Compile Include="Packaging\Operations\PackagingOperation.cs" />
+    <Compile Include="Packaging\Operations\PackagingOperationType.cs" />
+    <Compile Include="Packaging\Operations\PackagingUpdateEventArgs.cs" />
+    <Compile Include="Packaging\Operations\PackagingUpdateType.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -50,7 +50,7 @@
 
 using System;
 
-namespace OpenIIoT.SDK.Packaging
+namespace OpenIIoT.SDK.Packaging.Operations
 {
     /// <summary>
     ///     Event arguments for the <see cref="PackagingOperation.Updated"/> event.
