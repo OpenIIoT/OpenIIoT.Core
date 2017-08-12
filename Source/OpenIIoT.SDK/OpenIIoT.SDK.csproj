@@ -79,6 +79,7 @@
     <Compile Include="Common\ContractResolver.cs" />
     <Compile Include="Common\Exceptions\ConfigurationExceptions.cs" />
     <Compile Include="Common\Item\ItemQuality.cs" />
+    <Compile Include="Common\PGPSignature.cs" />
     <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
     <Compile Include="Common\Provider\IProvider.cs" />
     <Compile Include="Common\Item\ItemSource.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="Packaging\Manifest\PackageManifestBuilder.cs" />
     <Compile Include="Packaging\Manifest\PackageManifestFile.cs" />
     <Compile Include="Packaging\Manifest\PackageManifestSignature.cs" />
+    <Compile Include="Packaging\Operations\ArgumentValidator.cs" />
     <Compile Include="Packaging\Operations\ManifestExtractor.cs" />
     <Compile Include="Packaging\Operations\ManifestGenerator.cs" />
     <Compile Include="Packaging\Operations\PackageCreator.cs" />
