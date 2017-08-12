@@ -49,6 +49,7 @@ using Newtonsoft.Json.Linq;
 using OpenIIoT.SDK.Packaging.Manifest;
 using OpenIIoT.SDK.Properties;
 using Utility.PGPSignatureTools;
+using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Packaging.Operations
 {

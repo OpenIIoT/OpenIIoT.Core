@@ -244,20 +244,6 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Serializes and returns as json the specified object.
-        /// </summary>
-        /// <param name="obj">The object to serialize.</param>
-        /// <returns>The serialized object.</returns>
-        public static string ToJson(this object obj)
-        {
-            return JsonConvert.SerializeObject(obj, new JsonSerializerSettings
-            {
-                Formatting = Formatting.Indented,
-                NullValueHandling = NullValueHandling.Ignore,
-            });
-        }
-
-        /// <summary>
         ///     Converts the specified wildcard pattern to a regular expression.
         /// </summary>
         /// <param name="pattern">The wildcard pattern to convert.</param>
