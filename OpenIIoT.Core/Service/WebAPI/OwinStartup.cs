@@ -50,7 +50,10 @@ namespace OpenIIoT.Core.Service.WebAPI
                     c.DescribeAllEnumsAsStrings();
                     c.OperationFilter<MimeTypeOperationFilter>();
                 })
-                .EnableSwaggerUi();
+                .EnableSwaggerUi(c =>
+                {
+                    c.EnableApiKeySupport("X-ApiKey", "header");
+                });
 
             // config.Routes.MapHttpRoute(
             // name: "DefaultApi",
