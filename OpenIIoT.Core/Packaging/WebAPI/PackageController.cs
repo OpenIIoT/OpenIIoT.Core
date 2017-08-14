@@ -60,7 +60,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>
-    [RoutePrefix("api")]
+    [RoutePrefix(WebAPIConstants.RoutePrefix)]
     public class PackageController : ApiBaseController
     {
         #region Variables
