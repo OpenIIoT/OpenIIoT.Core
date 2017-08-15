@@ -62,6 +62,7 @@ using OpenIIoT.SDK.Plugin;
 using OpenIIoT.SDK.Plugin.Connector;
 using Utility.CommandLine;
 using Utility.OperationResult;
+using OpenIIoT.Core.Security;
 
 namespace OpenIIoT.Core
 {
@@ -123,6 +124,7 @@ namespace OpenIIoT.Core
         {
             typeof(PlatformManager),
             typeof(ConfigurationManager),
+            typeof(SecurityManager),
             typeof(EventManager),
             typeof(PluginManager),
             typeof(ModelManager),
