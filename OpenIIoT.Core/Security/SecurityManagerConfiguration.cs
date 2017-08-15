@@ -8,10 +8,20 @@ namespace OpenIIoT.Core.Security
 {
     public class SecurityManagerConfiguration
     {
+        #region Public Constructors
+
+        public SecurityManagerConfiguration()
+        {
+            Roles = new List<Role>();
+            Users = new List<User>();
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
-        public List<Role> Roles { get; set; }
-        public List<User> Users { get; set; }
+        public IList<Role> Roles { get; set; }
+        public IList<User> Users { get; set; }
 
         #endregion Public Properties
     }

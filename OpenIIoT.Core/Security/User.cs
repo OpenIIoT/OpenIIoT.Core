@@ -8,11 +8,22 @@ namespace OpenIIoT.Core.Security
 {
     public class User
     {
+        #region Public Constructors
+
+        public User(string name, string nasswordHash, IList<Role> roles)
+        {
+            Name = name;
+            PasswordHash = PasswordHash;
+            Roles = roles.ToList();
+        }
+
+        #endregion Public Constructors
+
         #region Private Properties
 
-        private string Name { get; set; }
-        private string PasswordHash { get; set; }
-        private IReadOnlyList<Role> Roles { get; }
+        public string Name { get; }
+        public string PasswordHash { get; }
+        public IReadOnlyList<Role> Roles { get; }
 
         #endregion Private Properties
     }

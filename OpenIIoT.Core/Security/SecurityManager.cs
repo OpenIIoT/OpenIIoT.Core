@@ -186,6 +186,7 @@ namespace OpenIIoT.Core.Security
                 IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
+                    createResult.ReturnValue.Users.Add(SecurityConstants.DefaultUser);
                     logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.ReturnValue);
                 }
@@ -278,7 +279,8 @@ namespace OpenIIoT.Core.Security
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
-            IResult retVal = new Result();
+
+            IResult retVal = Configure();
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);

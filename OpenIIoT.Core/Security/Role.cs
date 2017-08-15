@@ -10,8 +10,8 @@ namespace OpenIIoT.Core.Security
     {
         #region Private Properties
 
-        private string Description { get; set; }
-        private string Name { get; set; }
+        public string Description { get; set; }
+        public string Name { get; set; }
 
         #endregion Private Properties
     }
