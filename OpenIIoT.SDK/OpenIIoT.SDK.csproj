@@ -114,6 +114,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Security\ISecurityManager.cs" />
     <Compile Include="Service\WebAPI\HubHelper.cs" />
     <Compile Include="Service\WebAPI\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
@@ -171,9 +172,7 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Security\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

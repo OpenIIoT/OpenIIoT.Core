@@ -52,8 +52,9 @@ using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK.Configuration;
+using OpenIIoT.SDK.Security;
 
-namespace OpenIIoT.Core.Platform
+namespace OpenIIoT.Core.Security
 {
     [Discoverable]
     public class SecurityManager : Manager, ISecurityManager, IConfigurable<SecurityManagerConfiguration>
@@ -97,7 +98,38 @@ namespace OpenIIoT.Core.Platform
 
         #endregion Private Constructors
 
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the Configuration for the Manager.
+        /// </summary>
+        public SecurityManagerConfiguration Configuration { get; private set; }
+
+        /// <summary>
+        ///     Gets the ConfigurationDefinition for the Manager.
+        /// </summary>
+        public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
+
+        #endregion Public Properties
+
         #region Public Methods
+
+        /// <summary>
+        ///     Returns the ConfigurationDefinition for the Model Manager.
+        /// </summary>
+        /// <returns>The ConfigurationDefinition for the Model Manager.</returns>
+        public static IConfigurationDefinition GetConfigurationDefinition()
+        {
+            ConfigurationDefinition retVal = new ConfigurationDefinition();
+            retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
+            retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
+            retVal.Model = typeof(SecurityManagerConfiguration);
+
+            SecurityManagerConfiguration config = new SecurityManagerConfiguration();
+            retVal.DefaultConfiguration = config;
+
+            return retVal;
+        }
 
         /// <summary>
         ///     Instantiates and/or returns the SecurityManager instance.
@@ -109,7 +141,7 @@ namespace OpenIIoT.Core.Platform
         /// </remarks>
         /// <param name="manager">The ApplicationManager instance for the application.</param>
         /// <returns>The Singleton instance of PlatformManager.</returns>
-        public static IPlatformManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
+        public static ISecurityManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             if (instance == null)
             {
@@ -125,6 +157,87 @@ namespace OpenIIoT.Core.Platform
         public static void Terminate()
         {
             instance = null;
+        }
+
+        /// <summary>
+        ///     Configures the Model Manager using the configuration stored in the Configuration Manager, or, failing that, using
+        ///     the default configuration.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult Configure()
+        {
+            logger.EnterMethod();
+
+            logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
+            Result retVal = new Result();
+
+            IResult<SecurityManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<SecurityManagerConfiguration>(this.GetType());
+
+            // if the fetch succeeded, configure this instance with the result.
+            if (fetchResult.ResultCode != ResultCode.Failure)
+            {
+                logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
+                Configure(fetchResult.ReturnValue);
+            }
+            else
+            {
+                // if the fetch failed, add a new default instance to the configuration and try again.
+                logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
+                IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                if (createResult.ResultCode != ResultCode.Failure)
+                {
+                    logger.Debug("Successfully added the configuration.  Configuring...");
+                    Configure(createResult.ReturnValue);
+                }
+                else
+                {
+                    retVal.Incorporate(createResult);
+                }
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Configures the Manager using the supplied configuration, then saves the configuration to the Model Manager.
+        /// </summary>
+        /// <param name="configuration">The configuration with which the Manager should be configured.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult Configure(SecurityManagerConfiguration configuration)
+        {
+            logger.EnterMethod(xLogger.Params(configuration));
+
+            Result retVal = new Result();
+
+            // update the configuration
+            Configuration = configuration;
+            logger.Debug("Successfully configured the Manager.");
+
+            // save it
+            logger.Debug("Saving the new configuration...");
+            retVal.Incorporate(SaveConfiguration());
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Saves the configuration to the Configuration Manager.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult SaveConfiguration()
+        {
+            logger.EnterMethod();
+            Result retVal = new Result();
+
+            retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration));
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
         #endregion Public Methods
