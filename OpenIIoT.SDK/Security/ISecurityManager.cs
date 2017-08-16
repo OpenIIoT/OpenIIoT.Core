@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OpenIIoT.SDK.Common;
 
 namespace OpenIIoT.SDK.Security
 {
-    public interface ISecurityManager
+    public interface ISecurityManager : IManager
     {
     }
 }

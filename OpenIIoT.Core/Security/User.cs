@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Security
 {
@@ -10,20 +7,30 @@ namespace OpenIIoT.Core.Security
     {
         #region Public Constructors
 
-        public User(string name, string nasswordHash, IList<Role> roles)
+        public User(string name, string email, string passwordHash)
+            : this(name, email, passwordHash, false)
+        {
+        }
+
+        public User(string name, string email, string passwordHash, bool isAdministrator)
         {
             Name = name;
-            PasswordHash = PasswordHash;
-            Roles = roles.ToList();
+            Email = email;
+            PasswordHash = passwordHash;
+            IsAdministrator = isAdministrator;
         }
 
         #endregion Public Constructors
 
         #region Private Properties
 
+        public string Email { get; }
+
+        public bool IsAdministrator { get; }
+
         public string Name { get; }
+
         public string PasswordHash { get; }
-        public IReadOnlyList<Role> Roles { get; }
 
         #endregion Private Properties
     }

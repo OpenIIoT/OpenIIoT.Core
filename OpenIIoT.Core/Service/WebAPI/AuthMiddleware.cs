@@ -18,9 +18,7 @@ namespace OpenIIoT.Core.Service.WebAPI
         /// </summary>
         private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
 
-        private IApplicationManager Manager => ApplicationManager.GetInstance();
-
-        private ISecurityManager SecurityManager => Manager.GetManager<ISecurityManager>();
+        private ISecurityManager SecurityManager => ApplicationManager.GetInstance().GetManager<ISecurityManager>();
 
         #endregion Private Fields
 

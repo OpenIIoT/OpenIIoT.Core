@@ -12,7 +12,6 @@ namespace OpenIIoT.Core.Security
 
         public SecurityManagerConfiguration()
         {
-            Roles = new List<Role>();
             Users = new List<User>();
         }
 
@@ -20,7 +19,6 @@ namespace OpenIIoT.Core.Security
 
         #region Public Properties
 
-        public IList<Role> Roles { get; set; }
         public IList<User> Users { get; set; }
 
         #endregion Public Properties

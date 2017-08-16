@@ -217,7 +217,6 @@
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\ScriptManager.cs" />
-    <Compile Include="Security\Role.cs" />
     <Compile Include="Security\SecurityConstants.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
