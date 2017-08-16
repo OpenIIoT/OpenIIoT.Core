@@ -1,7 +1,10 @@
 ﻿using Microsoft.Owin;
 using NLog;
 using NLog.xLogger;
+using OpenIIoT.SDK;
+using OpenIIoT.SDK.Security;
 using System;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Service.WebAPI
@@ -14,6 +17,10 @@ namespace OpenIIoT.Core.Service.WebAPI
         ///     The main logger for the application.
         /// </summary>
         private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+
+        private IApplicationManager Manager => ApplicationManager.GetInstance();
+
+        private ISecurityManager SecurityManager => Manager.GetManager<ISecurityManager>();
 
         #endregion Private Fields
 
@@ -44,11 +51,24 @@ namespace OpenIIoT.Core.Service.WebAPI
             {
                 if (!context.Request.Headers.ContainsKey("X-ApiKey"))
                 {
-                    logger.Info("MISSING AUTH");
-                    context.Response.StatusCode = 401;
-                    context.Response.ReasonPhrase = "Get lost";
-                    context.Response.Redirect("http://reddit.com");
-                    return;
+                    ClaimsIdentity identity = new ClaimsIdentity("Basic");
+                    identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
+                    identity.AddClaim(new Claim(ClaimTypes.Role, "Public"));
+
+                    context.Request.User = new ClaimsPrincipal(identity);
+                    //logger.Info("MISSING AUTH");
+                    //context.Response.StatusCode = 401;
+                    //context.Response.ReasonPhrase = "Get lost";
+                    //context.Response.Redirect("http://reddit.com");
+                    //return;
+                }
+                else
+                {
+                    ClaimsIdentity identity = new ClaimsIdentity("Basic");
+                    identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
+                    identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
+
+                    context.Request.User = new ClaimsPrincipal(identity);
                 }
             }
 
