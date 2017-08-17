@@ -7,6 +7,8 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using System.Security.Claims;
 using System;
+using OpenIIoT.SDK.Security;
+using System.Linq;
 
 namespace OpenIIoT.Core.Security.WebAPI
 {
@@ -24,9 +26,19 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// </summary>
         private IApplicationManager manager = ApplicationManager.GetInstance();
 
+        private ISecurityManager SecurityManager => manager.GetManager<ISecurityManager>();
+
         #endregion Variables
 
         #region Instance Methods
+
+        [HttpGet]
+        [Authorize]
+        [Route("v1/security/sessions")]
+        public async Task<HttpResponseMessage> GetSessions()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions);
+        }
 
         [HttpPost]
         [AllowAnonymous]
@@ -37,10 +49,11 @@ namespace OpenIIoT.Core.Security.WebAPI
 
             ClaimsIdentity identity = new ClaimsIdentity("Basic");
             identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
-            identity.AddClaim(new Claim(ClaimTypes.Role, "Public"));
+
+            identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
             identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
 
-            Request.GetOwinContext().Authentication.User = new ClaimsPrincipal(identity);
+            manager.GetManager<ISecurityManager>().StartSession(new ClaimsPrincipal(identity));
 
             return Request.CreateResponse(HttpStatusCode.OK, hash);
         }
@@ -50,7 +63,19 @@ namespace OpenIIoT.Core.Security.WebAPI
         [Route("v1/security/logout")]
         public async Task<HttpResponseMessage> Logout()
         {
-            return Request.CreateResponse(HttpStatusCode.OK);
+            if (Request.Headers.Contains("X-ApiKey"))
+            {
+                string key = Request.Headers.GetValues("X-ApiKey").FirstOrDefault();
+                ClaimsPrincipal principal = SecurityManager.FindSession(key);
+
+                if (principal != default(ClaimsPrincipal))
+                {
+                    SecurityManager.EndSession(principal);
+                }
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            return Request.CreateResponse(HttpStatusCode.NotFound);
         }
 
         #endregion Instance Methods

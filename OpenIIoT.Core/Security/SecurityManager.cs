@@ -54,6 +54,7 @@ using OpenIIoT.Core.Common;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Security;
 using System.Security.Claims;
+using System.Linq;
 
 namespace OpenIIoT.Core.Security
 {
@@ -91,6 +92,8 @@ namespace OpenIIoT.Core.Security
 
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
+
+            SessionList = new List<ClaimsPrincipal>();
 
             ChangeState(State.Initialized);
 
@@ -164,12 +167,6 @@ namespace OpenIIoT.Core.Security
             instance = null;
         }
 
-        public IResult AddSession(ClaimsPrincipal principal)
-        {
-            SessionList.Add(principal);
-            return new Result();
-        }
-
         /// <summary>
         ///     Configures the Model Manager using the configuration stored in the Configuration Manager, or, failing that, using
         ///     the default configuration.
@@ -236,6 +233,17 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
+        public IResult EndSession(ClaimsPrincipal principal)
+        {
+            SessionList.Remove(principal);
+            return new Result();
+        }
+
+        public ClaimsPrincipal FindSession(string key)
+        {
+            return SessionList.Where(s => s.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
+        }
+
         /// <summary>
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
@@ -250,6 +258,12 @@ namespace OpenIIoT.Core.Security
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
+        }
+
+        public IResult StartSession(ClaimsPrincipal principal)
+        {
+            SessionList.Add(principal);
+            return new Result();
         }
 
         #endregion Public Methods

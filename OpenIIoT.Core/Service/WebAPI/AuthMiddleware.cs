@@ -1,9 +1,11 @@
 ﻿using Microsoft.Owin;
 using NLog;
 using NLog.xLogger;
+using OpenIIoT.Core.Security;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -44,11 +46,26 @@ namespace OpenIIoT.Core.Service.WebAPI
                 {
                     string key = context.Request.Headers["X-ApiKey"];
 
-                    ClaimsPrincipal principal = SecurityManager.Sessions.Where(s => s.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
+                    //IReadOnlyList<ClaimsPrincipal> sessions = SecurityManager.Sessions;
+
+                    //foreach (ClaimsPrincipal c in sessions)
+                    //{
+                    //    if (c.HasClaim(claim => claim.Type == ClaimTypes.Hash))
+                    //    {
+                    //        string hash = c.Claims.Where(claim => claim.Type == ClaimTypes.Hash).FirstOrDefault().Value;
+
+                    //        if (hash == key)
+                    //        {
+                    //            context.Request.User = c;
+                    //        }
+                    //    }
+                    //}
+
+                    ClaimsPrincipal principal = SecurityManager.FindSession(key);
 
                     if (principal != default(ClaimsPrincipal))
                     {
-                        context.Request.User = new ClaimsPrincipal(principal);
+                        context.Request.User = principal;
                     }
                 }
             }
