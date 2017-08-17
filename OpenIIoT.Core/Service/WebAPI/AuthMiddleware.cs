@@ -4,6 +4,7 @@ using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
 using System;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -34,39 +35,21 @@ namespace OpenIIoT.Core.Service.WebAPI
         {
             PathString apiPath;
 
-            try
-            {
-                apiPath = new PathString($"/{WebAPIConstants.RoutePrefix}");
-            }
-            catch (Exception ex)
-            {
-                logger.Error(ex);
-            }
-
+            apiPath = new PathString($"/{WebAPIConstants.RoutePrefix}");
             bool api = context.Request.Path.StartsWithSegments(apiPath);
 
             if (api)
             {
-                if (!context.Request.Headers.ContainsKey("X-ApiKey"))
+                if (context.Request.Headers.ContainsKey("X-ApiKey"))
                 {
-                    ClaimsIdentity identity = new ClaimsIdentity("Basic");
-                    identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
-                    identity.AddClaim(new Claim(ClaimTypes.Role, "Public"));
+                    string key = context.Request.Headers["X-ApiKey"];
 
-                    context.Request.User = new ClaimsPrincipal(identity);
-                    //logger.Info("MISSING AUTH");
-                    //context.Response.StatusCode = 401;
-                    //context.Response.ReasonPhrase = "Get lost";
-                    //context.Response.Redirect("http://reddit.com");
-                    //return;
-                }
-                else
-                {
-                    ClaimsIdentity identity = new ClaimsIdentity("Basic");
-                    identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
-                    identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
+                    ClaimsPrincipal principal = SecurityManager.Sessions.Where(s => s.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
 
-                    context.Request.User = new ClaimsPrincipal(identity);
+                    if (principal != default(ClaimsPrincipal))
+                    {
+                        context.Request.User = new ClaimsPrincipal(principal);
+                    }
                 }
             }
 

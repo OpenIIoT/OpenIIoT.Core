@@ -53,6 +53,7 @@ using Utility.OperationResult;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Security;
+using System.Security.Claims;
 
 namespace OpenIIoT.Core.Security
 {
@@ -110,6 +111,10 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
+        public IReadOnlyList<ClaimsPrincipal> Sessions => ((List<ClaimsPrincipal>)SessionList).AsReadOnly();
+
+        private IList<ClaimsPrincipal> SessionList { get; set; }
+
         #endregion Public Properties
 
         #region Public Methods
@@ -157,6 +162,12 @@ namespace OpenIIoT.Core.Security
         public static void Terminate()
         {
             instance = null;
+        }
+
+        public IResult AddSession(ClaimsPrincipal principal)
+        {
+            SessionList.Add(principal);
+            return new Result();
         }
 
         /// <summary>

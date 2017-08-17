@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -10,10 +11,11 @@ namespace OpenIIoT.Core.Security
     {
         #region Private Properties
 
-        private DateTime Created { get; }
-        private DateTime Expires { get; }
-        private Guid Token { get; }
-        private User User { get; }
+        public Session(ClaimsPrincipal principal)
+        {
+        }
+
+        private ClaimsPrincipal Principal { get; }
 
         #endregion Private Properties
     }
