@@ -63,19 +63,11 @@ namespace OpenIIoT.Core.Security.WebAPI
         [Route("v1/security/logout")]
         public async Task<HttpResponseMessage> Logout()
         {
-            if (Request.Headers.Contains("X-ApiKey"))
-            {
-                string key = Request.Headers.GetValues("X-ApiKey").FirstOrDefault();
-                ClaimsPrincipal principal = SecurityManager.FindSession(key);
+            ClaimsPrincipal principal = Request.GetOwinContext().Authentication.User;
 
-                if (principal != default(ClaimsPrincipal))
-                {
-                    SecurityManager.EndSession(principal);
-                }
+            SecurityManager.EndSession(principal);
 
-                return Request.CreateResponse(HttpStatusCode.OK);
-            }
-            return Request.CreateResponse(HttpStatusCode.NotFound);
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         #endregion Instance Methods
