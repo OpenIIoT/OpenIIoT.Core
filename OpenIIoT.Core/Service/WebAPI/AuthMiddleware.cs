@@ -42,24 +42,9 @@ namespace OpenIIoT.Core.Service.WebAPI
 
             if (api)
             {
-                if (context.Request.Headers.ContainsKey("X-ApiKey"))
+                if (context.Request.Headers.ContainsKey("X-APIKey"))
                 {
-                    string key = context.Request.Headers["X-ApiKey"];
-
-                    //IReadOnlyList<ClaimsPrincipal> sessions = SecurityManager.Sessions;
-
-                    //foreach (ClaimsPrincipal c in sessions)
-                    //{
-                    //    if (c.HasClaim(claim => claim.Type == ClaimTypes.Hash))
-                    //    {
-                    //        string hash = c.Claims.Where(claim => claim.Type == ClaimTypes.Hash).FirstOrDefault().Value;
-
-                    //        if (hash == key)
-                    //        {
-                    //            context.Request.User = c;
-                    //        }
-                    //    }
-                    //}
+                    string key = context.Request.Headers["X-APIKey"];
 
                     ClaimsPrincipal principal = SecurityManager.FindSession(key);
 

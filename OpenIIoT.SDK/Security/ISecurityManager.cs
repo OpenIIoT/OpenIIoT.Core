@@ -9,13 +9,11 @@ namespace OpenIIoT.SDK.Security
     {
         #region Public Properties
 
-        IReadOnlyList<ClaimsPrincipal> Sessions { get; }
-
         IResult EndSession(ClaimsPrincipal principal);
 
         ClaimsPrincipal FindSession(string key);
 
-        IResult StartSession(ClaimsPrincipal principal);
+        IResult<KeyValuePair<string, ClaimsPrincipal>> StartSession(string user, string password);
 
         #endregion Public Properties
     }

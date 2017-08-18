@@ -9,6 +9,8 @@ using System.Security.Claims;
 using System;
 using OpenIIoT.SDK.Security;
 using System.Linq;
+using Utility.OperationResult;
+using System.Collections.Generic;
 
 namespace OpenIIoT.Core.Security.WebAPI
 {
@@ -34,10 +36,10 @@ namespace OpenIIoT.Core.Security.WebAPI
 
         [HttpGet]
         [Authorize]
-        [Route("v1/security/sessions")]
-        public async Task<HttpResponseMessage> GetSessions()
+        [Route("v1/security/users")]
+        public async Task<HttpResponseMessage> GetUsers()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions);
+            return Request.CreateResponse(HttpStatusCode.OK);
         }
 
         [HttpPost]
@@ -45,17 +47,9 @@ namespace OpenIIoT.Core.Security.WebAPI
         [Route("v1/security/login/{user}/{password}")]
         public async Task<HttpResponseMessage> Login(string user, string password)
         {
-            string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
+            IResult<KeyValuePair<string, ClaimsPrincipal>> retVal = SecurityManager.StartSession(user, password);
 
-            ClaimsIdentity identity = new ClaimsIdentity("Basic");
-            identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
-
-            identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
-            identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
-
-            manager.GetManager<ISecurityManager>().StartSession(new ClaimsPrincipal(identity));
-
-            return Request.CreateResponse(HttpStatusCode.OK, hash);
+            return Request.CreateResponse(HttpStatusCode.OK, retVal.ReturnValue.Key);
         }
 
         [HttpPost]

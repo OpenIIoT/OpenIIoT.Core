@@ -61,7 +61,7 @@ namespace OpenIIoT.Core.Service.WebAPI
                 })
                 .EnableSwaggerUi(c =>
                 {
-                    c.EnableApiKeySupport("X-ApiKey", "header");
+                    c.EnableApiKeySupport("X-APIKey", "header");
                 });
 
             // config.Routes.MapHttpRoute(

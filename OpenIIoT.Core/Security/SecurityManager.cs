@@ -260,10 +260,26 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
-        public IResult StartSession(ClaimsPrincipal principal)
+        public IResult<KeyValuePair<string, ClaimsPrincipal>> StartSession(string user, string password)
         {
+            logger.EnterMethod(xLogger.Params(user, xLogger.Exclude()));
+            IResult<KeyValuePair<string, ClaimsPrincipal>> retVal = new Result<KeyValuePair<string, ClaimsPrincipal>>();
+
+            string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
+
+            ClaimsIdentity identity = new ClaimsIdentity("APIKey");
+            identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
+            identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
+            identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
+
+            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+
             SessionList.Add(principal);
-            return new Result();
+            retVal.ReturnValue = new KeyValuePair<string, ClaimsPrincipal>(hash, principal);
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
         #endregion Public Methods

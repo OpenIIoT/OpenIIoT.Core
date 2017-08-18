@@ -115,6 +115,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Security\ISecurityManager.cs" />
+    <Compile Include="Security\User.cs" />
     <Compile Include="Service\WebAPI\HubHelper.cs" />
     <Compile Include="Service\WebAPI\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
