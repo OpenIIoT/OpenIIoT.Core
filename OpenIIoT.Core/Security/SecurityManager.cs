@@ -194,7 +194,7 @@ namespace OpenIIoT.Core.Security
                 IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
-                    createResult.ReturnValue.Users.Add(SecurityConstants.DefaultUser);
+                    createResult.ReturnValue.Users.Add(new User(GetDefaultUser(), GetDefaultUserEmail(), GetDefaultUserPasswordHash()));
                     logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.ReturnValue);
                 }
@@ -326,6 +326,21 @@ namespace OpenIIoT.Core.Security
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
+        }
+
+        private static string GetDefaultUser()
+        {
+            return Utility.GetSetting("DefaultUser", "admin");
+        }
+
+        private static string GetDefaultUserEmail()
+        {
+            return Utility.GetSetting("DefaultUserEmail", "admin@localhost");
+        }
+
+        private static string GetDefaultUserPasswordHash()
+        {
+            return Utility.GetSetting("DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
         }
 
         #endregion Protected Methods
