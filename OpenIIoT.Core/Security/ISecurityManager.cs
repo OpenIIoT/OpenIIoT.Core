@@ -39,8 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using System.Collections.Generic;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Provider.EventProvider;
 using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Security
@@ -50,6 +52,46 @@ namespace OpenIIoT.Core.Security
     /// </summary>
     public interface ISecurityManager : IManager
     {
+        #region Public Events
+
+        /// <summary>
+        ///     Occurs when a Session is ended.
+        /// </summary>
+        [Event(Description = "Occurs when a Session is ended.")]
+        event EventHandler<SessionEventArgs> SessionEnded;
+
+        /// <summary>
+        ///     Occurs when a Session is extended.
+        /// </summary>
+        [Event(Description = "Occurs when a Session is extended.")]
+        event EventHandler<SessionEventArgs> SessionExtended;
+
+        /// <summary>
+        ///     Occurs when a Session is started.
+        /// </summary>
+        [Event(Description = "Occurs when a Session is started.")]
+        event EventHandler<SessionEventArgs> SessionStarted;
+
+        /// <summary>
+        ///     Occurs when a User is created.
+        /// </summary>
+        [Event(Description = "Occurs when a User is created.")]
+        event EventHandler<UserEventArgs> UserCreated;
+
+        /// <summary>
+        ///     Occurs when a User is deleted.
+        /// </summary>
+        [Event(Description = "Occurs when a User is deleted.")]
+        event EventHandler<UserEventArgs> UserDeleted;
+
+        /// <summary>
+        ///     Occurs when a User is updated.
+        /// </summary>
+        [Event(Description = "Occurs when a User is updated.")]
+        event EventHandler<UserEventArgs> UserUpdated;
+
+        #endregion Public Events
+
         #region Public Properties
 
         /// <summary>
@@ -93,6 +135,13 @@ namespace OpenIIoT.Core.Security
         /// <param name="session">The Session to end.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         IResult EndSession(Session session);
+
+        /// <summary>
+        ///     Extends the specified <see cref="Session"/> to the configured session length.
+        /// </summary>
+        /// <param name="session">The Session to extend.</param>
+        /// <returns>A Result containing the result of the operation and the extended Session.</returns>
+        IResult<Session> ExtendSession(Session session);
 
         /// <summary>
         ///     Finds the <see cref="Session"/> matching the specified <paramref name="apiKey"/>.

@@ -115,6 +115,12 @@ namespace OpenIIoT.Core.Security
         public event EventHandler<SessionEventArgs> SessionEnded;
 
         /// <summary>
+        ///     Occurs when a Session is extended.
+        /// </summary>
+        [Event(Description = "Occurs when a Session is extended.")]
+        public event EventHandler<SessionEventArgs> SessionExtended;
+
+        /// <summary>
         ///     Occurs when a Session is started.
         /// </summary>
         [Event(Description = "Occurs when a Session is started.")]
