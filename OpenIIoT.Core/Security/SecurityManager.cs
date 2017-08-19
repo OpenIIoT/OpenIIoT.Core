@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █
+      █  Manages the security subsystem.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -43,6 +43,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.Owin.Security;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
@@ -52,10 +53,13 @@ using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
-using Microsoft.Owin.Security;
+using OpenIIoT.SDK.Common.Provider.EventProvider;
 
 namespace OpenIIoT.Core.Security
 {
+    /// <summary>
+    ///     Manages the security subsystem.
+    /// </summary>
     [Discoverable]
     public class SecurityManager : Manager, ISecurityManager, IConfigurable<SecurityManagerConfiguration>
     {
@@ -78,8 +82,8 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Initializes a new instance of the <see cref="SecurityManager"/> class.
         /// </summary>
-        /// <param name="manager">The ApplicationManager instance for the application.</param>
-        /// <param name="configurationManager">The ConfigurationManager instance for the application.</param>
+        /// <param name="manager">The IApplicationManager instance for the application.</param>
+        /// <param name="configurationManager">The IConfigurationManager instance for the application.</param>
         private SecurityManager(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             base.logger = logger;
@@ -101,6 +105,40 @@ namespace OpenIIoT.Core.Security
 
         #endregion Private Constructors
 
+        #region Public Events
+
+        /// <summary>
+        ///     Occurs when a Session is ended.
+        /// </summary>
+        [Event(Description = "Occurs when a Session is ended.")]
+        public event EventHandler<SessionEventArgs> SessionEnded;
+
+        /// <summary>
+        ///     Occurs when a Session is started.
+        /// </summary>
+        [Event(Description = "Occurs when a Session is started.")]
+        public event EventHandler<SessionEventArgs> SessionStarted;
+
+        /// <summary>
+        ///     Occurs when a User is created.
+        /// </summary>
+        [Event(Description = "Occurs when a User is created.")]
+        public event EventHandler<UserEventArgs> UserCreated;
+
+        /// <summary>
+        ///     Occurs when a User is deleted.
+        /// </summary>
+        [Event(Description = "Occurs when a User is deleted.")]
+        public event EventHandler<UserEventArgs> UserDeleted;
+
+        /// <summary>
+        ///     Occurs when a User is updated.
+        /// </summary>
+        [Event(Description = "Occurs when a User is updated.")]
+        public event EventHandler<UserEventArgs> UserUpdated;
+
+        #endregion Public Events
+
         #region Public Properties
 
         /// <summary>
@@ -113,15 +151,36 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
-        public IReadOnlyList<Role> Roles => new[] { Role.Guest, Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
+        /// <summary>
+        ///     Gets the list of built-in <see cref="Role"/> s.
+        /// </summary>
+        public IReadOnlyList<Role> Roles => new[] { Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
 
+        /// <summary>
+        ///     Gets the list of active <see cref="Session"/> s.
+        /// </summary>
         public IReadOnlyList<Session> Sessions => ((List<Session>)SessionList).AsReadOnly();
-        public IReadOnlyList<User> Users => ((List<User>)UserList).AsReadOnly();
-        private IList<Session> SessionList { get; set; }
 
-        private IList<User> UserList { get; set; }
+        /// <summary>
+        ///     Gets the list of configured <see cref="User"/> s.
+        /// </summary>
+        public IReadOnlyList<User> Users => ((List<User>)UserList).AsReadOnly();
 
         #endregion Public Properties
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the list of active <see cref="Session"/> s.
+        /// </summary>
+        private IList<Session> SessionList { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the list of configured <see cref="User"/> s.
+        /// </summary>
+        private IList<User> UserList { get; set; }
+
+        #endregion Private Properties
 
         #region Public Methods
 
@@ -137,6 +196,8 @@ namespace OpenIIoT.Core.Security
             retVal.Model = typeof(SecurityManagerConfiguration);
 
             SecurityManagerConfiguration config = new SecurityManagerConfiguration();
+            config.Users.Add(new User(GetDefaultUser(), GetDefaultUserPasswordHash(), Role.Administrator));
+
             retVal.DefaultConfiguration = config;
 
             return retVal;
@@ -150,7 +211,8 @@ namespace OpenIIoT.Core.Security
         ///     which are then passed to this method. To specify additional dependencies simply insert them into the parameter list
         ///     for the method and they will be injected when the method is invoked.
         /// </remarks>
-        /// <param name="manager">The ApplicationManager instance for the application.</param>
+        /// <param name="manager">The IApplicationManager instance for the application.</param>
+        /// <param name="configurationManager">The IConfigurationManager instance for the application.</param>
         /// <returns>The Singleton instance of PlatformManager.</returns>
         public static ISecurityManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
         {
@@ -171,14 +233,13 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
-        ///     Configures the Model Manager using the configuration stored in the Configuration Manager, or, failing that, using
-        ///     the default configuration.
+        ///     Configures the Manager using the configuration stored in the Configuration Manager, or, failing that, using the
+        ///     default configuration.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult Configure()
         {
             logger.EnterMethod();
-
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
@@ -197,7 +258,6 @@ namespace OpenIIoT.Core.Security
                 IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
-                    createResult.ReturnValue.Users.Add(new User() { Name = GetDefaultUser(), PasswordHash = GetDefaultUserPasswordHash(), Role = Role.Administrator });
                     logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.ReturnValue);
                 }
@@ -223,14 +283,11 @@ namespace OpenIIoT.Core.Security
 
             Result retVal = new Result();
 
-            // update the configuration
             Configuration = configuration;
-
             UserList = Configuration.Users;
 
             logger.Debug("Successfully configured the Manager.");
 
-            // save it
             logger.Debug("Saving the new configuration...");
             retVal.Incorporate(SaveConfiguration());
 
@@ -239,18 +296,39 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
+        /// <summary>
+        ///     Creates a new <see cref="User"/>.
+        /// </summary>
+        /// <param name="name">The name of the new User.</param>
+        /// <param name="password">The plaintext password for the new User.</param>
+        /// <param name="role">The Role for the new User.</param>
+        /// <returns>A Result containing the result of the operation and the newly created User.</returns>
         public IResult<User> CreateUser(string name, string password, Role role)
         {
-            User user = default(User);
+            logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
+            logger.Info($"Creating new User '{name}' with Role '{role}'...");
+
+            IResult<User> retVal = new Result<User>();
+            retVal.ReturnValue = default(User);
 
             if (FindUser(name) == default(User))
             {
-                user = new User() { Name = name, PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password), Role = role };
-
-                UserList.Add(user);
+                retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
+                UserList.Add(retVal.ReturnValue);
+            }
+            else
+            {
+                retVal.AddError($"User '{name}' already exists.");
             }
 
-            return new Result<User>().SetReturnValue(user);
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to create User '{name}'.");
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public IResult DeleteUser(User user)
@@ -400,6 +478,10 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
+        #endregion Protected Methods
+
+        #region Private Methods
+
         private static string GetDefaultUser()
         {
             return Utility.GetSetting("DefaultUser", "admin");
@@ -410,6 +492,6 @@ namespace OpenIIoT.Core.Security
             return Utility.GetSetting("DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
         }
 
-        #endregion Protected Methods
+        #endregion Private Methods
     }
 }

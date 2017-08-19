@@ -72,7 +72,7 @@ namespace OpenIIoT.Core.Security
         #region Public Methods
 
         /// <summary>
-        ///     Creates a new <see cref="User"/> and adds it to the list of <see cref="Users"/>.
+        ///     Creates a new <see cref="User"/>.
         /// </summary>
         /// <param name="name">The name of the new User.</param>
         /// <param name="password">The plaintext password for the new User.</param>
