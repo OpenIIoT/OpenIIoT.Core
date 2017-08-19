@@ -266,7 +266,7 @@ namespace OpenIIoT.Core.Security
 
             string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
 
-            ClaimsIdentity identity = new ClaimsIdentity("APIKey");
+            ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
             identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
             identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
             identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
