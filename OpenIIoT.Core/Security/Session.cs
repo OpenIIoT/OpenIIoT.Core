@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Owin.Security;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -11,10 +12,10 @@ namespace OpenIIoT.Core.Security
     {
         #region Public Constructors
 
-        public Session(string apiKey, ClaimsPrincipal principal)
+        public Session(string apiKey, AuthenticationTicket ticket)
         {
             ApiKey = apiKey;
-            Principal = principal;
+            Ticket = ticket;
         }
 
         #endregion Public Constructors
@@ -22,7 +23,7 @@ namespace OpenIIoT.Core.Security
         #region Private Properties
 
         public string ApiKey { get; }
-        public ClaimsPrincipal Principal { get; }
+        public AuthenticationTicket Ticket { get; }
 
         #endregion Private Properties
     }

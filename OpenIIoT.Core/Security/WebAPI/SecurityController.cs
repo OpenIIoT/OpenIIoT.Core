@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using Utility.OperationResult;
 using System.Collections.Generic;
+using Microsoft.Owin.Security;
 
 namespace OpenIIoT.Core.Security.WebAPI
 {
@@ -96,6 +97,14 @@ namespace OpenIIoT.Core.Security.WebAPI
 
         [HttpGet]
         [Authorize]
+        [Route("v1/security/session")]
+        public HttpResponseMessage GetSessions()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+        }
+
+        [HttpGet]
+        [Authorize]
         [Route("v1/security/user")]
         public HttpResponseMessage GetUsers()
         {
@@ -117,12 +126,20 @@ namespace OpenIIoT.Core.Security.WebAPI
         [Route("v1/security/logout")]
         public HttpResponseMessage Logout()
         {
-            ClaimsPrincipal principal = Request.GetOwinContext().Authentication.User;
-            Session session = SecurityManager.FindSession(principal);
+            string apiKey = Request.GetOwinContext().Authentication.User.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value;
 
-            SecurityManager.EndSession(session);
+            if (!string.IsNullOrEmpty(apiKey))
+            {
+                Session session = SecurityManager.FindSession(apiKey);
 
-            return Request.CreateResponse(HttpStatusCode.OK);
+                SecurityManager.EndSession(session);
+
+                return Request.CreateResponse(HttpStatusCode.OK);
+            }
+            else
+            {
+                return Request.CreateResponse(HttpStatusCode.BadRequest);
+            }
         }
 
         [HttpPut]

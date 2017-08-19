@@ -52,6 +52,7 @@ using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
+using Microsoft.Owin.Security;
 
 namespace OpenIIoT.Core.Security
 {
@@ -114,8 +115,8 @@ namespace OpenIIoT.Core.Security
 
         public IReadOnlyList<Role> Roles => new[] { Role.Guest, Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
 
+        public IReadOnlyList<Session> Sessions => ((List<Session>)SessionList).AsReadOnly();
         public IReadOnlyList<User> Users => ((List<User>)UserList).AsReadOnly();
-
         private IList<Session> SessionList { get; set; }
 
         private IList<User> UserList { get; set; }
@@ -265,12 +266,7 @@ namespace OpenIIoT.Core.Security
 
         public Session FindSession(string key)
         {
-            return SessionList.Where(s => s.Principal.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
-        }
-
-        public Session FindSession(ClaimsPrincipal principal)
-        {
-            return SessionList.Where(s => s.Principal == principal).FirstOrDefault();
+            return SessionList.Where(s => s.Ticket.Identity.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
         }
 
         public User FindUser(string name)
@@ -308,9 +304,13 @@ namespace OpenIIoT.Core.Security
             identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
             identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
 
-            ClaimsPrincipal principal = new ClaimsPrincipal(identity);
+            AuthenticationProperties ticketProperties = new AuthenticationProperties();
+            ticketProperties.IssuedUtc = DateTime.UtcNow;
+            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(30);
 
-            Session session = new Session(hash, principal);
+            AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
+
+            Session session = new Session(hash, ticket);
 
             SessionList.Add(session);
             retVal.ReturnValue = session;

@@ -39,11 +39,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Security.Claims;
+using System.Collections.Generic;
 using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
-using System.Collections.Generic;
-using System;
 
 namespace OpenIIoT.Core.Security
 {
@@ -54,7 +52,15 @@ namespace OpenIIoT.Core.Security
     {
         #region Public Properties
 
+        /// <summary>
+        ///     Gets the list of built-in <see cref="Role"/> s.
+        /// </summary>
         IReadOnlyList<Role> Roles { get; }
+
+        /// <summary>
+        ///     Gets the list of active <see cref="Session"/> s.
+        /// </summary>
+        IReadOnlyList<Session> Sessions { get; }
 
         /// <summary>
         ///     Gets the list of configured <see cref="User"/> s.
@@ -65,8 +71,20 @@ namespace OpenIIoT.Core.Security
 
         #region Public Methods
 
+        /// <summary>
+        ///     Creates a new <see cref="User"/> and adds it to the list of <see cref="Users"/>.
+        /// </summary>
+        /// <param name="name">The name of the new User.</param>
+        /// <param name="password">The plaintext password for the new User.</param>
+        /// <param name="role">The Role for the new User.</param>
+        /// <returns>A Result containing the result of the operation and the newly created User.</returns>
         IResult<User> CreateUser(string name, string password, Role role);
 
+        /// <summary>
+        ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.
+        /// </summary>
+        /// <param name="user">The name of the User to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         IResult DeleteUser(User user);
 
         /// <summary>
@@ -84,12 +102,10 @@ namespace OpenIIoT.Core.Security
         Session FindSession(string apiKey);
 
         /// <summary>
-        ///     Finds the <see cref="Session"/> matching the specified <paramref name="principal"/>.
+        ///     Finds the <see cref="User"/> matching the specified <paramref name="name"/>.
         /// </summary>
-        /// <param name="principal">The Principal for the requested Session.</param>
-        /// <returns>The found Session.</returns>
-        Session FindSession(ClaimsPrincipal principal);
-
+        /// <param name="name">The name of the requested User.</param>
+        /// <returns>The found User.</returns>
         User FindUser(string name);
 
         /// <summary>
@@ -100,6 +116,13 @@ namespace OpenIIoT.Core.Security
         /// <returns>A Result containing the result of the operation and the created Session.</returns>
         IResult<Session> StartSession(string user, string password);
 
+        /// <summary>
+        ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
+        /// </summary>
+        /// <param name="user">The User to update.</param>
+        /// <param name="password">The updated plaintext password for the User.</param>
+        /// <param name="role">The updated Role for the user.</param>
+        /// <returns>A Result containing the result of the operation and the updated User.</returns>
         IResult<User> UpdateUser(User user, string password = null, Role role = Role.NotSpecified);
 
         #endregion Public Methods

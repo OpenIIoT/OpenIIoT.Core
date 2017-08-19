@@ -44,6 +44,7 @@ using Microsoft.Owin;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Security;
+using System.Security.Claims;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
@@ -103,7 +104,8 @@ namespace OpenIIoT.Core.Service.WebAPI
 
                 if (session != default(Session))
                 {
-                    context.Request.User = session.Principal;
+                    ClaimsPrincipal principal = new ClaimsPrincipal(session.Ticket.Identity);
+                    context.Request.User = principal;
                 }
             }
 
