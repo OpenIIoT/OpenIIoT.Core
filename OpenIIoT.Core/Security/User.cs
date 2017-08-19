@@ -1,8 +1,4 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace OpenIIoT.Core.Security
+﻿namespace OpenIIoT.Core.Security
 {
     public class User
     {
