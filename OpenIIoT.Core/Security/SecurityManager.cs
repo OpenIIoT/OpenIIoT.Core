@@ -52,7 +52,6 @@ using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Security;
 using System.Security.Claims;
 using System.Linq;
 
@@ -194,7 +193,7 @@ namespace OpenIIoT.Core.Security
                 IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
-                    createResult.ReturnValue.Users.Add(new User(GetDefaultUser(), GetDefaultUserEmail(), GetDefaultUserPasswordHash()));
+                    createResult.ReturnValue.Users.Add(new User() { Name = GetDefaultUser(), PasswordHash = GetDefaultUserPasswordHash(), Role = Role.Administrator });
                     logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.ReturnValue);
                 }
@@ -331,11 +330,6 @@ namespace OpenIIoT.Core.Security
         private static string GetDefaultUser()
         {
             return Utility.GetSetting("DefaultUser", "admin");
-        }
-
-        private static string GetDefaultUserEmail()
-        {
-            return Utility.GetSetting("DefaultUserEmail", "admin@localhost");
         }
 
         private static string GetDefaultUserPasswordHash()

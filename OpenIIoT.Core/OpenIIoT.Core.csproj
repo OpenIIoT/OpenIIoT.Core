@@ -217,9 +217,12 @@
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\ScriptManager.cs" />
+    <Compile Include="Security\ISecurityManager.cs" />
+    <Compile Include="Security\Role.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
     <Compile Include="Security\Session.cs" />
+    <Compile Include="Security\User.cs" />
     <Compile Include="Security\WebAPI\SecurityController.cs" />
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />

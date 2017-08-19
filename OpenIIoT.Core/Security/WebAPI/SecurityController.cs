@@ -7,7 +7,6 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using System.Security.Claims;
 using System;
-using OpenIIoT.SDK.Security;
 using System.Linq;
 using Utility.OperationResult;
 using System.Collections.Generic;

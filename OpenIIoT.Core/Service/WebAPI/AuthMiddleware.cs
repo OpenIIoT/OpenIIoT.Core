@@ -3,7 +3,6 @@ using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Security;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;

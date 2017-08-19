@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Security.Claims;
 using Utility.OperationResult;
 
-namespace OpenIIoT.SDK.Security
+namespace OpenIIoT.Core.Security
 {
     public interface ISecurityManager : IManager
     {

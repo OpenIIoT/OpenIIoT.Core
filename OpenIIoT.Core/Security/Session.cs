@@ -9,13 +9,20 @@ namespace OpenIIoT.Core.Security
 {
     public class Session
     {
-        #region Private Properties
+        #region Public Constructors
 
-        public Session(ClaimsPrincipal principal)
+        public Session(string apiKey, ClaimsPrincipal principal)
         {
+            ApiKey = apiKey;
+            Principal = principal;
         }
 
-        private ClaimsPrincipal Principal { get; }
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        public string ApiKey { get; }
+        public ClaimsPrincipal Principal { get; }
 
         #endregion Private Properties
     }
