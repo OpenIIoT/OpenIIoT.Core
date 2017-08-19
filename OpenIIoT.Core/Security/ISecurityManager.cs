@@ -109,6 +109,13 @@ namespace OpenIIoT.Core.Security
         User FindUser(string name);
 
         /// <summary>
+        ///     Finds the <see cref="Session"/> belonging to the specified <see cref="User"/>.
+        /// </summary>
+        /// <param name="user">The User for which the Session is to be retrieved.</param>
+        /// <returns>The found Session.</returns>
+        Session FindUserSession(User user);
+
+        /// <summary>
         ///     Starts a new <see cref="Session"/> with the specified <paramref name="user"/> and <paramref name="password"/>
         /// </summary>
         /// <param name="user">The user for which the Session is to be started.</param>

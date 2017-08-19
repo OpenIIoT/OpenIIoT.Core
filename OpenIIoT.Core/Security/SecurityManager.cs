@@ -408,11 +408,23 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
-        public Session FindSession(string key)
+        /// <summary>
+        ///     Finds the <see cref="Session"/> matching the specified <paramref name="apiKey"/>.
+        /// </summary>
+        /// <param name="apiKey">The ApiKey for the requested Session.</param>
+        /// <returns>The found Session.</returns>
+        public Session FindSession(string apiKey)
         {
-            return SessionList.Where(s => s.Ticket.Identity.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
+            return SessionList
+                .Where(s => s.Ticket.Identity.Claims
+                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == apiKey).FirstOrDefault();
         }
 
+        /// <summary>
+        ///     Finds the <see cref="User"/> matching the specified <paramref name="name"/>.
+        /// </summary>
+        /// <param name="name">The name of the requested User.</param>
+        /// <returns>The found User.</returns>
         public User FindUser(string name)
         {
             return UserList.Where(u => u.Name == name).FirstOrDefault();
