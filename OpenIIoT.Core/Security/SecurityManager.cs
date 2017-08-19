@@ -372,10 +372,40 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
+        /// <summary>
+        ///     Ends the specified <see cref="Session"/>.
+        /// </summary>
+        /// <param name="session">The Session to end.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
         public IResult EndSession(Session session)
         {
-            SessionList.Remove(session);
-            return new Result();
+            logger.EnterMethod();
+            logger.Debug($"Ending Session '{session.ApiKey}'...");
+
+            IResult retVal = new Result();
+            Session foundSession = FindSession(session.ApiKey);
+
+            if (foundSession != default(Session))
+            {
+                SessionList.Remove(foundSession);
+            }
+            else
+            {
+                retVal.AddError($"Session matching ApiKey '{session.ApiKey}' does not exist.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to end Session.");
+            }
+            else
+            {
+                Task.Run(() => SessionEnded?.Invoke(this, new SessionEventArgs(foundSession)));
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public Session FindSession(string key)
