@@ -431,6 +431,18 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
+        ///     Finds the <see cref="Session"/> belonging to the specified <see cref="User"/>.
+        /// </summary>
+        /// <param name="user">The User for which the Session is to be retrieved.</param>
+        /// <returns>The found Session.</returns>
+        public Session FindUserSession(User user)
+        {
+            return SessionList
+                .Where(s => s.Ticket.Identity.Claims
+                    .Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value == user.Name).FirstOrDefault();
+        }
+
+        /// <summary>
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -448,28 +460,61 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
-        public IResult<Session> StartSession(string user, string password)
+        /// <summary>
+        ///     Starts a new <see cref="Session"/> with the specified <paramref name="userName"/> and <paramref name="password"/>
+        /// </summary>
+        /// <param name="userName">The user for which the Session is to be started.</param>
+        /// <param name="password">The password with which to authenticate the user.</param>
+        /// <returns>A Result containing the result of the operation and the created Session.</returns>
+        public IResult<Session> StartSession(string userName, string password)
         {
-            logger.EnterMethod(xLogger.Params(user, xLogger.Exclude()));
+            logger.EnterMethod(xLogger.Params(userName, xLogger.Exclude()));
+            logger.Info($"Starting Session for User '{userName}'...");
+
             IResult<Session> retVal = new Result<Session>();
 
-            string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
+            User foundUser = FindUser(userName);
 
-            ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
-            identity.AddClaim(new Claim(ClaimTypes.Name, "test"));
-            identity.AddClaim(new Claim(ClaimTypes.Role, "Administrator"));
-            identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
+            if (foundUser != default(User))
+            {
+                string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
 
-            AuthenticationProperties ticketProperties = new AuthenticationProperties();
-            ticketProperties.IssuedUtc = DateTime.UtcNow;
-            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(30);
+                if (foundUser.PasswordHash == hash)
+                {
+                    Session foundSession = FindUserSession(foundUser);
 
-            AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
+                    if (foundSession == default(Session))
+                    {
+                        retVal.ReturnValue = new Session(hash, CreateTicket(foundUser));
+                        SessionList.Add(retVal.ReturnValue);
+                    }
+                    else
+                    {
+                        retVal.AddWarning($"The specified User has an existing Session.  The existing Session is being returned.");
+                        retVal.ReturnValue = foundSession;
+                    }
+                }
+                else
+                {
+                    retVal.AddError($"Supplied password does not match.");
+                }
+            }
+            else
+            {
+                retVal.AddError($"User '{userName}' does not exist.");
+            }
 
-            Session session = new Session(hash, ticket);
-
-            SessionList.Add(session);
-            retVal.ReturnValue = session;
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to start Session for User '{userName}'.");
+            }
+            else
+            {
+                if (retVal.ResultCode == ResultCode.Success)
+                {
+                    Task.Run(() => SessionStarted?.Invoke(this, new SessionEventArgs(retVal.ReturnValue)));
+                }
+            }
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
@@ -562,12 +607,34 @@ namespace OpenIIoT.Core.Security
 
         private static string GetDefaultUser()
         {
-            return Utility.GetSetting("DefaultUser", "admin");
+            return Utility.GetSetting<string>("DefaultUser", "admin");
         }
 
         private static string GetDefaultUserPasswordHash()
         {
-            return Utility.GetSetting("DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
+            return Utility.GetSetting<string>("DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
+        }
+
+        private static int SessionLength()
+        {
+            return Utility.GetSetting<int>("SessionLength", "30");
+        }
+
+        private AuthenticationTicket CreateTicket(User user)
+        {
+            ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
+            identity.AddClaim(new Claim(ClaimTypes.Role, user.Role.ToString()));
+
+            string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
+
+            identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
+
+            AuthenticationProperties ticketProperties = new AuthenticationProperties();
+            ticketProperties.IssuedUtc = DateTime.UtcNow;
+            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SessionLength());
+
+            return new AuthenticationTicket(identity, ticketProperties);
         }
 
         #endregion Private Methods

@@ -190,6 +190,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Exceptions\XMLConfigurationException.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />

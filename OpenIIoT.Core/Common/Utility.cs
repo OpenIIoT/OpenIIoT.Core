@@ -43,6 +43,7 @@ using System;
 using System.Collections.Generic;
 using OpenIIoT.SDK.Common;
 using Utility.BigFont;
+using System.ComponentModel;
 
 namespace OpenIIoT.Core
 {
@@ -112,6 +113,29 @@ namespace OpenIIoT.Core
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file and converts it to the
+        ///     specified Type. If the setting isn't found, returns the provided defaultSetting and logs a warning.
+        /// </summary>
+        /// <typeparam name="T">The Type to which the retrieved value should be converted.</typeparam>
+        /// <param name="key">The setting to retrieve.</param>
+        /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
+        /// <returns>The string value of the retrieved setting.</returns>
+        public static T GetSetting<T>(string key, string defaultSetting)
+        {
+            string retVal = GetSetting(key, defaultSetting);
+
+            try
+            {
+                var converter = TypeDescriptor.GetConverter(typeof(T));
+                return (T)converter.ConvertFromString(retVal);
+            }
+            catch (Exception ex)
+            {
+                throw new Common.Exceptions.XMLConfigurationException("Failed to retrieve XML configuration setting '{key}'.  See inner Exception for details.", ex);
+            }
         }
 
         /// <summary>

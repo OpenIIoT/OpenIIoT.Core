@@ -116,12 +116,12 @@ namespace OpenIIoT.Core.Security
         Session FindUserSession(User user);
 
         /// <summary>
-        ///     Starts a new <see cref="Session"/> with the specified <paramref name="user"/> and <paramref name="password"/>
+        ///     Starts a new <see cref="Session"/> with the specified <paramref name="userName"/> and <paramref name="password"/>
         /// </summary>
-        /// <param name="user">The user for which the Session is to be started.</param>
+        /// <param name="userName">The user for which the Session is to be started.</param>
         /// <param name="password">The password with which to authenticate the user.</param>
         /// <returns>A Result containing the result of the operation and the created Session.</returns>
-        IResult<Session> StartSession(string user, string password);
+        IResult<Session> StartSession(string userName, string password);
 
         /// <summary>
         ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
