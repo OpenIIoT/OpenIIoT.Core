@@ -70,7 +70,7 @@ namespace OpenIIoT.Core.Security.WebAPI
 
             if (user != default(User))
             {
-                IResult deleteResult = SecurityManager.DeleteUser(user);
+                IResult deleteResult = SecurityManager.DeleteUser(user.Name);
 
                 if (deleteResult.ResultCode != ResultCode.Failure)
                 {

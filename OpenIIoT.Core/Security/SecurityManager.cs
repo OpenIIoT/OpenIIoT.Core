@@ -477,7 +477,7 @@ namespace OpenIIoT.Core.Security
 
             if (foundUser != default(User))
             {
-                string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
+                string hash = SDK.Common.Utility.ComputeSHA512Hash(password);
 
                 if (foundUser.PasswordHash == hash)
                 {
@@ -485,7 +485,7 @@ namespace OpenIIoT.Core.Security
 
                     if (foundSession == default(Session))
                     {
-                        retVal.ReturnValue = new Session(hash, CreateTicket(foundUser));
+                        retVal.ReturnValue = CreateSession(foundUser);
                         SessionList.Add(retVal.ReturnValue);
                     }
                     else
@@ -620,7 +620,7 @@ namespace OpenIIoT.Core.Security
             return Utility.GetSetting<int>("SessionLength", "30");
         }
 
-        private AuthenticationTicket CreateTicket(User user)
+        private Session CreateSession(User user)
         {
             ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
             identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
@@ -634,7 +634,9 @@ namespace OpenIIoT.Core.Security
             ticketProperties.IssuedUtc = DateTime.UtcNow;
             ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SessionLength());
 
-            return new AuthenticationTicket(identity, ticketProperties);
+            AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
+
+            return new Session(hash, ticket);
         }
 
         #endregion Private Methods
