@@ -9,11 +9,11 @@ namespace OpenIIoT.Core.Security
     {
         #region Public Properties
 
-        IResult EndSession(ClaimsPrincipal principal);
+        IResult EndSession(Session session);
 
-        ClaimsPrincipal FindSession(string key);
+        Session FindSession(string key);
 
-        IResult<KeyValuePair<string, ClaimsPrincipal>> StartSession(string user, string password);
+        IResult<Session> StartSession(string user, string password);
 
         #endregion Public Properties
     }
