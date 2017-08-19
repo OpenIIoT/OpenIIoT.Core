@@ -43,6 +43,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
+using System.Timers;
 using Microsoft.Owin.Security;
 using NLog;
 using NLog.xLogger;
@@ -51,10 +53,9 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
+using OpenIIoT.SDK.Common.Provider.EventProvider;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Common.Provider.EventProvider;
-using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Security
 {
@@ -99,6 +100,9 @@ namespace OpenIIoT.Core.Security
             SessionList = new List<Session>();
             UserList = new List<User>();
 
+            SessionExpiryTimer = new Timer(5);
+            SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
+
             ChangeState(State.Initialized);
 
             logger.ExitMethod(guid);
@@ -138,15 +142,13 @@ namespace OpenIIoT.Core.Security
         [Event(Description = "Occurs when a User is deleted.")]
         public event EventHandler<UserEventArgs> UserDeleted;
 
-        #region Public Properties
-
         /// <summary>
         ///     Occurs when a User is updated.
         /// </summary>
         [Event(Description = "Occurs when a User is updated.")]
         public event EventHandler<UserEventArgs> UserUpdated;
 
-        #endregion Public Properties
+        #endregion Public Events
 
         #region Public Properties
 
@@ -154,8 +156,6 @@ namespace OpenIIoT.Core.Security
         ///     Gets the Configuration for the Manager.
         /// </summary>
         public SecurityManagerConfiguration Configuration { get; private set; }
-
-        #endregion Public Properties
 
         /// <summary>
         ///     Gets the ConfigurationDefinition for the Manager.
@@ -177,9 +177,14 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         public IReadOnlyList<User> Users => ((List<User>)UserList).AsReadOnly();
 
-        #endregion Public Events
+        #endregion Public Properties
 
         #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the <see cref="Timer"/> used to purge expired <see cref="Sessions"/>.
+        /// </summary>
+        private Timer SessionExpiryTimer { get; set; }
 
         /// <summary>
         ///     Gets or sets the list of active <see cref="Session"/> s.
@@ -207,7 +212,7 @@ namespace OpenIIoT.Core.Security
             retVal.Model = typeof(SecurityManagerConfiguration);
 
             SecurityManagerConfiguration config = new SecurityManagerConfiguration();
-            config.Users.Add(new User(GetDefaultUser(), GetDefaultUserPasswordHash(), Role.Administrator));
+            config.Users.Add(new User(SecuritySettings.DefaultUser, SecuritySettings.DefaultUserPasswordHash, Role.Administrator));
 
             retVal.DefaultConfiguration = config;
 
@@ -435,7 +440,7 @@ namespace OpenIIoT.Core.Security
             {
                 if (foundSession.Ticket.Properties.ExpiresUtc >= DateTime.UtcNow)
                 {
-                    foundSession.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(GetSessionLength());
+                    foundSession.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SecuritySettings.SessionLength);
                     retVal.ReturnValue = foundSession;
                 }
                 else
@@ -645,7 +650,10 @@ namespace OpenIIoT.Core.Security
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+
             IResult retVal = new Result();
+
+            SessionExpiryTimer.Stop();
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -664,6 +672,8 @@ namespace OpenIIoT.Core.Security
 
             IResult retVal = Configure();
 
+            SessionExpiryTimer.Start();
+
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
             return retVal;
@@ -674,39 +684,16 @@ namespace OpenIIoT.Core.Security
         #region Private Methods
 
         /// <summary>
-        ///     Retrieves the value of the 'DefaultUser' key from the application's XML configuration file.
-        /// </summary>
-        /// <returns>The value of the 'DefaultUser' configuration key.</returns>
-        private static string GetDefaultUser()
-        {
-            return Utility.GetSetting<string>("DefaultUser", "admin");
-        }
-
-        /// <summary>
-        ///     Retrieves the value of the 'DefaultUserPasswordHash' key from the application's XML configuration file.
-        /// </summary>
-        /// <returns>The value of the 'DefaultUserPasswordHash' configuration key.</returns>
-        private static string GetDefaultUserPasswordHash()
-        {
-            return Utility.GetSetting<string>("DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
-        }
-
-        /// <summary>
-        ///     Retrieves the value of the 'SessionLength' key from the application's XML configuration file.
-        /// </summary>
-        /// <returns>The value of the 'SessionLength' configuration key.</returns>
-        private static int GetSessionLength()
-        {
-            return Utility.GetSetting<int>("SessionLength", "30");
-        }
-
-        /// <summary>
         ///     Creates a new <see cref="Session"/> from the specified <see cref="User"/>.
         /// </summary>
         /// <param name="user">The User for which the Session is to be created.</param>
         /// <returns>The created Session.</returns>
         private Session CreateSession(User user)
         {
+            logger.EnterMethod(xLogger.Params(user));
+
+            Session retVal;
+
             ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
             identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
             identity.AddClaim(new Claim(ClaimTypes.Role, user.Role.ToString()));
@@ -717,11 +704,32 @@ namespace OpenIIoT.Core.Security
 
             AuthenticationProperties ticketProperties = new AuthenticationProperties();
             ticketProperties.IssuedUtc = DateTime.UtcNow;
-            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(GetSessionLength());
+            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SecuritySettings.SessionLength);
 
             AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
 
-            return new Session(hash, ticket);
+            retVal = new Session(hash, ticket);
+
+            logger.ExitMethod(retVal);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Ends any expired <see cref="Session"/> s in the <see cref="SessionList"/>.
+        /// </summary>
+        private void PurgeExpiredSessions()
+        {
+            logger.EnterMethod();
+
+            foreach (Session session in SessionList)
+            {
+                if (session.Ticket.Properties.ExpiresUtc < DateTime.UtcNow)
+                {
+                    EndSession(session);
+                }
+            }
+
+            logger.ExitMethod();
         }
 
         #endregion Private Methods
