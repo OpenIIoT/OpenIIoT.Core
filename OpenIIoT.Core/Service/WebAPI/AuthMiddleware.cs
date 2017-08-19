@@ -45,11 +45,11 @@ namespace OpenIIoT.Core.Service.WebAPI
                 {
                     string key = context.Request.Headers["X-APIKey"];
 
-                    ClaimsPrincipal principal = SecurityManager.FindSession(key);
+                    Session session = SecurityManager.FindSession(key);
 
-                    if (principal != default(ClaimsPrincipal))
+                    if (session != default(Session))
                     {
-                        context.Request.User = principal;
+                        context.Request.User = session.Principal;
                     }
                 }
             }

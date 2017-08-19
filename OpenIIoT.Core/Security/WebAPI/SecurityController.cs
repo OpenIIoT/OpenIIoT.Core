@@ -46,9 +46,9 @@ namespace OpenIIoT.Core.Security.WebAPI
         [Route("v1/security/login/{user}/{password}")]
         public async Task<HttpResponseMessage> Login(string user, string password)
         {
-            IResult<KeyValuePair<string, ClaimsPrincipal>> retVal = SecurityManager.StartSession(user, password);
+            IResult<Session> retVal = SecurityManager.StartSession(user, password);
 
-            return Request.CreateResponse(HttpStatusCode.OK, retVal.ReturnValue.Key);
+            return Request.CreateResponse(HttpStatusCode.OK, retVal.ReturnValue.ApiKey);
         }
 
         [HttpPost]
@@ -57,8 +57,9 @@ namespace OpenIIoT.Core.Security.WebAPI
         public async Task<HttpResponseMessage> Logout()
         {
             ClaimsPrincipal principal = Request.GetOwinContext().Authentication.User;
+            Session session = SecurityManager.FindSession(principal);
 
-            SecurityManager.EndSession(principal);
+            SecurityManager.EndSession(session);
 
             return Request.CreateResponse(HttpStatusCode.OK);
         }

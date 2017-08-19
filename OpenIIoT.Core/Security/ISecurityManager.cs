@@ -13,6 +13,8 @@ namespace OpenIIoT.Core.Security
 
         Session FindSession(string key);
 
+        Session FindSession(ClaimsPrincipal principal);
+
         IResult<Session> StartSession(string user, string password);
 
         #endregion Public Properties

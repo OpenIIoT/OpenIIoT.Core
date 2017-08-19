@@ -113,9 +113,11 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
-        public IReadOnlyList<Session> Sessions => ((List<Session>)SessionList).AsReadOnly();
+        public IReadOnlyList<User> Users => ((List<User>)UserList).AsReadOnly();
 
         private IList<Session> SessionList { get; set; }
+
+        private IList<User> UserList { get; set; }
 
         #endregion Public Properties
 
@@ -221,6 +223,9 @@ namespace OpenIIoT.Core.Security
 
             // update the configuration
             Configuration = configuration;
+
+            UserList = Configuration.Users;
+
             logger.Debug("Successfully configured the Manager.");
 
             // save it
@@ -243,6 +248,11 @@ namespace OpenIIoT.Core.Security
             return SessionList.Where(s => s.Principal.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
         }
 
+        public Session FindSession(ClaimsPrincipal principal)
+        {
+            return SessionList.Where(s => s.Principal == principal).FirstOrDefault();
+        }
+
         /// <summary>
         ///     Saves the configuration to the Configuration Manager.
         /// </summary>
@@ -251,6 +261,8 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod();
             Result retVal = new Result();
+
+            Configuration.Users = UserList;
 
             retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration));
 
