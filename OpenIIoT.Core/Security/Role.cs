@@ -2,9 +2,10 @@
 {
     public enum Role
     {
-        Guest = 0,
-        Reader = 1,
-        ReadWriter = 2,
-        Administrator = 3
+        NotSpecified = 0,
+        Guest = 1,
+        Reader = 2,
+        ReadWriter = 3,
+        Administrator = 4
     }
 }

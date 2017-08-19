@@ -41,19 +41,17 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
+using System.Security.Claims;
 using NLog;
 using NLog.xLogger;
+using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
-using OpenIIoT.Core.Common;
 using OpenIIoT.SDK.Configuration;
-using System.Security.Claims;
-using System.Linq;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Security
 {
@@ -93,6 +91,7 @@ namespace OpenIIoT.Core.Security
             RegisterDependency<IConfigurationManager>(configurationManager);
 
             SessionList = new List<Session>();
+            UserList = new List<User>();
 
             ChangeState(State.Initialized);
 
@@ -321,28 +320,38 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
-        public IResult<User> UpdateUser(User user, string password)
+        public IResult<User> UpdateUser(User user, string password = null, Role role = Role.NotSpecified)
         {
-            return UpdateUser(user, password, user.Role);
-        }
+            logger.EnterMethod(xLogger.Params(user, xLogger.Exclude(), role));
+            IResult<User> retVal = new Result<User>();
 
-        public IResult<User> UpdateUser(User user, string password, Role role)
-        {
             User foundUser = FindUser(user.Name);
 
-            foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
-            foundUser.Role = role;
+            if (foundUser != default(User))
+            {
+                if (password != null)
+                {
+                    foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
+                }
 
-            return new Result<User>().SetReturnValue(foundUser);
-        }
+                if (role != Role.NotSpecified)
+                {
+                    foundUser.Role = role;
+                }
+            }
+            else
+            {
+                retVal.AddError($"Failed to find User '{user}'.");
+            }
 
-        public IResult<User> UpdateUSer(User user, Role role)
-        {
-            User foundUser = FindUser(user.Name);
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                retVal.ReturnValue = foundUser;
+            }
 
-            foundUser.Role = role;
-
-            return new Result<User>().SetReturnValue(foundUser);
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         #endregion Public Methods

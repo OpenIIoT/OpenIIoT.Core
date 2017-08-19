@@ -100,11 +100,7 @@ namespace OpenIIoT.Core.Security
         /// <returns>A Result containing the result of the operation and the created Session.</returns>
         IResult<Session> StartSession(string user, string password);
 
-        IResult<User> UpdateUser(User user, string password);
-
-        IResult<User> UpdateUser(User user, string password, Role role);
-
-        IResult<User> UpdateUSer(User user, Role role);
+        IResult<User> UpdateUser(User user, string password = null, Role role = Role.NotSpecified);
 
         #endregion Public Methods
     }
