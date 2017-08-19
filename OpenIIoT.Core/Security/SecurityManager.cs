@@ -440,8 +440,7 @@ namespace OpenIIoT.Core.Security
             {
                 if (foundSession.Ticket.Properties.ExpiresUtc >= DateTime.UtcNow)
                 {
-                    foundSession.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SecuritySettings.SessionLength);
-                    retVal.ReturnValue = foundSession;
+                    retVal.ReturnValue = SessionFactory.ExtendSession(foundSession);
                 }
                 else
                 {
@@ -544,7 +543,7 @@ namespace OpenIIoT.Core.Security
 
                     if (foundSession == default(Session))
                     {
-                        retVal.ReturnValue = CreateSession(foundUser);
+                        retVal.ReturnValue = SessionFactory.CreateSession(foundUser);
                         SessionList.Add(retVal.ReturnValue);
                     }
                     else
@@ -682,37 +681,6 @@ namespace OpenIIoT.Core.Security
         #endregion Protected Methods
 
         #region Private Methods
-
-        /// <summary>
-        ///     Creates a new <see cref="Session"/> from the specified <see cref="User"/>.
-        /// </summary>
-        /// <param name="user">The User for which the Session is to be created.</param>
-        /// <returns>The created Session.</returns>
-        private Session CreateSession(User user)
-        {
-            logger.EnterMethod(xLogger.Params(user));
-
-            Session retVal;
-
-            ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
-            identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
-            identity.AddClaim(new Claim(ClaimTypes.Role, user.Role.ToString()));
-
-            string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
-
-            identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
-
-            AuthenticationProperties ticketProperties = new AuthenticationProperties();
-            ticketProperties.IssuedUtc = DateTime.UtcNow;
-            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SecuritySettings.SessionLength);
-
-            AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
-
-            retVal = new Session(hash, ticket);
-
-            logger.ExitMethod(retVal);
-            return retVal;
-        }
 
         /// <summary>
         ///     Ends any expired <see cref="Session"/> s in the <see cref="SessionList"/>.
