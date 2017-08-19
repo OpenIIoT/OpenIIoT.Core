@@ -151,7 +151,7 @@ namespace OpenIIoT.Core.Security.WebAPI
 
             if (user != default(User))
             {
-                IResult<User> updateResult = SecurityManager.UpdateUser(user, password, role);
+                IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, password, role);
 
                 if (updateResult.ResultCode != ResultCode.Failure)
                 {

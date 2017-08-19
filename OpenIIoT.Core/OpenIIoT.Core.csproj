@@ -223,7 +223,6 @@
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
     <Compile Include="Security\Session.cs" />
-    <Compile Include="Security\SessionFactory.cs" />
     <Compile Include="Security\UserEventArgs.cs" />
     <Compile Include="Security\SessionEventArgs.cs" />
     <Compile Include="Security\User.cs" />

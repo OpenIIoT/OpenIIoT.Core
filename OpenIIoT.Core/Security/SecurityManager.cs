@@ -138,13 +138,15 @@ namespace OpenIIoT.Core.Security
         [Event(Description = "Occurs when a User is deleted.")]
         public event EventHandler<UserEventArgs> UserDeleted;
 
+        #region Public Properties
+
         /// <summary>
         ///     Occurs when a User is updated.
         /// </summary>
         [Event(Description = "Occurs when a User is updated.")]
         public event EventHandler<UserEventArgs> UserUpdated;
 
-        #endregion Public Events
+        #endregion Public Properties
 
         #region Public Properties
 
@@ -152,6 +154,8 @@ namespace OpenIIoT.Core.Security
         ///     Gets the Configuration for the Manager.
         /// </summary>
         public SecurityManagerConfiguration Configuration { get; private set; }
+
+        #endregion Public Properties
 
         /// <summary>
         ///     Gets the ConfigurationDefinition for the Manager.
@@ -173,7 +177,7 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         public IReadOnlyList<User> Users => ((List<User>)UserList).AsReadOnly();
 
-        #endregion Public Properties
+        #endregion Public Events
 
         #region Private Properties
 
@@ -415,6 +419,50 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
+        ///     Extends the specified <see cref="Session"/> to the configured session length.
+        /// </summary>
+        /// <param name="session">The Session to extend.</param>
+        /// <returns>A Result containing the result of the operation and the extended Session.</returns>
+        public IResult<Session> ExtendSession(Session session)
+        {
+            logger.EnterMethod();
+            logger.Debug($"Extending Session '{session.ApiKey}'...");
+
+            IResult<Session> retVal = new Result<Session>();
+            Session foundSession = FindSession(session.ApiKey);
+
+            if (foundSession != default(Session))
+            {
+                if (foundSession.Ticket.Properties.ExpiresUtc >= DateTime.UtcNow)
+                {
+                    foundSession.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(GetSessionLength());
+                    retVal.ReturnValue = foundSession;
+                }
+                else
+                {
+                    retVal.AddError($"Session has expired and can not be extended.");
+                }
+            }
+            else
+            {
+                retVal.AddError($"Session matching ApiKey '{session.ApiKey}' does not exist.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to extend Session.");
+            }
+            else
+            {
+                Task.Run(() => SessionExtended?.Invoke(this, new SessionEventArgs(foundSession)));
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
         ///     Finds the <see cref="Session"/> matching the specified <paramref name="apiKey"/>.
         /// </summary>
         /// <param name="apiKey">The ApiKey for the requested Session.</param>
@@ -647,7 +695,7 @@ namespace OpenIIoT.Core.Security
         ///     Retrieves the value of the 'SessionLength' key from the application's XML configuration file.
         /// </summary>
         /// <returns>The value of the 'SessionLength' configuration key.</returns>
-        private static int SessionLength()
+        private static int GetSessionLength()
         {
             return Utility.GetSetting<int>("SessionLength", "30");
         }
@@ -669,7 +717,7 @@ namespace OpenIIoT.Core.Security
 
             AuthenticationProperties ticketProperties = new AuthenticationProperties();
             ticketProperties.IssuedUtc = DateTime.UtcNow;
-            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SessionLength());
+            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(GetSessionLength());
 
             AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
 
