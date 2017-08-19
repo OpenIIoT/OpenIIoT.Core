@@ -35,10 +35,18 @@ namespace OpenIIoT.Core.Security.WebAPI
 
         [HttpGet]
         [Authorize]
-        [Route("v1/security/users")]
+        [Route("v1/security/role")]
+        public async Task<HttpResponseMessage> GetRoles()
+        {
+            return await Task.Run(() => Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Roles));
+        }
+
+        [HttpGet]
+        [Authorize]
+        [Route("v1/security/user")]
         public async Task<HttpResponseMessage> GetUsers()
         {
-            return Request.CreateResponse(HttpStatusCode.OK);
+            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Users);
         }
 
         [HttpPost]

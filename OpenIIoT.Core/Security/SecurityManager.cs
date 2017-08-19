@@ -113,6 +113,8 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
+        public IReadOnlyList<Role> Roles => new[] { Role.Guest, Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
+
         public IReadOnlyList<User> Users => ((List<User>)UserList).AsReadOnly();
 
         private IList<Session> SessionList { get; set; }
@@ -237,6 +239,25 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
+        public IResult<User> CreateUser(string name, string password, Role role)
+        {
+            User user = default(User);
+
+            if (FindUser(name) == default(User))
+            {
+                user = new User() { Name = name, PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password), Role = role };
+
+                UserList.Add(user);
+            }
+
+            return new Result<User>().SetReturnValue(user);
+        }
+
+        public IResult DeleteUser(User user)
+        {
+            return new Result();
+        }
+
         public IResult EndSession(Session session)
         {
             SessionList.Remove(session);
@@ -251,6 +272,11 @@ namespace OpenIIoT.Core.Security
         public Session FindSession(ClaimsPrincipal principal)
         {
             return SessionList.Where(s => s.Principal == principal).FirstOrDefault();
+        }
+
+        public User FindUser(string name)
+        {
+            return UserList.Where(u => u.Name == name).FirstOrDefault();
         }
 
         /// <summary>
@@ -293,6 +319,30 @@ namespace OpenIIoT.Core.Security
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
             return retVal;
+        }
+
+        public IResult<User> UpdateUser(User user, string password)
+        {
+            return UpdateUser(user, password, user.Role);
+        }
+
+        public IResult<User> UpdateUser(User user, string password, Role role)
+        {
+            User foundUser = FindUser(user.Name);
+
+            foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
+            foundUser.Role = role;
+
+            return new Result<User>().SetReturnValue(foundUser);
+        }
+
+        public IResult<User> UpdateUSer(User user, Role role)
+        {
+            User foundUser = FindUser(user.Name);
+
+            foundUser.Role = role;
+
+            return new Result<User>().SetReturnValue(foundUser);
         }
 
         #endregion Public Methods
