@@ -83,9 +83,9 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.
         /// </summary>
-        /// <param name="user">The name of the User to delete.</param>
+        /// <param name="name">The name of the User to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        IResult DeleteUser(User user);
+        IResult DeleteUser(string name);
 
         /// <summary>
         ///     Ends the specified <see cref="Session"/>.

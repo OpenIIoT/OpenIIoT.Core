@@ -336,9 +336,40 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
-        public IResult DeleteUser(User user)
+        /// <summary>
+        ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.
+        /// </summary>
+        /// <param name="name">The name of the User to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult DeleteUser(string name)
         {
-            return new Result();
+            logger.EnterMethod(xLogger.Params(name));
+            logger.Info($"Deleting User '{name}'...");
+
+            IResult retVal = new Result();
+            User foundUser = FindUser(name);
+
+            if (foundUser != default(User))
+            {
+                UserList.Remove(foundUser);
+            }
+            else
+            {
+                retVal.AddError($"User '{name}' does not exist.");
+            }
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                retVal.AddError($"Failed to delete User '{name}'.");
+            }
+            else
+            {
+                Task.Run(() => UserDeleted?.Invoke(this, new UserEventArgs(foundUser)));
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
         }
 
         public IResult EndSession(Session session)
