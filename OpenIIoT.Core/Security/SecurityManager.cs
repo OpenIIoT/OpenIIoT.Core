@@ -54,6 +54,7 @@ using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
+using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Security
 {
@@ -324,6 +325,10 @@ namespace OpenIIoT.Core.Security
             if (retVal.ResultCode == ResultCode.Failure)
             {
                 retVal.AddError($"Failed to create User '{name}'.");
+            }
+            else
+            {
+                Task.Run(() => UserCreated?.Invoke(this, new UserEventArgs(retVal.ReturnValue)));
             }
 
             retVal.LogResult(logger);

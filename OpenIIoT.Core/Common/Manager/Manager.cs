@@ -402,10 +402,7 @@ namespace OpenIIoT.Core.Common
                 }
             }
 
-            if (StateChanged != null)
-            {
-                StateChanged(this, new StateChangedEventArgs(State, previousState, message, stopType));
-            }
+            StateChanged?.Invoke(this, new StateChangedEventArgs(State, previousState, message, stopType));
 
             logger.ExitMethod();
         }
