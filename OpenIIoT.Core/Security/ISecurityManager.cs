@@ -126,11 +126,11 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
         /// </summary>
-        /// <param name="user">The User to update.</param>
+        /// <param name="userName">The name of the User to update.</param>
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        IResult<User> UpdateUser(User user, string password = null, Role role = Role.NotSpecified);
+        IResult<User> UpdateUser(string userName, string password = null, Role role = Role.NotSpecified);
 
         #endregion Public Methods
     }

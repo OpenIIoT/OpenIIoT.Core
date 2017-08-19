@@ -521,12 +521,20 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
-        public IResult<User> UpdateUser(User user, string password = null, Role role = Role.NotSpecified)
+        /// <summary>
+        ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
+        /// </summary>
+        /// <param name="userName">The name of the User to update.</param>
+        /// <param name="password">The updated plaintext password for the User.</param>
+        /// <param name="role">The updated Role for the user.</param>
+        /// <returns>A Result containing the result of the operation and the updated User.</returns>
+        public IResult<User> UpdateUser(string userName, string password = null, Role role = Role.NotSpecified)
         {
-            logger.EnterMethod(xLogger.Params(user, xLogger.Exclude(), role));
-            IResult<User> retVal = new Result<User>();
+            logger.EnterMethod(xLogger.Params(userName, xLogger.Exclude(), role));
+            logger.Info($"Updating User '{userName}'...");
 
-            User foundUser = FindUser(user.Name);
+            IResult<User> retVal = new Result<User>();
+            User foundUser = FindUser(userName);
 
             if (foundUser != default(User))
             {
@@ -539,15 +547,21 @@ namespace OpenIIoT.Core.Security
                 {
                     foundUser.Role = role;
                 }
+
+                retVal.ReturnValue = foundUser;
             }
             else
             {
-                retVal.AddError($"Failed to find User '{user}'.");
+                retVal.AddError($"User '{userName}' does not exist.");
             }
 
-            if (retVal.ResultCode != ResultCode.Failure)
+            if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.ReturnValue = foundUser;
+                retVal.AddError($"Failed to update USer '{userName}'.");
+            }
+            else
+            {
+                Task.Run(() => UserUpdated?.Invoke(this, new UserEventArgs(retVal.ReturnValue)));
             }
 
             retVal.LogResult(logger);
@@ -560,7 +574,7 @@ namespace OpenIIoT.Core.Security
         #region Protected Methods
 
         /// <summary>
-        ///     Implements the post-instantiation procedure for the <see cref="PlatformManager"/> class.
+        ///     Implements the post-instantiation procedure for the <see cref="SecurityManager"/> class.
         /// </summary>
         /// <remarks>This method is invoked by the ApplicationManager following the instantiation of all program Managers.</remarks>
         /// <exception cref="ManagerSetupException">Thrown when an error is encountered during setup.</exception>
@@ -569,7 +583,7 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
-        ///     Implements the shutdown procedure for the <see cref="PlatformManager"/> class.
+        ///     Implements the shutdown procedure for the <see cref="SecurityManager"/> class.
         /// </summary>
         /// <param name="stopType">The <see cref="StopType"/> enumeration corresponding to the nature of the stoppage.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -585,7 +599,7 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
-        ///     Implements the startup procedure for the <see cref="PlatformManager"/> class.
+        ///     Implements the startup procedure for the <see cref="SecurityManager"/> class.
         /// </summary>
         /// <returns>A Result containing the result of the operation.</returns>
         /// <exception cref="DirectoryException">Thrown when one or more application directories can not be verified.</exception>
@@ -605,21 +619,38 @@ namespace OpenIIoT.Core.Security
 
         #region Private Methods
 
+        /// <summary>
+        ///     Retrieves the value of the 'DefaultUser' key from the application's XML configuration file.
+        /// </summary>
+        /// <returns>The value of the 'DefaultUser' configuration key.</returns>
         private static string GetDefaultUser()
         {
             return Utility.GetSetting<string>("DefaultUser", "admin");
         }
 
+        /// <summary>
+        ///     Retrieves the value of the 'DefaultUserPasswordHash' key from the application's XML configuration file.
+        /// </summary>
+        /// <returns>The value of the 'DefaultUserPasswordHash' configuration key.</returns>
         private static string GetDefaultUserPasswordHash()
         {
             return Utility.GetSetting<string>("DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
         }
 
+        /// <summary>
+        ///     Retrieves the value of the 'SessionLength' key from the application's XML configuration file.
+        /// </summary>
+        /// <returns>The value of the 'SessionLength' configuration key.</returns>
         private static int SessionLength()
         {
             return Utility.GetSetting<int>("SessionLength", "30");
         }
 
+        /// <summary>
+        ///     Creates a new <see cref="Session"/> from the specified <see cref="User"/>.
+        /// </summary>
+        /// <param name="user">The User for which the Session is to be created.</param>
+        /// <returns>The created Session.</returns>
         private Session CreateSession(User user)
         {
             ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
