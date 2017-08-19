@@ -92,7 +92,7 @@ namespace OpenIIoT.Core.Security
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
 
-            SessionList = new List<ClaimsPrincipal>();
+            SessionList = new List<Session>();
 
             ChangeState(State.Initialized);
 
@@ -113,9 +113,9 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
-        public IReadOnlyList<ClaimsPrincipal> Sessions => ((List<ClaimsPrincipal>)SessionList).AsReadOnly();
+        public IReadOnlyList<Session> Sessions => ((List<Session>)SessionList).AsReadOnly();
 
-        private IList<ClaimsPrincipal> SessionList { get; set; }
+        private IList<Session> SessionList { get; set; }
 
         #endregion Public Properties
 
@@ -232,15 +232,15 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
-        public IResult EndSession(ClaimsPrincipal principal)
+        public IResult EndSession(Session session)
         {
-            SessionList.Remove(principal);
+            SessionList.Remove(session);
             return new Result();
         }
 
-        public ClaimsPrincipal FindSession(string key)
+        public Session FindSession(string key)
         {
-            return SessionList.Where(s => s.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
+            return SessionList.Where(s => s.Principal.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == key).FirstOrDefault();
         }
 
         /// <summary>
@@ -259,10 +259,10 @@ namespace OpenIIoT.Core.Security
             return retVal;
         }
 
-        public IResult<KeyValuePair<string, ClaimsPrincipal>> StartSession(string user, string password)
+        public IResult<Session> StartSession(string user, string password)
         {
             logger.EnterMethod(xLogger.Params(user, xLogger.Exclude()));
-            IResult<KeyValuePair<string, ClaimsPrincipal>> retVal = new Result<KeyValuePair<string, ClaimsPrincipal>>();
+            IResult<Session> retVal = new Result<Session>();
 
             string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
 
@@ -273,8 +273,10 @@ namespace OpenIIoT.Core.Security
 
             ClaimsPrincipal principal = new ClaimsPrincipal(identity);
 
-            SessionList.Add(principal);
-            retVal.ReturnValue = new KeyValuePair<string, ClaimsPrincipal>(hash, principal);
+            Session session = new Session(hash, principal);
+
+            SessionList.Add(session);
+            retVal.ReturnValue = session;
 
             retVal.LogResult(logger);
             logger.ExitMethod(retVal);
