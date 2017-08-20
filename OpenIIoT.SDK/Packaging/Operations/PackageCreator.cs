@@ -128,7 +128,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
                 Verbose("Directory created.");
 
                 Verbose($"Copying input directory '{inputDirectory}' to '{payloadDirectory}'...");
-                Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(inputDirectory, payloadDirectory);
+                Common.Utility.CopyDirectory(new DirectoryInfo(inputDirectory), new DirectoryInfo(payloadDirectory));
                 Verbose("Directory copied successfully.");
 
                 Verbose($"Validating manifest '{manifestFile}' and generating SHA512 hashes...");

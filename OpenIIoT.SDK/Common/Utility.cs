@@ -122,6 +122,28 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
+        ///     Copies the contents of the <paramref name="source"/> directory to the <paramref name="destination"/>.
+        /// </summary>
+        /// <param name="source">The directory to be copied.</param>
+        /// <param name="destination">The destination for the new copy.</param>
+        public static void CopyDirectory(DirectoryInfo source, DirectoryInfo destination)
+        {
+            Directory.CreateDirectory(destination.FullName);
+
+            foreach (FileInfo fi in source.GetFiles())
+            {
+                fi.CopyTo(Path.Combine(destination.FullName, fi.Name), true);
+            }
+
+            foreach (DirectoryInfo diSourceSubDir in source.GetDirectories())
+            {
+                DirectoryInfo nextTargetSubDir =
+                    destination.CreateSubdirectory(diSourceSubDir.Name);
+                CopyDirectory(diSourceSubDir, nextTargetSubDir);
+            }
+        }
+
+        /// <summary>
         ///     Returns the path of the specified file, relative to the specified base directory.
         /// </summary>
         /// <param name="baseDirectory">The base directory of the relative file reference.</param>
