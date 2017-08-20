@@ -39,12 +39,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Security;
-using System.Security.Claims;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
@@ -88,18 +88,22 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         /// <summary>
         ///     Retrieves the <see cref="Session"/> associated with the hash provided in the 'X-ApiKey' header and sets the
-        ///     request's <see cref="OwinRequest.User"/> property to the retrieved <see cref="Session.Principal"/>.
+        ///     request's <see cref="OwinRequest.User"/> property to the retrieved <see cref="Session.Ticket"/>.
         /// </summary>
         /// <param name="context">The Owin context for the current request.</param>
         /// <returns>The Task context under which the method is invoked.</returns>
         public async override Task Invoke(IOwinContext context)
         {
+            logger.EnterMethod();
+
             PathString apiPath = new PathString($"/{WebAPIConstants.RoutePrefix}");
             bool api = context.Request.Path.StartsWithSegments(apiPath);
 
             if (api && context.Request.Headers.ContainsKey("X-ApiKey"))
             {
                 string key = context.Request.Headers["X-ApiKey"];
+                logger.Trace($"ApiKey: {key}");
+
                 Session session = SecurityManager.FindSession(key);
 
                 if (session != default(Session) && !session.IsExpired)
@@ -111,9 +115,14 @@ namespace OpenIIoT.Core.Service.WebAPI
                         SecurityManager.ExtendSession(session);
                     }
                 }
+                else
+                {
+                    logger.Trace($"Session either not found or expired.");
+                }
             }
 
             await Next.Invoke(context);
+            logger.ExitMethod();
         }
 
         #endregion Public Methods
