@@ -11,6 +11,12 @@ using Swashbuckle.Application;
 using System;
 using Utility.OperationResult;
 using System.Runtime.Serialization;
+using System.Threading.Tasks;
+using NLog.xLogger;
+using NLog;
+using OpenIIoT.SDK.Common;
+using System.IO;
+using System.Net;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
@@ -37,6 +43,9 @@ namespace OpenIIoT.Core.Service.WebAPI
 
             app.UseCors(CorsOptions.AllowAll);
 
+            app.Use(typeof(LogMiddleware));
+            app.Use(typeof(AuthMiddleware));
+
             app.MapSignalR((webRoot.Length > 0 ? "/" : string.Empty) + webRoot + "/signalr", new HubConfiguration());
 
             HttpConfiguration config = new HttpConfiguration();
@@ -50,7 +59,10 @@ namespace OpenIIoT.Core.Service.WebAPI
                     c.DescribeAllEnumsAsStrings();
                     c.OperationFilter<MimeTypeOperationFilter>();
                 })
-                .EnableSwaggerUi();
+                .EnableSwaggerUi(c =>
+                {
+                    c.EnableApiKeySupport("X-ApiKey", "header");
+                });
 
             // config.Routes.MapHttpRoute(
             // name: "DefaultApi",

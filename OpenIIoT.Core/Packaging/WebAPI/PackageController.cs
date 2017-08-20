@@ -60,7 +60,8 @@ namespace OpenIIoT.Core.Packaging.WebAPI
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>
-    [RoutePrefix("api")]
+    [Authorize]
+    [RoutePrefix(WebAPIConstants.RoutePrefix)]
     public class PackageController : ApiBaseController
     {
         #region Variables
@@ -208,6 +209,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
         ///     Reloads the list of Packages from disk and returns the list.
         /// </summary>
         /// <returns>The reloaded list of available Packages.</returns>
+        [Authorize(Roles = "Administrator")]
         [Route("api/package/scan")]
         [HttpGet]
         public async Task<HttpResponseMessage> ScanPackages()
@@ -222,6 +224,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
         /// </summary>
         /// <param name="data">The base 64 encoded binary package data.</param>
         /// <returns>A Result containing the result of the operation and the created Package.</returns>
+        [Authorize]
         [Route("v1/package")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(Package))]
