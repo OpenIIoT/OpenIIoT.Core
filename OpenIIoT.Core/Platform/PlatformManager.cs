@@ -108,11 +108,11 @@ namespace OpenIIoT.Core.Platform
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
-                    Platform = new Windows.WindowsPlatform(LoadDirectories(GetDirectories()));
+                    Platform = new Windows.WindowsPlatform(LoadDirectories(PlatformSettings.Directories));
                     break;
 
                 case PlatformType.UNIX:
-                    Platform = new UNIX.UNIXPlatform(LoadDirectories(GetDirectories()));
+                    Platform = new UNIX.UNIXPlatform(LoadDirectories(PlatformSettings.Directories));
                     break;
 
                 default:
@@ -238,25 +238,6 @@ namespace OpenIIoT.Core.Platform
         #endregion Protected Methods
 
         #region Private Methods
-
-        /// <summary>
-        ///     Retrieves the "Directories" setting from the app.config file, or the default value if the retrieval fails.
-        /// </summary>
-        /// <returns>The list of program directories.</returns>
-        private static string GetDirectories()
-        {
-            string defaultDirectories = @"{
-                      'Data':'Data',
-                      'Packages':'Data\|Packages',
-                      'Plugins':'Plugins',
-                      'Temp':'Data\|Temp',
-		              'Persistence':'Data\|Persistence',
-                      'Web':'Web',
-                      'Logs':'Logs'
-                 }";
-
-            return Utility.GetSetting("Directories", defaultDirectories).Replace('|', System.IO.Path.DirectorySeparatorChar);
-        }
 
         /// <summary>
         ///     Check each of the directories in the internal directory list and ensures that they exist.
