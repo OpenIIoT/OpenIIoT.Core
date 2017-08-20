@@ -95,9 +95,9 @@ namespace OpenIIoT.Core.Security
         #region Public Properties
 
         /// <summary>
-        ///     Gets the list of built-in <see cref="Role"/> s.
+        ///     Gets the list of built-in <see cref="UserRole"/> s.
         /// </summary>
-        IReadOnlyList<Role> Roles { get; }
+        IReadOnlyList<UserRole> Roles { get; }
 
         /// <summary>
         ///     Gets the list of active <see cref="Session"/> s.
@@ -120,7 +120,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="password">The plaintext password for the new User.</param>
         /// <param name="role">The Role for the new User.</param>
         /// <returns>A Result containing the result of the operation and the newly created User.</returns>
-        IResult<User> CreateUser(string name, string password, Role role);
+        IResult<User> CreateUser(string name, string password, UserRole role);
 
         /// <summary>
         ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.
@@ -179,7 +179,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        IResult<User> UpdateUser(string userName, string password = null, Role role = Role.NotSpecified);
+        IResult<User> UpdateUser(string userName, string password = null, UserRole role = UserRole.NotSpecified);
 
         #endregion Public Methods
     }

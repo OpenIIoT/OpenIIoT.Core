@@ -161,9 +161,9 @@ namespace OpenIIoT.Core.Security
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
         /// <summary>
-        ///     Gets the list of built-in <see cref="Role"/> s.
+        ///     Gets the list of built-in <see cref="UserRole"/> s.
         /// </summary>
-        public IReadOnlyList<Role> Roles => new[] { Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
+        public IReadOnlyList<UserRole> Roles => new[] { UserRole.Reader, UserRole.ReadWriter, UserRole.Administrator }.ToList();
 
         /// <summary>
         ///     Gets the list of active <see cref="Session"/> s.
@@ -205,7 +205,7 @@ namespace OpenIIoT.Core.Security
             retVal.Model = typeof(SecurityManagerConfiguration);
 
             SecurityManagerConfiguration config = new SecurityManagerConfiguration();
-            config.Users.Add(new User(SecuritySettings.DefaultUser, SecuritySettings.DefaultUserPasswordHash, Role.Administrator));
+            config.Users.Add(new User(SecuritySettings.DefaultUser, SecuritySettings.DefaultUserPasswordHash, UserRole.Administrator));
 
             retVal.DefaultConfiguration = config;
 
@@ -311,7 +311,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="password">The plaintext password for the new User.</param>
         /// <param name="role">The Role for the new User.</param>
         /// <returns>A Result containing the result of the operation and the newly created User.</returns>
-        public IResult<User> CreateUser(string name, string password, Role role)
+        public IResult<User> CreateUser(string name, string password, UserRole role)
         {
             logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
             logger.Info($"Creating new User '{name}' with Role '{role}'...");
@@ -576,7 +576,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        public IResult<User> UpdateUser(string userName, string password = null, Role role = Role.NotSpecified)
+        public IResult<User> UpdateUser(string userName, string password = null, UserRole role = UserRole.NotSpecified)
         {
             logger.EnterMethod(xLogger.Params(userName, xLogger.Exclude(), role));
             logger.Info($"Updating User '{userName}'...");
@@ -591,7 +591,7 @@ namespace OpenIIoT.Core.Security
                     foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
                 }
 
-                if (role != Role.NotSpecified)
+                if (role != UserRole.NotSpecified)
                 {
                     foundUser.Role = role;
                 }

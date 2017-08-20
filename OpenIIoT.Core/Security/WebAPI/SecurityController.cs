@@ -37,7 +37,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         [HttpPost]
         [Authorize]
         [Route("v1/security/user")]
-        public HttpResponseMessage CreateUser(string name, string password, Role role)
+        public HttpResponseMessage CreateUser(string name, string password, UserRole role)
         {
             User user = SecurityManager.FindUser(name);
 
@@ -145,7 +145,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         [HttpPut]
         [Authorize]
         [Route("v1/security/user/{name}")]
-        public HttpResponseMessage UpdateUser(string name, string password = null, Role role = Role.NotSpecified)
+        public HttpResponseMessage UpdateUser(string name, string password = null, UserRole role = UserRole.NotSpecified)
         {
             User user = SecurityManager.FindUser(name);
 
