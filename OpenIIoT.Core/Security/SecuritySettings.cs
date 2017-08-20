@@ -61,7 +61,7 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the value of the 'SessionLength' key from the application's XML configuration file.
         /// </summary>
-        public static int SessionLength => Utility.GetSetting<int>("SessionLength", "30");
+        public static int SessionLength => Utility.GetSetting<int>("SessionLength", "15");
 
         /// <summary>
         ///     Gets the value of the 'SessionPurgeInterval' key from the application's XML configuration file.

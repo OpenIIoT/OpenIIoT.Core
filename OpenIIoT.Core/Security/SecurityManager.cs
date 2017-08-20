@@ -45,7 +45,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Timers;
-using Microsoft.Owin.Security;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
@@ -98,7 +97,6 @@ namespace OpenIIoT.Core.Security
             RegisterDependency<IConfigurationManager>(configurationManager);
 
             SessionList = new List<Session>();
-            UserList = new List<User>();
 
             SessionExpiryTimer = new Timer(5);
             SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
@@ -175,7 +173,7 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the list of configured <see cref="User"/> s.
         /// </summary>
-        public IReadOnlyList<User> Users => ((List<User>)UserList).AsReadOnly();
+        public IReadOnlyList<User> Users => ((List<User>)Configuration.Users).AsReadOnly();
 
         #endregion Public Properties
 
@@ -190,11 +188,6 @@ namespace OpenIIoT.Core.Security
         ///     Gets or sets the list of active <see cref="Session"/> s.
         /// </summary>
         private IList<Session> SessionList { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the list of configured <see cref="User"/> s.
-        /// </summary>
-        private IList<User> UserList { get; set; }
 
         #endregion Private Properties
 
@@ -300,7 +293,6 @@ namespace OpenIIoT.Core.Security
             Result retVal = new Result();
 
             Configuration = configuration;
-            UserList = Configuration.Users;
 
             logger.Debug("Successfully configured the Manager.");
 
@@ -330,7 +322,7 @@ namespace OpenIIoT.Core.Security
             if (FindUser(name) == default(User))
             {
                 retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
-                UserList.Add(retVal.ReturnValue);
+                Configuration.Users.Add(retVal.ReturnValue);
             }
             else
             {
@@ -366,7 +358,7 @@ namespace OpenIIoT.Core.Security
 
             if (foundUser != default(User))
             {
-                UserList.Remove(foundUser);
+                Configuration.Users.Remove(foundUser);
             }
             else
             {
@@ -418,7 +410,7 @@ namespace OpenIIoT.Core.Security
                 Task.Run(() => SessionEnded?.Invoke(this, new SessionEventArgs(foundSession)));
             }
 
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod();
             return retVal;
         }
@@ -461,7 +453,7 @@ namespace OpenIIoT.Core.Security
                 Task.Run(() => SessionExtended?.Invoke(this, new SessionEventArgs(foundSession)));
             }
 
-            retVal.LogResult(logger);
+            retVal.LogResult(logger.Debug);
             logger.ExitMethod();
             return retVal;
         }
@@ -485,7 +477,7 @@ namespace OpenIIoT.Core.Security
         /// <returns>The found User.</returns>
         public User FindUser(string name)
         {
-            return UserList.Where(u => u.Name == name).FirstOrDefault();
+            return Configuration.Users.Where(u => u.Name == name).FirstOrDefault();
         }
 
         /// <summary>
@@ -508,8 +500,6 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod();
             Result retVal = new Result();
-
-            Configuration.Users = UserList;
 
             retVal.Incorporate(Dependency<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration));
 
