@@ -98,7 +98,7 @@ namespace OpenIIoT.Core.Security
 
             SessionList = new List<Session>();
 
-            SessionExpiryTimer = new Timer(5);
+            SessionExpiryTimer = new Timer(SecuritySettings.SessionPurgeInterval);
             SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
 
             ChangeState(State.Initialized);
