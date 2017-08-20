@@ -102,10 +102,14 @@ namespace OpenIIoT.Core.Service.WebAPI
                 string key = context.Request.Headers["X-ApiKey"];
                 Session session = SecurityManager.FindSession(key);
 
-                if (session != default(Session))
+                if (session != default(Session) && !session.IsExpired)
                 {
-                    ClaimsPrincipal principal = new ClaimsPrincipal(session.Ticket.Identity);
-                    context.Request.User = principal;
+                    context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
+
+                    if (SecuritySettings.SlidingSessions)
+                    {
+                        SecurityManager.ExtendSession(session);
+                    }
                 }
             }
 

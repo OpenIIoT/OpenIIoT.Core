@@ -438,7 +438,7 @@ namespace OpenIIoT.Core.Security
 
             if (foundSession != default(Session))
             {
-                if (foundSession.Ticket.Properties.ExpiresUtc >= DateTime.UtcNow)
+                if (!foundSession.IsExpired)
                 {
                     retVal.ReturnValue = SessionFactory.ExtendSession(foundSession);
                 }

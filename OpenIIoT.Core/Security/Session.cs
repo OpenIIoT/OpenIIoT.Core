@@ -23,6 +23,7 @@ namespace OpenIIoT.Core.Security
         #region Private Properties
 
         public string ApiKey { get; }
+        public bool IsExpired => Ticket?.Properties.ExpiresUtc < DateTime.UtcNow;
         public AuthenticationTicket Ticket { get; }
 
         #endregion Private Properties

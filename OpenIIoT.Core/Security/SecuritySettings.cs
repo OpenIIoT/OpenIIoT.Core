@@ -24,6 +24,11 @@
         /// </summary>
         public static int SessionPurgeInterval => Utility.GetSetting<int>("SessionPurgeInterval", "900000");
 
+        /// <summary>
+        ///     Gets a value indicating whether sliding sessions should be used from the application's XML configuration file.
+        /// </summary>
+        public static bool SlidingSessions => Utility.GetSetting<bool>("SlidingSessions", "true");
+
         #endregion Public Properties
     }
 }
