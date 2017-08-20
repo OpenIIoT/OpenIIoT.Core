@@ -1,21 +1,70 @@
-﻿using System.Net;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀     ▄█████  ▄██████ ██   █     █████  █      ██    ▄█   ▄
+      █     ███          ██   █  ██    ██ ██   ██   ██  ██ ██  ▀███████▄ ██   █▄
+      █   ▀███████████  ▄██▄▄    ██    ▀  ██   ██  ▄██▄▄█▀ ██▌     ██  ▀ ▀▀▀▀▀██
+      █            ███ ▀▀██▀▀    ██    ▄  ██   ██ ▀███████ ██      ██    ▄█   ██
+      █      ▄█    ███   ██   █  ██    ██ ██   ██   ██  ██ ██      ██    ██   ██
+      █    ▄████████▀    ███████ ██████▀  ██████    ██  ██ █      ▄██▀    █████
+      █
+      █   ▄████████
+      █   ███    ███
+      █   ███    █▀   ██████  ██▄▄▄▄      ██       █████  ██████   █        █          ▄█████    █████
+      █   ███        ██    ██ ██▀▀▀█▄ ▀███████▄   ██  ██ ██    ██ ██       ██         ██   █    ██  ██
+      █   ███        ██    ██ ██   ██     ██  ▀  ▄██▄▄█▀ ██    ██ ██       ██        ▄██▄▄     ▄██▄▄█▀
+      █   ███    █▄  ██    ██ ██   ██     ██    ▀███████ ██    ██ ██       ██       ▀▀██▀▀    ▀███████
+      █   ███    ███ ██    ██ ██   ██     ██      ██  ██ ██    ██ ██▌    ▄ ██▌    ▄   ██   █    ██  ██
+      █   ████████▀   ██████   █   █     ▄██▀     ██  ██  ██████  ████▄▄██ ████▄▄██   ███████   ██  ██
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █  WebAPI Controller for the Security namespace.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
+                                                                                                   ▀▀                            */
+
+using System.Linq;
+using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
+using System.Security.Claims;
 using System.Web.Http;
 using OpenIIoT.Core.Service.WebAPI;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using System.Security.Claims;
-using System;
-using System.Linq;
 using Utility.OperationResult;
+using Swashbuckle.Swagger.Annotations;
+using System;
 using System.Collections.Generic;
-using Microsoft.Owin.Security;
 
 namespace OpenIIoT.Core.Security.WebAPI
 {
     /// <summary>
-    ///     API methods for application security.
+    ///     WebAPI Controller for the Security namespace.
     /// </summary>
     [Authorize]
     [RoutePrefix(WebAPIConstants.RoutePrefix)]
@@ -24,41 +73,74 @@ namespace OpenIIoT.Core.Security.WebAPI
         #region Variables
 
         /// <summary>
-        ///     The ApplicationManager for the application.
+        ///     Gets the IApplicationManager for the application.
         /// </summary>
-        private IApplicationManager manager = ApplicationManager.GetInstance();
+        private IApplicationManager Manager => ApplicationManager.GetInstance();
 
-        private ISecurityManager SecurityManager => manager.GetManager<ISecurityManager>();
+        /// <summary>
+        ///     Gets the ISecurityManager for the application.
+        /// </summary>
+        private ISecurityManager SecurityManager => Manager.GetManager<ISecurityManager>();
 
         #endregion Variables
 
         #region Instance Methods
 
+        /// <summary>
+        ///     Creates a new User.
+        /// </summary>
+        /// <param name="name">The name of the User.</param>
+        /// <param name="password">The password for the User.</param>
+        /// <param name="role">The Role of the User.</param>
+        /// <returns>An HTTP response message.</returns>
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [Route("v1/security/user")]
+        [SwaggerResponse(HttpStatusCode.OK, "The User was created.", typeof(User))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage CreateUser(string name, string password, UserRole role)
         {
-            User user = SecurityManager.FindUser(name);
+            HttpResponseMessage retVal;
 
-            if (user == default(User))
+            if (string.IsNullOrEmpty(name))
             {
-                IResult<User> createResult = SecurityManager.CreateUser(name, password, role);
-
-                if (createResult.ResultCode != ResultCode.Failure)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, createResult.ReturnValue, JsonFormatter());
-                }
-                else
-                {
-                    Result result = (Result)createResult;
-                    return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
-                }
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
+            }
+            else if (string.IsNullOrEmpty(password))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
+            }
+            else if (role == UserRole.NotSpecified)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The User Role may not be 'NotSpecified'.");
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest);
+                User user = SecurityManager.FindUser(name);
+
+                if (user == default(User))
+                {
+                    IResult<User> createResult = SecurityManager.CreateUser(name, password, role);
+
+                    if (createResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.OK, createResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+                    }
+                    else
+                    {
+                        Result result = (Result)createResult;
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.Conflict, "The specified User already exists.");
+                }
             }
+
+            return retVal;
         }
 
         [HttpDelete]

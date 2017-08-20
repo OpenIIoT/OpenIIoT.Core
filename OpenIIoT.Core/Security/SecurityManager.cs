@@ -74,7 +74,7 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     The Logger for this class.
         /// </summary>
-        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        private static new xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         #endregion Private Fields
 
