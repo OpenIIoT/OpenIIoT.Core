@@ -39,8 +39,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.ComponentModel.DataAnnotations;
-
 namespace OpenIIoT.Core.Security
 {
     /// <summary>
@@ -70,19 +68,16 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the name of the User.
         /// </summary>
-        [Required]
         public string Name { get; }
 
         /// <summary>
         ///     Gets or sets the SHA512 hash of the password for the User.
         /// </summary>
-        [Required]
         public string PasswordHash { get; set; }
 
         /// <summary>
         ///     Gets or sets the Role of the User.
         /// </summary>
-        [Required]
         public UserRole Role { get; set; }
 
         #endregion Private Properties
