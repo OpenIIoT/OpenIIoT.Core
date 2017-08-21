@@ -319,14 +319,29 @@ namespace OpenIIoT.Core.Security
             IResult<User> retVal = new Result<User>();
             retVal.ReturnValue = default(User);
 
-            if (FindUser(name) == default(User))
+            if (string.IsNullOrEmpty(name))
             {
-                retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
-                Configuration.Users.Add(retVal.ReturnValue);
+                retVal.AddError("The specified name is null or empty.");
+            }
+            else if (string.IsNullOrEmpty(password))
+            {
+                retVal.AddError("The specified password is null or empty.");
+            }
+            else if (role == UserRole.NotSpecified)
+            {
+                retVal.AddError("The User Role must not be 'NotSpecified'.");
             }
             else
             {
-                retVal.AddError($"User '{name}' already exists.");
+                if (FindUser(name) == default(User))
+                {
+                    retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
+                    Configuration.Users.Add(retVal.ReturnValue);
+                }
+                else
+                {
+                    retVal.AddError($"User '{name}' already exists.");
+                }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -387,7 +402,7 @@ namespace OpenIIoT.Core.Security
         public IResult EndSession(Session session)
         {
             logger.EnterMethod();
-            logger.Debug($"Ending Session '{session.ApiKey}'...");
+            logger.Debug($"Ending Session '{session?.ApiKey}'...");
 
             IResult retVal = new Result();
             Session foundSession = FindSession(session.ApiKey);
@@ -423,10 +438,10 @@ namespace OpenIIoT.Core.Security
         public IResult<Session> ExtendSession(Session session)
         {
             logger.EnterMethod();
-            logger.Debug($"Extending Session '{session.ApiKey}'...");
+            logger.Debug($"Extending Session '{session?.ApiKey}'...");
 
             IResult<Session> retVal = new Result<Session>();
-            Session foundSession = FindSession(session.ApiKey);
+            Session foundSession = FindSession(session?.ApiKey);
 
             if (foundSession != default(Session))
             {
@@ -582,30 +597,39 @@ namespace OpenIIoT.Core.Security
             logger.Info($"Updating User '{userName}'...");
 
             IResult<User> retVal = new Result<User>();
-            User foundUser = FindUser(userName);
+            User foundUser;
 
-            if (foundUser != default(User))
+            if (password != null && password == string.Empty)
             {
-                if (password != null)
-                {
-                    foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
-                }
-
-                if (role != UserRole.NotSpecified)
-                {
-                    foundUser.Role = role;
-                }
-
-                retVal.ReturnValue = foundUser;
+                retVal.AddError("The specified password is empty.");
             }
             else
             {
-                retVal.AddError($"User '{userName}' does not exist.");
+                foundUser = FindUser(userName);
+
+                if (foundUser != default(User))
+                {
+                    if (password != null)
+                    {
+                        foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
+                    }
+
+                    if (role != UserRole.NotSpecified)
+                    {
+                        foundUser.Role = role;
+                    }
+
+                    retVal.ReturnValue = foundUser;
+                }
+                else
+                {
+                    retVal.AddError($"User '{userName}' does not exist.");
+                }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.AddError($"Failed to update USer '{userName}'.");
+                retVal.AddError($"Failed to update User '{userName}'.");
             }
             else
             {
