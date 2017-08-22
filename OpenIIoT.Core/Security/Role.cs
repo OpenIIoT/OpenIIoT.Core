@@ -47,23 +47,18 @@ namespace OpenIIoT.Core.Security
     public enum Role
     {
         /// <summary>
-        ///     The default/uninitialized Role.
-        /// </summary>
-        NotSpecified = 0,
-
-        /// <summary>
         ///     The User may read data.
         /// </summary>
-        Reader = 1,
+        Reader = 0,
 
         /// <summary>
         ///     The User may read and write data.
         /// </summary>
-        ReadWriter = 2,
+        ReadWriter = 1,
 
         /// <summary>
         ///     The User has full administrative control over data and configuration.
         /// </summary>
-        Administrator = 3
+        Administrator = 2
     }
 }

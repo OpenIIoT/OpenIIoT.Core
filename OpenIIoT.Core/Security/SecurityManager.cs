@@ -327,10 +327,6 @@ namespace OpenIIoT.Core.Security
             {
                 retVal.AddError("The specified password is null or empty.");
             }
-            else if (role == Role.NotSpecified)
-            {
-                retVal.AddError("The User Role must not be 'NotSpecified'.");
-            }
             else
             {
                 if (FindUser(name) == default(User))
@@ -591,7 +587,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        public IResult<User> UpdateUser(string userName, string password = null, Role role = Role.NotSpecified)
+        public IResult<User> UpdateUser(string userName, string password = null, Role? role = null)
         {
             logger.EnterMethod(xLogger.Params(userName, xLogger.Exclude(), role));
             logger.Info($"Updating User '{userName}'...");
@@ -614,9 +610,9 @@ namespace OpenIIoT.Core.Security
                         foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
                     }
 
-                    if (role != Role.NotSpecified)
+                    if (role != null)
                     {
-                        foundUser.Role = role;
+                        foundUser.Role = role ?? Role.Reader;
                     }
 
                     retVal.ReturnValue = foundUser;

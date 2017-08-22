@@ -179,7 +179,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        IResult<User> UpdateUser(string userName, string password = null, Role role = Role.NotSpecified);
+        IResult<User> UpdateUser(string userName, string password = null, Role? role = null);
 
         #endregion Public Methods
     }
