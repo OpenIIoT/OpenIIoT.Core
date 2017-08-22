@@ -87,11 +87,11 @@ namespace OpenIIoT.Core.Security.WebAPI
         #region Instance Methods
 
         /// <summary>
-        ///     Creates a new User.
+        ///     Creates a new <see cref="User"/>.
         /// </summary>
-        /// <param name="name">The name of the User.</param>
-        /// <param name="password">The password for the User.</param>
-        /// <param name="role">The Role of the User.</param>
+        /// <param name="name">The name of the new User.</param>
+        /// <param name="password">The plaintext password for the new User.</param>
+        /// <param name="role">The Role for the new User.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
         [Authorize(Roles = "Administrator")]
@@ -143,30 +143,50 @@ namespace OpenIIoT.Core.Security.WebAPI
             return retVal;
         }
 
+        /// <summary>
+        ///     Deletes the specified <see cref="User"/> from the list of <see cref="SecurityManager.Users"/>.
+        /// </summary>
+        /// <param name="name">The name of the User to delete.</param>
+        /// <returns>An HTTP response message.</returns>
         [HttpDelete]
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [Route("v1/security/user/{nane}")]
+        [SwaggerResponse(HttpStatusCode.OK, "The User was deleted.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "The specified User does not exist.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage DeleteUser(string name)
         {
-            User user = SecurityManager.FindUser(name);
+            HttpResponseMessage retVal;
 
-            if (user != default(User))
+            if (string.IsNullOrEmpty(name))
             {
-                IResult deleteResult = SecurityManager.DeleteUser(user.Name);
-
-                if (deleteResult.ResultCode != ResultCode.Failure)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK);
-                }
-                else
-                {
-                    return Request.CreateResponse(HttpStatusCode.InternalServerError, deleteResult, JsonFormatter());
-                }
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
+                User user = SecurityManager.FindUser(name);
+
+                if (user != default(User))
+                {
+                    IResult deleteResult = SecurityManager.DeleteUser(user.Name);
+
+                    if (deleteResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.OK);
+                    }
+                    else
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, deleteResult, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
             }
+
+            return retVal;
         }
 
         [HttpGet]
