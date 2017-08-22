@@ -87,7 +87,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         #region Instance Methods
 
         /// <summary>
-        ///     Creates a new <see cref="User"/>.
+        ///     Creates a new User.
         /// </summary>
         /// <param name="name">The name of the new User.</param>
         /// <param name="password">The plaintext password for the new User.</param>
@@ -144,7 +144,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         }
 
         /// <summary>
-        ///     Deletes the specified <see cref="User"/> from the list of <see cref="SecurityManager.Users"/>.
+        ///     Deletes the specified User.
         /// </summary>
         /// <param name="name">The name of the User to delete.</param>
         /// <returns>An HTTP response message.</returns>
@@ -189,26 +189,40 @@ namespace OpenIIoT.Core.Security.WebAPI
             return retVal;
         }
 
-
+        /// <summary>
+        ///     Gets the list of built-in User Roles.
+        /// </summary>
+        /// <returns>An HTTP response message.</returns>
         [HttpGet]
         [Authorize]
         [Route("v1/security/role")]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Role>))]
         public HttpResponseMessage GetRoles()
         {
             return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Roles, JsonFormatter());
         }
 
+        /// <summary>
+        ///     Gets the list of active Sessions.
+        /// </summary>
+        /// <returns>An HTTP response message.</returns>
         [HttpGet]
         [Authorize]
         [Route("v1/security/session")]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
         public HttpResponseMessage GetSessions()
         {
             return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions, JsonFormatter(ContractResolverType.OptOut, "Subject"));
         }
 
+        /// <summary>
+        ///     Gets the list of configured Users.
+        /// </summary>
+        /// <returns>An HTTP response message.</returns>
         [HttpGet]
         [Authorize]
         [Route("v1/security/user")]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<User>))]
         public HttpResponseMessage GetUsers()
         {
             return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Users, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));

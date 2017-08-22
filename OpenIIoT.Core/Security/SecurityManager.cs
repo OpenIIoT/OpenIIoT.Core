@@ -161,7 +161,7 @@ namespace OpenIIoT.Core.Security
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
         /// <summary>
-        ///     Gets the list of built-in <see cref="Role"/> s.
+        ///     Gets the list of built-in User <see cref="Role"/> s.
         /// </summary>
         public IReadOnlyList<Role> Roles => new[] { Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
 
@@ -359,7 +359,7 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
-        ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.
+        ///     Deletes the specified <see cref="User"/>.
         /// </summary>
         /// <param name="name">The name of the User to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
