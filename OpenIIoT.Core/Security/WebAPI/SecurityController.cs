@@ -207,7 +207,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [Route("v1/security/session")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
         public HttpResponseMessage GetSessions()
@@ -220,7 +220,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Authorize]
+        [Authorize(Roles = "Administrator")]
         [Route("v1/security/user")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<User>))]
         public HttpResponseMessage GetUsers()
