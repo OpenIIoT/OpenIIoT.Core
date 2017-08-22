@@ -54,7 +54,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="name">The name of the User.</param>
         /// <param name="passwordHash">The SHA512 hash of the password for the User.</param>
         /// <param name="role">The Role of the User.</param>
-        public User(string name, string passwordHash, UserRole role)
+        public User(string name, string passwordHash, Role role)
         {
             Name = name;
             PasswordHash = passwordHash;
@@ -78,7 +78,7 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets or sets the Role of the User.
         /// </summary>
-        public UserRole Role { get; set; }
+        public Role Role { get; set; }
 
         #endregion Private Properties
     }

@@ -217,7 +217,7 @@
     </Compile>
     <Compile Include="Scripting\ScriptManager.cs" />
     <Compile Include="Security\ISecurityManager.cs" />
-    <Compile Include="Security\UserRole.cs" />
+    <Compile Include="Security\Role.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
     <Compile Include="Security\SecuritySettings.cs" />

@@ -100,7 +100,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        public HttpResponseMessage CreateUser(string name, string password, UserRole role)
+        public HttpResponseMessage CreateUser(string name, string password, Role role)
         {
             HttpResponseMessage retVal;
 
@@ -112,7 +112,7 @@ namespace OpenIIoT.Core.Security.WebAPI
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
             }
-            else if (role == UserRole.NotSpecified)
+            else if (role == Role.NotSpecified)
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The User Role may not be 'NotSpecified'.");
             }
@@ -150,7 +150,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// <returns>An HTTP response message.</returns>
         [HttpDelete]
         [Authorize(Roles = "Administrator")]
-        [Route("v1/security/user/{nane}")]
+        [Route("v1/security/user/{name}")]
         [SwaggerResponse(HttpStatusCode.OK, "The User was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The specified User does not exist.")]
@@ -188,6 +188,7 @@ namespace OpenIIoT.Core.Security.WebAPI
 
             return retVal;
         }
+
 
         [HttpGet]
         [Authorize]
@@ -247,7 +248,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         [HttpPut]
         [Authorize]
         [Route("v1/security/user/{name}")]
-        public HttpResponseMessage UpdateUser(string name, string password = null, UserRole role = UserRole.NotSpecified)
+        public HttpResponseMessage UpdateUser(string name, string password = null, Role role = Role.NotSpecified)
         {
             User user = SecurityManager.FindUser(name);
 
