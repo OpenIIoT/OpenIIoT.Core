@@ -112,10 +112,6 @@ namespace OpenIIoT.Core.Security.WebAPI
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
             }
-            else if (role == Role.NotSpecified)
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The User Role may not be 'NotSpecified'.");
-            }
             else
             {
                 User user = SecurityManager.FindUser(name);
@@ -262,7 +258,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         [HttpPut]
         [Authorize]
         [Route("v1/security/user/{name}")]
-        public HttpResponseMessage UpdateUser(string name, string password = null, Role role = Role.NotSpecified)
+        public HttpResponseMessage UpdateUser(string name, string password = null, Role? role = null)
         {
             User user = SecurityManager.FindUser(name);
 
