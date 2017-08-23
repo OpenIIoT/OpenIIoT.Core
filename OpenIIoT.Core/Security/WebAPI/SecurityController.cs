@@ -148,7 +148,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The User was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.NotFound, "The specified User does not exist.")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage DeleteUser(string name)
         {
@@ -294,31 +294,60 @@ namespace OpenIIoT.Core.Security.WebAPI
             return retVal;
         }
 
+        /// <summary>
+        ///     Updates the specified User.
+        /// </summary>
+        /// <param name="name">The name of the User to update.</param>
+        /// <param name="password">The updated plaintext password for the User.</param>
+        /// <param name="role">The updated Role for the user.</param>
         [HttpPut]
         [Route("v1/security/user/{name}")]
         [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(User))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage UpdateUser(string name, string password = null, Role? role = null)
         {
-            User user = SecurityManager.FindUser(name);
+            HttpResponseMessage retVal;
 
-            if (user != default(User))
+            if (string.IsNullOrEmpty(name))
             {
-                IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, password, role);
-
-                if (updateResult.ResultCode != ResultCode.Failure)
-                {
-                    return Request.CreateResponse(HttpStatusCode.OK, updateResult, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
-                }
-                else
-                {
-                    Result result = (Result)updateResult;
-                    return Request.CreateResponse(HttpStatusCode.InternalServerError, updateResult, JsonFormatter());
-                }
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
+            }
+            else if (password != null && password == string.Empty)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is empty.");
+            }
+            else if (password == null && role == null)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "Neither the password nor the Role was specified; nothing to update.");
             }
             else
             {
-                return Request.CreateResponse(HttpStatusCode.NotFound);
+                User user = SecurityManager.FindUser(name);
+
+                if (user != default(User))
+                {
+                    IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, password, role);
+
+                    if (updateResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.OK, updateResult, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+                    }
+                    else
+                    {
+                        Result result = (Result)updateResult;
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, updateResult, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
             }
+
+            return retVal;
         }
 
         #endregion Instance Methods
