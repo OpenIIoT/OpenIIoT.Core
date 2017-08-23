@@ -589,8 +589,8 @@ namespace OpenIIoT.Core.Security
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
         public IResult<User> UpdateUser(string name, string password = null, Role? role = null)
         {
-            logger.EnterMethod(xLogger.Params(userName, xLogger.Exclude(), role));
-            logger.Info($"Updating User '{userName}'...");
+            logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
+            logger.Info($"Updating User '{name}'...");
 
             IResult<User> retVal = new Result<User>();
             User foundUser;
@@ -601,7 +601,7 @@ namespace OpenIIoT.Core.Security
             }
             else
             {
-                foundUser = FindUser(userName);
+                foundUser = FindUser(name);
 
                 if (foundUser != default(User))
                 {
@@ -619,13 +619,13 @@ namespace OpenIIoT.Core.Security
                 }
                 else
                 {
-                    retVal.AddError($"User '{userName}' does not exist.");
+                    retVal.AddError($"User '{name}' does not exist.");
                 }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.AddError($"Failed to update User '{userName}'.");
+                retVal.AddError($"Failed to update User '{name}'.");
             }
             else
             {
