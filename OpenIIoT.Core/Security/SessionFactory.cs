@@ -61,7 +61,11 @@ namespace OpenIIoT.Core.Security
         {
             ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
             identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
-            identity.AddClaim(new Claim(ClaimTypes.Role, user.Role.ToString()));
+
+            for (int r = (int)user.Role; r >= 0; r--)
+            {
+                identity.AddClaim(new Claim(ClaimTypes.Role, ((Role)r).ToString()));
+            }
 
             string hash = SDK.Common.Utility.ComputeSHA512Hash(Guid.NewGuid().ToString());
 

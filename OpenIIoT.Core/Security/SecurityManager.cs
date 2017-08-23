@@ -74,7 +74,7 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     The Logger for this class.
         /// </summary>
-        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        private static new xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         #endregion Private Fields
 
@@ -161,7 +161,7 @@ namespace OpenIIoT.Core.Security
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
         /// <summary>
-        ///     Gets the list of built-in <see cref="Role"/> s.
+        ///     Gets the list of built-in User <see cref="Role"/> s.
         /// </summary>
         public IReadOnlyList<Role> Roles => new[] { Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
 
@@ -319,14 +319,25 @@ namespace OpenIIoT.Core.Security
             IResult<User> retVal = new Result<User>();
             retVal.ReturnValue = default(User);
 
-            if (FindUser(name) == default(User))
+            if (string.IsNullOrEmpty(name))
             {
-                retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
-                Configuration.Users.Add(retVal.ReturnValue);
+                retVal.AddError("The specified name is null or empty.");
+            }
+            else if (string.IsNullOrEmpty(password))
+            {
+                retVal.AddError("The specified password is null or empty.");
             }
             else
             {
-                retVal.AddError($"User '{name}' already exists.");
+                if (FindUser(name) == default(User))
+                {
+                    retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
+                    Configuration.Users.Add(retVal.ReturnValue);
+                }
+                else
+                {
+                    retVal.AddError($"User '{name}' already exists.");
+                }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -344,7 +355,7 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
-        ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.
+        ///     Deletes the specified <see cref="User"/>.
         /// </summary>
         /// <param name="name">The name of the User to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -387,7 +398,7 @@ namespace OpenIIoT.Core.Security
         public IResult EndSession(Session session)
         {
             logger.EnterMethod();
-            logger.Debug($"Ending Session '{session.ApiKey}'...");
+            logger.Debug($"Ending Session '{session?.ApiKey}'...");
 
             IResult retVal = new Result();
             Session foundSession = FindSession(session.ApiKey);
@@ -423,10 +434,10 @@ namespace OpenIIoT.Core.Security
         public IResult<Session> ExtendSession(Session session)
         {
             logger.EnterMethod();
-            logger.Debug($"Extending Session '{session.ApiKey}'...");
+            logger.Debug($"Extending Session '{session?.ApiKey}'...");
 
             IResult<Session> retVal = new Result<Session>();
-            Session foundSession = FindSession(session.ApiKey);
+            Session foundSession = FindSession(session?.ApiKey);
 
             if (foundSession != default(Session))
             {
@@ -572,40 +583,49 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
         /// </summary>
-        /// <param name="userName">The name of the User to update.</param>
+        /// <param name="name">The name of the User to update.</param>
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        public IResult<User> UpdateUser(string userName, string password = null, Role role = Role.NotSpecified)
+        public IResult<User> UpdateUser(string name, string password = null, Role? role = null)
         {
-            logger.EnterMethod(xLogger.Params(userName, xLogger.Exclude(), role));
-            logger.Info($"Updating User '{userName}'...");
+            logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
+            logger.Info($"Updating User '{name}'...");
 
             IResult<User> retVal = new Result<User>();
-            User foundUser = FindUser(userName);
+            User foundUser;
 
-            if (foundUser != default(User))
+            if (password != null && password == string.Empty)
             {
-                if (password != null)
-                {
-                    foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
-                }
-
-                if (role != Role.NotSpecified)
-                {
-                    foundUser.Role = role;
-                }
-
-                retVal.ReturnValue = foundUser;
+                retVal.AddError("The specified password is empty.");
             }
             else
             {
-                retVal.AddError($"User '{userName}' does not exist.");
+                foundUser = FindUser(name);
+
+                if (foundUser != default(User))
+                {
+                    if (password != null)
+                    {
+                        foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
+                    }
+
+                    if (role != null)
+                    {
+                        foundUser.Role = role ?? Role.Reader;
+                    }
+
+                    retVal.ReturnValue = foundUser;
+                }
+                else
+                {
+                    retVal.AddError($"User '{name}' does not exist.");
+                }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
             {
-                retVal.AddError($"Failed to update USer '{userName}'.");
+                retVal.AddError($"Failed to update User '{name}'.");
             }
             else
             {
