@@ -111,6 +111,8 @@
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Security\SecurityManager.cs" />
+    <Compile Include="Security\SecurityManagerConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
