@@ -56,6 +56,7 @@
                                                                                                ▀█▄ ██ ▄█▀
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
+using Microsoft.Owin.Security;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Security
