@@ -57,9 +57,26 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Xunit;
+
 namespace OpenIIoT.Core.Tests.Security
 {
-    class UserEventArgs
+    /// <summary>
+    ///     Unit tests for the <see cref="Core.Security.UserEventArgs"/> class.
+    /// </summary>
+    public class UserEventArgs
     {
+        /// <summary>
+        ///     Test the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            Core.Security.User user = new Core.Security.User("name", "password", Core.Security.Role.Reader);
+            Core.Security.UserEventArgs test = new Core.Security.UserEventArgs(user);
+
+            Assert.IsType<Core.Security.UserEventArgs>(test);
+            Assert.Equal(user, test.User);
+        }
     }
 }

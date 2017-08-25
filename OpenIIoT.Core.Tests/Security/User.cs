@@ -48,9 +48,27 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Xunit;
+
 namespace OpenIIoT.Core.Tests.Security
 {
-    class User
+    /// <summary>
+    ///     Unit tests for the <see cref="Core.Security.User"/> class.
+    /// </summary>
+    public class User
     {
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            Core.Security.User test = new Core.Security.User("test", "password", Core.Security.Role.Reader);
+
+            Assert.IsType<Core.Security.User>(test);
+            Assert.Equal("test", test.Name);
+            Assert.Equal("password", test.PasswordHash);
+            Assert.Equal(Core.Security.Role.Reader, test.Role);
+        }
     }
 }

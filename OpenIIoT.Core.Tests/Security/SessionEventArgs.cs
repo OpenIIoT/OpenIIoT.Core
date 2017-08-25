@@ -56,10 +56,26 @@
                                                                                                ▀█▄ ██ ▄█▀
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
+using Xunit;
 
 namespace OpenIIoT.Core.Tests.Security
 {
-    class SessionEventArgs
+    /// <summary>
+    ///     Unit tests for the <see cref="Core.Security.SessionEventArgs"/> class.
+    /// </summary>
+    public class SessionEventArgs
     {
+        /// <summary>
+        ///     Test the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            Core.Security.Session session = new Core.Security.Session("key", new AuthenticationTicket());
+            Core.Security.SessionEventArgs test = new Core.Security.SessionEventArgs(session);
+
+            Assert.IsType<Core.Security.UserEventArgs>(test);
+            Assert.Equal(session, test.Session);
+        }
     }
 }
