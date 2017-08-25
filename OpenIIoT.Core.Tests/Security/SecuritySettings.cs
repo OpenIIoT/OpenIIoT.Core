@@ -48,9 +48,71 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
+using Xunit;
+
 namespace OpenIIoT.Core.Tests.Security
 {
-    class SecuritySettings
+    /// <summary>
+    ///     Unit tests for the <see cref="Core.Security.SecuritySettings"/> class.
+    /// </summary>
+    public class SecuritySettings
     {
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecuritySettings.DefaultUser"/> property.
+        /// </summary>
+        [Fact]
+        public void DefaultUser()
+        {
+            string test = Core.Security.SecuritySettings.DefaultUser;
+
+            Assert.NotEqual(default(string), test);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecuritySettings.DefaultUserPasswordHash"/> property.
+        /// </summary>
+        [Fact]
+        public void DefaultUserPasswordHash()
+        {
+            string test = Core.Security.SecuritySettings.DefaultUserPasswordHash;
+
+            Assert.NotEqual(default(string), test);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecuritySettings.SessionLength"/> property.
+        /// </summary>
+        [Fact]
+        public void SessionLength()
+        {
+            int test = Core.Security.SecuritySettings.SessionLength;
+
+            Assert.NotEqual(default(int), test);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecuritySettings.SessionPurgeInterval"/> property.
+        /// </summary>
+        [Fact]
+        public void SessionPurgeInterval()
+        {
+            int test = Core.Security.SecuritySettings.SessionPurgeInterval;
+
+            Assert.NotEqual(default(int), test);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecuritySettings.SlidingSessions"/> property.
+        /// </summary>
+        [Fact]
+        public void SlidingSessions()
+        {
+            bool test = Core.Security.SecuritySettings.SlidingSessions;
+        }
+
+        #endregion Public Methods
     }
 }
