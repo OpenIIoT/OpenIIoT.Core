@@ -56,6 +56,7 @@
                                                                                                ▀█▄ ██ ▄█▀
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
+using System.Security.Claims;
 using Microsoft.Owin.Security;
 using Xunit;
 
@@ -72,7 +73,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Core.Security.Session session = new Core.Security.Session("key", new AuthenticationTicket());
+            Core.Security.Session session = new Core.Security.Session("key", new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties()));
             Core.Security.SessionEventArgs test = new Core.Security.SessionEventArgs(session);
 
             Assert.IsType<Core.Security.UserEventArgs>(test);
