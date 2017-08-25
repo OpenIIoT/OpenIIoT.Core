@@ -57,9 +57,35 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Xunit;
+
 namespace OpenIIoT.Core.Tests.Security
 {
-    class SecurityManagerConfiguration
+    /// <summary>
+    ///     Unit tests for the <see cref="Core.Security.SecurityManagerConfiguration"/> class.
+    /// </summary>
+    public class SecurityManagerConfiguration
     {
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            Core.Security.User user = new Core.Security.User("name", "password", Core.Security.Role.Reader);
+            Core.Security.SecurityManagerConfiguration test = new Core.Security.SecurityManagerConfiguration();
+
+            Assert.IsType<Core.Security.SecurityManagerConfiguration>(test);
+            Assert.Empty(test.Users);
+
+            test.Users.Add(user);
+
+            Assert.NotEmpty(test.Users);
+            Assert.Equal(user, test.Users[0]);
+        }
+
+        #endregion Public Methods
     }
 }
