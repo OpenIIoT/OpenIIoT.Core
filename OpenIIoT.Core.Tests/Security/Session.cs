@@ -10,19 +10,19 @@
       █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
       █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
       █
-      █      ▄████████                                        ▄████████
-      █     ███    ███                                        ███    ███
-      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
-      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
-      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
-      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
-      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
-      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Event arguments for Session events.
+      █  Unit tests for the Session class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -49,34 +49,62 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Security.Claims;
+using Microsoft.Owin.Security;
+using Xunit;
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.Core.Tests.Security
 {
     /// <summary>
-    ///     Event arguments for <see cref="Session"/> events.
+    ///     Unit tests for the <see cref="Core.Security.Session"/> class.
     /// </summary>
-    public class SessionEventArgs : EventArgs
+    public class Session
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionEventArgs"/> class.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        /// <param name="session">The Session associated with the event.</param>
-        public SessionEventArgs(Session session)
+        [Fact]
+        public void Constructor()
         {
-            Session = session;
+            AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(15) };
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            Core.Security.Session test = new Core.Security.Session("key", ticket);
+
+            Assert.IsType<Core.Security.Session>(test);
+            Assert.Equal("key", test.ApiKey);
+            Assert.Equal(ticket, test.Ticket);
+            Assert.False(test.IsExpired);
         }
 
-        #endregion Public Constructors
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.Session.IsExpired"/> property with an expired Ticket.
+        /// </summary>
+        [Fact]
+        public void IsExpiredExpired()
+        {
+            AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(-15) };
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            Core.Security.Session test = new Core.Security.Session("key", ticket);
 
-        #region Public Properties
+            Assert.True(test.IsExpired);
+        }
 
         /// <summary>
-        ///     Gets the Session associated with the event.
+        ///     Tests the <see cref="Core.Security.Session.IsExpired"/> property with a Ticket which does not contain the
+        ///     ExpiresUtc property.
         /// </summary>
-        public Session Session { get; }
+        [Fact]
+        public void IsExpiredNullProperty()
+        {
+            AuthenticationProperties props = new AuthenticationProperties();
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            Core.Security.Session test = new Core.Security.Session("key", ticket);
 
-        #endregion Public Properties
+            Assert.True(test.IsExpired);
+        }
+
+        #endregion Public Methods
     }
 }

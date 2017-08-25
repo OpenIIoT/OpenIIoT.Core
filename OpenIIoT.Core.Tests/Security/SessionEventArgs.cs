@@ -19,10 +19,19 @@
       █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
       █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Event arguments for Session events.
+      █  Unit tests for the SessionEventArgs class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,35 +57,32 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
+using System.Security.Claims;
+using Microsoft.Owin.Security;
+using Xunit;
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.Core.Tests.Security
 {
     /// <summary>
-    ///     Event arguments for <see cref="Session"/> events.
+    ///     Unit tests for the <see cref="Core.Security.SessionEventArgs"/> class.
     /// </summary>
-    public class SessionEventArgs : EventArgs
+    public class SessionEventArgs
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionEventArgs"/> class.
+        ///     Test the constructor and all properties.
         /// </summary>
-        /// <param name="session">The Session associated with the event.</param>
-        public SessionEventArgs(Session session)
+        [Fact]
+        public void Constructor()
         {
-            Session = session;
+            Core.Security.Session session = new Core.Security.Session("key", new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties()));
+            Core.Security.SessionEventArgs test = new Core.Security.SessionEventArgs(session);
+
+            Assert.IsType<Core.Security.SessionEventArgs>(test);
+            Assert.Equal(session, test.Session);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the Session associated with the event.
-        /// </summary>
-        public Session Session { get; }
-
-        #endregion Public Properties
+        #endregion Public Methods
     }
 }
