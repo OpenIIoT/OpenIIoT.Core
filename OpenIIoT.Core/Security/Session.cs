@@ -74,7 +74,7 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
         /// </summary>
-        public bool IsExpired => Ticket?.Properties.ExpiresUtc < DateTime.UtcNow;
+        public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
 
         /// <summary>
         ///     Gets the AuthenticationTicket for the Session.

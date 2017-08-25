@@ -57,6 +57,8 @@ namespace OpenIIoT.Core.Tests.Security
     /// </summary>
     public class User
     {
+        #region Public Methods
+
         /// <summary>
         ///     Tests the constructor and all properties.
         /// </summary>
@@ -70,5 +72,7 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal("password", test.PasswordHash);
             Assert.Equal(Core.Security.Role.Reader, test.Role);
         }
+
+        #endregion Public Methods
     }
 }

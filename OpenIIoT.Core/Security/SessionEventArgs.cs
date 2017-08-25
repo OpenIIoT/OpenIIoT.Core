@@ -65,7 +65,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="session">The Session associated with the event.</param>
         public SessionEventArgs(Session session)
         {
-            Session = Session;
+            Session = session;
         }
 
         #endregion Public Constructors

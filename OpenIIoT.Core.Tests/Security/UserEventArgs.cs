@@ -66,6 +66,8 @@ namespace OpenIIoT.Core.Tests.Security
     /// </summary>
     public class UserEventArgs
     {
+        #region Public Methods
+
         /// <summary>
         ///     Test the constructor and all properties.
         /// </summary>
@@ -78,5 +80,7 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.IsType<Core.Security.UserEventArgs>(test);
             Assert.Equal(user, test.User);
         }
+
+        #endregion Public Methods
     }
 }
