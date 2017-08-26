@@ -441,13 +441,20 @@ namespace OpenIIoT.Core.Security
 
             if (foundSession != default(Session))
             {
-                if (!foundSession.IsExpired)
+                if (SecuritySettings.SlidingSessions)
                 {
-                    retVal.ReturnValue = SessionFactory.ExtendSession(foundSession);
+                    if (!foundSession.IsExpired)
+                    {
+                        retVal.ReturnValue = SessionFactory.ExtendSession(foundSession);
+                    }
+                    else
+                    {
+                        retVal.AddError($"Session has expired and can not be extended.");
+                    }
                 }
                 else
                 {
-                    retVal.AddError($"Session has expired and can not be extended.");
+                    retVal.AddWarning($"Sliding sessions are not enabled; the Session has not been extended.");
                 }
             }
             else

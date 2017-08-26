@@ -81,7 +81,7 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
-        ///     Extends the exipration time of the specified <see cref="Session"/> to the configured session length.
+        ///     Extends the expiration time of the specified <see cref="Session"/> to the configured session length.
         /// </summary>
         /// <param name="session">The Session to extend.</param>
         /// <returns>The extended Session.</returns>
