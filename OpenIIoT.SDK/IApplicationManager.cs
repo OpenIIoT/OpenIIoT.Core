@@ -72,6 +72,11 @@ namespace OpenIIoT.SDK
         /// </summary>
         Version ProductVersion { get; }
 
+        /// <summary>
+        ///     Gets the settings for the Application.
+        /// </summary>
+        IApplicationSettings Settings { get; }
+
         #endregion Public Properties
 
         #region Public Methods

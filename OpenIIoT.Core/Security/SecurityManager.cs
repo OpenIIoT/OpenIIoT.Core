@@ -86,7 +86,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="manager">The IApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The IConfigurationManager instance for the application.</param>
         /// <param name="settings">The settings for the Manager.</param>
-        private SecurityManager(IApplicationManager manager, IConfigurationManager configurationManager, SecuritySettings settings)
+        private SecurityManager(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             base.logger = logger;
             Guid guid = logger.EnterMethod();
@@ -97,7 +97,7 @@ namespace OpenIIoT.Core.Security
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
 
-            Settings = settings;
+            SessionFactory = new SessionFactory(Settings);
 
             SessionList = new List<Session>();
 
@@ -183,19 +183,24 @@ namespace OpenIIoT.Core.Security
         #region Private Properties
 
         /// <summary>
+        ///     Gets the settings for the Application.
+        /// </summary>
+        private IApplicationSettings Settings => Dependency<IApplicationManager>().Settings;
+
+        /// <summary>
         ///     Gets or sets the <see cref="Timer"/> used to purge expired <see cref="Sessions"/>.
         /// </summary>
         private Timer SessionExpiryTimer { get; set; }
 
         /// <summary>
+        ///     Gets or sets the Session Factory for the Manager.
+        /// </summary>
+        private SessionFactory SessionFactory { get; set; }
+
+        /// <summary>
         ///     Gets or sets the list of active <see cref="Session"/> s.
         /// </summary>
         private IList<Session> SessionList { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the settings for the Manager.
-        /// </summary>
-        private SecuritySettings Settings { get; set; }
 
         #endregion Private Properties
 
@@ -212,7 +217,7 @@ namespace OpenIIoT.Core.Security
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
             retVal.Model = typeof(SecurityManagerConfiguration);
 
-            SecuritySettings settings = new SecuritySettings();
+            IApplicationSettings settings = ApplicationManager.GetInstance().Settings;
 
             SecurityManagerConfiguration config = new SecurityManagerConfiguration();
             config.Users.Add(new User(settings.DefaultUser, settings.DefaultUserPasswordHash, Role.Administrator));
@@ -232,32 +237,15 @@ namespace OpenIIoT.Core.Security
         /// </remarks>
         /// <param name="manager">The IApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The IConfigurationManager instance for the application.</param>
-        /// <param name="settings">The settings for the Manager.</param>
-        /// <returns>The Singleton instance of PlatformManager.</returns>
-        public static ISecurityManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager, SecuritySettings settings)
-        {
-            if (instance == null)
-            {
-                instance = new SecurityManager(manager, configurationManager, settings);
-            }
-
-            return instance;
-        }
-
-        /// <summary>
-        ///     Instantiates and/or returns the SecurityManager instance.
-        /// </summary>
-        /// <remarks>
-        ///     Invoked via reflection from ApplicationManager. The parameters are used to build an array of IManager parameters
-        ///     which are then passed to this method. To specify additional dependencies simply insert them into the parameter list
-        ///     for the method and they will be injected when the method is invoked.
-        /// </remarks>
-        /// <param name="manager">The IApplicationManager instance for the application.</param>
-        /// <param name="configurationManager">The IConfigurationManager instance for the application.</param>
         /// <returns>The Singleton instance of PlatformManager.</returns>
         public static ISecurityManager Instantiate(IApplicationManager manager, IConfigurationManager configurationManager)
         {
-            return Instantiate(manager, configurationManager, new SecuritySettings());
+            if (instance == null)
+            {
+                instance = new SecurityManager(manager, configurationManager);
+            }
+
+            return instance;
         }
 
         /// <summary>
