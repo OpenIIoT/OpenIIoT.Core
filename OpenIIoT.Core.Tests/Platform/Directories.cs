@@ -48,9 +48,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
 using System.Collections.Generic;
-using OpenIIoT.SDK.Common.Exceptions;
+using OpenIIoT.SDK;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests
@@ -61,20 +60,6 @@ namespace OpenIIoT.Core.Tests
     [Collection("Directories")]
     public class Directories
     {
-        #region Private Fields
-
-        /// <summary>
-        ///     The shared dictionary containing a "bad" set of directories.
-        /// </summary>
-        private Dictionary<string, string> badDirs;
-
-        /// <summary>
-        ///     The shared dictionary containing a "good" set of directories.
-        /// </summary>
-        private Dictionary<string, string> goodDirs;
-
-        #endregion Private Fields
-
         #region Public Constructors
 
         /// <summary>
@@ -82,38 +67,80 @@ namespace OpenIIoT.Core.Tests
         /// </summary>
         public Directories()
         {
-            goodDirs = new Dictionary<string, string>();
-
-            goodDirs.Add("Data", "Data");
-            goodDirs.Add("Packages", "Packages");
-            goodDirs.Add("Plugins", "Plugins");
-            goodDirs.Add("Temp", "Temp");
-            goodDirs.Add("Persistence", "Persistence");
-            goodDirs.Add("Web", "Web");
-            goodDirs.Add("Logs", "Logs");
-
-            badDirs = new Dictionary<string, string>(goodDirs);
-
-            badDirs.Remove("Data");
+            Settings = new Core.ApplicationSettings();
         }
 
         #endregion Public Constructors
 
-
-
-        #region Private Methods
+        #region Private Properties
 
         /// <summary>
-        ///     Returns the fully qualified path for the specified directory, relative to the application root.
+        ///     Gets or sets the application settings.
         /// </summary>
-        /// <param name="dir">The directory to qualify.</param>
-        /// <returns>The fully qualified path for the specified directory, relative to the application root.</returns>
-        private string FullDir(string dir)
+        private IApplicationSettings Settings { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
+        [Fact]
+        public void Constructor()
         {
-            string root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
-            return System.IO.Path.Combine(root, dir);
+            Core.Platform.Directories test = new Core.Platform.Directories(Settings);
+
+            Assert.IsType<Core.Platform.Directories>(test);
         }
 
-        #endregion Private Methods
+        /// <summary>
+        ///     Tests all properties.
+        /// </summary>
+        [Fact]
+        public void Properties()
+        {
+            Core.Platform.Directories test = new Core.Platform.Directories(Settings);
+
+            Assert.NotNull(test.Data);
+            Assert.NotNull(test.Logs);
+            Assert.NotNull(test.Packages);
+            Assert.NotNull(test.Persistence);
+            Assert.NotNull(test.Plugins);
+            Assert.NotNull(test.Root);
+            Assert.NotNull(test.Temp);
+            Assert.NotNull(test.Web);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Directories.ToDictionary()"/> method.
+        /// </summary>
+        [Fact]
+        public void ToDictionary()
+        {
+            Core.Platform.Directories test = new Core.Platform.Directories(Settings);
+
+            IDictionary<string, string> dict = test.ToDictionary();
+
+            Assert.NotEmpty(dict);
+            Assert.True(dict.ContainsKey("Data"));
+            Assert.NotNull(dict["Data"]);
+            Assert.True(dict.ContainsKey("Logs"));
+            Assert.NotNull(dict["Logs"]);
+            Assert.True(dict.ContainsKey("Packages"));
+            Assert.NotNull(dict["Packages"]);
+            Assert.True(dict.ContainsKey("Persistence"));
+            Assert.NotNull(dict["Persistence"]);
+            Assert.True(dict.ContainsKey("Plugins"));
+            Assert.NotNull(dict["Plugins"]);
+            Assert.True(dict.ContainsKey("Root"));
+            Assert.NotNull(dict["Root"]);
+            Assert.True(dict.ContainsKey("Temp"));
+            Assert.NotNull(dict["Temp"]);
+            Assert.True(dict.ContainsKey("Web"));
+            Assert.NotNull(dict["Web"]);
+        }
+
+        #endregion Public Methods
     }
 }
