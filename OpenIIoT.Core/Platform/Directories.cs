@@ -78,7 +78,7 @@ namespace OpenIIoT.Core.Platform
         /// <exception cref="DirectoryConfigurationException">
         ///     Thrown when the directory configuration is determined to be malformed.
         /// </exception>
-        public Directories(Dictionary<string, string> directories)
+        public Directories(IDictionary<string, string> directories)
         {
             logger.EnterMethod(xLogger.Params(xLogger.Exclude(), directories));
 

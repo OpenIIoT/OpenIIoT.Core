@@ -41,16 +41,17 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Linq;
+using System.Reflection;
 using NLog;
 using NLog.xLogger;
+using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Platform
 {
@@ -108,11 +109,11 @@ namespace OpenIIoT.Core.Platform
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
-                    Platform = new Windows.WindowsPlatform(LoadDirectories(PlatformSettings.Directories));
+                    Platform = new Windows.WindowsPlatform(LoadDirectories());
                     break;
 
                 case PlatformType.UNIX:
-                    Platform = new UNIX.UNIXPlatform(LoadDirectories(PlatformSettings.Directories));
+                    Platform = new UNIX.UNIXPlatform(LoadDirectories());
                     break;
 
                 default:
@@ -133,6 +134,11 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         [Discoverable]
         public IPlatform Platform { get; private set; }
+
+        /// <summary>
+        ///     Gets the settings for the Application.
+        /// </summary>
+        private IApplicationSettings Settings => Dependency<IApplicationManager>().Settings;
 
         #endregion Public Properties
 
@@ -264,23 +270,38 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
+        ///     Retrieves a Dictionary of the settings within <see cref="IApplicationSettings"/> and their values.
+        /// </summary>
+        /// <returns>A Dictionary of the settings within <see cref="IApplicationSettings"/> and their values</returns>
+        private IDictionary<string, string> GetDirectoryDictionary()
+        {
+            IDictionary<string, string> retVal = new Dictionary<string, string>();
+
+            foreach (PropertyInfo p in Settings.GetType().GetProperties().Where(p => p.Name.StartsWith("Directory")))
+            {
+                retVal.Add(p.Name.Replace("Directory", string.Empty), (string)p.GetValue(this));
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
         ///     De-serializes the provided string to a dictionary containing the program directory names and paths, then creates an
         ///     instance of ProgramDirectories with it.
         /// </summary>
-        /// <param name="directories">A serialized dictionary containing the program directories and their paths.</param>
         /// <returns>
         ///     A Result containing the result of the operation along with a ProgramDirectories instance containing the directories.
         /// </returns>
-        private Directories LoadDirectories(string directories)
+        private Directories LoadDirectories()
         {
-            logger.EnterMethod(xLogger.Params(directories));
+            logger.EnterMethod();
             Directories retVal = default(Directories);
 
             try
             {
                 // try to set all of the directories from the deserialized config json. if anything goes wrong an exception will be
                 // thrown and we'll handle it.
-                retVal = new Directories(JsonConvert.DeserializeObject<Dictionary<string, string>>(directories));
+                retVal = new Directories(GetDirectoryDictionary());
             }
             catch (Exception ex)
             {

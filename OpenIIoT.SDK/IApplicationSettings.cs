@@ -54,6 +54,41 @@ namespace OpenIIoT.SDK
         string ConfigurationFileName { get; }
 
         /// <summary>
+        ///     Gets the value of the 'Directory.Data' key from the application's XML configuration file.
+        /// </summary>
+        string DirectoryData { get; }
+
+        /// <summary>
+        ///     Gets the value of the 'Directory.Log' key from the application's XML configuration file.
+        /// </summary>
+        string DirectoryLog { get; }
+
+        /// <summary>
+        ///     Gets the value of the 'Directory.Packages' key from the application's XML configuration file.
+        /// </summary>
+        string DirectoryPackages { get; }
+
+        /// <summary>
+        ///     Gets the value of the 'Directory.Persistence' key from the application's XML configuration file.
+        /// </summary>
+        string DirectoryPersistence { get; }
+
+        /// <summary>
+        ///     Gets the value of the 'Directory.Plugins' key from the application's XML configuration file.
+        /// </summary>
+        string DirectoryPlugins { get; }
+
+        /// <summary>
+        ///     Gets the value of the 'Directory.Temp' key from the application's XML configuration file.
+        /// </summary>
+        string DirectoryTemp { get; }
+
+        /// <summary>
+        ///     Gets the value of the 'Directory.Web' key from the application's XML configuration file.
+        /// </summary>
+        string DirectoryWeb { get; }
+
+        /// <summary>
         ///     Gets the value of the 'Security.DefaultUser' key from the application's XML configuration file.
         /// </summary>
         string SecurityDefaultUser { get; }

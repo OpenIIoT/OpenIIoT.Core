@@ -87,58 +87,6 @@ namespace OpenIIoT.Core
         }
 
         /// <summary>
-        ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file.
-        /// </summary>
-        /// <param name="key">The setting to retrieve.</param>
-        /// <returns>The string value of the retrieved setting.</returns>
-        public static string GetSetting(string key)
-        {
-            return System.Configuration.ConfigurationManager.AppSettings[key];
-        }
-
-        /// <summary>
-        ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file. If the setting isn't
-        ///     found, returns the provided defaultSetting and logs a warning.
-        /// </summary>
-        /// <param name="key">The setting to retrieve.</param>
-        /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
-        /// <returns>The string value of the retrieved setting.</returns>
-        public static string GetSetting(string key, string defaultSetting)
-        {
-            string retVal = GetSetting(key);
-            if (retVal == default(string))
-            {
-                NLog.LogManager.GetCurrentClassLogger().Warn("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
-                retVal = defaultSetting;
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file and converts it to the
-        ///     specified Type. If the setting isn't found, returns the provided defaultSetting and logs a warning.
-        /// </summary>
-        /// <typeparam name="T">The Type to which the retrieved value should be converted.</typeparam>
-        /// <param name="key">The setting to retrieve.</param>
-        /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
-        /// <returns>The string value of the retrieved setting.</returns>
-        public static T GetSetting<T>(string key, string defaultSetting)
-        {
-            string retVal = GetSetting(key, defaultSetting);
-
-            try
-            {
-                var converter = TypeDescriptor.GetConverter(typeof(T));
-                return (T)converter.ConvertFromString(retVal);
-            }
-            catch (Exception ex)
-            {
-                throw new Common.Exceptions.XMLConfigurationException("Failed to retrieve XML configuration setting '{key}'.  See inner Exception for details.", ex);
-            }
-        }
-
-        /// <summary>
         ///     Installs or uninstalls the application as a Windows Service, depending on the provided action.
         /// </summary>
         /// <param name="action">The action to perform (uninstall or install).</param>
@@ -281,29 +229,6 @@ namespace OpenIIoT.Core
             catch (Exception ex)
             {
                 throw new Exception("Exception thrown while setting log level: " + ex, ex);
-            }
-        }
-
-        /// <summary>
-        ///     Updates the setting corresponding to the specified setting within the app.exe.config file with the specified value.
-        /// </summary>
-        /// <param name="key">The setting to update.</param>
-        /// <param name="value">The value to which the setting should be set.</param>
-        /// <exception cref="ArgumentException">Thrown when the specified key can not be found in the configuration.</exception>
-        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
-        public static void UpdateSetting(string key, string value)
-        {
-            try
-            {
-                System.Configuration.Configuration configuration = System.Configuration.ConfigurationManager.OpenExeConfiguration(System.Configuration.ConfigurationUserLevel.None);
-                configuration.AppSettings.Settings[key].Value = value;
-                configuration.Save();
-
-                System.Configuration.ConfigurationManager.RefreshSection("appSettings");
-            }
-            catch (NullReferenceException)
-            {
-                throw new ArgumentException("The specified key could not be found in the configuration.");
             }
         }
 
