@@ -185,6 +185,63 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.CopyFile(string, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void CopyFile()
+        {
+            string sourceFile = Path.Combine(testDirectory, "test.txt");
+            string destinationFile = Path.Combine(testDirectory, "test2.txt");
+
+            File.WriteAllText(sourceFile, "hello world");
+            Assert.True(File.Exists(sourceFile));
+
+            IResult<string> result = platformMock.CopyFile(sourceFile, destinationFile);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(File.Exists(destinationFile));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.CopyFile(string, string)"/> method with an existing file.
+        /// </summary>
+        [Fact]
+        public void CopyFileDestinationExists()
+        {
+            string sourceFile = Path.Combine(testDirectory, "test.txt");
+            string destinationFile = Path.Combine(testDirectory, "test2.txt");
+
+            File.WriteAllText(sourceFile, "hello world");
+            File.WriteAllText(destinationFile, "i exist");
+            Assert.True(File.Exists(sourceFile));
+            Assert.True(File.Exists(destinationFile));
+
+            IResult<string> result = platformMock.CopyFile(sourceFile, destinationFile, false);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.CopyFile(string, string)"/> method with an existing file and using the
+        ///     overwrite option.
+        /// </summary>
+        [Fact]
+        public void CopyFileDestinationOverwrite()
+        {
+            string sourceFile = Path.Combine(testDirectory, "test.txt");
+            string destinationFile = Path.Combine(testDirectory, "test2.txt");
+
+            File.WriteAllText(sourceFile, "hello world");
+            File.WriteAllText(destinationFile, "i exist");
+            Assert.True(File.Exists(sourceFile));
+            Assert.True(File.Exists(destinationFile));
+
+            IResult<string> result = platformMock.CopyFile(sourceFile, destinationFile, true);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="Core.Platform.Platform.CreateDirectory(string)"/> method.
         /// </summary>
         [Fact]
