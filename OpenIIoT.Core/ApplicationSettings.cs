@@ -42,6 +42,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using OpenIIoT.Core.Common.Exceptions;
 using OpenIIoT.SDK;
@@ -154,10 +155,14 @@ namespace OpenIIoT.Core
         ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file and converts it to the
         ///     specified Type. If the setting isn't found, returns the provided defaultSetting and logs a warning.
         /// </summary>
+        /// <remarks>
+        ///     Excluded from code coverage because it isn't possible to directly test ConfigurationManager under XUnit.
+        /// </remarks>
         /// <typeparam name="T">The Type to which the retrieved value should be converted.</typeparam>
         /// <param name="key">The setting to retrieve.</param>
         /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
         /// <returns>The string value of the retrieved setting.</returns>
+        [ExcludeFromCodeCoverage]
         private T GetSetting<T>(string key, string defaultSetting)
         {
             T retVal = default(T);
