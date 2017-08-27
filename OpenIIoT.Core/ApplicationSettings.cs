@@ -232,7 +232,11 @@ namespace OpenIIoT.Core
         /// <summary>
         ///     Initializes the settings cache and tests each setting by attempting to retrieve initial values.
         /// </summary>
+        /// <remarks>
+        ///     Excluded from code coverage because it isn't possible to directly test ConfigurationManager under XUnit.
+        /// </remarks>
         /// <exception cref="XMLConfigurationException">Thrown when an Exception is encountered during initialization.</exception>
+        [ExcludeFromCodeCoverage]
         private void Initialize()
         {
             SettingsCache = new Dictionary<string, object>();
