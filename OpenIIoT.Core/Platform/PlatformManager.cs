@@ -82,7 +82,7 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     The Logger for this class.
         /// </summary>
-        private static new xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
+        private static new xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         #endregion Private Fields
 
@@ -100,10 +100,8 @@ namespace OpenIIoT.Core.Platform
             ManagerName = "Platform Manager";
             EventProviderName = GetType().Name;
 
-            // register dependencies
             RegisterDependency<IApplicationManager>(manager);
 
-            // determine the platform and instantiate it
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
