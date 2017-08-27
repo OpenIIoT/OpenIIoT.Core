@@ -217,7 +217,7 @@ namespace OpenIIoT.Core.Security
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
             retVal.Model = typeof(SecurityManagerConfiguration);
 
-            IApplicationSettings settings = ApplicationManager.GetInstance().Settings;
+            IApplicationSettings settings = new ApplicationSettings();
 
             SecurityManagerConfiguration config = new SecurityManagerConfiguration();
             config.Users.Add(new User(settings.DefaultUser, settings.DefaultUserPasswordHash, Role.Administrator));
