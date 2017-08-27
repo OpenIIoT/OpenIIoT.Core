@@ -53,6 +53,11 @@ namespace OpenIIoT.Core
         #region Public Properties
 
         /// <summary>
+        ///     Gets the value of the "Application.InstanceName' key from the application's XML configuration file.
+        /// </summary>
+        public string ApplicationInstanceName => GetSetting<string>("Application.InstanceName", "OpenIIoT");
+
+        /// <summary>
         ///     Gets the value of the 'Configuration.Filename' key from the application's XML configuration file.
         /// </summary>
         public string ConfigurationFileName => GetSetting<string>("Configuration.FileName", "OpenIIoT.json").Replace('|', System.IO.Path.DirectorySeparatorChar);

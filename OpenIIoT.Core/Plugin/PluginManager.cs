@@ -510,34 +510,7 @@ namespace OpenIIoT.Core.Plugin
 
         #endregion Protected Methods
 
-        #region Private Methods
-
-        /// <summary>
-        ///     Retrieves the PackageConfigurationFileName setting or substitutes "OpenIIoTPlugin.json" if retrieval fails.
-        /// </summary>
-        /// <returns>The name of the Plugin Package configuration file.</returns>
-        private static string GetPackageConfigurationFileName()
-        {
-            return Utility.GetSetting("PackageConfigurationFileName", "OpenIIoTPlugin.json");
-        }
-
-        /// <summary>
-        ///     Retrieves the PackageExtension setting or substitutes "*.zip" if retrieval fails.
-        /// </summary>
-        /// <returns>The wildcard mask of the file extension for Plugin Packages.</returns>
-        private static string GetPackageExtension()
-        {
-            return Utility.GetSetting("PackageExtension", "*.zip");
-        }
-
-        /// <summary>
-        ///     Retrieves the PackagePayloadFileName setting or substitutes "Plugin.zip" if retrieval fails.
-        /// </summary>
-        /// <returns>The name of the Plugin payload file contained within a Plugin Package.</returns>
-        private static string GetPackagePayloadFileName()
-        {
-            return Utility.GetSetting("PackagePayloadFileName", "Plugin.zip");
-        }
+        #region Private Methodss
 
         /// <summary>
         ///     Returns the base directory in which the specified Plugin should be installed, based on the type and name of the
@@ -932,6 +905,6 @@ namespace OpenIIoT.Core.Plugin
             return retVal;
         }
 
-        #endregion Private Methods
+        #endregion Private Methodss
     }
 }

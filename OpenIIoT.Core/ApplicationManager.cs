@@ -176,13 +176,7 @@ namespace OpenIIoT.Core
         /// <remarks>
         ///     If the "InstanceName" setting is missing from the application settings, the value of the ProductName property is substituted.
         /// </remarks>
-        public string InstanceName
-        {
-            get
-            {
-                return GetInstanceName();
-            }
-        }
+        public string InstanceName => Settings.ApplicationInstanceName;
 
         /// <summary>
         ///     Gets the list of <see cref="IManager"/> instances managed by the <see cref="IApplicationManager"/>.
@@ -364,15 +358,6 @@ namespace OpenIIoT.Core
         #endregion Protected Methods
 
         #region Private Methods
-
-        /// <summary>
-        ///     Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retrieved.
-        /// </summary>
-        /// <returns>The name of the program instance.</returns>
-        private static string GetInstanceName()
-        {
-            return Utility.GetSetting("InstanceName", Assembly.GetExecutingAssembly().GetName().Name);
-        }
 
         /// <summary>
         ///     Retrieves the list of <see cref="Type"/> s corresponding to the <see cref="IManager"/> Types on which the specified

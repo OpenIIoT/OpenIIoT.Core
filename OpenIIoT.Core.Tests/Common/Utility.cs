@@ -109,15 +109,6 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Utility.GetSetting(string, string)"/> method overloads.
-        /// </summary>
-        [Fact]
-        public void GetSettingSubstitution()
-        {
-            Assert.Equal("default", Core.Utility.GetSetting("InstanceName", "default"));
-        }
-
-        /// <summary>
         ///     Tests the <see cref="Core.Utility.PrintLogo(Logger)"/> method.
         /// </summary>
         [Fact]
@@ -215,18 +206,6 @@ namespace OpenIIoT.Core.Tests
 
             Assert.NotNull(ex);
             Assert.IsType<Exception>(ex);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Utility.UpdateSetting(string, string)"/> method.
-        /// </summary>
-        [Fact]
-        public void UpdateSettingBad()
-        {
-            Exception ex = Record.Exception(() => Core.Utility.UpdateSetting("key", "value"));
-
-            Assert.NotNull(ex);
-            Assert.IsType<ArgumentException>(ex);
         }
 
         #endregion Public Methods

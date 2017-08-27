@@ -49,6 +49,11 @@ namespace OpenIIoT.SDK
         #region Public Properties
 
         /// <summary>
+        ///     Gets the value of the "Application.InstanceName' key from the application's XML configuration file.
+        /// </summary>
+        string ApplicationInstanceName { get; }
+
+        /// <summary>
         ///     Gets the value of the 'ConfigurationFilename' key from the application's XML configuration file.
         /// </summary>
         string ConfigurationFileName { get; }
