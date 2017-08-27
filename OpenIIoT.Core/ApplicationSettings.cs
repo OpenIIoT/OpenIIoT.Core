@@ -75,7 +75,7 @@ namespace OpenIIoT.Core
         /// <summary>
         ///     Gets the value of the 'Configuration.Filename' key from the application's XML configuration file.
         /// </summary>
-        public string ConfigurationFileName => GetSetting<string>("Configuration.FileName", "OpenIIoT.json").Replace('|', System.IO.Path.DirectorySeparatorChar);
+        public string ConfigurationFileName => GetSetting<string>("Configuration.FileName", "OpenIIoT.json");
 
         /// <summary>
         ///     Gets the value of the 'Directory.Data' key from the application's XML configuration file.

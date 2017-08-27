@@ -97,11 +97,12 @@ namespace OpenIIoT.Core.Tests.Configuration
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
             applicationManager.Setup(a => a.Managers).Returns(new List<IManager>());
+            applicationManager.Setup(a => a.Settings).Returns(new ApplicationSettings());
 
             platformManager = new Mock<IPlatformManager>();
             platformManager.Setup(p => p.State).Returns(State.Running);
             platformManager.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
-            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories()));
+            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(applicationManager.Object.Settings)));
 
             Core.Configuration.ConfigurationManager.Terminate();
 
@@ -131,11 +132,12 @@ namespace OpenIIoT.Core.Tests.Configuration
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
             applicationManager.Setup(a => a.Managers).Returns(new List<IManager>());
+            applicationManager.Setup(a => a.Settings).Returns(new ApplicationSettings());
 
             platformManager = new Mock<IPlatformManager>();
             platformManager.Setup(p => p.State).Returns(State.Running);
             platformManager.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
-            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories()));
+            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(applicationManager.Object.Settings)));
 
             Core.Configuration.ConfigurationManager.Terminate();
 

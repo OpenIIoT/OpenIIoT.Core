@@ -41,8 +41,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
@@ -270,24 +268,6 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
-        ///     Retrieves a Dictionary of the settings within <see cref="IApplicationSettings"/> and their values.
-        /// </summary>
-        /// <returns>A Dictionary of the settings within <see cref="IApplicationSettings"/> and their values</returns>
-        private IDictionary<string, string> GetDirectoryDictionary()
-        {
-            IDictionary<string, string> retVal = new Dictionary<string, string>();
-
-            foreach (PropertyInfo p in Settings.GetType().GetProperties().Where(p => p.Name.StartsWith("Directory")))
-            {
-                string name = p.Name.Replace("Directory", string.Empty);
-                string value = (string)p.GetValue(Settings);
-                retVal.Add(p.Name.Replace("Directory", string.Empty), (string)p.GetValue(Settings));
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
         ///     De-serializes the provided string to a dictionary containing the program directory names and paths, then creates an
         ///     instance of ProgramDirectories with it.
         /// </summary>
@@ -301,9 +281,7 @@ namespace OpenIIoT.Core.Platform
 
             try
             {
-                // try to set all of the directories from the deserialized config json. if anything goes wrong an exception will be
-                // thrown and we'll handle it.
-                retVal = new Directories(GetDirectoryDictionary());
+                retVal = new Directories(Settings);
             }
             catch (Exception ex)
             {

@@ -92,7 +92,7 @@ namespace OpenIIoT.Core.Tests.Platform
         /// </summary>
         public Platform()
         {
-            platformMock = new PlatformMock(new Core.Platform.Directories());
+            platformMock = new PlatformMock(new Core.Platform.Directories(new ApplicationSettings()));
 
             // set test directory = application directory + a new Guid
             string root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);

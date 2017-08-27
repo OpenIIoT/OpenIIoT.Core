@@ -41,9 +41,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
-using NLog.xLogger;
-using OpenIIoT.SDK.Common.Exceptions;
+using OpenIIoT.SDK;
 using OpenIIoT.SDK.Platform;
 
 namespace OpenIIoT.Core.Platform
@@ -53,53 +53,22 @@ namespace OpenIIoT.Core.Platform
     /// </summary>
     public class Directories : IDirectories
     {
-        #region Private Fields
-
-        /// <summary>
-        ///     The Logger for this class.
-        /// </summary>
-        private static xLogger logger = xLogManager.GetCurrentClassxLogger();
-
-        #endregion Private Fields
-
         #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Directories"/> class with a blank dictionary.
         /// </summary>
-        public Directories()
+        /// <param name="settings">The application settings.</param>
+        public Directories(IApplicationSettings settings)
         {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Directories"/> class with the specified dictionary.
-        /// </summary>
-        /// <param name="directories">A dictionary containing the name and directory for each of the program directories.</param>
-        /// <exception cref="DirectoryConfigurationException">
-        ///     Thrown when the directory configuration is determined to be malformed.
-        /// </exception>
-        public Directories(IDictionary<string, string> directories)
-        {
-            logger.EnterMethod(xLogger.Params(xLogger.Exclude(), directories));
-
-            try
-            {
-                Root = System.IO.Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
-                Data = System.IO.Path.Combine(Root, directories["Data"]);
-                Packages = System.IO.Path.Combine(Root, directories["Packages"]);
-                Plugins = System.IO.Path.Combine(Root, directories["Plugins"]);
-                Temp = System.IO.Path.Combine(Root, directories["Temp"]);
-                Persistence = System.IO.Path.Combine(Root, directories["Persistence"]);
-                Web = System.IO.Path.Combine(Root, directories["Web"]);
-                Logs = System.IO.Path.Combine(Root, directories["Logs"]);
-            }
-            catch (KeyNotFoundException ex)
-            {
-                logger.Exception(ex);
-                throw new DirectoryConfigurationException("The directory configuration is missing one or more directories.", ex);
-            }
-
-            logger.ExitMethod();
+            Root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
+            Data = NormalizePath(Path.Combine(Root, Settings.DirectoryData));
+            Packages = NormalizePath(Path.Combine(Root, Settings.DirectoryPackages));
+            Plugins = NormalizePath(Path.Combine(Root, Settings.DirectoryPlugins));
+            Temp = NormalizePath(Path.Combine(Root, Settings.DirectoryTemp));
+            Persistence = NormalizePath(Path.Combine(Root, Settings.DirectoryPersistence));
+            Web = NormalizePath(Path.Combine(Root, Settings.DirectoryWeb));
+            Logs = NormalizePath(Path.Combine(Root, Settings.DirectoryLogs));
         }
 
         #endregion Public Constructors
@@ -149,6 +118,15 @@ namespace OpenIIoT.Core.Platform
 
         #endregion Public Properties
 
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the application settings.
+        /// </summary>
+        private IApplicationSettings Settings { get; set; }
+
+        #endregion Private Properties
+
         #region Public Methods
 
         /// <summary>
@@ -168,5 +146,20 @@ namespace OpenIIoT.Core.Platform
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Normalizes the specified path to the current platform.
+        /// </summary>
+        /// <param name="path">The path to normalize.</param>
+        /// <returns>The normalized path.</returns>
+        private string NormalizePath(string path)
+        {
+            return Path.GetFullPath(new Uri(path).LocalPath)
+                       .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        }
+
+        #endregion Private Methods
     }
 }
