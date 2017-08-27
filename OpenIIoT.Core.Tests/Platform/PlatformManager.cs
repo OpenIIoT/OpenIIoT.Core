@@ -54,6 +54,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.SDK.Platform;
 
 namespace OpenIIoT.Core.Tests.Platform
 {
@@ -121,6 +122,26 @@ namespace OpenIIoT.Core.Tests.Platform
             Core.Platform.PlatformManager.Terminate();
 
             manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.PlatformManager.Instantiate(IApplicationManager)"/> method.
+        /// </summary>
+        [Fact]
+        public void InstantiateTwice()
+        {
+            applicationManager = new Mock<IApplicationManager>();
+            applicationManager.Setup(a => a.State).Returns(State.Running);
+            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            applicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+
+            Core.Platform.PlatformManager.Terminate();
+
+            manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
+
+            IPlatformManager manager2 = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
+
+            Assert.Equal(manager, manager2);
         }
 
         /// <summary>
