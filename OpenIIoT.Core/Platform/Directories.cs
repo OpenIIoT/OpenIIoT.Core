@@ -61,6 +61,8 @@ namespace OpenIIoT.Core.Platform
         /// <param name="settings">The application settings.</param>
         public Directories(IApplicationSettings settings)
         {
+            Settings = settings;
+
             Root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
             Data = NormalizePath(Path.Combine(Root, Settings.DirectoryData));
             Packages = NormalizePath(Path.Combine(Root, Settings.DirectoryPackages));

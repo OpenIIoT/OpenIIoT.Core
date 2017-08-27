@@ -87,6 +87,7 @@ namespace OpenIIoT.Core.Tests.Platform
             applicationManager = new Mock<IApplicationManager>();
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            applicationManager.Setup(a => a.Settings).Returns(new ApplicationSettings());
 
             Core.Platform.PlatformManager.Terminate();
 
@@ -115,6 +116,7 @@ namespace OpenIIoT.Core.Tests.Platform
             applicationManager = new Mock<IApplicationManager>();
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            applicationManager.Setup(a => a.Settings).Returns(new ApplicationSettings());
 
             Core.Platform.PlatformManager.Terminate();
 
