@@ -192,7 +192,6 @@
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
-    <Compile Include="Configuration\ConfigurationSettings.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
     <Compile Include="Model\WebAPI\BrowseController.cs" />

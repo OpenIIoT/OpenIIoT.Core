@@ -150,7 +150,6 @@ namespace OpenIIoT.Core.Configuration
             ConfigurableTypeRegistry = new ConfigurableTypeRegistry();
             Configuration = new Configuration(ConfigurableTypeRegistry);
 
-            ConfigurationFileName = ConfigurationSettings.ConfigurationFileName;
             ConfigurationLoader = new ConfigurationLoader(Dependency<IPlatformManager>().Platform);
 
             ChangeState(State.Initialized);
@@ -172,14 +171,14 @@ namespace OpenIIoT.Core.Configuration
         /// </summary>
         public IConfiguration Configuration { get; private set; }
 
+        /// <summary>
+        ///     Gets the settings for the Application.
+        /// </summary>
+        private IApplicationSettings Settings => Dependency<IApplicationManager>().Settings;
+
         #endregion Public Properties
 
         #region Private Properties
-
-        /// <summary>
-        ///     Gets or sets the filename of the configuration file.
-        /// </summary>
-        private string ConfigurationFileName { get; set; }
 
         /// <summary>
         ///     Gets or sets the configuration loader.
@@ -226,7 +225,7 @@ namespace OpenIIoT.Core.Configuration
         public IResult SaveConfiguration()
         {
             IDictionary<string, IDictionary<string, object>> instances = Configuration.Instances.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            return ConfigurationLoader.Save(instances, ConfigurationFileName);
+            return ConfigurationLoader.Save(instances, Settings.ConfigurationFileName);
         }
 
         #endregion Public Methods
@@ -295,25 +294,25 @@ namespace OpenIIoT.Core.Configuration
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            logger.Info("Loading application configuration from '" + ConfigurationFileName + "'...");
-            IResult<IDictionary<string, IDictionary<string, object>>> loadResult = ConfigurationLoader.Load(ConfigurationFileName);
+            logger.Info("Loading application configuration from '" + Settings.ConfigurationFileName + "'...");
+            IResult<IDictionary<string, IDictionary<string, object>>> loadResult = ConfigurationLoader.Load(Settings.ConfigurationFileName);
 
             if (loadResult.ResultCode == ResultCode.Failure)
             {
-                logger.Info("The configuration file '" + ConfigurationFileName + "' could not be found.  Rebuilding...");
+                logger.Info("The configuration file '" + Settings.ConfigurationFileName + "' could not be found.  Rebuilding...");
 
                 loadResult = ConfigurationLoader.BuildNew();
                 logger.Info("New configuration built.");
 
                 // try to save the new configuration to file
-                logger.Info("Saving the new configuration to '" + ConfigurationFileName + "'...");
-                IResult saveResult = ConfigurationLoader.Save(loadResult.ReturnValue, ConfigurationFileName);
+                logger.Info("Saving the new configuration to '" + Settings.ConfigurationFileName + "'...");
+                IResult saveResult = ConfigurationLoader.Save(loadResult.ReturnValue, Settings.ConfigurationFileName);
 
                 if (saveResult.ResultCode != ResultCode.Failure)
                 {
                     // the file saved properly. print the result and a final confirmation.
                     saveResult.LogResult(logger, "SaveConfiguration");
-                    logger.Info("Saved the new configuration to '" + ConfigurationFileName + "'.");
+                    logger.Info("Saved the new configuration to '" + Settings.ConfigurationFileName + "'.");
                 }
                 else
                 {

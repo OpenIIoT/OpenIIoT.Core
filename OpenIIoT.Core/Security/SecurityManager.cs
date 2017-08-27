@@ -45,7 +45,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Timers;
-using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
@@ -85,7 +84,6 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         /// <param name="manager">The IApplicationManager instance for the application.</param>
         /// <param name="configurationManager">The IConfigurationManager instance for the application.</param>
-        /// <param name="settings">The settings for the Manager.</param>
         private SecurityManager(IApplicationManager manager, IConfigurationManager configurationManager)
         {
             base.logger = logger;

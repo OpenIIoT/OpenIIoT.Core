@@ -49,6 +49,11 @@ namespace OpenIIoT.SDK
         #region Public Properties
 
         /// <summary>
+        ///     Gets the value of the 'ConfigurationFilename' key from the application's XML configuration file.
+        /// </summary>
+        string ConfigurationFileName { get; }
+
+        /// <summary>
         ///     Gets the value of the 'DefaultUser' key from the application's XML configuration file.
         /// </summary>
         string DefaultUser { get; }

@@ -51,6 +51,11 @@ namespace OpenIIoT.Core
         #region Public Properties
 
         /// <summary>
+        ///     Gets the value of the 'ConfigurationFilename' key from the application's XML configuration file.
+        /// </summary>
+        public string ConfigurationFileName => Utility.GetSetting<string>("ConfigurationFileName", "OpenIIoT.json").Replace('|', System.IO.Path.DirectorySeparatorChar);
+
+        /// <summary>
         ///     Gets the value of the 'DefaultUser' key from the application's XML configuration file.
         /// </summary>
         public string DefaultUser => Utility.GetSetting<string>("DefaultUser", "admin");
