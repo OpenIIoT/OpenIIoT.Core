@@ -102,14 +102,16 @@ namespace OpenIIoT.Core.Platform
 
             RegisterDependency<IApplicationManager>(manager);
 
+            Directories directories = new Directories(Settings);
+
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
-                    Platform = new Windows.WindowsPlatform(LoadDirectories());
+                    Platform = new Windows.WindowsPlatform(directories);
                     break;
 
                 case PlatformType.UNIX:
-                    Platform = new UNIX.UNIXPlatform(LoadDirectories());
+                    Platform = new UNIX.UNIXPlatform(directories);
                     break;
 
                 default:
@@ -262,35 +264,6 @@ namespace OpenIIoT.Core.Platform
             }
 
             logger.ExitMethod(retVal);
-            return retVal;
-        }
-
-        /// <summary>
-        ///     De-serializes the provided string to a dictionary containing the program directory names and paths, then creates an
-        ///     instance of ProgramDirectories with it.
-        /// </summary>
-        /// <returns>
-        ///     A Result containing the result of the operation along with a ProgramDirectories instance containing the directories.
-        /// </returns>
-        private Directories LoadDirectories()
-        {
-            logger.EnterMethod();
-            Directories retVal = default(Directories);
-
-            try
-            {
-                retVal = new Directories(Settings);
-            }
-            catch (Exception ex)
-            {
-                logger.Exception(LogLevel.Debug, ex);
-                throw new DirectoryConfigurationException("Exception encountered while parsing the directory configuration.  See inner exception for details.", ex);
-            }
-            finally
-            {
-                logger.ExitMethod(retVal);
-            }
-
             return retVal;
         }
 
