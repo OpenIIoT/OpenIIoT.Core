@@ -125,6 +125,7 @@ namespace OpenIIoT.Core
         ///     Initializes a new instance of the <see cref="ApplicationManager"/> class with the specified Manager Types.
         /// </summary>
         /// <param name="managerTypes">The array of Manager Types for the application.</param>
+        /// <param name="settings">The settings for the application.</param>
         /// <exception cref="ManagerTypeListException">
         ///     Thrown when the type list argument for the ApplicationManager constructor is malformed.
         /// </exception>
@@ -181,35 +182,17 @@ namespace OpenIIoT.Core
         /// <summary>
         ///     Gets the list of <see cref="IManager"/> instances managed by the <see cref="IApplicationManager"/>.
         /// </summary>
-        public IReadOnlyList<IManager> Managers
-        {
-            get
-            {
-                return ManagerInstances.ToList().AsReadOnly();
-            }
-        }
+        public IReadOnlyList<IManager> Managers => ManagerInstances.ToList().AsReadOnly();
 
         /// <summary>
         ///     Gets the name of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
-        public string ProductName
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Name;
-            }
-        }
+        public string ProductName => Assembly.GetExecutingAssembly().GetName().Name;
 
         /// <summary>
         ///     Gets the version of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
-        public Version ProductVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version;
-            }
-        }
+        public Version ProductVersion => Assembly.GetExecutingAssembly().GetName().Version;
 
         /// <summary>
         ///     Gets the settings for the Application.
@@ -262,6 +245,7 @@ namespace OpenIIoT.Core
         ///     Returns the singleton instance of the ApplicationManager. Creates an instance if null.
         /// </summary>
         /// <param name="managers">The array of Manager Types for the application.</param>
+        /// <param name="settings">The settings for the application.</param>
         /// <returns>The singleton instance of the ApplicationManager</returns>
         /// <exception cref="ManagerTypeListException">
         ///     Thrown when the supplied list of Manager Types is empty or if one or more supplied Types do not implement the
@@ -291,6 +275,15 @@ namespace OpenIIoT.Core
             return instance;
         }
 
+        /// <summary>
+        ///     Returns the singleton instance of the ApplicationManager. Creates an instance if null.
+        /// </summary>
+        /// <param name="managers">The array of Manager Types for the application.</param>
+        /// <returns>The singleton instance of the ApplicationManager</returns>
+        /// <exception cref="ManagerTypeListException">
+        ///     Thrown when the supplied list of Manager Types is empty or if one or more supplied Types do not implement the
+        ///     <see cref="IManager"/> interface.
+        /// </exception>
         public static IApplicationManager Instantiate(Type[] managers)
         {
             return Instantiate(managers, new ApplicationSettings());
