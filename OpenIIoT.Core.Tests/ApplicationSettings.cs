@@ -59,6 +59,9 @@ namespace OpenIIoT.Core.Tests
     {
         #region Public Constructors
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationSettings"/> class.
+        /// </summary>
         public ApplicationSettings()
         {
             Settings = new Core.ApplicationSettings();
@@ -68,12 +71,18 @@ namespace OpenIIoT.Core.Tests
 
         #region Private Properties
 
+        /// <summary>
+        ///     Gets or sets the application settings.
+        /// </summary>
         private Core.ApplicationSettings Settings { get; set; }
 
         #endregion Private Properties
 
         #region Public Methods
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.ApplicationInstanceName"/> property.
+        /// </summary>
         [Fact]
         public void ApplicationInstanceName()
         {
@@ -82,6 +91,10 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.ApplicationInstanceName"/> property twice to ensure setting caching
+        ///     is working properly.
+        /// </summary>
         [Fact]
         public void ApplicationInstanceNameCached()
         {
@@ -93,6 +106,9 @@ namespace OpenIIoT.Core.Tests
             Assert.Equal(setting, setting2);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.ConfigurationFileName"/> property.
+        /// </summary>
         [Fact]
         public void ConfigurationFileName()
         {
@@ -101,12 +117,18 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
         [Fact]
         public void Constructor()
         {
             Assert.IsType<Core.ApplicationSettings>(Settings);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.DirectoryData"/> property.
+        /// </summary>
         [Fact]
         public void DirectoryData()
         {
@@ -115,6 +137,9 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.DirectoryLogs"/> property.
+        /// </summary>
         [Fact]
         public void DirectoryLogs()
         {
@@ -123,6 +148,9 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.DirectoryPackages"/> property.
+        /// </summary>
         [Fact]
         public void DirectoryPackages()
         {
@@ -131,6 +159,9 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.DirectoryPersistence"/> property.
+        /// </summary>
         [Fact]
         public void DirectoryPersistence()
         {
@@ -139,6 +170,9 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.DirectoryPlugins"/> property.
+        /// </summary>
         [Fact]
         public void DirectoryPlugins()
         {
@@ -147,6 +181,9 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.DirectoryTemp"/> property.
+        /// </summary>
         [Fact]
         public void DirectoryTemp()
         {
@@ -155,6 +192,9 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.DirectoryWeb"/> property.
+        /// </summary>
         [Fact]
         public void DirectoryWeb()
         {
@@ -163,6 +203,9 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.SecurityDefaultUser"/> property.
+        /// </summary>
         [Fact]
         public void SecurityDefaultUser()
         {
@@ -171,6 +214,9 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.SecurityDefaultUserPasswordHash"/> property.
+        /// </summary>
         [Fact]
         public void SecurityDefaultUserPasswordHash()
         {
@@ -179,12 +225,35 @@ namespace OpenIIoT.Core.Tests
             Assert.NotEqual(string.Empty, setting);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.SecuritySessionLength"/> property.
+        /// </summary>
         [Fact]
         public void SecuritySessionLength()
         {
             int setting = Settings.SecuritySessionLength;
             Assert.NotNull(setting);
             Assert.NotEqual(0, setting);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.SecuritySessionPurgeInterval"/> property.
+        /// </summary>
+        [Fact]
+        public void SecuritySessionPurgeInterval()
+        {
+            int setting = Settings.SecuritySessionPurgeInterval;
+            Assert.NotNull(setting);
+            Assert.NotEqual(0, setting);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.SecuritySlidingSessions"/> property.
+        /// </summary>
+        [Fact]
+        public void SecuritySlidingSessions()
+        {
+            bool setting = Settings.SecuritySlidingSessions;
         }
 
         #endregion Public Methods
