@@ -66,7 +66,7 @@ namespace OpenIIoT.SDK
         /// <summary>
         ///     Gets the value of the 'Directory.Log' key from the application's XML configuration file.
         /// </summary>
-        string DirectoryLog { get; }
+        string DirectoryLogs { get; }
 
         /// <summary>
         ///     Gets the value of the 'Directory.Packages' key from the application's XML configuration file.

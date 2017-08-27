@@ -40,7 +40,10 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
+using OpenIIoT.Core.Common.Exceptions;
 using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core
@@ -50,6 +53,18 @@ namespace OpenIIoT.Core
     /// </summary>
     public class ApplicationSettings : IApplicationSettings
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApplicationSettings"/> class.
+        /// </summary>
+        public ApplicationSettings()
+        {
+            SettingsCache = new Dictionary<string, object>();
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>
@@ -70,7 +85,7 @@ namespace OpenIIoT.Core
         /// <summary>
         ///     Gets the value of the 'Directory.Log' key from the application's XML configuration file.
         /// </summary>
-        public string DirectoryLog => GetSetting<string>("Directory.Log", @"Data\Log");
+        public string DirectoryLogs => GetSetting<string>("Directory.Logs", @"Data\Logs");
 
         /// <summary>
         ///     Gets the value of the 'Directory.Packages' key from the application's XML configuration file.
@@ -124,6 +139,15 @@ namespace OpenIIoT.Core
 
         #endregion Public Properties
 
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets a dictionary containing previously retrieved settings stored in the application's XML configuration file.
+        /// </summary>
+        private IDictionary<string, object> SettingsCache { get; set; }
+
+        #endregion Private Properties
+
         #region Private Methods
 
         /// <summary>
@@ -134,27 +158,50 @@ namespace OpenIIoT.Core
         /// <param name="key">The setting to retrieve.</param>
         /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
         /// <returns>The string value of the retrieved setting.</returns>
-        private static T GetSetting<T>(string key, string defaultSetting)
+        private T GetSetting<T>(string key, string defaultSetting)
         {
-            string retVal;
+            T retVal = default(T);
 
-            try
+            if (SettingsCache.ContainsKey(key))
             {
-                retVal = System.Configuration.ConfigurationManager.AppSettings[key];
+                retVal = (T)SettingsCache[key];
+            }
+            else
+            {
+                string setting = default(string);
 
-                if (retVal == default(string))
+                if (System.Configuration.ConfigurationManager.AppSettings.AllKeys.Contains(key))
                 {
-                    NLog.LogManager.GetCurrentClassLogger().Warn("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
-                    retVal = defaultSetting;
+                    try
+                    {
+                        setting = System.Configuration.ConfigurationManager.AppSettings[key];
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new XMLConfigurationException($"Failed to retrieve XML configuration setting '{key}'.  See inner Exception for details.", ex);
+                    }
                 }
 
-                var converter = TypeDescriptor.GetConverter(typeof(T));
-                return (T)converter.ConvertFromString(retVal);
+                if (setting == default(string))
+                {
+                    NLog.LogManager.GetCurrentClassLogger().Trace("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
+                    setting = defaultSetting;
+                }
+
+                try
+                {
+                    TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
+                    retVal = (T)converter.ConvertFromString(setting);
+                }
+                catch (Exception ex)
+                {
+                    throw new XMLConfigurationException($"Failed to convert value supplied for '{key}' to Type {typeof(T).Name}.  See inner Exception for details.", ex);
+                }
+
+                SettingsCache.Add(key, retVal);
             }
-            catch (Exception ex)
-            {
-                throw new Common.Exceptions.XMLConfigurationException("Failed to retrieve XML configuration setting '{key}'.  See inner Exception for details.", ex);
-            }
+
+            return retVal;
         }
 
         #endregion Private Methods

@@ -279,7 +279,9 @@ namespace OpenIIoT.Core.Platform
 
             foreach (PropertyInfo p in Settings.GetType().GetProperties().Where(p => p.Name.StartsWith("Directory")))
             {
-                retVal.Add(p.Name.Replace("Directory", string.Empty), (string)p.GetValue(this));
+                string name = p.Name.Replace("Directory", string.Empty);
+                string value = (string)p.GetValue(Settings);
+                retVal.Add(p.Name.Replace("Directory", string.Empty), (string)p.GetValue(Settings));
             }
 
             return retVal;
