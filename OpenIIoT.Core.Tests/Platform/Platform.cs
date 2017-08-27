@@ -463,7 +463,7 @@ namespace OpenIIoT.Core.Tests.Platform
         ///     failing conditions.
         /// </summary>
         [Fact]
-        public void ExtractZipFailing()
+        public void ExtractZipFailure()
         {
             IResult<string> result = platformMock.ExtractZip(".", string.Empty);
 
@@ -517,7 +517,7 @@ namespace OpenIIoT.Core.Tests.Platform
         ///     failing conditions.
         /// </summary>
         [Fact]
-        public void ExtractZipFileFailing()
+        public void ExtractZipFileFailure()
         {
             IResult<string> result = platformMock.ExtractZipFile(".", string.Empty, string.Empty);
 
@@ -653,7 +653,7 @@ namespace OpenIIoT.Core.Tests.Platform
         ///     Tests the <see cref="Core.Platform.Platform.ListZipFiles(string, string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
-        public void ListZipFilesFailing()
+        public void ListZipFilesFailure()
         {
             IResult<IList<string>> result = platformMock.ListZipFiles(string.Empty);
 
@@ -688,6 +688,35 @@ namespace OpenIIoT.Core.Tests.Platform
             // assert that the contents match
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(content, result.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.ReadFileBytes(string)"/> method.
+        /// </summary>
+        [Fact]
+        public void ReadFileBytes()
+        {
+            string file = Path.Combine(testDirectory, Guid.NewGuid().ToString());
+            byte[] bytes = new byte[] { 32 };
+            File.WriteAllBytes(file, bytes);
+
+            IResult<byte[]> result = platformMock.ReadFileBytes(file);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(bytes, result.ReturnValue);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.ReadFileBytes(string)"/> method with a bad filename.
+        /// </summary>
+        [Fact]
+        public void ReadFileBytesFailure()
+        {
+            string file = Path.Combine(testDirectory, Guid.NewGuid().ToString());
+
+            IResult<byte[]> result = platformMock.ReadFileBytes(file);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>
@@ -755,6 +784,33 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(file, result.ReturnValue);
             Assert.True(File.Exists(file));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.WriteFileBytes(string, byte[])"/> method.
+        /// </summary>
+        [Fact]
+        public void WriteFileBytes()
+        {
+            string file = Path.Combine(testDirectory, Guid.NewGuid().ToString());
+
+            IResult<string> result = platformMock.WriteFileBytes(file, new byte[] { 32 });
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(File.Exists(file));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.WriteFileBytes(string, byte[])"/> method with a bad filename.
+        /// </summary>
+        [Fact]
+        public void WriteFileBytesFailure()
+        {
+            string file = Path.Combine(testDirectory, "?");
+
+            IResult<string> result = platformMock.WriteFileBytes(file, new byte[] { 32 });
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
         /// <summary>
