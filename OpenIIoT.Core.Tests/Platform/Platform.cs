@@ -646,7 +646,7 @@ namespace OpenIIoT.Core.Tests.Platform
             Assert.Equal(ResultCode.Success, listResult.ResultCode);
             Assert.Equal(2, listResult.ReturnValue.Count);
             Assert.True(listResult.ReturnValue.Any(f => f == "file1.txt"));
-            Assert.True(listResult.ReturnValue.Any(f => f == "file1.txt"));
+            Assert.True(listResult.ReturnValue.Any(f => f == "file2.txt"));
         }
 
         /// <summary>
@@ -658,6 +658,39 @@ namespace OpenIIoT.Core.Tests.Platform
             IResult<IList<string>> result = platformMock.ListZipFiles(string.Empty);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Platform.Platform.ListZipFiles(string, string)"/> method with search string which does
+        ///     not match any files in the zip.
+        /// </summary>
+        [Fact]
+        public void ListZipFilesNoMatches()
+        {
+            // create a zip file
+            string folder = Path.Combine(testDirectory, "folder");
+            Directory.CreateDirectory(folder);
+
+            string file1 = Path.Combine(folder, "file1.txt");
+            string file2 = Path.Combine(folder, "file2.txt");
+            string contents = "Hello World!";
+
+            File.WriteAllText(file1, contents);
+            File.WriteAllText(file2, contents);
+
+            string zipFile = Path.Combine(testDirectory, "zip.zip");
+
+            IResult<string> result = platformMock.CreateZip(zipFile, folder);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(File.Exists(zipFile));
+
+            // list the contents of the zip we crated
+            IResult<IList<string>> listResult = platformMock.ListZipFiles(zipFile, "*nomatch*");
+
+            // ensure the contents match the file we created
+            Assert.Equal(ResultCode.Success, listResult.ResultCode);
+            Assert.Equal(0, listResult.ReturnValue.Count);
         }
 
         /// <summary>
