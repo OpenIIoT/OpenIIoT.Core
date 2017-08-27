@@ -71,6 +71,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IApplicationSettings.cs" />
     <Compile Include="Common\ContractResolver.cs" />
     <Compile Include="Common\Exceptions\ConfigurationExceptions.cs" />
     <Compile Include="Common\Item\ItemQuality.cs" />

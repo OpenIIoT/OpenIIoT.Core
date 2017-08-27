@@ -42,14 +42,30 @@
 using System;
 using System.Security.Claims;
 using Microsoft.Owin.Security;
+using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core.Security
 {
     /// <summary>
     ///     Creates and extends <see cref="Session"/> s.
     /// </summary>
-    public static class SessionFactory
+    public class SessionFactory
     {
+        #region Public Constructors
+
+        public SessionFactory(IApplicationSettings settings)
+        {
+            Settings = settings;
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        private IApplicationSettings Settings { get; set; }
+
+        #endregion Private Properties
+
         #region Public Methods
 
         /// <summary>
@@ -57,7 +73,7 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         /// <param name="user">The User for which the Session is to be created.</param>
         /// <returns>The created Session.</returns>
-        public static Session CreateSession(User user)
+        public Session CreateSession(User user)
         {
             ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
             identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
@@ -73,7 +89,7 @@ namespace OpenIIoT.Core.Security
 
             AuthenticationProperties ticketProperties = new AuthenticationProperties();
             ticketProperties.IssuedUtc = DateTime.UtcNow;
-            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SecuritySettings.SessionLength);
+            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(Settings.SecuritySessionLength);
 
             AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
 
@@ -81,13 +97,13 @@ namespace OpenIIoT.Core.Security
         }
 
         /// <summary>
-        ///     Extends the exipration time of the specified <see cref="Session"/> to the configured session length.
+        ///     Extends the expiration time of the specified <see cref="Session"/> to the configured session length.
         /// </summary>
         /// <param name="session">The Session to extend.</param>
         /// <returns>The extended Session.</returns>
-        public static Session ExtendSession(Session session)
+        public Session ExtendSession(Session session)
         {
-            session.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(SecuritySettings.SessionLength);
+            session.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(Settings.SecuritySessionLength);
             return session;
         }
 

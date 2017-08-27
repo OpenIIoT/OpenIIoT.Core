@@ -125,6 +125,7 @@ namespace OpenIIoT.Core
         ///     Initializes a new instance of the <see cref="ApplicationManager"/> class with the specified Manager Types.
         /// </summary>
         /// <param name="managerTypes">The array of Manager Types for the application.</param>
+        /// <param name="settings">The settings for the application.</param>
         /// <exception cref="ManagerTypeListException">
         ///     Thrown when the type list argument for the ApplicationManager constructor is malformed.
         /// </exception>
@@ -134,7 +135,7 @@ namespace OpenIIoT.Core
         /// <exception cref="ManagerSetupException">
         ///     Thrown when an error is encountered while performing setup of the instantiated Managers.
         /// </exception>
-        private ApplicationManager(Type[] managerTypes)
+        private ApplicationManager(Type[] managerTypes, IApplicationSettings settings)
         {
             // force the parent logger to this instance due to the way GetCurrentClassLogger works
             base.logger = logger;
@@ -145,6 +146,8 @@ namespace OpenIIoT.Core
             ManagerTypes = managerTypes.ToList();
             ManagerInstances = new List<IManager>();
             ManagerDependencies = new Dictionary<Type, List<Type>>();
+
+            Settings = settings;
 
             // register the ApplicationManager with itself to simplify things later
             RegisterManager<IApplicationManager>(this);
@@ -174,46 +177,27 @@ namespace OpenIIoT.Core
         /// <remarks>
         ///     If the "InstanceName" setting is missing from the application settings, the value of the ProductName property is substituted.
         /// </remarks>
-        public string InstanceName
-        {
-            get
-            {
-                return GetInstanceName();
-            }
-        }
+        public string InstanceName => Settings.ApplicationInstanceName;
 
         /// <summary>
         ///     Gets the list of <see cref="IManager"/> instances managed by the <see cref="IApplicationManager"/>.
         /// </summary>
-        public IReadOnlyList<IManager> Managers
-        {
-            get
-            {
-                return ManagerInstances.ToList().AsReadOnly();
-            }
-        }
+        public IReadOnlyList<IManager> Managers => ManagerInstances.ToList().AsReadOnly();
 
         /// <summary>
         ///     Gets the name of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
-        public string ProductName
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Name;
-            }
-        }
+        public string ProductName => Assembly.GetExecutingAssembly().GetName().Name;
 
         /// <summary>
         ///     Gets the version of the product, retrieved from AssemblyInfo.cs.
         /// </summary>
-        public Version ProductVersion
-        {
-            get
-            {
-                return Assembly.GetExecutingAssembly().GetName().Version;
-            }
-        }
+        public Version ProductVersion => Assembly.GetExecutingAssembly().GetName().Version;
+
+        /// <summary>
+        ///     Gets the settings for the Application.
+        /// </summary>
+        public IApplicationSettings Settings { get; private set; }
 
         #endregion Public Properties
 
@@ -261,12 +245,13 @@ namespace OpenIIoT.Core
         ///     Returns the singleton instance of the ApplicationManager. Creates an instance if null.
         /// </summary>
         /// <param name="managers">The array of Manager Types for the application.</param>
+        /// <param name="settings">The settings for the application.</param>
         /// <returns>The singleton instance of the ApplicationManager</returns>
         /// <exception cref="ManagerTypeListException">
         ///     Thrown when the supplied list of Manager Types is empty or if one or more supplied Types do not implement the
         ///     <see cref="IManager"/> interface.
         /// </exception>
-        public static IApplicationManager Instantiate(Type[] managers)
+        public static IApplicationManager Instantiate(Type[] managers, IApplicationSettings settings)
         {
             // validate input. ensure the list of types is not empty and that all types implement IManager.
             if (managers == default(Type[]) || managers.Count() == 0)
@@ -284,10 +269,24 @@ namespace OpenIIoT.Core
 
             if (instance == null)
             {
-                instance = new ApplicationManager(managers);
+                instance = new ApplicationManager(managers, settings);
             }
 
             return instance;
+        }
+
+        /// <summary>
+        ///     Returns the singleton instance of the ApplicationManager. Creates an instance if null.
+        /// </summary>
+        /// <param name="managers">The array of Manager Types for the application.</param>
+        /// <returns>The singleton instance of the ApplicationManager</returns>
+        /// <exception cref="ManagerTypeListException">
+        ///     Thrown when the supplied list of Manager Types is empty or if one or more supplied Types do not implement the
+        ///     <see cref="IManager"/> interface.
+        /// </exception>
+        public static IApplicationManager Instantiate(Type[] managers)
+        {
+            return Instantiate(managers, new ApplicationSettings());
         }
 
         /// <summary>
@@ -352,15 +351,6 @@ namespace OpenIIoT.Core
         #endregion Protected Methods
 
         #region Private Methods
-
-        /// <summary>
-        ///     Returns the "InstanceName" setting from the app.config file, or the default value if the setting is not retrieved.
-        /// </summary>
-        /// <returns>The name of the program instance.</returns>
-        private static string GetInstanceName()
-        {
-            return Utility.GetSetting("InstanceName", Assembly.GetExecutingAssembly().GetName().Name);
-        }
 
         /// <summary>
         ///     Retrieves the list of <see cref="Type"/> s corresponding to the <see cref="IManager"/> Types on which the specified

@@ -99,61 +99,7 @@ namespace OpenIIoT.Core.Tests
 
         #endregion Public Constructors
 
-        #region Public Methods
 
-        /// <summary>
-        ///     Tests all constructor overloads.
-        /// </summary>
-        [Fact]
-        public void Constructor()
-        {
-            Core.Platform.Directories test = new Core.Platform.Directories(goodDirs);
-            Assert.IsType<Core.Platform.Directories>(test);
-
-            test = new Core.Platform.Directories();
-            Assert.IsType<Core.Platform.Directories>(test);
-
-            Assert.Throws<DirectoryConfigurationException>(() => new Core.Platform.Directories(badDirs));
-        }
-
-        /// <summary>
-        ///     Tests all properties.
-        /// </summary>
-        [Fact]
-        public void Properties()
-        {
-            Core.Platform.Directories test = new Core.Platform.Directories(goodDirs);
-
-            Assert.Equal(FullDir("Data"), test.Data);
-            Assert.Equal(FullDir("Packages"), test.Packages);
-            Assert.Equal(FullDir("Plugins"), test.Plugins);
-            Assert.Equal(FullDir("Temp"), test.Temp);
-            Assert.Equal(FullDir("Persistence"), test.Persistence);
-            Assert.Equal(FullDir("Web"), test.Web);
-            Assert.Equal(FullDir("Logs"), test.Logs);
-        }
-
-        /// <summary>
-        ///     Tests <see cref="ToDictionary"/> and spot-checks the outcome.
-        /// </summary>
-        [Fact]
-        public void ToDictionary()
-        {
-            Core.Platform.Directories test = new Core.Platform.Directories(goodDirs);
-
-            Assert.Equal(FullDir("Data"), test.Data);
-            Assert.Equal(FullDir("Packages"), test.Packages);
-            Assert.Equal(FullDir("Plugins"), test.Plugins);
-            Assert.Equal(FullDir("Temp"), test.Temp);
-
-            IDictionary<string, string> dict = test.ToDictionary();
-
-            Assert.Equal(FullDir("Data"), dict["Data"]);
-            Assert.Equal(FullDir("Packages"), dict["Packages"]);
-            Assert.Equal(FullDir("Temp"), dict["Temp"]);
-        }
-
-        #endregion Public Methods
 
         #region Private Methods
 

@@ -45,7 +45,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Timers;
-using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
@@ -96,9 +95,11 @@ namespace OpenIIoT.Core.Security
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
 
+            SessionFactory = new SessionFactory(Settings);
+
             SessionList = new List<Session>();
 
-            SessionExpiryTimer = new Timer(SecuritySettings.SessionPurgeInterval);
+            SessionExpiryTimer = new Timer(Settings.SecuritySessionPurgeInterval);
             SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
 
             ChangeState(State.Initialized);
@@ -180,9 +181,19 @@ namespace OpenIIoT.Core.Security
         #region Private Properties
 
         /// <summary>
+        ///     Gets the settings for the Application.
+        /// </summary>
+        private IApplicationSettings Settings => Dependency<IApplicationManager>().Settings;
+
+        /// <summary>
         ///     Gets or sets the <see cref="Timer"/> used to purge expired <see cref="Sessions"/>.
         /// </summary>
         private Timer SessionExpiryTimer { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the Session Factory for the Manager.
+        /// </summary>
+        private SessionFactory SessionFactory { get; set; }
 
         /// <summary>
         ///     Gets or sets the list of active <see cref="Session"/> s.
@@ -204,8 +215,10 @@ namespace OpenIIoT.Core.Security
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
             retVal.Model = typeof(SecurityManagerConfiguration);
 
+            IApplicationSettings settings = new ApplicationSettings();
+
             SecurityManagerConfiguration config = new SecurityManagerConfiguration();
-            config.Users.Add(new User(SecuritySettings.DefaultUser, SecuritySettings.DefaultUserPasswordHash, Role.Administrator));
+            config.Users.Add(new User(settings.SecurityDefaultUser, settings.SecurityDefaultUserPasswordHash, Role.Administrator));
 
             retVal.DefaultConfiguration = config;
 
@@ -441,13 +454,20 @@ namespace OpenIIoT.Core.Security
 
             if (foundSession != default(Session))
             {
-                if (!foundSession.IsExpired)
+                if (Settings.SecuritySlidingSessions)
                 {
-                    retVal.ReturnValue = SessionFactory.ExtendSession(foundSession);
+                    if (!foundSession.IsExpired)
+                    {
+                        retVal.ReturnValue = SessionFactory.ExtendSession(foundSession);
+                    }
+                    else
+                    {
+                        retVal.AddError($"Session has expired and can not be extended.");
+                    }
                 }
                 else
                 {
-                    retVal.AddError($"Session has expired and can not be extended.");
+                    retVal.AddWarning($"Sliding sessions are not enabled; the Session has not been extended.");
                 }
             }
             else

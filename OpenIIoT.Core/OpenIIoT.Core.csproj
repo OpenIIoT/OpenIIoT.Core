@@ -192,7 +192,6 @@
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
-    <Compile Include="Configuration\ConfigurationSettings.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
     <Compile Include="Model\WebAPI\BrowseController.cs" />
@@ -205,7 +204,6 @@
     <Compile Include="Packaging\WebAPI\PackageController.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
-    <Compile Include="Platform\PlatformSettings.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />
@@ -216,11 +214,11 @@
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
     </Compile>
     <Compile Include="Scripting\ScriptManager.cs" />
+    <Compile Include="ApplicationSettings.cs" />
     <Compile Include="Security\ISecurityManager.cs" />
     <Compile Include="Security\Role.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
-    <Compile Include="Security\SecuritySettings.cs" />
     <Compile Include="Security\Session.cs" />
     <Compile Include="Security\SessionFactory.cs" />
     <Compile Include="Security\UserEventArgs.cs" />

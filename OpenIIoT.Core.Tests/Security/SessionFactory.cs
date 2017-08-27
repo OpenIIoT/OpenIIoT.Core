@@ -47,9 +47,13 @@
                                                                                                ▀█▄ ██ ▄█▀
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
+
 namespace OpenIIoT.Core.Tests.Security
 {
-    class SessionFactory
+    /// <summary>
+    ///     Unit tests for the <see cref="Core.Security.SessionFactory"/> class.
+    /// </summary>
+    public class SessionFactory
     {
     }
 }

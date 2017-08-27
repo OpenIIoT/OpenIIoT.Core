@@ -45,6 +45,7 @@ using Microsoft.Owin;
 using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Security;
+using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
@@ -109,11 +110,7 @@ namespace OpenIIoT.Core.Service.WebAPI
                 if (session != default(Session) && !session.IsExpired)
                 {
                     context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
-
-                    if (SecuritySettings.SlidingSessions)
-                    {
-                        SecurityManager.ExtendSession(session);
-                    }
+                    SecurityManager.ExtendSession(session);
                 }
                 else
                 {
