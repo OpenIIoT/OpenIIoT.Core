@@ -54,29 +54,29 @@ namespace OpenIIoT.SDK
         string ConfigurationFileName { get; }
 
         /// <summary>
-        ///     Gets the value of the 'DefaultUser' key from the application's XML configuration file.
+        ///     Gets the value of the 'Security.DefaultUser' key from the application's XML configuration file.
         /// </summary>
-        string DefaultUser { get; }
+        string SecurityDefaultUser { get; }
 
         /// <summary>
-        ///     Gets the value of the 'DefaultUserPasswordHash' key from the application's XML configuration file.
+        ///     Gets the value of the 'Security.DefaultUserPasswordHash' key from the application's XML configuration file.
         /// </summary>
-        string DefaultUserPasswordHash { get; }
+        string SecurityDefaultUserPasswordHash { get; }
 
         /// <summary>
-        ///     Gets the value of the 'SessionLength' key from the application's XML configuration file.
+        ///     Gets the value of the 'Security.SessionLength' key from the application's XML configuration file.
         /// </summary>
-        int SessionLength { get; }
+        int SecuritySessionLength { get; }
 
         /// <summary>
-        ///     Gets the value of the 'SessionPurgeInterval' key from the application's XML configuration file.
+        ///     Gets the value of the 'Security.SessionPurgeInterval' key from the application's XML configuration file.
         /// </summary>
-        int SessionPurgeInterval { get; }
+        int SecuritySessionPurgeInterval { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether sliding sessions should be used from the application's XML configuration file.
+        ///     Gets a value indicating whether the 'Security.SlidingSessions' value is true in the application's XML configuration file.
         /// </summary>
-        bool SlidingSessions { get; }
+        bool SecuritySlidingSessions { get; }
 
         #endregion Public Properties
     }

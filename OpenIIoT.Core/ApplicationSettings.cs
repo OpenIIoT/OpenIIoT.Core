@@ -51,34 +51,34 @@ namespace OpenIIoT.Core
         #region Public Properties
 
         /// <summary>
-        ///     Gets the value of the 'ConfigurationFilename' key from the application's XML configuration file.
+        ///     Gets the value of the 'Configuration.Filename' key from the application's XML configuration file.
         /// </summary>
-        public string ConfigurationFileName => Utility.GetSetting<string>("ConfigurationFileName", "OpenIIoT.json").Replace('|', System.IO.Path.DirectorySeparatorChar);
+        public string ConfigurationFileName => Utility.GetSetting<string>("Configuration.FileName", "OpenIIoT.json").Replace('|', System.IO.Path.DirectorySeparatorChar);
 
         /// <summary>
-        ///     Gets the value of the 'DefaultUser' key from the application's XML configuration file.
+        ///     Gets the value of the 'Security.DefaultUser' key from the application's XML configuration file.
         /// </summary>
-        public string DefaultUser => Utility.GetSetting<string>("DefaultUser", "admin");
+        public string SecurityDefaultUser => Utility.GetSetting<string>("Security.DefaultUser", "admin");
 
         /// <summary>
-        ///     Gets the value of the 'DefaultUserPasswordHash' key from the application's XML configuration file.
+        ///     Gets the value of the 'Security.DefaultUserPasswordHash' key from the application's XML configuration file.
         /// </summary>
-        public string DefaultUserPasswordHash => Utility.GetSetting<string>("DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
+        public string SecurityDefaultUserPasswordHash => Utility.GetSetting<string>("Security.DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
 
         /// <summary>
-        ///     Gets the value of the 'SessionLength' key from the application's XML configuration file.
+        ///     Gets the value of the 'Security.SessionLength' key from the application's XML configuration file.
         /// </summary>
-        public int SessionLength => Utility.GetSetting<int>("SessionLength", "15");
+        public int SecuritySessionLength => Utility.GetSetting<int>("security.SessionLength", "15");
 
         /// <summary>
-        ///     Gets the value of the 'SessionPurgeInterval' key from the application's XML configuration file.
+        ///     Gets the value of the 'Security.SessionPurgeInterval' key from the application's XML configuration file.
         /// </summary>
-        public int SessionPurgeInterval => Utility.GetSetting<int>("SessionPurgeInterval", "900000");
+        public int SecuritySessionPurgeInterval => Utility.GetSetting<int>("Security.SessionPurgeInterval", "900000");
 
         /// <summary>
-        ///     Gets a value indicating whether sliding sessions should be used from the application's XML configuration file.
+        ///     Gets a value indicating whether the 'Security.SlidingSessions' value is true in the application's XML configuration file.
         /// </summary>
-        public bool SlidingSessions => Utility.GetSetting<bool>("SlidingSessions", "true");
+        public bool SecuritySlidingSessions => Utility.GetSetting<bool>("Security.SlidingSessions", "true");
 
         #endregion Public Properties
     }

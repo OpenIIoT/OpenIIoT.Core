@@ -99,7 +99,7 @@ namespace OpenIIoT.Core.Security
 
             SessionList = new List<Session>();
 
-            SessionExpiryTimer = new Timer(Settings.SessionPurgeInterval);
+            SessionExpiryTimer = new Timer(Settings.SecuritySessionPurgeInterval);
             SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
 
             ChangeState(State.Initialized);
@@ -218,7 +218,7 @@ namespace OpenIIoT.Core.Security
             IApplicationSettings settings = new ApplicationSettings();
 
             SecurityManagerConfiguration config = new SecurityManagerConfiguration();
-            config.Users.Add(new User(settings.DefaultUser, settings.DefaultUserPasswordHash, Role.Administrator));
+            config.Users.Add(new User(settings.SecurityDefaultUser, settings.SecurityDefaultUserPasswordHash, Role.Administrator));
 
             retVal.DefaultConfiguration = config;
 
@@ -454,7 +454,7 @@ namespace OpenIIoT.Core.Security
 
             if (foundSession != default(Session))
             {
-                if (Settings.SlidingSessions)
+                if (Settings.SecuritySlidingSessions)
                 {
                     if (!foundSession.IsExpired)
                     {

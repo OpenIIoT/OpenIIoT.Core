@@ -89,7 +89,7 @@ namespace OpenIIoT.Core.Security
 
             AuthenticationProperties ticketProperties = new AuthenticationProperties();
             ticketProperties.IssuedUtc = DateTime.UtcNow;
-            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(Settings.SessionLength);
+            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(Settings.SecuritySessionLength);
 
             AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
 
@@ -103,7 +103,7 @@ namespace OpenIIoT.Core.Security
         /// <returns>The extended Session.</returns>
         public Session ExtendSession(Session session)
         {
-            session.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(Settings.SessionLength);
+            session.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(Settings.SecuritySessionLength);
             return session;
         }
 

@@ -79,11 +79,6 @@ namespace OpenIIoT.Core.Service.WebAPI
         #region Private Properties
 
         /// <summary>
-        ///     Gets the Application settings.
-        /// </summary>
-        private IApplicationSettings Settings => ApplicationManager.GetInstance().Settings;
-
-        /// <summary>
         ///     Gets the ISecurityManager instance for the application.
         /// </summary>
         private ISecurityManager SecurityManager => ApplicationManager.GetInstance().GetManager<ISecurityManager>();
@@ -115,11 +110,7 @@ namespace OpenIIoT.Core.Service.WebAPI
                 if (session != default(Session) && !session.IsExpired)
                 {
                     context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
-
-                    if (Settings.SlidingSessions)
-                    {
-                        SecurityManager.ExtendSession(session);
-                    }
+                    SecurityManager.ExtendSession(session);
                 }
                 else
                 {
