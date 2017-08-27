@@ -119,5 +119,15 @@ namespace OpenIIoT.SDK
         bool SecuritySlidingSessions { get; }
 
         #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Clears the settings cache and re-initializes the values from the application's XML configuration file.
+        /// </summary>
+        /// <returns>This <see cref="IApplicationSettings"/> instance.</returns>
+        IApplicationSettings ResetCache();
+
+        #endregion Public Methods
     }
 }

@@ -44,6 +44,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
+using System.Reflection;
 using OpenIIoT.Core.Common.Exceptions;
 using OpenIIoT.SDK;
 
@@ -61,7 +62,7 @@ namespace OpenIIoT.Core
         /// </summary>
         public ApplicationSettings()
         {
-            SettingsCache = new Dictionary<string, object>();
+            Initialize();
         }
 
         #endregion Public Constructors
@@ -149,6 +150,22 @@ namespace OpenIIoT.Core
 
         #endregion Private Properties
 
+        #region Public Methods
+
+        /// <summary>
+        ///     Clears the settings cache and re-initializes the values from the application's XML configuration file.
+        /// </summary>
+        /// <returns>This <see cref="IApplicationSettings"/> instance.</returns>
+        public IApplicationSettings ResetCache()
+        {
+            SettingsCache.Clear();
+            Initialize();
+
+            return this;
+        }
+
+        #endregion Public Methods
+
         #region Private Methods
 
         /// <summary>
@@ -162,6 +179,9 @@ namespace OpenIIoT.Core
         /// <param name="key">The setting to retrieve.</param>
         /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
         /// <returns>The string value of the retrieved setting.</returns>
+        /// <exception cref="XMLConfigurationException">
+        ///     Thrown when an Exception is encountered reading or converting the value of the specified setting.
+        /// </exception>
         [ExcludeFromCodeCoverage]
         private T GetSetting<T>(string key, string defaultSetting)
         {
@@ -207,6 +227,27 @@ namespace OpenIIoT.Core
             }
 
             return retVal;
+        }
+
+        /// <summary>
+        ///     Initializes the settings cache and tests each setting by attempting to retrieve initial values.
+        /// </summary>
+        /// <exception cref="XMLConfigurationException">Thrown when an Exception is encountered during initialization.</exception>
+        private void Initialize()
+        {
+            SettingsCache = new Dictionary<string, object>();
+
+            try
+            {
+                foreach (PropertyInfo property in GetType().GetProperties())
+                {
+                    object value = property.GetValue(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new XMLConfigurationException($"Failed to initialize XML configuration.  See inner Exception for details.", ex);
+            }
         }
 
         #endregion Private Methods

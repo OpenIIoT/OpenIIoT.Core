@@ -48,6 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests
@@ -201,6 +202,16 @@ namespace OpenIIoT.Core.Tests
             string setting = Settings.DirectoryWeb;
             Assert.NotNull(setting);
             Assert.NotEqual(string.Empty, setting);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.ApplicationSettings.ResetCache"/> method.
+        /// </summary>
+        [Fact]
+        public void ResetCache()
+        {
+            Exception ex = Record.Exception(() => Settings.ResetCache());
+            Assert.Null(ex);
         }
 
         /// <summary>
