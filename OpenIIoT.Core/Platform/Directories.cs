@@ -44,6 +44,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
 
 namespace OpenIIoT.Core.Platform
@@ -63,14 +64,21 @@ namespace OpenIIoT.Core.Platform
         {
             Settings = settings;
 
-            Root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
-            Data = NormalizePath(Path.Combine(Root, Settings.DirectoryData));
-            Packages = NormalizePath(Path.Combine(Root, Settings.DirectoryPackages));
-            Plugins = NormalizePath(Path.Combine(Root, Settings.DirectoryPlugins));
-            Temp = NormalizePath(Path.Combine(Root, Settings.DirectoryTemp));
-            Persistence = NormalizePath(Path.Combine(Root, Settings.DirectoryPersistence));
-            Web = NormalizePath(Path.Combine(Root, Settings.DirectoryWeb));
-            Logs = NormalizePath(Path.Combine(Root, Settings.DirectoryLogs));
+            try
+            {
+                Root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
+                Data = NormalizePath(Path.Combine(Root, Settings.DirectoryData));
+                Packages = NormalizePath(Path.Combine(Root, Settings.DirectoryPackages));
+                Plugins = NormalizePath(Path.Combine(Root, Settings.DirectoryPlugins));
+                Temp = NormalizePath(Path.Combine(Root, Settings.DirectoryTemp));
+                Persistence = NormalizePath(Path.Combine(Root, Settings.DirectoryPersistence));
+                Web = NormalizePath(Path.Combine(Root, Settings.DirectoryWeb));
+                Logs = NormalizePath(Path.Combine(Root, Settings.DirectoryLogs));
+            }
+            catch (Exception ex)
+            {
+                throw new DirectoryConfigurationException($"Failed to configure application Directories.  See inner Exception for details.", ex);
+            }
         }
 
         #endregion Public Constructors

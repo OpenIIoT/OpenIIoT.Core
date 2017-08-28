@@ -48,7 +48,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
 using NLog;
 using NLog.Targets;
 using Xunit;
@@ -62,51 +61,6 @@ namespace OpenIIoT.Core.Tests
     public class Utility
     {
         #region Public Methods
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Utility.DisableLoggingLevel(NLog.LogLevel)"/> method.
-        /// </summary>
-        [Fact]
-        public void DisableLoggingLevel()
-        {
-            Target target = new ConsoleTarget();
-            LogManager.Configuration.AddTarget("test", target);
-            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
-
-            Logger logger = LogManager.GetLogger("test");
-
-            Core.Utility.EnableLoggingLevel(LogLevel.Trace);
-
-            Assert.True(logger.IsTraceEnabled);
-
-            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
-
-            Assert.False(logger.IsTraceEnabled);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Utility.EnableLoggingLevel(NLog.LogLevel)"/> method.
-        /// </summary>
-        [Fact]
-        public void EnableLoggingLevel()
-        {
-            Target target = new ConsoleTarget();
-            LogManager.Configuration.AddTarget("test", target);
-            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
-
-            Logger logger = LogManager.GetLogger("test");
-
-            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
-
-            Assert.False(logger.IsTraceEnabled);
-
-            Core.Utility.EnableLoggingLevel(LogLevel.Trace);
-
-            Assert.True(logger.IsTraceEnabled);
-
-            // disable the logger to prevent CI from erroring
-            Core.Utility.DisableLoggingLevel(LogLevel.Trace);
-        }
 
         /// <summary>
         ///     Tests the <see cref="Core.Utility.PrintLogo(Logger)"/> method.
@@ -156,56 +110,6 @@ namespace OpenIIoT.Core.Tests
             root.AddChild(child2);
 
             Core.Utility.PrintModel(logger, root, 0);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Utility.SetLoggingLevel(string)"/> method.
-        /// </summary>
-        [Fact]
-        public void SetLoggingLevel()
-        {
-            Target target = new ConsoleTarget();
-            LogManager.Configuration.AddTarget("test", target);
-            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
-
-            foreach (var rule in LogManager.Configuration.LoggingRules)
-            {
-                rule.EnableLoggingForLevel(LogLevel.Trace);
-                rule.EnableLoggingForLevel(LogLevel.Debug);
-                rule.EnableLoggingForLevel(LogLevel.Info);
-                rule.EnableLoggingForLevel(LogLevel.Error);
-                rule.EnableLoggingForLevel(LogLevel.Fatal);
-            }
-
-            LogManager.ReconfigExistingLoggers();
-
-            Logger logger = LogManager.GetLogger("test");
-
-            Assert.True(logger.IsTraceEnabled);
-            Assert.True(logger.IsDebugEnabled);
-            Assert.True(logger.IsInfoEnabled);
-            Assert.True(logger.IsErrorEnabled);
-            Assert.True(logger.IsFatalEnabled);
-
-            Core.Utility.SetLoggingLevel("fatal");
-
-            Assert.False(logger.IsTraceEnabled);
-            Assert.False(logger.IsDebugEnabled);
-            Assert.False(logger.IsInfoEnabled);
-            Assert.False(logger.IsErrorEnabled);
-            Assert.True(logger.IsFatalEnabled);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Utility.SetLoggingLevel(string)"/> method with a known bad level.
-        /// </summary>
-        [Fact]
-        public void SetLoggingLevelBad()
-        {
-            Exception ex = Record.Exception(() => Core.Utility.SetLoggingLevel("bad"));
-
-            Assert.NotNull(ex);
-            Assert.IsType<Exception>(ex);
         }
 
         #endregion Public Methods

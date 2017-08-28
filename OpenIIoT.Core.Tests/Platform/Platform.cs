@@ -883,7 +883,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void WriteFileBytesFailure()
         {
-            string file = Path.Combine(testDirectory, "?");
+            string file = Path.Combine(testDirectory, string.Empty);
 
             IResult<string> result = platformMock.WriteFileBytes(file, new byte[] { 32 });
 

@@ -51,6 +51,9 @@
 using System.Collections.Generic;
 using OpenIIoT.SDK;
 using Xunit;
+using Moq;
+using System;
+using OpenIIoT.SDK.Common.Exceptions;
 
 namespace OpenIIoT.Core.Tests
 {
@@ -92,6 +95,19 @@ namespace OpenIIoT.Core.Tests
             Core.Platform.Directories test = new Core.Platform.Directories(Settings);
 
             Assert.IsType<Core.Platform.Directories>(test);
+        }
+
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
+        [Fact]
+        public void ConstructorFailure()
+        {
+            Mock<IApplicationSettings> settings = new Mock<IApplicationSettings>();
+
+            Exception ex = Record.Exception(() => new Core.Platform.Directories(settings.Object));
+
+            Assert.IsType<DirectoryConfigurationException>(ex);
         }
 
         /// <summary>
