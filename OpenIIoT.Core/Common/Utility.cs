@@ -58,6 +58,7 @@ namespace OpenIIoT.Core
         ///     Disables the specified logging level within the LogManager.
         /// </summary>
         /// <param name="level">The level to disable.</param>
+        [ExcludeFromCodeCoverage]
         public static void DisableLoggingLevel(NLog.LogLevel level)
         {
             IList<NLog.Config.LoggingRule> rules = NLog.LogManager.Configuration.LoggingRules;
@@ -74,6 +75,7 @@ namespace OpenIIoT.Core
         ///     Enables the specified logging level within the LogManager.
         /// </summary>
         /// <param name="level">The level to enable.</param>
+        [ExcludeFromCodeCoverage]
         public static void EnableLoggingLevel(NLog.LogLevel level)
         {
             IList<NLog.Config.LoggingRule> rules = NLog.LogManager.Configuration.LoggingRules;
@@ -197,6 +199,7 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <param name="level">The desired logging level.</param>
         /// <exception cref="Exception">Thrown when the specified string is not a valid logging level.</exception>
+        [ExcludeFromCodeCoverage]
         public static void SetLoggingLevel(string level)
         {
             try
