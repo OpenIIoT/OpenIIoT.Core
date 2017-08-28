@@ -69,6 +69,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void DisableLoggingLevel()
         {
+            LogManager.GlobalThreshold = LogLevel.Trace;
             Target target = new ConsoleTarget();
             LogManager.Configuration.AddTarget("test", target);
             LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
@@ -82,6 +83,8 @@ namespace OpenIIoT.Core.Tests
             Core.Utility.DisableLoggingLevel(LogLevel.Trace);
 
             Assert.False(logger.IsTraceEnabled);
+
+            LogManager.GlobalThreshold = LogLevel.Off;
         }
 
         /// <summary>
@@ -90,6 +93,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void EnableLoggingLevel()
         {
+            LogManager.GlobalThreshold = LogLevel.Trace;
             Target target = new ConsoleTarget();
             LogManager.Configuration.AddTarget("test", target);
             LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
@@ -106,6 +110,7 @@ namespace OpenIIoT.Core.Tests
 
             // disable the logger to prevent CI from erroring
             Core.Utility.DisableLoggingLevel(LogLevel.Trace);
+            LogManager.GlobalThreshold = LogLevel.Off;
         }
 
         /// <summary>
@@ -164,6 +169,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void SetLoggingLevel()
         {
+            LogManager.GlobalThreshold = LogLevel.Trace;
             Target target = new ConsoleTarget();
             LogManager.Configuration.AddTarget("test", target);
             LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
@@ -194,6 +200,8 @@ namespace OpenIIoT.Core.Tests
             Assert.False(logger.IsInfoEnabled);
             Assert.False(logger.IsErrorEnabled);
             Assert.True(logger.IsFatalEnabled);
+
+            LogManager.GlobalThreshold = LogLevel.Off;
         }
 
         /// <summary>

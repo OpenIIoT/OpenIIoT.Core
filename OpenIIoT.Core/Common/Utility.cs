@@ -41,9 +41,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using OpenIIoT.SDK.Common;
 using Utility.BigFont;
-using System.ComponentModel;
 
 namespace OpenIIoT.Core
 {
@@ -91,7 +91,7 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <param name="action">The action to perform (uninstall or install).</param>
         /// <returns>True if the installation/uninstallation succeeded, false otherwise.</returns>
-        [System.Diagnostics.CodeAnalysis.ExcludeFromCodeCoverage]
+        [ExcludeFromCodeCoverage]
         public static bool ModifyService(string action)
         {
             try
