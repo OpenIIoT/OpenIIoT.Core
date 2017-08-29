@@ -300,6 +300,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// <param name="name">The name of the User to update.</param>
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
+        /// <returns>An HTTP response message.</returns>
         [HttpPut]
         [Route("v1/security/user/{name}")]
         [Authorize]
