@@ -244,7 +244,7 @@
     <Compile Include="Common\WebAPI\LogHub.cs" />
     <Compile Include="Service\WebAPI\ApiBaseController.cs" />
     <Compile Include="Service\WebAPI\AuthMiddleware.cs" />
-    <Compile Include="Service\WebAPI\WebAPIRoutePrefixAttribute.cs" />
+    <Compile Include="Service\WebAPI\WebApiRoutePrefixAttribute.cs" />
     <Compile Include="Service\WebAPI\LogMiddleware.cs" />
     <Compile Include="Service\WebAPI\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebAPI\OwinStartup.cs" />
