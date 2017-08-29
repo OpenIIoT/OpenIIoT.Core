@@ -10,7 +10,7 @@ using Utility.OperationResult;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     public class WebApiService : IService, IConfigurable<WebAPIServiceConfiguration>
     {

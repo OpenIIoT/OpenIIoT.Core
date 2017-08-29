@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     public static class WebApiConstants
     {

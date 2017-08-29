@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     public class ApiBaseController : ApiController
     {

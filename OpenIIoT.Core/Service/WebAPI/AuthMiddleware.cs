@@ -47,7 +47,7 @@ using NLog.xLogger;
 using OpenIIoT.Core.Security;
 using OpenIIoT.SDK;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.

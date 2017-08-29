@@ -48,7 +48,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using OpenIIoT.Core.Service.WebAPI;
+using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Packaging;

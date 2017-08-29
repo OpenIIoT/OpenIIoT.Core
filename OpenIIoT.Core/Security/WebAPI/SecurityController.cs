@@ -54,7 +54,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
-using OpenIIoT.Core.Service.WebAPI;
+using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using Swashbuckle.Swagger.Annotations;

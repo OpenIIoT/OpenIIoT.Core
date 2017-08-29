@@ -51,7 +51,7 @@
 using System.Web.Http.Description;
 using Swashbuckle.Swagger;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     /// <summary>
     ///     The Swashbuckle Operation Filter which determines the Accept and Content-Type types supported by the API.

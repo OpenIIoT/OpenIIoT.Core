@@ -242,14 +242,14 @@
     <Compile Include="Configuration\WebAPI\ConfigurationController.cs" />
     <Compile Include="Common\WebAPI\LogController.cs" />
     <Compile Include="Common\WebAPI\LogHub.cs" />
-    <Compile Include="Service\WebAPI\ApiBaseController.cs" />
-    <Compile Include="Service\WebAPI\AuthMiddleware.cs" />
-    <Compile Include="Service\WebAPI\WebApiRoutePrefixAttribute.cs" />
-    <Compile Include="Service\WebAPI\LogMiddleware.cs" />
-    <Compile Include="Service\WebAPI\MimeTypesOperationFilter.cs" />
-    <Compile Include="Service\WebAPI\OwinStartup.cs" />
-    <Compile Include="Service\WebAPI\WebApiConstants.cs" />
-    <Compile Include="Service\WebAPI\WebApiService.cs" />
+    <Compile Include="Service\WebApi\ApiBaseController.cs" />
+    <Compile Include="Service\WebApi\AuthMiddleware.cs" />
+    <Compile Include="Service\WebApi\WebApiRoutePrefixAttribute.cs" />
+    <Compile Include="Service\WebApi\LogMiddleware.cs" />
+    <Compile Include="Service\WebApi\MimeTypesOperationFilter.cs" />
+    <Compile Include="Service\WebApi\OwinStartup.cs" />
+    <Compile Include="Service\WebApi\WebApiConstants.cs" />
+    <Compile Include="Service\WebApi\WebApiService.cs" />
     <Compile Include="WindowsService.cs">
       <SubType>Component</SubType>
     </Compile>

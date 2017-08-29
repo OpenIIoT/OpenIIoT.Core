@@ -21,7 +21,7 @@ using System.Net.Http;
 using System.Linq;
 using System.Net.Http.Headers;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     public class OwinStartup
     {
