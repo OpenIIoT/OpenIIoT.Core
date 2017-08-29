@@ -40,29 +40,39 @@ namespace OpenIIoT.Core.Service.WebAPI
         {
             WebServiceConfiguration = WebAPIService.GetConfiguration;
             string webRoot = WebServiceConfiguration.Root;
+            string slash = webRoot.Length > 0 ? "/" : string.Empty;
 
             app.UseCors(CorsOptions.AllowAll);
 
             app.Use(typeof(LogMiddleware));
             app.Use(typeof(AuthMiddleware));
 
-            app.MapSignalR((webRoot.Length > 0 ? "/" : string.Empty) + webRoot + "/signalr", new HubConfiguration());
+            app.MapSignalR(slash + webRoot + "/signalr", new HubConfiguration());
 
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
 
             config
-                .EnableSwagger(c =>
+                .EnableSwagger(webRoot + slash + "help/docs/{apiVersion}", c =>
                 {
                     c.SingleApiVersion("v1", manager.ProductName);
                     c.IncludeXmlComments($"{manager.ProductName}.XML");
                     c.DescribeAllEnumsAsStrings();
                     c.OperationFilter<MimeTypeOperationFilter>();
                 })
-                .EnableSwaggerUi(c =>
+                .EnableSwaggerUi(webRoot + slash + "help/ui/{*assetPath}", c =>
                 {
                     c.EnableApiKeySupport("X-ApiKey", "header");
+                    c.DisableValidator();
                 });
+
+            config
+                .Routes.MapHttpRoute(
+                    name: "help_ui_shortcut",
+                    routeTemplate: webRoot + slash + "help",
+                    defaults: null,
+                    constraints: null,
+                    handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, webRoot + slash + "help/ui/index"));
 
             // config.Routes.MapHttpRoute(
             // name: "DefaultApi",
@@ -79,7 +89,7 @@ namespace OpenIIoT.Core.Service.WebAPI
             app.UseFileServer(new FileServerOptions()
             {
                 FileSystem = new PhysicalFileSystem(manager.GetManager<PlatformManager>().Platform.Directories.Web),
-                RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : string.Empty) + webRoot),
+                RequestPath = PathString.FromUriComponent(slash + webRoot),
             });
         }
 
