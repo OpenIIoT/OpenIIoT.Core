@@ -17,6 +17,9 @@ using NLog;
 using OpenIIoT.SDK.Common;
 using System.IO;
 using System.Net;
+using System.Net.Http;
+using System.Linq;
+using System.Net.Http.Headers;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
@@ -30,6 +33,7 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         #region Private Properties
 
+        public static string Authority { get; private set; }
         private WebAPIServiceConfiguration WebServiceConfiguration { get; set; }
 
         #endregion Private Properties
@@ -55,6 +59,7 @@ namespace OpenIIoT.Core.Service.WebAPI
             config
                 .EnableSwagger(webRoot + slash + "help/docs/{apiVersion}", c =>
                 {
+                    c.RootUrl(req => ComputeHostAsSeenByOriginalClient(req));
                     c.SingleApiVersion("v1", manager.ProductName);
                     c.IncludeXmlComments($"{manager.ProductName}.XML");
                     c.DescribeAllEnumsAsStrings();
@@ -94,5 +99,38 @@ namespace OpenIIoT.Core.Service.WebAPI
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        private static string ComputeHostAsSeenByOriginalClient(HttpRequestMessage req)
+        {
+            string authority = req.RequestUri.Authority;
+            string scheme = req.RequestUri.Scheme;
+
+            HttpRequestHeaders headers = req.Headers;
+
+            if (req.Headers.Contains("X-Forwarded-Host"))
+            {
+                string xForwardedHost = req.Headers.GetValues("X-Forwarded-Host").First();
+                string firstForwardedHost = xForwardedHost.Split(',')[0];
+
+                authority = firstForwardedHost;
+            }
+
+            if (req.Headers.Contains("X-Forwarded-Proto"))
+            {
+                var xForwardedProto = req.Headers.GetValues("X-Forwarded-Proto").First();
+                if (xForwardedProto.IndexOf(",") != -1)
+                {
+                    xForwardedProto = xForwardedProto.Split(',')[0];
+                }
+
+                scheme = xForwardedProto;
+            }
+
+            return scheme + "://" + authority;
+        }
+
+        #endregion Private Methods
     }
 }
