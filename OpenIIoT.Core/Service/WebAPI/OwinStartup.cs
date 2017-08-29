@@ -102,6 +102,15 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         #region Private Methods
 
+        /// <summary>
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        /// <example>
+        ///     <![CDATA[ <rule name="openiiot" stopProcessing="true"> <match url = "openiiot(/.*)" /> <serverVariables> <set
+        ///     name="HTTP_X_Forwarded_Host" value="whatnet.us" /> <set name = "HTTP_X_Forwarded_Proto" value="http" />
+        ///     </serverVariables> <action type = "Rewrite" url="http://sandbox/{R:0}" /> </rule> ]]>
+        /// </example>
         private static string ComputeHostAsSeenByOriginalClient(HttpRequestMessage req)
         {
             string authority = req.RequestUri.Authority;
