@@ -12,7 +12,7 @@ using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
-    public class WebAPIService : IService, IConfigurable<WebAPIServiceConfiguration>
+    public class WebApiService : IService, IConfigurable<WebAPIServiceConfiguration>
     {
         #region Internal Fields
 
@@ -27,7 +27,7 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         #region Private Fields
 
-        private static WebAPIService instance;
+        private static WebApiService instance;
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -39,7 +39,7 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         #region Private Constructors
 
-        private WebAPIService(ApplicationManager manager)
+        private WebApiService(ApplicationManager manager)
         {
             this.manager = manager;
             Hubs = new Dictionary<string, Hub>();
@@ -102,11 +102,11 @@ namespace OpenIIoT.Core.Service.WebAPI
             return retVal;
         }
 
-        public static WebAPIService Instance(ApplicationManager manager)
+        public static WebApiService Instance(ApplicationManager manager)
         {
             if (instance == null)
             {
-                instance = new WebAPIService(manager);
+                instance = new WebApiService(manager);
             }
 
             return instance;

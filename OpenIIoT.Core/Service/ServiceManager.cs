@@ -167,8 +167,8 @@ namespace OpenIIoT.Core.Service
             try
             {
                 logger.Trace("Registering Web Services...");
-                retVal.ReturnValue.Add("Web Services", typeof(WebAPI.WebAPIService));
-                configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(WebAPI.WebAPIService));
+                retVal.ReturnValue.Add("Web Services", typeof(WebAPI.WebApiService));
+                configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(WebAPI.WebApiService));
             }
             catch (Exception ex)
             {

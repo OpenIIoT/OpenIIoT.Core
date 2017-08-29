@@ -249,7 +249,7 @@
     <Compile Include="Service\WebAPI\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebAPI\OwinStartup.cs" />
     <Compile Include="Service\WebAPI\WebAPIConstants.cs" />
-    <Compile Include="Service\WebAPI\WebAPIService.cs" />
+    <Compile Include="Service\WebAPI\WebApiService.cs" />
     <Compile Include="WindowsService.cs">
       <SubType>Component</SubType>
     </Compile>

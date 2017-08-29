@@ -42,7 +42,7 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         public void Configuration(IAppBuilder app)
         {
-            WebServiceConfiguration = WebAPIService.GetConfiguration;
+            WebServiceConfiguration = WebApiService.GetConfiguration;
             string webRoot = manager.Settings.WebRoot.TrimStart('/').TrimEnd('/');
 
             string signalRPath = $"/{webRoot}/signalr";
