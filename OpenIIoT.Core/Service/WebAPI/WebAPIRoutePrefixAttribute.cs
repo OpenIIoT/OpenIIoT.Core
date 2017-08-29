@@ -25,7 +25,8 @@ namespace OpenIIoT.Core.Service.WebAPI
             get
             {
                 IApplicationSettings settings = ApplicationManager.GetInstance().Settings;
-                string prefix = $"{settings.WebRoot}/{WebAPIConstants.APIRoutePrefix}/{base.Prefix}";
+                string root = settings.WebRoot.TrimStart('/').TrimEnd('/');
+                string prefix = $"{root}/{WebAPIConstants.APIRoutePrefix}/{base.Prefix}";
                 prefix = prefix.TrimStart('/').TrimEnd('/');
                 return prefix;
             }

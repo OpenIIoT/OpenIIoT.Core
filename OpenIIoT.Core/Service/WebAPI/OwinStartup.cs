@@ -43,21 +43,26 @@ namespace OpenIIoT.Core.Service.WebAPI
         public void Configuration(IAppBuilder app)
         {
             WebServiceConfiguration = WebAPIService.GetConfiguration;
-            string webRoot = new ApplicationSettings().WebRoot;
-            string slash = webRoot.Length > 0 ? "/" : string.Empty;
+            string webRoot = manager.Settings.WebRoot.TrimStart('/').TrimEnd('/');
+
+            string signalRPath = $"/{webRoot}/signalr";
+            string helpPath = $"{webRoot}/{WebAPIConstants.HelpRoutePrefix}".TrimStart('/');
+            string swaggerPath = $"{helpPath}/docs/{{apiVersion}}";
+            string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
+            string helpShortcut = $"{helpPath}/ui/index";
 
             app.UseCors(CorsOptions.AllowAll);
 
             app.Use(typeof(LogMiddleware));
             app.Use(typeof(AuthMiddleware));
 
-            app.MapSignalR(slash + webRoot + "/signalr", new HubConfiguration());
+            app.MapSignalR(signalRPath, new HubConfiguration());
 
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
 
             config
-                .EnableSwagger(webRoot + slash + "help/docs/{apiVersion}", c =>
+                .EnableSwagger(swaggerPath, c =>
                 {
                     c.RootUrl(req => ComputeHostAsSeenByOriginalClient(req));
                     c.SingleApiVersion("v1", manager.ProductName);
@@ -65,7 +70,7 @@ namespace OpenIIoT.Core.Service.WebAPI
                     c.DescribeAllEnumsAsStrings();
                     c.OperationFilter<MimeTypeOperationFilter>();
                 })
-                .EnableSwaggerUi(webRoot + slash + "help/ui/{*assetPath}", c =>
+                .EnableSwaggerUi(swaggerUiPath, c =>
                 {
                     c.EnableApiKeySupport("X-ApiKey", "header");
                     c.DisableValidator();
@@ -73,11 +78,11 @@ namespace OpenIIoT.Core.Service.WebAPI
 
             config
                 .Routes.MapHttpRoute(
-                    name: "help_ui_shortcut",
-                    routeTemplate: webRoot + slash + "help",
+                    name: "HelpShortcut",
+                    routeTemplate: helpPath,
                     defaults: null,
                     constraints: null,
-                    handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, webRoot + slash + "help/ui/index"));
+                    handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, helpShortcut));
 
             app.UseWebApi(config);
 
@@ -86,7 +91,7 @@ namespace OpenIIoT.Core.Service.WebAPI
             app.UseFileServer(new FileServerOptions()
             {
                 FileSystem = new PhysicalFileSystem(manager.GetManager<PlatformManager>().Platform.Directories.Web),
-                RequestPath = PathString.FromUriComponent(slash + webRoot),
+                RequestPath = PathString.FromUriComponent($"/{webRoot}"),
             });
         }
 

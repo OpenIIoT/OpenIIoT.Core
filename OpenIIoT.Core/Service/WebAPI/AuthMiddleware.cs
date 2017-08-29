@@ -99,7 +99,10 @@ namespace OpenIIoT.Core.Service.WebAPI
         {
             logger.EnterMethod();
 
-            PathString apiPath = new PathString($"{Manager.Settings.WebRoot}/{WebAPIConstants.APIRoutePrefix}");
+            string path = $"{Manager.Settings.WebRoot}/{WebAPIConstants.APIRoutePrefix}".TrimStart('/');
+            path = $"/{path}";
+
+            PathString apiPath = new PathString(path);
             bool api = context.Request.Path.StartsWithSegments(apiPath);
 
             if (api && context.Request.Headers.ContainsKey("X-ApiKey"))
