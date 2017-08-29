@@ -81,7 +81,7 @@ namespace OpenIIoT.Core.Service.WebAPI
             get
             {
                 string root = Settings.WebRoot.TrimEnd('/');
-                return $"{root}/{WebAPIConstants.APIRoutePrefix}/{base.Prefix}".TrimStart('/');
+                return $"{root}/{WebApiConstants.ApiRoutePrefix}/{base.Prefix}".TrimStart('/');
             }
         }
 

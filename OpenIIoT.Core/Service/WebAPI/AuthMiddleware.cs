@@ -99,7 +99,7 @@ namespace OpenIIoT.Core.Service.WebAPI
         {
             logger.EnterMethod();
 
-            string path = $"{Manager.Settings.WebRoot}/{WebAPIConstants.APIRoutePrefix}".TrimStart('/');
+            string path = $"{Manager.Settings.WebRoot}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/');
             path = $"/{path}";
 
             PathString apiPath = new PathString(path);

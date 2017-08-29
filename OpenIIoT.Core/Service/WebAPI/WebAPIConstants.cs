@@ -7,11 +7,11 @@ using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Service.WebAPI
 {
-    public static class WebAPIConstants
+    public static class WebApiConstants
     {
         #region Public Fields
 
-        public const string APIRoutePrefix = "api";
+        public const string ApiRoutePrefix = "api";
         public const string HelpRoutePrefix = "help";
 
         #endregion Public Fields

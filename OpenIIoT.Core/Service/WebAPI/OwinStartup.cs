@@ -46,7 +46,7 @@ namespace OpenIIoT.Core.Service.WebAPI
             string webRoot = manager.Settings.WebRoot.TrimStart('/').TrimEnd('/');
 
             string signalRPath = $"/{webRoot}/signalr";
-            string helpPath = $"{webRoot}/{WebAPIConstants.HelpRoutePrefix}".TrimStart('/');
+            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
             string swaggerPath = $"{helpPath}/docs/{{apiVersion}}";
             string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
             string helpShortcut = $"{helpPath}/ui/index";
