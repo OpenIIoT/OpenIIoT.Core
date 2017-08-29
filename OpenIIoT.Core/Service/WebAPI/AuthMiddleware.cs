@@ -78,10 +78,12 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         #region Private Properties
 
+        private IApplicationManager Manager => ApplicationManager.GetInstance();
+
         /// <summary>
         ///     Gets the ISecurityManager instance for the application.
         /// </summary>
-        private ISecurityManager SecurityManager => ApplicationManager.GetInstance().GetManager<ISecurityManager>();
+        private ISecurityManager SecurityManager => Manager.GetManager<ISecurityManager>();
 
         #endregion Private Properties
 
@@ -97,7 +99,7 @@ namespace OpenIIoT.Core.Service.WebAPI
         {
             logger.EnterMethod();
 
-            PathString apiPath = new PathString($"/{WebAPIConstants.RoutePrefix}");
+            PathString apiPath = new PathString($"{Manager.Settings.WebRoot}/{WebAPIConstants.APIRoutePrefix}");
             bool api = context.Request.Path.StartsWithSegments(apiPath);
 
             if (api && context.Request.Headers.ContainsKey("X-ApiKey"))

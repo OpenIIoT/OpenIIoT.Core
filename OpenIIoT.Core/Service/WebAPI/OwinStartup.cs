@@ -43,7 +43,7 @@ namespace OpenIIoT.Core.Service.WebAPI
         public void Configuration(IAppBuilder app)
         {
             WebServiceConfiguration = WebAPIService.GetConfiguration;
-            string webRoot = WebServiceConfiguration.Root;
+            string webRoot = new ApplicationSettings().WebRoot;
             string slash = webRoot.Length > 0 ? "/" : string.Empty;
 
             app.UseCors(CorsOptions.AllowAll);
@@ -79,14 +79,6 @@ namespace OpenIIoT.Core.Service.WebAPI
                     constraints: null,
                     handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, webRoot + slash + "help/ui/index"));
 
-            // config.Routes.MapHttpRoute(
-            // name: "DefaultApi",
-            // routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : string.Empty) + "api/{controller}/{id}",
-            // defaults: new { id = RouteParameter.Optional } );
-
-            // config.Formatters.Clear(); config.Formatters.Add(new JsonMediaTypeFormatter());
-            // config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings { ContractResolver = new
-            // DefaultContractResolver() };
             app.UseWebApi(config);
 
             // use Path.Combine to build the path to the filesystem for cross platform compatibility windows uses web\content,

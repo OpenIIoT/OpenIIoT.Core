@@ -127,17 +127,20 @@ namespace OpenIIoT.Core
         /// <summary>
         ///     Gets the value of the 'Security.SessionLength' key from the application's XML configuration file.
         /// </summary>
-        public int SecuritySessionLength => GetSetting<int>("Security.SessionLength", "15");
+        public int SecuritySessionLength => GetSetting<int>("Security.SessionLength", 15);
 
         /// <summary>
         ///     Gets the value of the 'Security.SessionPurgeInterval' key from the application's XML configuration file.
         /// </summary>
-        public int SecuritySessionPurgeInterval => GetSetting<int>("Security.SessionPurgeInterval", "900000");
+        public int SecuritySessionPurgeInterval => GetSetting<int>("Security.SessionPurgeInterval", 900000);
 
         /// <summary>
         ///     Gets a value indicating whether the 'Security.SlidingSessions' value is true in the application's XML configuration file.
         /// </summary>
-        public bool SecuritySlidingSessions => GetSetting<bool>("Security.SlidingSessions", "true");
+        public bool SecuritySlidingSessions => GetSetting<bool>("Security.SlidingSessions", true);
+
+        public int WebPort => GetSetting<int>("Web.Port", 80);
+        public string WebRoot => GetSetting<string>("Web.Root", string.Empty);
 
         #endregion Public Properties
 
@@ -183,7 +186,7 @@ namespace OpenIIoT.Core
         ///     Thrown when an Exception is encountered reading or converting the value of the specified setting.
         /// </exception>
         [ExcludeFromCodeCoverage]
-        private T GetSetting<T>(string key, string defaultSetting)
+        private T GetSetting<T>(string key, T defaultSetting)
         {
             T retVal = default(T);
 
@@ -210,17 +213,19 @@ namespace OpenIIoT.Core
                 if (setting == default(string))
                 {
                     NLog.LogManager.GetCurrentClassLogger().Trace("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
-                    setting = defaultSetting;
+                    retVal = defaultSetting;
                 }
-
-                try
+                else
                 {
-                    TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
-                    retVal = (T)converter.ConvertFromString(setting);
-                }
-                catch (Exception ex)
-                {
-                    throw new XMLConfigurationException($"Failed to convert value supplied for '{key}' to Type {typeof(T).Name}.  See inner Exception for details.", ex);
+                    try
+                    {
+                        TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
+                        retVal = (T)converter.ConvertFromString(setting);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new XMLConfigurationException($"Failed to convert value supplied for '{key}' to Type {typeof(T).Name}.  See inner Exception for details.", ex);
+                    }
                 }
 
                 SettingsCache.Add(key, retVal);

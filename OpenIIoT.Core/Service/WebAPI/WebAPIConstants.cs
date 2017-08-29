@@ -11,7 +11,8 @@ namespace OpenIIoT.Core.Service.WebAPI
     {
         #region Public Fields
 
-        public const string RoutePrefix = "api";
+        public const string APIRoutePrefix = "api";
+        public const string HelpRoutePrefix = "help";
 
         #endregion Public Fields
     }

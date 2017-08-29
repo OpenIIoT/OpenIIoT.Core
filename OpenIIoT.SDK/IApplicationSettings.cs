@@ -118,6 +118,9 @@ namespace OpenIIoT.SDK
         /// </summary>
         bool SecuritySlidingSessions { get; }
 
+        int WebPort { get; }
+        string WebRoot { get; }
+
         #endregion Public Properties
 
         #region Public Methods
