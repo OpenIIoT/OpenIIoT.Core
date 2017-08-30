@@ -7,14 +7,14 @@ using Microsoft.Owin.Hosting;
 using NLog;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Service.WebAPI;
+using OpenIIoT.SDK.Service.WebApi;
 using OpenIIoT.SDK.Service;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
 
 namespace OpenIIoT.Core.Service.WebApi
 {
-    public class WebApiService : IService, IConfigurable<WebAPIServiceConfiguration>
+    public class WebApiService : IService, IConfigurable<WebApiServiceConfiguration>
     {
         #region Internal Fields
 
@@ -22,7 +22,7 @@ namespace OpenIIoT.Core.Service.WebApi
         ///     The configuration for this Service.
         /// </summary>
         /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
-        private static WebAPIServiceConfiguration configuration;
+        private static WebApiServiceConfiguration configuration;
 
         #endregion Internal Fields
 
@@ -53,7 +53,7 @@ namespace OpenIIoT.Core.Service.WebApi
 
         public Dictionary<string, ApiController> ApiControllers { get; private set; }
 
-        public WebAPIServiceConfiguration Configuration { get; private set; }
+        public WebApiServiceConfiguration Configuration { get; private set; }
 
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
@@ -70,7 +70,7 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <summary>
         ///     Provies configuration accessibility to the Owin startup class.
         /// </summary>
-        internal static WebAPIServiceConfiguration StaticConfiguration
+        internal static WebApiServiceConfiguration StaticConfiguration
         {
             get
             {
@@ -92,9 +92,9 @@ namespace OpenIIoT.Core.Service.WebApi
             ConfigurationDefinition retVal = new ConfigurationDefinition();
             retVal.Form = "[\"name\",\"email\",{\"key\":\"comment\",\"type\":\"textarea\",\"placeholder\":\"Make a comment\"},{\"type\":\"submit\",\"style\":\"btn-info\",\"title\":\"OK\"}]";
             retVal.Schema = "{\"type\":\"object\",\"title\":\"Comment\",\"properties\":{\"name\":{\"title\":\"Name\",\"type\":\"string\"},\"email\":{\"title\":\"Email\",\"type\":\"string\",\"pattern\":\"^\\\\S+@\\\\S+$\",\"description\":\"Email will be used for evil.\"},\"comment\":{\"title\":\"Comment\",\"type\":\"string\",\"maxLength\":20,\"validationMessage\":\"Don\'t be greedy!\"}},\"required\":[\"name\",\"email\",\"comment\"]}";
-            retVal.Model = typeof(WebAPIServiceConfiguration);
+            retVal.Model = typeof(WebApiServiceConfiguration);
 
-            WebAPIServiceConfiguration config = new WebAPIServiceConfiguration();
+            WebApiServiceConfiguration config = new WebApiServiceConfiguration();
             config.Port = 80;
             config.Root = string.Empty;
 
@@ -117,7 +117,7 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             Result retVal = new Result();
 
-            IResult<WebAPIServiceConfiguration> fetchResult = manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebAPIServiceConfiguration>(GetType());
+            IResult<WebApiServiceConfiguration> fetchResult = manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebApiServiceConfiguration>(GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -127,17 +127,17 @@ namespace OpenIIoT.Core.Service.WebApi
             else
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
-                IResult<WebAPIServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstance<WebAPIServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                IResult<WebApiServiceConfiguration> createResult = manager.GetManager<IConfigurationManager>().Configuration.AddInstance<WebApiServiceConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     Configure(createResult.ReturnValue);
                 }
             }
 
-            return Configure(manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebAPIServiceConfiguration>(this.GetType()).ReturnValue);
+            return Configure(manager.GetManager<IConfigurationManager>().Configuration.GetInstance<WebApiServiceConfiguration>(this.GetType()).ReturnValue);
         }
 
-        public IResult Configure(WebAPIServiceConfiguration configuration)
+        public IResult Configure(WebApiServiceConfiguration configuration)
         {
             Configuration = configuration;
             StaticConfiguration = Configuration;

@@ -43,7 +43,7 @@ using System;
 using System.Security.Claims;
 using Microsoft.Owin.Security;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Service.WebAPI;
+using OpenIIoT.SDK.Service.WebApi;
 
 namespace OpenIIoT.Core.Security
 {
