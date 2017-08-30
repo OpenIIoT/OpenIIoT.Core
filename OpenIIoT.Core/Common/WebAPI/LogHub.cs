@@ -7,7 +7,7 @@ using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Service.WebAPI;
 
-namespace OpenIIoT.Core.Common.WebAPI
+namespace OpenIIoT.Core.Common.WebApi
 {
     /// <summary>
     ///     The LogHub provides realtime read access to logs.

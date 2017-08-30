@@ -11,7 +11,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.Core.Service.WebApi;
 
-namespace OpenIIoT.Core.Configuration.WebAPI
+namespace OpenIIoT.Core.Configuration.WebApi
 {
     public class ConfigurationController : ApiBaseController
     {

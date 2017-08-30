@@ -55,7 +55,7 @@ using OpenIIoT.SDK.Packaging;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Packaging.WebAPI
+namespace OpenIIoT.Core.Packaging.WebApi
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.
