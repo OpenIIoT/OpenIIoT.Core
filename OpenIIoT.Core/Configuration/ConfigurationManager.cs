@@ -225,7 +225,7 @@ namespace OpenIIoT.Core.Configuration
         public IResult SaveConfiguration()
         {
             IDictionary<string, IDictionary<string, object>> instances = Configuration.Instances.ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            return ConfigurationLoader.Save(instances, Settings.ConfigurationFileName);
+            return ConfigurationLoader.Save(instances, Settings.ConfigurationFilename);
         }
 
         #endregion Public Methods
@@ -294,25 +294,27 @@ namespace OpenIIoT.Core.Configuration
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            logger.Info("Loading application configuration from '" + Settings.ConfigurationFileName + "'...");
-            IResult<IDictionary<string, IDictionary<string, object>>> loadResult = ConfigurationLoader.Load(Settings.ConfigurationFileName);
+            string filename = Settings.ConfigurationFilename;
+
+            logger.Info("Loading application configuration from '" + filename + "'...");
+            IResult<IDictionary<string, IDictionary<string, object>>> loadResult = ConfigurationLoader.Load(filename);
 
             if (loadResult.ResultCode == ResultCode.Failure)
             {
-                logger.Info("The configuration file '" + Settings.ConfigurationFileName + "' could not be found.  Rebuilding...");
+                logger.Info("The configuration file '" + filename + "' could not be found.  Rebuilding...");
 
                 loadResult = ConfigurationLoader.BuildNew();
                 logger.Info("New configuration built.");
 
                 // try to save the new configuration to file
-                logger.Info("Saving the new configuration to '" + Settings.ConfigurationFileName + "'...");
-                IResult saveResult = ConfigurationLoader.Save(loadResult.ReturnValue, Settings.ConfigurationFileName);
+                logger.Info("Saving the new configuration to '" + filename + "'...");
+                IResult saveResult = ConfigurationLoader.Save(loadResult.ReturnValue, filename);
 
                 if (saveResult.ResultCode != ResultCode.Failure)
                 {
                     // the file saved properly. print the result and a final confirmation.
                     saveResult.LogResult(logger, "SaveConfiguration");
-                    logger.Info("Saved the new configuration to '" + Settings.ConfigurationFileName + "'.");
+                    logger.Info("Saved the new configuration to '" + filename + "'.");
                 }
                 else
                 {

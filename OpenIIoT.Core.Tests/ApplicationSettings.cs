@@ -113,7 +113,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void ConfigurationFileName()
         {
-            string setting = Settings.ConfigurationFileName;
+            string setting = Settings.ConfigurationFilename;
             Assert.NotNull(setting);
             Assert.NotEqual(string.Empty, setting);
         }
