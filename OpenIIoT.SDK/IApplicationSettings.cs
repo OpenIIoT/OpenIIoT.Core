@@ -56,7 +56,7 @@ namespace OpenIIoT.SDK
         /// <summary>
         ///     Gets the value of the 'Configuration.Filename' key from the application's XML configuration file.
         /// </summary>
-        string ConfigurationFileName { get; }
+        string ConfigurationFilename { get; }
 
         /// <summary>
         ///     Gets the value of the 'Directory.Data' key from the application's XML configuration file.
