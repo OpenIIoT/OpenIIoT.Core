@@ -139,9 +139,6 @@ namespace OpenIIoT.Core
         /// </summary>
         public bool SecuritySlidingSessions => GetSetting<bool>("Security.SlidingSessions", true);
 
-        public int WebPort => GetSetting<int>("Web.Port", 80);
-        public string WebRoot => GetSetting<string>("Web.Root", string.Empty);
-
         #endregion Public Properties
 
         #region Private Properties

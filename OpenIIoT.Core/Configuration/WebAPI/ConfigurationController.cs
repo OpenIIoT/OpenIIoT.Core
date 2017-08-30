@@ -9,7 +9,7 @@ using OpenIIoT.Core.Configuration;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
-using OpenIIoT.Core.Service.WebAPI;
+using OpenIIoT.Core.Service.WebApi;
 
 namespace OpenIIoT.Core.Configuration.WebAPI
 {

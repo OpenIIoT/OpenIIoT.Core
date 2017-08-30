@@ -9,9 +9,9 @@ using OpenIIoT.Core.Model;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
-using OpenIIoT.Core.Service.WebAPI;
+using OpenIIoT.Core.Service.WebApi;
 
-namespace OpenIIoT.Core.Model.WebAPI
+namespace OpenIIoT.Core.Model.WebApi
 {
     public class ReadController : ApiBaseController
     {

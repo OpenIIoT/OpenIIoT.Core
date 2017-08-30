@@ -225,7 +225,6 @@
     <Compile Include="Security\SessionEventArgs.cs" />
     <Compile Include="Security\User.cs" />
     <Compile Include="Security\WebAPI\SecurityController.cs" />
-    <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />

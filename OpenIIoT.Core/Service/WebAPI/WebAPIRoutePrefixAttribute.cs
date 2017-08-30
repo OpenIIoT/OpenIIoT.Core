@@ -80,7 +80,7 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             get
             {
-                string root = Settings.WebRoot.TrimEnd('/');
+                string root = WebApiService.StaticConfiguration.Root.TrimEnd('/');
                 return $"{root}/{WebApiConstants.ApiRoutePrefix}/{base.Prefix}".TrimStart('/');
             }
         }

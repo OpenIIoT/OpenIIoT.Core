@@ -46,6 +46,10 @@ using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Security;
 using OpenIIoT.SDK;
+using OpenIIoT.Core.Service;
+using OpenIIoT.SDK.Service;
+using System.Diagnostics;
+using System;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -70,7 +74,7 @@ namespace OpenIIoT.Core.Service.WebApi
         /// </summary>
         /// <param name="next">The next middleware in the chain.</param>
         public AuthMiddleware(OwinMiddleware next)
-        : base(next)
+            : base(next)
         {
         }
 
@@ -97,9 +101,7 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <returns>The Task context under which the method is invoked.</returns>
         public async override Task Invoke(IOwinContext context)
         {
-            logger.EnterMethod();
-
-            string path = $"{Manager.Settings.WebRoot}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/');
+            string path = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/');
             path = $"/{path}";
 
             PathString apiPath = new PathString(path);
@@ -124,7 +126,6 @@ namespace OpenIIoT.Core.Service.WebApi
             }
 
             await Next.Invoke(context);
-            logger.ExitMethod();
         }
 
         #endregion Public Methods

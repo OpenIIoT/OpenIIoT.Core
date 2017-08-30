@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web.Http;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
@@ -6,20 +9,9 @@ using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Service.WebAPI;
 using Owin;
 using Swashbuckle.Application;
-using System;
-using Utility.OperationResult;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using NLog.xLogger;
-using NLog;
-using OpenIIoT.SDK.Common;
-using System.IO;
-using System.Net;
-using System.Net.Http;
-using System.Linq;
-using System.Net.Http.Headers;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -33,7 +25,6 @@ namespace OpenIIoT.Core.Service.WebApi
 
         #region Private Properties
 
-        public static string Authority { get; private set; }
         private WebAPIServiceConfiguration WebServiceConfiguration { get; set; }
 
         #endregion Private Properties
@@ -42,8 +33,7 @@ namespace OpenIIoT.Core.Service.WebApi
 
         public void Configuration(IAppBuilder app)
         {
-            WebServiceConfiguration = WebApiService.GetConfiguration;
-            string webRoot = manager.Settings.WebRoot.TrimStart('/').TrimEnd('/');
+            string webRoot = WebApiService.StaticConfiguration.Root.TrimStart('/').TrimEnd('/');
 
             string signalRPath = $"/{webRoot}/signalr";
             string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');

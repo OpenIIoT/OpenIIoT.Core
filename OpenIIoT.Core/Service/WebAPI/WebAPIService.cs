@@ -7,6 +7,8 @@ using Microsoft.Owin.Hosting;
 using NLog;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Service.WebAPI;
+using OpenIIoT.SDK.Service;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
 
@@ -20,7 +22,6 @@ namespace OpenIIoT.Core.Service.WebApi
         ///     The configuration for this Service.
         /// </summary>
         /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
-        [ThreadStatic]
         private static WebAPIServiceConfiguration configuration;
 
         #endregion Internal Fields
@@ -69,7 +70,7 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <summary>
         ///     Provies configuration accessibility to the Owin startup class.
         /// </summary>
-        internal static WebAPIServiceConfiguration GetConfiguration
+        internal static WebAPIServiceConfiguration StaticConfiguration
         {
             get
             {
@@ -139,12 +140,13 @@ namespace OpenIIoT.Core.Service.WebApi
         public IResult Configure(WebAPIServiceConfiguration configuration)
         {
             Configuration = configuration;
-            GetConfiguration = configuration;
+            StaticConfiguration = Configuration;
             return new Result();
         }
 
         public IResult SaveConfiguration()
         {
+            StaticConfiguration = Configuration;
             return manager.GetManager<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration);
         }
 
@@ -188,16 +190,5 @@ namespace OpenIIoT.Core.Service.WebApi
         }
 
         #endregion Public Methods
-    }
-
-    public class WebAPIServiceConfiguration
-    {
-        #region Public Properties
-
-        public int Port { get; set; }
-
-        public string Root { get; set; }
-
-        #endregion Public Properties
     }
 }

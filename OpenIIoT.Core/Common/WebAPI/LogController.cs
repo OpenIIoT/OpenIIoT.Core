@@ -8,7 +8,7 @@ using NLog.RealtimeLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using System.Net;
-using OpenIIoT.Core.Service.WebAPI;
+using OpenIIoT.Core.Service.WebApi;
 
 namespace OpenIIoT.Core.Common.WebAPI
 {
