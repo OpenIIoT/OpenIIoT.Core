@@ -46,6 +46,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
 using OpenIIoT.Core.Common.Exceptions;
+using OpenIIoT.Core.Configuration;
 using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core
@@ -53,6 +54,17 @@ namespace OpenIIoT.Core
     /// <summary>
     ///     Application settings, sourced from App.config.
     /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         This class contains application settings that:
+    ///         <list type="bullet">
+    ///             <item>Are low level (pertaining to the application at the OS/framework level)</item>
+    ///             <item>Would generally require an application restart if changed</item>
+    ///             <item>Contain values that need to be retrieved prior to the startup of the <see cref="ConfigurationManager"/></item>
+    ///         </list>
+    ///     </para>
+    ///     <para>All other settings should be stored in the Configuration for their respective Managers.</para>
+    /// </remarks>
     public class ApplicationSettings : IApplicationSettings
     {
         #region Public Constructors
@@ -68,6 +80,8 @@ namespace OpenIIoT.Core
         #endregion Public Constructors
 
         #region Public Properties
+
+        // TODO: replace strings with constants (except for setting keys)
 
         /// <summary>
         ///     Gets the value of the "Application.InstanceName' key from the application's XML configuration file.
