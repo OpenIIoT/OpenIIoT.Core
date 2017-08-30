@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
-    public static class WebAPIConstants
+    public static class WebApiConstants
     {
         #region Public Fields
 
-        public const string RoutePrefix = "api";
+        public const string ApiRoutePrefix = "api";
+        public const string HelpRoutePrefix = "help";
 
         #endregion Public Fields
     }

@@ -7,12 +7,14 @@ using Microsoft.Owin.Hosting;
 using NLog;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Service.WebAPI;
+using OpenIIoT.SDK.Service;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
-    public class WebAPIService : IService, IConfigurable<WebAPIServiceConfiguration>
+    public class WebApiService : IService, IConfigurable<WebAPIServiceConfiguration>
     {
         #region Internal Fields
 
@@ -20,14 +22,13 @@ namespace OpenIIoT.Core.Service.WebAPI
         ///     The configuration for this Service.
         /// </summary>
         /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
-        [ThreadStatic]
         private static WebAPIServiceConfiguration configuration;
 
         #endregion Internal Fields
 
         #region Private Fields
 
-        private static WebAPIService instance;
+        private static WebApiService instance;
 
         private static Logger logger = LogManager.GetCurrentClassLogger();
 
@@ -39,7 +40,7 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         #region Private Constructors
 
-        private WebAPIService(ApplicationManager manager)
+        private WebApiService(ApplicationManager manager)
         {
             this.manager = manager;
             Hubs = new Dictionary<string, Hub>();
@@ -69,7 +70,7 @@ namespace OpenIIoT.Core.Service.WebAPI
         /// <summary>
         ///     Provies configuration accessibility to the Owin startup class.
         /// </summary>
-        internal static WebAPIServiceConfiguration GetConfiguration
+        internal static WebAPIServiceConfiguration StaticConfiguration
         {
             get
             {
@@ -102,11 +103,11 @@ namespace OpenIIoT.Core.Service.WebAPI
             return retVal;
         }
 
-        public static WebAPIService Instance(ApplicationManager manager)
+        public static WebApiService Instance(ApplicationManager manager)
         {
             if (instance == null)
             {
-                instance = new WebAPIService(manager);
+                instance = new WebApiService(manager);
             }
 
             return instance;
@@ -139,12 +140,13 @@ namespace OpenIIoT.Core.Service.WebAPI
         public IResult Configure(WebAPIServiceConfiguration configuration)
         {
             Configuration = configuration;
-            GetConfiguration = configuration;
+            StaticConfiguration = Configuration;
             return new Result();
         }
 
         public IResult SaveConfiguration()
         {
+            StaticConfiguration = Configuration;
             return manager.GetManager<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration);
         }
 
@@ -188,16 +190,5 @@ namespace OpenIIoT.Core.Service.WebAPI
         }
 
         #endregion Public Methods
-    }
-
-    public class WebAPIServiceConfiguration
-    {
-        #region Public Properties
-
-        public int Port { get; set; }
-
-        public string Root { get; set; }
-
-        #endregion Public Properties
     }
 }

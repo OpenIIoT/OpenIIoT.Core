@@ -1,6 +1,6 @@
 ﻿using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Service
+namespace OpenIIoT.SDK.Service
 {
     public interface IService
     {

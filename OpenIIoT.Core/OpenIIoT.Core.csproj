@@ -191,6 +191,7 @@
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
+    <Compile Include="Configuration\ConfigurationConstants.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
@@ -217,6 +218,7 @@
     <Compile Include="ApplicationSettings.cs" />
     <Compile Include="Security\ISecurityManager.cs" />
     <Compile Include="Security\Role.cs" />
+    <Compile Include="Security\SecurityConstants.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
     <Compile Include="Security\Session.cs" />
@@ -225,7 +227,6 @@
     <Compile Include="Security\SessionEventArgs.cs" />
     <Compile Include="Security\User.cs" />
     <Compile Include="Security\WebAPI\SecurityController.cs" />
-    <Compile Include="Service\IService.cs" />
     <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />
@@ -242,13 +243,14 @@
     <Compile Include="Configuration\WebAPI\ConfigurationController.cs" />
     <Compile Include="Common\WebAPI\LogController.cs" />
     <Compile Include="Common\WebAPI\LogHub.cs" />
-    <Compile Include="Service\WebAPI\ApiBaseController.cs" />
-    <Compile Include="Service\WebAPI\AuthMiddleware.cs" />
-    <Compile Include="Service\WebAPI\LogMiddleware.cs" />
-    <Compile Include="Service\WebAPI\MimeTypesOperationFilter.cs" />
-    <Compile Include="Service\WebAPI\OwinStartup.cs" />
-    <Compile Include="Service\WebAPI\WebAPIConstants.cs" />
-    <Compile Include="Service\WebAPI\WebAPIService.cs" />
+    <Compile Include="Service\WebApi\ApiBaseController.cs" />
+    <Compile Include="Service\WebApi\AuthMiddleware.cs" />
+    <Compile Include="Service\WebApi\WebApiRoutePrefixAttribute.cs" />
+    <Compile Include="Service\WebApi\LogMiddleware.cs" />
+    <Compile Include="Service\WebApi\MimeTypesOperationFilter.cs" />
+    <Compile Include="Service\WebApi\OwinStartup.cs" />
+    <Compile Include="Service\WebApi\WebApiConstants.cs" />
+    <Compile Include="Service\WebApi\WebApiService.cs" />
     <Compile Include="WindowsService.cs">
       <SubType>Component</SubType>
     </Compile>

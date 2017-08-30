@@ -7,10 +7,12 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
 using OpenIIoT.Core.Common;
+using OpenIIoT.Core.Service.WebApi;
+using OpenIIoT.SDK.Service;
 
 namespace OpenIIoT.Core.Service
 {
-    public class ServiceManager : Manager, IManager
+    public class ServiceManager : Manager, IServiceManager
     {
         #region Private Fields
 
@@ -42,8 +44,8 @@ namespace OpenIIoT.Core.Service
         #region Public Properties
 
         public Dictionary<string, IService> Services { get; private set; }
-
         public Dictionary<string, Type> ServiceTypes { get; private set; }
+        public WebApiService WebApi { get; set; }
 
         #endregion Public Properties
 
@@ -167,8 +169,8 @@ namespace OpenIIoT.Core.Service
             try
             {
                 logger.Trace("Registering Web Services...");
-                retVal.ReturnValue.Add("Web Services", typeof(WebAPI.WebAPIService));
-                configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(WebAPI.WebAPIService));
+                retVal.ReturnValue.Add("Web Services", typeof(WebApi.WebApiService));
+                configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(WebApi.WebApiService));
             }
             catch (Exception ex)
             {

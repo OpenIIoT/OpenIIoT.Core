@@ -48,7 +48,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using OpenIIoT.Core.Service.WebAPI;
+using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Packaging;
@@ -61,7 +61,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
     ///     Handles the API methods for AppPackages.
     /// </summary>
     [Authorize]
-    [RoutePrefix(WebAPIConstants.RoutePrefix)]
+    [WebApiRoutePrefix("v1/package")]
     public class PackageController : ApiBaseController
     {
         #region Variables
@@ -91,7 +91,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
         /// <param name="fqn">The Fully Qualified Name of the Package to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         [HttpDelete]
-        [Route("v1/package/{fqn}")]
+        [Route("{fqn}")]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified Fully Qualified Name could not be found.")]
@@ -133,7 +133,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
             }
         }
 
-        [Route("v1/{fqn}/download")]
+        [Route("{fqn}/download")]
         [HttpGet]
         public async Task<HttpResponseMessage> DownloadPackage(string fqn)
         {
@@ -170,7 +170,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to return.</param>
         /// <returns>The matching Package.</returns>
-        [Route("v1/package/{fqn}")]
+        [Route("{fqn}")]
         [HttpGet]
         public async Task<HttpResponseMessage> GetPackage(string fqn)
         {
@@ -186,7 +186,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
         ///     Returns a list of Packages available for installation.
         /// </summary>
         /// <returns>A Result containing the result of the operation and a list of Packages.</returns>
-        [Route("v1/package")]
+        [Route("")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(List<Package>))]
         public HttpResponseMessage GetPackages()
@@ -196,7 +196,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
 
-        [Route("api/package/{fqn}")]
+        [Route("{fqn}")]
         [HttpPut]
         public async Task<HttpResponseMessage> InstallPackage(string fqn, [FromBody]PackageInstallationOptions options)
         {
@@ -210,7 +210,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
         /// </summary>
         /// <returns>The reloaded list of available Packages.</returns>
         [Authorize(Roles = "Administrator")]
-        [Route("api/package/scan")]
+        [Route("scan")]
         [HttpGet]
         public async Task<HttpResponseMessage> ScanPackages()
         {
@@ -225,7 +225,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
         /// <param name="data">The base 64 encoded binary package data.</param>
         /// <returns>A Result containing the result of the operation and the created Package.</returns>
         [Authorize]
-        [Route("v1/package")]
+        [Route("")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(Package))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.", typeof(string))]
@@ -263,7 +263,7 @@ namespace OpenIIoT.Core.Packaging.WebAPI
             }
         }
 
-        [Route("api/package/{fqn}/verify")]
+        [Route("{fqn}/verify")]
         [HttpGet]
         public async Task<HttpResponseMessage> VerifyPackage(string fqn, string publicKey = "")
         {

@@ -15,9 +15,9 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
 using Utility.OperationResult;
 using OpenIIoT.Core.Service.Web;
-using OpenIIoT.Core.Service.WebAPI;
+using OpenIIoT.Core.Service.WebApi;
 
-namespace OpenIIoT.Core.Plugin.WebAPI
+namespace OpenIIoT.Core.Plugin.WebApi
 {
     /// <summary>
     ///     Handles the API methods for AppPackages.

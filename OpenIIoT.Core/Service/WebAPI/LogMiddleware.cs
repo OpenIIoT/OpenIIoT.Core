@@ -4,7 +4,7 @@ using NLog.xLogger;
 using System;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     public class LogMiddleware : OwinMiddleware
     {

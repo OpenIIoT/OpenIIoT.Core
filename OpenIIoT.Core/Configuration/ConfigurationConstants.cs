@@ -1,15 +1,6 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████                                                              ▄▄▄▄███▄▄▄▄
-      █     ███    ███                                                            ▄██▀▀▀███▀▀▀██▄
-      █     ███    █▀     ▄█████  ▄██████ ██   █     █████  █      ██    ▄█   ▄   ███   ███   ███   ▄█████  ██▄▄▄▄    ▄█████     ▄████▄     ▄█████    █████
-      █     ███          ██   █  ██    ██ ██   ██   ██  ██ ██  ▀███████▄ ██   █▄  ███   ███   ███   ██   ██ ██▀▀▀█▄   ██   ██   ██    ▀    ██   █    ██  ██
-      █   ▀███████████  ▄██▄▄    ██    ▀  ██   ██  ▄██▄▄█▀ ██▌     ██  ▀ ▀▀▀▀▀██  ███   ███   ███   ██   ██ ██   ██   ██   ██  ▄██        ▄██▄▄     ▄██▄▄█▀
-      █            ███ ▀▀██▀▀    ██    ▄  ██   ██ ▀███████ ██      ██    ▄█   ██  ███   ███   ███ ▀████████ ██   ██ ▀████████ ▀▀██ ███▄  ▀▀██▀▀    ▀███████
-      █      ▄█    ███   ██   █  ██    ██ ██   ██   ██  ██ ██      ██    ██   ██  ███   ███   ███   ██   ██ ██   ██   ██   ██   ██    ██   ██   █    ██  ██
-      █    ▄████████▀    ███████ ██████▀  ██████    ██  ██ █      ▄██▀    █████    ▀█   ███   █▀    ██   █▀  █   █    ██   █▀   ██████▀    ███████   ██  ██
-      █
       █   ▄████████
       █   ███    ███
       █   ███    █▀   ██████  ██▄▄▄▄     ▄█████  █     ▄████▄  ██   █     █████   ▄█████      ██     █   ██████  ██▄▄▄▄
@@ -19,10 +10,19 @@
       █   ███    ███ ██    ██ ██   ██   ██      ██    ██    ██ ██   ██   ██  ██   ██   ██     ██    ██  ██    ██ ██   ██
       █   ████████▀   ██████   █   █    ██      █     ██████▀  ██████    ██  ██   ██   █▀    ▄██▀   █    ██████   █   █
       █
+      █   ▄████████
+      █   ███    ███
+      █   ███    █▀   ██████  ██▄▄▄▄    ▄█████     ██      ▄█████  ██▄▄▄▄      ██      ▄█████
+      █   ███        ██    ██ ██▀▀▀█▄   ██  ▀  ▀███████▄   ██   ██ ██▀▀▀█▄ ▀███████▄   ██  ▀
+      █   ███        ██    ██ ██   ██   ██         ██  ▀   ██   ██ ██   ██     ██  ▀   ██
+      █   ███    █▄  ██    ██ ██   ██ ▀███████     ██    ▀████████ ██   ██     ██    ▀███████
+      █   ███    ███ ██    ██ ██   ██    ▄  ██     ██      ██   ██ ██   ██     ██       ▄  ██
+      █   ████████▀   ██████   █   █   ▄████▀     ▄██▀     ██   █▀  █   █     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The configuration for the SecurityManager.
+      █  Constants for the Configuration namespace.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,54 +48,20 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.Core.Configuration
 {
     /// <summary>
-    ///     The configuration for the SecurityManager.
+    ///     Constants for the <see cref="Configuration"/> namespace.
     /// </summary>
-    public class SecurityManagerConfiguration
+    public static class ConfigurationConstants
     {
-        #region Public Constructors
+        #region Public Fields
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SecurityManagerConfiguration"/> class.
+        ///     The default Configuration filename.
         /// </summary>
-        public SecurityManagerConfiguration()
-        {
-            Users = new List<User>();
-        }
+        public const string DefaultConfigurationFilename = "OpenIIoT.json";
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Session"/> length.
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        public int SessionLength { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the interval at which expired <see cref="Session"/> s are purged.
-        /// </summary>
-        [JsonProperty(Order = 3)]
-        public int SessionPurgeInterval { get; set; }
-
-        /// <summary>
-        ///     Gets or sets a value indicating whether sliding <see cref="Session"/> s are to be used.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        public bool SlidingSessions { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the list of configured <see cref="User"/> s.
-        /// </summary>
-        [JsonProperty(Order = 4)]
-        public IList<User> Users { get; set; }
-
-        #endregion Public Properties
+        #endregion Public Fields
     }
 }

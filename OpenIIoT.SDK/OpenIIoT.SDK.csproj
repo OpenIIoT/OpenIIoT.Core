@@ -114,6 +114,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Service\IService.cs" />
+    <Compile Include="Service\IServiceManager.cs" />
     <Compile Include="Service\WebAPI\HubHelper.cs" />
     <Compile Include="Service\WebAPI\IHub.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />
@@ -150,6 +152,8 @@
     <Compile Include="Plugin\IPluginManager.cs" />
     <Compile Include="Plugin\PluginType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Service\WebAPI\IWebAPIService.cs" />
+    <Compile Include="Service\WebAPI\WebApiServiceConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

@@ -1,4 +1,7 @@
-﻿using System.Web.Http;
+﻿using System.Linq;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using System.Web.Http;
 using Microsoft.AspNet.SignalR;
 using Microsoft.Owin;
 using Microsoft.Owin.Cors;
@@ -6,19 +9,11 @@ using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK;
+using OpenIIoT.SDK.Service.WebAPI;
 using Owin;
 using Swashbuckle.Application;
-using System;
-using Utility.OperationResult;
-using System.Runtime.Serialization;
-using System.Threading.Tasks;
-using NLog.xLogger;
-using NLog;
-using OpenIIoT.SDK.Common;
-using System.IO;
-using System.Net;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     public class OwinStartup
     {
@@ -38,40 +33,47 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         public void Configuration(IAppBuilder app)
         {
-            WebServiceConfiguration = WebAPIService.GetConfiguration;
-            string webRoot = WebServiceConfiguration.Root;
+            string webRoot = WebApiService.StaticConfiguration.Root.TrimStart('/').TrimEnd('/');
+
+            string signalRPath = $"/{webRoot}/signalr";
+            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
+            string swaggerPath = $"{helpPath}/docs/{{apiVersion}}";
+            string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
+            string helpShortcut = $"{helpPath}/ui/index";
 
             app.UseCors(CorsOptions.AllowAll);
 
             app.Use(typeof(LogMiddleware));
             app.Use(typeof(AuthMiddleware));
 
-            app.MapSignalR((webRoot.Length > 0 ? "/" : string.Empty) + webRoot + "/signalr", new HubConfiguration());
+            app.MapSignalR(signalRPath, new HubConfiguration());
 
             HttpConfiguration config = new HttpConfiguration();
             config.MapHttpAttributeRoutes();
 
             config
-                .EnableSwagger(c =>
+                .EnableSwagger(swaggerPath, c =>
                 {
+                    c.RootUrl(req => ComputeHostAsSeenByOriginalClient(req));
                     c.SingleApiVersion("v1", manager.ProductName);
                     c.IncludeXmlComments($"{manager.ProductName}.XML");
                     c.DescribeAllEnumsAsStrings();
                     c.OperationFilter<MimeTypeOperationFilter>();
                 })
-                .EnableSwaggerUi(c =>
+                .EnableSwaggerUi(swaggerUiPath, c =>
                 {
                     c.EnableApiKeySupport("X-ApiKey", "header");
+                    c.DisableValidator();
                 });
 
-            // config.Routes.MapHttpRoute(
-            // name: "DefaultApi",
-            // routeTemplate: webRoot + (webRoot.Length > 0 ? "/" : string.Empty) + "api/{controller}/{id}",
-            // defaults: new { id = RouteParameter.Optional } );
+            config
+                .Routes.MapHttpRoute(
+                    name: "HelpShortcut",
+                    routeTemplate: helpPath,
+                    defaults: null,
+                    constraints: null,
+                    handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, helpShortcut));
 
-            // config.Formatters.Clear(); config.Formatters.Add(new JsonMediaTypeFormatter());
-            // config.Formatters.JsonFormatter.SerializerSettings = new JsonSerializerSettings { ContractResolver = new
-            // DefaultContractResolver() };
             app.UseWebApi(config);
 
             // use Path.Combine to build the path to the filesystem for cross platform compatibility windows uses web\content,
@@ -79,10 +81,52 @@ namespace OpenIIoT.Core.Service.WebAPI
             app.UseFileServer(new FileServerOptions()
             {
                 FileSystem = new PhysicalFileSystem(manager.GetManager<PlatformManager>().Platform.Directories.Web),
-                RequestPath = PathString.FromUriComponent((webRoot.Length > 0 ? "/" : string.Empty) + webRoot),
+                RequestPath = PathString.FromUriComponent($"/{webRoot}"),
             });
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        /// <example>
+        ///     <![CDATA[ <rule name="openiiot" stopProcessing="true"> <match url = "openiiot(/.*)" /> <serverVariables> <set
+        ///     name="HTTP_X_Forwarded_Host" value="whatnet.us" /> <set name = "HTTP_X_Forwarded_Proto" value="http" />
+        ///     </serverVariables> <action type = "Rewrite" url="http://sandbox/{R:0}" /> </rule> ]]>
+        /// </example>
+        private static string ComputeHostAsSeenByOriginalClient(HttpRequestMessage req)
+        {
+            string authority = req.RequestUri.Authority;
+            string scheme = req.RequestUri.Scheme;
+
+            HttpRequestHeaders headers = req.Headers;
+
+            if (req.Headers.Contains("X-Forwarded-Host"))
+            {
+                string xForwardedHost = req.Headers.GetValues("X-Forwarded-Host").First();
+                string firstForwardedHost = xForwardedHost.Split(',')[0];
+
+                authority = firstForwardedHost;
+            }
+
+            if (req.Headers.Contains("X-Forwarded-Proto"))
+            {
+                var xForwardedProto = req.Headers.GetValues("X-Forwarded-Proto").First();
+                if (xForwardedProto.IndexOf(",") != -1)
+                {
+                    xForwardedProto = xForwardedProto.Split(',')[0];
+                }
+
+                scheme = xForwardedProto;
+            }
+
+            return scheme + "://" + authority;
+        }
+
+        #endregion Private Methods
     }
 }

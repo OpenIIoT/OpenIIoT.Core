@@ -56,7 +56,7 @@ namespace OpenIIoT.SDK
         /// <summary>
         ///     Gets the value of the 'Configuration.Filename' key from the application's XML configuration file.
         /// </summary>
-        string ConfigurationFileName { get; }
+        string ConfigurationFilename { get; }
 
         /// <summary>
         ///     Gets the value of the 'Directory.Data' key from the application's XML configuration file.
@@ -92,31 +92,6 @@ namespace OpenIIoT.SDK
         ///     Gets the value of the 'Directory.Web' key from the application's XML configuration file.
         /// </summary>
         string DirectoryWeb { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Security.DefaultUser' key from the application's XML configuration file.
-        /// </summary>
-        string SecurityDefaultUser { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Security.DefaultUserPasswordHash' key from the application's XML configuration file.
-        /// </summary>
-        string SecurityDefaultUserPasswordHash { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Security.SessionLength' key from the application's XML configuration file.
-        /// </summary>
-        int SecuritySessionLength { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Security.SessionPurgeInterval' key from the application's XML configuration file.
-        /// </summary>
-        int SecuritySessionPurgeInterval { get; }
-
-        /// <summary>
-        ///     Gets a value indicating whether the 'Security.SlidingSessions' value is true in the application's XML configuration file.
-        /// </summary>
-        bool SecuritySlidingSessions { get; }
 
         #endregion Public Properties
 

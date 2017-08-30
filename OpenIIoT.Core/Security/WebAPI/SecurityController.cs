@@ -54,7 +54,7 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Web.Http;
-using OpenIIoT.Core.Service.WebAPI;
+using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using Swashbuckle.Swagger.Annotations;
@@ -66,7 +66,7 @@ namespace OpenIIoT.Core.Security.WebAPI
     ///     WebAPI Controller for the Security namespace.
     /// </summary>
     [Authorize]
-    [RoutePrefix(WebAPIConstants.RoutePrefix)]
+    [WebApiRoutePrefix("v1/security")]
     public class SecurityController : ApiBaseController
     {
         #region Variables
@@ -93,7 +93,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// <param name="role">The Role for the new User.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
-        [Route("v1/security/user")]
+        [Route("user")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The User was created.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
@@ -144,7 +144,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// <param name="name">The name of the User to delete.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpDelete]
-        [Route("v1/security/user/{name}")]
+        [Route("user/{name}")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The User was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
@@ -189,7 +189,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("v1/security/role")]
+        [Route("role")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Role>))]
         public HttpResponseMessage GetRoles()
@@ -202,7 +202,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("v1/security/session")]
+        [Route("session")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
         public HttpResponseMessage GetSessions()
@@ -215,7 +215,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("v1/security/user")]
+        [Route("user")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<User>))]
         public HttpResponseMessage GetUsers()
@@ -230,7 +230,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// <param name="password">The password with which to authenticate the user.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
-        [Route("v1/security/login")]
+        [Route("login")]
         [AllowAnonymous]
         [SwaggerResponse(HttpStatusCode.OK, "The login was successful.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
@@ -270,7 +270,7 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
-        [Route("v1/security/logout")]
+        [Route("logout")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The logout was successful.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "The logout failed.", typeof(Result))]
@@ -300,8 +300,9 @@ namespace OpenIIoT.Core.Security.WebAPI
         /// <param name="name">The name of the User to update.</param>
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
+        /// <returns>An HTTP response message.</returns>
         [HttpPut]
-        [Route("v1/security/user/{name}")]
+        [Route("user/{name}")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]

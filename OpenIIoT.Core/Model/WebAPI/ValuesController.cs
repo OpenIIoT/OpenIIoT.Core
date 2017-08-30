@@ -1,8 +1,8 @@
-﻿using OpenIIoT.Core.Service.WebAPI;
+﻿using OpenIIoT.Core.Service.WebApi;
 using System.Collections.Generic;
 using System.Web.Http;
 
-namespace OpenIIoT.Core.Service.Web.WebAPI
+namespace OpenIIoT.Core.Service.Web.WebApi
 {
     public class ValuesController : ApiBaseController
     {

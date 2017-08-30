@@ -46,8 +46,12 @@ using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Security;
 using OpenIIoT.SDK;
+using OpenIIoT.Core.Service;
+using OpenIIoT.SDK.Service;
+using System.Diagnostics;
+using System;
 
-namespace OpenIIoT.Core.Service.WebAPI
+namespace OpenIIoT.Core.Service.WebApi
 {
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.
@@ -70,7 +74,7 @@ namespace OpenIIoT.Core.Service.WebAPI
         /// </summary>
         /// <param name="next">The next middleware in the chain.</param>
         public AuthMiddleware(OwinMiddleware next)
-        : base(next)
+            : base(next)
         {
         }
 
@@ -78,10 +82,12 @@ namespace OpenIIoT.Core.Service.WebAPI
 
         #region Private Properties
 
+        private IApplicationManager Manager => ApplicationManager.GetInstance();
+
         /// <summary>
         ///     Gets the ISecurityManager instance for the application.
         /// </summary>
-        private ISecurityManager SecurityManager => ApplicationManager.GetInstance().GetManager<ISecurityManager>();
+        private ISecurityManager SecurityManager => Manager.GetManager<ISecurityManager>();
 
         #endregion Private Properties
 
@@ -95,9 +101,10 @@ namespace OpenIIoT.Core.Service.WebAPI
         /// <returns>The Task context under which the method is invoked.</returns>
         public async override Task Invoke(IOwinContext context)
         {
-            logger.EnterMethod();
+            string path = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/');
+            path = $"/{path}";
 
-            PathString apiPath = new PathString($"/{WebAPIConstants.RoutePrefix}");
+            PathString apiPath = new PathString(path);
             bool api = context.Request.Path.StartsWithSegments(apiPath);
 
             if (api && context.Request.Headers.ContainsKey("X-ApiKey"))
@@ -119,7 +126,6 @@ namespace OpenIIoT.Core.Service.WebAPI
             }
 
             await Next.Invoke(context);
-            logger.ExitMethod();
         }
 
         #endregion Public Methods
