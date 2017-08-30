@@ -114,31 +114,6 @@ namespace OpenIIoT.Core
         /// </summary>
         public string DirectoryWeb => GetSetting<string>("Directory.Web", "Web");
 
-        /// <summary>
-        ///     Gets the value of the 'Security.DefaultUser' key from the application's XML configuration file.
-        /// </summary>
-        public string SecurityDefaultUser => GetSetting<string>("Security.DefaultUser", "admin");
-
-        /// <summary>
-        ///     Gets the value of the 'Security.DefaultUserPasswordHash' key from the application's XML configuration file.
-        /// </summary>
-        public string SecurityDefaultUserPasswordHash => GetSetting<string>("Security.DefaultUserPasswordHash", "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC");
-
-        /// <summary>
-        ///     Gets the value of the 'Security.SessionLength' key from the application's XML configuration file.
-        /// </summary>
-        public int SecuritySessionLength => GetSetting<int>("Security.SessionLength", 15);
-
-        /// <summary>
-        ///     Gets the value of the 'Security.SessionPurgeInterval' key from the application's XML configuration file.
-        /// </summary>
-        public int SecuritySessionPurgeInterval => GetSetting<int>("Security.SessionPurgeInterval", 900000);
-
-        /// <summary>
-        ///     Gets a value indicating whether the 'Security.SlidingSessions' value is true in the application's XML configuration file.
-        /// </summary>
-        public bool SecuritySlidingSessions => GetSetting<bool>("Security.SlidingSessions", true);
-
         #endregion Public Properties
 
         #region Private Properties

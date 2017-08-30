@@ -214,59 +214,6 @@ namespace OpenIIoT.Core.Tests
             Assert.Null(ex);
         }
 
-        /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.SecurityDefaultUser"/> property.
-        /// </summary>
-        [Fact]
-        public void SecurityDefaultUser()
-        {
-            string setting = Settings.SecurityDefaultUser;
-            Assert.NotNull(setting);
-            Assert.NotEqual(string.Empty, setting);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.SecurityDefaultUserPasswordHash"/> property.
-        /// </summary>
-        [Fact]
-        public void SecurityDefaultUserPasswordHash()
-        {
-            string setting = Settings.SecurityDefaultUserPasswordHash;
-            Assert.NotNull(setting);
-            Assert.NotEqual(string.Empty, setting);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.SecuritySessionLength"/> property.
-        /// </summary>
-        [Fact]
-        public void SecuritySessionLength()
-        {
-            int setting = Settings.SecuritySessionLength;
-            Assert.NotNull(setting);
-            Assert.NotEqual(0, setting);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.SecuritySessionPurgeInterval"/> property.
-        /// </summary>
-        [Fact]
-        public void SecuritySessionPurgeInterval()
-        {
-            int setting = Settings.SecuritySessionPurgeInterval;
-            Assert.NotNull(setting);
-            Assert.NotEqual(0, setting);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.SecuritySlidingSessions"/> property.
-        /// </summary>
-        [Fact]
-        public void SecuritySlidingSessions()
-        {
-            bool setting = Settings.SecuritySlidingSessions;
-        }
-
         #endregion Public Methods
     }
 }

@@ -217,6 +217,7 @@
     <Compile Include="ApplicationSettings.cs" />
     <Compile Include="Security\ISecurityManager.cs" />
     <Compile Include="Security\Role.cs" />
+    <Compile Include="Security\SecurityConstants.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
     <Compile Include="Security\Session.cs" />
