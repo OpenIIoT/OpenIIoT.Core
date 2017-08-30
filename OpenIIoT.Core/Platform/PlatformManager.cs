@@ -102,6 +102,8 @@ namespace OpenIIoT.Core.Platform
 
             RegisterDependency<IApplicationManager>(manager);
 
+            Settings = new PlatformSettings();
+
             Directories directories = new Directories(Settings);
 
             switch (GetPlatformType())
@@ -134,9 +136,9 @@ namespace OpenIIoT.Core.Platform
         public IPlatform Platform { get; private set; }
 
         /// <summary>
-        ///     Gets the settings for the Application.
+        ///     Gets or sets the settings for the Manager.
         /// </summary>
-        private IApplicationSettings Settings => Dependency<IApplicationManager>().Settings;
+        private PlatformSettings Settings { get; set; }
 
         #endregion Public Properties
 

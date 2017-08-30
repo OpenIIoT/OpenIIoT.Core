@@ -188,11 +188,12 @@
   <ItemGroup>
     <Compile Include="Common\Exceptions\XMLConfigurationException.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
+    <Compile Include="Common\Settings.cs" />
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
-    <Compile Include="Configuration\ConfigurationConstants.cs" />
     <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="Configuration\ConfigurationSettings.cs" />
     <Compile Include="Event\EventManager.cs" />
     <Compile Include="Event\EventManagerConfiguration.cs" />
     <Compile Include="Model\WebAPI\BrowseController.cs" />
@@ -205,6 +206,7 @@
     <Compile Include="Packaging\WebAPI\PackageController.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
+    <Compile Include="Platform\PlatformSettings.cs" />
     <Compile Include="Plugin\Plugin.cs" />
     <Compile Include="Plugin\PluginAssembly.cs" />
     <Compile Include="Plugin\PluginManagerConfiguration.cs" />

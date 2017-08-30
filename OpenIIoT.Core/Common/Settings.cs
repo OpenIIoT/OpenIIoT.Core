@@ -10,19 +10,10 @@
       █     ███    ███   ██        ██      ██▌    ▄ ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██    ▄█    ███   ██   █      ██        ██    ██  ██   ██   ██    ██    ▄  ██
       █     ███    █▀   ▄███▀     ▄███▀    ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █   ▄████████▀    ███████    ▄██▀      ▄██▀   █    █   █    ██████▀   ▄████▀
       █
-      █       ███
-      █   ▀█████████▄
-      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
-      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
-      █       ███      ▄██▄▄      ██         ██  ▀   ██
-      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
-      █       ███       ██   █     ▄  ██     ██       ▄  ██
-      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
-      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the ApplicationSettings class.
+      █  The abstract base class from which various Settings can be retrieved, sourced from App.config.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -49,83 +40,155 @@
                                                                                                    ▀▀                            */
 
 using System;
-using Xunit;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reflection;
+using OpenIIoT.Core.Common.Exceptions;
 
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Core.Common
 {
     /// <summary>
-    ///     Unit tests for the <see cref="ApplicationSettings"/> class.
+    ///     The abstract base class from which various Settings can be retrieved, sourced from App.config.
     /// </summary>
-    public class ApplicationSettings
+    /// <remarks>
+    ///     <para>
+    ///         Classes derived from this class should contain settings that:
+    ///         <list type="bullet">
+    ///             <item>Are low level (pertaining to the application at the OS/framework level)</item>
+    ///             <item>Would generally require an application restart if changed</item>
+    ///             <item>Contain values that need to be retrieved prior to the startup of the ConfigurationManager.</item>
+    ///         </list>
+    ///     </para>
+    ///     <para>All other settings should be stored in the Configuration for their respective Managers.</para>
+    /// </remarks>
+    public abstract class Settings
     {
         #region Public Constructors
 
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationSettings"/> class.
-        /// </summary>
-        public ApplicationSettings()
+        public Settings()
         {
-            Settings = new Core.ApplicationSettings();
+            Initialize();
         }
 
         #endregion Public Constructors
 
-        #region Private Properties
+        #region Protected Properties
 
         /// <summary>
-        ///     Gets or sets the application settings.
+        ///     Gets or sets a dictionary containing previously retrieved settings stored in the application's XML configuration file.
         /// </summary>
-        private Core.ApplicationSettings Settings { get; set; }
+        protected IDictionary<string, object> SettingsCache { get; set; }
 
-        #endregion Private Properties
+        #endregion Protected Properties
 
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.ApplicationInstanceName"/> property.
+        ///     Clears the settings cache and re-initializes the values from the application's XML configuration file.
         /// </summary>
-        [Fact]
-        public void ApplicationInstanceName()
+        /// <returns>This <see cref="Settings"/> instance.</returns>
+        public Settings ResetCache()
         {
-            string setting = Settings.ApplicationInstanceName;
-            Assert.NotNull(setting);
-            Assert.NotEqual(string.Empty, setting);
-        }
+            SettingsCache.Clear();
+            Initialize();
 
-        /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.ApplicationInstanceName"/> property twice to ensure setting caching
-        ///     is working properly.
-        /// </summary>
-        [Fact]
-        public void ApplicationInstanceNameCached()
-        {
-            string setting = Settings.ApplicationInstanceName;
-            Assert.NotNull(setting);
-            Assert.NotEqual(string.Empty, setting);
-
-            string setting2 = Settings.ApplicationInstanceName;
-            Assert.Equal(setting, setting2);
-        }
-
-        /// <summary>
-        ///     Tests the constructor.
-        /// </summary>
-        [Fact]
-        public void Constructor()
-        {
-            Assert.IsType<Core.ApplicationSettings>(Settings);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.ResetCache"/> method.
-        /// </summary>
-        [Fact]
-        public void ResetCache()
-        {
-            Exception ex = Record.Exception(() => Settings.ResetCache());
-            Assert.Null(ex);
+            return this;
         }
 
         #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file and converts it to the
+        ///     specified Type. If the setting isn't found, returns the provided defaultSetting and logs a warning.
+        /// </summary>
+        /// <remarks>
+        ///     Excluded from code coverage because it isn't possible to directly test ConfigurationManager under XUnit.
+        /// </remarks>
+        /// <typeparam name="T">The Type to which the retrieved value should be converted.</typeparam>
+        /// <param name="key">The setting to retrieve.</param>
+        /// <param name="defaultSetting">The default setting to return if the setting can't be retrieved.</param>
+        /// <returns>The string value of the retrieved setting.</returns>
+        /// <exception cref="XMLConfigurationException">
+        ///     Thrown when an Exception is encountered reading or converting the value of the specified setting.
+        /// </exception>
+        [ExcludeFromCodeCoverage]
+        protected T GetSetting<T>(string key, T defaultSetting)
+        {
+            T retVal = default(T);
+
+            if (SettingsCache.ContainsKey(key))
+            {
+                retVal = (T)SettingsCache[key];
+            }
+            else
+            {
+                string setting = default(string);
+
+                if (System.Configuration.ConfigurationManager.AppSettings.AllKeys.Contains(key))
+                {
+                    try
+                    {
+                        setting = System.Configuration.ConfigurationManager.AppSettings[key];
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new XMLConfigurationException($"Failed to retrieve XML configuration setting '{key}'.  See inner Exception for details.", ex);
+                    }
+                }
+
+                if (setting == default(string))
+                {
+                    NLog.LogManager.GetCurrentClassLogger().Trace("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
+                    retVal = defaultSetting;
+                }
+                else
+                {
+                    try
+                    {
+                        TypeConverter converter = TypeDescriptor.GetConverter(typeof(T));
+                        retVal = (T)converter.ConvertFromString(setting);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new XMLConfigurationException($"Failed to convert value supplied for '{key}' to Type {typeof(T).Name}.  See inner Exception for details.", ex);
+                    }
+                }
+
+                SettingsCache.Add(key, retVal);
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Initializes the settings cache and tests each setting by attempting to retrieve initial values.
+        /// </summary>
+        /// <remarks>
+        ///     Excluded from code coverage because it isn't possible to directly test ConfigurationManager under XUnit.
+        /// </remarks>
+        /// <exception cref="XMLConfigurationException">Thrown when an Exception is encountered during initialization.</exception>
+        [ExcludeFromCodeCoverage]
+        protected void Initialize()
+        {
+            SettingsCache = new Dictionary<string, object>();
+
+            try
+            {
+                foreach (PropertyInfo property in GetType().GetProperties())
+                {
+                    object value = property.GetValue(this);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new XMLConfigurationException($"Failed to initialize XML configuration.  See inner Exception for details.", ex);
+            }
+        }
+
+        #endregion Protected Methods
     }
 }

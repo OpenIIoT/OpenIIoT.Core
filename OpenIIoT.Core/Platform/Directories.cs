@@ -60,7 +60,7 @@ namespace OpenIIoT.Core.Platform
         ///     Initializes a new instance of the <see cref="Directories"/> class with a blank dictionary.
         /// </summary>
         /// <param name="settings">The application settings.</param>
-        public Directories(IApplicationSettings settings)
+        public Directories(PlatformSettings settings)
         {
             Settings = settings;
 
@@ -133,7 +133,7 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     Gets or sets the application settings.
         /// </summary>
-        private IApplicationSettings Settings { get; set; }
+        private PlatformSettings Settings { get; set; }
 
         #endregion Private Properties
 

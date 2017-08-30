@@ -147,6 +147,8 @@ namespace OpenIIoT.Core.Configuration
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
 
+            Settings = new ConfigurationSettings();
+
             ConfigurableTypeRegistry = new ConfigurableTypeRegistry();
             Configuration = new Configuration(ConfigurableTypeRegistry);
 
@@ -172,9 +174,9 @@ namespace OpenIIoT.Core.Configuration
         public IConfiguration Configuration { get; private set; }
 
         /// <summary>
-        ///     Gets the settings for the Application.
+        ///     Gets or sets the settings for the Manager.
         /// </summary>
-        private IApplicationSettings Settings => Dependency<IApplicationManager>().Settings;
+        private ConfigurationSettings Settings { get; set; }
 
         #endregion Public Properties
 
