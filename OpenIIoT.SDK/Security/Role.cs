@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄
-      █   ███    ███
-      █   ███    ███   ▄█████    ▄█████    █████
-      █   ███    ███   ██  ▀    ██   █    ██  ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
-      █   ███    ███    ▄  ██   ██   █    ██  ██
-      █   ████████▀   ▄████▀    ███████   ██  ██
+      █      ▄████████
+      █     ███    ███
+      █    ▄███▄▄▄▄██▀  ██████   █          ▄█████
+      █   ▀▀███▀▀▀▀▀   ██    ██ ██         ██   █
+      █   ▀███████████ ██    ██ ██        ▄██▄▄
+      █     ███    ███ ██    ██ ██       ▀▀██▀▀
+      █     ███    ███ ██    ██ ██▌    ▄   ██   █
+      █     ███    ███  ██████  ████▄▄██   ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  An application User.
+      █  Enumeration of the built-in User Roles for the application.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,47 +39,26 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.SDK.Security
 {
     /// <summary>
-    ///     An application User.
+    ///     Enumeration of the built-in User Roles for the application.
     /// </summary>
-    public class User
+    public enum Role
     {
-        #region Public Constructors
+        /// <summary>
+        ///     The User may read data.
+        /// </summary>
+        Reader = 0,
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="User"/> class.
+        ///     The User may read and write data.
         /// </summary>
-        /// <param name="name">The name of the User.</param>
-        /// <param name="passwordHash">The SHA512 hash of the password for the User.</param>
-        /// <param name="role">The Role of the User.</param>
-        public User(string name, string passwordHash, Role role)
-        {
-            Name = name;
-            PasswordHash = passwordHash;
-            Role = role;
-        }
-
-        #endregion Public Constructors
-
-        #region Private Properties
+        ReadWriter = 1,
 
         /// <summary>
-        ///     Gets the name of the User.
+        ///     The User has full administrative control over data and configuration.
         /// </summary>
-        public string Name { get; }
-
-        /// <summary>
-        ///     Gets or sets the SHA512 hash of the password for the User.
-        /// </summary>
-        public string PasswordHash { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Role of the User.
-        /// </summary>
-        public Role Role { get; set; }
-
-        #endregion Private Properties
+        Administrator = 2
     }
 }

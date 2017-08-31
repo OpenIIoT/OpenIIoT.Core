@@ -43,6 +43,7 @@ using System;
 using System.Security.Claims;
 using Microsoft.Owin.Security;
 using NLog.xLogger;
+using OpenIIoT.SDK.Security;
 
 namespace OpenIIoT.Core.Security
 {

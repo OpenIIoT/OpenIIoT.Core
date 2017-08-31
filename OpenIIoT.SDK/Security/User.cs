@@ -1,28 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀     ▄█████  ▄██████ ██   █     █████  █      ██    ▄█   ▄
-      █     ███          ██   █  ██    ██ ██   ██   ██  ██ ██  ▀███████▄ ██   █▄
-      █   ▀███████████  ▄██▄▄    ██    ▀  ██   ██  ▄██▄▄█▀ ██▌     ██  ▀ ▀▀▀▀▀██
-      █            ███ ▀▀██▀▀    ██    ▄  ██   ██ ▀███████ ██      ██    ▄█   ██
-      █      ▄█    ███   ██   █  ██    ██ ██   ██   ██  ██ ██      ██    ██   ██
-      █    ▄████████▀    ███████ ██████▀  ██████    ██  ██ █      ▄██▀    █████
-      █
-      █   ▄████████
+      █   ███    █▄
       █   ███    ███
-      █   ███    █▀   ██████  ██▄▄▄▄    ▄█████     ██      ▄█████  ██▄▄▄▄      ██      ▄█████
-      █   ███        ██    ██ ██▀▀▀█▄   ██  ▀  ▀███████▄   ██   ██ ██▀▀▀█▄ ▀███████▄   ██  ▀
-      █   ███        ██    ██ ██   ██   ██         ██  ▀   ██   ██ ██   ██     ██  ▀   ██
-      █   ███    █▄  ██    ██ ██   ██ ▀███████     ██    ▀████████ ██   ██     ██    ▀███████
-      █   ███    ███ ██    ██ ██   ██    ▄  ██     ██      ██   ██ ██   ██     ██       ▄  ██
-      █   ████████▀   ██████   █   █   ▄████▀     ▄██▀     ██   █▀  █   █     ▄██▀    ▄████▀
+      █   ███    ███   ▄█████    ▄█████    █████
+      █   ███    ███   ██  ▀    ██   █    ██  ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
+      █   ███    ███    ▄  ██   ██   █    ██  ██
+      █   ████████▀   ▄████▀    ███████   ██  ██
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Constants for the Security namespace.
+      █  An application User.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,40 +39,47 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.SDK.Security
 {
     /// <summary>
-    ///     Constants for the <see cref="Security"/> namespace.
+    ///     An application User.
     /// </summary>
-    public static class SecurityConstants
+    public class User
     {
-        #region Public Fields
+        #region Public Constructors
 
         /// <summary>
-        ///     The default <see cref="Session"/> length, in seconds.
+        ///     Initializes a new instance of the <see cref="User"/> class.
         /// </summary>
-        public const int DefaultSessionLength = 900;
+        /// <param name="name">The name of the User.</param>
+        /// <param name="passwordHash">The SHA512 hash of the password for the User.</param>
+        /// <param name="role">The Role of the User.</param>
+        public User(string name, string passwordHash, Role role)
+        {
+            Name = name;
+            PasswordHash = passwordHash;
+            Role = role;
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
 
         /// <summary>
-        ///     The default expired <see cref="Session"/> purge interval.
+        ///     Gets the name of the User.
         /// </summary>
-        public const int DefaultSessionPurgeInterval = 1800;
+        public string Name { get; }
 
         /// <summary>
-        ///     The default value indicating whether sliding <see cref="Session"/> s are to be used.
+        ///     Gets or sets the SHA512 hash of the password for the User.
         /// </summary>
-        public const bool DefaultSlidingSessions = true;
+        public string PasswordHash { get; set; }
 
         /// <summary>
-        ///     The default <see cref="User"/> name.
+        ///     Gets or sets the Role of the User.
         /// </summary>
-        public const string DefaultUserName = "admin";
+        public Role Role { get; set; }
 
-        /// <summary>
-        ///     The default <see cref="User"/> password hash.
-        /// </summary>
-        public const string DefaultUserPasswordHash = "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC";
-
-        #endregion Public Fields
+        #endregion Private Properties
     }
 }

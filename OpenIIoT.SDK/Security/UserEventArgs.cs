@@ -1,19 +1,28 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
-      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
-      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
-      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
-      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
-      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
+      █   ███    █▄
+      █   ███    ███
+      █   ███    ███   ▄█████    ▄█████    █████
+      █   ███    ███   ██  ▀    ██   █    ██  ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
+      █   ███    ███    ▄  ██   ██   █    ██  ██
+      █   ████████▀   ▄████▀    ███████   ██  ██
+      █
+      █      ▄████████                                        ▄████████
+      █     ███    ███                                        ███    ███
+      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
+      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
+      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
+      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
+      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
+      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Session information for a User Session.
+      █  Event arguments for User events.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -40,47 +49,34 @@
                                                                                                    ▀▀                            */
 
 using System;
-using Microsoft.Owin.Security;
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.SDK.Security
 {
     /// <summary>
-    ///     Session information for a <see cref="User"/> Session.
+    ///     Event arguments for User events.
     /// </summary>
-    public class Session
+    public class UserEventArgs : EventArgs
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Session"/> class.
+        ///     Initializes a new instance of the <see cref="UserEventArgs"/> class.
         /// </summary>
-        /// <param name="apiKey">The ApiKey for the Session.</param>
-        /// <param name="ticket">The AuthenticationTicket for the Session.</param>
-        public Session(string apiKey, AuthenticationTicket ticket)
+        /// <param name="user">The User associated with the event.</param>
+        public UserEventArgs(User user)
         {
-            ApiKey = apiKey;
-            Ticket = ticket;
+            User = user;
         }
 
         #endregion Public Constructors
 
-        #region Private Properties
+        #region Public Properties
 
         /// <summary>
-        ///     Gets the ApiKey for the Session.
+        ///     Gets the User associated with the event.
         /// </summary>
-        public string ApiKey { get; }
+        public User User { get; }
 
-        /// <summary>
-        ///     Gets a value indicating whether the Session is expired.
-        /// </summary>
-        public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
-
-        /// <summary>
-        ///     Gets the AuthenticationTicket for the Session.
-        /// </summary>
-        public AuthenticationTicket Ticket { get; }
-
-        #endregion Private Properties
+        #endregion Public Properties
     }
 }

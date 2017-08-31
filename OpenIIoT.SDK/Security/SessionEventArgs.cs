@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄
-      █   ███    ███
-      █   ███    ███   ▄█████    ▄█████    █████
-      █   ███    ███   ██  ▀    ██   █    ██  ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
-      █   ███    ███    ▄  ██   ██   █    ██  ██
-      █   ████████▀   ▄████▀    ███████   ██  ██
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
+      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
+      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
+      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
+      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
+      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
       █
       █      ▄████████                                        ▄████████
       █     ███    ███                                        ███    ███
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Event arguments for User events.
+      █  Event arguments for Session events.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -50,22 +50,22 @@
 
 using System;
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.SDK.Security
 {
     /// <summary>
-    ///     Event arguments for User events.
+    ///     Event arguments for <see cref="Session"/> events.
     /// </summary>
-    public class UserEventArgs : EventArgs
+    public class SessionEventArgs : EventArgs
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="UserEventArgs"/> class.
+        ///     Initializes a new instance of the <see cref="SessionEventArgs"/> class.
         /// </summary>
-        /// <param name="user">The User associated with the event.</param>
-        public UserEventArgs(User user)
+        /// <param name="session">The Session associated with the event.</param>
+        public SessionEventArgs(Session session)
         {
-            User = user;
+            Session = session;
         }
 
         #endregion Public Constructors
@@ -73,9 +73,9 @@ namespace OpenIIoT.Core.Security
         #region Public Properties
 
         /// <summary>
-        ///     Gets the User associated with the event.
+        ///     Gets the Session associated with the event.
         /// </summary>
-        public User User { get; }
+        public Session Session { get; }
 
         #endregion Public Properties
     }

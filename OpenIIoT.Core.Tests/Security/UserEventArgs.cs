@@ -74,10 +74,10 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Core.Security.User user = new Core.Security.User("name", "password", Core.Security.Role.Reader);
-            Core.Security.UserEventArgs test = new Core.Security.UserEventArgs(user);
+            SDK.Security.User user = new SDK.Security.User("name", "password", SDK.Security.Role.Reader);
+            SDK.Security.UserEventArgs test = new SDK.Security.UserEventArgs(user);
 
-            Assert.IsType<Core.Security.UserEventArgs>(test);
+            Assert.IsType<SDK.Security.UserEventArgs>(test);
             Assert.Equal(user, test.User);
         }
 

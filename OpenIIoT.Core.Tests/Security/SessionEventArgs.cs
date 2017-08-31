@@ -76,10 +76,10 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Core.Security.Session session = new Core.Security.Session("key", new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties()));
-            Core.Security.SessionEventArgs test = new Core.Security.SessionEventArgs(session);
+            SDK.Security.Session session = new SDK.Security.Session("key", new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties()));
+            SDK.Security.SessionEventArgs test = new SDK.Security.SessionEventArgs(session);
 
-            Assert.IsType<Core.Security.SessionEventArgs>(test);
+            Assert.IsType<SDK.Security.SessionEventArgs>(test);
             Assert.Equal(session, test.Session);
         }
 

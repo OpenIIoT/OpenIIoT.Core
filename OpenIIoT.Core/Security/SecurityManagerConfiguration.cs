@@ -50,6 +50,7 @@
 
 using System.Collections.Generic;
 using Newtonsoft.Json;
+using OpenIIoT.SDK.Security;
 
 namespace OpenIIoT.Core.Security
 {

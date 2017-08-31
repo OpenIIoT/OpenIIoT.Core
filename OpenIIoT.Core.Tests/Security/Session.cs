@@ -56,7 +56,7 @@ using Xunit;
 namespace OpenIIoT.Core.Tests.Security
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Security.Session"/> class.
+    ///     Unit tests for the <see cref="SDK.Security.Session"/> class.
     /// </summary>
     public class Session
     {
@@ -70,37 +70,36 @@ namespace OpenIIoT.Core.Tests.Security
         {
             AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(15) };
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
-            Core.Security.Session test = new Core.Security.Session("key", ticket);
+            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
 
-            Assert.IsType<Core.Security.Session>(test);
+            Assert.IsType<SDK.Security.Session>(test);
             Assert.Equal("key", test.ApiKey);
             Assert.Equal(ticket, test.Ticket);
             Assert.False(test.IsExpired);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.Session.IsExpired"/> property with an expired Ticket.
+        ///     Tests the <see cref="SDK.Security.Session.IsExpired"/> property with an expired Ticket.
         /// </summary>
         [Fact]
         public void IsExpiredExpired()
         {
             AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(-15) };
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
-            Core.Security.Session test = new Core.Security.Session("key", ticket);
+            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
 
             Assert.True(test.IsExpired);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.Session.IsExpired"/> property with a Ticket which does not contain the
-        ///     ExpiresUtc property.
+        ///     Tests the <see cref="SDK.Security.Session.IsExpired"/> property with a Ticket which does not contain the ExpiresUtc property.
         /// </summary>
         [Fact]
         public void IsExpiredNullProperty()
         {
             AuthenticationProperties props = new AuthenticationProperties();
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
-            Core.Security.Session test = new Core.Security.Session("key", ticket);
+            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
 
             Assert.True(test.IsExpired);
         }

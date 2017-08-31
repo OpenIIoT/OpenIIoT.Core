@@ -3,17 +3,26 @@
       █
       █      ▄████████
       █     ███    ███
-      █    ▄███▄▄▄▄██▀  ██████   █          ▄█████
-      █   ▀▀███▀▀▀▀▀   ██    ██ ██         ██   █
-      █   ▀███████████ ██    ██ ██        ▄██▄▄
-      █     ███    ███ ██    ██ ██       ▀▀██▀▀
-      █     ███    ███ ██    ██ ██▌    ▄   ██   █
-      █     ███    ███  ██████  ████▄▄██   ███████
+      █     ███    █▀     ▄█████  ▄██████ ██   █     █████  █      ██    ▄█   ▄
+      █     ███          ██   █  ██    ██ ██   ██   ██  ██ ██  ▀███████▄ ██   █▄
+      █   ▀███████████  ▄██▄▄    ██    ▀  ██   ██  ▄██▄▄█▀ ██▌     ██  ▀ ▀▀▀▀▀██
+      █            ███ ▀▀██▀▀    ██    ▄  ██   ██ ▀███████ ██      ██    ▄█   ██
+      █      ▄█    ███   ██   █  ██    ██ ██   ██   ██  ██ ██      ██    ██   ██
+      █    ▄████████▀    ███████ ██████▀  ██████    ██  ██ █      ▄██▀    █████
+      █
+      █   ▄████████
+      █   ███    ███
+      █   ███    █▀   ██████  ██▄▄▄▄    ▄█████     ██      ▄█████  ██▄▄▄▄      ██      ▄█████
+      █   ███        ██    ██ ██▀▀▀█▄   ██  ▀  ▀███████▄   ██   ██ ██▀▀▀█▄ ▀███████▄   ██  ▀
+      █   ███        ██    ██ ██   ██   ██         ██  ▀   ██   ██ ██   ██     ██  ▀   ██
+      █   ███    █▄  ██    ██ ██   ██ ▀███████     ██    ▀████████ ██   ██     ██    ▀███████
+      █   ███    ███ ██    ██ ██   ██    ▄  ██     ██      ██   ██ ██   ██     ██       ▄  ██
+      █   ████████▀   ██████   █   █   ▄████▀     ▄██▀     ██   █▀  █   █     ▄██▀    ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Enumeration of the built-in User Roles for the application.
+      █  Constants for the Security namespace.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,26 +48,40 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.SDK.Security
 {
     /// <summary>
-    ///     Enumeration of the built-in User Roles for the application.
+    ///     Constants for the <see cref="Security"/> namespace.
     /// </summary>
-    public enum Role
+    public static class SecurityConstants
     {
-        /// <summary>
-        ///     The User may read data.
-        /// </summary>
-        Reader = 0,
+        #region Public Fields
 
         /// <summary>
-        ///     The User may read and write data.
+        ///     The default <see cref="Session"/> length, in seconds.
         /// </summary>
-        ReadWriter = 1,
+        public const int DefaultSessionLength = 900;
 
         /// <summary>
-        ///     The User has full administrative control over data and configuration.
+        ///     The default expired <see cref="Session"/> purge interval.
         /// </summary>
-        Administrator = 2
+        public const int DefaultSessionPurgeInterval = 1800;
+
+        /// <summary>
+        ///     The default value indicating whether sliding <see cref="Session"/> s are to be used.
+        /// </summary>
+        public const bool DefaultSlidingSessions = true;
+
+        /// <summary>
+        ///     The default <see cref="User"/> name.
+        /// </summary>
+        public const string DefaultUserName = "admin";
+
+        /// <summary>
+        ///     The default <see cref="User"/> password hash.
+        /// </summary>
+        public const string DefaultUserPasswordHash = "C7AD44CBAD762A5DA0A452F9E854FDC1E0E7A52A38015F23F3EAB1D80B931DD472634DFAC71CD34EBC35D16AB7FB8A90C81F975113D6C7538DC69DD8DE9077EC";
+
+        #endregion Public Fields
     }
 }

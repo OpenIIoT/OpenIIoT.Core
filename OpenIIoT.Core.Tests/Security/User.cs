@@ -53,7 +53,7 @@ using Xunit;
 namespace OpenIIoT.Core.Tests.Security
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Security.User"/> class.
+    ///     Unit tests for the <see cref="SDK.Security.User"/> class.
     /// </summary>
     public class User
     {
@@ -65,12 +65,12 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Core.Security.User test = new Core.Security.User("test", "password", Core.Security.Role.Reader);
+            SDK.Security.User test = new SDK.Security.User("test", "password", SDK.Security.Role.Reader);
 
-            Assert.IsType<Core.Security.User>(test);
+            Assert.IsType<SDK.Security.User>(test);
             Assert.Equal("test", test.Name);
             Assert.Equal("password", test.PasswordHash);
-            Assert.Equal(Core.Security.Role.Reader, test.Role);
+            Assert.Equal(SDK.Security.Role.Reader, test.Role);
         }
 
         #endregion Public Methods
