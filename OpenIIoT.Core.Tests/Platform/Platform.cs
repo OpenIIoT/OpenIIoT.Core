@@ -58,6 +58,7 @@ using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.Core.Platform;
 
 namespace OpenIIoT.Core.Tests.Platform
 {
@@ -92,7 +93,16 @@ namespace OpenIIoT.Core.Tests.Platform
         /// </summary>
         public Platform()
         {
-            platformMock = new PlatformMock(new Core.Platform.Directories(new Core.ApplicationSettings()));
+            Mock<PlatformSettings> settings = new Mock<PlatformSettings>();
+            settings.Setup(s => s.DirectoryData).Returns("Data");
+            settings.Setup(s => s.DirectoryLogs).Returns("Logs");
+            settings.Setup(s => s.DirectoryPackages).Returns("Packages");
+            settings.Setup(s => s.DirectoryPersistence).Returns("Persistence");
+            settings.Setup(s => s.DirectoryPlugins).Returns("Plugins");
+            settings.Setup(s => s.DirectoryTemp).Returns("Temp");
+            settings.Setup(s => s.DirectoryWeb).Returns("Web");
+
+            platformMock = new PlatformMock(new Core.Platform.Directories(settings.Object));
 
             // set test directory = application directory + a new Guid
             string root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);

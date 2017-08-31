@@ -10,7 +10,7 @@ using OpenIIoT.SDK.Common;
 using System.Net;
 using OpenIIoT.Core.Service.WebApi;
 
-namespace OpenIIoT.Core.Common.WebAPI
+namespace OpenIIoT.Core.Common.WebApi
 {
     public class LogController : ApiBaseController
     {

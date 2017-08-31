@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OpenIIoT.SDK.Service.WebAPI
+namespace OpenIIoT.SDK.Service.WebApi
 {
-    public class WebAPIServiceConfiguration
+    public class WebApiServiceConfiguration
     {
         #region Public Properties
 

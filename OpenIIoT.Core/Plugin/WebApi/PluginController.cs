@@ -13,8 +13,6 @@ using OpenIIoT.Core.Plugin;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
-using Utility.OperationResult;
-using OpenIIoT.Core.Service.Web;
 using OpenIIoT.Core.Service.WebApi;
 
 namespace OpenIIoT.Core.Plugin.WebApi

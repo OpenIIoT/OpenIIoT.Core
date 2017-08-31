@@ -7,9 +7,9 @@ using NLog;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
-using OpenIIoT.SDK.Service.WebAPI;
+using OpenIIoT.SDK.Service.WebApi;
 
-namespace OpenIIoT.Core.Model.WebAPI
+namespace OpenIIoT.Core.Model.WebApi
 {
     /// <summary>
     ///     The ItemHub provides realtime data access to Model Items.

@@ -1,4 +1,4 @@
-﻿using OpenIIoT.SDK.Service.WebAPI;
+﻿using OpenIIoT.SDK.Service.WebApi;
 
 namespace OpenIIoT.SDK.Service.WebApi
 {
@@ -6,7 +6,7 @@ namespace OpenIIoT.SDK.Service.WebApi
     {
         #region Public Properties
 
-        WebAPIServiceConfiguration Configuration { get; }
+        WebApiServiceConfiguration Configuration { get; }
 
         #endregion Public Properties
     }

@@ -9,7 +9,7 @@ using Microsoft.Owin.FileSystems;
 using Microsoft.Owin.StaticFiles;
 using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Service.WebAPI;
+using OpenIIoT.SDK.Service.WebApi;
 using Owin;
 using Swashbuckle.Application;
 
@@ -25,7 +25,7 @@ namespace OpenIIoT.Core.Service.WebApi
 
         #region Private Properties
 
-        private WebAPIServiceConfiguration WebServiceConfiguration { get; set; }
+        private WebApiServiceConfiguration WebServiceConfiguration { get; set; }
 
         #endregion Private Properties
 

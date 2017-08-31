@@ -58,6 +58,8 @@ using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.Core.Platform;
+using OpenIIoT.Core.Configuration;
 
 namespace OpenIIoT.Core.Tests.Configuration
 {
@@ -84,6 +86,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         /// </summary>
         private Mock<IPlatformManager> platformManager;
 
+        private Mock<PlatformSettings> platformSettings;
+
         #endregion Private Fields
 
         #region Public Constructors
@@ -97,12 +101,20 @@ namespace OpenIIoT.Core.Tests.Configuration
             applicationManager.Setup(a => a.State).Returns(State.Running);
             applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
             applicationManager.Setup(a => a.Managers).Returns(new List<IManager>());
-            applicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+
+            platformSettings = new Mock<PlatformSettings>();
+            platformSettings.Setup(s => s.DirectoryData).Returns("Data");
+            platformSettings.Setup(s => s.DirectoryLogs).Returns("Logs");
+            platformSettings.Setup(s => s.DirectoryPackages).Returns("Packages");
+            platformSettings.Setup(s => s.DirectoryPersistence).Returns("Persistence");
+            platformSettings.Setup(s => s.DirectoryPlugins).Returns("Plugins");
+            platformSettings.Setup(s => s.DirectoryTemp).Returns("Temp");
+            platformSettings.Setup(s => s.DirectoryWeb).Returns("Web");
 
             platformManager = new Mock<IPlatformManager>();
             platformManager.Setup(p => p.State).Returns(State.Running);
             platformManager.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
-            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(applicationManager.Object.Settings)));
+            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(platformSettings.Object)));
 
             Core.Configuration.ConfigurationManager.Terminate();
 
@@ -136,7 +148,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             platformManager = new Mock<IPlatformManager>();
             platformManager.Setup(p => p.State).Returns(State.Running);
             platformManager.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
-            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(new Core.ApplicationSettings())));
+            platformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(platformSettings.Object)));
 
             Core.Configuration.ConfigurationManager.Terminate();
 

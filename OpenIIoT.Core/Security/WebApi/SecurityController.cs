@@ -60,7 +60,7 @@ using OpenIIoT.SDK.Common;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Security.WebAPI
+namespace OpenIIoT.Core.Security.WebApi
 {
     /// <summary>
     ///     WebAPI Controller for the Security namespace.

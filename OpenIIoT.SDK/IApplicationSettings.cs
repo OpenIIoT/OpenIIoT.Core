@@ -53,56 +53,6 @@ namespace OpenIIoT.SDK
         /// </summary>
         string ApplicationInstanceName { get; }
 
-        /// <summary>
-        ///     Gets the value of the 'Configuration.Filename' key from the application's XML configuration file.
-        /// </summary>
-        string ConfigurationFilename { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Directory.Data' key from the application's XML configuration file.
-        /// </summary>
-        string DirectoryData { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Directory.Log' key from the application's XML configuration file.
-        /// </summary>
-        string DirectoryLogs { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Directory.Packages' key from the application's XML configuration file.
-        /// </summary>
-        string DirectoryPackages { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Directory.Persistence' key from the application's XML configuration file.
-        /// </summary>
-        string DirectoryPersistence { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Directory.Plugins' key from the application's XML configuration file.
-        /// </summary>
-        string DirectoryPlugins { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Directory.Temp' key from the application's XML configuration file.
-        /// </summary>
-        string DirectoryTemp { get; }
-
-        /// <summary>
-        ///     Gets the value of the 'Directory.Web' key from the application's XML configuration file.
-        /// </summary>
-        string DirectoryWeb { get; }
-
         #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Clears the settings cache and re-initializes the values from the application's XML configuration file.
-        /// </summary>
-        /// <returns>This <see cref="IApplicationSettings"/> instance.</returns>
-        IApplicationSettings ResetCache();
-
-        #endregion Public Methods
     }
 }
