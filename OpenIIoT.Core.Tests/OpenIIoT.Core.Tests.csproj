@@ -126,11 +126,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
-    <Compile Include="Security\Session.cs" />
-    <Compile Include="Security\SessionEventArgs.cs" />
     <Compile Include="Security\SessionFactory.cs" />
-    <Compile Include="Security\User.cs" />
-    <Compile Include="Security\UserEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

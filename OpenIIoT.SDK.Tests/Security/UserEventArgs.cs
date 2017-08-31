@@ -59,10 +59,10 @@
 
 using Xunit;
 
-namespace OpenIIoT.Core.Tests.Security
+namespace OpenIIoT.SDK.Tests.Security
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Security.UserEventArgs"/> class.
+    ///     Unit tests for the <see cref="SDK.Security.UserEventArgs"/> class.
     /// </summary>
     public class UserEventArgs
     {

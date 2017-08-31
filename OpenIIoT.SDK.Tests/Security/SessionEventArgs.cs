@@ -1,14 +1,23 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄
-      █   ███    ███
-      █   ███    ███   ▄█████    ▄█████    █████
-      █   ███    ███   ██  ▀    ██   █    ██  ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
-      █   ███    ███    ▄  ██   ██   █    ██  ██
-      █   ████████▀   ▄████▀    ███████   ██  ██
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
+      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
+      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
+      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
+      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
+      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
+      █
+      █      ▄████████                                        ▄████████
+      █     ███    ███                                        ███    ███
+      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
+      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
+      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
+      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
+      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
+      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +31,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the User class.
+      █  Unit tests for the SessionEventArgs class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,29 +57,30 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System.Security.Claims;
+using Microsoft.Owin.Security;
 using Xunit;
 
-namespace OpenIIoT.Core.Tests.Security
+namespace OpenIIoT.SDK.Tests.Security
 {
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Security.User"/> class.
+    ///     Unit tests for the <see cref="SDK.Security.SessionEventArgs"/> class.
     /// </summary>
-    public class User
+    public class SessionEventArgs
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the constructor and all properties.
+        ///     Test the constructor and all properties.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            SDK.Security.User test = new SDK.Security.User("test", "password", SDK.Security.Role.Reader);
+            SDK.Security.Session session = new SDK.Security.Session("key", new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties()));
+            SDK.Security.SessionEventArgs test = new SDK.Security.SessionEventArgs(session);
 
-            Assert.IsType<SDK.Security.User>(test);
-            Assert.Equal("test", test.Name);
-            Assert.Equal("password", test.PasswordHash);
-            Assert.Equal(SDK.Security.Role.Reader, test.Role);
+            Assert.IsType<SDK.Security.SessionEventArgs>(test);
+            Assert.Equal(session, test.Session);
         }
 
         #endregion Public Methods
