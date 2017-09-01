@@ -96,7 +96,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPost]
         [Route("users")]
         [Authorize(Roles = "Administrator")]
-        [SwaggerResponse(HttpStatusCode.OK, "The User was created.", typeof(User))]
+        [SwaggerResponse(HttpStatusCode.Created, "The User was created.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
@@ -122,7 +122,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
                     if (createResult.ResultCode != ResultCode.Failure)
                     {
-                        retVal = Request.CreateResponse(HttpStatusCode.OK, createResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+                        retVal = Request.CreateResponse(HttpStatusCode.Created, createResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
                     }
                     else
                     {
@@ -147,7 +147,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpDelete]
         [Route("users/{name}")]
         [Authorize(Roles = "Administrator")]
-        [SwaggerResponse(HttpStatusCode.OK, "The User was deleted.")]
+        [SwaggerResponse(HttpStatusCode.NoContent, "The User was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
@@ -169,7 +169,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
                     if (deleteResult.ResultCode != ResultCode.Failure)
                     {
-                        retVal = Request.CreateResponse(HttpStatusCode.OK);
+                        retVal = Request.CreateResponse(HttpStatusCode.NoContent);
                     }
                     else
                     {
