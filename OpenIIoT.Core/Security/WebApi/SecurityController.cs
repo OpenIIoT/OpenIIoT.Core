@@ -94,7 +94,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <param name="role">The Role for the new User.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
-        [Route("user")]
+        [Route("users")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The User was created.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
@@ -145,7 +145,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <param name="name">The name of the User to delete.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpDelete]
-        [Route("user/{name}")]
+        [Route("users/{name}")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The User was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
@@ -190,7 +190,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("role")]
+        [Route("roles")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Role>))]
         public HttpResponseMessage GetRoles()
@@ -203,7 +203,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("session")]
+        [Route("sessions")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
         public HttpResponseMessage GetSessions()
@@ -216,7 +216,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("user")]
+        [Route("users")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<User>))]
         public HttpResponseMessage GetUsers()
@@ -225,7 +225,7 @@ namespace OpenIIoT.Core.Security.WebApi
         }
 
         /// <summary>
-        ///     Starts a new Session returns the Session ApiKey.
+        ///     Starts a new Session.
         /// </summary>
         /// <param name="userName">The user for which the Session is to be started.</param>
         /// <param name="password">The password with which to authenticate the user.</param>
@@ -254,7 +254,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
                 if (startSessionResult.ResultCode != ResultCode.Failure)
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, startSessionResult.ReturnValue.ApiKey, JsonFormatter());
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, startSessionResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "Subject"));
                 }
                 else
                 {
@@ -303,7 +303,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPut]
-        [Route("user/{name}")]
+        [Route("users/{name}")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
