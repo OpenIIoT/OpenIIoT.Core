@@ -73,11 +73,13 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod(xLogger.Params(user, sessionLength));
             Session retVal;
+            string userName = user?.Name ?? string.Empty;
+            Role userRole = user?.Role ?? Role.Reader;
 
             ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
-            identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
+            identity.AddClaim(new Claim(ClaimTypes.Name, userName));
 
-            for (int r = (int)user.Role; r >= 0; r--)
+            for (int r = (int)userRole; r >= 0; r--)
             {
                 identity.AddClaim(new Claim(ClaimTypes.Role, ((Role)r).ToString()));
             }
@@ -108,7 +110,7 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod(xLogger.Params(session, sessionLength));
 
-            session.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(sessionLength);
+            session.Ticket.Properties.ExpiresUtc = session.Ticket.Properties.ExpiresUtc.Value.AddSeconds(sessionLength);
 
             logger.ExitMethod(session);
             return session;

@@ -57,6 +57,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System.Collections.Generic;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Security
@@ -75,15 +76,22 @@ namespace OpenIIoT.Core.Tests.Security
         public void Constructor()
         {
             SDK.Security.User user = new SDK.Security.User("name", "password", SDK.Security.Role.Reader);
-            Core.Security.SecurityManagerConfiguration test = new Core.Security.SecurityManagerConfiguration();
+            Core.Security.SecurityManagerConfiguration test = new Core.Security.SecurityManagerConfiguration()
+            {
+                Users = new List<SDK.Security.User>(new[] { user }),
+                SessionLength = 1,
+                SessionPurgeInterval = 2,
+                SlidingSessions = false,
+            };
 
             Assert.IsType<Core.Security.SecurityManagerConfiguration>(test);
-            Assert.Empty(test.Users);
-
-            test.Users.Add(user);
 
             Assert.NotEmpty(test.Users);
             Assert.Equal(user, test.Users[0]);
+
+            Assert.Equal(1, test.SessionLength);
+            Assert.Equal(2, test.SessionPurgeInterval);
+            Assert.False(test.SlidingSessions);
         }
 
         #endregion Public Methods

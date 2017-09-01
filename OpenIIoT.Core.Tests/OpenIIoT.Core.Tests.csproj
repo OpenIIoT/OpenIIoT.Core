@@ -127,6 +127,7 @@
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
     <Compile Include="Security\SessionFactory.cs" />
+    <Compile Include="Security\WebApi\SecurityController.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
