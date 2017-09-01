@@ -57,9 +57,9 @@ using System.Web.Http;
 using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Security;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Security;
 
 namespace OpenIIoT.Core.Security.WebApi
 {
@@ -70,12 +70,34 @@ namespace OpenIIoT.Core.Security.WebApi
     [WebApiRoutePrefix("v1/security")]
     public class SecurityController : ApiBaseController
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SecurityController"/> class.
+        /// </summary>
+        public SecurityController()
+            : this(ApplicationManager.GetInstance())
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SecurityController"/> class with the specified
+        ///     <see cref="IApplicationManager"/> instance.
+        /// </summary>
+        /// <param name="manager">The IApplicationManager instance used to resolve dependencies.</param>
+        public SecurityController(IApplicationManager manager)
+        {
+            Manager = manager;
+        }
+
+        #endregion Public Constructors
+
         #region Private Properties
 
         /// <summary>
-        ///     Gets the IApplicationManager for the application.
+        ///     Gets or sets the IApplicationManager used to resolve dependencies.
         /// </summary>
-        private IApplicationManager Manager => ApplicationManager.GetInstance();
+        private IApplicationManager Manager { get; set; }
 
         /// <summary>
         ///     Gets the ISecurityManager for the application.
