@@ -45,7 +45,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
 using Utility.OperationResult;
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.SDK.Security
 {
     /// <summary>
     ///     Manages the security subsystem.

@@ -54,7 +54,7 @@ using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
 using OpenIIoT.SDK.Configuration;
 using Utility.OperationResult;
-using OpenIIoT.Core.Security;
+using OpenIIoT.SDK.Security;
 
 namespace OpenIIoT.Core.Security
 {
@@ -258,7 +258,7 @@ namespace OpenIIoT.Core.Security
             logger.Debug("Attempting to Configure with the configuration from the Configuration Manager...");
             Result retVal = new Result();
 
-            IResult<SecurityManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<SecurityManagerConfiguration>(this.GetType());
+            IResult<SecurityManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<SecurityManagerConfiguration>(GetType());
 
             // if the fetch succeeded, configure this instance with the result.
             if (fetchResult.ResultCode != ResultCode.Failure)
@@ -270,16 +270,14 @@ namespace OpenIIoT.Core.Security
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
-                IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(this.GetType(), GetConfigurationDefinition().DefaultConfiguration);
+                IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(GetType(), GetConfigurationDefinition().DefaultConfiguration);
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.ReturnValue);
                 }
-                else
-                {
-                    retVal.Incorporate(createResult);
-                }
+
+                retVal.Incorporate(createResult);
             }
 
             retVal.LogResult(logger.Debug);
@@ -342,7 +340,7 @@ namespace OpenIIoT.Core.Security
                 }
                 else
                 {
-                    retVal.AddError($"User '{name}' already exists.");
+                    retVal.AddError($"The User '{name}' already exists.");
                 }
             }
 
@@ -379,7 +377,7 @@ namespace OpenIIoT.Core.Security
             }
             else
             {
-                retVal.AddError($"User '{name}' does not exist.");
+                retVal.AddError($"The User '{name}' does not exist.");
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -415,7 +413,7 @@ namespace OpenIIoT.Core.Security
             }
             else
             {
-                retVal.AddError($"Session matching ApiKey '{session.ApiKey}' does not exist.");
+                retVal.AddError($"The Session matching ApiKey '{session.ApiKey}' does not exist.");
             }
 
             if (retVal.ResultCode == ResultCode.Failure)

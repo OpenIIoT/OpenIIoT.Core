@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
-      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
-      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
-      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
-      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
-      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
+      █   ███    █▄
+      █   ███    ███
+      █   ███    ███   ▄█████    ▄█████    █████
+      █   ███    ███   ██  ▀    ██   █    ██  ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
+      █   ███    ███    ▄  ██   ██   █    ██  ██
+      █   ████████▀   ▄████▀    ███████   ██  ██
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Session information for a User Session.
+      █  An application User.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,27 +39,26 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using Microsoft.Owin.Security;
-
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.SDK.Security
 {
     /// <summary>
-    ///     Session information for a <see cref="User"/> Session.
+    ///     An application User.
     /// </summary>
-    public class Session
+    public class User
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Session"/> class.
+        ///     Initializes a new instance of the <see cref="User"/> class.
         /// </summary>
-        /// <param name="apiKey">The ApiKey for the Session.</param>
-        /// <param name="ticket">The AuthenticationTicket for the Session.</param>
-        public Session(string apiKey, AuthenticationTicket ticket)
+        /// <param name="name">The name of the User.</param>
+        /// <param name="passwordHash">The SHA512 hash of the password for the User.</param>
+        /// <param name="role">The Role of the User.</param>
+        public User(string name, string passwordHash, Role role)
         {
-            ApiKey = apiKey;
-            Ticket = ticket;
+            Name = name;
+            PasswordHash = passwordHash;
+            Role = role;
         }
 
         #endregion Public Constructors
@@ -67,19 +66,19 @@ namespace OpenIIoT.Core.Security
         #region Private Properties
 
         /// <summary>
-        ///     Gets the ApiKey for the Session.
+        ///     Gets the name of the User.
         /// </summary>
-        public string ApiKey { get; }
+        public string Name { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether the Session is expired.
+        ///     Gets or sets the SHA512 hash of the password for the User.
         /// </summary>
-        public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
+        public string PasswordHash { get; set; }
 
         /// <summary>
-        ///     Gets the AuthenticationTicket for the Session.
+        ///     Gets or sets the Role of the User.
         /// </summary>
-        public AuthenticationTicket Ticket { get; }
+        public Role Role { get; set; }
 
         #endregion Private Properties
     }

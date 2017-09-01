@@ -19,19 +19,10 @@
       █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
       █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
       █
-      █       ███
-      █   ▀█████████▄
-      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
-      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
-      █       ███      ▄██▄▄      ██         ██  ▀   ██
-      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
-      █       ███       ██   █     ▄  ██     ██       ▄  ██
-      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
-      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the UserEventArgs class.
+      █  Event arguments for User events.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -57,30 +48,35 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Xunit;
+using System;
 
-namespace OpenIIoT.Core.Tests.Security
+namespace OpenIIoT.SDK.Security
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Security.UserEventArgs"/> class.
+    ///     Event arguments for User events.
     /// </summary>
-    public class UserEventArgs
+    public class UserEventArgs : EventArgs
     {
-        #region Public Methods
+        #region Public Constructors
 
         /// <summary>
-        ///     Test the constructor and all properties.
+        ///     Initializes a new instance of the <see cref="UserEventArgs"/> class.
         /// </summary>
-        [Fact]
-        public void Constructor()
+        /// <param name="user">The User associated with the event.</param>
+        public UserEventArgs(User user)
         {
-            Core.Security.User user = new Core.Security.User("name", "password", Core.Security.Role.Reader);
-            Core.Security.UserEventArgs test = new Core.Security.UserEventArgs(user);
-
-            Assert.IsType<Core.Security.UserEventArgs>(test);
-            Assert.Equal(user, test.User);
+            User = user;
         }
 
-        #endregion Public Methods
+        #endregion Public Constructors
+
+        #region Public Properties
+
+        /// <summary>
+        ///     Gets the User associated with the event.
+        /// </summary>
+        public User User { get; }
+
+        #endregion Public Properties
     }
 }

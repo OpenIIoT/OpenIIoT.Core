@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄
-      █   ███    ███
-      █   ███    ███   ▄█████    ▄█████    █████
-      █   ███    ███   ██  ▀    ██   █    ██  ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
-      █   ███    ███    ▄  ██   ██   █    ██  ██
-      █   ████████▀   ▄████▀    ███████   ██  ██
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
+      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
+      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
+      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
+      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
+      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the User class.
+      █  Unit tests for the Session class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,14 +48,17 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
+using System.Security.Claims;
+using Microsoft.Owin.Security;
 using Xunit;
 
-namespace OpenIIoT.Core.Tests.Security
+namespace OpenIIoT.SDK.Tests.Security
 {
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Security.User"/> class.
+    ///     Unit tests for the <see cref="SDK.Security.Session"/> class.
     /// </summary>
-    public class User
+    public class Session
     {
         #region Public Methods
 
@@ -65,12 +68,40 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Core.Security.User test = new Core.Security.User("test", "password", Core.Security.Role.Reader);
+            AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(15) };
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
 
-            Assert.IsType<Core.Security.User>(test);
-            Assert.Equal("test", test.Name);
-            Assert.Equal("password", test.PasswordHash);
-            Assert.Equal(Core.Security.Role.Reader, test.Role);
+            Assert.IsType<SDK.Security.Session>(test);
+            Assert.Equal("key", test.ApiKey);
+            Assert.Equal(ticket, test.Ticket);
+            Assert.False(test.IsExpired);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.IsExpired"/> property with an expired Ticket.
+        /// </summary>
+        [Fact]
+        public void IsExpiredExpired()
+        {
+            AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(-15) };
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
+
+            Assert.True(test.IsExpired);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.IsExpired"/> property with a Ticket which does not contain the ExpiresUtc property.
+        /// </summary>
+        [Fact]
+        public void IsExpiredNullProperty()
+        {
+            AuthenticationProperties props = new AuthenticationProperties();
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
+
+            Assert.True(test.IsExpired);
         }
 
         #endregion Public Methods

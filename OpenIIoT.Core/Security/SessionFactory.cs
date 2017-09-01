@@ -42,8 +42,8 @@
 using System;
 using System.Security.Claims;
 using Microsoft.Owin.Security;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Service.WebApi;
+using NLog.xLogger;
+using OpenIIoT.SDK.Security;
 
 namespace OpenIIoT.Core.Security
 {
@@ -52,17 +52,28 @@ namespace OpenIIoT.Core.Security
     /// </summary>
     public static class SessionFactory
     {
-        #region Public Methods
+        #region Private Fields
 
-        // TODO: should this use a logger?
+        /// <summary>
+        ///     The Logger for this class.
+        /// </summary>
+        private static xLogger logger = xLogManager.GetCurrentClassxLogger();
+
+        #endregion Private Fields
+
+        #region Public Methods
 
         /// <summary>
         ///     Creates a new <see cref="Session"/> from the specified <see cref="User"/>.
         /// </summary>
         /// <param name="user">The User for which the Session is to be created.</param>
+        /// <param name="sessionLength">The length of the Session, in seconds.</param>
         /// <returns>The created Session.</returns>
         public static Session CreateSession(User user, int sessionLength)
         {
+            logger.EnterMethod(xLogger.Params(user, sessionLength));
+            Session retVal;
+
             ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
             identity.AddClaim(new Claim(ClaimTypes.Name, user.Name));
 
@@ -77,21 +88,29 @@ namespace OpenIIoT.Core.Security
 
             AuthenticationProperties ticketProperties = new AuthenticationProperties();
             ticketProperties.IssuedUtc = DateTime.UtcNow;
-            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddMinutes(sessionLength);
+            ticketProperties.ExpiresUtc = DateTime.UtcNow.AddSeconds(sessionLength);
 
             AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
 
-            return new Session(hash, ticket);
+            retVal = new Session(hash, ticket);
+
+            logger.ExitMethod(retVal);
+            return retVal;
         }
 
         /// <summary>
         ///     Extends the expiration time of the specified <see cref="Session"/> to the configured session length.
         /// </summary>
         /// <param name="session">The Session to extend.</param>
+        /// <param name="sessionLength">The length of the Session, in seconds.</param>
         /// <returns>The extended Session.</returns>
         public static Session ExtendSession(Session session, int sessionLength)
         {
+            logger.EnterMethod(xLogger.Params(session, sessionLength));
+
             session.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddMinutes(sessionLength);
+
+            logger.ExitMethod(session);
             return session;
         }
 

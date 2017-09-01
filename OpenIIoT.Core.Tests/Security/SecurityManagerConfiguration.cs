@@ -74,7 +74,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Core.Security.User user = new Core.Security.User("name", "password", Core.Security.Role.Reader);
+            SDK.Security.User user = new SDK.Security.User("name", "password", SDK.Security.Role.Reader);
             Core.Security.SecurityManagerConfiguration test = new Core.Security.SecurityManagerConfiguration();
 
             Assert.IsType<Core.Security.SecurityManagerConfiguration>(test);

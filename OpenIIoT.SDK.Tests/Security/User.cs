@@ -10,19 +10,19 @@
       █   ███    ███    ▄  ██   ██   █    ██  ██
       █   ████████▀   ▄████▀    ███████   ██  ██
       █
-      █      ▄████████                                        ▄████████
-      █     ███    ███                                        ███    ███
-      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
-      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
-      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
-      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
-      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
-      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Event arguments for User events.
+      █  Unit tests for the User class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,35 +48,31 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
+using Xunit;
 
-namespace OpenIIoT.Core.Security
+namespace OpenIIoT.SDK.Tests.Security
 {
     /// <summary>
-    ///     Event arguments for User events.
+    ///     Unit tests for the <see cref="SDK.Security.User"/> class.
     /// </summary>
-    public class UserEventArgs : EventArgs
+    public class User
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="UserEventArgs"/> class.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        /// <param name="user">The User associated with the event.</param>
-        public UserEventArgs(User user)
+        [Fact]
+        public void Constructor()
         {
-            User = user;
+            SDK.Security.User test = new SDK.Security.User("test", "password", SDK.Security.Role.Reader);
+
+            Assert.IsType<SDK.Security.User>(test);
+            Assert.Equal("test", test.Name);
+            Assert.Equal("password", test.PasswordHash);
+            Assert.Equal(SDK.Security.Role.Reader, test.Role);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the User associated with the event.
-        /// </summary>
-        public User User { get; }
-
-        #endregion Public Properties
+        #endregion Public Methods
     }
 }

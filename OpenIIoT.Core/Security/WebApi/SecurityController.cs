@@ -59,6 +59,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Security;
 
 namespace OpenIIoT.Core.Security.WebApi
 {
@@ -69,7 +70,7 @@ namespace OpenIIoT.Core.Security.WebApi
     [WebApiRoutePrefix("v1/security")]
     public class SecurityController : ApiBaseController
     {
-        #region Variables
+        #region Private Properties
 
         /// <summary>
         ///     Gets the IApplicationManager for the application.
@@ -81,9 +82,9 @@ namespace OpenIIoT.Core.Security.WebApi
         /// </summary>
         private ISecurityManager SecurityManager => Manager.GetManager<ISecurityManager>();
 
-        #endregion Variables
+        #endregion Private Properties
 
-        #region Instance Methods
+        #region Public Methods
 
         /// <summary>
         ///     Creates a new User.
@@ -351,6 +352,6 @@ namespace OpenIIoT.Core.Security.WebApi
             return retVal;
         }
 
-        #endregion Instance Methods
+        #endregion Public Methods
     }
 }

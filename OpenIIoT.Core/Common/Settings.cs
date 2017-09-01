@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █     ▄████████                                                                                        ▄████████
-      █     ███    ███                                                                                      ███    ███
-      █     ███    ███    █████▄    █████▄  █        █   ▄██████   ▄█████      ██     █   ██████  ██▄▄▄▄    ███    █▀     ▄█████     ██        ██     █  ██▄▄▄▄     ▄████▄    ▄█████
-      █     ███    ███   ██   ██   ██   ██ ██       ██  ██    ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄   ███          ██   █  ▀███████▄ ▀███████▄ ██  ██▀▀▀█▄   ██    ▀    ██  ▀
-      █   ▀███████████   ██   ██   ██   ██ ██       ██▌ ██    ▀    ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀███████████  ▄██▄▄        ██  ▀     ██  ▀ ██▌ ██   ██  ▄██         ██
-      █     ███    ███ ▀██████▀  ▀██████▀  ██       ██  ██    ▄  ▀████████     ██    ██  ██    ██ ██   ██          ███ ▀▀██▀▀        ██        ██    ██  ██   ██ ▀▀██ ███▄  ▀███████
-      █     ███    ███   ██        ██      ██▌    ▄ ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██    ▄█    ███   ██   █      ██        ██    ██  ██   ██   ██    ██    ▄  ██
-      █     ███    █▀   ▄███▀     ▄███▀    ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █   ▄████████▀    ███████    ▄██▀      ▄██▀   █    █   █    ██████▀   ▄████▀
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀     ▄█████     ██        ██     █  ██▄▄▄▄     ▄████▄    ▄█████
+      █     ███          ██   █  ▀███████▄ ▀███████▄ ██  ██▀▀▀█▄   ██    ▀    ██  ▀
+      █   ▀███████████  ▄██▄▄        ██  ▀     ██  ▀ ██▌ ██   ██  ▄██         ██
+      █            ███ ▀▀██▀▀        ██        ██    ██  ██   ██ ▀▀██ ███▄  ▀███████
+      █      ▄█    ███   ██   █      ██        ██    ██  ██   ██   ██    ██    ▄  ██
+      █    ▄████████▀    ███████    ▄██▀      ▄██▀   █    █   █    ██████▀   ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  The abstract base class from which various Settings can be retrieved, sourced from App.config.
+      █  Application settings, sourced from App.config.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -50,7 +50,7 @@ using OpenIIoT.Core.Common.Exceptions;
 namespace OpenIIoT.Core.Common
 {
     /// <summary>
-    ///     The abstract base class from which various Settings can be retrieved, sourced from App.config.
+    ///     Application settings, sourced from App.config.
     /// </summary>
     /// <remarks>
     ///     <para>
@@ -67,6 +67,9 @@ namespace OpenIIoT.Core.Common
     {
         #region Public Constructors
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Settings"/> class.
+        /// </summary>
         public Settings()
         {
             Initialize();
@@ -103,7 +106,7 @@ namespace OpenIIoT.Core.Common
 
         /// <summary>
         ///     Retrieves the setting corresponding to the specified setting from the app.exe.config file and converts it to the
-        ///     specified Type. If the setting isn't found, returns the provided defaultSetting and logs a warning.
+        ///     specified Type. If the setting isn't found, returns the provided defaultSetting.
         /// </summary>
         /// <remarks>
         ///     Excluded from code coverage because it isn't possible to directly test ConfigurationManager under XUnit.
@@ -142,7 +145,6 @@ namespace OpenIIoT.Core.Common
 
                 if (setting == default(string))
                 {
-                    NLog.LogManager.GetCurrentClassLogger().Trace("Failed to retrieve the setting '" + key + "'.  Defaulting to '" + defaultSetting + "'.");
                     retVal = defaultSetting;
                 }
                 else
