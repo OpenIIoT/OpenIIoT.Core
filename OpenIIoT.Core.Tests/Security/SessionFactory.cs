@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using System.Security.Claims;
 using Microsoft.Owin.Security;
 using Xunit;
-using System;
 
 namespace OpenIIoT.Core.Tests.Security
 {
