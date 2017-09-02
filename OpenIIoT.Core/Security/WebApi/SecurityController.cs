@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  WebAPI Controller for the Security namespace.
+      █  WebApi Controller for the Security namespace.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -49,6 +49,7 @@
                                                                                                    ▀▀                            */
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -75,6 +76,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <summary>
         ///     Initializes a new instance of the <see cref="SecurityController"/> class.
         /// </summary>
+        [ExcludeFromCodeCoverage]
         public SecurityController()
             : this(ApplicationManager.GetInstance())
         {
@@ -148,7 +150,7 @@ namespace OpenIIoT.Core.Security.WebApi
                     }
                     else
                     {
-                        Result result = (Result)createResult;
+                        IResult result = (Result)createResult;
                         retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                     }
                 }
