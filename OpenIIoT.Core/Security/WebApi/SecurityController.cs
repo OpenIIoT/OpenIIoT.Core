@@ -277,7 +277,7 @@ namespace OpenIIoT.Core.Security.WebApi
                 }
                 else
                 {
-                    Result result = (Result)startSessionResult;
+                    IResult result = (Result)startSessionResult;
                     retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
                 }
             }
@@ -298,8 +298,14 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            string apiKey = Request.GetOwinContext().Authentication.User.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value;
+            // coalesce the api key so that this method can be run under test. at runtime the Owin pipeline will not allow this
+            // method to execute if the hash claim can't be satisfied, so additional checking for validity is not necessary.
+            string apiKey = Request.GetOwinContext()?
+                .Authentication?.User?.Claims?
+                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
+
             Session session = SecurityManager.FindSession(apiKey);
+
             IResult endSessionResult = SecurityManager.EndSession(session);
 
             if (endSessionResult.ResultCode != ResultCode.Failure)
