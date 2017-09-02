@@ -3,11 +3,42 @@ using System.Net.Http.Formatting;
 using System.Web.Http;
 using Newtonsoft.Json;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
     public class ApiBaseController : ApiController
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApiBaseController"/> class.
+        /// </summary>
+        [ExcludeFromCodeCoverage]
+        protected ApiBaseController()
+            : this(ApplicationManager.GetInstance())
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="ApiBaseController"/> class with the specified
+        ///     <see cref="IApplicationManager"/> instance.
+        /// </summary>
+        /// <param name="manager">The IApplicationManager instance used to resolve dependencies.</param>
+        protected ApiBaseController(IApplicationManager manager)
+        {
+            Manager = manager;
+        }
+
+        #endregion Public Constructors
+
+        #region Protected Properties
+
+        protected IApplicationManager Manager { get; set; }
+
+        #endregion Protected Properties
+
         #region Protected Methods
 
         /// <summary>

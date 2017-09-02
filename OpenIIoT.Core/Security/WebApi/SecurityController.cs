@@ -71,14 +71,14 @@ namespace OpenIIoT.Core.Security.WebApi
     [WebApiRoutePrefix("v1/security")]
     public class SecurityController : ApiBaseController
     {
-        #region Public Constructors
+        #region Protected Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SecurityController"/> class.
         /// </summary>
         [ExcludeFromCodeCoverage]
         public SecurityController()
-            : this(ApplicationManager.GetInstance())
+            : base(ApplicationManager.GetInstance())
         {
         }
 
@@ -88,18 +88,13 @@ namespace OpenIIoT.Core.Security.WebApi
         /// </summary>
         /// <param name="manager">The IApplicationManager instance used to resolve dependencies.</param>
         public SecurityController(IApplicationManager manager)
+            : base(manager)
         {
-            Manager = manager;
         }
 
-        #endregion Public Constructors
+        #endregion Protected Constructors
 
         #region Private Properties
-
-        /// <summary>
-        ///     Gets or sets the IApplicationManager used to resolve dependencies.
-        /// </summary>
-        private IApplicationManager Manager { get; set; }
 
         /// <summary>
         ///     Gets the ISecurityManager for the application.
