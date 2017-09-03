@@ -6,5 +6,7 @@ install:
   - nuget restore OpenIIoT.Core.sln
 script:
   - xbuild /p:Configuration=Release OpenIIoT.Core.sln
-  - mono ./packages/xunit.runner.console.2.2.0/tools/xunit.console.exe ./OpenIIoT.Core.Tests/bin/Release/OpenIIoT.Core.Tests.dll
-  - mono ./packages/xunit.runner.console.2.2.0/tools/xunit.console.exe ./OpenIIoT.SDK.Tests/bin/Release/OpenIIoT.SDK.Tests.dll
+  - mono ./packages/xunit.runner.console.2.2.0/tools/xunit.console.exe ./Tests/OpenIIoT.Core.Tests/bin/Release/OpenIIoT.Core.Tests.dll
+  - mono ./packages/xunit.runner.console.2.2.0/tools/xunit.console.exe ./Tests/OpenIIoT.SDK.Tests/bin/Release/OpenIIoT.SDK.Tests.dll
+  - mono ./packages/xunit.runner.console.2.2.0/tools/xunit.console.exe ./Tests/OpenIIoT.SDK.Security.Tests/bin/Release/OpenIIoT.SDK.Security.Tests.dll
+  - mono ./packages/xunit.runner.console.2.2.0/tools/xunit.console.exe ./Tests/OpenIIoT.SDK.Packaging.Tests/bin/Release/OpenIIoT.SDK.Packaging.Tests.dll
