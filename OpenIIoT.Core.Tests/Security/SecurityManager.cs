@@ -48,37 +48,36 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Security;
-using System;
 using Utility.OperationResult;
 using Xunit;
+using System.Linq;
+using System.Reflection;
 
 namespace OpenIIoT.Core.Tests.Security
 {
+    /// <summary>
+    ///     Unit tests for the <see cref="Core.Security.SecurityManager"/> class.
+    /// </summary>
     public class SecurityManager
     {
         #region Public Constructors
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SecurityManager"/> class.
+        /// </summary>
         public SecurityManager()
         {
-            AppManager = new Mock<IApplicationManager>();
-            AppManager.Setup(a => a.State).Returns(State.Running);
-            AppManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
-            AppManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+            SetupMocks();
 
-            Configuration = new Core.Security.SecurityManagerConfiguration();
+            Core.Security.SecurityManager.Terminate();
 
-            AppConfiguration = new Mock<IConfiguration>();
-            AppConfiguration.Setup(c => c.GetInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>()))
-                .Returns(new Result<Core.Security.SecurityManagerConfiguration>().SetReturnValue(Configuration));
-
-            ConfigurationManager.Setup(c => c.GetInstance<SecurityManagerConfiguration>(typeof(Core.Security.SecurityManager)))
-
-            Manager = Core.Security.SecurityManager.Instantiate(ApplicationManager.Object, ConfigurationManager.Object);
+            Manager = Core.Security.SecurityManager.Instantiate(AppManager.Object, ConfigurationManager.Object);
         }
 
         #endregion Public Constructors
@@ -99,13 +98,171 @@ namespace OpenIIoT.Core.Tests.Security
         public void Constructor()
         {
             Assert.IsType<Core.Security.SecurityManager>(Manager);
+
+            Assert.Equal(State.Initialized, Manager.State);
+            Assert.NotEmpty(Manager.Roles);
+            Assert.NotNull(Manager.Sessions);
+            Assert.Null(Manager.Users);
         }
 
         [Fact]
-        public void Instantiate()
+        public void CreateUser()
         {
+            Manager.Start();
+
+            string name = Guid.NewGuid().ToString();
+
+            IResult<SDK.Security.User> result = Manager.CreateUser(name, "password", Role.Reader);
+
+            Assert.Equal(string.Empty, result.GetLastError());
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(name, result.ReturnValue.Name);
+            Assert.Equal(SDK.Common.Utility.ComputeSHA512Hash("password"), result.ReturnValue.PasswordHash);
+            Assert.Equal(Role.Reader, result.ReturnValue.Role);
+
+            Assert.True(((Core.Security.SecurityManager)Manager).Configuration.Users.Any(u => u.Name == name));
+        }
+
+        [Fact]
+        public void CreateUserBadPassword()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.User> result = Manager.CreateUser("name", string.Empty, Role.Reader);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void CreateUserBadUser()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.User> result = Manager.CreateUser(string.Empty, "password", Role.Reader);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void CreateUserNotStarted()
+        {
+            IResult<SDK.Security.User> result = Manager.CreateUser("name", "password", Role.Reader);
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void CreateUserUserExists()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.User> result = Manager.CreateUser("test", "password", Role.Reader); // name must match SetupMocks()
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void GetConfigurationDefinition()
+        {
+            IConfigurationDefinition configdef = Core.Security.SecurityManager.GetConfigurationDefinition();
+
+            Assert.False(string.IsNullOrEmpty(configdef.Form));
+            Assert.False(string.IsNullOrEmpty(configdef.Schema));
+            Assert.NotNull(configdef.Model);
+
+            Core.Security.SecurityManagerConfiguration config = (Core.Security.SecurityManagerConfiguration)configdef.DefaultConfiguration;
+
+            Assert.NotNull(config.SessionLength);
+            Assert.NotNull(config.SessionPurgeInterval);
+            Assert.NotEmpty(config.Users);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.Setup"/> method using reflection.
+        /// </summary>
+        [Fact]
+        public void Setup()
+        {
+            MethodInfo setup = typeof(Core.Security.SecurityManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
+            setup.Invoke(Manager, new object[] { });
+        }
+
+        [Fact]
+        public void Start()
+        {
+            IResult result = Manager.Start();
+
+            Assert.Equal(string.Empty, result.GetLastError());
+            Assert.NotEqual(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(State.Running, Manager.State);
+        }
+
+        [Fact]
+        public void StartNotConfigured()
+        {
+            AppConfiguration.Setup(
+                c => c.GetInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>()))
+                    .Returns(new Result<Core.Security.SecurityManagerConfiguration>(ResultCode.Failure));
+
+            AppConfiguration.Setup(
+                c => c.AddInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>(), It.IsAny<object>()))
+                    .Returns(new Result<Core.Security.SecurityManagerConfiguration>().SetReturnValue(Configuration));
+
+            IResult result = Manager.Start();
+
+            Assert.Equal(string.Empty, result.GetLastError());
+            Assert.NotEqual(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(State.Running, Manager.State);
+        }
+
+        [Fact]
+        public void Stop()
+        {
+            IResult result = Manager.Start();
+
+            Assert.Equal(string.Empty, result.GetLastError());
+            Assert.NotEqual(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(State.Running, Manager.State);
+
+            result = Manager.Stop();
+
+            Assert.Equal(string.Empty, result.GetLastError());
+            Assert.NotEqual(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(State.Stopped, Manager.State);
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        private void SetupMocks()
+        {
+            AppManager = new Mock<IApplicationManager>();
+            AppManager.Setup(a => a.State).Returns(State.Running);
+            AppManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            AppManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+
+            Configuration = new Core.Security.SecurityManagerConfiguration();
+            Configuration.SessionLength = 900;
+            Configuration.SessionPurgeInterval = 90000;
+            Configuration.SlidingSessions = true;
+            Configuration.Users = new[] { new User("test", "test", Role.Reader) }.ToList();
+
+            AppConfiguration = new Mock<IConfiguration>();
+
+            AppConfiguration.Setup(
+                c => c.GetInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>()))
+                    .Returns(new Result<Core.Security.SecurityManagerConfiguration>().SetReturnValue(Configuration));
+
+            AppConfiguration.Setup(
+                c => c.UpdateInstance(It.IsAny<Type>(), It.IsAny<object>()))
+                    .Returns(new Result());
+
+            ConfigurationManager = new Mock<IConfigurationManager>();
+            ConfigurationManager.Setup(c => c.Configuration).Returns(AppConfiguration.Object);
+            ConfigurationManager.Setup(c => c.State).Returns(State.Running);
+            ConfigurationManager.Setup(c => c.IsInState(State.Starting, State.Running)).Returns(true);
+        }
+
+        #endregion Private Methods
     }
 }

@@ -153,11 +153,6 @@ namespace OpenIIoT.Core.Security
         public SecurityManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
-        ///     Gets the ConfigurationDefinition for the Manager.
-        /// </summary>
-        public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
-
-        /// <summary>
         ///     Gets the list of built-in User <see cref="Role"/> s.
         /// </summary>
         public IReadOnlyList<Role> Roles => new[] { Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
@@ -170,16 +165,11 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the list of configured <see cref="User"/> s.
         /// </summary>
-        public IReadOnlyList<User> Users => ((List<User>)Configuration.Users).AsReadOnly();
+        public IReadOnlyList<User> Users => ((List<User>)Configuration?.Users)?.AsReadOnly();
 
         #endregion Public Properties
 
         #region Private Properties
-
-        /// <summary>
-        ///     Gets the settings for the Application.
-        /// </summary>
-        private IApplicationSettings Settings => Dependency<IApplicationManager>().Settings;
 
         /// <summary>
         ///     Gets or sets the <see cref="Timer"/> used to purge expired <see cref="Sessions"/>.
@@ -323,7 +313,11 @@ namespace OpenIIoT.Core.Security
             IResult<User> retVal = new Result<User>();
             retVal.ReturnValue = default(User);
 
-            if (string.IsNullOrEmpty(name))
+            if (State != State.Running)
+            {
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else if (string.IsNullOrEmpty(name))
             {
                 retVal.AddError("The specified name is null or empty.");
             }
@@ -337,6 +331,7 @@ namespace OpenIIoT.Core.Security
                 {
                     retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
                     Configuration.Users.Add(retVal.ReturnValue);
+                    SaveConfiguration();
                 }
                 else
                 {
