@@ -57,10 +57,10 @@ using System.Threading.Tasks;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
+using OpenIIoT.SDK.Packaging;
 
 namespace OpenIIoT.Core.Tests.Package
 {

@@ -282,6 +282,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\OpenIIoT.SDK.Packaging\OpenIIoT.SDK.Packaging.csproj">
+      <Project>{ba56542b-20ff-46b8-ba5c-c0190ecd243d}</Project>
+      <Name>OpenIIoT.SDK.Packaging</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OpenIIoT.SDK.Security\OpenIIoT.SDK.Security.csproj">
       <Project>{fcf72b45-9f92-41bb-b75c-e7eb9749dbce}</Project>
       <Name>OpenIIoT.SDK.Security</Name>
