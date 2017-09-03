@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  WebAPI Controller for the Security namespace.
+      █  WebApi Controller for the Security namespace.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -49,6 +49,7 @@
                                                                                                    ▀▀                            */
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -57,9 +58,9 @@ using System.Web.Http;
 using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Security;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
-using OpenIIoT.SDK.Security;
 
 namespace OpenIIoT.Core.Security.WebApi
 {
@@ -70,12 +71,30 @@ namespace OpenIIoT.Core.Security.WebApi
     [WebApiRoutePrefix("v1/security")]
     public class SecurityController : ApiBaseController
     {
-        #region Private Properties
+        #region Protected Constructors
 
         /// <summary>
-        ///     Gets the IApplicationManager for the application.
+        ///     Initializes a new instance of the <see cref="SecurityController"/> class.
         /// </summary>
-        private IApplicationManager Manager => ApplicationManager.GetInstance();
+        [ExcludeFromCodeCoverage]
+        public SecurityController()
+            : base(ApplicationManager.GetInstance())
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SecurityController"/> class with the specified
+        ///     <see cref="IApplicationManager"/> instance.
+        /// </summary>
+        /// <param name="manager">The IApplicationManager instance used to resolve dependencies.</param>
+        public SecurityController(IApplicationManager manager)
+            : base(manager)
+        {
+        }
+
+        #endregion Protected Constructors
+
+        #region Private Properties
 
         /// <summary>
         ///     Gets the ISecurityManager for the application.
@@ -94,9 +113,9 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <param name="role">The Role for the new User.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
-        [Route("user")]
+        [Route("users")]
         [Authorize(Roles = "Administrator")]
-        [SwaggerResponse(HttpStatusCode.OK, "The User was created.", typeof(User))]
+        [SwaggerResponse(HttpStatusCode.Created, "The User was created.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
@@ -122,11 +141,11 @@ namespace OpenIIoT.Core.Security.WebApi
 
                     if (createResult.ResultCode != ResultCode.Failure)
                     {
-                        retVal = Request.CreateResponse(HttpStatusCode.OK, createResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+                        retVal = Request.CreateResponse(HttpStatusCode.Created, createResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
                     }
                     else
                     {
-                        Result result = (Result)createResult;
+                        IResult result = (Result)createResult;
                         retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                     }
                 }
@@ -145,9 +164,9 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <param name="name">The name of the User to delete.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpDelete]
-        [Route("user/{name}")]
+        [Route("users/{name}")]
         [Authorize(Roles = "Administrator")]
-        [SwaggerResponse(HttpStatusCode.OK, "The User was deleted.")]
+        [SwaggerResponse(HttpStatusCode.NoContent, "The User was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
@@ -169,7 +188,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
                     if (deleteResult.ResultCode != ResultCode.Failure)
                     {
-                        retVal = Request.CreateResponse(HttpStatusCode.OK);
+                        retVal = Request.CreateResponse(HttpStatusCode.NoContent);
                     }
                     else
                     {
@@ -190,7 +209,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("role")]
+        [Route("roles")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Role>))]
         public HttpResponseMessage GetRoles()
@@ -203,7 +222,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("session")]
+        [Route("sessions")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
         public HttpResponseMessage GetSessions()
@@ -216,7 +235,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// </summary>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
-        [Route("user")]
+        [Route("users")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<User>))]
         public HttpResponseMessage GetUsers()
@@ -225,7 +244,7 @@ namespace OpenIIoT.Core.Security.WebApi
         }
 
         /// <summary>
-        ///     Starts a new Session returns the Session ApiKey.
+        ///     Starts a new Session.
         /// </summary>
         /// <param name="userName">The user for which the Session is to be started.</param>
         /// <param name="password">The password with which to authenticate the user.</param>
@@ -254,11 +273,11 @@ namespace OpenIIoT.Core.Security.WebApi
 
                 if (startSessionResult.ResultCode != ResultCode.Failure)
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, startSessionResult.ReturnValue.ApiKey, JsonFormatter());
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, startSessionResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "Subject"));
                 }
                 else
                 {
-                    Result result = (Result)startSessionResult;
+                    IResult result = (Result)startSessionResult;
                     retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
                 }
             }
@@ -279,8 +298,14 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            string apiKey = Request.GetOwinContext().Authentication.User.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value;
+            // coalesce the api key so that this method can be run under test. at runtime the Owin pipeline will not allow this
+            // method to execute if the hash claim can't be satisfied, so additional checking for validity is not necessary.
+            string apiKey = Request.GetOwinContext()?
+                .Authentication?.User?.Claims?
+                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
+
             Session session = SecurityManager.FindSession(apiKey);
+
             IResult endSessionResult = SecurityManager.EndSession(session);
 
             if (endSessionResult.ResultCode != ResultCode.Failure)
@@ -303,7 +328,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPut]
-        [Route("user/{name}")]
+        [Route("users/{name}")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]

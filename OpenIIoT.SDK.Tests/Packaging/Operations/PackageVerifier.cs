@@ -408,6 +408,21 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
+        ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a plain file.
+        /// </summary>
+        [Fact]
+        public void VerifyPackagePackageNotAZip()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "notapackage.zip");
+
+            Exception ex = Record.Exception(() => Verifier.VerifyPackage(package));
+
+            Assert.NotNull(ex);
+            Assert.IsType<Exception>(ex);
+            Assert.IsType<InvalidDataException>(ex.InnerException);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SDK.Packaging.Operations.PackageVerifier.VerifyPackage(string, string)"/> method with a
         ///     package argument containing a file which can not be found on the local filesystem.
         /// </summary>
