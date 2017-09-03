@@ -53,8 +53,8 @@ using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
 using OpenIIoT.SDK.Configuration;
-using Utility.OperationResult;
 using OpenIIoT.SDK.Security;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Security
 {

@@ -48,9 +48,64 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using Moq;
+using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Configuration;
+using OpenIIoT.SDK.Security;
+using System;
+using Utility.OperationResult;
+using Xunit;
+
 namespace OpenIIoT.Core.Tests.Security
 {
-    class SecurityManager
+    public class SecurityManager
     {
+        #region Public Constructors
+
+        public SecurityManager()
+        {
+            AppManager = new Mock<IApplicationManager>();
+            AppManager.Setup(a => a.State).Returns(State.Running);
+            AppManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            AppManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+
+            Configuration = new Core.Security.SecurityManagerConfiguration();
+
+            AppConfiguration = new Mock<IConfiguration>();
+            AppConfiguration.Setup(c => c.GetInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>()))
+                .Returns(new Result<Core.Security.SecurityManagerConfiguration>().SetReturnValue(Configuration));
+
+            ConfigurationManager.Setup(c => c.GetInstance<SecurityManagerConfiguration>(typeof(Core.Security.SecurityManager)))
+
+            Manager = Core.Security.SecurityManager.Instantiate(ApplicationManager.Object, ConfigurationManager.Object);
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        private Mock<IConfiguration> AppConfiguration { get; set; }
+        private Mock<IApplicationManager> AppManager { get; set; }
+        private Core.Security.SecurityManagerConfiguration Configuration { get; set; }
+        private Mock<IConfigurationManager> ConfigurationManager { get; set; }
+        private ISecurityManager Manager { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
+
+        [Fact]
+        public void Constructor()
+        {
+            Assert.IsType<Core.Security.SecurityManager>(Manager);
+        }
+
+        [Fact]
+        public void Instantiate()
+        {
+        }
+
+        #endregion Public Methods
     }
 }
