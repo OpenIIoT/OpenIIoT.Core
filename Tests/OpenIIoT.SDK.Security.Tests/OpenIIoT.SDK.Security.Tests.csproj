@@ -26,6 +26,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>openiiot.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,6 +35,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>openiiot.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Castle.Core, Version=4.1.1.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
@@ -90,14 +92,16 @@
     <Compile Include="Security\UserEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
+    <AdditionalFiles Include="OpenIIoT.ruleset" />
     <None Include="packages.config" />
+    <AdditionalFiles Include="stylecop.json" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\OpenIIoT.SDK.Security\OpenIIoT.SDK.Security.csproj">
+    <ProjectReference Include="..\..\Source\OpenIIoT.SDK.Security\OpenIIoT.SDK.Security.csproj">
       <Project>{fcf72b45-9f92-41bb-b75c-e7eb9749dbce}</Project>
       <Name>OpenIIoT.SDK.Security</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\OpenIIoT.SDK\OpenIIoT.SDK.csproj">
+    <ProjectReference Include="..\..\Source\OpenIIoT.SDK\OpenIIoT.SDK.csproj">
       <Project>{9c220b49-76ac-4ef5-b385-906ac84d5da2}</Project>
       <Name>OpenIIoT.SDK</Name>
     </ProjectReference>
