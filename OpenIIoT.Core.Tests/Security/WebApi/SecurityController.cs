@@ -57,6 +57,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Http;
@@ -65,9 +67,6 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
 using Utility.OperationResult;
 using Xunit;
-using System;
-using System.Linq;
-using System.Collections.Generic;
 
 namespace OpenIIoT.Core.Tests.Security.WebApi
 {
@@ -276,6 +275,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.GetRoles"/> method.
+        /// </summary>
         [Fact]
         public void GetRoles()
         {
@@ -295,6 +297,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.Roles, Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.GetSessions"/> method.
+        /// </summary>
         [Fact]
         public void GetSessions()
         {
@@ -312,6 +317,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.Sessions, Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.GetUsers"/> method.
+        /// </summary>
         [Fact]
         public void GetUsers()
         {
@@ -331,6 +339,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.Users, Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Login(string, string)"/> method.
+        /// </summary>
         [Fact]
         public void Login()
         {
@@ -344,6 +355,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Login(string, string)"/> method with a known bad password.
+        /// </summary>
         [Fact]
         public void LoginBadPassword()
         {
@@ -353,6 +367,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Login(string, string)"/> method with a known bad user.
+        /// </summary>
         [Fact]
         public void LoginBadUser()
         {
@@ -362,6 +379,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Login(string, string)"/> method with an
+        ///     <see cref="ISecurityManager"/> returning a failing result.
+        /// </summary>
         [Fact]
         public void LoginFailure()
         {
@@ -375,6 +396,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Logout"/> method.
+        /// </summary>
         [Fact]
         public void Logout()
         {
@@ -389,6 +413,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.EndSession(It.IsAny<Session>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Logout"/> method with an
+        ///     <see cref="ISecurityManager"/> returning a failing result.
+        /// </summary>
         [Fact]
         public void LogoutFailure()
         {
@@ -404,6 +432,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.EndSession(It.IsAny<Session>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method.
+        /// </summary>
         [Fact]
         public void UpdateUser()
         {
@@ -425,6 +456,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with a
+        ///     known bad password.
+        /// </summary>
         [Fact]
         public void UpdateUserBadPassword()
         {
@@ -434,6 +469,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with a
+        ///     known bad user.
+        /// </summary>
         [Fact]
         public void UpdateUserBadUser()
         {
@@ -443,6 +482,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with an
+        ///     <see cref="ISecurityManager"/> returning a failing result.
+        /// </summary>
         [Fact]
         public void UpdateUserFailure()
         {
@@ -461,6 +504,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with
+        ///     neither an updated <see cref="Role"/> nor password.
+        /// </summary>
         [Fact]
         public void UpdateUserNothingToUpdate()
         {
@@ -470,6 +517,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with an
+        ///     updated password.
+        /// </summary>
         [Fact]
         public void UpdateUserPassword()
         {
@@ -491,6 +542,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with an
+        ///     updated <see cref="Role"/>.
+        /// </summary>
         [Fact]
         public void UpdateUserRole()
         {
@@ -512,6 +567,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with an
+        ///     <see cref="ISecurityManager"/> unable to locate the specified user..
+        /// </summary>
         [Fact]
         public void UpdateUserUserNotFound()
         {
