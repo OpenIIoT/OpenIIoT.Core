@@ -53,7 +53,7 @@ using System.Security.Claims;
 using Microsoft.Owin.Security;
 using Xunit;
 
-namespace OpenIIoT.SDK.Tests.Security
+namespace OpenIIoT.SDK.Tests.Securitsy
 {
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Security.Session"/> class.

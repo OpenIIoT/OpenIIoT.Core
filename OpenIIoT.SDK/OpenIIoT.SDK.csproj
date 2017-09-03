@@ -126,13 +126,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Security\ISecurityManager.cs" />
-    <Compile Include="Security\Role.cs" />
-    <Compile Include="Security\SecurityConstants.cs" />
-    <Compile Include="Security\Session.cs" />
-    <Compile Include="Security\SessionEventArgs.cs" />
-    <Compile Include="Security\User.cs" />
-    <Compile Include="Security\UserEventArgs.cs" />
     <Compile Include="Service\IService.cs" />
     <Compile Include="Service\IServiceManager.cs" />
     <Compile Include="Service\WebApi\HubHelper.cs" />
