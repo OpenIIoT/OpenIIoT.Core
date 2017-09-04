@@ -472,12 +472,16 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.False(session2.IsExpired);
 
+            Assert.Equal(2, Manager.Sessions.Count());
+
             // invoke the purge via reflection since the timer would be tricky to set up.
             MethodInfo purge = typeof(Core.Security.SecurityManager).GetMethod("PurgeExpiredSessions", BindingFlags.NonPublic | BindingFlags.Instance);
 
             Exception ex = Record.Exception(() => purge.Invoke(Manager, new object[] { }));
 
             Assert.Null(ex);
+
+            Assert.Equal(1, Manager.Sessions.Count());
         }
 
         /// <summary>

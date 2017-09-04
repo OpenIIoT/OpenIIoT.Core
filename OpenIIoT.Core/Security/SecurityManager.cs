@@ -684,7 +684,7 @@ namespace OpenIIoT.Core.Security
 
                     if (role != null)
                     {
-                        foundUser.Role = role ?? Role.Reader;
+                        foundUser.Role = (Role)role;
                     }
 
                     retVal.ReturnValue = foundUser;
