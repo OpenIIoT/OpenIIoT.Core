@@ -49,6 +49,8 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Linq;
+using System.Reflection;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
@@ -56,8 +58,8 @@ using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Security;
 using Utility.OperationResult;
 using Xunit;
-using System.Linq;
-using System.Reflection;
+using System.Collections.Generic;
+using OpenIIoT.SDK.Common.Exceptions;
 
 namespace OpenIIoT.Core.Tests.Security
 {
@@ -77,17 +79,36 @@ namespace OpenIIoT.Core.Tests.Security
 
             Core.Security.SecurityManager.Terminate();
 
-            Manager = Core.Security.SecurityManager.Instantiate(AppManager.Object, ConfigurationManager.Object);
+            Manager = Core.Security.SecurityManager.Instantiate(ApplicationManager.Object, ConfigurationManager.Object);
         }
 
         #endregion Public Constructors
 
         #region Private Properties
 
-        private Mock<IConfiguration> AppConfiguration { get; set; }
-        private Mock<IApplicationManager> AppManager { get; set; }
+        /// <summary>
+        ///     Gets or sets the <see cref="IConfiguration"/> mockup for the class.
+        /// </summary>
+        private Mock<IConfiguration> ApplicationConfiguration { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="IApplicationManager"/> mockup for the class.
+        /// </summary>
+        private Mock<IApplicationManager> ApplicationManager { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="Core.Security.SecurityManagerConfiguration"/> for the Manager.
+        /// </summary>
         private Core.Security.SecurityManagerConfiguration Configuration { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="IConfigurationManager"/> mockup for the class.
+        /// </summary>
         private Mock<IConfigurationManager> ConfigurationManager { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="ISecurityManager"/> instance under test.
+        /// </summary>
         private ISecurityManager Manager { get; set; }
 
         #endregion Private Properties
@@ -231,6 +252,16 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         [Fact]
+        public void EndSessionSessionNull()
+        {
+            Manager.Start();
+
+            IResult result = Manager.EndSession(null);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
         public void ExtendSession()
         {
             Manager.Start();
@@ -278,6 +309,16 @@ namespace OpenIIoT.Core.Tests.Security
         public void ExtendSessionNotRunning()
         {
             IResult result = Manager.ExtendSession(new Session("key", null));
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void ExtendSessionSessionNull()
+        {
+            Manager.Start();
+
+            IResult result = Manager.ExtendSession(null);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -388,6 +429,31 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         [Fact]
+        public void Instantiate()
+        {
+            Core.Security.SecurityManager.Terminate();
+
+            ISecurityManager manager = Core.Security.SecurityManager.Instantiate(ApplicationManager.Object, ConfigurationManager.Object);
+
+            Assert.IsType<Core.Security.SecurityManager>(manager);
+        }
+
+        [Fact]
+        public void InstantiateTwice()
+        {
+            Core.Security.SecurityManager.Terminate();
+
+            ISecurityManager manager = Core.Security.SecurityManager.Instantiate(ApplicationManager.Object, ConfigurationManager.Object);
+
+            Assert.IsType<Core.Security.SecurityManager>(manager);
+
+            ISecurityManager manager2 = Core.Security.SecurityManager.Instantiate(ApplicationManager.Object, ConfigurationManager.Object);
+
+            Assert.IsType<Core.Security.SecurityManager>(manager2);
+            Assert.Same(manager, manager2);
+        }
+
+        [Fact]
         public void PurgeExpiredSessions()
         {
             Manager.Start();
@@ -435,13 +501,30 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         [Fact]
-        public void StartNotConfigured()
+        public void StartConfigurationFailure()
         {
-            AppConfiguration.Setup(
+            ApplicationConfiguration.Setup(
                 c => c.GetInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>()))
                     .Returns(new Result<Core.Security.SecurityManagerConfiguration>(ResultCode.Failure));
 
-            AppConfiguration.Setup(
+            ApplicationConfiguration.Setup(
+                c => c.AddInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>(), It.IsAny<object>()))
+                    .Returns(new Result<Core.Security.SecurityManagerConfiguration>(ResultCode.Failure));
+
+            Exception ex = Record.Exception(() => Manager.Start());
+
+            Assert.NotNull(ex);
+            Assert.IsType<ManagerStartException>(ex);
+        }
+
+        [Fact]
+        public void StartNotConfigured()
+        {
+            ApplicationConfiguration.Setup(
+                c => c.GetInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>()))
+                    .Returns(new Result<Core.Security.SecurityManagerConfiguration>(ResultCode.Failure));
+
+            ApplicationConfiguration.Setup(
                 c => c.AddInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>(), It.IsAny<object>()))
                     .Returns(new Result<Core.Security.SecurityManagerConfiguration>().SetReturnValue(Configuration));
 
@@ -616,16 +699,36 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
 
+        [Fact]
+        public void Users()
+        {
+            Assert.Null(Manager.Users);
+
+            Manager.Start();
+
+            Assert.NotNull(Manager.Users);
+        }
+
+        [Fact]
+        public void UsersEmpty()
+        {
+            Configuration.Users = new List<SDK.Security.User>();
+
+            Manager.Start();
+
+            Assert.Empty(Manager.Users);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
 
         private void SetupMocks()
         {
-            AppManager = new Mock<IApplicationManager>();
-            AppManager.Setup(a => a.State).Returns(State.Running);
-            AppManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
-            AppManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+            ApplicationManager = new Mock<IApplicationManager>();
+            ApplicationManager.Setup(a => a.State).Returns(State.Running);
+            ApplicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            ApplicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
 
             Configuration = new Core.Security.SecurityManagerConfiguration();
             Configuration.SessionLength = 900;
@@ -633,18 +736,18 @@ namespace OpenIIoT.Core.Tests.Security
             Configuration.SlidingSessions = true;
             Configuration.Users = new[] { new User("test", SDK.Common.Utility.ComputeSHA512Hash("test"), Role.Reader) }.ToList();
 
-            AppConfiguration = new Mock<IConfiguration>();
+            ApplicationConfiguration = new Mock<IConfiguration>();
 
-            AppConfiguration.Setup(
+            ApplicationConfiguration.Setup(
                 c => c.GetInstance<Core.Security.SecurityManagerConfiguration>(It.IsAny<Type>()))
                     .Returns(new Result<Core.Security.SecurityManagerConfiguration>().SetReturnValue(Configuration));
 
-            AppConfiguration.Setup(
+            ApplicationConfiguration.Setup(
                 c => c.UpdateInstance(It.IsAny<Type>(), It.IsAny<object>()))
                     .Returns(new Result());
 
             ConfigurationManager = new Mock<IConfigurationManager>();
-            ConfigurationManager.Setup(c => c.Configuration).Returns(AppConfiguration.Object);
+            ConfigurationManager.Setup(c => c.Configuration).Returns(ApplicationConfiguration.Object);
             ConfigurationManager.Setup(c => c.State).Returns(State.Running);
             ConfigurationManager.Setup(c => c.IsInState(State.Starting, State.Running)).Returns(true);
         }

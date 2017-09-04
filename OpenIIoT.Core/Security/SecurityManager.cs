@@ -423,7 +423,7 @@ namespace OpenIIoT.Core.Security
             }
             else
             {
-                foundSession = FindSession(session.ApiKey);
+                foundSession = FindSession(session?.ApiKey);
 
                 if (foundSession != default(Session))
                 {
@@ -440,7 +440,7 @@ namespace OpenIIoT.Core.Security
                 }
                 else
                 {
-                    retVal.AddError($"The Session matching ApiKey '{session.ApiKey}' does not exist.");
+                    retVal.AddError($"The Session matching ApiKey '{session?.ApiKey}' does not exist.");
                 }
             }
 
@@ -498,7 +498,7 @@ namespace OpenIIoT.Core.Security
                 }
                 else
                 {
-                    retVal.AddError($"Session matching ApiKey '{session.ApiKey}' does not exist.");
+                    retVal.AddError($"Session matching ApiKey '{session?.ApiKey}' does not exist.");
                 }
             }
 
@@ -523,7 +523,7 @@ namespace OpenIIoT.Core.Security
         /// <returns>The found Session.</returns>
         public Session FindSession(string apiKey)
         {
-            return SessionList?
+            return SessionList
                 .Where(s => s.Ticket.Identity.Claims
                     .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == apiKey).FirstOrDefault();
         }
@@ -545,7 +545,7 @@ namespace OpenIIoT.Core.Security
         /// <returns>The found Session.</returns>
         public Session FindUserSession(string name)
         {
-            return SessionList?
+            return SessionList
                 .Where(s => s.Ticket.Identity.Claims
                     .Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value == name).FirstOrDefault();
         }
