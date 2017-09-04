@@ -199,6 +199,46 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         [Fact]
+        public void EndSession()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
+
+            Assert.Equal(ResultCode.Success, session.ResultCode);
+
+            IResult result = Manager.EndSession(session.ReturnValue);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+        }
+
+        [Fact]
+        public void EndSessionNotRunning()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
+
+            Assert.Equal(ResultCode.Success, session.ResultCode);
+
+            Manager.Stop();
+
+            IResult result = Manager.EndSession(session.ReturnValue);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void EndSessionSessionNotFound()
+        {
+            Manager.Start();
+
+            IResult result = Manager.EndSession(new Session("key", null));
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
         public void FindSession()
         {
             Manager.Start();
