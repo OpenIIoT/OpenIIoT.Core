@@ -387,6 +387,33 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.NotEmpty(config.Users);
         }
 
+        [Fact]
+        public void PurgeExpiredSessions()
+        {
+            Manager.Start();
+
+            string name1 = Guid.NewGuid().ToString();
+            string name2 = Guid.NewGuid().ToString();
+
+            Manager.CreateUser(name1, "test", Role.Reader);
+            SDK.Security.Session session1 = Manager.StartSession(name1, "test").ReturnValue;
+            session1.Ticket.Properties.ExpiresUtc = session1.Ticket.Properties.IssuedUtc.Value.AddMinutes(-1);
+
+            Assert.True(session1.IsExpired);
+
+            Manager.CreateUser(name2, "test", Role.Reader);
+            SDK.Security.Session session2 = Manager.StartSession(name2, "test").ReturnValue;
+
+            Assert.False(session2.IsExpired);
+
+            // invoke the purge via reflection since the timer would be tricky to set up.
+            MethodInfo purge = typeof(Core.Security.SecurityManager).GetMethod("PurgeExpiredSessions", BindingFlags.NonPublic | BindingFlags.Instance);
+
+            Exception ex = Record.Exception(() => purge.Invoke(Manager, new object[] { }));
+
+            Assert.Null(ex);
+        }
+
         /// <summary>
         ///     Tests the <see cref="Core.Security.SecurityManager.Setup"/> method using reflection.
         /// </summary>
@@ -511,6 +538,82 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(name, user.ReturnValue.Name);
             Assert.Equal(hash, user.ReturnValue.PasswordHash);
             Assert.Equal(Role.ReadWriter, user.ReturnValue.Role);
+        }
+
+        [Fact]
+        public void UpdateUserBadPassword()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.User> user = Manager.UpdateUser("name", string.Empty, Role.ReadWriter);
+
+            Assert.Equal(ResultCode.Failure, user.ResultCode);
+        }
+
+        [Fact]
+        public void UpdateUserNothingToUpdate()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.User> user = Manager.UpdateUser("name", null, null);
+
+            Assert.Equal(ResultCode.Failure, user.ResultCode);
+        }
+
+        [Fact]
+        public void UpdateUserNotRunning()
+        {
+            IResult<SDK.Security.User> user = Manager.UpdateUser("name", "test", Role.ReadWriter);
+
+            Assert.Equal(ResultCode.Failure, user.ResultCode);
+        }
+
+        [Fact]
+        public void UpdateUserPassword()
+        {
+            Manager.Start();
+
+            string name = Guid.NewGuid().ToString();
+            string hash = SDK.Common.Utility.ComputeSHA512Hash("test2");
+
+            Manager.CreateUser(name, "test", Role.Reader);
+
+            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test2", null);
+
+            Assert.Equal(ResultCode.Success, user.ResultCode);
+            Assert.Equal(name, user.ReturnValue.Name);
+            Assert.Equal(hash, user.ReturnValue.PasswordHash);
+            Assert.Equal(Role.Reader, user.ReturnValue.Role);
+        }
+
+        [Fact]
+        public void UpdateUserRole()
+        {
+            Manager.Start();
+
+            string name = Guid.NewGuid().ToString();
+            string hash = SDK.Common.Utility.ComputeSHA512Hash("test");
+
+            Manager.CreateUser(name, "test", Role.Reader);
+
+            IResult<SDK.Security.User> user = Manager.UpdateUser(name, null, Role.ReadWriter);
+
+            Assert.Equal(ResultCode.Success, user.ResultCode);
+            Assert.Equal(name, user.ReturnValue.Name);
+            Assert.Equal(hash, user.ReturnValue.PasswordHash);
+            Assert.Equal(Role.ReadWriter, user.ReturnValue.Role);
+        }
+
+        [Fact]
+        public void UpdateUserUserNotFound()
+        {
+            Manager.Start();
+
+            string name = Guid.NewGuid().ToString();
+
+            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test", Role.ReadWriter);
+
+            Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
 
         #endregion Public Methods

@@ -43,6 +43,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using NLog.xLogger;
@@ -75,6 +76,11 @@ namespace OpenIIoT.Core.Security
         ///     The Logger for this class.
         /// </summary>
         private static new xLogger logger = xLogManager.GetCurrentClassxLogger();
+
+        /// <summary>
+        ///     The lock for the <see cref="Session"/> collection.
+        /// </summary>
+        private ReaderWriterLockSlim sessionLock = new ReaderWriterLockSlim();
 
         #endregion Private Fields
 
@@ -172,9 +178,9 @@ namespace OpenIIoT.Core.Security
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the <see cref="Timer"/> used to purge expired <see cref="Sessions"/>.
+        ///     Gets or sets the <see cref="System.Timers.Timer"/> used to purge expired <see cref="Sessions"/>.
         /// </summary>
-        private Timer SessionExpiryTimer { get; set; }
+        private System.Timers.Timer SessionExpiryTimer { get; set; }
 
         /// <summary>
         ///     Gets or sets the list of active <see cref="Session"/> s.
@@ -421,7 +427,16 @@ namespace OpenIIoT.Core.Security
 
                 if (foundSession != default(Session))
                 {
-                    SessionList.Remove(foundSession);
+                    sessionLock.EnterWriteLock();
+
+                    try
+                    {
+                        SessionList.Remove(foundSession);
+                    }
+                    finally
+                    {
+                        sessionLock.ExitWriteLock();
+                    }
                 }
                 else
                 {
@@ -583,7 +598,17 @@ namespace OpenIIoT.Core.Security
                         if (foundSession == default(Session))
                         {
                             retVal.ReturnValue = SessionFactory.CreateSession(foundUser, Configuration.SessionLength);
-                            SessionList.Add(retVal.ReturnValue);
+
+                            sessionLock.EnterWriteLock();
+
+                            try
+                            {
+                                SessionList.Add(retVal.ReturnValue);
+                            }
+                            finally
+                            {
+                                sessionLock.ExitWriteLock();
+                            }
                         }
                         else
                         {
@@ -728,7 +753,7 @@ namespace OpenIIoT.Core.Security
 
             IResult retVal = Configure();
 
-            SessionExpiryTimer = new Timer(Configuration.SessionPurgeInterval);
+            SessionExpiryTimer = new System.Timers.Timer(Configuration.SessionPurgeInterval);
             SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
             SessionExpiryTimer.Start();
 
@@ -748,7 +773,20 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod();
 
-            foreach (Session session in SessionList)
+            IList<Session> sessions = new List<Session>();
+
+            sessionLock.EnterReadLock();
+
+            try
+            {
+                sessions = SessionList.ToList();
+            }
+            finally
+            {
+                sessionLock.ExitReadLock();
+            }
+
+            foreach (Session session in sessions)
             {
                 if (session.Ticket.Properties.ExpiresUtc < DateTime.UtcNow)
                 {
