@@ -106,6 +106,109 @@ namespace OpenIIoT.Core.Security.WebApi
         #region Public Methods
 
         /// <summary>
+        ///     Gets the list of built-in User Roles.
+        /// </summary>
+        /// <returns>An HTTP response message.</returns>
+        [HttpGet]
+        [Route("roles")]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Role>))]
+        public HttpResponseMessage RolesGet()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Roles, JsonFormatter());
+        }
+
+        /// <summary>
+        ///     Ends the current Session.
+        /// </summary>
+        /// <returns>An HTTP response message.</returns>
+        [HttpDelete]
+        [Route("sessions/current")]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The Session was successfully ended.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be ended.", typeof(Result))]
+        public HttpResponseMessage SessionsEnd()
+        {
+            HttpResponseMessage retVal;
+
+            // coalesce the api key so that this method can be run under test. at runtime the Owin pipeline will not allow this
+            // method to execute if the hash claim can't be satisfied, so additional checking for validity is not necessary.
+            string apiKey = Request.GetOwinContext()?
+                .Authentication?.User?.Claims?
+                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
+
+            Session session = SecurityManager.FindSession(apiKey);
+
+            IResult endSessionResult = SecurityManager.EndSession(session);
+
+            if (endSessionResult.ResultCode != ResultCode.Failure)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.OK);
+            }
+            else
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, endSessionResult, JsonFormatter());
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Gets the list of active Sessions.
+        /// </summary>
+        /// <returns>An HTTP response message.</returns>
+        [HttpGet]
+        [Route("sessions")]
+        [Authorize(Roles = "Administrator")]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
+        public HttpResponseMessage SessionsGet()
+        {
+            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+        }
+
+        /// <summary>
+        ///     Starts a new Session.
+        /// </summary>
+        /// <param name="userName">The user for which the Session is to be started.</param>
+        /// <param name="password">The password with which to authenticate the user.</param>
+        /// <returns>An HTTP response message.</returns>
+        [HttpPost]
+        [Route("sessions")]
+        [AllowAnonymous]
+        [SwaggerResponse(HttpStatusCode.OK, "The Session was successfully started.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be started.", typeof(Result))]
+        public HttpResponseMessage SessionsStart(string userName, string password)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(userName))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified User name is null or empty.");
+            }
+            else if (string.IsNullOrEmpty(password))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
+            }
+            else
+            {
+                IResult<Session> startSessionResult = SecurityManager.StartSession(userName, password);
+
+                if (startSessionResult.ResultCode != ResultCode.Failure)
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, startSessionResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+                }
+                else
+                {
+                    IResult result = (Result)startSessionResult;
+                    retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
         ///     Creates a new User.
         /// </summary>
         /// <param name="name">The name of the new User.</param>
@@ -119,7 +222,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        public HttpResponseMessage CreateUser(string name, string password, Role role)
+        public HttpResponseMessage UsersCreate(string name, string password, Role role)
         {
             HttpResponseMessage retVal;
 
@@ -170,7 +273,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        public HttpResponseMessage DeleteUser(string name)
+        public HttpResponseMessage UsersDelete(string name)
         {
             HttpResponseMessage retVal;
 
@@ -205,32 +308,6 @@ namespace OpenIIoT.Core.Security.WebApi
         }
 
         /// <summary>
-        ///     Gets the list of built-in User Roles.
-        /// </summary>
-        /// <returns>An HTTP response message.</returns>
-        [HttpGet]
-        [Route("roles")]
-        [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Role>))]
-        public HttpResponseMessage GetRoles()
-        {
-            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Roles, JsonFormatter());
-        }
-
-        /// <summary>
-        ///     Gets the list of active Sessions.
-        /// </summary>
-        /// <returns>An HTTP response message.</returns>
-        [HttpGet]
-        [Route("sessions")]
-        [Authorize(Roles = "Administrator")]
-        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
-        public HttpResponseMessage GetSessions()
-        {
-            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions, JsonFormatter(ContractResolverType.OptOut, "Subject"));
-        }
-
-        /// <summary>
         ///     Gets the list of configured Users.
         /// </summary>
         /// <returns>An HTTP response message.</returns>
@@ -238,86 +315,9 @@ namespace OpenIIoT.Core.Security.WebApi
         [Route("users")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<User>))]
-        public HttpResponseMessage GetUsers()
+        public HttpResponseMessage UsersGet()
         {
             return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Users, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
-        }
-
-        /// <summary>
-        ///     Starts a new Session.
-        /// </summary>
-        /// <param name="userName">The user for which the Session is to be started.</param>
-        /// <param name="password">The password with which to authenticate the user.</param>
-        /// <returns>An HTTP response message.</returns>
-        [HttpPost]
-        [Route("login")]
-        [AllowAnonymous]
-        [SwaggerResponse(HttpStatusCode.OK, "The login was successful.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "The login failed.", typeof(Result))]
-        public HttpResponseMessage Login(string userName, string password)
-        {
-            HttpResponseMessage retVal;
-
-            if (string.IsNullOrEmpty(userName))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified User name is null or empty.");
-            }
-            else if (string.IsNullOrEmpty(password))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
-            }
-            else
-            {
-                IResult<Session> startSessionResult = SecurityManager.StartSession(userName, password);
-
-                if (startSessionResult.ResultCode != ResultCode.Failure)
-                {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, startSessionResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "Subject"));
-                }
-                else
-                {
-                    IResult result = (Result)startSessionResult;
-                    retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
-                }
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Ends the current Session.
-        /// </summary>
-        /// <returns>An HTTP response message.</returns>
-        [HttpPost]
-        [Route("logout")]
-        [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The logout was successful.")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "The logout failed.", typeof(Result))]
-        public HttpResponseMessage Logout()
-        {
-            HttpResponseMessage retVal;
-
-            // coalesce the api key so that this method can be run under test. at runtime the Owin pipeline will not allow this
-            // method to execute if the hash claim can't be satisfied, so additional checking for validity is not necessary.
-            string apiKey = Request.GetOwinContext()?
-                .Authentication?.User?.Claims?
-                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
-
-            Session session = SecurityManager.FindSession(apiKey);
-
-            IResult endSessionResult = SecurityManager.EndSession(session);
-
-            if (endSessionResult.ResultCode != ResultCode.Failure)
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.OK);
-            }
-            else
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, endSessionResult, JsonFormatter());
-            }
-
-            return retVal;
         }
 
         /// <summary>
@@ -334,7 +334,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        public HttpResponseMessage UpdateUser(string name, string password = null, Role? role = null)
+        public HttpResponseMessage UsersUpdate(string name, string password = null, Role? role = null)
         {
             HttpResponseMessage retVal;
 
