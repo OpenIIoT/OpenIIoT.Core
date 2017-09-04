@@ -364,15 +364,24 @@ namespace OpenIIoT.Core.Security
             logger.Info($"Deleting User '{name}'...");
 
             IResult retVal = new Result();
-            User foundUser = FindUser(name);
+            User foundUser = default(User);
 
-            if (foundUser != default(User))
+            if (State != State.Running)
             {
-                Configuration.Users.Remove(foundUser);
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
             }
             else
             {
-                retVal.AddError($"The User '{name}' does not exist.");
+                foundUser = FindUser(name);
+
+                if (foundUser != default(User))
+                {
+                    Configuration.Users.Remove(foundUser);
+                }
+                else
+                {
+                    retVal.AddError($"The User '{name}' does not exist.");
+                }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -400,15 +409,24 @@ namespace OpenIIoT.Core.Security
             logger.Debug($"Ending Session '{session?.ApiKey}'...");
 
             IResult retVal = new Result();
-            Session foundSession = FindSession(session.ApiKey);
+            Session foundSession = default(Session);
 
-            if (foundSession != default(Session))
+            if (State != State.Running)
             {
-                SessionList.Remove(foundSession);
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
             }
             else
             {
-                retVal.AddError($"The Session matching ApiKey '{session.ApiKey}' does not exist.");
+                foundSession = FindSession(session.ApiKey);
+
+                if (foundSession != default(Session))
+                {
+                    SessionList.Remove(foundSession);
+                }
+                else
+                {
+                    retVal.AddError($"The Session matching ApiKey '{session.ApiKey}' does not exist.");
+                }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -436,29 +454,37 @@ namespace OpenIIoT.Core.Security
             logger.Debug($"Extending Session '{session?.ApiKey}'...");
 
             IResult<Session> retVal = new Result<Session>();
-            Session foundSession = FindSession(session?.ApiKey);
+            Session foundSession = default(Session);
 
-            if (foundSession != default(Session))
+            if (State != State.Running)
             {
-                if (Configuration.SlidingSessions)
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else
+            {
+                foundSession = FindSession(session?.ApiKey);
+                if (foundSession != default(Session))
                 {
-                    if (!foundSession.IsExpired)
+                    if (Configuration.SlidingSessions)
                     {
-                        retVal.ReturnValue = SessionFactory.ExtendSession(foundSession, Configuration.SessionLength);
+                        if (!foundSession.IsExpired)
+                        {
+                            retVal.ReturnValue = SessionFactory.ExtendSession(foundSession, Configuration.SessionLength);
+                        }
+                        else
+                        {
+                            retVal.AddError($"Session has expired and can not be extended.");
+                        }
                     }
                     else
                     {
-                        retVal.AddError($"Session has expired and can not be extended.");
+                        retVal.AddWarning($"Sliding sessions are not enabled; the Session has not been extended.");
                     }
                 }
                 else
                 {
-                    retVal.AddWarning($"Sliding sessions are not enabled; the Session has not been extended.");
+                    retVal.AddError($"Session matching ApiKey '{session.ApiKey}' does not exist.");
                 }
-            }
-            else
-            {
-                retVal.AddError($"Session matching ApiKey '{session.ApiKey}' does not exist.");
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
