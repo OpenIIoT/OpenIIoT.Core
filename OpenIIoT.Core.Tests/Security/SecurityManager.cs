@@ -215,15 +215,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void EndSessionNotRunning()
         {
-            Manager.Start();
-
-            IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
-
-            Assert.Equal(ResultCode.Success, session.ResultCode);
-
-            Manager.Stop();
-
-            IResult result = Manager.EndSession(session.ReturnValue);
+            IResult result = Manager.EndSession(new Session("key", null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -236,6 +228,75 @@ namespace OpenIIoT.Core.Tests.Security
             IResult result = Manager.EndSession(new Session("key", null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void ExtendSession()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
+            DateTimeOffset? offset = session.ReturnValue.Ticket.Properties.ExpiresUtc;
+
+            Assert.Equal(ResultCode.Success, session.ResultCode);
+
+            Configuration.SessionLength = Configuration.SessionLength * 2;
+
+            IResult<SDK.Security.Session> result = Manager.ExtendSession(session.ReturnValue);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.True(result.ReturnValue.Ticket.Properties.ExpiresUtc > offset);
+        }
+
+        [Fact]
+        public void ExtendSessionExpired()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
+
+            Assert.Equal(ResultCode.Success, session.ResultCode);
+
+            session.ReturnValue.Ticket.Properties.ExpiresUtc = session.ReturnValue.Ticket.Properties.IssuedUtc.Value.AddMinutes(-1);
+
+            IResult<SDK.Security.Session> result = Manager.ExtendSession(session.ReturnValue);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void ExtendSessionNotFound()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> result = Manager.ExtendSession(new Session("key", null));
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void ExtendSessionNotRunning()
+        {
+            IResult result = Manager.ExtendSession(new Session("key", null));
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void ExtendSessionSlidingSessionsNotEnabled()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
+            DateTimeOffset? offset = session.ReturnValue.Ticket.Properties.ExpiresUtc;
+
+            Assert.Equal(ResultCode.Success, session.ResultCode);
+
+            Configuration.SlidingSessions = false;
+
+            IResult<SDK.Security.Session> result = Manager.ExtendSession(session.ReturnValue);
+
+            Assert.Equal(ResultCode.Warning, result.ResultCode);
         }
 
         [Fact]
@@ -432,6 +493,24 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(string.Empty, result.GetLastError());
             Assert.NotEqual(ResultCode.Failure, result.ResultCode);
             Assert.Equal(State.Stopped, Manager.State);
+        }
+
+        [Fact]
+        public void UpdateUser()
+        {
+            Manager.Start();
+
+            string name = Guid.NewGuid().ToString();
+            string hash = SDK.Common.Utility.ComputeSHA512Hash("test2");
+
+            Manager.CreateUser(name, "test", Role.Reader);
+
+            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test2", Role.ReadWriter);
+
+            Assert.Equal(ResultCode.Success, user.ResultCode);
+            Assert.Equal(name, user.ReturnValue.Name);
+            Assert.Equal(hash, user.ReturnValue.PasswordHash);
+            Assert.Equal(Role.ReadWriter, user.ReturnValue.Role);
         }
 
         #endregion Public Methods
