@@ -43,6 +43,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using NLog.xLogger;
@@ -53,8 +54,8 @@ using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
 using OpenIIoT.SDK.Configuration;
-using Utility.OperationResult;
 using OpenIIoT.SDK.Security;
+using Utility.OperationResult;
 
 namespace OpenIIoT.Core.Security
 {
@@ -75,6 +76,11 @@ namespace OpenIIoT.Core.Security
         ///     The Logger for this class.
         /// </summary>
         private static new xLogger logger = xLogManager.GetCurrentClassxLogger();
+
+        /// <summary>
+        ///     The lock for the <see cref="Session"/> collection.
+        /// </summary>
+        private ReaderWriterLockSlim sessionLock = new ReaderWriterLockSlim();
 
         #endregion Private Fields
 
@@ -153,11 +159,6 @@ namespace OpenIIoT.Core.Security
         public SecurityManagerConfiguration Configuration { get; private set; }
 
         /// <summary>
-        ///     Gets the ConfigurationDefinition for the Manager.
-        /// </summary>
-        public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
-
-        /// <summary>
         ///     Gets the list of built-in User <see cref="Role"/> s.
         /// </summary>
         public IReadOnlyList<Role> Roles => new[] { Role.Reader, Role.ReadWriter, Role.Administrator }.ToList();
@@ -170,21 +171,16 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the list of configured <see cref="User"/> s.
         /// </summary>
-        public IReadOnlyList<User> Users => ((List<User>)Configuration.Users).AsReadOnly();
+        public IReadOnlyList<User> Users => ((List<User>)Configuration?.Users)?.AsReadOnly();
 
         #endregion Public Properties
 
         #region Private Properties
 
         /// <summary>
-        ///     Gets the settings for the Application.
+        ///     Gets or sets the <see cref="System.Timers.Timer"/> used to purge expired <see cref="Sessions"/>.
         /// </summary>
-        private IApplicationSettings Settings => Dependency<IApplicationManager>().Settings;
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Timer"/> used to purge expired <see cref="Sessions"/>.
-        /// </summary>
-        private Timer SessionExpiryTimer { get; set; }
+        private System.Timers.Timer SessionExpiryTimer { get; set; }
 
         /// <summary>
         ///     Gets or sets the list of active <see cref="Session"/> s.
@@ -323,7 +319,11 @@ namespace OpenIIoT.Core.Security
             IResult<User> retVal = new Result<User>();
             retVal.ReturnValue = default(User);
 
-            if (string.IsNullOrEmpty(name))
+            if (State != State.Running)
+            {
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else if (string.IsNullOrEmpty(name))
             {
                 retVal.AddError("The specified name is null or empty.");
             }
@@ -337,6 +337,7 @@ namespace OpenIIoT.Core.Security
                 {
                     retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
                     Configuration.Users.Add(retVal.ReturnValue);
+                    SaveConfiguration();
                 }
                 else
                 {
@@ -369,15 +370,24 @@ namespace OpenIIoT.Core.Security
             logger.Info($"Deleting User '{name}'...");
 
             IResult retVal = new Result();
-            User foundUser = FindUser(name);
+            User foundUser = default(User);
 
-            if (foundUser != default(User))
+            if (State != State.Running)
             {
-                Configuration.Users.Remove(foundUser);
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
             }
             else
             {
-                retVal.AddError($"The User '{name}' does not exist.");
+                foundUser = FindUser(name);
+
+                if (foundUser != default(User))
+                {
+                    Configuration.Users.Remove(foundUser);
+                }
+                else
+                {
+                    retVal.AddError($"The User '{name}' does not exist.");
+                }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -405,15 +415,33 @@ namespace OpenIIoT.Core.Security
             logger.Debug($"Ending Session '{session?.ApiKey}'...");
 
             IResult retVal = new Result();
-            Session foundSession = FindSession(session.ApiKey);
+            Session foundSession = default(Session);
 
-            if (foundSession != default(Session))
+            if (State != State.Running)
             {
-                SessionList.Remove(foundSession);
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
             }
             else
             {
-                retVal.AddError($"The Session matching ApiKey '{session.ApiKey}' does not exist.");
+                foundSession = FindSession(session?.ApiKey);
+
+                if (foundSession != default(Session))
+                {
+                    sessionLock.EnterWriteLock();
+
+                    try
+                    {
+                        SessionList.Remove(foundSession);
+                    }
+                    finally
+                    {
+                        sessionLock.ExitWriteLock();
+                    }
+                }
+                else
+                {
+                    retVal.AddError($"The Session matching ApiKey '{session?.ApiKey}' does not exist.");
+                }
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -441,29 +469,37 @@ namespace OpenIIoT.Core.Security
             logger.Debug($"Extending Session '{session?.ApiKey}'...");
 
             IResult<Session> retVal = new Result<Session>();
-            Session foundSession = FindSession(session?.ApiKey);
+            Session foundSession = default(Session);
 
-            if (foundSession != default(Session))
+            if (State != State.Running)
             {
-                if (Configuration.SlidingSessions)
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else
+            {
+                foundSession = FindSession(session?.ApiKey);
+                if (foundSession != default(Session))
                 {
-                    if (!foundSession.IsExpired)
+                    if (Configuration.SlidingSessions)
                     {
-                        retVal.ReturnValue = SessionFactory.ExtendSession(foundSession, Configuration.SessionLength);
+                        if (!foundSession.IsExpired)
+                        {
+                            retVal.ReturnValue = SessionFactory.ExtendSession(foundSession, Configuration.SessionLength);
+                        }
+                        else
+                        {
+                            retVal.AddError($"Session has expired and can not be extended.");
+                        }
                     }
                     else
                     {
-                        retVal.AddError($"Session has expired and can not be extended.");
+                        retVal.AddWarning($"Sliding sessions are not enabled; the Session has not been extended.");
                     }
                 }
                 else
                 {
-                    retVal.AddWarning($"Sliding sessions are not enabled; the Session has not been extended.");
+                    retVal.AddError($"Session matching ApiKey '{session?.ApiKey}' does not exist.");
                 }
-            }
-            else
-            {
-                retVal.AddError($"Session matching ApiKey '{session.ApiKey}' does not exist.");
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -499,19 +535,19 @@ namespace OpenIIoT.Core.Security
         /// <returns>The found User.</returns>
         public User FindUser(string name)
         {
-            return Configuration.Users.Where(u => u.Name == name).FirstOrDefault();
+            return Configuration?.Users?.Where(u => u.Name == name).FirstOrDefault();
         }
 
         /// <summary>
-        ///     Finds the <see cref="Session"/> belonging to the specified <see cref="User"/>.
+        ///     Finds the <see cref="Session"/> belonging to the specified <see paramref="name"/>.
         /// </summary>
-        /// <param name="user">The User for which the Session is to be retrieved.</param>
+        /// <param name="name">The name of the <see cref="User"/> for which the Session is to be retrieved.</param>
         /// <returns>The found Session.</returns>
-        public Session FindUserSession(User user)
+        public Session FindUserSession(string name)
         {
             return SessionList
                 .Where(s => s.Ticket.Identity.Claims
-                    .Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value == user.Name).FirstOrDefault();
+                    .Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value == name).FirstOrDefault();
         }
 
         /// <summary>
@@ -543,35 +579,52 @@ namespace OpenIIoT.Core.Security
 
             IResult<Session> retVal = new Result<Session>();
 
-            User foundUser = FindUser(userName);
-
-            if (foundUser != default(User))
+            if (State != State.Running)
             {
-                string hash = SDK.Common.Utility.ComputeSHA512Hash(password);
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else
+            {
+                User foundUser = FindUser(userName);
 
-                if (foundUser.PasswordHash == hash)
+                if (foundUser != default(User))
                 {
-                    Session foundSession = FindUserSession(foundUser);
+                    string hash = SDK.Common.Utility.ComputeSHA512Hash(password);
 
-                    if (foundSession == default(Session))
+                    if (foundUser.PasswordHash == hash)
                     {
-                        retVal.ReturnValue = SessionFactory.CreateSession(foundUser, Configuration.SessionLength);
-                        SessionList.Add(retVal.ReturnValue);
+                        Session foundSession = FindUserSession(foundUser.Name);
+
+                        if (foundSession == default(Session))
+                        {
+                            retVal.ReturnValue = SessionFactory.CreateSession(foundUser, Configuration.SessionLength);
+
+                            sessionLock.EnterWriteLock();
+
+                            try
+                            {
+                                SessionList.Add(retVal.ReturnValue);
+                            }
+                            finally
+                            {
+                                sessionLock.ExitWriteLock();
+                            }
+                        }
+                        else
+                        {
+                            retVal.AddWarning($"The specified User has an existing Session.  The existing Session is being returned.");
+                            retVal.ReturnValue = foundSession;
+                        }
                     }
                     else
                     {
-                        retVal.AddWarning($"The specified User has an existing Session.  The existing Session is being returned.");
-                        retVal.ReturnValue = foundSession;
+                        retVal.AddError($"Supplied password does not match.");
                     }
                 }
                 else
                 {
-                    retVal.AddError($"Supplied password does not match.");
+                    retVal.AddError($"User '{userName}' does not exist.");
                 }
-            }
-            else
-            {
-                retVal.AddError($"User '{userName}' does not exist.");
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -606,9 +659,17 @@ namespace OpenIIoT.Core.Security
             IResult<User> retVal = new Result<User>();
             User foundUser;
 
-            if (password != null && password == string.Empty)
+            if (State != State.Running)
+            {
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else if (password != null && password == string.Empty)
             {
                 retVal.AddError("The specified password is empty.");
+            }
+            else if (password == null && role == null)
+            {
+                retVal.AddError("Neither the password nor the Role was specified; nothing to update.");
             }
             else
             {
@@ -623,7 +684,7 @@ namespace OpenIIoT.Core.Security
 
                     if (role != null)
                     {
-                        foundUser.Role = role ?? Role.Reader;
+                        foundUser.Role = (Role)role;
                     }
 
                     retVal.ReturnValue = foundUser;
@@ -692,7 +753,7 @@ namespace OpenIIoT.Core.Security
 
             IResult retVal = Configure();
 
-            SessionExpiryTimer = new Timer(Configuration.SessionPurgeInterval);
+            SessionExpiryTimer = new System.Timers.Timer(Configuration.SessionPurgeInterval);
             SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
             SessionExpiryTimer.Start();
 
@@ -712,7 +773,20 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod();
 
-            foreach (Session session in SessionList)
+            IList<Session> sessions = new List<Session>();
+
+            sessionLock.EnterReadLock();
+
+            try
+            {
+                sessions = SessionList.ToList();
+            }
+            finally
+            {
+                sessionLock.ExitReadLock();
+            }
+
+            foreach (Session session in sessions)
             {
                 if (session.Ticket.Properties.ExpiresUtc < DateTime.UtcNow)
                 {

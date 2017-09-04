@@ -114,6 +114,18 @@ namespace OpenIIoT.Core.Configuration
         #region Public Methods
 
         /// <summary>
+        ///     Adds the specified configuration to the default instance of the specified type.
+        /// </summary>
+        /// <typeparam name="T">The configuration Type.</typeparam>
+        /// <param name="type">The Type of the instance to be configured.</param>
+        /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult<T> AddInstance<T>(Type type, object instanceConfiguration)
+        {
+            return AddInstance<T>(type, instanceConfiguration, string.Empty);
+        }
+
+        /// <summary>
         ///     Adds the specified configuration to the specified instance of the specified type.
         /// </summary>
         /// <typeparam name="T">The configuration Type.</typeparam>
@@ -121,7 +133,7 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="instanceConfiguration">The ApplicationConfiguration instance to which to add the new configuration.</param>
         /// <param name="instanceName">The name of the instance to configure.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult<T> AddInstance<T>(Type type, object instanceConfiguration, string instanceName = "")
+        public IResult<T> AddInstance<T>(Type type, object instanceConfiguration, string instanceName)
         {
             logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
 
@@ -170,7 +182,7 @@ namespace OpenIIoT.Core.Configuration
         ///     A Result containing the result of the operation and an instance of the Configuration model for the calling class
         ///     containing the retrieved configuration.
         /// </returns>
-        public IResult<T> GetInstance<T>(Type type, string instanceName = "")
+        public IResult<T> GetInstance<T>(Type type, string instanceName)
         {
             logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
 
@@ -203,12 +215,27 @@ namespace OpenIIoT.Core.Configuration
         }
 
         /// <summary>
+        ///     Retrieves the configuration for the default instance of the supplied Type. If the configuration can't be found,
+        ///     returns the default configuration for the Type.
+        /// </summary>
+        /// <typeparam name="T">The Type matching the Configuration model for the calling class.</typeparam>
+        /// <param name="type">The Type of the calling class.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and an instance of the Configuration model for the calling class
+        ///     containing the retrieved configuration.
+        /// </returns>
+        public IResult<T> GetInstance<T>(Type type)
+        {
+            return GetInstance<T>(type, string.Empty);
+        }
+
+        /// <summary>
         ///     Determines whether the specified instance of the specified type is configured.
         /// </summary>
         /// <param name="type">The Type of the instance to check.</param>
         /// <param name="instanceName">The name of the instance to check.</param>
         /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
-        public IResult<bool> IsInstanceConfigured(Type type, string instanceName = "")
+        public IResult<bool> IsInstanceConfigured(Type type, string instanceName)
         {
             logger.EnterMethod(xLogger.Params(type, new xLogger.ExcludedParam(), instanceName));
             Result<bool> retVal = new Result<bool>();
@@ -235,6 +262,16 @@ namespace OpenIIoT.Core.Configuration
         }
 
         /// <summary>
+        ///     Determines whether the default instance of the specified type is configured.
+        /// </summary>
+        /// <param name="type">The Type of the instance to check.</param>
+        /// <returns>A Result containing the result of the operation and a boolean containing the outcome of the lookup.</returns>
+        public IResult<bool> IsInstanceConfigured(Type type)
+        {
+            return IsInstanceConfigured(type, string.Empty);
+        }
+
+        /// <summary>
         ///     Sets value of the Instance property to the specified instance configuration collection.
         /// </summary>
         /// <param name="instances">The collection of instance configurations to which the Instances property is to be set.</param>
@@ -252,7 +289,7 @@ namespace OpenIIoT.Core.Configuration
         /// <param name="type">The Type of instance to remove.</param>
         /// <param name="instanceName">The name of the instance to remove from the Type.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult RemoveInstance(Type type, string instanceName = "")
+        public IResult RemoveInstance(Type type, string instanceName)
         {
             logger.EnterMethod(xLogger.Params(type, instanceName));
 
@@ -274,13 +311,23 @@ namespace OpenIIoT.Core.Configuration
         }
 
         /// <summary>
+        ///     Removes the default instance of the specified type from the configuration.
+        /// </summary>
+        /// <param name="type">The Type of instance to remove.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult RemoveInstance(Type type)
+        {
+            return RemoveInstance(type, string.Empty);
+        }
+
+        /// <summary>
         ///     Saves the specified Configuration model to the Configuration for the specified instance and Type.
         /// </summary>
         /// <param name="type">The Type of the calling class.</param>
         /// <param name="instanceConfiguration">The Configuration model to save.</param>
         /// <param name="instanceName">The instance of the calling class for which to save the configuration.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult UpdateInstance(Type type, object instanceConfiguration, string instanceName = "")
+        public IResult UpdateInstance(Type type, object instanceConfiguration, string instanceName)
         {
             logger.EnterMethod(xLogger.Params(type, instanceConfiguration, new xLogger.ExcludedParam(), instanceName));
 
@@ -299,6 +346,17 @@ namespace OpenIIoT.Core.Configuration
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal);
             return retVal;
+        }
+
+        /// <summary>
+        ///     Saves the specified Configuration model to the Configuration for the default instance and Type.
+        /// </summary>
+        /// <param name="type">The Type of the calling class.</param>
+        /// <param name="instanceConfiguration">The Configuration model to save.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult UpdateInstance(Type type, object instanceConfiguration)
+        {
+            return UpdateInstance(type, instanceConfiguration, string.Empty);
         }
 
         #endregion Public Methods
