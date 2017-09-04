@@ -482,7 +482,7 @@ namespace OpenIIoT.Core.Security
         /// <returns>The found Session.</returns>
         public Session FindSession(string apiKey)
         {
-            return SessionList
+            return SessionList?
                 .Where(s => s.Ticket.Identity.Claims
                     .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == apiKey).FirstOrDefault();
         }
@@ -494,19 +494,19 @@ namespace OpenIIoT.Core.Security
         /// <returns>The found User.</returns>
         public User FindUser(string name)
         {
-            return Configuration.Users.Where(u => u.Name == name).FirstOrDefault();
+            return Configuration?.Users?.Where(u => u.Name == name).FirstOrDefault();
         }
 
         /// <summary>
-        ///     Finds the <see cref="Session"/> belonging to the specified <see cref="User"/>.
+        ///     Finds the <see cref="Session"/> belonging to the specified <see paramref="name"/>.
         /// </summary>
-        /// <param name="user">The User for which the Session is to be retrieved.</param>
+        /// <param name="name">The name of the <see cref="User"/> for which the Session is to be retrieved.</param>
         /// <returns>The found Session.</returns>
-        public Session FindUserSession(User user)
+        public Session FindUserSession(string name)
         {
-            return SessionList
+            return SessionList?
                 .Where(s => s.Ticket.Identity.Claims
-                    .Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value == user.Name).FirstOrDefault();
+                    .Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value == name).FirstOrDefault();
         }
 
         /// <summary>
@@ -538,35 +538,42 @@ namespace OpenIIoT.Core.Security
 
             IResult<Session> retVal = new Result<Session>();
 
-            User foundUser = FindUser(userName);
-
-            if (foundUser != default(User))
+            if (State != State.Running)
             {
-                string hash = SDK.Common.Utility.ComputeSHA512Hash(password);
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else
+            {
+                User foundUser = FindUser(userName);
 
-                if (foundUser.PasswordHash == hash)
+                if (foundUser != default(User))
                 {
-                    Session foundSession = FindUserSession(foundUser);
+                    string hash = SDK.Common.Utility.ComputeSHA512Hash(password);
 
-                    if (foundSession == default(Session))
+                    if (foundUser.PasswordHash == hash)
                     {
-                        retVal.ReturnValue = SessionFactory.CreateSession(foundUser, Configuration.SessionLength);
-                        SessionList.Add(retVal.ReturnValue);
+                        Session foundSession = FindUserSession(foundUser.Name);
+
+                        if (foundSession == default(Session))
+                        {
+                            retVal.ReturnValue = SessionFactory.CreateSession(foundUser, Configuration.SessionLength);
+                            SessionList.Add(retVal.ReturnValue);
+                        }
+                        else
+                        {
+                            retVal.AddWarning($"The specified User has an existing Session.  The existing Session is being returned.");
+                            retVal.ReturnValue = foundSession;
+                        }
                     }
                     else
                     {
-                        retVal.AddWarning($"The specified User has an existing Session.  The existing Session is being returned.");
-                        retVal.ReturnValue = foundSession;
+                        retVal.AddError($"Supplied password does not match.");
                     }
                 }
                 else
                 {
-                    retVal.AddError($"Supplied password does not match.");
+                    retVal.AddError($"User '{userName}' does not exist.");
                 }
-            }
-            else
-            {
-                retVal.AddError($"User '{userName}' does not exist.");
             }
 
             if (retVal.ResultCode == ResultCode.Failure)
@@ -601,9 +608,17 @@ namespace OpenIIoT.Core.Security
             IResult<User> retVal = new Result<User>();
             User foundUser;
 
-            if (password != null && password == string.Empty)
+            if (State != State.Running)
+            {
+                retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else if (password != null && password == string.Empty)
             {
                 retVal.AddError("The specified password is empty.");
+            }
+            else if (password == null && role == null)
+            {
+                retVal.AddError("Neither the password nor the Role was specified; nothing to update.");
             }
             else
             {

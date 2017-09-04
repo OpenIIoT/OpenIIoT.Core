@@ -161,6 +161,78 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         [Fact]
+        public void FindSession()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
+
+            Assert.Equal(ResultCode.Success, session.ResultCode);
+
+            SDK.Security.Session foundSession = Manager.FindSession(session.ReturnValue.ApiKey);
+
+            Assert.NotEqual(default(SDK.Security.Session), foundSession);
+            Assert.Equal("test", foundSession.Ticket.Identity.Name);
+        }
+
+        [Fact]
+        public void FindSessionNotFound()
+        {
+            SDK.Security.Session foundSession = Manager.FindSession(Guid.NewGuid().ToString());
+
+            Assert.Equal(default(SDK.Security.Session), foundSession);
+        }
+
+        [Fact]
+        public void FindUser()
+        {
+            Manager.Start();
+
+            string name = Guid.NewGuid().ToString();
+            Configuration.Users.Add(new SDK.Security.User(name, "hash", Role.Reader));
+
+            SDK.Security.User user = Manager.FindUser(name);
+
+            Assert.NotEqual(default(SDK.Security.User), user);
+            Assert.Equal(user.Name, name);
+            Assert.Equal(user.PasswordHash, "hash");
+            Assert.Equal(user.Role, Role.Reader);
+        }
+
+        [Fact]
+        public void FindUserNotFound()
+        {
+            string name = Guid.NewGuid().ToString();
+
+            SDK.Security.User user = Manager.FindUser(name);
+
+            Assert.Equal(default(SDK.Security.User), user);
+        }
+
+        [Fact]
+        public void FindUserSession()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
+
+            Assert.Equal(ResultCode.Success, session.ResultCode);
+
+            SDK.Security.Session foundSession = Manager.FindUserSession("test");
+
+            Assert.NotEqual(default(SDK.Security.Session), foundSession);
+            Assert.Equal("test", foundSession.Ticket.Identity.Name);
+        }
+
+        [Fact]
+        public void FindUserSessionNotFound()
+        {
+            SDK.Security.Session foundSession = Manager.FindUserSession(Guid.NewGuid().ToString());
+
+            Assert.Equal(default(SDK.Security.Session), foundSession);
+        }
+
+        [Fact]
         public void GetConfigurationDefinition()
         {
             IConfigurationDefinition configdef = Core.Security.SecurityManager.GetConfigurationDefinition();
@@ -215,6 +287,60 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         [Fact]
+        public void StartSession()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> result = Manager.StartSession("test", "test");
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal("test", result.ReturnValue.Ticket.Identity.Name);
+        }
+
+        [Fact]
+        public void StartSessionBadPassword()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> result = Manager.StartSession("test", "bad");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void StartSessionExistingSession()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> session1 = Manager.StartSession("test", "test");
+
+            Assert.Equal(ResultCode.Success, session1.ResultCode);
+            Assert.Equal("test", session1.ReturnValue.Ticket.Identity.Name);
+
+            IResult<SDK.Security.Session> session2 = Manager.StartSession("test", "test");
+
+            Assert.Same(session1.ReturnValue, session2.ReturnValue);
+        }
+
+        [Fact]
+        public void StartSessionNotStarted()
+        {
+            IResult<SDK.Security.Session> result = Manager.StartSession("test", "test");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void StartSessionUSerNotFound()
+        {
+            Manager.Start();
+
+            IResult<SDK.Security.Session> result = Manager.StartSession(Guid.NewGuid().ToString(), "test");
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
         public void Stop()
         {
             IResult result = Manager.Start();
@@ -245,7 +371,7 @@ namespace OpenIIoT.Core.Tests.Security
             Configuration.SessionLength = 900;
             Configuration.SessionPurgeInterval = 90000;
             Configuration.SlidingSessions = true;
-            Configuration.Users = new[] { new User("test", "test", Role.Reader) }.ToList();
+            Configuration.Users = new[] { new User("test", SDK.Common.Utility.ComputeSHA512Hash("test"), Role.Reader) }.ToList();
 
             AppConfiguration = new Mock<IConfiguration>();
 
