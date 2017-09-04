@@ -161,6 +161,44 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         [Fact]
+        public void DeleteUser()
+        {
+            string name = Guid.NewGuid().ToString();
+            string hash = SDK.Common.Utility.ComputeSHA512Hash("test");
+
+            Configuration.Users.Add(new User(name, hash, Role.Reader));
+
+            Manager.Start();
+
+            IResult result = Manager.DeleteUser(name);
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+        }
+
+        [Fact]
+        public void DeleteUserNotFound()
+        {
+            Manager.Start();
+
+            IResult result = Manager.DeleteUser(Guid.NewGuid().ToString());
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
+        public void DeleteUserNotRunning()
+        {
+            string name = Guid.NewGuid().ToString();
+            string hash = SDK.Common.Utility.ComputeSHA512Hash("test");
+
+            Configuration.Users.Add(new User(name, hash, Role.Reader));
+
+            IResult result = Manager.DeleteUser(name);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        [Fact]
         public void FindSession()
         {
             Manager.Start();
