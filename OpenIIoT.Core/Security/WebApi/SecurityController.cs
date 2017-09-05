@@ -134,12 +134,7 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            // coalesce the api key so that this method can be run under test. at runtime the Owin pipeline will not allow this
-            // method to execute if the hash claim can't be satisfied, so additional checking for validity is not necessary.
-            string apiKey = Request.GetOwinContext()?
-                .Authentication?.User?.Claims?
-                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
-
+            string apiKey = GetSessionKey(Request);
             Session session = SecurityManager.FindSession(apiKey);
             IResult endSessionResult = SecurityManager.EndSession(session);
 
@@ -180,26 +175,10 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage SessionsGetCurrent()
         {
-            HttpResponseMessage retVal;
-
-            // coalesce the api key so that this method can be run under test. at runtime the Owin pipeline will not allow this
-            // method to execute if the hash claim can't be satisfied, so additional checking for validity is not necessary.
-            string apiKey = Request.GetOwinContext()?
-                .Authentication?.User?.Claims?
-                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
-
+            string apiKey = GetSessionKey(Request);
             Session session = SecurityManager.FindSession(apiKey);
 
-            if (session != default(Session))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
-            }
-            else
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized); // redundant, but leave it.
-            }
-
-            return retVal;
+            return Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
         }
 
         /// <summary>
@@ -384,7 +363,7 @@ namespace OpenIIoT.Core.Security.WebApi
             }
             else
             {
-                User user = SecurityManager.Users.Where(u => u.Name == name).FirstOrDefault();
+                User user = SecurityManager.FindUser(name);
 
                 if (user != default(User))
                 {
@@ -458,5 +437,21 @@ namespace OpenIIoT.Core.Security.WebApi
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Retrieves the ApiKey for the specified <paramref name="request"/>.
+        /// </summary>
+        /// <param name="request">The request from which to retrieve the ApiKey.</param>
+        /// <returns>The retrieved ApiKey, or an empty string if it does not exist.</returns>
+        private string GetSessionKey(HttpRequestMessage request)
+        {
+            return Request.GetOwinContext()?
+                .Authentication?.User?.Claims?
+                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
+        }
+
+        #endregion Private Methods
     }
 }
