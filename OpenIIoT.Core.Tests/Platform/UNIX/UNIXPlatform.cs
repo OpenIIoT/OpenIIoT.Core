@@ -64,6 +64,9 @@ namespace OpenIIoT.Core.Tests.Platform
     {
         #region Public Constructors
 
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="UNIXPlatform"/> class.
+        /// </summary>
         public UNIXPlatform()
         {
             Settings = new Mock<PlatformSettings>();
@@ -80,6 +83,9 @@ namespace OpenIIoT.Core.Tests.Platform
 
         #region Private Properties
 
+        /// <summary>
+        ///     Gets or sets the <see cref="PlatformSettings"/> mockup for the class.
+        /// </summary>
         private Mock<PlatformSettings> Settings { get; set; }
 
         #endregion Private Properties

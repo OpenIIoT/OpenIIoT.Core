@@ -66,9 +66,14 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
     ///     Unit tests for the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider"/> class.
     /// </summary>
     [Collection("UNIXPlatformItemProvider")]
-    public class UNIXPlatformItemProvider : IDisposable
+    public sealed class UNIXPlatformItemProvider : IDisposable
     {
         #region Private Fields
+
+        /// <summary>
+        ///     An item used for testing; allows for disposal.
+        /// </summary>
+        private SDK.Common.Item item;
 
         /// <summary>
         ///     The instance of <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider"/> under test.
@@ -106,6 +111,7 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         public void Dispose()
         {
             provider.Dispose();
+            item.Dispose();
         }
 
         /// <summary>
@@ -114,7 +120,7 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         [Fact]
         public void Read()
         {
-            SDK.Common.Item item = new SDK.Common.Item("UNIX.CPU.% Processor Time", provider);
+            item = new SDK.Common.Item("UNIX.CPU.% Processor Time", provider);
 
             object result = provider.Read(item);
 
@@ -127,7 +133,7 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         [Fact]
         public async void ReadAsync()
         {
-            SDK.Common.Item item = new SDK.Common.Item("UNIX.CPU.% Processor Time", provider);
+            item = new SDK.Common.Item("UNIX.CPU.% Processor Time", provider);
 
             object result = await provider.ReadAsync(item);
 
@@ -140,7 +146,7 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         [Fact]
         public void ReadBad()
         {
-            SDK.Common.Item item = new SDK.Common.Item("bad value", provider);
+            item = new SDK.Common.Item("bad value", provider);
 
             object result = provider.Read(item);
 

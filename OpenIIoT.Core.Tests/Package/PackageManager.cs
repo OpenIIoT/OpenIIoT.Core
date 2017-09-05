@@ -652,7 +652,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.PackageManager.InstallPackage(string)"/> method with a known good Package and default options.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.InstallPackage(string)"/> method with a known good Package and
+        ///     default options.
         /// </summary>
         [Fact]
         public void InstallPackage()
@@ -688,8 +689,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.PackageManager.InstallPackageAsync(string)"/> method with a known good Package and
-        ///     default options.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.InstallPackageAsync(string)"/> method with a known good Package
+        ///     and default options.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -726,8 +727,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.PackageManager.InstallPackageAsync(string)"/> method with a known good Package and
-        ///     null/default options.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.InstallPackageAsync(string)"/> method with a known good Package
+        ///     and null/default options.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -764,7 +765,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.PackageManager.InstallPackageAsync(string)"/> method with a known good Package and blank options.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.InstallPackageAsync(string)"/> method with a known good Package
+        ///     and blank options.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -801,8 +803,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.PackageManager.InstallPackageAsync(string)"/> method with a known good Package and blank
-        ///     options and an explicit PGP key.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.InstallPackageAsync(string)"/> method with a known good Package
+        ///     and blank options and an explicit PGP key.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
@@ -839,7 +841,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.PackageManager.InstallPackage(string)"/> method with scenario known to raise an exception.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.InstallPackage(string)"/> method with scenario known to raise an exception.
         /// </summary>
         [Fact]
         public void InstallPackageFailure()
@@ -880,8 +882,8 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.PackageManager.InstallPackage(string)"/> method with a Package which does not exist in
-        ///     the collection.
+        ///     Tests the <see cref="Core.Packaging.PackageManager.InstallPackage(string)"/> method with a Package which does not
+        ///     exist in the collection.
         /// </summary>
         [Fact]
         public void InstallPackageNotFound()
@@ -1066,7 +1068,7 @@ namespace OpenIIoT.Core.Tests.Package
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Packaging.PackageManager.Setup"/> method using reflection.
+        ///     Tests the Setup method using reflection.
         /// </summary>
         [Fact]
         public void Setup()

@@ -52,11 +52,11 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using Moq;
+using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
 using Xunit;
-using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core.Tests.Common
 {

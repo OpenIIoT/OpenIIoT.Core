@@ -49,17 +49,17 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Security;
 using Utility.OperationResult;
 using Xunit;
-using System.Collections.Generic;
-using OpenIIoT.SDK.Common.Exceptions;
 
 namespace OpenIIoT.Core.Tests.Security
 {
@@ -115,6 +115,9 @@ namespace OpenIIoT.Core.Tests.Security
 
         #region Public Methods
 
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
         [Fact]
         public void Constructor()
         {
@@ -126,6 +129,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Null(Manager.Users);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.CreateUser(string, string, Role)"/> method.
+        /// </summary>
         [Fact]
         public void CreateUser()
         {
@@ -144,6 +150,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.True(((Core.Security.SecurityManager)Manager).Configuration.Users.Any(u => u.Name == name));
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.CreateUser(string, string, Role)"/> method with a known bad password.
+        /// </summary>
         [Fact]
         public void CreateUserBadPassword()
         {
@@ -154,6 +163,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.CreateUser(string, string, Role)"/> method with a known bad user.
+        /// </summary>
         [Fact]
         public void CreateUserBadUser()
         {
@@ -164,6 +176,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.CreateUser(string, string, Role)"/> method with an
+        ///     <see cref="ISecurityManager"/> which nas not been started.
+        /// </summary>
         [Fact]
         public void CreateUserNotStarted()
         {
@@ -171,6 +187,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.CreateUser(string, string, Role)"/> method with a known existing user.
+        /// </summary>
         [Fact]
         public void CreateUserUserExists()
         {
@@ -181,6 +200,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.DeleteUser(string)"/> method.
+        /// </summary>
         [Fact]
         public void DeleteUser()
         {
@@ -196,6 +218,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Success, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.DeleteUser(string)"/> method with a user which is not found.
+        /// </summary>
         [Fact]
         public void DeleteUserNotFound()
         {
@@ -206,6 +231,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.DeleteUser(string)"/> method with an
+        ///     <see cref="ISecurityManager"/> which has not been started.
+        /// </summary>
         [Fact]
         public void DeleteUserNotRunning()
         {
@@ -219,6 +248,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.EndSession(Session)"/> method.
+        /// </summary>
         [Fact]
         public void EndSession()
         {
@@ -233,6 +265,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Success, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.EndSession(Session)"/> method with an
+        ///     <see cref="ISecurityManager"/> which has not been started.
+        /// </summary>
         [Fact]
         public void EndSessionNotRunning()
         {
@@ -241,6 +277,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.EndSession(Session)"/> method with a Session which can not be found.
+        /// </summary>
         [Fact]
         public void EndSessionSessionNotFound()
         {
@@ -251,6 +290,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.EndSession(Session)"/> method with a null Session.
+        /// </summary>
         [Fact]
         public void EndSessionSessionNull()
         {
@@ -261,6 +303,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.ExtendSession(Session)"/> method.
+        /// </summary>
         [Fact]
         public void ExtendSession()
         {
@@ -279,6 +324,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.True(result.ReturnValue.Ticket.Properties.ExpiresUtc > offset);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.ExtendSession(Session)"/> method with a Session which has expired.
+        /// </summary>
         [Fact]
         public void ExtendSessionExpired()
         {
@@ -295,6 +343,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.ExtendSession(Session)"/> method with a Session which can not be found.
+        /// </summary>
         [Fact]
         public void ExtendSessionNotFound()
         {
@@ -305,6 +356,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.ExtendSession(Session)"/> method with an
+        ///     <see cref="ISecurityManager"/> which has not been started.
+        /// </summary>
         [Fact]
         public void ExtendSessionNotRunning()
         {
@@ -313,6 +368,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.ExtendSession(Session)"/> method with a null Session.
+        /// </summary>
         [Fact]
         public void ExtendSessionSessionNull()
         {
@@ -323,6 +381,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.ExtendSession(Session)"/> method with a configuration in which
+        ///     SlidingSessions is false.
+        /// </summary>
         [Fact]
         public void ExtendSessionSlidingSessionsNotEnabled()
         {
@@ -340,6 +402,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Warning, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.FindSession(string)"/> method.
+        /// </summary>
         [Fact]
         public void FindSession()
         {
@@ -355,6 +420,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal("test", foundSession.Ticket.Identity.Name);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.FindSession(string)"/> method with a Session which can not be found.
+        /// </summary>
         [Fact]
         public void FindSessionNotFound()
         {
@@ -363,6 +431,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(default(SDK.Security.Session), foundSession);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.FindUser(string)"/> method.
+        /// </summary>
         [Fact]
         public void FindUser()
         {
@@ -379,6 +450,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(user.Role, Role.Reader);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.FindUser(string)"/> method with a User which can not be found.
+        /// </summary>
         [Fact]
         public void FindUserNotFound()
         {
@@ -389,6 +463,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(default(SDK.Security.User), user);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.FindUserSession(string)"/> method.
+        /// </summary>
         [Fact]
         public void FindUserSession()
         {
@@ -404,6 +481,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal("test", foundSession.Ticket.Identity.Name);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.FindUserSession(string)"/> method with a Session which can not
+        ///     be found.
+        /// </summary>
         [Fact]
         public void FindUserSessionNotFound()
         {
@@ -412,6 +493,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(default(SDK.Security.Session), foundSession);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.GetConfigurationDefinition"/> method.
+        /// </summary>
         [Fact]
         public void GetConfigurationDefinition()
         {
@@ -428,6 +512,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.NotEmpty(config.Users);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.Instantiate(IApplicationManager, IConfigurationManager)"/> method.
+        /// </summary>
         [Fact]
         public void Instantiate()
         {
@@ -438,6 +525,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.IsType<Core.Security.SecurityManager>(manager);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.Instantiate(IApplicationManager, IConfigurationManager)"/>
+        ///     method twice in succession.
+        /// </summary>
         [Fact]
         public void InstantiateTwice()
         {
@@ -453,6 +544,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Same(manager, manager2);
         }
 
+        /// <summary>
+        ///     Tests the PurgeExpiredSessions method via reflection.
+        /// </summary>
         [Fact]
         public void PurgeExpiredSessions()
         {
@@ -494,6 +588,9 @@ namespace OpenIIoT.Core.Tests.Security
             setup.Invoke(Manager, new object[] { });
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.Startup()"/> method via <see cref="Core.Common.Manager.Start()"/>.
+        /// </summary>
         [Fact]
         public void Start()
         {
@@ -504,6 +601,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(State.Running, Manager.State);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.Startup()"/> method via
+        ///     <see cref="Core.Common.Manager.Start()"/> with a configuration failure.
+        /// </summary>
         [Fact]
         public void StartConfigurationFailure()
         {
@@ -521,6 +622,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.IsType<ManagerStartException>(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.Startup()"/> method via
+        ///     <see cref="Core.Common.Manager.Start()"/> with a failing Configuration.
+        /// </summary>
         [Fact]
         public void StartNotConfigured()
         {
@@ -539,6 +644,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(State.Running, Manager.State);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.StartSession(string, string)"/> method.
+        /// </summary>
         [Fact]
         public void StartSession()
         {
@@ -550,6 +658,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal("test", result.ReturnValue.Ticket.Identity.Name);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.StartSession(string, string)"/> method with a known bad password.
+        /// </summary>
         [Fact]
         public void StartSessionBadPassword()
         {
@@ -560,6 +671,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.StartSession(string, string)"/> method with a User which has an
+        ///     existing Session.
+        /// </summary>
         [Fact]
         public void StartSessionExistingSession()
         {
@@ -575,6 +690,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Same(session1.ReturnValue, session2.ReturnValue);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.StartSession(string, string)"/> method with an
+        ///     <see cref="ISecurityManager"/> which has not been started.
+        /// </summary>
         [Fact]
         public void StartSessionNotStarted()
         {
@@ -583,8 +702,12 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.StartSession(string, string)"/> method with a User which can not
+        ///     be found.
+        /// </summary>
         [Fact]
-        public void StartSessionUSerNotFound()
+        public void StartSessionUserNotFound()
         {
             Manager.Start();
 
@@ -593,6 +716,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the Shutdown method via Manager.Stop.
+        /// </summary>
         [Fact]
         public void Stop()
         {
@@ -609,6 +735,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(State.Stopped, Manager.State);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.UpdateUser(string, string, Role?)"/> method.
+        /// </summary>
         [Fact]
         public void UpdateUser()
         {
@@ -627,6 +756,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(Role.ReadWriter, user.ReturnValue.Role);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.UpdateUser(string, string, Role?)"/> method with a known bad password.
+        /// </summary>
         [Fact]
         public void UpdateUserBadPassword()
         {
@@ -637,6 +769,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.UpdateUser(string, string, Role?)"/> method with neither an
+        ///     updated password nor Role.
+        /// </summary>
         [Fact]
         public void UpdateUserNothingToUpdate()
         {
@@ -647,6 +783,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.UpdateUser(string, string, Role?)"/> method with an
+        ///     <see cref="ISecurityManager"/> which has not been started.
+        /// </summary>
         [Fact]
         public void UpdateUserNotRunning()
         {
@@ -655,6 +795,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.UpdateUser(string, string, Role?)"/> method with an updated password.
+        /// </summary>
         [Fact]
         public void UpdateUserPassword()
         {
@@ -673,6 +816,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(Role.Reader, user.ReturnValue.Role);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.UpdateUser(string, string, Role?)"/> method with an updated Role.
+        /// </summary>
         [Fact]
         public void UpdateUserRole()
         {
@@ -691,6 +837,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(Role.ReadWriter, user.ReturnValue.Role);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.UpdateUser(string, string, Role?)"/> method with a User which
+        ///     can not be found.
+        /// </summary>
         [Fact]
         public void UpdateUserUserNotFound()
         {
@@ -703,6 +853,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.Users"/> property.
+        /// </summary>
         [Fact]
         public void Users()
         {
@@ -713,6 +866,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.NotNull(Manager.Users);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.SecurityManager.Users"/> property with an empty Users collection.
+        /// </summary>
         [Fact]
         public void UsersEmpty()
         {
@@ -727,6 +883,9 @@ namespace OpenIIoT.Core.Tests.Security
 
         #region Private Methods
 
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
         private void SetupMocks()
         {
             ApplicationManager = new Mock<IApplicationManager>();

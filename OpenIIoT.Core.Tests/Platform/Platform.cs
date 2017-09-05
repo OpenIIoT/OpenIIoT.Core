@@ -54,11 +54,11 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Moq;
+using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
-using OpenIIoT.Core.Platform;
 
 namespace OpenIIoT.Core.Tests.Platform
 {
@@ -70,7 +70,7 @@ namespace OpenIIoT.Core.Tests.Platform
     ///     not abstracted from the tests.
     /// </remarks>
     [Collection("Platform")]
-    public class Platform : IDisposable
+    public sealed class Platform : IDisposable
     {
         #region Private Fields
 

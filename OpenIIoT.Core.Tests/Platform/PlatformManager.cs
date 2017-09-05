@@ -52,9 +52,9 @@ using System.Reflection;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
 using Xunit;
-using OpenIIoT.SDK.Platform;
 
 namespace OpenIIoT.Core.Tests.Platform
 {
