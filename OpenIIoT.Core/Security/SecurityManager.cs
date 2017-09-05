@@ -45,7 +45,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
@@ -788,7 +787,7 @@ namespace OpenIIoT.Core.Security
 
             foreach (Session session in sessions)
             {
-                if (session.Ticket.Properties.ExpiresUtc < DateTime.UtcNow)
+                if (session.IsExpired)
                 {
                     EndSession(session);
                 }
