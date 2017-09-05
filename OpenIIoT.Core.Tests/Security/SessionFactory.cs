@@ -60,7 +60,37 @@ namespace OpenIIoT.Core.Tests.Security
     /// </summary>
     public class SessionFactory
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="SessionFactory"/> class
+        /// </summary>
+        public SessionFactory()
+        {
+            Factory = new Core.Security.SessionFactory();
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the <see cref="Core.Security.SessionFactory"/> under test.
+        /// </summary>
+        private Core.Security.SessionFactory Factory { get; set; }
+
+        #endregion Private Properties
+
         #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            Assert.IsType<Core.Security.SessionFactory>(Factory);
+        }
 
         /// <summary>
         ///     Tests the <see cref="Core.Security.SessionFactory.CreateSession(SDK.Security.User, int)"/> method.
@@ -69,8 +99,7 @@ namespace OpenIIoT.Core.Tests.Security
         public void CreateSession()
         {
             SDK.Security.User user = new SDK.Security.User("test", "hash", SDK.Security.Role.Reader);
-            Core.Security.SessionFactory factory = new Core.Security.SessionFactory();
-            SDK.Security.Session test = factory.CreateSession(user, 15);
+            SDK.Security.Session test = Factory.CreateSession(user, 15);
 
             Assert.IsType<SDK.Security.Session>(test);
             Assert.NotNull(test);
@@ -89,8 +118,7 @@ namespace OpenIIoT.Core.Tests.Security
         public void CreateSessionAdmin()
         {
             SDK.Security.User user = new SDK.Security.User("admin", "hash", SDK.Security.Role.Administrator);
-            Core.Security.SessionFactory factory = new Core.Security.SessionFactory();
-            SDK.Security.Session test = factory.CreateSession(user, 15);
+            SDK.Security.Session test = Factory.CreateSession(user, 15);
 
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.ReadWriter.ToString()));
@@ -105,8 +133,7 @@ namespace OpenIIoT.Core.Tests.Security
         public void CreateSessionNullUser()
         {
             SDK.Security.User user = default(SDK.Security.User);
-            Core.Security.SessionFactory factory = new Core.Security.SessionFactory();
-            SDK.Security.Session test = factory.CreateSession(user, 15);
+            SDK.Security.Session test = Factory.CreateSession(user, 15);
 
             Assert.IsType<SDK.Security.Session>(test);
             Assert.NotNull(test);
@@ -124,8 +151,7 @@ namespace OpenIIoT.Core.Tests.Security
         public void CreateSessionReadWriter()
         {
             SDK.Security.User user = new SDK.Security.User("admin", "hash", SDK.Security.Role.ReadWriter);
-            Core.Security.SessionFactory factory = new Core.Security.SessionFactory();
-            SDK.Security.Session test = factory.CreateSession(user, 15);
+            SDK.Security.Session test = Factory.CreateSession(user, 15);
 
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.ReadWriter.ToString()));
@@ -138,12 +164,11 @@ namespace OpenIIoT.Core.Tests.Security
         public void ExtendSession()
         {
             SDK.Security.User user = new SDK.Security.User("admin", "hash", SDK.Security.Role.ReadWriter);
-            Core.Security.SessionFactory factory = new Core.Security.SessionFactory();
-            SDK.Security.Session test = factory.CreateSession(user, 15);
+            SDK.Security.Session test = Factory.CreateSession(user, 15);
 
             DateTimeOffset initial = test.Ticket.Properties.ExpiresUtc.Value;
 
-            factory.ExtendSession(test, 15);
+            Factory.ExtendSession(test, 15);
 
             Assert.Equal(initial.AddSeconds(15), test.Ticket.Properties.ExpiresUtc.Value);
         }

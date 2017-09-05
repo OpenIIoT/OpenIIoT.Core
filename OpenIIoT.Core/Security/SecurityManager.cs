@@ -101,6 +101,7 @@ namespace OpenIIoT.Core.Security
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
 
+            SessionFactory = new SessionFactory();
             SessionList = new List<Session>();
 
             ChangeState(State.Initialized);
