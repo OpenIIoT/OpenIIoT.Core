@@ -3,13 +3,11 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Web.Http;
-using Newtonsoft.Json;
 using NLog;
-using OpenIIoT.Core.Model;
+using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
-using OpenIIoT.Core.Service.WebApi;
 
 namespace OpenIIoT.Core.Model.WebApi
 {

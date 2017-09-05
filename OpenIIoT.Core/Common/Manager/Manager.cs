@@ -51,6 +51,7 @@ using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
 using Utility.OperationResult;
+using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core.Common
 {

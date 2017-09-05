@@ -90,32 +90,33 @@ namespace OpenIIoT.Core.Service.WebApi
         #region Private Methods
 
         /// <summary>
+        ///     Computes the hostname and protocol as seen by the original client for the specified <paramref name="request"/>.
         /// </summary>
-        /// <param name="req"></param>
-        /// <returns></returns>
+        /// <param name="request">The request for which the hostname and protocol is to be computed.</param>
+        /// <returns>The computed hostname and protocol.</returns>
         /// <example>
         ///     <![CDATA[ <rule name="openiiot" stopProcessing="true"> <match url = "openiiot(/.*)" /> <serverVariables> <set
         ///     name="HTTP_X_Forwarded_Host" value="whatnet.us" /> <set name = "HTTP_X_Forwarded_Proto" value="http" />
         ///     </serverVariables> <action type = "Rewrite" url="http://sandbox/{R:0}" /> </rule> ]]>
         /// </example>
-        private static string ComputeHostAsSeenByOriginalClient(HttpRequestMessage req)
+        private static string ComputeHostAsSeenByOriginalClient(HttpRequestMessage request)
         {
-            string authority = req.RequestUri.Authority;
-            string scheme = req.RequestUri.Scheme;
+            string authority = request.RequestUri.Authority;
+            string scheme = request.RequestUri.Scheme;
 
-            HttpRequestHeaders headers = req.Headers;
+            HttpRequestHeaders headers = request.Headers;
 
-            if (req.Headers.Contains("X-Forwarded-Host"))
+            if (request.Headers.Contains("X-Forwarded-Host"))
             {
-                string xForwardedHost = req.Headers.GetValues("X-Forwarded-Host").First();
+                string xForwardedHost = request.Headers.GetValues("X-Forwarded-Host").First();
                 string firstForwardedHost = xForwardedHost.Split(',')[0];
 
                 authority = firstForwardedHost;
             }
 
-            if (req.Headers.Contains("X-Forwarded-Proto"))
+            if (request.Headers.Contains("X-Forwarded-Proto"))
             {
-                var xForwardedProto = req.Headers.GetValues("X-Forwarded-Proto").First();
+                var xForwardedProto = request.Headers.GetValues("X-Forwarded-Proto").First();
                 if (xForwardedProto.IndexOf(",") != -1)
                 {
                     xForwardedProto = xForwardedProto.Split(',')[0];

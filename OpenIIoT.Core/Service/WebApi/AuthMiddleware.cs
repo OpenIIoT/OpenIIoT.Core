@@ -44,12 +44,7 @@ using System.Threading.Tasks;
 using Microsoft.Owin;
 using NLog;
 using NLog.xLogger;
-using OpenIIoT.Core.Security;
 using OpenIIoT.SDK;
-using OpenIIoT.Core.Service;
-using OpenIIoT.SDK.Service;
-using System.Diagnostics;
-using System;
 using OpenIIoT.SDK.Security;
 
 namespace OpenIIoT.Core.Service.WebApi

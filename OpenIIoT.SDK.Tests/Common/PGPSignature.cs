@@ -79,11 +79,6 @@ namespace OpenIIoT.SDK.Tests.Common
         private string newPublicKey;
 
         /// <summary>
-        ///     A null string.
-        /// </summary>
-        private string nullString;
-
-        /// <summary>
         ///     The contents of the private key file.
         /// </summary>
         private string privateKey;
@@ -257,7 +252,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void VerifyNulls()
         {
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Verify(nullString, null));
+            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Verify(default(string), null));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpDataValidationException>(ex);

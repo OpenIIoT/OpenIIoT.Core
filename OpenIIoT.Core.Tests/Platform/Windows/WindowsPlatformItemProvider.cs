@@ -111,7 +111,11 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
         public void Dispose()
         {
             provider.Dispose();
-            item.Dispose();
+
+            if (item != default(SDK.Common.Item))
+            {
+                item.Dispose();
+            }
         }
 
         /// <summary>

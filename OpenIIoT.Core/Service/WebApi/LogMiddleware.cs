@@ -1,8 +1,7 @@
-﻿using Microsoft.Owin;
+﻿using System.Threading.Tasks;
+using Microsoft.Owin;
 using NLog;
 using NLog.xLogger;
-using System;
-using System.Threading.Tasks;
 
 namespace OpenIIoT.Core.Service.WebApi
 {

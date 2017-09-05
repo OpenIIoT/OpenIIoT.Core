@@ -2,18 +2,13 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Newtonsoft.Json;
 using NLog;
-using OpenIIoT.Core.Platform;
-using OpenIIoT.Core.Plugin;
+using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Plugin;
-using OpenIIoT.Core.Service.WebApi;
 
 namespace OpenIIoT.Core.Plugin.WebApi
 {
