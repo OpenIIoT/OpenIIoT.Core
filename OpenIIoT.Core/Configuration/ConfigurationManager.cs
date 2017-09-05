@@ -43,13 +43,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NLog.xLogger;
+using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
-using OpenIIoT.Core.Common;
 
 namespace OpenIIoT.Core.Configuration
 {

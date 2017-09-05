@@ -612,12 +612,8 @@ namespace OpenIIoT.SDK.Common
         /// </summary>
         public void Dispose()
         {
-            childrenLock.Dispose();
-            grandchildrenLock.Dispose();
-            parentLock.Dispose();
-            providerLock.Dispose();
-            sourceItemLock.Dispose();
-            valueLock.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
@@ -1072,6 +1068,16 @@ namespace OpenIIoT.SDK.Common
         public virtual async Task<bool> WriteToSourceAsync(object value)
         {
             return await Task.Run(() => WriteToSource(value));
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            childrenLock.Dispose();
+            grandchildrenLock.Dispose();
+            parentLock.Dispose();
+            providerLock.Dispose();
+            sourceItemLock.Dispose();
+            valueLock.Dispose();
         }
 
         #endregion Public Methods

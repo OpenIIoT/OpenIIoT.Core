@@ -154,7 +154,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="Core.Configuration.ConfigurationLoader.Save(IReadOnlyDictionary{string, Dictionary{string, object}}, string)"/> method.
+        ///     <see cref="Core.Configuration.ConfigurationLoader.Save(IDictionary{string, IDictionary{string, object}}, string)"/> method.
         /// </summary>
         [Fact]
         public void Save()

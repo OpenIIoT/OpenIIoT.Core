@@ -48,13 +48,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using OpenIIoT.SDK;
-using Xunit;
-using Moq;
 using System;
-using OpenIIoT.SDK.Common.Exceptions;
+using System.Collections.Generic;
+using Moq;
 using OpenIIoT.Core.Platform;
+using OpenIIoT.SDK;
+using OpenIIoT.SDK.Common.Exceptions;
+using Xunit;
 
 namespace OpenIIoT.Core.Tests
 {

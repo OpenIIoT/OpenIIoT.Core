@@ -116,16 +116,6 @@ namespace OpenIIoT.Core.Tests
             Assert.IsType<Core.ApplicationSettings>(Settings);
         }
 
-        /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.ResetCache"/> method.
-        /// </summary>
-        [Fact]
-        public void ResetCache()
-        {
-            Exception ex = Record.Exception(() => Settings.ResetCache());
-            Assert.Null(ex);
-        }
-
         #endregion Public Methods
     }
 }

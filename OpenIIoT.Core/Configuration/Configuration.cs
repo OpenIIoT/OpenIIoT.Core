@@ -61,11 +61,6 @@ namespace OpenIIoT.Core.Configuration
         /// </summary>
         private static xLogger logger = xLogManager.GetCurrentClassxLogger();
 
-        /// <summary>
-        ///     Gets or sets tThe collection of instance configurations.
-        /// </summary>
-        private IDictionary<string, IDictionary<string, object>> InstanceDictionary { get; set; }
-
         #endregion Private Fields
 
         #region Public Constructors
@@ -103,6 +98,11 @@ namespace OpenIIoT.Core.Configuration
         #endregion Public Properties
 
         #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets tThe collection of instance configurations.
+        /// </summary>
+        private IDictionary<string, IDictionary<string, object>> InstanceDictionary { get; set; }
 
         /// <summary>
         ///     Gets or sets the registry of configurable Types.

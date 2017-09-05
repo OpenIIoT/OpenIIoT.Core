@@ -279,7 +279,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="Core.Configuration.Configuration.LoadInstancesFrom(Dictionary{string, Dictionary{string, object}})"/> method.
+        ///     <see cref="Core.Configuration.Configuration.LoadInstancesFrom(IDictionary{string, IDictionary{string, object}})"/> method.
         /// </summary>
         [Fact]
         public void LoadInstancesFrom()

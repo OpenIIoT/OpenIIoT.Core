@@ -1,14 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Web.Http;
-using Newtonsoft.Json;
 using NLog;
 using NLog.RealtimeLogger;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using System.Net;
 using OpenIIoT.Core.Service.WebApi;
+using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core.Common.WebApi
 {

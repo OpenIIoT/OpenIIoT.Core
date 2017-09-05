@@ -1,6 +1,6 @@
-﻿using OpenIIoT.Core.Service.WebApi;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Http;
+using OpenIIoT.Core.Service.WebApi;
 
 namespace OpenIIoT.Core.Model.WebApi
 {

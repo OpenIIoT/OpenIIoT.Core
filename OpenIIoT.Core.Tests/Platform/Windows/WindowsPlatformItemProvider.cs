@@ -66,9 +66,14 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
     ///     Unit tests for the <see cref="Core.Platform.Windows.WindowsPlatformItemProvider"/> class.
     /// </summary>
     [Collection("WindowsPlatformItemProvider")]
-    public class WindowsPlatformItemProvider : IDisposable
+    public sealed class WindowsPlatformItemProvider : IDisposable
     {
         #region Private Fields
+
+        /// <summary>
+        ///     An item used for testing; allows for disposal.
+        /// </summary>
+        private SDK.Common.Item item;
 
         /// <summary>
         ///     The instance of <see cref="Core.Platform.Windows.WindowsPlatformItemProvider"/> under test.
@@ -106,6 +111,11 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
         public void Dispose()
         {
             provider.Dispose();
+
+            if (item != default(SDK.Common.Item))
+            {
+                item.Dispose();
+            }
         }
 
         /// <summary>
@@ -114,7 +124,7 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
         [Fact]
         public void Read()
         {
-            SDK.Common.Item item = new SDK.Common.Item("Windows.CPU.% Processor Time", provider);
+            item = new SDK.Common.Item("Windows.CPU.% Processor Time", provider);
 
             object result = provider.Read(item);
 
@@ -127,7 +137,7 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
         [Fact]
         public async void ReadAsync()
         {
-            SDK.Common.Item item = new SDK.Common.Item("Windows.CPU.% Processor Time", provider);
+            item = new SDK.Common.Item("Windows.CPU.% Processor Time", provider);
 
             object result = await provider.ReadAsync(item);
 
@@ -141,7 +151,7 @@ namespace OpenIIoT.Core.Tests.Platform.Windows
         [Fact]
         public void ReadBad()
         {
-            SDK.Common.Item item = new SDK.Common.Item("bad value", provider);
+            item = new SDK.Common.Item("bad value", provider);
 
             object result = provider.Read(item);
 

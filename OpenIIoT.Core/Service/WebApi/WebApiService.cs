@@ -6,9 +6,9 @@ using Microsoft.AspNet.SignalR;
 using Microsoft.Owin.Hosting;
 using NLog;
 using OpenIIoT.SDK.Configuration;
-using Utility.OperationResult;
-using OpenIIoT.SDK.Service.WebApi;
 using OpenIIoT.SDK.Service;
+using OpenIIoT.SDK.Service.WebApi;
+using Utility.OperationResult;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
 

@@ -127,163 +127,14 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.CreateUser(string, string, Role)"/> method.
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.RolesGet"/> method.
         /// </summary>
         [Fact]
-        public void CreateUser()
-        {
-            string hash = "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86";
-            SDK.Security.User user = new User("user", hash, Role.Reader);
-
-            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>().SetReturnValue(user));
-
-            HttpResponseMessage response = Controller.CreateUser("user", "password", Role.Reader);
-
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-
-            SDK.Security.User responseUser = response.GetContent<User>();
-
-            Assert.Equal("user", responseUser.Name);
-            Assert.Equal(hash, responseUser.PasswordHash);
-            Assert.Equal(Role.Reader, responseUser.Role);
-
-            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once());
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.CreateUser(string, string, Role)"/> method with a
-        ///     known bad password.
-        /// </summary>
-        [Fact]
-        public void CreateUserBadPassword()
-        {
-            HttpResponseMessage response = Controller.CreateUser("user", string.Empty, Role.Reader);
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.CreateUser(string, string, Role)"/> method with a
-        ///     known bad user name.
-        /// </summary>
-        [Fact]
-        public void CreateUserBadUser()
-        {
-            HttpResponseMessage response = Controller.CreateUser(string.Empty, "password", Role.Reader);
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.CreateUser(string, string, Role)"/> method with
-        ///     <see cref="ISecurityManager"/> returning a failing result.
-        /// </summary>
-        [Fact]
-        public void CreateUserFailure()
-        {
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(SDK.Security.User));
-            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>(ResultCode.Failure));
-
-            HttpResponseMessage response = Controller.CreateUser("user", "password", Role.Reader);
-
-            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
-
-            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.CreateUser(string, string, Role)"/> method with an
-        ///     existing user.
-        /// </summary>
-        [Fact]
-        public void CreateUserUserExists()
-        {
-            SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-
-            HttpResponseMessage response = Controller.CreateUser("user", "password", Role.Reader);
-
-            Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
-            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.DeleteUser(string)"/> method.
-        /// </summary>
-        [Fact]
-        public void DeleteUser()
-        {
-            SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.DeleteUser(It.IsAny<string>())).Returns(new Result());
-
-            HttpResponseMessage response = Controller.DeleteUser("user");
-
-            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-
-            SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
-            SecurityManager.Verify(s => s.DeleteUser(It.IsAny<string>()), Times.Once);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.DeleteUser(string)"/> method with a known bad user name.
-        /// </summary>
-        [Fact]
-        public void DeleteUserBadUser()
-        {
-            HttpResponseMessage response = Controller.DeleteUser(string.Empty);
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.DeleteUser(string)"/> method with
-        ///     <see cref="ISecurityManager"/> returning a failing result.
-        /// </summary>
-        [Fact]
-        public void DeleteUserFailure()
-        {
-            SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.DeleteUser(It.IsAny<string>())).Returns(new Result(ResultCode.Failure));
-
-            HttpResponseMessage response = Controller.DeleteUser("user");
-
-            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
-
-            SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
-            SecurityManager.Verify(s => s.DeleteUser(It.IsAny<string>()), Times.Once);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.DeleteUser(string)"/> method with a user which is not found.
-        /// </summary>
-        [Fact]
-        public void DeleteUserUserNotFound()
-        {
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(User));
-
-            HttpResponseMessage response = Controller.DeleteUser("user");
-
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
-
-            SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.GetRoles"/> method.
-        /// </summary>
-        [Fact]
-        public void GetRoles()
+        public void RolesGet()
         {
             SecurityManager.Setup(s => s.Roles).Returns(new[] { Role.Reader, Role.ReadWriter, Role.Administrator }.ToList());
 
-            HttpResponseMessage response = Controller.GetRoles();
+            HttpResponseMessage response = Controller.RolesGet();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -298,14 +149,50 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.GetSessions"/> method.
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.SessionsEnd"/> method.
         /// </summary>
         [Fact]
-        public void GetSessions()
+        public void SessionsEnd()
+        {
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session("key", null));
+            SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result());
+
+            HttpResponseMessage response = Controller.SessionsEnd();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
+            SecurityManager.Verify(s => s.EndSession(It.IsAny<Session>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.SessionsEnd"/> method with an
+        ///     <see cref="ISecurityManager"/> returning a failing result.
+        /// </summary>
+        [Fact]
+        public void SessionsEndFailure()
+        {
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session("key", null));
+            SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result(ResultCode.Failure));
+
+            HttpResponseMessage response = Controller.SessionsEnd();
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
+
+            SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
+            SecurityManager.Verify(s => s.EndSession(It.IsAny<Session>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.SessionsGet"/> method.
+        /// </summary>
+        [Fact]
+        public void SessionsGet()
         {
             SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session("key", null) }.ToList().AsReadOnly());
 
-            HttpResponseMessage response = Controller.GetSessions();
+            HttpResponseMessage response = Controller.SessionsGet();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -318,14 +205,222 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.GetUsers"/> method.
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.SessionsStart(string, string)"/> method.
         /// </summary>
         [Fact]
-        public void GetUsers()
+        public void SessionsStart()
+        {
+            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>().SetReturnValue(new Session("key", null)));
+
+            HttpResponseMessage response = Controller.SessionsStart("user", "password");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("key", response.GetContent<Session>().ApiKey);
+
+            SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.SessionsStart(string, string)"/> method with a known
+        ///     bad password.
+        /// </summary>
+        [Fact]
+        public void SessionsStartBadPassword()
+        {
+            HttpResponseMessage response = Controller.SessionsStart("user", string.Empty);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.SessionsStart(string, string)"/> method with a known
+        ///     bad user.
+        /// </summary>
+        [Fact]
+        public void SessionsStartBadUser()
+        {
+            HttpResponseMessage response = Controller.SessionsStart(string.Empty, "password");
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.SessionsStart(string, string)"/> method with an
+        ///     <see cref="ISecurityManager"/> returning a failing result.
+        /// </summary>
+        [Fact]
+        public void SessionsStartFailure()
+        {
+            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>(ResultCode.Failure));
+
+            HttpResponseMessage response = Controller.SessionsStart("user", "password");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
+
+            SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersCreate(string, string, Role)"/> method.
+        /// </summary>
+        [Fact]
+        public void UsersCreate()
+        {
+            string hash = "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86";
+            SDK.Security.User user = new User("user", hash, Role.Reader);
+
+            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>().SetReturnValue(user));
+
+            HttpResponseMessage response = Controller.UsersCreate("user", "password", Role.Reader);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+
+            SDK.Security.User responseUser = response.GetContent<User>();
+
+            Assert.Equal("user", responseUser.Name);
+            Assert.Equal(hash, responseUser.PasswordHash);
+            Assert.Equal(Role.Reader, responseUser.Role);
+
+            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersCreate(string, string, Role)"/> method with a
+        ///     known bad password.
+        /// </summary>
+        [Fact]
+        public void UsersCreateBadPassword()
+        {
+            HttpResponseMessage response = Controller.UsersCreate("user", string.Empty, Role.Reader);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersCreate(string, string, Role)"/> method with a
+        ///     known bad user name.
+        /// </summary>
+        [Fact]
+        public void UsersCreateBadUser()
+        {
+            HttpResponseMessage response = Controller.UsersCreate(string.Empty, "password", Role.Reader);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersCreate(string, string, Role)"/> method with
+        ///     <see cref="ISecurityManager"/> returning a failing result.
+        /// </summary>
+        [Fact]
+        public void UsersCreateFailure()
+        {
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(SDK.Security.User));
+            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>(ResultCode.Failure));
+
+            HttpResponseMessage response = Controller.UsersCreate("user", "password", Role.Reader);
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
+
+            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersCreate(string, string, Role)"/> method with an
+        ///     existing user.
+        /// </summary>
+        [Fact]
+        public void UsersCreateUserExists()
+        {
+            SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
+
+            HttpResponseMessage response = Controller.UsersCreate("user", "password", Role.Reader);
+
+            Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
+            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersDelete(string)"/> method.
+        /// </summary>
+        [Fact]
+        public void UsersDelete()
+        {
+            SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
+            SecurityManager.Setup(s => s.DeleteUser(It.IsAny<string>())).Returns(new Result());
+
+            HttpResponseMessage response = Controller.UsersDelete("user");
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+
+            SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
+            SecurityManager.Verify(s => s.DeleteUser(It.IsAny<string>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersDelete(string)"/> method with a known bad user name.
+        /// </summary>
+        [Fact]
+        public void UsersDeleteBadUser()
+        {
+            HttpResponseMessage response = Controller.UsersDelete(string.Empty);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersDelete(string)"/> method with
+        ///     <see cref="ISecurityManager"/> returning a failing result.
+        /// </summary>
+        [Fact]
+        public void UsersDeleteFailure()
+        {
+            SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
+            SecurityManager.Setup(s => s.DeleteUser(It.IsAny<string>())).Returns(new Result(ResultCode.Failure));
+
+            HttpResponseMessage response = Controller.UsersDelete("user");
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
+
+            SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
+            SecurityManager.Verify(s => s.DeleteUser(It.IsAny<string>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersDelete(string)"/> method with a user which is not found.
+        /// </summary>
+        [Fact]
+        public void UsersDeleteUserNotFound()
+        {
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(User));
+
+            HttpResponseMessage response = Controller.UsersDelete("user");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+            SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersGet"/> method.
+        /// </summary>
+        [Fact]
+        public void UsersGet()
         {
             SecurityManager.Setup(s => s.Users).Returns(new[] { new User("user", "hash", Role.Reader) }.ToList().AsReadOnly());
 
-            HttpResponseMessage response = Controller.GetUsers();
+            HttpResponseMessage response = Controller.UsersGet();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -340,109 +435,16 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Login(string, string)"/> method.
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersUpdate(string, string, Role?)"/> method.
         /// </summary>
         [Fact]
-        public void Login()
-        {
-            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>().SetReturnValue(new Session("key", null)));
-
-            HttpResponseMessage response = Controller.Login("user", "password");
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("key", response.GetContent<Session>().ApiKey);
-
-            SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Login(string, string)"/> method with a known bad password.
-        /// </summary>
-        [Fact]
-        public void LoginBadPassword()
-        {
-            HttpResponseMessage response = Controller.Login("user", string.Empty);
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Login(string, string)"/> method with a known bad user.
-        /// </summary>
-        [Fact]
-        public void LoginBadUser()
-        {
-            HttpResponseMessage response = Controller.Login(string.Empty, "password");
-
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Login(string, string)"/> method with an
-        ///     <see cref="ISecurityManager"/> returning a failing result.
-        /// </summary>
-        [Fact]
-        public void LoginFailure()
-        {
-            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>(ResultCode.Failure));
-
-            HttpResponseMessage response = Controller.Login("user", "password");
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
-
-            SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Logout"/> method.
-        /// </summary>
-        [Fact]
-        public void Logout()
-        {
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session("key", null));
-            SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result());
-
-            HttpResponseMessage response = Controller.Logout();
-
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
-            SecurityManager.Verify(s => s.EndSession(It.IsAny<Session>()), Times.Once);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.Logout"/> method with an
-        ///     <see cref="ISecurityManager"/> returning a failing result.
-        /// </summary>
-        [Fact]
-        public void LogoutFailure()
-        {
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session("key", null));
-            SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result(ResultCode.Failure));
-
-            HttpResponseMessage response = Controller.Logout();
-
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
-
-            SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
-            SecurityManager.Verify(s => s.EndSession(It.IsAny<Session>()), Times.Once);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method.
-        /// </summary>
-        [Fact]
-        public void UpdateUser()
+        public void UsersUpdate()
         {
             SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
 
-            HttpResponseMessage response = Controller.UpdateUser("user", "newpassword", Role.ReadWriter);
+            HttpResponseMessage response = Controller.UsersUpdate("user", "newpassword", Role.ReadWriter);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -457,43 +459,43 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with a
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersUpdate(string, string, Role?)"/> method with a
         ///     known bad password.
         /// </summary>
         [Fact]
-        public void UpdateUserBadPassword()
+        public void UsersUpdateBadPassword()
         {
-            HttpResponseMessage response = Controller.UpdateUser("user", string.Empty, Role.ReadWriter);
+            HttpResponseMessage response = Controller.UsersUpdate("user", string.Empty, Role.ReadWriter);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with a
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersUpdate(string, string, Role?)"/> method with a
         ///     known bad user.
         /// </summary>
         [Fact]
-        public void UpdateUserBadUser()
+        public void UsersUpdateBadUser()
         {
-            HttpResponseMessage response = Controller.UpdateUser(string.Empty, "newpassword", Role.ReadWriter);
+            HttpResponseMessage response = Controller.UsersUpdate(string.Empty, "newpassword", Role.ReadWriter);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with an
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersUpdate(string, string, Role?)"/> method with an
         ///     <see cref="ISecurityManager"/> returning a failing result.
         /// </summary>
         [Fact]
-        public void UpdateUserFailure()
+        public void UsersUpdateFailure()
         {
             SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>(ResultCode.Failure));
 
-            HttpResponseMessage response = Controller.UpdateUser("user", "newpassword", Role.ReadWriter);
+            HttpResponseMessage response = Controller.UsersUpdate("user", "newpassword", Role.ReadWriter);
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 
@@ -505,30 +507,30 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersUpdate(string, string, Role?)"/> method with
         ///     neither an updated <see cref="Role"/> nor password.
         /// </summary>
         [Fact]
-        public void UpdateUserNothingToUpdate()
+        public void UsersUpdateNothingToUpdate()
         {
-            HttpResponseMessage response = Controller.UpdateUser("user", null, null);
+            HttpResponseMessage response = Controller.UsersUpdate("user", null, null);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with an
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersUpdate(string, string, Role?)"/> method with an
         ///     updated password.
         /// </summary>
         [Fact]
-        public void UpdateUserPassword()
+        public void UsersUpdatePassword()
         {
             SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
 
-            HttpResponseMessage response = Controller.UpdateUser("user", "newpassword", null);
+            HttpResponseMessage response = Controller.UsersUpdate("user", "newpassword", null);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -543,17 +545,17 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with an
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersUpdate(string, string, Role?)"/> method with an
         ///     updated <see cref="Role"/>.
         /// </summary>
         [Fact]
-        public void UpdateUserRole()
+        public void UsersUpdateRole()
         {
             SDK.Security.User user = new User("user", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
 
-            HttpResponseMessage response = Controller.UpdateUser("user", null, Role.ReadWriter);
+            HttpResponseMessage response = Controller.UsersUpdate("user", null, Role.ReadWriter);
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -568,15 +570,15 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UpdateUser(string, string, Role?)"/> method with an
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersUpdate(string, string, Role?)"/> method with an
         ///     <see cref="ISecurityManager"/> unable to locate the specified user..
         /// </summary>
         [Fact]
-        public void UpdateUserUserNotFound()
+        public void UsersUpdateUserNotFound()
         {
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(User));
 
-            HttpResponseMessage response = Controller.UpdateUser("user", "newpassword", Role.ReadWriter);
+            HttpResponseMessage response = Controller.UsersUpdate("user", "newpassword", Role.ReadWriter);
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
