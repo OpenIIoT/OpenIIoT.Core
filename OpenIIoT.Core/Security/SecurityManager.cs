@@ -182,6 +182,11 @@ namespace OpenIIoT.Core.Security
         private System.Timers.Timer SessionExpiryTimer { get; set; }
 
         /// <summary>
+        ///     Gets or sets the <see cref="SessionFactory"/> used to create and extend <see cref="Session"/>.
+        /// </summary>
+        private SessionFactory SessionFactory { get; set; }
+
+        /// <summary>
         ///     Gets or sets the list of active <see cref="Session"/> s.
         /// </summary>
         private IList<Session> SessionList { get; set; }

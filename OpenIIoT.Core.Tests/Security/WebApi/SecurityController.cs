@@ -57,6 +57,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -67,7 +68,6 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
 using Utility.OperationResult;
 using Xunit;
-using System;
 
 namespace OpenIIoT.Core.Tests.Security.WebApi
 {
