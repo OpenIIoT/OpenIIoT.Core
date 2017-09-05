@@ -177,7 +177,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
 
             HttpResponseMessage response = Controller.SessionsEnd();
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
             Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
 
             SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
