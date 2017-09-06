@@ -41,7 +41,6 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
@@ -103,17 +102,16 @@ namespace OpenIIoT.Core.Platform
             RegisterDependency<IApplicationManager>(manager);
 
             Settings = new PlatformSettings();
-
-            Directories directories = new Directories(Settings);
+            Directories = new Directories(Settings);
 
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
-                    Platform = new Windows.WindowsPlatform(directories);
+                    Platform = new Windows.WindowsPlatform();
                     break;
 
                 case PlatformType.UNIX:
-                    Platform = new UNIX.UNIXPlatform(directories);
+                    Platform = new UNIX.UNIXPlatform();
                     break;
 
                 default:
@@ -130,17 +128,26 @@ namespace OpenIIoT.Core.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the current platform.
+        ///     Gets the list of configured <see cref="IDirectories"/>.
+        /// </summary>
+        public IDirectories Directories { get; private set; }
+
+        /// <summary>
+        ///     Gets the current <see cref="IPlatform"/> .
         /// </summary>
         [Discoverable]
         public IPlatform Platform { get; private set; }
+
+        #endregion Public Properties
+
+        #region Private Properties
 
         /// <summary>
         ///     Gets or sets the settings for the Manager.
         /// </summary>
         private PlatformSettings Settings { get; set; }
 
-        #endregion Public Properties
+        #endregion Private Properties
 
         #region Public Methods
 
@@ -204,6 +211,7 @@ namespace OpenIIoT.Core.Platform
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+
             IResult retVal = new Result();
 
             retVal.LogResult(logger.Debug);
@@ -222,8 +230,8 @@ namespace OpenIIoT.Core.Platform
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             IResult retVal = new Result();
 
-            // Check to ensure all directories exist. If not, create them.
             logger.Debug("Checking directories...");
+
             IResult checkResult = CheckDirectories();
             if (checkResult.ResultCode == ResultCode.Failure)
             {
@@ -254,7 +262,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod();
             IResult retVal = new Result();
 
-            IDictionary<string, string> directories = Platform.Directories.ToDictionary();
+            IDictionary<string, string> directories = Directories.ToDictionary();
 
             foreach (string directory in directories.Keys)
             {

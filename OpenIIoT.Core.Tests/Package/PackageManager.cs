@@ -149,7 +149,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -158,6 +157,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -181,7 +181,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -190,6 +189,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -212,11 +212,11 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -240,7 +240,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -248,6 +247,7 @@ namespace OpenIIoT.Core.Tests.Package
             PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
                 .Returns(failResult);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -270,11 +270,11 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(failResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -296,7 +296,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -309,6 +308,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string>(s => File.Delete(s));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -337,7 +337,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -350,6 +349,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string>(s => File.Delete(s));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -377,8 +377,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -416,7 +416,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -429,6 +428,7 @@ namespace OpenIIoT.Core.Tests.Package
             PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(dataResult);
             PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -463,7 +463,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -476,6 +475,7 @@ namespace OpenIIoT.Core.Tests.Package
             PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(dataResult);
             PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -508,7 +508,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -521,6 +520,7 @@ namespace OpenIIoT.Core.Tests.Package
             PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
             PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(readByteResult);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -547,9 +547,9 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
@@ -571,7 +571,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -580,6 +579,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -607,7 +607,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -616,6 +615,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -642,8 +642,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -666,7 +666,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
             DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -675,6 +674,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -704,7 +704,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
             DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -713,6 +712,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -742,7 +742,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
             DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -751,6 +750,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -780,7 +780,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
             DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -789,6 +788,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -818,7 +818,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
             DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -827,6 +826,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -854,7 +854,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
             DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -863,6 +862,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -896,8 +896,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -950,8 +950,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Data);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -972,8 +972,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Data);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1000,8 +1000,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1023,8 +1023,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1052,8 +1052,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1095,8 +1095,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
             PlatformManagerMock.Setup(p => p.State).Returns(State.Running);
             PlatformManagerMock.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
@@ -1125,8 +1125,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
             PlatformManagerMock.Setup(p => p.State).Returns(State.Running);
             PlatformManagerMock.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
@@ -1169,7 +1169,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -1178,6 +1177,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1206,7 +1206,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -1215,6 +1214,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1245,7 +1245,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -1254,6 +1253,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1282,8 +1282,8 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
             PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1307,7 +1307,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -1316,6 +1315,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1345,7 +1345,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -1354,6 +1353,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
@@ -1383,7 +1383,6 @@ namespace OpenIIoT.Core.Tests.Package
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
             DirectoryMock.Setup(d => d.Temp).Returns(Temp);
 
-            PlatformMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
                 .Returns(successResult)
                     .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
@@ -1392,6 +1391,7 @@ namespace OpenIIoT.Core.Tests.Package
                 .Returns(successResult)
                     .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
 
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             IPackageManager test = Core.Packaging.PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);

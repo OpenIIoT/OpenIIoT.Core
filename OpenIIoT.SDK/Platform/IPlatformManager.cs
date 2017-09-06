@@ -51,7 +51,12 @@ namespace OpenIIoT.SDK.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the current platform.
+        ///     Gets the list of configured <see cref="Directories"/>.
+        /// </summary>
+        IDirectories Directories { get; }
+
+        /// <summary>
+        ///     Gets the current <see cref="IPlatform"/> .
         /// </summary>
         IPlatform Platform { get; }
 

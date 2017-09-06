@@ -66,6 +66,7 @@ namespace OpenIIoT.Core.Tests.Security
     /// <summary>
     ///     Unit tests for the <see cref="Core.Security.SecurityManager"/> class.
     /// </summary>
+    [Collection("SecurityManager")]
     public class SecurityManager
     {
         #region Public Constructors
@@ -87,12 +88,12 @@ namespace OpenIIoT.Core.Tests.Security
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the <see cref="IConfiguration"/> mockup for the class.
+        ///     Gets or sets the <see cref="IConfiguration"/> mockup for the unit tests.
         /// </summary>
         private Mock<IConfiguration> ApplicationConfiguration { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="IApplicationManager"/> mockup for the class.
+        ///     Gets or sets the <see cref="IApplicationManager"/> mockup for the unit tests.
         /// </summary>
         private Mock<IApplicationManager> ApplicationManager { get; set; }
 
@@ -102,7 +103,7 @@ namespace OpenIIoT.Core.Tests.Security
         private Core.Security.SecurityManagerConfiguration Configuration { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="IConfigurationManager"/> mockup for the class.
+        ///     Gets or sets the <see cref="IConfigurationManager"/> mockup for the unit tests.
         /// </summary>
         private Mock<IConfigurationManager> ConfigurationManager { get; set; }
 

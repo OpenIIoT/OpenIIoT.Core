@@ -74,6 +74,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
     /// <summary>
     ///     Unit tests for the <see cref="Core.Security.WebApi.SecurityController"/> class.
     /// </summary>
+    [Collection("SecurityController")]
     public class SecurityController
     {
         #region Public Constructors

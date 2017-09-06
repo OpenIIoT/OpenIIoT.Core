@@ -53,11 +53,6 @@ namespace OpenIIoT.SDK.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets a Dictionary containing all of the application directories, loaded from the App.config.
-        /// </summary>
-        IDirectories Directories { get; }
-
-        /// <summary>
         ///     Gets the Item Provider for the Platform.
         /// </summary>
         IItemProvider ItemProvider { get; }

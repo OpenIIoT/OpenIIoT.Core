@@ -88,7 +88,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the <see cref="IApplicationManager"/> mockup for the class.
+        ///     Gets or sets the <see cref="IApplicationManager"/> mockup for the unit tests.
         /// </summary>
         private Mock<IApplicationManager> ApplicationManager { get; set; }
 
@@ -98,12 +98,12 @@ namespace OpenIIoT.Core.Tests.Configuration
         private SDK.Configuration.IConfigurationManager Manager { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="IPlatformManager"/> mockup for the class.
+        ///     Gets or sets the <see cref="IPlatformManager"/> mockup for the unit tests.
         /// </summary>
         private Mock<IPlatformManager> PlatformManager { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="Core.Platform.PlatformSettings"/> mockup for the class.
+        ///     Gets or sets the <see cref="Core.Platform.PlatformSettings"/> mockup for the unit tests.
         /// </summary>
         private Mock<PlatformSettings> PlatformSettings { get; set; }
 
@@ -258,7 +258,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             PlatformManager = new Mock<IPlatformManager>();
             PlatformManager.Setup(p => p.State).Returns(State.Running);
             PlatformManager.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
-            PlatformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(PlatformSettings.Object)));
+            PlatformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform());
         }
 
         #endregion Private Methods

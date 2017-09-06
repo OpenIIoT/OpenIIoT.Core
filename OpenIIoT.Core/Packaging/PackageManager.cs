@@ -122,12 +122,17 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets the Platform instance with which file operations are carried out.
         /// </summary>
-        private IPlatform Platform => Dependency<IPlatformManager>().Platform;
+        private IPlatform Platform => PlatformManager.Platform;
 
         /// <summary>
         ///     Gets or sets the list of Packages available for installation.
         /// </summary>
         private IList<Package> PackageList { get; set; }
+
+        /// <summary>
+        ///     Gets the <see cref="IPlatformManager"/> with which Platform operations are carried out.
+        /// </summary>
+        private IPlatformManager PlatformManager => Dependency<IPlatformManager>();
 
         #endregion Private Properties
 
@@ -178,7 +183,7 @@ namespace OpenIIoT.Core.Packaging
 
             IResult<Package> retVal = new Result<Package>();
 
-            string tempFile = Path.Combine(Platform.Directories.Temp, Guid.NewGuid().ToString());
+            string tempFile = Path.Combine(PlatformManager.Directories.Temp, Guid.NewGuid().ToString());
 
             logger.Debug($"Saving new Package to '{tempFile}'...");
 
@@ -400,7 +405,7 @@ namespace OpenIIoT.Core.Packaging
                 extractor.Updated += (sender, e) => logger.Debug(e.Message);
 
                 // determine the installation directory; should look like \path\to\Plugins\FQN\
-                string destination = Platform.Directories.Plugins;
+                string destination = PlatformManager.Directories.Plugins;
                 destination = Path.Combine(destination, findResult.FQN);
 
                 bool overwrite = options?.Overwrite ?? false;
@@ -479,7 +484,7 @@ namespace OpenIIoT.Core.Packaging
             IResult<IList<Package>> retVal = new Result<IList<Package>>();
             retVal.ReturnValue = new List<Package>();
 
-            string directory = Platform.Directories.Packages;
+            string directory = PlatformManager.Directories.Packages;
 
             logger.Debug($"Scanning directory '{directory}'...");
 
@@ -712,7 +717,7 @@ namespace OpenIIoT.Core.Packaging
                 filename = filename.Replace(c, SDK.Packaging.PackagingConstants.PackageFilenameInvalidCharacterSubstitution);
             }
 
-            return Path.Combine(Platform.Directories.Packages, filename);
+            return Path.Combine(PlatformManager.Directories.Packages, filename);
         }
 
         /// <summary>

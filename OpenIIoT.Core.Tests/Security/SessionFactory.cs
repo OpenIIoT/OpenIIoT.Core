@@ -58,6 +58,7 @@ namespace OpenIIoT.Core.Tests.Security
     /// <summary>
     ///     Unit tests for the <see cref="Core.Security.SessionFactory"/> class.
     /// </summary>
+    [Collection("SessionFactory")]
     public class SessionFactory
     {
         #region Public Constructors

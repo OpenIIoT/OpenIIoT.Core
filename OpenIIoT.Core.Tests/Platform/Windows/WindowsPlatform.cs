@@ -48,8 +48,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Moq;
-using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
 using Xunit;
@@ -70,9 +68,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Constructor()
         {
-            PlatformSettings settings = new PlatformSettings();
-
-            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(settings));
+            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform();
             Assert.IsAssignableFrom<Core.Platform.Windows.WindowsPlatform>(platform);
         }
 
@@ -82,9 +78,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Properties()
         {
-            PlatformSettings settings = new PlatformSettings();
-
-            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(settings));
+            Core.Platform.Windows.WindowsPlatform platform = new Core.Platform.Windows.WindowsPlatform();
             Assert.IsAssignableFrom<IItemProvider>(platform.ItemProvider);
             Assert.Equal(PlatformType.Windows, platform.PlatformType);
             Assert.NotNull(platform.Version);

@@ -48,8 +48,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Moq;
-using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
 using Xunit;
@@ -62,34 +60,6 @@ namespace OpenIIoT.Core.Tests.Platform
     [Collection("UNIXPlatform")]
     public class UNIXPlatform
     {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="UNIXPlatform"/> class.
-        /// </summary>
-        public UNIXPlatform()
-        {
-            Settings = new Mock<PlatformSettings>();
-            Settings.Setup(s => s.DirectoryData).Returns("Data");
-            Settings.Setup(s => s.DirectoryLogs).Returns("Logs");
-            Settings.Setup(s => s.DirectoryPackages).Returns("Packages");
-            Settings.Setup(s => s.DirectoryPersistence).Returns("Persistence");
-            Settings.Setup(s => s.DirectoryPlugins).Returns("Plugins");
-            Settings.Setup(s => s.DirectoryTemp).Returns("Temp");
-            Settings.Setup(s => s.DirectoryWeb).Returns("Web");
-        }
-
-        #endregion Public Constructors
-
-        #region Private Properties
-
-        /// <summary>
-        ///     Gets or sets the <see cref="PlatformSettings"/> mockup for the class.
-        /// </summary>
-        private Mock<PlatformSettings> Settings { get; set; }
-
-        #endregion Private Properties
-
         #region Public Methods
 
         /// <summary>
@@ -98,7 +68,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Constructor()
         {
-            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform(new Core.Platform.Directories(Settings.Object));
+            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform();
             Assert.IsAssignableFrom<Core.Platform.UNIX.UNIXPlatform>(platform);
         }
 
@@ -108,7 +78,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Properties()
         {
-            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform(new Core.Platform.Directories(Settings.Object));
+            Core.Platform.UNIX.UNIXPlatform platform = new Core.Platform.UNIX.UNIXPlatform();
             Assert.IsAssignableFrom<IItemProvider>(platform.ItemProvider);
             Assert.Equal(PlatformType.UNIX, platform.PlatformType);
             Assert.NotNull(platform.Version);

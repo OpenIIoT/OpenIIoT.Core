@@ -65,6 +65,7 @@ namespace OpenIIoT.Core.Tests.Security
     /// <summary>
     ///     Unit tests for the <see cref="Core.Security.SecurityManagerConfiguration"/> class.
     /// </summary>
+    [Collection("SecurityManagerConfiguration")]
     public class SecurityManagerConfiguration
     {
         #region Public Methods
