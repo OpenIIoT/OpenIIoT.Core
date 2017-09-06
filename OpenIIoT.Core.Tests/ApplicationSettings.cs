@@ -48,7 +48,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests
@@ -56,6 +55,7 @@ namespace OpenIIoT.Core.Tests
     /// <summary>
     ///     Unit tests for the <see cref="ApplicationSettings"/> class.
     /// </summary>
+    [Collection("ApplicationSettings")]
     public class ApplicationSettings
     {
         #region Public Constructors
