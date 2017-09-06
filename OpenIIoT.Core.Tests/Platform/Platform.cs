@@ -102,7 +102,7 @@ namespace OpenIIoT.Core.Tests.Platform
             settings.Setup(s => s.DirectoryTemp).Returns("Temp");
             settings.Setup(s => s.DirectoryWeb).Returns("Web");
 
-            platformMock = new PlatformMock(new Core.Platform.Directories(settings.Object));
+            platformMock = new PlatformMock();
 
             // set test directory = application directory + a new Guid
             string root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
@@ -1027,9 +1027,8 @@ namespace OpenIIoT.Core.Tests.Platform
         /// <summary>
         ///     Initializes a new instance of the <see cref="PlatformMock"/> class.
         /// </summary>
-        /// <param name="directories">An instance of IDirectories.</param>
-        public PlatformMock(IDirectories directories)
-            : base(directories)
+        public PlatformMock()
+            : base()
         {
             PlatformType = PlatformType.Unknown;
             Version = "1.0";

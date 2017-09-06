@@ -258,7 +258,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             PlatformManager = new Mock<IPlatformManager>();
             PlatformManager.Setup(p => p.State).Returns(State.Running);
             PlatformManager.Setup(p => p.IsInState(State.Starting, State.Running)).Returns(true);
-            PlatformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform(new Core.Platform.Directories(PlatformSettings.Object)));
+            PlatformManager.Setup(p => p.Platform).Returns(new Core.Platform.Windows.WindowsPlatform());
         }
 
         #endregion Private Methods

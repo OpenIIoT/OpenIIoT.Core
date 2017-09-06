@@ -521,11 +521,11 @@ namespace OpenIIoT.Core.Plugin
         {
             if (plugin.PluginType == PluginType.App)
             {
-                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Platform.Directories.Web, plugin.Name);
+                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Directories.Web, plugin.Name);
             }
             else
             {
-                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Platform.Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
+                return System.IO.Path.Combine(ApplicationManager.GetInstance().GetManager<IPlatformManager>().Directories.Plugins, plugin.PluginType.ToString(), plugin.Name);
             }
         }
 

@@ -102,17 +102,16 @@ namespace OpenIIoT.Core.Platform
             RegisterDependency<IApplicationManager>(manager);
 
             Settings = new PlatformSettings();
-
-            Directories directories = new Directories(Settings);
+            Directories = new Directories(Settings);
 
             switch (GetPlatformType())
             {
                 case PlatformType.Windows:
-                    Platform = new Windows.WindowsPlatform(directories);
+                    Platform = new Windows.WindowsPlatform();
                     break;
 
                 case PlatformType.UNIX:
-                    Platform = new UNIX.UNIXPlatform(directories);
+                    Platform = new UNIX.UNIXPlatform();
                     break;
 
                 default:
@@ -129,9 +128,9 @@ namespace OpenIIoT.Core.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the list of configured <see cref="Directories"/>.
+        ///     Gets the list of configured <see cref="IDirectories"/>.
         /// </summary>
-        public Directories Directories { get; private set; }
+        public IDirectories Directories { get; private set; }
 
         /// <summary>
         ///     Gets the current <see cref="IPlatform"/> .
@@ -212,6 +211,7 @@ namespace OpenIIoT.Core.Platform
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
+
             IResult retVal = new Result();
 
             retVal.LogResult(logger.Debug);
@@ -230,8 +230,8 @@ namespace OpenIIoT.Core.Platform
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             IResult retVal = new Result();
 
-            // Check to ensure all directories exist. If not, create them.
             logger.Debug("Checking directories...");
+
             IResult checkResult = CheckDirectories();
             if (checkResult.ResultCode == ResultCode.Failure)
             {

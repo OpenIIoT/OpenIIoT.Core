@@ -12,6 +12,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Service.WebApi;
 using Owin;
 using Swashbuckle.Application;
+using OpenIIoT.SDK.Platform;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -80,7 +81,7 @@ namespace OpenIIoT.Core.Service.WebApi
             // linux uses web/content.
             app.UseFileServer(new FileServerOptions()
             {
-                FileSystem = new PhysicalFileSystem(manager.GetManager<PlatformManager>().Platform.Directories.Web),
+                FileSystem = new PhysicalFileSystem(manager.GetManager<IPlatformManager>().Directories.Web),
                 RequestPath = PathString.FromUriComponent($"/{webRoot}"),
             });
         }
