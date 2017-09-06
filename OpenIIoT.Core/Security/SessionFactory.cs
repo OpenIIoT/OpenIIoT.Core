@@ -50,7 +50,7 @@ namespace OpenIIoT.Core.Security
     /// <summary>
     ///     Creates and extends <see cref="Session"/> s.
     /// </summary>
-    public static class SessionFactory
+    public class SessionFactory
     {
         #region Private Fields
 
@@ -69,7 +69,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="user">The User for which the Session is to be created.</param>
         /// <param name="sessionLength">The length of the Session, in seconds.</param>
         /// <returns>The created Session.</returns>
-        public static Session CreateSession(User user, int sessionLength)
+        public Session CreateSession(User user, int sessionLength)
         {
             logger.EnterMethod(xLogger.Params(user, sessionLength));
             Session retVal;
@@ -106,7 +106,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="session">The Session to extend.</param>
         /// <param name="sessionLength">The length of the Session, in seconds.</param>
         /// <returns>The extended Session.</returns>
-        public static Session ExtendSession(Session session, int sessionLength)
+        public Session ExtendSession(Session session, int sessionLength)
         {
             logger.EnterMethod(xLogger.Params(session, sessionLength));
 

@@ -71,7 +71,7 @@ namespace OpenIIoT.Core.Security.WebApi
     [WebApiRoutePrefix("v1/security")]
     public class SecurityController : ApiBaseController
     {
-        #region Protected Constructors
+        #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="SecurityController"/> class.
@@ -92,7 +92,7 @@ namespace OpenIIoT.Core.Security.WebApi
         {
         }
 
-        #endregion Protected Constructors
+        #endregion Public Constructors
 
         #region Private Properties
 
@@ -113,6 +113,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [Route("roles")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Role>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage RolesGet()
         {
             return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Roles, JsonFormatter());
@@ -125,20 +126,16 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpDelete]
         [Route("sessions/current")]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The Session was successfully ended.")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be ended.", typeof(Result))]
+        [SwaggerResponseRemoveDefaults]
+        [SwaggerResponse(HttpStatusCode.NoContent, "The Session was successfully ended.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage SessionsEnd()
         {
             HttpResponseMessage retVal;
 
-            // coalesce the api key so that this method can be run under test. at runtime the Owin pipeline will not allow this
-            // method to execute if the hash claim can't be satisfied, so additional checking for validity is not necessary.
-            string apiKey = Request.GetOwinContext()?
-                .Authentication?.User?.Claims?
-                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
-
+            string apiKey = GetSessionKey(Request);
             Session session = SecurityManager.FindSession(apiKey);
-
             IResult endSessionResult = SecurityManager.EndSession(session);
 
             if (endSessionResult.ResultCode != ResultCode.Failure)
@@ -147,7 +144,7 @@ namespace OpenIIoT.Core.Security.WebApi
             }
             else
             {
-                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, endSessionResult, JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, endSessionResult, JsonFormatter());
             }
 
             return retVal;
@@ -161,13 +158,31 @@ namespace OpenIIoT.Core.Security.WebApi
         [Route("sessions")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage SessionsGet()
         {
             return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions, JsonFormatter(ContractResolverType.OptOut, "Subject"));
         }
 
         /// <summary>
-        ///     Starts a new Session.
+        ///     Gets the current Session.
+        /// </summary>
+        /// <returns>An HTTP response message.</returns>
+        [HttpGet]
+        [Route("sessions/current")]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The current Session was retrieved successfully.", typeof(IReadOnlyList<Session>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        public HttpResponseMessage SessionsGetCurrent()
+        {
+            string apiKey = GetSessionKey(Request);
+            Session session = SecurityManager.FindSession(apiKey);
+
+            return Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+        }
+
+        /// <summary>
+        ///     Starts a new Session, or returns an existing Session if one exists.
         /// </summary>
         /// <param name="userName">The user for which the Session is to be started.</param>
         /// <param name="password">The password with which to authenticate the user.</param>
@@ -175,7 +190,8 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPost]
         [Route("sessions")]
         [AllowAnonymous]
-        [SwaggerResponse(HttpStatusCode.OK, "The Session was successfully started.", typeof(string))]
+        [SwaggerResponseRemoveDefaults]
+        [SwaggerResponse(HttpStatusCode.Created, "The Session was successfully started.", typeof(Session))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be started.", typeof(Result))]
         public HttpResponseMessage SessionsStart(string userName, string password)
@@ -218,9 +234,11 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPost]
         [Route("users")]
         [Authorize(Roles = "Administrator")]
+        [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.Created, "The User was created.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage UsersCreate(string name, string password, Role role)
         {
@@ -269,9 +287,11 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpDelete]
         [Route("users/{name}")]
         [Authorize(Roles = "Administrator")]
+        [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.NoContent, "The User was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage UsersDelete(string name)
         {
@@ -315,9 +335,47 @@ namespace OpenIIoT.Core.Security.WebApi
         [Route("users")]
         [Authorize(Roles = "Administrator")]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<User>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage UsersGet()
         {
             return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Users, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+        }
+
+        /// <summary>
+        ///     Gets the specified User.
+        /// </summary>
+        /// <param name="name">The name of the User to retrieve.</param>
+        /// <returns>An HTTP response message.</returns>
+        [HttpGet]
+        [Route("users/{name}")]
+        [Authorize(Roles = "Administrator")]
+        [SwaggerResponse(HttpStatusCode.OK, "The User was retrieved successfully.", typeof(IReadOnlyList<User>))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        public HttpResponseMessage UsersGetName(string name)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(name))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
+            }
+            else
+            {
+                User user = SecurityManager.FindUser(name);
+
+                if (user != default(User))
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, user, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
+
+            return retVal;
         }
 
         /// <summary>
@@ -333,6 +391,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(User))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage UsersUpdate(string name, string password = null, Role? role = null)
         {
@@ -378,5 +437,19 @@ namespace OpenIIoT.Core.Security.WebApi
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Retrieves the ApiKey for the specified <paramref name="request"/>.
+        /// </summary>
+        /// <param name="request">The request from which to retrieve the ApiKey.</param>
+        /// <returns>The retrieved ApiKey, or an empty string if it does not exist.</returns>
+        private string GetSessionKey(HttpRequestMessage request)
+        {
+            return Request.GetOwinContext()?.Authentication?.User?.Claims?.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
+        }
+
+        #endregion Private Methods
     }
 }

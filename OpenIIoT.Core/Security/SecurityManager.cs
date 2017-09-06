@@ -45,7 +45,6 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
@@ -102,6 +101,7 @@ namespace OpenIIoT.Core.Security
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IConfigurationManager>(configurationManager);
 
+            SessionFactory = new SessionFactory();
             SessionList = new List<Session>();
 
             ChangeState(State.Initialized);
@@ -181,6 +181,11 @@ namespace OpenIIoT.Core.Security
         ///     Gets or sets the <see cref="System.Timers.Timer"/> used to purge expired <see cref="Sessions"/>.
         /// </summary>
         private System.Timers.Timer SessionExpiryTimer { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="SessionFactory"/> used to create and extend <see cref="Session"/>.
+        /// </summary>
+        private SessionFactory SessionFactory { get; set; }
 
         /// <summary>
         ///     Gets or sets the list of active <see cref="Session"/> s.
@@ -788,7 +793,7 @@ namespace OpenIIoT.Core.Security
 
             foreach (Session session in sessions)
             {
-                if (session.Ticket.Properties.ExpiresUtc < DateTime.UtcNow)
+                if (session.IsExpired)
                 {
                     EndSession(session);
                 }

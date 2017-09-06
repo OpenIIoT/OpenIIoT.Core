@@ -57,6 +57,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -177,7 +178,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
 
             HttpResponseMessage response = Controller.SessionsEnd();
 
-            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
             Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
 
             SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
@@ -202,6 +203,22 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.Equal("key", sessions[0].ApiKey);
 
             SecurityManager.Verify(s => s.Sessions, Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.SessionsGetCurrent"/> method.
+        /// </summary>
+        [Fact]
+        public void SessionsGetCurrent()
+        {
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session("key", null));
+
+            HttpResponseMessage response = Controller.SessionsGetCurrent();
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("key", response.GetContent<Session>().ApiKey);
+
+            SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
         }
 
         /// <summary>
@@ -432,6 +449,51 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.Equal(Role.Reader, users[0].Role);
 
             SecurityManager.Verify(s => s.Users, Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersGetName(string)"/> method.
+        /// </summary>
+        [Fact]
+        public void UsersGetName()
+        {
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(new User("user", "hash", Role.Reader));
+
+            HttpResponseMessage response = Controller.UsersGetName("user");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("user", response.GetContent<User>().Name);
+
+            SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersGetName(string)"/> method with a known bad name.
+        /// </summary>
+        [Fact]
+        public void UsersGetNameBadName()
+        {
+            HttpResponseMessage response = Controller.UsersGetName(string.Empty);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            SecurityManager.Verify(s => s.Users, Times.Never);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Core.Security.WebApi.SecurityController.UsersGetName(string)"/> method with a User which can
+        ///     not be found.
+        /// </summary>
+        [Fact]
+        public void UsersGetNameNotFound()
+        {
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(User));
+
+            HttpResponseMessage response = Controller.UsersGetName(Guid.NewGuid().ToString());
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+            SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
         }
 
         /// <summary>
