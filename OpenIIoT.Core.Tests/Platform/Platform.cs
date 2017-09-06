@@ -54,7 +54,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using Moq;
-using OpenIIoT.Core.Platform;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
 using Utility.OperationResult;
@@ -104,7 +103,7 @@ namespace OpenIIoT.Core.Tests.Platform
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the <see cref="IPlatform"/> mockup for the class.
+        ///     Gets or sets the <see cref="IPlatform"/> mockup for the unit tests.
         /// </summary>
         private PlatformMock PlatformMock { get; set; }
 

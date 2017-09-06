@@ -64,20 +64,6 @@ namespace OpenIIoT.Core.Tests.Platform
     [Collection("PlatformManager")]
     public class PlatformManager
     {
-        #region Private Fields
-
-        /// <summary>
-        ///     The <see cref="IApplicationManager"/> mockup to be used as the dependency for the <see cref="Core.Platform.PlatformManager"/>.
-        /// </summary>
-        private Mock<IApplicationManager> applicationManager;
-
-        /// <summary>
-        ///     The <see cref="SDK.Platform.IPlatformManager"/> instance under test.
-        /// </summary>
-        private SDK.Platform.IPlatformManager manager;
-
-        #endregion Private Fields
-
         #region Public Constructors
 
         /// <summary>
@@ -85,17 +71,28 @@ namespace OpenIIoT.Core.Tests.Platform
         /// </summary>
         public PlatformManager()
         {
-            applicationManager = new Mock<IApplicationManager>();
-            applicationManager.Setup(a => a.State).Returns(State.Running);
-            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
-            applicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+            SetupMocks();
 
             Core.Platform.PlatformManager.Terminate();
 
-            manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
+            Manager = Core.Platform.PlatformManager.Instantiate(ApplicationManager.Object);
         }
 
         #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the <see cref="IApplicationManager"/> mockup for the unit tests.
+        /// </summary>
+        private Mock<IApplicationManager> ApplicationManager { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="IPlatformManager"/> instance under test.
+        /// </summary>
+        private IPlatformManager Manager { get; set; }
+
+        #endregion Private Properties
 
         #region Public Methods
 
@@ -105,7 +102,7 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<Core.Platform.PlatformManager>(manager);
+            Assert.IsType<Core.Platform.PlatformManager>(Manager);
         }
 
         /// <summary>
@@ -114,14 +111,11 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Instantiate()
         {
-            applicationManager = new Mock<IApplicationManager>();
-            applicationManager.Setup(a => a.State).Returns(State.Running);
-            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
-            applicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+            SetupMocks();
 
             Core.Platform.PlatformManager.Terminate();
 
-            manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
+            Manager = Core.Platform.PlatformManager.Instantiate(ApplicationManager.Object);
         }
 
         /// <summary>
@@ -130,18 +124,18 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void InstantiateTwice()
         {
-            applicationManager = new Mock<IApplicationManager>();
-            applicationManager.Setup(a => a.State).Returns(State.Running);
-            applicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
-            applicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+            ApplicationManager = new Mock<IApplicationManager>();
+            ApplicationManager.Setup(a => a.State).Returns(State.Running);
+            ApplicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            ApplicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
 
             Core.Platform.PlatformManager.Terminate();
 
-            manager = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
+            Manager = Core.Platform.PlatformManager.Instantiate(ApplicationManager.Object);
 
-            IPlatformManager manager2 = Core.Platform.PlatformManager.Instantiate(applicationManager.Object);
+            IPlatformManager manager2 = Core.Platform.PlatformManager.Instantiate(ApplicationManager.Object);
 
-            Assert.Equal(manager, manager2);
+            Assert.Equal(Manager, manager2);
         }
 
         /// <summary>
@@ -151,7 +145,7 @@ namespace OpenIIoT.Core.Tests.Platform
         public void Setup()
         {
             MethodInfo setup = typeof(Core.Platform.PlatformManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
-            setup.Invoke(manager, new object[] { });
+            setup.Invoke(Manager, new object[] { });
         }
 
         /// <summary>
@@ -161,10 +155,10 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Start()
         {
-            IResult result = manager.Start();
+            IResult result = Manager.Start();
 
             Assert.NotEqual(ResultCode.Failure, result.ResultCode);
-            Assert.Equal(State.Running, manager.State);
+            Assert.Equal(State.Running, Manager.State);
         }
 
         /// <summary>
@@ -174,11 +168,11 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Stop()
         {
-            manager.Start();
-            IResult result = manager.Stop();
+            Manager.Start();
+            IResult result = Manager.Stop();
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.Equal(State.Stopped, manager.State);
+            Assert.Equal(State.Stopped, Manager.State);
         }
 
         /// <summary>
@@ -191,5 +185,20 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
+        private void SetupMocks()
+        {
+            ApplicationManager = new Mock<IApplicationManager>();
+            ApplicationManager.Setup(a => a.State).Returns(State.Running);
+            ApplicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
+            ApplicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
+        }
+
+        #endregion Private Methods
     }
 }

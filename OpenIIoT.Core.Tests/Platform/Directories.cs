@@ -52,7 +52,6 @@ using System;
 using System.Collections.Generic;
 using Moq;
 using OpenIIoT.Core.Platform;
-using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common.Exceptions;
 using Xunit;
 
@@ -71,14 +70,7 @@ namespace OpenIIoT.Core.Tests
         /// </summary>
         public Directories()
         {
-            Settings = new Mock<PlatformSettings>();
-            Settings.Setup(s => s.DirectoryData).Returns("Data");
-            Settings.Setup(s => s.DirectoryLogs).Returns("Logs");
-            Settings.Setup(s => s.DirectoryPackages).Returns("Packages");
-            Settings.Setup(s => s.DirectoryPersistence).Returns("Persistence");
-            Settings.Setup(s => s.DirectoryPlugins).Returns("Plugins");
-            Settings.Setup(s => s.DirectoryTemp).Returns("Temp");
-            Settings.Setup(s => s.DirectoryWeb).Returns("Web");
+            SetupMocks();
         }
 
         #endregion Public Constructors
@@ -166,5 +158,24 @@ namespace OpenIIoT.Core.Tests
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
+        private void SetupMocks()
+        {
+            Settings = new Mock<PlatformSettings>();
+            Settings.Setup(s => s.DirectoryData).Returns("Data");
+            Settings.Setup(s => s.DirectoryLogs).Returns("Logs");
+            Settings.Setup(s => s.DirectoryPackages).Returns("Packages");
+            Settings.Setup(s => s.DirectoryPersistence).Returns("Persistence");
+            Settings.Setup(s => s.DirectoryPlugins).Returns("Plugins");
+            Settings.Setup(s => s.DirectoryTemp).Returns("Temp");
+            Settings.Setup(s => s.DirectoryWeb).Returns("Web");
+        }
+
+        #endregion Private Methods
     }
 }
