@@ -41,7 +41,6 @@
 
 using System;
 using System.Collections.Generic;
-using NLog;
 using NLog.xLogger;
 using OpenIIoT.Core.Common;
 using OpenIIoT.SDK;
@@ -130,17 +129,26 @@ namespace OpenIIoT.Core.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the current platform.
+        ///     Gets the list of configured <see cref="Directories"/>.
+        /// </summary>
+        public Directories Directories { get; private set; }
+
+        /// <summary>
+        ///     Gets the current <see cref="IPlatform"/> .
         /// </summary>
         [Discoverable]
         public IPlatform Platform { get; private set; }
+
+        #endregion Public Properties
+
+        #region Private Properties
 
         /// <summary>
         ///     Gets or sets the settings for the Manager.
         /// </summary>
         private PlatformSettings Settings { get; set; }
 
-        #endregion Public Properties
+        #endregion Private Properties
 
         #region Public Methods
 
@@ -254,7 +262,7 @@ namespace OpenIIoT.Core.Platform
             logger.EnterMethod();
             IResult retVal = new Result();
 
-            IDictionary<string, string> directories = Platform.Directories.ToDictionary();
+            IDictionary<string, string> directories = Directories.ToDictionary();
 
             foreach (string directory in directories.Keys)
             {

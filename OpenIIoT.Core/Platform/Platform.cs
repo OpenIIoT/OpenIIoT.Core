@@ -110,10 +110,8 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     Initializes a new instance of the <see cref="Platform"/> class.
         /// </summary>
-        /// <param name="directories">The directories with which the Platform is to be configured.</param>
-        public Platform(IDirectories directories)
+        public Platform()
         {
-            Directories = directories;
         }
 
         #endregion Public Constructors
@@ -123,7 +121,7 @@ namespace OpenIIoT.Core.Platform
         /// <summary>
         ///     Gets a list containing all of the application directories, loaded from the App.config.
         /// </summary>
-        public IDirectories Directories { get; private set; }
+        public IDirectories Directories1 { get; private set; }
 
         /// <summary>
         ///     Gets or sets the accompanying <see cref="IItemProvider"/> for the <see cref="Platform"/>.
