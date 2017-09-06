@@ -112,16 +112,12 @@ namespace OpenIIoT.Core.Platform
         /// </summary>
         public Platform()
         {
+            Version = Environment.OSVersion.VersionString;
         }
 
         #endregion Public Constructors
 
         #region Public Properties
-
-        /// <summary>
-        ///     Gets a list containing all of the application directories, loaded from the App.config.
-        /// </summary>
-        public IDirectories Directories1 { get; private set; }
 
         /// <summary>
         ///     Gets or sets the accompanying <see cref="IItemProvider"/> for the <see cref="Platform"/>.
