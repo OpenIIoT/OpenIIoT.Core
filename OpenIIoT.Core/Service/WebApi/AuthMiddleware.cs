@@ -90,7 +90,7 @@ namespace OpenIIoT.Core.Service.WebApi
         #region Public Methods
 
         /// <summary>
-        ///     Retrieves the <see cref="Session"/> associated with the hash provided in the 'X-ApiKey' header and sets the
+        ///     Retrieves the <see cref="Session"/> associated with the hash provided in the 'X-token' header and sets the
         ///     request's <see cref="OwinRequest.User"/> property to the retrieved <see cref="Session.Ticket"/>.
         /// </summary>
         /// <param name="context">The Owin context for the current request.</param>
@@ -102,12 +102,10 @@ namespace OpenIIoT.Core.Service.WebApi
 
             PathString apiPath = new PathString(path);
             bool api = context.Request.Path.StartsWithSegments(apiPath);
+            string key = context.Request.Headers["X-SessionToken"];
 
-            if (api && context.Request.Headers.ContainsKey("X-ApiKey"))
+            if (api && context.Request.Headers.ContainsKey("X-SessionToken"))
             {
-                string key = context.Request.Headers["X-ApiKey"];
-                logger.Trace($"ApiKey: {key}");
-
                 Session session = SecurityManager.FindSession(key);
 
                 if (session != default(Session) && !session.IsExpired)
@@ -122,6 +120,8 @@ namespace OpenIIoT.Core.Service.WebApi
             }
 
             await Next.Invoke(context);
+
+            context.Response.Cookies.Append("SessionToken", key ?? "key");
         }
 
         #endregion Public Methods

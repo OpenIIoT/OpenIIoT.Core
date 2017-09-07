@@ -54,22 +54,17 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
-        /// <param name="apiKey">The ApiKey for the Session.</param>
+        /// <param name="token">The token for the Session.</param>
         /// <param name="ticket">The AuthenticationTicket for the Session.</param>
-        public Session(string apiKey, AuthenticationTicket ticket)
+        public Session(string token, AuthenticationTicket ticket)
         {
-            ApiKey = apiKey;
+            Token = token;
             Ticket = ticket;
         }
 
         #endregion Public Constructors
 
         #region Private Properties
-
-        /// <summary>
-        ///     Gets the ApiKey for the Session.
-        /// </summary>
-        public string ApiKey { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
@@ -80,6 +75,11 @@ namespace OpenIIoT.SDK.Security
         ///     Gets the AuthenticationTicket for the Session.
         /// </summary>
         public AuthenticationTicket Ticket { get; }
+
+        /// <summary>
+        ///     Gets the token for the Session.
+        /// </summary>
+        public string Token { get; }
 
         #endregion Private Properties
     }

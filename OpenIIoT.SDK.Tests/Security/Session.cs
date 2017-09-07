@@ -73,7 +73,7 @@ namespace OpenIIoT.SDK.Tests.Security
             SDK.Security.Session test = new SDK.Security.Session("key", ticket);
 
             Assert.IsType<SDK.Security.Session>(test);
-            Assert.Equal("key", test.ApiKey);
+            Assert.Equal("key", test.Token);
             Assert.Equal(ticket, test.Ticket);
             Assert.False(test.IsExpired);
         }

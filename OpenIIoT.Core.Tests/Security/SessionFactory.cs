@@ -104,7 +104,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.IsType<SDK.Security.Session>(test);
             Assert.NotNull(test);
-            Assert.Equal(128, test.ApiKey.Length);
+            Assert.Equal(128, test.Token.Length);
             Assert.NotEqual(default(AuthenticationTicket), test.Ticket);
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Name, "test"));
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
@@ -138,7 +138,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.IsType<SDK.Security.Session>(test);
             Assert.NotNull(test);
-            Assert.Equal(128, test.ApiKey.Length);
+            Assert.Equal(128, test.Token.Length);
             Assert.NotEqual(default(AuthenticationTicket), test.Ticket);
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Name, string.Empty));
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));

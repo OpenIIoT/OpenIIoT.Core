@@ -415,7 +415,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.Equal(ResultCode.Success, session.ResultCode);
 
-            SDK.Security.Session foundSession = Manager.FindSession(session.ReturnValue.ApiKey);
+            SDK.Security.Session foundSession = Manager.FindSession(session.ReturnValue.Token);
 
             Assert.NotEqual(default(SDK.Security.Session), foundSession);
             Assert.Equal("test", foundSession.Ticket.Identity.Name);

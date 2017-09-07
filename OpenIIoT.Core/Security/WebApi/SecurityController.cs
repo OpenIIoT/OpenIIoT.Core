@@ -134,8 +134,8 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            string apiKey = GetSessionKey(Request);
-            Session session = SecurityManager.FindSession(apiKey);
+            string token = GetSessionToken(Request);
+            Session session = SecurityManager.FindSession(token);
             IResult endSessionResult = SecurityManager.EndSession(session);
 
             if (endSessionResult.ResultCode != ResultCode.Failure)
@@ -175,8 +175,8 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage SessionsGetCurrent()
         {
-            string apiKey = GetSessionKey(Request);
-            Session session = SecurityManager.FindSession(apiKey);
+            string token = GetSessionToken(Request);
+            Session session = SecurityManager.FindSession(token);
 
             return Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
         }
@@ -441,11 +441,11 @@ namespace OpenIIoT.Core.Security.WebApi
         #region Private Methods
 
         /// <summary>
-        ///     Retrieves the ApiKey for the specified <paramref name="request"/>.
+        ///     Retrieves the token for the specified <paramref name="request"/>.
         /// </summary>
-        /// <param name="request">The request from which to retrieve the ApiKey.</param>
-        /// <returns>The retrieved ApiKey, or an empty string if it does not exist.</returns>
-        private string GetSessionKey(HttpRequestMessage request)
+        /// <param name="request">The request from which to retrieve the token.</param>
+        /// <returns>The retrieved token, or an empty string if it does not exist.</returns>
+        private string GetSessionToken(HttpRequestMessage request)
         {
             return Request.GetOwinContext()?.Authentication?.User?.Claims?.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
         }

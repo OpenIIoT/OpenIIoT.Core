@@ -76,7 +76,7 @@ namespace OpenIIoT.Core.Security
             string userName = user?.Name ?? string.Empty;
             Role userRole = user?.Role ?? Role.Reader;
 
-            ClaimsIdentity identity = new ClaimsIdentity("ApiKey");
+            ClaimsIdentity identity = new ClaimsIdentity("Token");
             identity.AddClaim(new Claim(ClaimTypes.Name, userName));
 
             for (int r = (int)userRole; r >= 0; r--)

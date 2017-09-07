@@ -201,7 +201,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             IReadOnlyList<Session> sessions = response.GetContent<IReadOnlyList<Session>>();
 
             Assert.NotEmpty(sessions);
-            Assert.Equal("key", sessions[0].ApiKey);
+            Assert.Equal("key", sessions[0].Token);
 
             SecurityManager.Verify(s => s.Sessions, Times.Once);
         }
@@ -217,7 +217,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.SessionsGetCurrent();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("key", response.GetContent<Session>().ApiKey);
+            Assert.Equal("key", response.GetContent<Session>().Token);
 
             SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
         }
@@ -233,7 +233,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.SessionsStart("user", "password");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("key", response.GetContent<Session>().ApiKey);
+            Assert.Equal("key", response.GetContent<Session>().Token);
 
             SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
