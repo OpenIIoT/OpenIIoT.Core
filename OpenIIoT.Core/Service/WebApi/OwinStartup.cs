@@ -63,7 +63,7 @@ namespace OpenIIoT.Core.Service.WebApi
                 })
                 .EnableSwaggerUi(swaggerUiPath, c =>
                 {
-                    c.EnableApiKeySupport("X-Token", "header");
+                    c.EnableApiKeySupport("X-ApiKey", "header");
                     c.DisableValidator();
                 });
 

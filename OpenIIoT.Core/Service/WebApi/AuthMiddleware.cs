@@ -97,33 +97,78 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <returns>The Task context under which the method is invoked.</returns>
         public async override Task Invoke(IOwinContext context)
         {
-            string path = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/');
+            string path = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/').TrimEnd('/');
             path = $"/{path}";
 
             PathString apiPath = new PathString(path);
-            bool api = context.Request.Path.StartsWithSegments(apiPath);
-            string key = context.Request.Headers["X-SessionToken"];
 
-            if (api && context.Request.Headers.ContainsKey("X-SessionToken"))
+            string sessionToken = GetSessionToken(context.Request);
+
+            string help = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
+            help = $"/{help}";
+
+            string login = $"{WebApiService.StaticConfiguration.Root}/login".TrimStart('/');
+            login = $"/{login}";
+
+            logger.Info("Path: " + context.Request.Path.Value);
+            if (context.Request.Path.Value.StartsWith(help) || context.Request.Path.Value.StartsWith(login))
             {
-                Session session = SecurityManager.FindSession(key);
+                logger.Info("invoking next");
+                await Next.Invoke(context);
+            }
+            else if (sessionToken == default(string))
+            {
+                context.Response.Redirect("login");
+            }
+            else
+            {
+                Session session = SecurityManager.FindSession(sessionToken);
 
                 if (session != default(Session) && !session.IsExpired)
                 {
                     context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
                     SecurityManager.ExtendSession(session);
+
+                    await Next.Invoke(context);
+                    context.Response.Cookies.Append("Session-Token", sessionToken);
                 }
                 else
                 {
                     logger.Trace($"Session either not found or expired.");
+                    context.Response.Redirect("login");
                 }
             }
-
-            await Next.Invoke(context);
-
-            context.Response.Cookies.Append("SessionToken", key ?? "key");
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        private string GetSessionToken(IOwinRequest request)
+        {
+            string retVal;
+
+            if (request.Headers.ContainsKey("X-ApiKey"))
+            {
+                retVal = request.Headers["X-ApiKey"];
+            }
+            else
+            {
+                retVal = request.Cookies["Session-Token"];
+            }
+
+            return retVal;
+        }
+
+        private bool IsApiPath(IOwinRequest request)
+        {
+            string path = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/');
+            path = $"/{path}";
+
+            PathString apiPath = new PathString(path);
+            return request.Path.StartsWithSegments(apiPath);
+        }
+
+        #endregion Private Methods
     }
 }
