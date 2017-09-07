@@ -46,6 +46,7 @@ using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
+using System;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -97,45 +98,28 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <returns>The Task context under which the method is invoked.</returns>
         public async override Task Invoke(IOwinContext context)
         {
-            string path = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/').TrimEnd('/');
-            path = $"/{path}";
+            PathString apiPath = GetPathString(WebApiConstants.ApiRoutePrefix);
+            PathString signalrPath = GetPathString(WebApiConstants.SignalRRoutePrefix);
+            PathString loginPath = GetPathString("login");
+            PathString helpPath = GetPathString("help");
+            PathString requestPath = new PathString(context.Request.Path.Value);
 
-            PathString apiPath = new PathString(path);
+            Authenticate(context);
 
-            string sessionToken = GetSessionToken(context.Request);
-
-            string help = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
-            help = $"/{help}";
-
-            string login = $"{WebApiService.StaticConfiguration.Root}/login".TrimStart('/');
-            login = $"/{login}";
-
-            logger.Info("Path: " + context.Request.Path.Value);
-            if (context.Request.Path.Value.StartsWith(help) || context.Request.Path.Value.StartsWith(login))
+            if (requestPath.StartsWithSegments(loginPath) || requestPath.StartsWithSegments(apiPath) || requestPath.StartsWithSegments(signalrPath) || requestPath.StartsWithSegments(helpPath))
             {
-                logger.Info("invoking next");
                 await Next.Invoke(context);
-            }
-            else if (sessionToken == default(string))
-            {
-                context.Response.Redirect("login");
             }
             else
             {
-                Session session = SecurityManager.FindSession(sessionToken);
-
-                if (session != default(Session) && !session.IsExpired)
+                if (IsAuthenticated(context.Request))
                 {
-                    context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
-                    SecurityManager.ExtendSession(session);
-
                     await Next.Invoke(context);
-                    context.Response.Cookies.Append("Session-Token", sessionToken);
                 }
                 else
                 {
-                    logger.Trace($"Session either not found or expired.");
-                    context.Response.Redirect("login");
+                    context.Response.Cookies.Append(WebApiConstants.SessionTokenCookieName, string.Empty, new CookieOptions() { Expires = DateTime.UtcNow.AddYears(-1) });
+                    context.Response.Redirect(loginPath.Value);
                 }
             }
         }
@@ -144,29 +128,52 @@ namespace OpenIIoT.Core.Service.WebApi
 
         #region Private Methods
 
-        private string GetSessionToken(IOwinRequest request)
+        private void Authenticate(IOwinContext context)
         {
-            string retVal;
+            string token = GetApiKey(context.Request);
 
-            if (request.Headers.ContainsKey("X-ApiKey"))
+            if (token == string.Empty)
             {
-                retVal = request.Headers["X-ApiKey"];
+                token = GetSessionToken(context.Request);
             }
-            else
+
+            Session session = SecurityManager.FindSession(token);
+
+            if (session != default(Session) && !session.IsExpired)
             {
-                retVal = request.Cookies["Session-Token"];
+                context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
+                SecurityManager.ExtendSession(session);
+
+                DateTime? expirationDate = ((DateTimeOffset)session.Ticket.Properties.ExpiresUtc).UtcDateTime;
+                context.Response.Cookies.Append(WebApiConstants.SessionTokenCookieName, token, new CookieOptions() { Expires = expirationDate });
+            }
+        }
+
+        private string GetApiKey(IOwinRequest request)
+        {
+            string retVal = string.Empty;
+
+            if (request.Headers.ContainsKey(WebApiConstants.ApiKeyHeaderName))
+            {
+                retVal = request.Headers[WebApiConstants.ApiKeyHeaderName];
             }
 
             return retVal;
         }
 
-        private bool IsApiPath(IOwinRequest request)
+        private PathString GetPathString(string path)
         {
-            string path = $"{WebApiService.StaticConfiguration.Root}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/');
-            path = $"/{path}";
+            return new PathString("/" + (WebApiService.StaticConfiguration.Root + "/" + path).Trim('/'));
+        }
 
-            PathString apiPath = new PathString(path);
-            return request.Path.StartsWithSegments(apiPath);
+        private string GetSessionToken(IOwinRequest request)
+        {
+            return request.Cookies[WebApiConstants.SessionTokenCookieName];
+        }
+
+        private bool IsAuthenticated(IOwinRequest request)
+        {
+            return request.User != default(ClaimsPrincipal);
         }
 
         #endregion Private Methods

@@ -54,6 +54,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Security.Claims;
+using System.Web;
 using System.Web.Http;
 using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
@@ -61,6 +62,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Security;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
+using System.Net.Http.Headers;
 
 namespace OpenIIoT.Core.Security.WebApi
 {
@@ -212,7 +214,15 @@ namespace OpenIIoT.Core.Security.WebApi
 
                 if (startSessionResult.ResultCode != ResultCode.Failure)
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, startSessionResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+                    Session session = startSessionResult.ReturnValue;
+
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+
+                    CookieHeaderValue cookie = new CookieHeaderValue(WebApiConstants.SessionTokenCookieName, session.Token);
+                    cookie.Expires = session.Ticket.Properties.ExpiresUtc;
+                    cookie.Path = "/";
+
+                    retVal.Headers.AddCookies(new[] { cookie });
                 }
                 else
                 {

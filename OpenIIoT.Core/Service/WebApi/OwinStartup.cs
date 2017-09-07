@@ -36,8 +36,10 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             string webRoot = WebApiService.StaticConfiguration.Root.TrimStart('/').TrimEnd('/');
 
-            string signalRPath = $"/{webRoot}/signalr";
-            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
+            // openiiot/signalr openiiot/help openiiot/help/docs/ openiiot/help/ui openiiot/help/ui/index openiiot/api/
+
+            string signalRPath = $"/{webRoot}/{WebApiConstants.SignalRRoutePrefix}";
+            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}";
             string swaggerPath = $"{helpPath}/docs/{{apiVersion}}";
             string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
             string helpShortcut = $"{helpPath}/ui/index";
@@ -63,7 +65,7 @@ namespace OpenIIoT.Core.Service.WebApi
                 })
                 .EnableSwaggerUi(swaggerUiPath, c =>
                 {
-                    c.EnableApiKeySupport("X-ApiKey", "header");
+                    c.EnableApiKeySupport(WebApiConstants.ApiKeyHeaderName, "header");
                     c.DisableValidator();
                 });
 
