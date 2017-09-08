@@ -71,7 +71,7 @@ namespace OpenIIoT.SDK.Security
         ///     Gets the expiration date of the Ticket, in UTC.
         /// </summary>
         [JsonProperty(Order = 3)]
-        public DateTimeOffset Expiriation => (DateTimeOffset)Ticket?.Properties.ExpiresUtc;
+        public DateTimeOffset? Expiriation => Ticket?.Properties.ExpiresUtc;
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
@@ -89,7 +89,7 @@ namespace OpenIIoT.SDK.Security
         ///     Gets the Role claim from the <see cref="Ticket"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
-        public Role Role => (Role)Enum.Parse(typeof(Role), GetClaim(Ticket, ClaimTypes.Role));
+        public Role Role => (Role)Enum.Parse(typeof(Role), GetClaim(Ticket, ClaimTypes.Role) ?? default(Role).ToString());
 
         /// <summary>
         ///     Gets the AuthenticationTicket for the Session.
@@ -109,7 +109,7 @@ namespace OpenIIoT.SDK.Security
 
         private string GetClaim(AuthenticationTicket ticket, string type)
         {
-            return ticket?.Identity.Claims?.Where(c => c.Type == type).FirstOrDefault().Value;
+            return ticket?.Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;
         }
 
         #endregion Private Methods

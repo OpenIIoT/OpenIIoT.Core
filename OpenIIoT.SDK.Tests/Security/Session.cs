@@ -98,6 +98,7 @@ namespace OpenIIoT.SDK.Tests.Security
             SDK.Security.Session test = new SDK.Security.Session(ticket);
 
             Assert.True(test.IsExpired);
+            Assert.NotNull(test.Expiriation);
         }
 
         /// <summary>
@@ -111,6 +112,88 @@ namespace OpenIIoT.SDK.Tests.Security
             SDK.Security.Session test = new SDK.Security.Session(ticket);
 
             Assert.True(test.IsExpired);
+            Assert.Null(test.Expiriation);
+        }
+
+        [Fact]
+        public void Name()
+        {
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
+
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
+
+            Assert.Equal("name", test.Name);
+        }
+
+        [Fact]
+        public void NameNoClaim()
+        {
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
+
+            Assert.Equal(string.Empty, test.Name);
+        }
+
+        [Fact]
+        public void Role()
+        {
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
+
+            Assert.Equal(SDK.Security.Role.Reader, test.Role);
+        }
+
+        [Fact]
+        public void RoleNoClaim()
+        {
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
+
+            Assert.Equal(SDK.Security.Role.Reader, test.Role);
+        }
+
+        [Fact]
+        public void Ticket()
+        {
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
+
+            Assert.Equal(ticket, test.Ticket);
+        }
+
+        [Fact]
+        public void TicketNull()
+        {
+            SDK.Security.Session test = new SDK.Security.Session(null);
+
+            Assert.Equal(null, test.Ticket);
+        }
+
+        [Fact]
+        public void Token()
+        {
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "token"));
+
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
+
+            Assert.Equal("token", test.Token);
+        }
+
+        [Fact]
+        public void TokenNoClaim()
+        {
+            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
+
+            Assert.Equal(string.Empty, test.Token);
         }
 
         #endregion Public Methods
