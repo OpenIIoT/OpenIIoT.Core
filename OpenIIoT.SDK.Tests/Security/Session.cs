@@ -68,7 +68,9 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(15) };
+            DateTimeOffset expiry = DateTime.UtcNow.AddMinutes(15);
+
+            AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = expiry };
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
@@ -82,6 +84,7 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.False(test.IsExpired);
             Assert.Equal("name", test.Name);
             Assert.Equal(SDK.Security.Role.Reader, test.Role);
+            Assert.NotNull(test.Expiriation);
         }
 
         /// <summary>

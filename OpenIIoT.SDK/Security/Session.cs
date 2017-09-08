@@ -68,24 +68,39 @@ namespace OpenIIoT.SDK.Security
         #region Private Properties
 
         /// <summary>
-        ///     Gets a value indicating whether the Session is expired.
+        ///     Gets the expiration date of the Ticket, in UTC.
         /// </summary>
-        [JsonProperty(Order = 1)]
-        public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
-
-        public string Name => GetClaim(Ticket, ClaimTypes.Name) ?? string.Empty;
-        public Role Role => (Role)Enum.Parse(typeof(Role), GetClaim(Ticket, ClaimTypes.Role));
+        [JsonProperty(Order = 3)]
+        public DateTimeOffset Expiriation => (DateTimeOffset)Ticket?.Properties.ExpiresUtc;
 
         /// <summary>
-        ///     Gets the token for the Session.
+        ///     Gets a value indicating whether the Session is expired.
+        /// </summary>
+        [JsonProperty(Order = 4)]
+        public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
+
+        /// <summary>
+        ///     Gets the Name claim from the <see cref="Ticket"/>.
         /// </summary>
         [JsonProperty(Order = 0)]
+        public string Name => GetClaim(Ticket, ClaimTypes.Name) ?? string.Empty;
+
+        /// <summary>
+        ///     Gets the Role claim from the <see cref="Ticket"/>.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public Role Role => (Role)Enum.Parse(typeof(Role), GetClaim(Ticket, ClaimTypes.Role));
 
         /// <summary>
         ///     Gets the AuthenticationTicket for the Session.
         /// </summary>
+        [JsonProperty(Order = 5)]
         public AuthenticationTicket Ticket { get; }
 
+        /// <summary>
+        ///     Gets the token for the Session.
+        /// </summary>
+        [JsonProperty(Order = 2)]
         public string Token => GetClaim(Ticket, ClaimTypes.Hash) ?? string.Empty;
 
         #endregion Private Properties
