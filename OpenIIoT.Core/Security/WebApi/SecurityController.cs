@@ -53,6 +53,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
@@ -62,7 +63,6 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Security;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
-using System.Net.Http.Headers;
 
 namespace OpenIIoT.Core.Security.WebApi
 {
@@ -219,7 +219,7 @@ namespace OpenIIoT.Core.Security.WebApi
                     retVal = Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
 
                     CookieHeaderValue cookie = new CookieHeaderValue(WebApiConstants.SessionTokenCookieName, session.Token);
-                    cookie.Expires = session.Ticket.Properties.ExpiresUtc;
+                    cookie.Expires = session.Expiriation;
                     cookie.Path = "/";
 
                     retVal.Headers.AddCookies(new[] { cookie });
