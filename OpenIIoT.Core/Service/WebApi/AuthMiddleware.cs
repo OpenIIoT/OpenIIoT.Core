@@ -47,6 +47,8 @@ using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -104,9 +106,18 @@ namespace OpenIIoT.Core.Service.WebApi
             PathString helpPath = GetPathString("help");
             PathString requestPath = new PathString(context.Request.Path.Value);
 
+            List<PathString> anonymousPaths = new List<PathString>();
+            anonymousPaths.Add(GetPathString("login"));
+            anonymousPaths.Add(GetPathString("dist"));
+            anonymousPaths.Add(GetPathString("bower_components"));
+            anonymousPaths.Add(GetPathString("plugins"));
+            anonymousPaths.Add(GetPathString(WebApiConstants.ApiRoutePrefix));
+            anonymousPaths.Add(GetPathString(WebApiConstants.SignalRRoutePrefix));
+            anonymousPaths.Add(GetPathString("help"));
+
             Authenticate(context);
 
-            if (requestPath.StartsWithSegments(loginPath) || requestPath.StartsWithSegments(apiPath) || requestPath.StartsWithSegments(signalrPath) || requestPath.StartsWithSegments(helpPath))
+            if (anonymousPaths.Any(p => requestPath.StartsWithSegments(p)))
             {
                 await Next.Invoke(context);
             }
@@ -119,7 +130,7 @@ namespace OpenIIoT.Core.Service.WebApi
                 else
                 {
                     context.Response.Cookies.Append(WebApiConstants.SessionTokenCookieName, string.Empty, new CookieOptions() { Expires = DateTime.UtcNow.AddYears(-1) });
-                    context.Response.Redirect(loginPath.Value);
+                    context.Response.Redirect($"{loginPath.Value}?{context.Request.Path.Value}{context.Request.QueryString}");
                 }
             }
         }
