@@ -115,6 +115,9 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Null(test.Expiriation);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.Name"/> property.
+        /// </summary>
         [Fact]
         public void Name()
         {
@@ -126,6 +129,9 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Equal("name", test.Name);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.Name"/> property with a Ticket missing the Name claim.
+        /// </summary>
         [Fact]
         public void NameNoClaim()
         {
@@ -136,6 +142,9 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Equal(string.Empty, test.Name);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.Role"/> property.
+        /// </summary>
         [Fact]
         public void Role()
         {
@@ -147,6 +156,9 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Equal(SDK.Security.Role.Reader, test.Role);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.Role"/> property with a ticket missing the Role claim.
+        /// </summary>
         [Fact]
         public void RoleNoClaim()
         {
@@ -157,6 +169,9 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Equal(SDK.Security.Role.Reader, test.Role);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.Ticket"/> property.
+        /// </summary>
         [Fact]
         public void Ticket()
         {
@@ -167,6 +182,9 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Equal(ticket, test.Ticket);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.Ticket"/> property with a null ticket.
+        /// </summary>
         [Fact]
         public void TicketNull()
         {
@@ -175,6 +193,9 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Equal(null, test.Ticket);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.Token"/> property.
+        /// </summary>
         [Fact]
         public void Token()
         {
@@ -186,6 +207,9 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Equal("token", test.Token);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="SDK.Security.Session.Token"/> property with a ticket missing the Hash claim..
+        /// </summary>
         [Fact]
         public void TokenNoClaim()
         {
