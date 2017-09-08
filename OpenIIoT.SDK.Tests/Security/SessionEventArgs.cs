@@ -76,7 +76,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.Session session = new SDK.Security.Session("key", new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties()));
+            SDK.Security.Session session = new SDK.Security.Session(new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties()));
             SDK.Security.SessionEventArgs test = new SDK.Security.SessionEventArgs(session);
 
             Assert.IsType<SDK.Security.SessionEventArgs>(test);

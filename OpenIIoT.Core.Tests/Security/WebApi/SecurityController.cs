@@ -156,7 +156,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsEnd()
         {
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session("key", null));
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(null));
             SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result());
 
             HttpResponseMessage response = Controller.SessionsEnd();
@@ -174,7 +174,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsEndFailure()
         {
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session("key", null));
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(null));
             SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result(ResultCode.Failure));
 
             HttpResponseMessage response = Controller.SessionsEnd();
@@ -192,7 +192,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsGet()
         {
-            SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session("key", null) }.ToList().AsReadOnly());
+            SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session(null) }.ToList().AsReadOnly());
 
             HttpResponseMessage response = Controller.SessionsGet();
 
@@ -212,7 +212,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsGetCurrent()
         {
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session("key", null));
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(null));
 
             HttpResponseMessage response = Controller.SessionsGetCurrent();
 
@@ -228,7 +228,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsStart()
         {
-            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>().SetReturnValue(new Session("key", null)));
+            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>().SetReturnValue(new Session(null)));
 
             HttpResponseMessage response = Controller.SessionsStart("user", "password");
 

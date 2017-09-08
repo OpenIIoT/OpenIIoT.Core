@@ -70,12 +70,18 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(15) };
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
-            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
+            ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
+            ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
+
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
 
             Assert.IsType<SDK.Security.Session>(test);
-            Assert.Equal("key", test.Token);
+            Assert.Equal("hash", test.Token);
             Assert.Equal(ticket, test.Ticket);
             Assert.False(test.IsExpired);
+            Assert.Equal("name", test.Name);
+            Assert.Equal(SDK.Security.Role.Reader, test.Role);
         }
 
         /// <summary>
@@ -86,7 +92,7 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(-15) };
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
-            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
 
             Assert.True(test.IsExpired);
         }
@@ -99,7 +105,7 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationProperties props = new AuthenticationProperties();
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
-            SDK.Security.Session test = new SDK.Security.Session("key", ticket);
+            SDK.Security.Session test = new SDK.Security.Session(ticket);
 
             Assert.True(test.IsExpired);
         }

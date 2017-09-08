@@ -41,6 +41,9 @@
 
 using System;
 using Microsoft.Owin.Security;
+using Newtonsoft.Json;
+using System.Linq;
+using System.Security.Claims;
 
 namespace OpenIIoT.SDK.Security
 {
@@ -54,11 +57,9 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
-        /// <param name="token">The token for the Session.</param>
         /// <param name="ticket">The AuthenticationTicket for the Session.</param>
-        public Session(string token, AuthenticationTicket ticket)
+        public Session(AuthenticationTicket ticket)
         {
-            Token = token;
             Ticket = ticket;
         }
 
@@ -69,18 +70,33 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
         /// </summary>
+        [JsonProperty(Order = 1)]
         public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
+
+        public string Name => GetClaim(Ticket, ClaimTypes.Name) ?? string.Empty;
+        public Role Role => (Role)Enum.Parse(typeof(Role), GetClaim(Ticket, ClaimTypes.Role));
+
+        /// <summary>
+        ///     Gets the token for the Session.
+        /// </summary>
+        [JsonProperty(Order = 0)]
 
         /// <summary>
         ///     Gets the AuthenticationTicket for the Session.
         /// </summary>
         public AuthenticationTicket Ticket { get; }
 
-        /// <summary>
-        ///     Gets the token for the Session.
-        /// </summary>
-        public string Token { get; }
+        public string Token => GetClaim(Ticket, ClaimTypes.Hash) ?? string.Empty;
 
         #endregion Private Properties
+
+        #region Private Methods
+
+        private string GetClaim(AuthenticationTicket ticket, string type)
+        {
+            return ticket?.Identity.Claims?.Where(c => c.Type == type).FirstOrDefault().Value;
+        }
+
+        #endregion Private Methods
     }
 }
