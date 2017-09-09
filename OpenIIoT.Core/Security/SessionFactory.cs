@@ -110,7 +110,7 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod(xLogger.Params(session, sessionLength));
 
-            session.Ticket.Properties.ExpiresUtc = session.Ticket.Properties.ExpiresUtc.Value.AddSeconds(sessionLength);
+            session.Ticket.Properties.ExpiresUtc = DateTime.UtcNow.AddSeconds(sessionLength);
 
             logger.ExitMethod(session);
             return session;
