@@ -46,8 +46,8 @@ namespace OpenIIoT.Core.Service.WebApi
 
             app.UseCors(CorsOptions.AllowAll);
 
-            app.Use(typeof(LogMiddleware));
-            app.Use(typeof(AuthMiddleware));
+            app.Use(typeof(LoggingMiddleware));
+            app.Use(typeof(AuthenticationMiddleware));
 
             app.MapSignalR(signalRPath, new HubConfiguration());
 

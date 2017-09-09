@@ -1,14 +1,23 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █     ▄████████                                   ▄▄▄▄███▄▄▄▄
-      █     ███    ███                                ▄██▀▀▀███▀▀▀██▄
-      █     ███    ███ ██   █      ██      ██   █     ███   ███   ███  █  ██████▄  ██████▄   █          ▄█████  █     █    ▄█████     █████    ▄█████
-      █     ███    ███ ██   ██ ▀███████▄   ██   ██    ███   ███   ███ ██  ██   ▀██ ██   ▀██ ██         ██   █  ██     ██   ██   ██   ██  ██   ██   █
-      █   ▀███████████ ██   ██     ██  ▀  ▄██▄▄▄██▄▄  ███   ███   ███ ██▌ ██    ██ ██    ██ ██        ▄██▄▄    ██     ██   ██   ██  ▄██▄▄█▀  ▄██▄▄
-      █     ███    ███ ██   ██     ██    ▀▀██▀▀▀██▀   ███   ███   ███ ██  ██    ██ ██    ██ ██       ▀▀██▀▀    ██     ██ ▀████████ ▀███████ ▀▀██▀▀
-      █     ███    ███ ██   ██     ██      ██   ██    ███   ███   ███ ██  ██   ▄██ ██   ▄██ ██▌    ▄   ██   █  ██ ▄█▄ ██   ██   ██   ██  ██   ██   █
-      █     ███    █▀  ██████     ▄██▀     ██   ██     ▀█   ███   █▀  █   ██████▀  ██████▀  ████▄▄██   ███████  ███▀███    ██   █▀   ██  ██   ███████
+      █     ▄████████
+      █     ███    ███
+      █     ███    ███ ██   █      ██      ██   █       ▄█████ ██▄▄▄▄      ██     █   ▄██████   ▄█████      ██     █   ██████  ██▄▄▄▄
+      █     ███    ███ ██   ██ ▀███████▄   ██   ██     ██   █  ██▀▀▀█▄ ▀███████▄ ██  ██    ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄
+      █   ▀███████████ ██   ██     ██  ▀  ▄██▄▄▄██▄▄  ▄██▄▄    ██   ██     ██  ▀ ██▌ ██    ▀    ██   ██     ██  ▀ ██▌ ██    ██ ██   ██
+      █     ███    ███ ██   ██     ██    ▀▀██▀▀▀██▀  ▀▀██▀▀    ██   ██     ██    ██  ██    ▄  ▀████████     ██    ██  ██    ██ ██   ██
+      █     ███    ███ ██   ██     ██      ██   ██     ██   █  ██   ██     ██    ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██
+      █     ███    █▀  ██████     ▄██▀     ██   ██     ███████  █   █     ▄██▀   █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █
+      █
+      █      ▄▄▄▄███▄▄▄▄
+      █    ▄██▀▀▀███▀▀▀██▄
+      █    ███   ███   ███  █  ██████▄  ██████▄   █          ▄█████  █     █    ▄█████     █████    ▄█████
+      █    ███   ███   ███ ██  ██   ▀██ ██   ▀██ ██         ██   █  ██     ██   ██   ██   ██  ██   ██   █
+      █    ███   ███   ███ ██▌ ██    ██ ██    ██ ██        ▄██▄▄    ██     ██   ██   ██  ▄██▄▄█▀  ▄██▄▄
+      █    ███   ███   ███ ██  ██    ██ ██    ██ ██       ▀▀██▀▀    ██     ██ ▀████████ ▀███████ ▀▀██▀▀
+      █    ███   ███   ███ ██  ██   ▄██ ██   ▄██ ██▌    ▄   ██   █  ██ ▄█▄ ██   ██   ██   ██  ██   ██   █
+      █     ▀█   ███   █▀  █   ██████▀  ██████▀  ████▄▄██   ███████  ███▀███    ██   █▀   ██  ██   ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
@@ -39,6 +48,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Owin;
@@ -46,16 +58,13 @@ using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.
     /// </summary>
-    public class AuthMiddleware : OwinMiddleware
+    public class AuthenticationMiddleware : OwinMiddleware
     {
         #region Private Fields
 
@@ -69,10 +78,10 @@ namespace OpenIIoT.Core.Service.WebApi
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="AuthMiddleware"/> class.
+        ///     Initializes a new instance of the <see cref="AuthenticationMiddleware"/> class.
         /// </summary>
         /// <param name="next">The next middleware in the chain.</param>
-        public AuthMiddleware(OwinMiddleware next)
+        public AuthenticationMiddleware(OwinMiddleware next)
             : base(next)
         {
         }
