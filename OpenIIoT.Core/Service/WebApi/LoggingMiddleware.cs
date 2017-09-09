@@ -48,12 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin;
-using NLog;
 using NLog.xLogger;
-using System.Text;
-using System;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -73,28 +72,68 @@ namespace OpenIIoT.Core.Service.WebApi
 
         #region Public Methods
 
-        // http://benfoster.io/blog/how-to-write-owin-middleware-in-5-different-steps
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="LoggingMiddleware"/> class.
+        /// </summary>
+        /// <param name="next">The middlware component which follows.</param>
         public LoggingMiddleware(OwinMiddleware next)
         : base(next)
         {
         }
 
+        /// <summary>
+        ///     Invokes the middleware function and transfers execution to the next middleware component.
+        /// </summary>
+        /// <param name="context">The context within which the middleware is to execute</param>
+        /// <returns>The result of the asynchronous middleware function.</returns>
         public async override Task Invoke(IOwinContext context)
         {
             await Next.Invoke(context);
 
-            string line = "[" + (context.Response.StatusCode.ToString() + " " + context.Response.ReasonPhrase).Trim(' ') + "] ";
+            if (logger.IsInfoEnabled)
+            {
+                string logString = GetLogString(context);
+                PathString apiPathString = new PathString("/" + (WebApiService.StaticConfiguration.Root + "/" + WebApiConstants.ApiRoutePrefix).Trim('/'));
 
-            line += context.Request.Method + " " + context.Request.Path.Value + " (" + (context.Request.RemoteIpAddress + "/" + GetTruncatedSessionToken(context.Response)).Trim('/') + ")";
-
-            logger.Info(line);
+                if (context.Request.Path.StartsWithSegments(apiPathString))
+                {
+                    logger.Info(logString);
+                }
+                else if (logger.IsDebugEnabled)
+                {
+                    logger.Debug(logString);
+                }
+            }
         }
 
         #endregion Public Methods
 
         #region Private Methods
 
-        private string GetTruncatedSessionToken(IOwinResponse response)
+        /// <summary>
+        ///     Constructs the logger string for the specified <paramref name="context"/>.
+        /// </summary>
+        /// <param name="context">The context from which the log information is retrieved.</param>
+        /// <returns>The constructed logger string.</returns>
+        private string GetLogString(IOwinContext context)
+        {
+            StringBuilder message = new StringBuilder();
+
+            message.Append("[" + (context.Response.StatusCode.ToString() + " " + context.Response.ReasonPhrase).Trim(' ') + "] ");
+            message.Append(context.Request.Method + " ");
+            message.Append(context.Request.Path.Value);
+            message.Append(" (" + (context.Request.RemoteIpAddress + "/" + GetTruncatedSessionToken(context.Response, 20)).Trim('/') + ")");
+
+            return message.ToString();
+        }
+
+        /// <summary>
+        ///     Retrieves the Session token from the response and, if present, truncates it to a fixed number of characters.
+        /// </summary>
+        /// <param name="response">The request from which to retrieve the Session token.</param>
+        /// <param name="characterCount">The number of characters to which the Session token is to be truncated.</param>
+        /// <returns>The truncated Session token, if present.</returns>
+        private string GetTruncatedSessionToken(IOwinResponse response, int characterCount)
         {
             string retVal = string.Empty;
 
@@ -104,7 +143,7 @@ namespace OpenIIoT.Core.Service.WebApi
 
                 if (cookieParts[0] == WebApiConstants.SessionTokenCookieName)
                 {
-                    retVal = cookieParts[1].Split(';')[0].Substring(0, 20) + "...";
+                    retVal = cookieParts[1].Split(';')[0].Substring(0, characterCount) + "...";
                 }
             }
             catch (Exception)
