@@ -120,12 +120,6 @@ namespace OpenIIoT.Core.Security
         public event EventHandler<SessionEventArgs> SessionEnded;
 
         /// <summary>
-        ///     Occurs when a Session is extended.
-        /// </summary>
-        [Event(Description = "Occurs when a Session is extended.")]
-        public event EventHandler<SessionEventArgs> SessionExtended;
-
-        /// <summary>
         ///     Occurs when a Session is started.
         /// </summary>
         [Event(Description = "Occurs when a Session is started.")]
@@ -510,10 +504,6 @@ namespace OpenIIoT.Core.Security
             if (retVal.ResultCode == ResultCode.Failure)
             {
                 retVal.AddError($"Failed to extend Session.");
-            }
-            else
-            {
-                Task.Run(() => SessionExtended?.Invoke(this, new SessionEventArgs(foundSession)));
             }
 
             retVal.LogResult(logger.Debug);

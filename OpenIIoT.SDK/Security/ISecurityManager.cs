@@ -61,12 +61,6 @@ namespace OpenIIoT.SDK.Security
         event EventHandler<SessionEventArgs> SessionEnded;
 
         /// <summary>
-        ///     Occurs when a Session is extended.
-        /// </summary>
-        [Event(Description = "Occurs when a Session is extended.")]
-        event EventHandler<SessionEventArgs> SessionExtended;
-
-        /// <summary>
         ///     Occurs when a Session is started.
         /// </summary>
         [Event(Description = "Occurs when a Session is started.")]
