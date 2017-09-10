@@ -117,9 +117,9 @@ namespace OpenIIoT.Core.Service.WebApi
 
             List<PathString> anonymousPaths = new List<PathString>();
             anonymousPaths.Add(GetPathString("login"));
-            anonymousPaths.Add(GetPathString("dist"));
-            anonymousPaths.Add(GetPathString("bower_components"));
-            anonymousPaths.Add(GetPathString("plugins"));
+            anonymousPaths.Add(GetPathString("assets"));
+            anonymousPaths.Add(GetPathString("pages"));
+            anonymousPaths.Add(GetPathString("node_modules"));
             anonymousPaths.Add(GetPathString(WebApiConstants.ApiRoutePrefix));
             anonymousPaths.Add(GetPathString(WebApiConstants.SignalRRoutePrefix));
             anonymousPaths.Add(GetPathString("help"));
