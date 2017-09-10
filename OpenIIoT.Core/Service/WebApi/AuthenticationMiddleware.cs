@@ -109,20 +109,10 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <returns>The Task context under which the method is invoked.</returns>
         public async override Task Invoke(IOwinContext context)
         {
-            PathString apiPath = GetPathString(WebApiConstants.ApiRoutePrefix);
-            PathString signalrPath = GetPathString(WebApiConstants.SignalRRoutePrefix);
-            PathString loginPath = GetPathString("login");
-            PathString helpPath = GetPathString("help");
             PathString requestPath = new PathString(context.Request.Path.Value);
 
             List<PathString> anonymousPaths = new List<PathString>();
-            anonymousPaths.Add(GetPathString("login"));
-            anonymousPaths.Add(GetPathString("assets"));
-            anonymousPaths.Add(GetPathString("pages"));
-            anonymousPaths.Add(GetPathString("node_modules"));
-            anonymousPaths.Add(GetPathString(WebApiConstants.ApiRoutePrefix));
-            anonymousPaths.Add(GetPathString(WebApiConstants.SignalRRoutePrefix));
-            anonymousPaths.Add(GetPathString("help"));
+            anonymousPaths = WebApiConstants.AnonymousRoutes.Select(r => GetPathString(r)).ToList();
 
             Authenticate(context);
 
@@ -138,8 +128,16 @@ namespace OpenIIoT.Core.Service.WebApi
                 }
                 else
                 {
-                    context.Response.Cookies.Append(WebApiConstants.SessionTokenCookieName, string.Empty, new CookieOptions() { Expires = DateTime.UtcNow.AddYears(-1) });
-                    context.Response.Redirect($"{loginPath.Value}?{context.Request.Path.Value}{context.Request.QueryString}");
+                    context.Response.Cookies.Append(
+                        WebApiConstants.SessionTokenCookieName,
+                        string.Empty,
+                        new CookieOptions()
+                        {
+                            Expires = DateTime.UtcNow.AddYears(-1),
+                        });
+
+                    string redirect = $"{GetPathString(WebApiConstants.LoginRoutePrefix).Value}?{context.Request.Path.Value}{context.Request.QueryString}";
+                    context.Response.Redirect(redirect);
                 }
             }
         }

@@ -53,6 +53,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using NLog.xLogger;
+using System.Diagnostics;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -88,11 +89,16 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <returns>The result of the asynchronous middleware function.</returns>
         public async override Task Invoke(IOwinContext context)
         {
+            Stopwatch benchmark = new Stopwatch();
+            benchmark.Start();
+
             await Next.Invoke(context);
+
+            benchmark.Stop();
 
             if (logger.IsInfoEnabled)
             {
-                string logString = GetLogString(context);
+                string logString = GetLogString(context, benchmark.Elapsed);
                 PathString apiPathString = new PathString("/" + (WebApiService.StaticConfiguration.Root + "/" + WebApiConstants.ApiRoutePrefix).Trim('/'));
 
                 if (context.Request.Path.StartsWithSegments(apiPathString))
@@ -114,17 +120,43 @@ namespace OpenIIoT.Core.Service.WebApi
         ///     Constructs the logger string for the specified <paramref name="context"/>.
         /// </summary>
         /// <param name="context">The context from which the log information is retrieved.</param>
+        /// <param name="duration">The duration of the span between the request and response.</param>
         /// <returns>The constructed logger string.</returns>
-        private string GetLogString(IOwinContext context)
+        private string GetLogString(IOwinContext context, TimeSpan duration)
         {
             StringBuilder message = new StringBuilder();
 
             message.Append("[" + (context.Response.StatusCode.ToString() + " " + context.Response.ReasonPhrase).Trim(' ') + "] ");
             message.Append(context.Request.Method + " ");
             message.Append(context.Request.Path.Value);
-            message.Append(" (" + (context.Request.RemoteIpAddress + "/" + GetTruncatedSessionToken(context.Response, 20)).Trim('/') + ")");
+            message.Append(" (" + (context.Request.RemoteIpAddress + "/" + GetTruncatedSessionToken(context.Response, 20)).Trim('/') + ") ");
+            message.Append(GetSizeSuffix((double)(context.Response.ContentLength ?? 0), 2) + ", " + duration.TotalMilliseconds + "ms");
 
             return message.ToString();
+        }
+
+        private string GetSizeSuffix(double value, int decimalPlaces = 1)
+        {
+            string[] sizeSuffixes = { "bytes", "KB", "MB", "GB" };
+
+            if (value == 0) { return "0.0 bytes"; }
+
+            // mag is 0 for bytes, 1 for KB, 2, for MB, etc.
+            int mag = (int)Math.Log(value, 1024);
+
+            // 1L << (mag * 10) == 2 ^ (10 * mag) [i.e. the number of bytes in the unit corresponding to mag]
+            decimal adjustedSize = (decimal)value / (1L << (mag * 10));
+
+            // make adjustment when the value is large enough that it would round up to 1000 or more
+            if (Math.Round(adjustedSize, decimalPlaces) >= 1000)
+            {
+                mag += 1;
+                adjustedSize /= 1024;
+            }
+
+            return string.Format("{0:n" + decimalPlaces + "} {1}",
+                adjustedSize,
+                sizeSuffixes[mag]);
         }
 
         /// <summary>
