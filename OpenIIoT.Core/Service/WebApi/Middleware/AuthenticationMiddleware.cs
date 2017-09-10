@@ -58,8 +58,9 @@ using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
+using System.Net;
 
-namespace OpenIIoT.Core.Service.WebApi
+namespace OpenIIoT.Core.Service.WebApi.Middleware
 {
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.
@@ -111,12 +112,9 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             PathString requestPath = new PathString(context.Request.Path.Value);
 
-            List<PathString> anonymousPaths = new List<PathString>();
-            anonymousPaths = WebApiConstants.AnonymousRoutes.Select(r => GetPathString(r)).ToList();
-
             Authenticate(context);
 
-            if (anonymousPaths.Any(p => requestPath.StartsWithSegments(p)))
+            if (IsAnonymousRoute(requestPath))
             {
                 await Next.Invoke(context);
             }
@@ -140,6 +138,13 @@ namespace OpenIIoT.Core.Service.WebApi
                     context.Response.Redirect(redirect);
                 }
             }
+        }
+
+        private bool IsAnonymousRoute(PathString route)
+        {
+            List<PathString> anonymousPaths = WebApiConstants.AnonymousRoutes.Select(r => GetPathString(r)).ToList();
+
+            return anonymousPaths.Any(p => route.StartsWithSegments(p));
         }
 
         #endregion Public Methods

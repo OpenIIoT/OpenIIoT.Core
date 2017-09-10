@@ -13,6 +13,7 @@ using OpenIIoT.SDK.Service.WebApi;
 using Owin;
 using Swashbuckle.Application;
 using OpenIIoT.SDK.Platform;
+using OpenIIoT.Core.Service.WebApi.Middleware;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -44,9 +45,10 @@ namespace OpenIIoT.Core.Service.WebApi
             string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
             string helpShortcut = $"{helpPath}/ui/index";
 
-            app.UseCors(CorsOptions.AllowAll);
-
             app.Use(typeof(LoggingMiddleware));
+            app.Use(typeof(NotFoundRedirectionMiddleware));
+
+            app.UseCors(CorsOptions.AllowAll);
             app.Use(typeof(AuthenticationMiddleware));
 
             app.MapSignalR(signalRPath, new HubConfiguration());

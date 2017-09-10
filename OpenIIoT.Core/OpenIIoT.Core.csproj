@@ -243,9 +243,10 @@
     <Compile Include="Common\WebApi\LogController.cs" />
     <Compile Include="Common\WebApi\LogHub.cs" />
     <Compile Include="Service\WebApi\ApiBaseController.cs" />
-    <Compile Include="Service\WebApi\AuthenticationMiddleware.cs" />
+    <Compile Include="Service\WebApi\Middleware\AuthenticationMiddleware.cs" />
+    <Compile Include="Service\WebApi\Middleware\NotFoundRedirectionMiddleware.cs" />
     <Compile Include="Service\WebApi\WebApiRoutePrefixAttribute.cs" />
-    <Compile Include="Service\WebApi\LoggingMiddleware.cs" />
+    <Compile Include="Service\WebApi\Middleware\LoggingMiddleware.cs" />
     <Compile Include="Service\WebApi\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebApi\OwinStartup.cs" />
     <Compile Include="Service\WebApi\WebApiConstants.cs" />
