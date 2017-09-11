@@ -139,7 +139,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
         {
             string[] sizeSuffixes = { "bytes", "KB", "MB", "GB" };
 
-            if (value == 0) { return "0.0 bytes"; }
+            if (value <= 0) { return "0 bytes"; }
 
             // mag is 0 for bytes, 1 for KB, 2, for MB, etc.
             int mag = (int)Math.Log(value, 1024);
