@@ -465,7 +465,7 @@ namespace OpenIIoT.Core.Security
         public IResult<Session> ExtendSession(Session session)
         {
             logger.EnterMethod();
-            logger.Debug($"Extending Session '{session?.Token}'...");
+            logger.Trace($"Extending Session '{session?.Token}'...");
 
             IResult<Session> retVal = new Result<Session>();
             Session foundSession = default(Session);
@@ -506,7 +506,7 @@ namespace OpenIIoT.Core.Security
                 retVal.AddError($"Failed to extend Session.");
             }
 
-            retVal.LogResult(logger.Debug);
+            retVal.LogResult(logger.Trace);
             logger.ExitMethod();
             return retVal;
         }
