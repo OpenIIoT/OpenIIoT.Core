@@ -154,22 +154,6 @@ namespace OpenIIoT.Core.Common.WebApi
             Clients.Caller.writeError("Logger", new object[] { "Not implemented." });
         }
 
-        /// <summary>
-        ///     Invoked by clients to update the value of the SourceItem(s) for an Item. Recursively writes the value all the way
-        ///     down to the origin.
-        /// </summary>
-        /// <remarks>
-        ///     Invokes the writeSuccess() and writeError() methods on the calling client depending on the outcome of the call.
-        /// </remarks>
-        /// <param name="args">
-        ///     An object array containing the Fully Qualified Name of the Item to update in the first index and an object
-        ///     containing the new value in the second.
-        /// </param>
-        public void WriteToSource(object[] args)
-        {
-            Clients.Caller.writeToSourceError("Logger", new object[] { "Not implemented." });
-        }
-
         private string GetLogPrefix()
         {
             return "SignalR Connection [" + this.GetType().Name + "/ID: " + Context.ConnectionId + "] ";

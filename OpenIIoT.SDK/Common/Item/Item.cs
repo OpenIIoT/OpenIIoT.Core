@@ -503,6 +503,8 @@ namespace OpenIIoT.SDK.Common
         /// </summary>
         public DateTime Timestamp { get; private set; }
 
+        // TODO: should Value be private/protected? Do we should be using Read(), no?
+
         /// <summary>
         ///     Gets the Item's value.
         /// </summary>
