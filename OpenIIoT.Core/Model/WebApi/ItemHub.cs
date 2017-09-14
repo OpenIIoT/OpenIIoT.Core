@@ -232,11 +232,12 @@ namespace OpenIIoT.Core.Model.WebApi
             if (foundItem != default(Item))
             {
                 retVal = foundItem.WriteToSource(args[1]);
+                string valueString = JsonConvert.SerializeObject(args[1]);
 
-                if (!retVal)
+                if (retVal)
                 {
                     Clients.Caller.writeToSourceSuccess(castFQN, args.SubArray(1, args.Length - 1));
-                    logger.Info(GetLogPrefix() + "updated item source '" + foundItem.FQN + "' with value '" + args[1] + "'.");
+                    logger.Info(GetLogPrefix() + "updated item source '" + foundItem.FQN + "' with value '" + valueString + "'.");
                 }
                 else
                 {

@@ -59,7 +59,7 @@ namespace OpenIIoT.Core.Model.WebApi
                 foundItem.ReadFromSource();
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, foundItem.Value, JsonFormatter(ContractResolverType.OptIn, "FQN", "Timestamp", "Quality", "Value", "Children"));
+            return Request.CreateResponse(HttpStatusCode.OK, foundItem.Value, JsonFormatter(ContractResolverType.OptOut, "Parent"));
         }
 
         #endregion Public Methods
