@@ -35,7 +35,7 @@ namespace OpenIIoT.Core.Model.WebApi
         public HttpResponseMessage Read()
         {
             IList<Item> result = model.Children;
-            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(ContractResolverType.OptIn, "FQN", "Timestamp", "Quality", "Value", "Children"));
+            return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter());
         }
 
         [Route("api/read/{fqn}")]
@@ -59,7 +59,7 @@ namespace OpenIIoT.Core.Model.WebApi
                 foundItem.ReadFromSource();
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, foundItem.Value, JsonFormatter(ContractResolverType.OptOut, "Parent"));
+            return Request.CreateResponse(HttpStatusCode.OK, foundItem.Value, JsonFormatter());
         }
 
         #endregion Public Methods
