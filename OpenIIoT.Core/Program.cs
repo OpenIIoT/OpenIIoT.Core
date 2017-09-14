@@ -492,6 +492,8 @@ namespace OpenIIoT.Core
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.Math.Sine").SubscribeToSource();
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.Math.Trig").SubscribeToSource();
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.Misc.MousePosition").SubscribeToSource();
+                subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.ReadWrite.Read").SubscribeToSource();
+                subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.ReadWrite.Write").SubscribeToSource();
                 subscribe.LogResult(logger.Info);
 
                 applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
