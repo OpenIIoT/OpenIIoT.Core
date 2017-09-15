@@ -95,10 +95,9 @@ namespace OpenIIoT.Core.Common.WebApi
         {
             RealtimeLoggerEventArgs args = (RealtimeLoggerEventArgs)e;
 
-            string levelJson = JsonConvert.SerializeObject(args.Level);
-            string messageJson = JsonConvert.SerializeObject(args.Message);
+            string json = JsonConvert.SerializeObject(args);
 
-            Clients.Group("Logger").read(levelJson, messageJson);
+            Clients.Group("Logger").read(json);
         }
 
         /// <summary>
