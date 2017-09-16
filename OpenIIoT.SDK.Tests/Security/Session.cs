@@ -84,7 +84,7 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.False(test.IsExpired);
             Assert.Equal("name", test.Name);
             Assert.Equal(SDK.Security.Role.Reader, test.Role);
-            Assert.NotNull(test.Expiriation);
+            Assert.NotNull(test.Expires);
         }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace OpenIIoT.SDK.Tests.Security
             SDK.Security.Session test = new SDK.Security.Session(ticket);
 
             Assert.True(test.IsExpired);
-            Assert.NotNull(test.Expiriation);
+            Assert.NotNull(test.Expires);
         }
 
         /// <summary>
@@ -112,7 +112,7 @@ namespace OpenIIoT.SDK.Tests.Security
             SDK.Security.Session test = new SDK.Security.Session(ticket);
 
             Assert.True(test.IsExpired);
-            Assert.Null(test.Expiriation);
+            Assert.Null(test.Expires);
         }
 
         /// <summary>
