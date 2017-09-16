@@ -142,14 +142,21 @@ namespace OpenIIoT.Core.Model.WebApi
 
             if (foundItem != default(Item))
             {
-                foundItem.Changed += hubManager.OnChange;
-                Groups.Add(Context.ConnectionId, foundItem.FQN);
-                hubManager.Subscribe(foundItem.FQN, Context.ConnectionId);
-                Clients.Caller.subscribeSuccess(castFQN);
+                if (hubManager.GetClientSubscriptions(Context.ConnectionId).Contains(foundItem.FQN))
+                {
+                    logger.Info(GetLogPrefix() + "is already subscribed to '" + foundItem.FQN + "'.");
+                }
+                else
+                {
+                    foundItem.Changed += hubManager.OnChange;
+                    Groups.Add(Context.ConnectionId, foundItem.FQN);
+                    hubManager.Subscribe(foundItem.FQN, Context.ConnectionId);
+                    Clients.Caller.subscribeSuccess(castFQN);
 
-                logger.Info(GetLogPrefix() + "subscribed to '" + foundItem.FQN + "'.");
+                    logger.Info(GetLogPrefix() + "subscribed to '" + foundItem.FQN + "'.");
 
-                logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
+                    logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
+                }
             }
             else
             {
