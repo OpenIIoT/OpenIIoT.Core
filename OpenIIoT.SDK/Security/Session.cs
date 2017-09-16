@@ -40,10 +40,10 @@
                                                                                                    ▀▀                            */
 
 using System;
-using Microsoft.Owin.Security;
-using Newtonsoft.Json;
 using System.Linq;
 using System.Security.Claims;
+using Microsoft.Owin.Security;
+using Newtonsoft.Json;
 
 namespace OpenIIoT.SDK.Security
 {
@@ -68,16 +68,22 @@ namespace OpenIIoT.SDK.Security
         #region Private Properties
 
         /// <summary>
-        ///     Gets the expiration date of the Ticket, in UTC.
+        ///     Gets the expiration timestamp of the Ticket, in UTC.
         /// </summary>
-        [JsonProperty(Order = 3)]
-        public DateTimeOffset? Expiriation => Ticket?.Properties.ExpiresUtc;
+        [JsonProperty(Order = 4)]
+        public DateTimeOffset? Expires => Ticket?.Properties.ExpiresUtc;
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
         /// </summary>
-        [JsonProperty(Order = 4)]
+        [JsonProperty(Order = 5)]
         public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
+
+        /// <summary>
+        ///     Gets the issued timestamp of the Ticket, in UTC.
+        /// </summary>
+        [JsonProperty(Order = 3)]
+        public DateTimeOffset? Issued => Ticket?.Properties.IssuedUtc;
 
         /// <summary>
         ///     Gets the Name claim from the <see cref="Ticket"/>.
@@ -94,7 +100,7 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Gets the AuthenticationTicket for the Session.
         /// </summary>
-        [JsonProperty(Order = 5)]
+        [JsonProperty(Order = 6)]
         public AuthenticationTicket Ticket { get; }
 
         /// <summary>
@@ -107,6 +113,12 @@ namespace OpenIIoT.SDK.Security
 
         #region Private Methods
 
+        /// <summary>
+        ///     Returns the specified Claim <paramref name="type"/> within the specified <paramref name="ticket"/>.
+        /// </summary>
+        /// <param name="ticket">The Ticket from which the Claim is to be retrieved.</param>
+        /// <param name="type">The type of Claim to retrieve.</param>
+        /// <returns>The retrieved Claim value.</returns>
         private string GetClaim(AuthenticationTicket ticket, string type)
         {
             return ticket?.Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;

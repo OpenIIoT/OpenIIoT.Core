@@ -48,6 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -57,6 +58,7 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
+using Newtonsoft.Json;
 using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
@@ -159,11 +161,12 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpGet]
         [Route("sessions")]
         [Authorize(Roles = nameof(Role.Administrator))]
-        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<SessionData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage SessionsGet()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+            IReadOnlyList<SessionData> sessions = SecurityManager.Sessions.Select(s => new SessionData(s)).ToList().AsReadOnly();
+            return Request.CreateResponse(HttpStatusCode.OK, sessions, JsonFormatter());
         }
 
         /// <summary>
@@ -173,53 +176,56 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpGet]
         [Route("sessions/current")]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The current Session was retrieved successfully.", typeof(IReadOnlyList<Session>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The current Session was retrieved successfully.", typeof(SessionData))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage SessionsGetCurrent()
         {
             string token = GetSessionToken(Request);
             Session session = SecurityManager.FindSession(token);
 
-            return Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+            return Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
         }
 
         /// <summary>
         ///     Starts a new Session, or returns an existing Session if one exists.
         /// </summary>
-        /// <param name="userName">The user for which the Session is to be started.</param>
-        /// <param name="password">The password with which to authenticate the user.</param>
+        /// <param name="data">The credentials with which to start the Session.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
         [Route("sessions")]
         [AllowAnonymous]
         [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.Created, "The Session was successfully started.", typeof(Session))]
+        [SwaggerResponse(HttpStatusCode.Created, "The Session was successfully started.", typeof(SessionData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be started.", typeof(Result))]
-        public HttpResponseMessage SessionsStart(string userName, string password)
+        public HttpResponseMessage SessionsStart([FromBody]SessionStartData data)
         {
             HttpResponseMessage retVal;
 
-            if (string.IsNullOrEmpty(userName))
+            if (!(data is SessionStartData))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
+            }
+            else if (string.IsNullOrEmpty(data.Name))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified User name is null or empty.");
             }
-            else if (string.IsNullOrEmpty(password))
+            else if (string.IsNullOrEmpty(data.Password))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
             }
             else
             {
-                IResult<Session> startSessionResult = SecurityManager.StartSession(userName, password);
+                IResult<Session> startSessionResult = SecurityManager.StartSession(data.Name, data.Password);
 
                 if (startSessionResult.ResultCode != ResultCode.Failure)
                 {
                     Session session = startSessionResult.ReturnValue;
 
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
 
                     CookieHeaderValue cookie = new CookieHeaderValue(WebApiConstants.SessionTokenCookieName, session.Token);
-                    cookie.Expires = session.Expiriation;
+                    cookie.Expires = session.Expires;
                     cookie.Path = "/";
 
                     retVal.Headers.AddCookies(new[] { cookie });
@@ -237,7 +243,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <summary>
         ///     Creates a new User.
         /// </summary>
-        /// <param name="data">The new User information.</param>
+        /// <param name="data">The data with which to create the User.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
         [Route("users")]
@@ -252,7 +258,11 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            if (string.IsNullOrEmpty(data.Name))
+            if (!(data is UserCreateData))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
+            }
+            else if (string.IsNullOrEmpty(data.Name))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
             }
@@ -405,7 +415,11 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            if (string.IsNullOrEmpty(name))
+            if (!(data is UserUpdateData))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
+            }
+            else if (string.IsNullOrEmpty(name))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
             }
@@ -458,12 +472,65 @@ namespace OpenIIoT.Core.Security.WebApi
             return Request.GetOwinContext()?.Authentication?.User?.Claims?.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
         }
 
+        public class SessionData
+        {
+            #region Public Constructors
+
+            public SessionData(Session session)
+            {
+                Name = session.Name;
+                Role = session.Role;
+                Token = session.Token;
+                Issued = session.Issued;
+                Expires = session.Expires;
+            }
+
+            #endregion Public Constructors
+
+            #region Public Properties
+
+            [JsonProperty(Order = 5)]
+            public DateTimeOffset? Expires { get; set; }
+
+            [JsonProperty(Order = 4)]
+            public DateTimeOffset? Issued { get; set; }
+
+            [JsonProperty(Order = 1)]
+            public string Name { get; set; }
+
+            [JsonProperty(Order = 2)]
+            public Role Role { get; set; }
+
+            [JsonProperty(Order = 3)]
+            public string Token { get; set; }
+
+            #endregion Public Properties
+        }
+
+        public class SessionStartData
+        {
+            #region Public Properties
+
+            [JsonProperty(Order = 1)]
+            public string Name { get; set; }
+
+            [JsonProperty(Order = 2)]
+            public string Password { get; set; }
+
+            #endregion Public Properties
+        }
+
         public class UserCreateData
         {
             #region Public Properties
 
+            [JsonProperty(Order = 1)]
             public string Name { get; set; }
+
+            [JsonProperty(Order = 3)]
             public string Password { get; set; }
+
+            [JsonProperty(Order = 2)]
             public Role Role { get; set; }
 
             #endregion Public Properties
@@ -483,7 +550,10 @@ namespace OpenIIoT.Core.Security.WebApi
 
             #region Public Properties
 
+            [JsonProperty(Order = 1)]
             public string Name { get; set; }
+
+            [JsonProperty(Order = 2)]
             public Role Role { get; set; }
 
             #endregion Public Properties
@@ -493,7 +563,10 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             #region Public Properties
 
+            [JsonProperty(Order = 2)]
             public string Password { get; set; }
+
+            [JsonProperty(Order = 1)]
             public Role? Role { get; set; }
 
             #endregion Public Properties
