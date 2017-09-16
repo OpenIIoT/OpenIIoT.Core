@@ -61,12 +61,6 @@ namespace OpenIIoT.SDK.Security
         event EventHandler<SessionEventArgs> SessionEnded;
 
         /// <summary>
-        ///     Occurs when a Session is extended.
-        /// </summary>
-        [Event(Description = "Occurs when a Session is extended.")]
-        event EventHandler<SessionEventArgs> SessionExtended;
-
-        /// <summary>
         ///     Occurs when a Session is started.
         /// </summary>
         [Event(Description = "Occurs when a Session is started.")]
@@ -144,11 +138,11 @@ namespace OpenIIoT.SDK.Security
         IResult<Session> ExtendSession(Session session);
 
         /// <summary>
-        ///     Finds the <see cref="Session"/> matching the specified <paramref name="apiKey"/>.
+        ///     Finds the <see cref="Session"/> matching the specified <paramref name="token"/>.
         /// </summary>
-        /// <param name="apiKey">The ApiKey for the requested Session.</param>
+        /// <param name="token">The token for the requested Session.</param>
         /// <returns>The found Session.</returns>
-        Session FindSession(string apiKey);
+        Session FindSession(string token);
 
         /// <summary>
         ///     Finds the <see cref="User"/> matching the specified <paramref name="name"/>.

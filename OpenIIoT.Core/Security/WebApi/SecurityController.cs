@@ -48,13 +48,17 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security.Claims;
+using System.Web;
 using System.Web.Http;
+using Newtonsoft.Json;
 using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
@@ -134,8 +138,8 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            string apiKey = GetSessionKey(Request);
-            Session session = SecurityManager.FindSession(apiKey);
+            string token = GetSessionToken(Request);
+            Session session = SecurityManager.FindSession(token);
             IResult endSessionResult = SecurityManager.EndSession(session);
 
             if (endSessionResult.ResultCode != ResultCode.Failure)
@@ -156,12 +160,13 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
         [Route("sessions")]
-        [Authorize(Roles = "Administrator")]
-        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<Session>))]
+        [Authorize(Roles = nameof(Role.Administrator))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<SessionData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage SessionsGet()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Sessions, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+            IReadOnlyList<SessionData> sessions = SecurityManager.Sessions.Select(s => new SessionData(s)).ToList().AsReadOnly();
+            return Request.CreateResponse(HttpStatusCode.OK, sessions, JsonFormatter());
         }
 
         /// <summary>
@@ -171,48 +176,59 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpGet]
         [Route("sessions/current")]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The current Session was retrieved successfully.", typeof(IReadOnlyList<Session>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The current Session was retrieved successfully.", typeof(SessionData))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage SessionsGetCurrent()
         {
-            string apiKey = GetSessionKey(Request);
-            Session session = SecurityManager.FindSession(apiKey);
+            string token = GetSessionToken(Request);
+            Session session = SecurityManager.FindSession(token);
 
-            return Request.CreateResponse(HttpStatusCode.OK, session, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+            return Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
         }
 
         /// <summary>
         ///     Starts a new Session, or returns an existing Session if one exists.
         /// </summary>
-        /// <param name="userName">The user for which the Session is to be started.</param>
-        /// <param name="password">The password with which to authenticate the user.</param>
+        /// <param name="data">The credentials with which to start the Session.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
         [Route("sessions")]
         [AllowAnonymous]
         [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.Created, "The Session was successfully started.", typeof(Session))]
+        [SwaggerResponse(HttpStatusCode.Created, "The Session was successfully started.", typeof(SessionData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be started.", typeof(Result))]
-        public HttpResponseMessage SessionsStart(string userName, string password)
+        public HttpResponseMessage SessionsStart([FromBody]SessionStartData data)
         {
             HttpResponseMessage retVal;
 
-            if (string.IsNullOrEmpty(userName))
+            if (!(data is SessionStartData))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
+            }
+            else if (string.IsNullOrEmpty(data.Name))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified User name is null or empty.");
             }
-            else if (string.IsNullOrEmpty(password))
+            else if (string.IsNullOrEmpty(data.Password))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
             }
             else
             {
-                IResult<Session> startSessionResult = SecurityManager.StartSession(userName, password);
+                IResult<Session> startSessionResult = SecurityManager.StartSession(data.Name, data.Password);
 
                 if (startSessionResult.ResultCode != ResultCode.Failure)
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, startSessionResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "Subject"));
+                    Session session = startSessionResult.ReturnValue;
+
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
+
+                    CookieHeaderValue cookie = new CookieHeaderValue(WebApiConstants.SessionTokenCookieName, session.Token);
+                    cookie.Expires = session.Expires;
+                    cookie.Path = "/";
+
+                    retVal.Headers.AddCookies(new[] { cookie });
                 }
                 else
                 {
@@ -227,42 +243,44 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <summary>
         ///     Creates a new User.
         /// </summary>
-        /// <param name="name">The name of the new User.</param>
-        /// <param name="password">The plaintext password for the new User.</param>
-        /// <param name="role">The Role for the new User.</param>
+        /// <param name="data">The data with which to create the User.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpPost]
         [Route("users")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = nameof(Role.Administrator))]
         [SwaggerResponseRemoveDefaults]
-        [SwaggerResponse(HttpStatusCode.Created, "The User was created.", typeof(User))]
+        [SwaggerResponse(HttpStatusCode.Created, "The User was created.", typeof(UserData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        public HttpResponseMessage UsersCreate(string name, string password, Role role)
+        public HttpResponseMessage UsersCreate([FromBody]UserCreateData data)
         {
             HttpResponseMessage retVal;
 
-            if (string.IsNullOrEmpty(name))
+            if (!(data is UserCreateData))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
+            }
+            else if (string.IsNullOrEmpty(data.Name))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
             }
-            else if (string.IsNullOrEmpty(password))
+            else if (string.IsNullOrEmpty(data.Password))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
             }
             else
             {
-                User user = SecurityManager.FindUser(name);
+                User user = SecurityManager.FindUser(data.Name);
 
                 if (user == default(User))
                 {
-                    IResult<User> createResult = SecurityManager.CreateUser(name, password, role);
+                    IResult<User> createResult = SecurityManager.CreateUser(data.Name, data.Password, data.Role);
 
                     if (createResult.ResultCode != ResultCode.Failure)
                     {
-                        retVal = Request.CreateResponse(HttpStatusCode.Created, createResult.ReturnValue, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+                        retVal = Request.CreateResponse(HttpStatusCode.Created, new UserData(createResult.ReturnValue), JsonFormatter());
                     }
                     else
                     {
@@ -286,7 +304,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <returns>An HTTP response message.</returns>
         [HttpDelete]
         [Route("users/{name}")]
-        [Authorize(Roles = "Administrator")]
+        [Authorize(Roles = nameof(Role.Administrator))]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.NoContent, "The User was deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
@@ -333,12 +351,13 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
         [Route("users")]
-        [Authorize(Roles = "Administrator")]
-        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<User>))]
+        [Authorize(Roles = nameof(Role.Administrator))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<UserData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         public HttpResponseMessage UsersGet()
         {
-            return Request.CreateResponse(HttpStatusCode.OK, SecurityManager.Users, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+            IReadOnlyList<UserData> users = SecurityManager.Users.Select(u => new UserData(u)).ToList().AsReadOnly();
+            return Request.CreateResponse(HttpStatusCode.OK, users, JsonFormatter());
         }
 
         /// <summary>
@@ -348,8 +367,8 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
         [Route("users/{name}")]
-        [Authorize(Roles = "Administrator")]
-        [SwaggerResponse(HttpStatusCode.OK, "The User was retrieved successfully.", typeof(IReadOnlyList<User>))]
+        [Authorize(Roles = nameof(Role.Administrator))]
+        [SwaggerResponse(HttpStatusCode.OK, "The User was retrieved successfully.", typeof(UserData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
@@ -367,7 +386,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
                 if (user != default(User))
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, user, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, new UserData(user), JsonFormatter());
                 }
                 else
                 {
@@ -382,30 +401,33 @@ namespace OpenIIoT.Core.Security.WebApi
         ///     Updates the specified User.
         /// </summary>
         /// <param name="name">The name of the User to update.</param>
-        /// <param name="password">The updated plaintext password for the User.</param>
-        /// <param name="role">The updated Role for the user.</param>
+        /// <param name="data">The updated User information.</param>
         /// <returns>An HTTP response message.</returns>
-        [HttpPut]
+        [HttpPatch]
         [Route("users/{name}")]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(User))]
+        [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(UserData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        public HttpResponseMessage UsersUpdate(string name, string password = null, Role? role = null)
+        public HttpResponseMessage UsersUpdate(string name, [FromBody]UserUpdateData data)
         {
             HttpResponseMessage retVal;
 
-            if (string.IsNullOrEmpty(name))
+            if (!(data is UserUpdateData))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
+            }
+            else if (string.IsNullOrEmpty(name))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
             }
-            else if (password != null && password == string.Empty)
+            else if (data.Password != null && data.Password == string.Empty)
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is empty.");
             }
-            else if (password == null && role == null)
+            else if (data.Password == null && data.Role == null)
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "Neither the password nor the Role was specified; nothing to update.");
             }
@@ -415,11 +437,11 @@ namespace OpenIIoT.Core.Security.WebApi
 
                 if (user != default(User))
                 {
-                    IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, password, role);
+                    IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, data.Password, data.Role);
 
                     if (updateResult.ResultCode != ResultCode.Failure)
                     {
-                        retVal = Request.CreateResponse(HttpStatusCode.OK, updateResult, JsonFormatter(ContractResolverType.OptOut, "PasswordHash"));
+                        retVal = Request.CreateResponse(HttpStatusCode.OK, new UserData(updateResult.ReturnValue), JsonFormatter());
                     }
                     else
                     {
@@ -441,13 +463,113 @@ namespace OpenIIoT.Core.Security.WebApi
         #region Private Methods
 
         /// <summary>
-        ///     Retrieves the ApiKey for the specified <paramref name="request"/>.
+        ///     Retrieves the token for the specified <paramref name="request"/>.
         /// </summary>
-        /// <param name="request">The request from which to retrieve the ApiKey.</param>
-        /// <returns>The retrieved ApiKey, or an empty string if it does not exist.</returns>
-        private string GetSessionKey(HttpRequestMessage request)
+        /// <param name="request">The request from which to retrieve the token.</param>
+        /// <returns>The retrieved token, or an empty string if it does not exist.</returns>
+        private string GetSessionToken(HttpRequestMessage request)
         {
             return Request.GetOwinContext()?.Authentication?.User?.Claims?.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
+        }
+
+        public class SessionData
+        {
+            #region Public Constructors
+
+            public SessionData(Session session)
+            {
+                Name = session.Name;
+                Role = session.Role;
+                Token = session.Token;
+                Issued = session.Issued;
+                Expires = session.Expires;
+            }
+
+            #endregion Public Constructors
+
+            #region Public Properties
+
+            [JsonProperty(Order = 5)]
+            public DateTimeOffset? Expires { get; set; }
+
+            [JsonProperty(Order = 4)]
+            public DateTimeOffset? Issued { get; set; }
+
+            [JsonProperty(Order = 1)]
+            public string Name { get; set; }
+
+            [JsonProperty(Order = 2)]
+            public Role Role { get; set; }
+
+            [JsonProperty(Order = 3)]
+            public string Token { get; set; }
+
+            #endregion Public Properties
+        }
+
+        public class SessionStartData
+        {
+            #region Public Properties
+
+            [JsonProperty(Order = 1)]
+            public string Name { get; set; }
+
+            [JsonProperty(Order = 2)]
+            public string Password { get; set; }
+
+            #endregion Public Properties
+        }
+
+        public class UserCreateData
+        {
+            #region Public Properties
+
+            [JsonProperty(Order = 1)]
+            public string Name { get; set; }
+
+            [JsonProperty(Order = 3)]
+            public string Password { get; set; }
+
+            [JsonProperty(Order = 2)]
+            public Role Role { get; set; }
+
+            #endregion Public Properties
+        }
+
+        public class UserData
+        {
+            #region Public Constructors
+
+            public UserData(User user)
+            {
+                Name = user.Name;
+                Role = user.Role;
+            }
+
+            #endregion Public Constructors
+
+            #region Public Properties
+
+            [JsonProperty(Order = 1)]
+            public string Name { get; set; }
+
+            [JsonProperty(Order = 2)]
+            public Role Role { get; set; }
+
+            #endregion Public Properties
+        }
+
+        public class UserUpdateData
+        {
+            #region Public Properties
+
+            [JsonProperty(Order = 2)]
+            public string Password { get; set; }
+
+            [JsonProperty(Order = 1)]
+            public Role? Role { get; set; }
+
+            #endregion Public Properties
         }
 
         #endregion Private Methods

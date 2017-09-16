@@ -120,12 +120,6 @@ namespace OpenIIoT.Core.Security
         public event EventHandler<SessionEventArgs> SessionEnded;
 
         /// <summary>
-        ///     Occurs when a Session is extended.
-        /// </summary>
-        [Event(Description = "Occurs when a Session is extended.")]
-        public event EventHandler<SessionEventArgs> SessionExtended;
-
-        /// <summary>
         ///     Occurs when a Session is started.
         /// </summary>
         [Event(Description = "Occurs when a Session is started.")]
@@ -417,7 +411,7 @@ namespace OpenIIoT.Core.Security
         public IResult EndSession(Session session)
         {
             logger.EnterMethod();
-            logger.Debug($"Ending Session '{session?.ApiKey}'...");
+            logger.Debug($"Ending Session '{session?.Token}'...");
 
             IResult retVal = new Result();
             Session foundSession = default(Session);
@@ -428,7 +422,7 @@ namespace OpenIIoT.Core.Security
             }
             else
             {
-                foundSession = FindSession(session?.ApiKey);
+                foundSession = FindSession(session?.Token);
 
                 if (foundSession != default(Session))
                 {
@@ -445,7 +439,7 @@ namespace OpenIIoT.Core.Security
                 }
                 else
                 {
-                    retVal.AddError($"The Session matching ApiKey '{session?.ApiKey}' does not exist.");
+                    retVal.AddError($"The Session matching Token '{session?.Token}' does not exist.");
                 }
             }
 
@@ -471,7 +465,7 @@ namespace OpenIIoT.Core.Security
         public IResult<Session> ExtendSession(Session session)
         {
             logger.EnterMethod();
-            logger.Debug($"Extending Session '{session?.ApiKey}'...");
+            logger.Trace($"Extending Session '{session?.Token}'...");
 
             IResult<Session> retVal = new Result<Session>();
             Session foundSession = default(Session);
@@ -482,7 +476,7 @@ namespace OpenIIoT.Core.Security
             }
             else
             {
-                foundSession = FindSession(session?.ApiKey);
+                foundSession = FindSession(session?.Token);
                 if (foundSession != default(Session))
                 {
                     if (Configuration.SlidingSessions)
@@ -503,7 +497,7 @@ namespace OpenIIoT.Core.Security
                 }
                 else
                 {
-                    retVal.AddError($"Session matching ApiKey '{session?.ApiKey}' does not exist.");
+                    retVal.AddError($"Session matching Token '{session?.Token}' does not exist.");
                 }
             }
 
@@ -511,26 +505,22 @@ namespace OpenIIoT.Core.Security
             {
                 retVal.AddError($"Failed to extend Session.");
             }
-            else
-            {
-                Task.Run(() => SessionExtended?.Invoke(this, new SessionEventArgs(foundSession)));
-            }
 
-            retVal.LogResult(logger.Debug);
+            retVal.LogResult(logger.Trace);
             logger.ExitMethod();
             return retVal;
         }
 
         /// <summary>
-        ///     Finds the <see cref="Session"/> matching the specified <paramref name="apiKey"/>.
+        ///     Finds the <see cref="Session"/> matching the specified <paramref name="token"/>.
         /// </summary>
-        /// <param name="apiKey">The ApiKey for the requested Session.</param>
+        /// <param name="token">The token for the requested Session.</param>
         /// <returns>The found Session.</returns>
-        public Session FindSession(string apiKey)
+        public Session FindSession(string token)
         {
             return SessionList
                 .Where(s => s.Ticket.Identity.Claims
-                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == apiKey).FirstOrDefault();
+                    .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == token).FirstOrDefault();
         }
 
         /// <summary>

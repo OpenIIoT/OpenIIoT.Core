@@ -104,7 +104,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.IsType<SDK.Security.Session>(test);
             Assert.NotNull(test);
-            Assert.Equal(128, test.ApiKey.Length);
+            Assert.Equal(128, test.Token.Length);
             Assert.NotEqual(default(AuthenticationTicket), test.Ticket);
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Name, "test"));
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
@@ -138,7 +138,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.IsType<SDK.Security.Session>(test);
             Assert.NotNull(test);
-            Assert.Equal(128, test.ApiKey.Length);
+            Assert.Equal(128, test.Token.Length);
             Assert.NotEqual(default(AuthenticationTicket), test.Ticket);
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Name, string.Empty));
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
@@ -165,13 +165,15 @@ namespace OpenIIoT.Core.Tests.Security
         public void ExtendSession()
         {
             SDK.Security.User user = new SDK.Security.User("admin", "hash", SDK.Security.Role.ReadWriter);
-            SDK.Security.Session test = Factory.CreateSession(user, 15);
+            SDK.Security.Session test = Factory.CreateSession(user, 150);
 
-            DateTimeOffset initial = test.Ticket.Properties.ExpiresUtc.Value;
+            DateTimeOffset initialtime = test.Ticket.Properties.ExpiresUtc.Value;
 
-            Factory.ExtendSession(test, 15);
+            Factory.ExtendSession(test, 300);
 
-            Assert.Equal(initial.AddSeconds(15), test.Ticket.Properties.ExpiresUtc.Value);
+            DateTimeOffset newtime = test.Ticket.Properties.ExpiresUtc.Value;
+
+            Assert.True(initialtime < test.Ticket.Properties.ExpiresUtc.Value);
         }
 
         #endregion Public Methods

@@ -273,7 +273,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void EndSessionNotRunning()
         {
-            IResult result = Manager.EndSession(new Session("key", null));
+            IResult result = Manager.EndSession(new Session(null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -286,7 +286,7 @@ namespace OpenIIoT.Core.Tests.Security
         {
             Manager.Start();
 
-            IResult result = Manager.EndSession(new Session("key", null));
+            IResult result = Manager.EndSession(new Session(null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -352,7 +352,7 @@ namespace OpenIIoT.Core.Tests.Security
         {
             Manager.Start();
 
-            IResult<SDK.Security.Session> result = Manager.ExtendSession(new Session("key", null));
+            IResult<SDK.Security.Session> result = Manager.ExtendSession(new Session(null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -364,7 +364,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void ExtendSessionNotRunning()
         {
-            IResult result = Manager.ExtendSession(new Session("key", null));
+            IResult result = Manager.ExtendSession(new Session(null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -415,7 +415,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.Equal(ResultCode.Success, session.ResultCode);
 
-            SDK.Security.Session foundSession = Manager.FindSession(session.ReturnValue.ApiKey);
+            SDK.Security.Session foundSession = Manager.FindSession(session.ReturnValue.Token);
 
             Assert.NotEqual(default(SDK.Security.Session), foundSession);
             Assert.Equal("test", foundSession.Ticket.Identity.Name);

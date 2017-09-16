@@ -13,6 +13,7 @@ using OpenIIoT.SDK.Service.WebApi;
 using Owin;
 using Swashbuckle.Application;
 using OpenIIoT.SDK.Platform;
+using OpenIIoT.Core.Service.WebApi.Middleware;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -36,16 +37,19 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             string webRoot = WebApiService.StaticConfiguration.Root.TrimStart('/').TrimEnd('/');
 
-            string signalRPath = $"/{webRoot}/signalr";
-            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
+            // openiiot/signalr openiiot/help openiiot/help/docs/ openiiot/help/ui openiiot/help/ui/index openiiot/api/
+
+            string signalRPath = $"/{webRoot}/{WebApiConstants.SignalRRoutePrefix}";
+            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}";
             string swaggerPath = $"{helpPath}/docs/{{apiVersion}}";
             string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
             string helpShortcut = $"{helpPath}/ui/index";
 
-            app.UseCors(CorsOptions.AllowAll);
+            app.Use(typeof(LoggingMiddleware));
+            app.Use(typeof(NotFoundRedirectionMiddleware));
 
-            app.Use(typeof(LogMiddleware));
-            app.Use(typeof(AuthMiddleware));
+            app.UseCors(CorsOptions.AllowAll);
+            app.Use(typeof(AuthenticationMiddleware));
 
             app.MapSignalR(signalRPath, new HubConfiguration());
 
@@ -63,7 +67,7 @@ namespace OpenIIoT.Core.Service.WebApi
                 })
                 .EnableSwaggerUi(swaggerUiPath, c =>
                 {
-                    c.EnableApiKeySupport("X-ApiKey", "header");
+                    c.EnableApiKeySupport(WebApiConstants.ApiKeyHeaderName, "header");
                     c.DisableValidator();
                 });
 

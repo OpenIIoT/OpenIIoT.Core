@@ -108,6 +108,23 @@ namespace OpenIIoT.Core.Model.WebApi
             Clients.Group(item.FQN).read(itemJson, valueJson);
         }
 
+        public void ReadFromSource(object arg)
+        {
+            string castFQN = (string)arg;
+
+            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
+
+            if (foundItem != default(Item))
+            {
+                object previousValue = foundItem.Value;
+                ItemQuality previousQuality = foundItem.Quality;
+
+                foundItem.ReadFromSource();
+
+                ItemChangedEventArgs args = new ItemChangedEventArgs(foundItem.Value, previousValue, foundItem.Quality, previousQuality);
+            }
+        }
+
         /// <summary>
         ///     Subscribes the calling client to the item matching the provided FQN.
         /// </summary>
@@ -232,11 +249,12 @@ namespace OpenIIoT.Core.Model.WebApi
             if (foundItem != default(Item))
             {
                 retVal = foundItem.WriteToSource(args[1]);
+                string valueString = JsonConvert.SerializeObject(args[1]);
 
-                if (!retVal)
+                if (retVal)
                 {
                     Clients.Caller.writeToSourceSuccess(castFQN, args.SubArray(1, args.Length - 1));
-                    logger.Info(GetLogPrefix() + "updated item source '" + foundItem.FQN + "' with value '" + args[1] + "'.");
+                    logger.Info(GetLogPrefix() + "updated item source '" + foundItem.FQN + "' with value '" + valueString + "'.");
                 }
                 else
                 {

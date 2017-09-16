@@ -97,6 +97,10 @@
       <HintPath>..\packages\Microsoft.Owin.Security.3.1.0\lib\net45\Microsoft.Owin.Security.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.3.1.0\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Owin.StaticFiles, Version=3.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Owin.StaticFiles.3.1.0\lib\net45\Microsoft.Owin.StaticFiles.dll</HintPath>
       <Private>True</Private>
@@ -239,9 +243,10 @@
     <Compile Include="Common\WebApi\LogController.cs" />
     <Compile Include="Common\WebApi\LogHub.cs" />
     <Compile Include="Service\WebApi\ApiBaseController.cs" />
-    <Compile Include="Service\WebApi\AuthMiddleware.cs" />
+    <Compile Include="Service\WebApi\Middleware\AuthenticationMiddleware.cs" />
+    <Compile Include="Service\WebApi\Middleware\NotFoundRedirectionMiddleware.cs" />
     <Compile Include="Service\WebApi\WebApiRoutePrefixAttribute.cs" />
-    <Compile Include="Service\WebApi\LogMiddleware.cs" />
+    <Compile Include="Service\WebApi\Middleware\LoggingMiddleware.cs" />
     <Compile Include="Service\WebApi\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebApi\OwinStartup.cs" />
     <Compile Include="Service\WebApi\WebApiConstants.cs" />

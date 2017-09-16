@@ -40,7 +40,10 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Linq;
+using System.Security.Claims;
 using Microsoft.Owin.Security;
+using Newtonsoft.Json;
 
 namespace OpenIIoT.SDK.Security
 {
@@ -54,11 +57,9 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
-        /// <param name="apiKey">The ApiKey for the Session.</param>
         /// <param name="ticket">The AuthenticationTicket for the Session.</param>
-        public Session(string apiKey, AuthenticationTicket ticket)
+        public Session(AuthenticationTicket ticket)
         {
-            ApiKey = apiKey;
             Ticket = ticket;
         }
 
@@ -67,20 +68,62 @@ namespace OpenIIoT.SDK.Security
         #region Private Properties
 
         /// <summary>
-        ///     Gets the ApiKey for the Session.
+        ///     Gets the expiration timestamp of the Ticket, in UTC.
         /// </summary>
-        public string ApiKey { get; }
+        [JsonProperty(Order = 4)]
+        public DateTimeOffset? Expires => Ticket?.Properties.ExpiresUtc;
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
         /// </summary>
+        [JsonProperty(Order = 5)]
         public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
+
+        /// <summary>
+        ///     Gets the issued timestamp of the Ticket, in UTC.
+        /// </summary>
+        [JsonProperty(Order = 3)]
+        public DateTimeOffset? Issued => Ticket?.Properties.IssuedUtc;
+
+        /// <summary>
+        ///     Gets the Name claim from the <see cref="Ticket"/>.
+        /// </summary>
+        [JsonProperty(Order = 0)]
+        public string Name => GetClaim(Ticket, ClaimTypes.Name) ?? string.Empty;
+
+        /// <summary>
+        ///     Gets the Role claim from the <see cref="Ticket"/>.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public Role Role => (Role)Enum.Parse(typeof(Role), GetClaim(Ticket, ClaimTypes.Role) ?? default(Role).ToString());
 
         /// <summary>
         ///     Gets the AuthenticationTicket for the Session.
         /// </summary>
+        [JsonProperty(Order = 6)]
         public AuthenticationTicket Ticket { get; }
 
+        /// <summary>
+        ///     Gets the token for the Session.
+        /// </summary>
+        [JsonProperty(Order = 2)]
+        public string Token => GetClaim(Ticket, ClaimTypes.Hash) ?? string.Empty;
+
         #endregion Private Properties
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Returns the specified Claim <paramref name="type"/> within the specified <paramref name="ticket"/>.
+        /// </summary>
+        /// <param name="ticket">The Ticket from which the Claim is to be retrieved.</param>
+        /// <param name="type">The type of Claim to retrieve.</param>
+        /// <returns>The retrieved Claim value.</returns>
+        private string GetClaim(AuthenticationTicket ticket, string type)
+        {
+            return ticket?.Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;
+        }
+
+        #endregion Private Methods
     }
 }
