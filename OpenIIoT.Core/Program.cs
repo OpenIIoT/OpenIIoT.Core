@@ -480,6 +480,7 @@ namespace OpenIIoT.Core
 
                 // attach all of the simulation items to the model
                 applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
+                applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("SQL")).Browse(), symItem);
 
                 // show 'em what they've won!
                 Utility.PrintLogo(logger);
