@@ -120,8 +120,7 @@ namespace OpenIIoT.Core.Model.WebApi
                 ItemQuality previousQuality = foundItem.Quality;
 
                 foundItem.ReadFromSource();
-
-                ItemChangedEventArgs args = new ItemChangedEventArgs(foundItem.Value, previousValue, foundItem.Quality, previousQuality);
+                InvokeRead(foundItem, previousValue, previousQuality);
             }
         }
 
@@ -156,6 +155,9 @@ namespace OpenIIoT.Core.Model.WebApi
                     logger.Info(GetLogPrefix() + "subscribed to '" + foundItem.FQN + "'.");
 
                     logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
+
+                    // force a read event to populate the initial value client side
+                    InvokeRead(foundItem);
                 }
             }
             else
@@ -274,6 +276,17 @@ namespace OpenIIoT.Core.Model.WebApi
         private string GetLogPrefix()
         {
             return "SignalR Connection [" + this.GetType().Name + "/ID: " + Context.ConnectionId + "] ";
+        }
+
+        private void InvokeRead(Item item)
+        {
+            InvokeRead(item, item.Value, item.Quality);
+        }
+
+        private void InvokeRead(Item item, object previousValue, ItemQuality previousQuality)
+        {
+            ItemChangedEventArgs args = new ItemChangedEventArgs(item.Value, previousValue, item.Quality, previousQuality);
+            Read(item, args);
         }
 
         #endregion Instance Methods

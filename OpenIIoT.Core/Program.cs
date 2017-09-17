@@ -495,9 +495,11 @@ namespace OpenIIoT.Core
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.Misc.MousePosition").SubscribeToSource();
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.ReadWrite.Read").SubscribeToSource();
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.ReadWrite.Write").SubscribeToSource();
+                subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.SQL.Demo.Batches").SubscribeToSource();
                 subscribe.LogResult(logger.Info);
 
                 applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
+                applicationManager.GetManager<IPluginManager>().FindPluginInstance("SQL").Start();
             }
             catch (Exception ex)
             {
