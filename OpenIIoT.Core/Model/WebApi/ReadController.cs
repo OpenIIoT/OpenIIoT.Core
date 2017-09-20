@@ -10,6 +10,7 @@ using OpenIIoT.SDK.Model;
 
 namespace OpenIIoT.Core.Model.WebApi
 {
+    [WebApiRoutePrefix("v1/item")]
     public class ReadController : ApiBaseController
     {
         #region Private Fields
@@ -30,7 +31,7 @@ namespace OpenIIoT.Core.Model.WebApi
 
         #region Public Methods
 
-        [Route("api/read")]
+        [Route("read")]
         [HttpGet]
         public HttpResponseMessage Read()
         {
@@ -38,14 +39,14 @@ namespace OpenIIoT.Core.Model.WebApi
             return Request.CreateResponse(HttpStatusCode.OK, result, JsonFormatter(ContractResolverType.OptIn, "FQN", "Timestamp", "Quality", "Value", "Children", "AccessMode"));
         }
 
-        [Route("api/read/{fqn}")]
+        [Route("read/{fqn}")]
         [HttpGet]
         public HttpResponseMessage Read(string fqn)
         {
             return Read(fqn, false);
         }
 
-        [Route("api/read/{fqn}/{fromSource}")]
+        [Route("read/{fqn}/{fromSource}")]
         [HttpGet]
         public HttpResponseMessage Read(string fqn, bool fromSource)
         {
