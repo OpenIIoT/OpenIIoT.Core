@@ -181,28 +181,28 @@ namespace OpenIIoT.Core.Platform.UNIX
             Item cpuRoot = ItemRoot.AddChild(new Item("CPU", this)).ReturnValue;
 
             // % CPU used
-            Item cpuProcessorTime = new Item("CPU.% Processor Time", this);
+            Item cpuProcessorTime = new Item("CPU.% Processor Time", ItemAccessMode.ReadOnly, this);
             cpuRoot.AddChild(cpuProcessorTime);
 
             actions.Add(
                 cpuProcessorTime.FQN,
                 () =>
-            {
-                lastCPUUsed = cpuUsed.NextValue();
-                return lastCPUUsed;
-            });
+                {
+                    lastCPUUsed = cpuUsed.NextValue();
+                    return lastCPUUsed;
+                });
 
             // % CPU Idle
-            Item cpuIdleTime = new Item("CPU.% Idle Time", this);
+            Item cpuIdleTime = new Item("CPU.% Idle Time", ItemAccessMode.ReadOnly, this);
             cpuRoot.AddChild(cpuIdleTime);
 
             actions.Add(
                 cpuIdleTime.FQN,
                 () =>
-            {
-                lastCPUIdle = cpuIdle.NextValue();
-                return lastCPUIdle;
-            });
+                {
+                    lastCPUIdle = cpuIdle.NextValue();
+                    return lastCPUIdle;
+                });
 
             // prepare variables to use for processor time. you need two successive values to report accurately so rather than
             // sleeping the thread we will just keep track from call to call. the first values will always be zero and that's ok.
@@ -210,40 +210,40 @@ namespace OpenIIoT.Core.Platform.UNIX
             lastCPUIdle = 0;
 
             // create memory items
-            Item memRoot = ItemRoot.AddChild(new Item("Memory", this)).ReturnValue;
+            Item memRoot = ItemRoot.AddChild(new Item("Memory", ItemAccessMode.ReadOnly, this)).ReturnValue;
 
             // total memory
-            Item memoryTotal = new Item("Memory.Total", this);
+            Item memoryTotal = new Item("Memory.Total", ItemAccessMode.ReadOnly, this);
             memRoot.AddChild(memoryTotal);
 
             actions.Add(
                 memoryTotal.FQN,
                 () =>
-            {
-                return 0;
-            });
+                {
+                    return 0;
+                });
 
             // available memory
-            Item memoryAvailable = new Item("Memory.Available", this);
+            Item memoryAvailable = new Item("Memory.Available", ItemAccessMode.ReadOnly, this);
             memRoot.AddChild(memoryAvailable);
 
             actions.Add(
                 memoryAvailable.FQN,
                 () =>
-            {
-                return new PerformanceCounter("Memory", "Available Bytes").NextValue();
-            });
+                {
+                    return new PerformanceCounter("Memory", "Available Bytes").NextValue();
+                });
 
             // cached memory
-            Item memoryCached = new Item("Memory.Cached", this);
+            Item memoryCached = new Item("Memory.Cached", ItemAccessMode.ReadOnly, this);
             memRoot.AddChild(memoryCached);
 
             actions.Add(
                 memoryCached.FQN,
                 () =>
-            {
-                return new PerformanceCounter("Memory", "Cache Bytes").NextValue();
-            });
+                {
+                    return new PerformanceCounter("Memory", "Cache Bytes").NextValue();
+                });
 
             // used memory
             Item memoryUsed = new Item("Memory.% Used", this);
@@ -252,34 +252,34 @@ namespace OpenIIoT.Core.Platform.UNIX
             actions.Add(
                 memoryUsed.FQN,
                 () =>
-            {
-                return new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
-            });
+                {
+                    return new PerformanceCounter("Memory", "% Committed Bytes In Use").NextValue();
+                });
 
             // create drive items
-            Item driveRoot = ItemRoot.AddChild(new Item("Drives", this)).ReturnValue;
+            Item driveRoot = ItemRoot.AddChild(new Item("Drives", ItemAccessMode.ReadOnly, this)).ReturnValue;
 
             // system drive
-            Item sysDriveRoot = driveRoot.AddChild(new Item("Drives.System", this)).ReturnValue;
-            sysDriveRoot.AddChild(new Item("Drives.System.Name", this));
-            sysDriveRoot.AddChild(new Item("Path", this));
-            sysDriveRoot.AddChild(new Item("Type", this));
-            sysDriveRoot.AddChild(new Item("Capacity", this));
-            sysDriveRoot.AddChild(new Item("UsedSpace", this));
-            sysDriveRoot.AddChild(new Item("FreeSpace", this));
-            sysDriveRoot.AddChild(new Item("PercentUsed", this));
-            sysDriveRoot.AddChild(new Item("PercentFree", this));
+            Item sysDriveRoot = driveRoot.AddChild(new Item("Drives.System", ItemAccessMode.ReadOnly, this)).ReturnValue;
+            sysDriveRoot.AddChild(new Item("Drives.System.Name", ItemAccessMode.ReadOnly, this));
+            sysDriveRoot.AddChild(new Item("Path", ItemAccessMode.ReadOnly, this));
+            sysDriveRoot.AddChild(new Item("Type", ItemAccessMode.ReadOnly, this));
+            sysDriveRoot.AddChild(new Item("Capacity", ItemAccessMode.ReadOnly, this));
+            sysDriveRoot.AddChild(new Item("UsedSpace", ItemAccessMode.ReadOnly, this));
+            sysDriveRoot.AddChild(new Item("FreeSpace", ItemAccessMode.ReadOnly, this));
+            sysDriveRoot.AddChild(new Item("PercentUsed", ItemAccessMode.ReadOnly, this));
+            sysDriveRoot.AddChild(new Item("PercentFree", ItemAccessMode.ReadOnly, this));
 
             // data drive
-            Item dataDriveRoot = driveRoot.AddChild(new Item("Data", this)).ReturnValue;
-            dataDriveRoot.AddChild(new Item("Name", this));
-            dataDriveRoot.AddChild(new Item("Path", this));
-            dataDriveRoot.AddChild(new Item("Type", this));
-            dataDriveRoot.AddChild(new Item("Capacity", this));
-            dataDriveRoot.AddChild(new Item("UsedSpace", this));
-            dataDriveRoot.AddChild(new Item("FreeSpace", this));
-            dataDriveRoot.AddChild(new Item("PercentUsed", this));
-            dataDriveRoot.AddChild(new Item("PercentFree", this));
+            Item dataDriveRoot = driveRoot.AddChild(new Item("Data", ItemAccessMode.ReadOnly, this)).ReturnValue;
+            dataDriveRoot.AddChild(new Item("Name", ItemAccessMode.ReadOnly, this));
+            dataDriveRoot.AddChild(new Item("Path", ItemAccessMode.ReadOnly, this));
+            dataDriveRoot.AddChild(new Item("Type", ItemAccessMode.ReadOnly, this));
+            dataDriveRoot.AddChild(new Item("Capacity", ItemAccessMode.ReadOnly, this));
+            dataDriveRoot.AddChild(new Item("UsedSpace", ItemAccessMode.ReadOnly, this));
+            dataDriveRoot.AddChild(new Item("FreeSpace", ItemAccessMode.ReadOnly, this));
+            dataDriveRoot.AddChild(new Item("PercentUsed", ItemAccessMode.ReadOnly, this));
+            dataDriveRoot.AddChild(new Item("PercentFree", ItemAccessMode.ReadOnly, this));
         }
 
         #endregion Private Methods
