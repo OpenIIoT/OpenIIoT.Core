@@ -79,6 +79,8 @@ namespace OpenIIoT.Core.Platform.Windows
         /// </summary>
         private PerformanceCounter cpuUsed;
 
+        private PerformanceCounter diskUsed;
+
         /// <summary>
         ///     The last retrieved value for the CPU % Idle Time PerformanceCounter.
         /// </summary>
@@ -88,6 +90,8 @@ namespace OpenIIoT.Core.Platform.Windows
         ///     The last retrieved value for the CPU % Processor Time PerformanceCounter.
         /// </summary>
         private double lastCPUUsed;
+
+        private double lastDiskUsed;
 
         #endregion Private Fields
 
@@ -104,6 +108,8 @@ namespace OpenIIoT.Core.Platform.Windows
 
             cpuUsed = new PerformanceCounter("Processor", "% Processor Time", "_Total");
             cpuIdle = new PerformanceCounter("Processor", "% Idle Time", "_Total");
+
+            diskUsed = new PerformanceCounter("PhysicalDisk", "% Disk Time", "_Total");
 
             InitializeItems();
         }
@@ -258,6 +264,16 @@ namespace OpenIIoT.Core.Platform.Windows
 
             // create drive items
             Item driveRoot = ItemRoot.AddChild(new Item("Drives", ItemAccessMode.ReadOnly, this)).ReturnValue;
+
+            Item diskUsedItem = driveRoot.AddChild(new Item("Drives.% Disk Time", ItemAccessMode.ReadOnly, this)).ReturnValue;
+
+            actions.Add(
+                diskUsedItem.FQN,
+                () =>
+                {
+                    lastDiskUsed = diskUsed.NextValue();
+                    return lastDiskUsed;
+                });
 
             // system drive
             Item sysDriveRoot = driveRoot.AddChild(new Item("Drives.System", ItemAccessMode.ReadOnly, this)).ReturnValue;
