@@ -14,6 +14,7 @@
         public const string SessionTokenCookieName = "Session-Token";
         public const string SignalRRoutePrefix = "signalr";
         public static readonly string[] AnonymousRoutes = { ApiRoutePrefix, SignalRRoutePrefix, HelpRoutePrefix, LoginRoutePrefix, HelpRoutePrefix, NotFoundRoutePrefix, AssetPath, ModulePath };
+        public static readonly string[] NonExtendableRoutes = { "api/v1/info" };
         public static readonly string[] RedirectSuppressedRoutes = { ApiRoutePrefix, SignalRRoutePrefix };
 
         #endregion Public Fields

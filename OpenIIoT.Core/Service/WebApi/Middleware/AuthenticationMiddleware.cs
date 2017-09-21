@@ -147,6 +147,12 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             return anonymousPaths.Any(p => route.StartsWithSegments(p));
         }
 
+        private bool IsNonExtendableRoute(PathString route)
+        {
+            List<PathString> nonExtendablePaths = WebApiConstants.NonExtendableRoutes.Select(r => GetPathString(r)).ToList();
+            return nonExtendablePaths.Any(p => route.StartsWithSegments(p));
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -165,7 +171,11 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             if (session != default(Session) && !session.IsExpired)
             {
                 context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
-                SecurityManager.ExtendSession(session);
+
+                if (!IsNonExtendableRoute(new PathString(context.Request.Path.Value)))
+                {
+                    SecurityManager.ExtendSession(session);
+                }
 
                 DateTime? expirationDate = ((DateTimeOffset)session.Ticket.Properties.ExpiresUtc).UtcDateTime;
                 context.Response.Cookies.Append(WebApiConstants.SessionTokenCookieName, token, new CookieOptions() { Expires = expirationDate });
