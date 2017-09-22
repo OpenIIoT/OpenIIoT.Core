@@ -52,11 +52,15 @@ namespace OpenIIoT.SDK.Security
         ///     Initializes a new instance of the <see cref="User"/> class.
         /// </summary>
         /// <param name="name">The name of the User.</param>
+        /// <param name="displayName">The display name of the User.</param>
+        /// <param name="email">The email address of the User.</param>
         /// <param name="passwordHash">The SHA512 hash of the password for the User.</param>
         /// <param name="role">The Role of the User.</param>
-        public User(string name, string passwordHash, Role role)
+        public User(string name, string displayName, string email, string passwordHash, Role role)
         {
             Name = name;
+            DisplayName = displayName;
+            Email = email;
             PasswordHash = passwordHash;
             Role = role;
         }
@@ -64,6 +68,16 @@ namespace OpenIIoT.SDK.Security
         #endregion Public Constructors
 
         #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the display name of the User.
+        /// </summary>
+        public string DisplayName { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the email address of the User.
+        /// </summary>
+        public string Email { get; set; }
 
         /// <summary>
         ///     Gets the name of the User.

@@ -99,7 +99,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void CreateSession()
         {
-            SDK.Security.User user = new SDK.Security.User("test", "hash", SDK.Security.Role.Reader);
+            SDK.Security.User user = new SDK.Security.User("test", "user", "test@test.com", "hash", SDK.Security.Role.Reader);
             SDK.Security.Session test = Factory.CreateSession(user, 15);
 
             Assert.IsType<SDK.Security.Session>(test);
@@ -118,7 +118,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void CreateSessionAdmin()
         {
-            SDK.Security.User user = new SDK.Security.User("admin", "hash", SDK.Security.Role.Administrator);
+            SDK.Security.User user = new SDK.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.Administrator);
             SDK.Security.Session test = Factory.CreateSession(user, 15);
 
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
@@ -151,7 +151,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void CreateSessionReadWriter()
         {
-            SDK.Security.User user = new SDK.Security.User("admin", "hash", SDK.Security.Role.ReadWriter);
+            SDK.Security.User user = new SDK.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.ReadWriter);
             SDK.Security.Session test = Factory.CreateSession(user, 15);
 
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
@@ -164,7 +164,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void ExtendSession()
         {
-            SDK.Security.User user = new SDK.Security.User("admin", "hash", SDK.Security.Role.ReadWriter);
+            SDK.Security.User user = new SDK.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.ReadWriter);
             SDK.Security.Session test = Factory.CreateSession(user, 150);
 
             DateTimeOffset initialtime = test.Ticket.Properties.ExpiresUtc.Value;

@@ -76,7 +76,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.User user = new SDK.Security.User("name", "password", SDK.Security.Role.Reader);
+            SDK.Security.User user = new SDK.Security.User("name", "user", "test@test.com", "password", SDK.Security.Role.Reader);
             Core.Security.SecurityManagerConfiguration test = new Core.Security.SecurityManagerConfiguration()
             {
                 Users = new List<SDK.Security.User>(new[] { user }),

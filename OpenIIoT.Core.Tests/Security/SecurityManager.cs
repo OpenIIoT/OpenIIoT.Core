@@ -140,7 +140,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             string name = Guid.NewGuid().ToString();
 
-            IResult<SDK.Security.User> result = Manager.CreateUser(name, "password", Role.Reader);
+            IResult<SDK.Security.User> result = Manager.CreateUser(name, "test", "test@test.com", "password", Role.Reader);
 
             Assert.Equal(string.Empty, result.GetLastError());
             Assert.Equal(ResultCode.Success, result.ResultCode);
@@ -159,7 +159,7 @@ namespace OpenIIoT.Core.Tests.Security
         {
             Manager.Start();
 
-            IResult<SDK.Security.User> result = Manager.CreateUser("name", string.Empty, Role.Reader);
+            IResult<SDK.Security.User> result = Manager.CreateUser("name", "test", "test@test.com", string.Empty, Role.Reader);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -172,7 +172,7 @@ namespace OpenIIoT.Core.Tests.Security
         {
             Manager.Start();
 
-            IResult<SDK.Security.User> result = Manager.CreateUser(string.Empty, "password", Role.Reader);
+            IResult<SDK.Security.User> result = Manager.CreateUser(string.Empty, "test", "test@test.com", "password", Role.Reader);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -184,7 +184,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void CreateUserNotStarted()
         {
-            IResult<SDK.Security.User> result = Manager.CreateUser("name", "password", Role.Reader);
+            IResult<SDK.Security.User> result = Manager.CreateUser("name", "test", "test@test.com", "password", Role.Reader);
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
 
@@ -196,7 +196,7 @@ namespace OpenIIoT.Core.Tests.Security
         {
             Manager.Start();
 
-            IResult<SDK.Security.User> result = Manager.CreateUser("test", "password", Role.Reader); // name must match SetupMocks()
+            IResult<SDK.Security.User> result = Manager.CreateUser("test", "test", "test@test.com", "password", Role.Reader); // name must match SetupMocks()
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -208,9 +208,11 @@ namespace OpenIIoT.Core.Tests.Security
         public void DeleteUser()
         {
             string name = Guid.NewGuid().ToString();
+            string displayName = name;
+            string email = name + "@test.com";
             string hash = SDK.Common.Utility.ComputeSHA512Hash("test");
 
-            Configuration.Users.Add(new User(name, hash, Role.Reader));
+            Configuration.Users.Add(new User(name, displayName, email, hash, Role.Reader));
 
             Manager.Start();
 
@@ -242,7 +244,7 @@ namespace OpenIIoT.Core.Tests.Security
             string name = Guid.NewGuid().ToString();
             string hash = SDK.Common.Utility.ComputeSHA512Hash("test");
 
-            Configuration.Users.Add(new User(name, hash, Role.Reader));
+            Configuration.Users.Add(new User(name, "user", "test@test.com", hash, Role.Reader));
 
             IResult result = Manager.DeleteUser(name);
 
@@ -441,7 +443,7 @@ namespace OpenIIoT.Core.Tests.Security
             Manager.Start();
 
             string name = Guid.NewGuid().ToString();
-            Configuration.Users.Add(new SDK.Security.User(name, "hash", Role.Reader));
+            Configuration.Users.Add(new SDK.Security.User(name, "user", "test@test.com", "hash", Role.Reader));
 
             SDK.Security.User user = Manager.FindUser(name);
 
@@ -556,13 +558,13 @@ namespace OpenIIoT.Core.Tests.Security
             string name1 = Guid.NewGuid().ToString();
             string name2 = Guid.NewGuid().ToString();
 
-            Manager.CreateUser(name1, "test", Role.Reader);
+            Manager.CreateUser(name1, "test", "test@test.com", "test", Role.Reader);
             SDK.Security.Session session1 = Manager.StartSession(name1, "test").ReturnValue;
             session1.Ticket.Properties.ExpiresUtc = session1.Ticket.Properties.IssuedUtc.Value.AddMinutes(-1);
 
             Assert.True(session1.IsExpired);
 
-            Manager.CreateUser(name2, "test", Role.Reader);
+            Manager.CreateUser(name2, "test", "test@test.com", "test", Role.Reader);
             SDK.Security.Session session2 = Manager.StartSession(name2, "test").ReturnValue;
 
             Assert.False(session2.IsExpired);
@@ -747,7 +749,7 @@ namespace OpenIIoT.Core.Tests.Security
             string name = Guid.NewGuid().ToString();
             string hash = SDK.Common.Utility.ComputeSHA512Hash("test2");
 
-            Manager.CreateUser(name, "test", Role.Reader);
+            Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
 
             IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test2", Role.ReadWriter);
 
@@ -807,7 +809,7 @@ namespace OpenIIoT.Core.Tests.Security
             string name = Guid.NewGuid().ToString();
             string hash = SDK.Common.Utility.ComputeSHA512Hash("test2");
 
-            Manager.CreateUser(name, "test", Role.Reader);
+            Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
 
             IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test2", null);
 
@@ -828,7 +830,7 @@ namespace OpenIIoT.Core.Tests.Security
             string name = Guid.NewGuid().ToString();
             string hash = SDK.Common.Utility.ComputeSHA512Hash("test");
 
-            Manager.CreateUser(name, "test", Role.Reader);
+            Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
 
             IResult<SDK.Security.User> user = Manager.UpdateUser(name, null, Role.ReadWriter);
 
@@ -898,7 +900,7 @@ namespace OpenIIoT.Core.Tests.Security
             Configuration.SessionLength = 900;
             Configuration.SessionPurgeInterval = 90000;
             Configuration.SlidingSessions = true;
-            Configuration.Users = new[] { new User("test", SDK.Common.Utility.ComputeSHA512Hash("test"), Role.Reader) }.ToList();
+            Configuration.Users = new[] { new User("test", "user", "test@test.com", SDK.Common.Utility.ComputeSHA512Hash("test"), Role.Reader) }.ToList();
 
             ApplicationConfiguration = new Mock<IConfiguration>();
 

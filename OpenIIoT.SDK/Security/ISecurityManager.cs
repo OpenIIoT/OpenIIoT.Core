@@ -111,10 +111,12 @@ namespace OpenIIoT.SDK.Security
         ///     Creates a new <see cref="User"/>.
         /// </summary>
         /// <param name="name">The name of the new User.</param>
+        /// <param name="displayName">The display name of the new User.</param>
+        /// <param name="email">The email address of the new user.</param>
         /// <param name="password">The plaintext password for the new User.</param>
-        /// <param name="role">The Role for the new User.</param>
+        /// <param name="role">The Role of the new User.</param>
         /// <returns>A Result containing the result of the operation and the newly created User.</returns>
-        IResult<User> CreateUser(string name, string password, Role role);
+        IResult<User> CreateUser(string name, string displayName, string email, string password, Role role);
 
         /// <summary>
         ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.

@@ -73,6 +73,16 @@ namespace OpenIIoT.SDK.Security
         public const bool DefaultSlidingSessions = true;
 
         /// <summary>
+        ///     The default <see cref="User"/> display name.
+        /// </summary>
+        public const string DefaultUserDisplayName = "Administrator";
+
+        /// <summary>
+        ///     The default <see cref="User"/> email address.
+        /// </summary>
+        public const string DefaultUserEmail = "admin@example.com";
+
+        /// <summary>
         ///     The default <see cref="User"/> name.
         /// </summary>
         public const string DefaultUserName = "admin";
