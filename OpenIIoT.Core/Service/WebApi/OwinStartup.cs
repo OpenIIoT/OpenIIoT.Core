@@ -71,7 +71,6 @@ namespace OpenIIoT.Core.Service.WebApi
                     Assembly containingAssembly = Assembly.GetExecutingAssembly();
                     c.CustomAsset("index", containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.index.html");
                     c.InjectStylesheet(containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.style.css");
-                    c.InjectJavaScript(containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.index.js");
                     c.EnableApiKeySupport(WebApiConstants.ApiKeyHeaderName, "header");
                     c.DisableValidator();
                 });

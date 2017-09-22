@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>OpenIIoT API Help</title>
-    <link rel="icon" type="image/png" href="images/favicon-32x32-png" sizes="32x32" />
-    <link rel="icon" type="image/png" href="images/favicon-16x16-png" sizes="16x16" />
+    <link rel="icon" href="../../assets/img/favicon.ico" type="image/x-icon">
     <link href='css/typography-css' media='screen' rel='stylesheet' type='text/css' />
     <link href='css/reset-css' media='screen' rel='stylesheet' type='text/css' />
     <link href='css/screen-css' media='screen' rel='stylesheet' type='text/css' />
@@ -71,6 +70,7 @@
             if (window.SwaggerTranslator) {
                 window.SwaggerTranslator.translate();
             }
+
             window.swaggerUi = new SwaggerUi({
                 url: swashbuckleConfig.rootUrl + "/" + swashbuckleConfig.discoveryPaths[0],
                 dom_id: "swagger-ui-container",
@@ -137,34 +137,18 @@
     </script>
 </head>
 
-<body class="swagger-section" style="background-color: #ecf0f5">
+<body class="swagger-section">
     <div id="header">
         <div class="swagger-ui-wrap">
             <a id="logo" href="http://localhost/openiiot/help/ui/index">
                 <img class="logo__img" height="30" width="30" src="../../assets/img/openiiot-logo.png">
-                <span class="logo__title" style="
-                      margin-left: -5px;
-                      font-size: 20px !important;
-                      font-family: 'Source Sans Pro' , 'Helvetica Neue', Helvetica, Arial, sans-serif !important; 
-                      font-weight: 400 !important"
-                >Open<strong>IIoT</strong></span>
+                <span class="logo__title">Open<strong>IIoT</strong> API</span>
             </a>
             <form id="api_selector">
                 <div class="input"><input class="form-control input-sm" placeholder="http://example.com/api" id="input_baseUrl" name="baseUrl" type="text"></div>
                 <div class="input"><input class="form-control input-sm" placeholder="api_key" id="input_apiKey" name="apiKey" type="text"></div>
                 <div class="input">
-                    <a id="explore" class="header__btn" style="
-                       background-color: #00a65a !important;
-                       border-color: #008d4c !important;
-                       border: 1px solid #008d4c !important;
-                       height: 16px !important;
-                       font-size: 16px !important;
-                       font-family: 'Source Sans Pro' , 'Helvetica Neue' , Helvetica, Arial, sans-serif !important;
-                       padding: 6px 12px !important;
-                       text-decoration: none !important;
-                       border-radius: 3px !important;
-                       color: #FFF !important;"
-                       href="http://localhost/openiiot/help/ui/index#" data-sw-translate=""><strong>Explore</strong></a>
+                    <a id="explore" class="header__btn" href="http://localhost/openiiot/help/ui/index#" data-sw-translate=""><strong>Explore</strong></a>
                 </div>
             </form>
         </div>

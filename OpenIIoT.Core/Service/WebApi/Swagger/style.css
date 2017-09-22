@@ -1,8 +1,34 @@
-﻿body {
+﻿body.swagger-section {
+     /*background-color: #ecf0f5*/
 }
 
 .swagger-section #header {
     background: #3c8dbc;
+    height: 22px;
+}
+
+div.info_title {
+    display: none;
+}
+
+span.logo__title {
+    margin-left: -5px;
+    font-size: 20px !important;
+    font-family: 'Source Sans Pro' , 'Helvetica Neue', Helvetica, Arial, sans-serif !important; 
+    font-weight: 400 !important;
+}
+
+a#explore.header__btn {
+    background-color: #00a65a !important;
+    border-color: #008d4c !important;
+    border: 1px solid #008d4c !important;
+    height: 16px !important;
+    font-size: 16px !important;
+    font-family: 'Source Sans Pro' , 'Helvetica Neue' , Helvetica, Arial, sans-serif !important;
+    padding: 6px 12px !important;
+    text-decoration: none !important;
+    border-radius: 3px !important;
+    color: #FFF !important;
 }
 
 .form-control {
