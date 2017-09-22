@@ -303,7 +303,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             string hash = "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86";
             SDK.Security.User user = new User("user", "user", "test@test.com", hash, Role.Reader);
 
-            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>().SetReturnValue(user));
+            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>().SetReturnValue(user));
 
             HttpResponseMessage response = Controller.UsersCreate(new Core.Security.WebApi.SecurityController.UserCreateData() { Name = "user", Password = "password", Role = Role.Reader });
 
@@ -314,7 +314,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.Equal("user", responseUser.Name);
             Assert.Equal(Role.Reader, responseUser.Role);
 
-            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once());
+            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once());
         }
 
         /// <summary>
@@ -351,14 +351,14 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         public void UsersCreateFailure()
         {
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(SDK.Security.User));
-            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>(ResultCode.Failure));
+            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>(ResultCode.Failure));
 
             HttpResponseMessage response = Controller.UsersCreate(new Core.Security.WebApi.SecurityController.UserCreateData() { Name = "user", Password = "password", Role = Role.Reader });
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
             Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
 
-            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once);
+            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once);
         }
 
         /// <summary>
@@ -516,7 +516,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         {
             SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.SecurityController.UserUpdateData() { Password = "newpassword", Role = Role.ReadWriter });
 
@@ -527,7 +527,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.Equal(user.Name, result.Name);
             Assert.Equal(user.Role, result.Role);
 
-            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
+            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
 
         /// <summary>
@@ -565,7 +565,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         {
             SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>(ResultCode.Failure));
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>(ResultCode.Failure));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.SecurityController.UserUpdateData() { Password = "newpassword", Role = Role.ReadWriter });
 
@@ -575,7 +575,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
 
-            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
+            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
 
         /// <summary>
@@ -600,7 +600,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         {
             SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.SecurityController.UserUpdateData() { Password = "newpassword", Role = null });
 
@@ -611,7 +611,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.Equal(user.Name, result.Name);
             Assert.Equal(user.Role, result.Role);
 
-            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
+            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
 
         /// <summary>
@@ -623,7 +623,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         {
             SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.SecurityController.UserUpdateData() { Password = null, Role = Role.ReadWriter });
 
@@ -636,7 +636,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.Equal(user.Email, result.Email);
             Assert.Equal(user.Role, result.Role);
 
-            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
+            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
 
         /// <summary>
