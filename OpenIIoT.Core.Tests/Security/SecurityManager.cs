@@ -751,7 +751,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
 
-            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test2", Role.ReadWriter);
+            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test", "test@test.com", "test2", Role.ReadWriter);
 
             Assert.Equal(ResultCode.Success, user.ResultCode);
             Assert.Equal(name, user.ReturnValue.Name);
@@ -767,7 +767,7 @@ namespace OpenIIoT.Core.Tests.Security
         {
             Manager.Start();
 
-            IResult<SDK.Security.User> user = Manager.UpdateUser("name", string.Empty, Role.ReadWriter);
+            IResult<SDK.Security.User> user = Manager.UpdateUser("name", "test", "test@test.com", string.Empty, Role.ReadWriter);
 
             Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
@@ -793,7 +793,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void UpdateUserNotRunning()
         {
-            IResult<SDK.Security.User> user = Manager.UpdateUser("name", "test", Role.ReadWriter);
+            IResult<SDK.Security.User> user = Manager.UpdateUser("name", "test", "test@test.com", "test", Role.ReadWriter);
 
             Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
@@ -811,7 +811,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
 
-            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test2", null);
+            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test", "test@test.com", "test2", null);
 
             Assert.Equal(ResultCode.Success, user.ResultCode);
             Assert.Equal(name, user.ReturnValue.Name);
@@ -832,7 +832,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
 
-            IResult<SDK.Security.User> user = Manager.UpdateUser(name, null, Role.ReadWriter);
+            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test", "test@test.com", null, Role.ReadWriter);
 
             Assert.Equal(ResultCode.Success, user.ResultCode);
             Assert.Equal(name, user.ReturnValue.Name);
@@ -851,7 +851,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             string name = Guid.NewGuid().ToString();
 
-            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test", Role.ReadWriter);
+            IResult<SDK.Security.User> user = Manager.UpdateUser(name, "test", "test@test.com", "test", Role.ReadWriter);
 
             Assert.Equal(ResultCode.Failure, user.ResultCode);
         }

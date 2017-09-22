@@ -663,10 +663,12 @@ namespace OpenIIoT.Core.Security
         ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
         /// </summary>
         /// <param name="name">The name of the User to update.</param>
+        /// <param name="displayName">The display name of the new User.</param>
+        /// <param name="email">The email address of the new user.</param>
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        public IResult<User> UpdateUser(string name, string password = null, Role? role = null)
+        public IResult<User> UpdateUser(string name, string displayName = null, string email = null, string password = null, Role? role = null)
         {
             logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
             logger.Info($"Updating User '{name}'...");
@@ -677,6 +679,14 @@ namespace OpenIIoT.Core.Security
             if (State != State.Running)
             {
                 retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else if (displayName != null && displayName == string.Empty)
+            {
+                retVal.AddError("The specified display name is empty.");
+            }
+            else if (!new EmailAddressAttribute().IsValid(email))
+            {
+                retVal.AddError("The specified email address does not match the pattern of a valid address.");
             }
             else if (password != null && password == string.Empty)
             {
@@ -692,6 +702,16 @@ namespace OpenIIoT.Core.Security
 
                 if (foundUser != default(User))
                 {
+                    if (displayName != null)
+                    {
+                        foundUser.DisplayName = displayName;
+                    }
+
+                    if (email != null)
+                    {
+                        foundUser.Email = email;
+                    }
+
                     if (password != null)
                     {
                         foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
