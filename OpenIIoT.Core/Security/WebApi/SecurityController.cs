@@ -428,25 +428,29 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            if (!(data is UserUpdateData))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
-            }
-            else if (string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
+            }
+            else if (!(data is UserUpdateData))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
             }
             else if (data.DisplayName != null && data.DisplayName == string.Empty)
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified display name is empty.");
             }
+            else if (!new EmailAddressAttribute().IsValid(data.Email))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified email address does not match the pattern of a valid address.");
+            }
             else if (data.Password != null && data.Password == string.Empty)
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is empty.");
             }
-            else if (data.Password == null && data.Role == null)
+            else if (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null)
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "Neither the password nor the Role was specified; nothing to update.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "No data supplied; nothing to update.");
             }
             else
             {
@@ -495,8 +499,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
             public SessionData(Session session)
             {
-                Name = session.Name;
-                Role = session.Role;
+                User = new UserData(session.User);
                 Token = session.Token;
                 Issued = session.Issued;
                 Expires = session.Expires;
@@ -506,19 +509,16 @@ namespace OpenIIoT.Core.Security.WebApi
 
             #region Public Properties
 
-            [JsonProperty(Order = 5)]
+            [JsonProperty(Order = 4)]
             public DateTimeOffset? Expires { get; set; }
 
-            [JsonProperty(Order = 4)]
+            [JsonProperty(Order = 3)]
             public DateTimeOffset? Issued { get; set; }
 
             [JsonProperty(Order = 1)]
-            public string Name { get; set; }
+            public UserData User { get; set; }
 
             [JsonProperty(Order = 2)]
-            public Role Role { get; set; }
-
-            [JsonProperty(Order = 3)]
             public string Token { get; set; }
 
             #endregion Public Properties

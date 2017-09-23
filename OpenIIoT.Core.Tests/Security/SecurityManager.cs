@@ -112,6 +112,11 @@ namespace OpenIIoT.Core.Tests.Security
         /// </summary>
         private ISecurityManager Manager { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the <see cref="SDK.Security.User"/> instance for the unit tests.
+        /// </summary>
+        private User User { get; set; }
+
         #endregion Private Properties
 
         #region Public Methods
@@ -275,7 +280,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void EndSessionNotRunning()
         {
-            IResult result = Manager.EndSession(new Session(null));
+            IResult result = Manager.EndSession(new Session(User, null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -288,7 +293,7 @@ namespace OpenIIoT.Core.Tests.Security
         {
             Manager.Start();
 
-            IResult result = Manager.EndSession(new Session(null));
+            IResult result = Manager.EndSession(new Session(User, null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -354,7 +359,7 @@ namespace OpenIIoT.Core.Tests.Security
         {
             Manager.Start();
 
-            IResult<SDK.Security.Session> result = Manager.ExtendSession(new Session(null));
+            IResult<SDK.Security.Session> result = Manager.ExtendSession(new Session(User, null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -366,7 +371,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void ExtendSessionNotRunning()
         {
-            IResult result = Manager.ExtendSession(new Session(null));
+            IResult result = Manager.ExtendSession(new Session(User, null));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -916,6 +921,8 @@ namespace OpenIIoT.Core.Tests.Security
             ConfigurationManager.Setup(c => c.Configuration).Returns(ApplicationConfiguration.Object);
             ConfigurationManager.Setup(c => c.State).Returns(State.Running);
             ConfigurationManager.Setup(c => c.IsInState(State.Starting, State.Running)).Returns(true);
+
+            User = new SDK.Security.User("name", "displayName", "name@test.com", "hash", Role.Reader);
         }
 
         #endregion Private Methods

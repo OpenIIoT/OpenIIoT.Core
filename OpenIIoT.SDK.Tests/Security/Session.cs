@@ -76,16 +76,20 @@ namespace OpenIIoT.SDK.Tests.Security
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
 
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            User = new SDK.Security.User("name", "displayName", "name@test.com", "hash", SDK.Security.Role.Reader);
+
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.IsType<SDK.Security.Session>(test);
             Assert.Equal("hash", test.Token);
             Assert.Equal(ticket, test.Ticket);
             Assert.False(test.IsExpired);
-            Assert.Equal("name", test.Name);
-            Assert.Equal(SDK.Security.Role.Reader, test.Role);
+            Assert.Equal("name", test.GetClaim("Name"));
+            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim("Role")));
             Assert.NotNull(test.Expires);
         }
+
+        private SDK.Security.User User { get; set; }
 
         /// <summary>
         ///     Tests the <see cref="SDK.Security.Session.IsExpired"/> property with an expired Ticket.
@@ -95,7 +99,7 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(-15) };
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.True(test.IsExpired);
             Assert.NotNull(test.Expires);
@@ -109,7 +113,7 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationProperties props = new AuthenticationProperties();
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.True(test.IsExpired);
             Assert.Null(test.Expires);
@@ -124,9 +128,9 @@ namespace OpenIIoT.SDK.Tests.Security
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
 
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
-            Assert.Equal("name", test.Name);
+            Assert.Equal("name", test.GetClaim("Name"));
         }
 
         /// <summary>
@@ -137,9 +141,9 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
 
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
-            Assert.Equal(string.Empty, test.Name);
+            Assert.Equal(string.Empty, test.GetClaim("Name"));
         }
 
         /// <summary>
@@ -151,9 +155,9 @@ namespace OpenIIoT.SDK.Tests.Security
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
 
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
-            Assert.Equal(SDK.Security.Role.Reader, test.Role);
+            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim("Role")));
         }
 
         /// <summary>
@@ -164,9 +168,9 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
 
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
-            Assert.Equal(SDK.Security.Role.Reader, test.Role);
+            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim("Role")));
         }
 
         /// <summary>
@@ -177,7 +181,7 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
 
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.Equal(ticket, test.Ticket);
         }
@@ -188,7 +192,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void TicketNull()
         {
-            SDK.Security.Session test = new SDK.Security.Session(null);
+            SDK.Security.Session test = new SDK.Security.Session(User, null);
 
             Assert.Equal(null, test.Ticket);
         }
@@ -202,7 +206,7 @@ namespace OpenIIoT.SDK.Tests.Security
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "token"));
 
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.Equal("token", test.Token);
         }
@@ -215,7 +219,7 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
 
-            SDK.Security.Session test = new SDK.Security.Session(ticket);
+            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.Equal(string.Empty, test.Token);
         }

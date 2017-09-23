@@ -692,9 +692,9 @@ namespace OpenIIoT.Core.Security
             {
                 retVal.AddError("The specified password is empty.");
             }
-            else if (password == null && role == null)
+            else if (displayName == null && email == null && password == null && role == null)
             {
-                retVal.AddError("Neither the password nor the Role was specified; nothing to update.");
+                retVal.AddError("No data supplied; nothing to update.");
             }
             else
             {

@@ -96,6 +96,8 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Controller = new Core.Security.WebApi.SecurityController(Manager.Object);
             Controller.Request = new HttpRequestMessage();
             Controller.Configuration = new HttpConfiguration();
+
+            User = new SDK.Security.User("name", "displayName", "name@test.com", "hash", Role.Reader);
         }
 
         #endregion Public Constructors
@@ -116,6 +118,8 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         ///     Gets or sets the <see cref="ISecurityManager"/> mockup.
         /// </summary>
         private Mock<ISecurityManager> SecurityManager { get; set; }
+
+        private SDK.Security.User User { get; set; }
 
         #endregion Private Properties
 
@@ -160,7 +164,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsEnd()
         {
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(null));
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, null));
             SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result());
 
             HttpResponseMessage response = Controller.SessionsEnd();
@@ -178,7 +182,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsEndFailure()
         {
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(null));
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, null));
             SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result(ResultCode.Failure));
 
             HttpResponseMessage response = Controller.SessionsEnd();
@@ -199,7 +203,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
-            SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session(ticket) }.ToList().AsReadOnly());
+            SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session(User, ticket) }.ToList().AsReadOnly());
 
             HttpResponseMessage response = Controller.SessionsGet();
 
@@ -222,7 +226,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(ticket));
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, ticket));
 
             HttpResponseMessage response = Controller.SessionsGetCurrent();
 
@@ -241,7 +245,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
-            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>().SetReturnValue(new Session(ticket)));
+            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>().SetReturnValue(new Session(User, ticket)));
 
             HttpResponseMessage response = Controller.SessionsStart(new Core.Security.WebApi.SecurityController.SessionStartData() { Name = "user", Password = "password" });
 

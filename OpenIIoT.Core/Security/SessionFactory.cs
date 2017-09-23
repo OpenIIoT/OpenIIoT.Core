@@ -94,7 +94,7 @@ namespace OpenIIoT.Core.Security
 
             AuthenticationTicket ticket = new AuthenticationTicket(identity, ticketProperties);
 
-            retVal = new Session(ticket);
+            retVal = new Session(user, ticket);
 
             logger.ExitMethod(retVal);
             return retVal;
