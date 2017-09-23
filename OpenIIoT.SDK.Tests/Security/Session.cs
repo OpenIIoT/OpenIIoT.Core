@@ -84,8 +84,8 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.Equal("hash", test.Token);
             Assert.Equal(ticket, test.Ticket);
             Assert.False(test.IsExpired);
-            Assert.Equal("name", test.GetClaim("Name"));
-            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim("Role")));
+            Assert.Equal("name", test.GetClaim(ClaimTypes.Name));
+            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim(ClaimTypes.Role)));
             Assert.NotNull(test.Expires);
         }
 
@@ -130,7 +130,7 @@ namespace OpenIIoT.SDK.Tests.Security
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
-            Assert.Equal("name", test.GetClaim("Name"));
+            Assert.Equal("name", test.GetClaim(ClaimTypes.Name));
         }
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace OpenIIoT.SDK.Tests.Security
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
-            Assert.Equal(string.Empty, test.GetClaim("Name"));
+            Assert.Equal(null, test.GetClaim(ClaimTypes.Name));
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace OpenIIoT.SDK.Tests.Security
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
-            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim("Role")));
+            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim(ClaimTypes.Role)));
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace OpenIIoT.SDK.Tests.Security
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
-            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim("Role")));
+            Assert.Null(test.GetClaim(ClaimTypes.Role));
         }
 
         /// <summary>
