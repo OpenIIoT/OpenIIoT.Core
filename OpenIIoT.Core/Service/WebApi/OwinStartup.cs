@@ -14,6 +14,7 @@ using Owin;
 using Swashbuckle.Application;
 using OpenIIoT.SDK.Platform;
 using OpenIIoT.Core.Service.WebApi.Middleware;
+using System.Reflection;
 
 namespace OpenIIoT.Core.Service.WebApi
 {
@@ -67,6 +68,9 @@ namespace OpenIIoT.Core.Service.WebApi
                 })
                 .EnableSwaggerUi(swaggerUiPath, c =>
                 {
+                    Assembly containingAssembly = Assembly.GetExecutingAssembly();
+                    c.CustomAsset("index", containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.index.html");
+                    c.InjectStylesheet(containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.style.css");
                     c.EnableApiKeySupport(WebApiConstants.ApiKeyHeaderName, "header");
                     c.DisableValidator();
                 });

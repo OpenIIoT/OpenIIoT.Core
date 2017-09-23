@@ -65,10 +65,12 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.User test = new SDK.Security.User("test", "password", SDK.Security.Role.Reader);
+            SDK.Security.User test = new SDK.Security.User("test", "Test", "test@test.com", "password", SDK.Security.Role.Reader);
 
             Assert.IsType<SDK.Security.User>(test);
             Assert.Equal("test", test.Name);
+            Assert.Equal("Test", test.DisplayName);
+            Assert.Equal("test@test.com", test.Email);
             Assert.Equal("password", test.PasswordHash);
             Assert.Equal(SDK.Security.Role.Reader, test.Role);
         }

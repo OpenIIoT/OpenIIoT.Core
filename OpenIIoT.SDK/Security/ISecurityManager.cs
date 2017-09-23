@@ -111,10 +111,12 @@ namespace OpenIIoT.SDK.Security
         ///     Creates a new <see cref="User"/>.
         /// </summary>
         /// <param name="name">The name of the new User.</param>
+        /// <param name="displayName">The display name of the new User.</param>
+        /// <param name="email">The email address of the new user.</param>
         /// <param name="password">The plaintext password for the new User.</param>
-        /// <param name="role">The Role for the new User.</param>
+        /// <param name="role">The Role of the new User.</param>
         /// <returns>A Result containing the result of the operation and the newly created User.</returns>
-        IResult<User> CreateUser(string name, string password, Role role);
+        IResult<User> CreateUser(string name, string displayName, string email, string password, Role role);
 
         /// <summary>
         ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.
@@ -170,10 +172,12 @@ namespace OpenIIoT.SDK.Security
         ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
         /// </summary>
         /// <param name="name">The name of the User to update.</param>
+        /// <param name="displayName">The display name of the new User.</param>
+        /// <param name="email">The email address of the new user.</param>
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        IResult<User> UpdateUser(string name, string password = null, Role? role = null);
+        IResult<User> UpdateUser(string name, string displayName = null, string email = null, string password = null, Role? role = null);
 
         #endregion Public Methods
     }

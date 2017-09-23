@@ -65,6 +65,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Security;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
+using System.ComponentModel.DataAnnotations;
 
 namespace OpenIIoT.Core.Security.WebApi
 {
@@ -266,6 +267,18 @@ namespace OpenIIoT.Core.Security.WebApi
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
             }
+            else if (string.IsNullOrEmpty(data.DisplayName))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified display name is null or empty.");
+            }
+            else if (string.IsNullOrEmpty(data.Email))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified email address is null or empty.");
+            }
+            else if (!new EmailAddressAttribute().IsValid(data.Email))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified email address does not match the pattern of a valid address.");
+            }
             else if (string.IsNullOrEmpty(data.Password))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
@@ -276,7 +289,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
                 if (user == default(User))
                 {
-                    IResult<User> createResult = SecurityManager.CreateUser(data.Name, data.Password, data.Role);
+                    IResult<User> createResult = SecurityManager.CreateUser(data.Name, data.DisplayName, data.Email, data.Password, data.Role);
 
                     if (createResult.ResultCode != ResultCode.Failure)
                     {
@@ -423,6 +436,10 @@ namespace OpenIIoT.Core.Security.WebApi
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
             }
+            else if (data.DisplayName != null && data.DisplayName == string.Empty)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified display name is empty.");
+            }
             else if (data.Password != null && data.Password == string.Empty)
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is empty.");
@@ -437,7 +454,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
                 if (user != default(User))
                 {
-                    IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, data.Password, data.Role);
+                    IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, data.DisplayName, data.Email, data.Password, data.Role);
 
                     if (updateResult.ResultCode != ResultCode.Failure)
                     {
@@ -524,13 +541,19 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             #region Public Properties
 
+            [JsonProperty(Order = 2)]
+            public string DisplayName { get; set; }
+
+            [JsonProperty(Order = 3)]
+            public string Email { get; set; }
+
             [JsonProperty(Order = 1)]
             public string Name { get; set; }
 
-            [JsonProperty(Order = 3)]
+            [JsonProperty(Order = 5)]
             public string Password { get; set; }
 
-            [JsonProperty(Order = 2)]
+            [JsonProperty(Order = 4)]
             public Role Role { get; set; }
 
             #endregion Public Properties
@@ -543,6 +566,8 @@ namespace OpenIIoT.Core.Security.WebApi
             public UserData(User user)
             {
                 Name = user.Name;
+                DisplayName = user.DisplayName;
+                Email = user.Email;
                 Role = user.Role;
             }
 
@@ -550,10 +575,16 @@ namespace OpenIIoT.Core.Security.WebApi
 
             #region Public Properties
 
+            [JsonProperty(Order = 2)]
+            public string DisplayName { get; set; }
+
+            [JsonProperty(Order = 3)]
+            public string Email { get; set; }
+
             [JsonProperty(Order = 1)]
             public string Name { get; set; }
 
-            [JsonProperty(Order = 2)]
+            [JsonProperty(Order = 4)]
             public Role Role { get; set; }
 
             #endregion Public Properties
@@ -563,10 +594,16 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             #region Public Properties
 
+            [JsonProperty(Order = 1)]
+            public string DisplayName { get; set; }
+
             [JsonProperty(Order = 2)]
+            public string Email { get; set; }
+
+            [JsonProperty(Order = 4)]
             public string Password { get; set; }
 
-            [JsonProperty(Order = 1)]
+            [JsonProperty(Order = 3)]
             public Role? Role { get; set; }
 
             #endregion Public Properties

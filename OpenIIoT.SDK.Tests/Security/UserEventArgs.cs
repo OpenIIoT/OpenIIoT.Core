@@ -74,7 +74,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.User user = new SDK.Security.User("name", "password", SDK.Security.Role.Reader);
+            SDK.Security.User user = new SDK.Security.User("name", "name", "name@test.com", "password", SDK.Security.Role.Reader);
             SDK.Security.UserEventArgs test = new SDK.Security.UserEventArgs(user);
 
             Assert.IsType<SDK.Security.UserEventArgs>(test);

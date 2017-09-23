@@ -55,6 +55,7 @@ using OpenIIoT.SDK.Common.Provider.EventProvider;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Security;
 using Utility.OperationResult;
+using System.ComponentModel.DataAnnotations;
 
 namespace OpenIIoT.Core.Security
 {
@@ -206,7 +207,12 @@ namespace OpenIIoT.Core.Security
             config.SlidingSessions = SecurityConstants.DefaultSlidingSessions;
             config.SessionPurgeInterval = SecurityConstants.DefaultSessionPurgeInterval;
 
-            config.Users.Add(new User(SecurityConstants.DefaultUserName, SecurityConstants.DefaultUserPasswordHash, Role.Administrator));
+            config.Users.Add(new User(
+                    SecurityConstants.DefaultUserName,
+                    SecurityConstants.DefaultUserDisplayName,
+                    SecurityConstants.DefaultUserEmail,
+                    SecurityConstants.DefaultUserPasswordHash,
+                    Role.Administrator));
 
             retVal.DefaultConfiguration = config;
 
@@ -307,10 +313,12 @@ namespace OpenIIoT.Core.Security
         ///     Creates a new <see cref="User"/>.
         /// </summary>
         /// <param name="name">The name of the new User.</param>
+        /// <param name="displayName">The display name of the new User.</param>
+        /// <param name="email">The email address of the new user.</param>
         /// <param name="password">The plaintext password for the new User.</param>
-        /// <param name="role">The Role for the new User.</param>
+        /// <param name="role">The Role of the new User.</param>
         /// <returns>A Result containing the result of the operation and the newly created User.</returns>
-        public IResult<User> CreateUser(string name, string password, Role role)
+        public IResult<User> CreateUser(string name, string displayName, string email, string password, Role role)
         {
             logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
             logger.Info($"Creating new User '{name}' with Role '{role}'...");
@@ -326,6 +334,18 @@ namespace OpenIIoT.Core.Security
             {
                 retVal.AddError("The specified name is null or empty.");
             }
+            else if (string.IsNullOrEmpty(displayName))
+            {
+                retVal.AddError("The specified display name is null or empty.");
+            }
+            else if (string.IsNullOrEmpty(email))
+            {
+                retVal.AddError("The specified email address is null or empty.");
+            }
+            else if (!new EmailAddressAttribute().IsValid(email))
+            {
+                retVal.AddError("The specified email address does not match the pattern of a valid address.");
+            }
             else if (string.IsNullOrEmpty(password))
             {
                 retVal.AddError("The specified password is null or empty.");
@@ -334,7 +354,7 @@ namespace OpenIIoT.Core.Security
             {
                 if (FindUser(name) == default(User))
                 {
-                    retVal.ReturnValue = new User(name, SDK.Common.Utility.ComputeSHA512Hash(password), role);
+                    retVal.ReturnValue = new User(name, displayName, email, SDK.Common.Utility.ComputeSHA512Hash(password), role);
                     Configuration.Users.Add(retVal.ReturnValue);
                     SaveConfiguration();
                 }
@@ -643,10 +663,12 @@ namespace OpenIIoT.Core.Security
         ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
         /// </summary>
         /// <param name="name">The name of the User to update.</param>
+        /// <param name="displayName">The display name of the new User.</param>
+        /// <param name="email">The email address of the new user.</param>
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        public IResult<User> UpdateUser(string name, string password = null, Role? role = null)
+        public IResult<User> UpdateUser(string name, string displayName = null, string email = null, string password = null, Role? role = null)
         {
             logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
             logger.Info($"Updating User '{name}'...");
@@ -657,6 +679,14 @@ namespace OpenIIoT.Core.Security
             if (State != State.Running)
             {
                 retVal.AddError($"The Manager is not in a state in which it can service requests (Currently {State}).");
+            }
+            else if (displayName != null && displayName == string.Empty)
+            {
+                retVal.AddError("The specified display name is empty.");
+            }
+            else if (!new EmailAddressAttribute().IsValid(email))
+            {
+                retVal.AddError("The specified email address does not match the pattern of a valid address.");
             }
             else if (password != null && password == string.Empty)
             {
@@ -672,6 +702,16 @@ namespace OpenIIoT.Core.Security
 
                 if (foundUser != default(User))
                 {
+                    if (displayName != null)
+                    {
+                        foundUser.DisplayName = displayName;
+                    }
+
+                    if (email != null)
+                    {
+                        foundUser.Email = email;
+                    }
+
                     if (password != null)
                     {
                         foundUser.PasswordHash = SDK.Common.Utility.ComputeSHA512Hash(password);
