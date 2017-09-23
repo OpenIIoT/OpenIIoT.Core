@@ -1,5 +1,5 @@
 ﻿body.swagger-section {
-     /*background-color: #ecf0f5*/
+     background-color: #ecf0f5
 }
 
 .swagger-section #header {
@@ -10,6 +10,65 @@
 div.info_title {
     display: none;
 }
+
+div#api_info.info {
+    display: none;
+}
+
+div.authorize-wrapper {
+    display: none;
+}
+
+div.footer {
+    display: none;
+}
+
+.box-title {
+    display: inline-block;
+    font-size: 14px;
+    margin: 0;
+    line-height: 1;
+}
+
+.box-icon {
+    font-size: 18px;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+div#swagger-ui-container.swagger-ui-wrap {
+          padding: 10px;
+      color: #333;
+      font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+      position: relative;
+      border-radius: 3px;
+      background: #ffffff;
+      margin-bottom: 20px;
+      width: 100%;
+      box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+}
+
+.box-header {
+    padding: 10px;
+    color: #444;
+    font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+    position: relative;
+    border-radius: 3px;
+    background: #ffffff;
+    border-top: 3px solid #3c8dbc;
+    width: 100%;
+    box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+    min-width: 760px;
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1;
+}
+
 
 span.logo__title {
     margin-left: -5px;
@@ -57,6 +116,10 @@ a#explore.header__btn {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
+}
+
+.box-title {
+    font-size: 18px;
 }
 
 .input-sm {
