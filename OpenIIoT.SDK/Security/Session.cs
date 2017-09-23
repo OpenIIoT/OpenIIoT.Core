@@ -57,9 +57,11 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
+        /// <param name="user">The User to which the Session belongs.</param>
         /// <param name="ticket">The AuthenticationTicket for the Session.</param>
-        public Session(AuthenticationTicket ticket)
+        public Session(User user, AuthenticationTicket ticket)
         {
+            User = user;
             Ticket = ticket;
         }
 
@@ -86,16 +88,10 @@ namespace OpenIIoT.SDK.Security
         public DateTimeOffset? Issued => Ticket?.Properties.IssuedUtc;
 
         /// <summary>
-        ///     Gets the Name claim from the <see cref="Ticket"/>.
-        /// </summary>
-        [JsonProperty(Order = 0)]
-        public string Name => GetClaim(Ticket, ClaimTypes.Name) ?? string.Empty;
-
-        /// <summary>
-        ///     Gets the Role claim from the <see cref="Ticket"/>.
+        ///     Gets the User to which the Session belongs.
         /// </summary>
         [JsonProperty(Order = 1)]
-        public Role Role => (Role)Enum.Parse(typeof(Role), GetClaim(Ticket, ClaimTypes.Role) ?? default(Role).ToString());
+        public User User { get; }
 
         /// <summary>
         ///     Gets the AuthenticationTicket for the Session.
@@ -107,21 +103,20 @@ namespace OpenIIoT.SDK.Security
         ///     Gets the token for the Session.
         /// </summary>
         [JsonProperty(Order = 2)]
-        public string Token => GetClaim(Ticket, ClaimTypes.Hash) ?? string.Empty;
+        public string Token => GetClaim(ClaimTypes.Hash) ?? string.Empty;
 
         #endregion Private Properties
 
         #region Private Methods
 
         /// <summary>
-        ///     Returns the specified Claim <paramref name="type"/> within the specified <paramref name="ticket"/>.
+        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Ticket"/> .
         /// </summary>
-        /// <param name="ticket">The Ticket from which the Claim is to be retrieved.</param>
         /// <param name="type">The type of Claim to retrieve.</param>
         /// <returns>The retrieved Claim value.</returns>
-        private string GetClaim(AuthenticationTicket ticket, string type)
+        public string GetClaim(string type)
         {
-            return ticket?.Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;
+            return Ticket?.Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;
         }
 
         #endregion Private Methods
