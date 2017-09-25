@@ -190,6 +190,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ApplicationItemProvider.cs" />
     <Compile Include="Common\Exceptions\XMLConfigurationException.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
     <Compile Include="Common\Settings.cs" />
