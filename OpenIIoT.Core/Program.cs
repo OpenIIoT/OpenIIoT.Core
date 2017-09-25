@@ -478,6 +478,11 @@ namespace OpenIIoT.Core
                     symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
                 }
 
+                logger.Info("Attaching Application Items...");
+
+                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.ItemProvider.Browse(), symItem);
+
+
                 // attach the Platform connector items to the model detach anything in "OpenIIoT.System.Platform" that was loaded
                 // from the config file
                 logger.Info("Detaching potentially stale Platform items...");
