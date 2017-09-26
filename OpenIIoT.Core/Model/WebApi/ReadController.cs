@@ -7,6 +7,9 @@ using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Model;
+using Newtonsoft.Json;
+using System;
+using System.Net.Http.Formatting;
 
 namespace OpenIIoT.Core.Model.WebApi
 {
@@ -52,15 +55,68 @@ namespace OpenIIoT.Core.Model.WebApi
         {
             // TODO: Fix this so all url encodings are translated
             fqn = fqn.Replace("%25", "%");
+            string[] fqns = fqn.Split(',');
+            IList<Item> foundItems = new List<Item>();
+            HttpResponseMessage retVal;
 
+            foreach (string item in fqns)
+            {
+                if (FetchItem(item, fromSource) != default(Item))
+                {
+                    foundItems.Add(FetchItem(item, fromSource));
+                }
+            }
+
+            HttpStatusCode statusCode = foundItems.Count == fqns.Length ? HttpStatusCode.OK : HttpStatusCode.PartialContent;
+            JsonMediaTypeFormatter formatter = JsonFormatter(ContractResolverType.OptIn, "FQN", "Timestamp", "Quality", "Value", "Children", "AccessMode");
+
+            if (foundItems.Count > 1)
+            {
+                retVal = Request.CreateResponse(statusCode, foundItems, formatter);
+            }
+            else if (foundItems.Count == 1)
+            {
+                retVal = Request.CreateResponse(statusCode, foundItems[0], formatter);
+            }
+            else
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+            }
+
+            return retVal;
+        }
+
+        private Item FetchItem(string fqn, bool fromSource)
+        {
             Item foundItem = manager.GetManager<IModelManager>().FindItem(fqn);
 
-            if (fromSource)
+            if (foundItem != default(Item) && fromSource)
             {
                 foundItem.ReadFromSource();
             }
 
-            return Request.CreateResponse(HttpStatusCode.OK, foundItem, JsonFormatter(ContractResolverType.OptIn, "FQN", "Timestamp", "Quality", "Value", "Children", "AccessMode"));
+            return foundItem;
+        }
+
+        public class ItemData
+        {
+            #region Public Constructors
+
+            public ItemData(Item item)
+            {
+            }
+
+            #endregion Public Constructors
+
+            #region Public Properties
+
+            public IList<Item> Children { get; set; }
+            public string FQN { get; set; }
+            public ItemQuality Quality { get; set; }
+            public DateTime Timestamp { get; set; }
+            public object Value { get; set; }
+
+            #endregion Public Properties
         }
 
         #endregion Public Methods
