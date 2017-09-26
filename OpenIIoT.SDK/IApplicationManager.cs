@@ -42,6 +42,7 @@
 using System;
 using System.Collections.Generic;
 using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
 namespace OpenIIoT.SDK
 {
@@ -76,6 +77,8 @@ namespace OpenIIoT.SDK
         ///     Gets the settings for the Application.
         /// </summary>
         IApplicationSettings Settings { get; }
+
+        IItemProvider ItemProvider { get; }
 
         #endregion Public Properties
 

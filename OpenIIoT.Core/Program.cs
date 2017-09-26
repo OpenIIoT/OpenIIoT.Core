@@ -478,6 +478,35 @@ namespace OpenIIoT.Core
                     symItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName)).ReturnValue;
                 }
 
+                logger.Info("Attaching Application Items...");
+
+                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.ItemProvider.Browse(), symItem);
+
+
+                // attach the Platform connector items to the model detach anything in "OpenIIoT.System.Platform" that was loaded
+                // from the config file
+                logger.Info("Detaching potentially stale Platform items...");
+                applicationManager.GetManager<IModelManager>().RemoveItem(applicationManager.GetManager<ModelManager>().FindItem(applicationManager.InstanceName + ".System.Platform"));
+
+                logger.Info("Attaching new Platform items...");
+
+                // find or create the parent for the Platform items
+                logger.Info("Checking for the 'System' item...");
+                Item systemItem = applicationManager.GetManager<IModelManager>().FindItem(applicationManager.InstanceName + ".System");
+                if (systemItem == default(Item))
+                {
+                    logger.Info("Creating the 'System' item...");
+                    systemItem = applicationManager.GetManager<IModelManager>().AddItem(new Item(applicationManager.InstanceName + ".System")).ReturnValue;
+                }
+                else
+                {
+                    logger.Info("'System' item already exists.");
+                }
+
+                // attach the Platform items to OpenIIoT.System
+                applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.GetManager<IPlatformManager>().Platform.ItemProvider.Browse(), systemItem);
+                logger.Info("Attached Platform items to '" + systemItem.FQN + "'.");
+
                 // attach all of the simulation items to the model
                 applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation")).Browse(), symItem);
                 applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("SQL")).Browse(), symItem);

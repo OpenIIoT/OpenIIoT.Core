@@ -51,6 +51,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Discovery;
 using OpenIIoT.SDK.Common.Exceptions;
 using Utility.OperationResult;
+using OpenIIoT.SDK.Common.Provider.ItemProvider;
 
 namespace OpenIIoT.Core
 {
@@ -152,6 +153,8 @@ namespace OpenIIoT.Core
             // register the ApplicationManager with itself to simplify things later
             RegisterManager<IApplicationManager>(this);
 
+            ItemProvider = new ApplicationItemProvider("System");
+
             // create an instance of each Manager Type in the ManagerTypes list
             logger.Info("Instantiating Managers...");
             InstantiateManagers(); // throws ManagerInstantiationException
@@ -170,6 +173,9 @@ namespace OpenIIoT.Core
         #endregion Private Constructors
 
         #region Public Properties
+
+        [Discoverable]
+        public IItemProvider ItemProvider { get; private set; }
 
         /// <summary>
         ///     Gets the name of the application instance, retrieved from the application's settings file.
