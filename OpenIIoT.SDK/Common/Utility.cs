@@ -144,6 +144,27 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
+        ///     Copies the value of public properties in the <paramref name="source"/> object instance matching public properties
+        ///     in the <paramref name="destination"/> object instance.
+        /// </summary>
+        /// <param name="destination">The object into which values are copied.</param>
+        /// <param name="source">The object from which values are copied.</param>
+        public static void CopyPropertyValuesFrom(this object destination, object source)
+        {
+            PropertyInfo[] properties = destination.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
+
+            foreach (PropertyInfo destinationProperty in properties)
+            {
+                PropertyInfo sourceProperty = source.GetType().GetProperty(destinationProperty.Name);
+
+                if (sourceProperty != default(PropertyInfo) && destinationProperty.PropertyType == sourceProperty.PropertyType)
+                {
+                    destinationProperty.SetValue(destination, sourceProperty.GetValue(source));
+                }
+            }
+        }
+
+        /// <summary>
         ///     Returns the path of the specified file, relative to the specified base directory.
         /// </summary>
         /// <param name="baseDirectory">The base directory of the relative file reference.</param>
@@ -194,24 +215,6 @@ namespace OpenIIoT.SDK.Common
             else
             {
                 return false;
-            }
-        }
-
-        /// <summary>
-        ///     Maps the values of the public properties of the specified base object to the specified derived object's properties.
-        /// </summary>
-        /// <typeparam name="Tderived">The Type of the derived class.</typeparam>
-        /// <typeparam name="Tbase">The Type of the base class.</typeparam>
-        /// <param name="derivedObject">The instance of the derived class into which values are to be mapped.</param>
-        /// <param name="baseObject">The instance of the base class from whihc values are to be copied.</param>
-        public static void MapFrom<Tderived, Tbase>(this Tderived derivedObject, Tbase baseObject)
-            where Tderived : Tbase
-        {
-            PropertyInfo[] properties = typeof(Tbase).GetProperties(BindingFlags.Instance | BindingFlags.Public);
-
-            foreach (PropertyInfo property in properties)
-            {
-                typeof(Tderived).GetProperty(property.Name).SetValue(derivedObject, property.GetValue(baseObject));
             }
         }
 

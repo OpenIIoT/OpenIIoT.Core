@@ -60,7 +60,7 @@ namespace OpenIIoT.SDK.Packaging
         /// <param name="manifest">The manifest contained within the archive.</param>
         public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
         {
-            this.MapFrom(manifest);
+            this.CopyPropertyValuesFrom(manifest);
 
             Filename = filename;
             ModifiedOn = modifiedOn;

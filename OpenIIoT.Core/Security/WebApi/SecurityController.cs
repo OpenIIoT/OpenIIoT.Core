@@ -499,10 +499,9 @@ namespace OpenIIoT.Core.Security.WebApi
 
             public SessionData(Session session)
             {
+                this.CopyPropertyValuesFrom(session);
+
                 User = new UserData(session.User);
-                Token = session.Token;
-                Issued = session.Issued;
-                Expires = session.Expires;
             }
 
             #endregion Public Constructors
@@ -515,11 +514,11 @@ namespace OpenIIoT.Core.Security.WebApi
             [JsonProperty(Order = 3)]
             public DateTimeOffset? Issued { get; set; }
 
-            [JsonProperty(Order = 1)]
-            public UserData User { get; set; }
-
             [JsonProperty(Order = 2)]
             public string Token { get; set; }
+
+            [JsonProperty(Order = 1)]
+            public UserData User { get; set; }
 
             #endregion Public Properties
         }
@@ -565,10 +564,7 @@ namespace OpenIIoT.Core.Security.WebApi
 
             public UserData(User user)
             {
-                Name = user.Name;
-                DisplayName = user.DisplayName;
-                Email = user.Email;
-                Role = user.Role;
+                this.CopyPropertyValuesFrom(user);
             }
 
             #endregion Public Constructors

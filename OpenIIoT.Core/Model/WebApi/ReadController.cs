@@ -61,9 +61,10 @@ namespace OpenIIoT.Core.Model.WebApi
 
             foreach (string item in fqns)
             {
-                if (FetchItem(item, fromSource) != default(Item))
+                Item foundItem = FetchItem(item, fromSource);
+                if (foundItem != default(Item))
                 {
-                    foundItems.Add(FetchItem(item, fromSource));
+                    foundItems.Add(foundItem);
                 }
             }
 
