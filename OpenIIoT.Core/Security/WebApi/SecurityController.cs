@@ -48,8 +48,8 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Net;
@@ -58,14 +58,12 @@ using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Web;
 using System.Web.Http;
-using Newtonsoft.Json;
+using OpenIIoT.Core.Security.WebApi.DTO;
 using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Security;
 using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
-using System.ComponentModel.DataAnnotations;
 
 namespace OpenIIoT.Core.Security.WebApi
 {
@@ -467,7 +465,7 @@ namespace OpenIIoT.Core.Security.WebApi
                     else
                     {
                         Result result = (Result)updateResult;
-                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, updateResult, JsonFormatter());
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                     }
                 }
                 else
@@ -491,118 +489,6 @@ namespace OpenIIoT.Core.Security.WebApi
         private string GetSessionToken(HttpRequestMessage request)
         {
             return Request.GetOwinContext()?.Authentication?.User?.Claims?.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
-        }
-
-        public class SessionData
-        {
-            #region Public Constructors
-
-            public SessionData(Session session)
-            {
-                this.CopyPropertyValuesFrom(session);
-
-                User = new UserData(session.User);
-            }
-
-            #endregion Public Constructors
-
-            #region Public Properties
-
-            [JsonProperty(Order = 4)]
-            public DateTimeOffset? Expires { get; set; }
-
-            [JsonProperty(Order = 3)]
-            public DateTimeOffset? Issued { get; set; }
-
-            [JsonProperty(Order = 2)]
-            public string Token { get; set; }
-
-            [JsonProperty(Order = 1)]
-            public UserData User { get; set; }
-
-            #endregion Public Properties
-        }
-
-        public class SessionStartData
-        {
-            #region Public Properties
-
-            [JsonProperty(Order = 1)]
-            public string Name { get; set; }
-
-            [JsonProperty(Order = 2)]
-            public string Password { get; set; }
-
-            #endregion Public Properties
-        }
-
-        public class UserCreateData
-        {
-            #region Public Properties
-
-            [JsonProperty(Order = 2)]
-            public string DisplayName { get; set; }
-
-            [JsonProperty(Order = 3)]
-            public string Email { get; set; }
-
-            [JsonProperty(Order = 1)]
-            public string Name { get; set; }
-
-            [JsonProperty(Order = 5)]
-            public string Password { get; set; }
-
-            [JsonProperty(Order = 4)]
-            public Role Role { get; set; }
-
-            #endregion Public Properties
-        }
-
-        public class UserData
-        {
-            #region Public Constructors
-
-            public UserData(User user)
-            {
-                this.CopyPropertyValuesFrom(user);
-            }
-
-            #endregion Public Constructors
-
-            #region Public Properties
-
-            [JsonProperty(Order = 2)]
-            public string DisplayName { get; set; }
-
-            [JsonProperty(Order = 3)]
-            public string Email { get; set; }
-
-            [JsonProperty(Order = 1)]
-            public string Name { get; set; }
-
-            [JsonProperty(Order = 4)]
-            public Role Role { get; set; }
-
-            #endregion Public Properties
-        }
-
-        public class UserUpdateData
-        {
-            #region Public Properties
-
-            [JsonProperty(Order = 1)]
-            public string DisplayName { get; set; }
-
-            [JsonProperty(Order = 2)]
-            public string Email { get; set; }
-
-            [JsonProperty(Order = 4)]
-            public string Password { get; set; }
-
-            [JsonProperty(Order = 3)]
-            public Role? Role { get; set; }
-
-            #endregion Public Properties
         }
 
         #endregion Private Methods
