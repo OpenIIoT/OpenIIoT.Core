@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used for returning Session objects.
+      █  Data Transfer Object used when returning Session objects.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -47,14 +47,14 @@ using OpenIIoT.SDK.Security;
 namespace OpenIIoT.Core.Security.WebApi.DTO
 {
     /// <summary>
-    ///     Data Transfer Object used for returning <see cref="Session"/> objects.
+    ///     Data Transfer Object used when returning <see cref="Session"/> objects.
     /// </summary>
     public class SessionData
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionData"/> class.
+        ///     Initializes a new instance of the <see cref="SessionData"/> class with the specified <see cref="Session"/>.
         /// </summary>
         /// <param name="session">The <see cref="Session"/> from which data is sourced.</param>
         public SessionData(Session session)
