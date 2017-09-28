@@ -49,21 +49,6 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
     /// </summary>
     public class SessionStartData
     {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionStartData"/> class.
-        /// </summary>
-        /// <param name="name">The <see cref="User"/><see cref="User.Name"/> with which to start the <see cref="Session"/>.</param>
-        /// <param name="password">The <see cref="User"/> password with which to start the <see cref="Session"/>.</param>
-        public SessionStartData(string name, string password)
-        {
-            Name = name;
-            Password = password;
-        }
-
-        #endregion Public Constructors
-
         #region Public Properties
 
         /// <summary>
