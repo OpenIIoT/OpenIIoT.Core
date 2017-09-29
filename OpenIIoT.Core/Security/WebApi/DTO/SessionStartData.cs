@@ -52,16 +52,16 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         #region Public Properties
 
         /// <summary>
-        ///     Gets the <see cref="User"/><see cref="User.Name"/> with which to start the <see cref="Session"/>.
+        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/> with which to start the <see cref="Session"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="User"/> password with which to start the <see cref="Session"/>.
+        ///     Gets or sets the <see cref="User"/> password with which to start the <see cref="Session"/>.
         /// </summary>
         [JsonProperty(Order = 2)]
-        public string Password { get; }
+        public string Password { get; set; }
 
         #endregion Public Properties
     }

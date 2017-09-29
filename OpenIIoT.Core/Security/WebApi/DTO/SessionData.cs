@@ -69,28 +69,28 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         #region Public Properties
 
         /// <summary>
-        ///     Gets the <see cref="Session"/><see cref="Session.Expires"/> date.
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.Expires"/> date.
         /// </summary>
         [JsonProperty(Order = 4)]
-        public DateTimeOffset? Expires { get; }
+        public DateTimeOffset? Expires { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="Session"/><see cref="Session.Issued"/> date.
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.Issued"/> date.
         /// </summary>
         [JsonProperty(Order = 3)]
-        public DateTimeOffset? Issued { get; }
+        public DateTimeOffset? Issued { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="Session"/><see cref="Session.Token"/>.
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.Token"/>.
         /// </summary>
         [JsonProperty(Order = 2)]
-        public string Token { get; }
+        public string Token { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="Session"/><see cref="Session.User"/>.
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.User"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
-        public UserData User { get; }
+        public UserData User { get; set; }
 
         #endregion Public Properties
     }

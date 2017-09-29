@@ -438,7 +438,7 @@ namespace OpenIIoT.Core.Security.WebApi
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified display name is empty.");
             }
-            else if (!new EmailAddressAttribute().IsValid(data.Email))
+            else if (data.Email != null && !new EmailAddressAttribute().IsValid(data.Email))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified email address does not match the pattern of a valid address.");
             }

@@ -66,28 +66,28 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         #region Public Properties
 
         /// <summary>
-        ///     Gets the <see cref="User"/><see cref="User.DisplayName"/>.
+        ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
         [JsonProperty(Order = 2)]
-        public string DisplayName { get; }
+        public string DisplayName { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="User"/><see cref="User.Email"/>.
+        ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
         /// </summary>
         [JsonProperty(Order = 3)]
-        public string Email { get; }
+        public string Email { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="User"/><see cref="User.Name"/>.
+        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
-        public string Name { get; }
+        public string Name { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="User"/><see cref="User.Role"/>.
+        ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
         /// </summary>
         [JsonProperty(Order = 4)]
-        public Role Role { get; }
+        public Role Role { get; set; }
 
         #endregion Public Properties
     }

@@ -482,7 +482,6 @@ namespace OpenIIoT.Core
 
                 applicationManager.GetManager<IModelManager>().AttachItem(applicationManager.ItemProvider.Browse(), symItem);
 
-
                 // attach the Platform connector items to the model detach anything in "OpenIIoT.System.Platform" that was loaded
                 // from the config file
                 logger.Info("Detaching potentially stale Platform items...");
@@ -525,6 +524,7 @@ namespace OpenIIoT.Core
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.ReadWrite.Read").SubscribeToSource();
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.ReadWrite.Write").SubscribeToSource();
                 subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.SQL.Demo.Batches").SubscribeToSource();
+                subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.Process.Random").SubscribeToSource();
                 subscribe.LogResult(logger.Info);
 
                 applicationManager.GetManager<IPluginManager>().FindPluginInstance("Simulation").Start();
