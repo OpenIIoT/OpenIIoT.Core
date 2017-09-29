@@ -574,7 +574,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 
-            IResult result = response.GetContent<IResult>(); // failures downcast generic Results
+            IResult result = response.GetContent<Result>(); // failures downcast generic Results
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
 
