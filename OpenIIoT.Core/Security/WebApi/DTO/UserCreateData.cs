@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄
-      █     ███    ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
+      █   ███    █▄                              ▄████████                                                   ████████▄
+      █   ███    ███                             ███    ███                                                  ███   ▀███
+      █   ███    ███   ▄█████    ▄█████    █████ ███    █▀     █████    ▄█████   ▄█████      ██       ▄█████ ███    ███   ▄█████      ██      ▄█████
+      █   ███    ███   ██  ▀    ██   █    ██  ██ ███          ██  ██   ██   █    ██   ██ ▀███████▄   ██   █  ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀ ███         ▄██▄▄█▀  ▄██▄▄      ██   ██     ██  ▀  ▄██▄▄    ███    ███   ██   ██     ██  ▀   ██   ██
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████ ███    █▄  ▀███████ ▀▀██▀▀    ▀████████     ██    ▀▀██▀▀    ███    ███ ▀████████     ██    ▀████████
+      █   ███    ███    ▄  ██   ██   █    ██  ██ ███    ███   ██  ██   ██   █    ██   ██     ██      ██   █  ███   ▄███   ██   ██     ██      ██   ██
+      █   ████████▀   ▄████▀    ███████   ██  ██ ████████▀    ██  ██   ███████   ██   █▀    ▄██▀     ███████ ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents an installable extension archive.
+      █  Data Transfer Object used when creating a User object.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,61 +39,47 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging.Manifest;
+using Newtonsoft.Json;
+using OpenIIoT.SDK.Security;
 
-namespace OpenIIoT.SDK.Packaging
+namespace OpenIIoT.Core.Security.WebApi.DTO
 {
     /// <summary>
-    ///     Represents an installable extension archive.
+    ///     Data Transfer Object used when creating a <see cref="User"/> object.
     /// </summary>
-    public class Package : PackageManifest
+    public class UserCreateData
     {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Package"/> class.
-        /// </summary>
-        /// <param name="filename">The fully qualified filename of the archive file.</param>
-        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
-        /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
-        {
-            this.CopyPropertyValuesFrom(manifest);
-
-            Filename = filename;
-            ModifiedOn = modifiedOn;
-        }
-
-        #endregion Public Constructors
-
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the fully qualified filename of the archive file.
+        ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
-        public string Filename { get; set; }
+        [JsonProperty(Order = 2)]
+        public string DisplayName { get; set; }
 
         /// <summary>
-        ///     Gets the Fully Qualified Name of the Package.
+        ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
         /// </summary>
-        public string FQN => Namespace + "." + Title;
+        [JsonProperty(Order = 3)]
+        public string Email { get; set; }
 
         /// <summary>
-        ///     Gets a value indicating whether the Package is signed.
+        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/>.
         /// </summary>
-        public bool IsSigned => Signature?.Digest != default(string);
+        [JsonProperty(Order = 1)]
+        public string Name { get; set; }
 
         /// <summary>
-        ///     Gets a value indicating whether the Package is trusted.
+        ///     Gets or sets the <see cref="User"/> password.
         /// </summary>
-        public bool IsTrusted => Signature?.Trust != default(string);
+        [JsonProperty(Order = 5)]
+        public string Password { get; set; }
 
         /// <summary>
-        ///     Gets the time at which the archive was last modified, according to the host filesystem.
+        ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
         /// </summary>
-        public DateTime ModifiedOn { get; }
+        [JsonProperty(Order = 4)]
+        public Role Role { get; set; }
 
         #endregion Public Properties
     }

@@ -1,44 +1,98 @@
-﻿using System;
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █     ▄████████
+      █     ███    ███
+      █     ███    ███    █████▄    █████▄  █        █   ▄██████   ▄█████      ██     █   ██████  ██▄▄▄▄
+      █     ███    ███   ██   ██   ██   ██ ██       ██  ██    ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄
+      █   ▀███████████   ██   ██   ██   ██ ██       ██▌ ██    ▀    ██   ██     ██  ▀ ██▌ ██    ██ ██   ██
+      █     ███    ███ ▀██████▀  ▀██████▀  ██       ██  ██    ▄  ▀████████     ██    ██  ██    ██ ██   ██
+      █     ███    ███   ██        ██      ██▌    ▄ ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██
+      █     ███    █▀   ▄███▀     ▄███▀    ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █
+      █
+      █    ▄█                                     ▄███████▄
+      █   ███                                    ███    ███
+      █   ███▌     ██       ▄█████    ▄▄██▄▄▄    ███    ███    █████  ██████   █    █   █  ██████▄     ▄█████    █████
+      █   ███▌ ▀███████▄   ██   █   ▄█▀▀██▀▀█▄   ███    ███   ██  ██ ██    ██ ██    ██ ██  ██   ▀██   ██   █    ██  ██
+      █   ███▌     ██  ▀  ▄██▄▄     ██  ██  ██ ▀█████████▀   ▄██▄▄█▀ ██    ██ ██    ██ ██▌ ██    ██  ▄██▄▄     ▄██▄▄█▀
+      █   ███      ██    ▀▀██▀▀     ██  ██  ██   ███        ▀███████ ██    ██ ██    ██ ██  ██    ██ ▀▀██▀▀    ▀███████
+      █   ███      ██      ██   █   ██  ██  ██   ███          ██  ██ ██    ██  █▄  ▄█  ██  ██   ▄██   ██   █    ██  ██
+      █   █▀      ▄██▀     ███████   █  ██  █   ▄████▀        ██  ██  ██████    ▀██▀   █   ██████▀    ███████   ██  ██
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █  Provides application information.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
+                                                                                                   ▀▀                            */
+
+using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
+using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
-using OpenIIoT.SDK;
 
 namespace OpenIIoT.Core
 {
     /// <summary>
-    ///     Provides Platform statistics and metrics for the Windows Platform on which the application is run.
+    ///     Provides application information.
     /// </summary>
     public class ApplicationItemProvider : ItemProvider
     {
-        #region Private Fields
-
-        /// <summary>
-        ///     The dictionary of <see cref="Func{T}"/> delegates for each Item.
-        /// </summary>
-        private Dictionary<string, Func<object>> actions;
-
-        #endregion Private Fields
-
         #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="ApplicationItemProvider"/> class.
         /// </summary>
+        /// <param name="manager">The <see cref="IApplicationManager"/> instance for the application.</param>
         /// <param name="itemProviderName">The name of the Item Provider.</param>
-        public ApplicationItemProvider(string itemProviderName)
+        public ApplicationItemProvider(IApplicationManager manager, string itemProviderName)
             : base(itemProviderName)
         {
-            actions = new Dictionary<string, Func<object>>();
+            Manager = manager;
+            Actions = new Dictionary<string, Func<object>>();
 
             InitializeItems();
         }
 
         #endregion Public Constructors
 
-        IApplicationManager Manager => ApplicationManager.GetInstance();
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the dictionary of <see cref="Func{T}"/> delegates for each Item.
+        /// </summary>
+        private Dictionary<string, Func<object>> Actions { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="IApplicationManager"/> instance for the application.
+        /// </summary>
+        private IApplicationManager Manager { get; set; }
+
+        #endregion Private Properties
 
         #region Public Methods
 
@@ -51,9 +105,9 @@ namespace OpenIIoT.Core
         {
             object retVal = default(object);
 
-            if (actions.ContainsKey(item.FQN))
+            if (Actions.ContainsKey(item.FQN))
             {
-                return actions[item.FQN]();
+                return Actions[item.FQN]();
             }
 
             return retVal;
@@ -78,25 +132,19 @@ namespace OpenIIoT.Core
         /// </summary>
         private void InitializeItems()
         {
-            // instantiate an item root
             ItemRoot = new Item(ItemProviderName, this);
 
-            // create CPU items
             Item instance = ItemRoot.AddChild(new Item("InstanceName", this)).ReturnValue;
-
-            actions.Add(instance.FQN, () => { return Manager.InstanceName; });
+            Actions.Add(instance.FQN, () => { return Manager.InstanceName; });
 
             Item productName = ItemRoot.AddChild(new Item("ProductName", ItemAccessMode.ReadOnly, this)).ReturnValue;
-
-            actions.Add(productName.FQN, () => { return Manager.ProductName; });
+            Actions.Add(productName.FQN, () => { return Manager.ProductName; });
 
             Item productVersion = ItemRoot.AddChild(new Item("ProductVersion", ItemAccessMode.ReadOnly, this)).ReturnValue;
-
-            actions.Add(productVersion.FQN, () => { return Manager.ProductVersion.ToString(); });
+            Actions.Add(productVersion.FQN, () => { return Manager.ProductVersion.ToString(); });
 
             Item state = ItemRoot.AddChild(new Item("State", ItemAccessMode.ReadOnly, this)).ReturnValue;
-
-            actions.Add(state.FQN, () => { return Manager.State; });
+            Actions.Add(state.FQN, () => { return Manager.State; });
         }
 
         #endregion Private Methods

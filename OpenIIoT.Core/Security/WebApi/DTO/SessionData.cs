@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄
-      █     ███    ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
+      █      ▄████████                                                  ████████▄
+      █     ███    ███                                                  ███   ▀███
+      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄  ███    ███   ▄█████      ██      ▄█████
+      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄ ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██ ███    ███   ██   ██     ██  ▀   ██   ██
+      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██ ███    ███ ▀████████     ██    ▀████████
+      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██ ███   ▄███   ██   ██     ██      ██   ██
+      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █  ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents an installable extension archive.
+      █  Data Transfer Object used when returning Session objects.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -40,30 +40,28 @@
                                                                                                    ▀▀                            */
 
 using System;
+using Newtonsoft.Json;
 using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging.Manifest;
+using OpenIIoT.SDK.Security;
 
-namespace OpenIIoT.SDK.Packaging
+namespace OpenIIoT.Core.Security.WebApi.DTO
 {
     /// <summary>
-    ///     Represents an installable extension archive.
+    ///     Data Transfer Object used when returning <see cref="Session"/> objects.
     /// </summary>
-    public class Package : PackageManifest
+    public class SessionData
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Package"/> class.
+        ///     Initializes a new instance of the <see cref="SessionData"/> class with the specified <see cref="Session"/>.
         /// </summary>
-        /// <param name="filename">The fully qualified filename of the archive file.</param>
-        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
-        /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
+        /// <param name="session">The <see cref="Session"/> from which data is sourced.</param>
+        public SessionData(Session session)
         {
-            this.CopyPropertyValuesFrom(manifest);
+            this.CopyPropertyValuesFrom(session);
 
-            Filename = filename;
-            ModifiedOn = modifiedOn;
+            User = new UserData(session.User);
         }
 
         #endregion Public Constructors
@@ -71,29 +69,28 @@ namespace OpenIIoT.SDK.Packaging
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the fully qualified filename of the archive file.
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.Expires"/> date.
         /// </summary>
-        public string Filename { get; set; }
+        [JsonProperty(Order = 4)]
+        public DateTimeOffset? Expires { get; set; }
 
         /// <summary>
-        ///     Gets the Fully Qualified Name of the Package.
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.Issued"/> date.
         /// </summary>
-        public string FQN => Namespace + "." + Title;
+        [JsonProperty(Order = 3)]
+        public DateTimeOffset? Issued { get; set; }
 
         /// <summary>
-        ///     Gets a value indicating whether the Package is signed.
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.Token"/>.
         /// </summary>
-        public bool IsSigned => Signature?.Digest != default(string);
+        [JsonProperty(Order = 2)]
+        public string Token { get; set; }
 
         /// <summary>
-        ///     Gets a value indicating whether the Package is trusted.
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.User"/>.
         /// </summary>
-        public bool IsTrusted => Signature?.Trust != default(string);
-
-        /// <summary>
-        ///     Gets the time at which the archive was last modified, according to the host filesystem.
-        /// </summary>
-        public DateTime ModifiedOn { get; }
+        [JsonProperty(Order = 1)]
+        public UserData User { get; set; }
 
         #endregion Public Properties
     }

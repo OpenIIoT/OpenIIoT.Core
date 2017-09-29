@@ -227,6 +227,11 @@
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
     <Compile Include="Security\SessionFactory.cs" />
     <Compile Include="Security\WebApi\SecurityController.cs" />
+    <Compile Include="Security\WebApi\DTO\SessionData.cs" />
+    <Compile Include="Security\WebApi\DTO\SessionStartData.cs" />
+    <Compile Include="Security\WebApi\DTO\UserCreateData.cs" />
+    <Compile Include="Security\WebApi\DTO\UserData.cs" />
+    <Compile Include="Security\WebApi\DTO\UserUpdateData.cs" />
     <Compile Include="Service\ServiceManager.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />

@@ -301,16 +301,19 @@ namespace OpenIIoT.SDK.Common
         /// <summary>
         ///     Gets the access mode for the Item.
         /// </summary>
+        [JsonProperty(Order = 4)]
         public ItemAccessMode AccessMode { get; private set; }
 
         /// <summary>
         ///     Gets the collection of children <see cref="Item"/> s.
         /// </summary>
+        [JsonProperty(Order = 6)]
         public IList<Item> Children { get; private set; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name.
         /// </summary>
+        [JsonProperty(Order = 1)]
         public string FQN { get; private set; }
 
         /// <summary>
@@ -422,6 +425,7 @@ namespace OpenIIoT.SDK.Common
         /// <summary>
         ///     Gets the quality of the <see cref="Item.Value"/> property.
         /// </summary>
+        [JsonProperty(Order = 3)]
         [JsonConverter(typeof(StringEnumConverter))]
         public ItemQuality Quality { get; private set; }
 
@@ -501,6 +505,7 @@ namespace OpenIIoT.SDK.Common
         /// <summary>
         ///     Gets the timestamp of the last update to the <see cref="Item.Value"/> property.
         /// </summary>
+        [JsonProperty(Order = 2)]
         public DateTime Timestamp { get; private set; }
 
         // TODO: should Value be private/protected? Do we should be using Read(), no?
@@ -508,6 +513,7 @@ namespace OpenIIoT.SDK.Common
         /// <summary>
         ///     Gets the Item's value.
         /// </summary>
+        [JsonProperty(Order = 5)]
         public object Value { get; private set; }
 
         #endregion Public Properties

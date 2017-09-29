@@ -1,28 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █     ▄████████
-      █     ███    ███
-      █     ███    ███    █████▄    █████▄  █        █   ▄██████   ▄█████      ██     █   ██████  ██▄▄▄▄
-      █     ███    ███   ██   ██   ██   ██ ██       ██  ██    ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄
-      █   ▀███████████   ██   ██   ██   ██ ██       ██▌ ██    ▀    ██   ██     ██  ▀ ██▌ ██    ██ ██   ██
-      █     ███    ███ ▀██████▀  ▀██████▀  ██       ██  ██    ▄  ▀████████     ██    ██  ██    ██ ██   ██
-      █     ███    ███   ██        ██      ██▌    ▄ ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██
-      █     ███    █▀   ▄███▀     ▄███▀    ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █
-      █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀     ▄█████     ██        ██     █  ██▄▄▄▄     ▄████▄    ▄█████
-      █     ███          ██   █  ▀███████▄ ▀███████▄ ██  ██▀▀▀█▄   ██    ▀    ██  ▀
-      █   ▀███████████  ▄██▄▄        ██  ▀     ██  ▀ ██▌ ██   ██  ▄██         ██
-      █            ███ ▀▀██▀▀        ██        ██    ██  ██   ██ ▀▀██ ███▄  ▀███████
-      █      ▄█    ███   ██   █      ██        ██    ██  ██   ██   ██    ██    ▄  ██
-      █    ▄████████▀    ███████    ▄██▀      ▄██▀   █    █   █    ██████▀   ▄████▀
+      █      ▄████████                                                     ▄████████                                        ████████▄
+      █     ███    ███                                                    ███    ███                                        ███   ▀███
+      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄    ███    █▀      ██      ▄█████     █████     ██    ███    ███   ▄█████      ██      ▄█████
+      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄   ███        ▀███████▄   ██   ██   ██  ██ ▀███████▄ ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██ ▀███████████     ██  ▀   ██   ██  ▄██▄▄█▀     ██  ▀ ███    ███   ██   ██     ██  ▀   ██   ██
+      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██          ███     ██    ▀████████ ▀███████     ██    ███    ███ ▀████████     ██    ▀████████
+      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██    ▄█    ███     ██      ██   ██   ██  ██     ██    ███   ▄███   ██   ██     ██      ██   ██
+      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █   ▄████████▀     ▄██▀     ██   █▀   ██  ██    ▄██▀   ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Application settings, sourced from App.config.
+      █  Data Transfer Object used when starting a Session.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,23 +39,29 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Reflection;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
+using Newtonsoft.Json;
+using OpenIIoT.SDK.Security;
 
-namespace OpenIIoT.Core
+namespace OpenIIoT.Core.Security.WebApi.DTO
 {
     /// <summary>
-    ///     Application settings, sourced from App.config.
+    ///     Data Transfer Object used when starting a <see cref="Session"/>.
     /// </summary>
-    public class ApplicationSettings : Settings, IApplicationSettings
+    public class SessionStartData
     {
         #region Public Properties
 
         /// <summary>
-        ///     Gets the value of the "Application.InstanceName' key from the application's XML configuration file.
+        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/> with which to start the <see cref="Session"/>.
         /// </summary>
-        public virtual string ApplicationInstanceName => GetSetting<string>("Application.InstanceName", Assembly.GetExecutingAssembly().GetName().Name);
+        [JsonProperty(Order = 1)]
+        public string Name { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/> password with which to start the <see cref="Session"/>.
+        /// </summary>
+        [JsonProperty(Order = 2)]
+        public string Password { get; set; }
 
         #endregion Public Properties
     }

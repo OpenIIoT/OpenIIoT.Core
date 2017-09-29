@@ -1,28 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █     ▄████████
-      █     ███    ███
-      █     ███    ███    █████▄    █████▄  █        █   ▄██████   ▄█████      ██     █   ██████  ██▄▄▄▄
-      █     ███    ███   ██   ██   ██   ██ ██       ██  ██    ██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄
-      █   ▀███████████   ██   ██   ██   ██ ██       ██▌ ██    ▀    ██   ██     ██  ▀ ██▌ ██    ██ ██   ██
-      █     ███    ███ ▀██████▀  ▀██████▀  ██       ██  ██    ▄  ▀████████     ██    ██  ██    ██ ██   ██
-      █     ███    ███   ██        ██      ██▌    ▄ ██  ██    ██   ██   ██     ██    ██  ██    ██ ██   ██
-      █     ███    █▀   ▄███▀     ▄███▀    ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █
-      █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀     ▄█████     ██        ██     █  ██▄▄▄▄     ▄████▄    ▄█████
-      █     ███          ██   █  ▀███████▄ ▀███████▄ ██  ██▀▀▀█▄   ██    ▀    ██  ▀
-      █   ▀███████████  ▄██▄▄        ██  ▀     ██  ▀ ██▌ ██   ██  ▄██         ██
-      █            ███ ▀▀██▀▀        ██        ██    ██  ██   ██ ▀▀██ ███▄  ▀███████
-      █      ▄█    ███   ██   █      ██        ██    ██  ██   ██   ██    ██    ▄  ██
-      █    ▄████████▀    ███████    ▄██▀      ▄██▀   █    █   █    ██████▀   ▄████▀
+      █   ███    █▄                              ████████▄
+      █   ███    ███                             ███   ▀███
+      █   ███    ███   ▄█████    ▄█████    █████ ███    ███   ▄█████      ██      ▄█████
+      █   ███    ███   ██  ▀    ██   █    ██  ██ ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀ ███    ███   ██   ██     ██  ▀   ██   ██
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████ ███    ███ ▀████████     ██    ▀████████
+      █   ███    ███    ▄  ██   ██   █    ██  ██ ███   ▄███   ██   ██     ██      ██   ██
+      █   ████████▀   ▄████▀    ███████   ██  ██ ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Application settings, sourced from App.config.
+      █  Data Transfer Object used when returning User objects.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,23 +39,55 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Reflection;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
+using Newtonsoft.Json;
+using OpenIIoT.SDK.Common;
+using OpenIIoT.SDK.Security;
 
-namespace OpenIIoT.Core
+namespace OpenIIoT.Core.Security.WebApi.DTO
 {
     /// <summary>
-    ///     Application settings, sourced from App.config.
+    ///     Data Transfer Object used when returning <see cref="User"/> objects.
     /// </summary>
-    public class ApplicationSettings : Settings, IApplicationSettings
+    public class UserData
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="UserData"/> class with the specified <see cref="User"/>.
+        /// </summary>
+        /// <param name="user">The <see cref="User"/> from which data is sourced.</param>
+        public UserData(User user)
+        {
+            this.CopyPropertyValuesFrom(user);
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>
-        ///     Gets the value of the "Application.InstanceName' key from the application's XML configuration file.
+        ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
-        public virtual string ApplicationInstanceName => GetSetting<string>("Application.InstanceName", Assembly.GetExecutingAssembly().GetName().Name);
+        [JsonProperty(Order = 2)]
+        public string DisplayName { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
+        /// </summary>
+        [JsonProperty(Order = 3)]
+        public string Email { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/>.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public string Name { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
+        /// </summary>
+        [JsonProperty(Order = 4)]
+        public Role Role { get; set; }
 
         #endregion Public Properties
     }
