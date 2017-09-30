@@ -8,6 +8,7 @@
   <ItemGroup>
     <PackageReference Include="NLog" Version="4.4.12" />
     <PackageReference Include="NLog.xLogger" Version="1.0.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="1.0.0" />
     <PackageReference Include="Utility.OperationResult" Version="1.0.0.23118" />
   </ItemGroup>
 

@@ -47,13 +47,14 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web.Http;
 using OpenIIoT.Core.Service.WebApi;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Packaging;
-using Swashbuckle.Swagger.Annotations;
 using Utility.OperationResult;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace OpenIIoT.Core.Packaging.WebApi
 {
@@ -92,23 +93,21 @@ namespace OpenIIoT.Core.Packaging.WebApi
         /// <returns>A Result containing the result of the operation.</returns>
         [HttpDelete]
         [Route("{fqn}")]
-        [SwaggerResponse(HttpStatusCode.OK, "The Package was deleted.")]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified Fully Qualified Name could not be found.")]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        public async Task<HttpResponseMessage> DeletePackage(string fqn)
+        [SwaggerResponse((int)HttpStatusCode.OK, typeof(string), "The Package was deleted.")]
+        [SwaggerResponse((int)HttpStatusCode.BadRequest, typeof(string), "The specified Fully Qualified Name is invalid.")]
+        [SwaggerResponse((int)HttpStatusCode.NotFound, typeof(string), "A Package with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse((int)HttpStatusCode.InternalServerError, typeof(Result), "An unexpected error was encountered during the operation.")]
+        public IActionResult DeletePackage(string fqn)
         {
-            Result result = new Result();
-
             // validate the FQN
             if (string.IsNullOrEmpty(fqn))
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "The Fully Qualified Name is null or empty.", JsonFormatter());
+                return new BadRequestObjectResult("The Fully Qualified Name is null or empty.");
             }
 
             if (!fqn.Contains('.'))
             {
-                return Request.CreateResponse(HttpStatusCode.BadRequest, "The Fully Qualified Name contains only one dot-separated tuple.", JsonFormatter());
+                return new BadRequestObjectResult("The Fully Qualified Name contains only one dot-separated tuple.");
             }
 
             // locate the Package
