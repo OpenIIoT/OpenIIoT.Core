@@ -9,6 +9,7 @@ using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Service;
 using OpenIIoT.SDK.Service.WebApi;
 using Utility.OperationResult;
+using NLog.xLogger;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
 
@@ -30,7 +31,7 @@ namespace OpenIIoT.Core.Service.WebApi
 
         private static WebApiService instance;
 
-        private static Logger logger = LogManager.GetCurrentClassLogger();
+        private static xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         private static IDisposable server;
 
@@ -166,6 +167,7 @@ namespace OpenIIoT.Core.Service.WebApi
             }
             catch (Exception ex)
             {
+                logger.Exception(ex);
                 retVal.AddError("Exception thrown while starting the web server: " + ex);
             }
 
