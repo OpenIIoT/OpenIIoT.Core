@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-
 namespace OpenIIoT.SDK.Security
 {
+    using System;
+
     /// <summary>
     ///     Event arguments for <see cref="Session"/> events.
     /// </summary>
