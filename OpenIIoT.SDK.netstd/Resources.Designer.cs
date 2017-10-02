@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace OpenIIoT.SDK.netstd {
+namespace OpenIIoT.SDK {
     using System;
     
     

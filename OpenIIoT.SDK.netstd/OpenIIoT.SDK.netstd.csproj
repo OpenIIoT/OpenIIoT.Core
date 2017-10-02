@@ -6,6 +6,10 @@
     <CodeAnalysisRuleSet>OpenIIoT.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>bin\Debug\netstandard2.0\OpenIIoT.SDK.netstd.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="OpenIIoT.ruleset" />
     <None Remove="stylecop.json" />
