@@ -42,7 +42,6 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
-using Microsoft.Owin.Security;
 using Newtonsoft.Json;
 
 namespace OpenIIoT.SDK.Security
@@ -88,12 +87,6 @@ namespace OpenIIoT.SDK.Security
         public DateTimeOffset? Issued => Ticket?.Properties.IssuedUtc;
 
         /// <summary>
-        ///     Gets the User to which the Session belongs.
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        public User User { get; }
-
-        /// <summary>
         ///     Gets the AuthenticationTicket for the Session.
         /// </summary>
         [JsonProperty(Order = 6)]
@@ -104,6 +97,12 @@ namespace OpenIIoT.SDK.Security
         /// </summary>
         [JsonProperty(Order = 2)]
         public string Token => GetClaim(ClaimTypes.Hash) ?? string.Empty;
+
+        /// <summary>
+        ///     Gets the User to which the Session belongs.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public User User { get; }
 
         #endregion Private Properties
 
