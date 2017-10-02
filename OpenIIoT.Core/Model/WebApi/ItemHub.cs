@@ -213,26 +213,34 @@ namespace OpenIIoT.Core.Model.WebApi
         public void Write(object[] args)
         {
             bool retVal;
+            string castFQN = default(string);
 
-            string castFQN = (string)args[0];
-
-            // Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
-            Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
-
-            if (foundItem != default(Item))
+            try
             {
-                retVal = foundItem.Write(args[1]);
+                castFQN = (string)args[0];
 
-                if (retVal)
+                // Item foundItem = manager.ProviderRegistry.FindItem(castFQN);
+                Item foundItem = manager.GetManager<IModelManager>().FindItem(castFQN);
+
+                if (foundItem != default(Item))
                 {
-                    Clients.Caller.writeSuccess(castFQN, args.SubArray(1, args.Length - 1));
-                    logger.Info(GetLogPrefix() + "updated item '" + foundItem.FQN + "' with value '" + args[1] + "'.");
+                    retVal = foundItem.Write(args[1]);
+
+                    if (retVal)
+                    {
+                        Clients.Caller.writeSuccess(castFQN, args.SubArray(1, args.Length - 1));
+                        logger.Info(GetLogPrefix() + "updated item '" + foundItem.FQN + "' with value '" + args[1] + "'.");
+                    }
+                    else
+                    {
+                        Clients.Caller.writeError(castFQN, args.SubArray(1, args.Length - 1));
+                        logger.Info(GetLogPrefix() + "failed to update item '" + foundItem.FQN + "'.");
+                    }
                 }
-                else
-                {
-                    Clients.Caller.writeError(castFQN, args.SubArray(1, args.Length - 1));
-                    logger.Info(GetLogPrefix() + "failed to update item '" + foundItem.FQN + "'.");
-                }
+            }
+            catch (Exception ex)
+            {
+                logger.Debug($"Error writing: " + ex.Message);
             }
         }
 
