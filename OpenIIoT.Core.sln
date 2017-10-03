@@ -20,7 +20,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK", "OpenIIoT.SD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK.Tests", "OpenIIoT.SDK.Tests\OpenIIoT.SDK.Tests.csproj", "{C01490C0-A243-4FB6-B6EF-A5FB534D20F0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK.netstd", "OpenIIoT.SDK.netstd\OpenIIoT.SDK.netstd.csproj", "{81A0D5A4-1D7C-4893-9609-E68D8D5925B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenIIoT.SDK.netstd", "OpenIIoT.SDK.netstd\OpenIIoT.SDK.netstd.csproj", "{81A0D5A4-1D7C-4893-9609-E68D8D5925B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenIIoT.SDK.netstd.Tests", "OpenIIoT.SDK.netstd.Tests\OpenIIoT.SDK.netstd.Tests.csproj", "{B17971C9-2ABB-4668-B983-4F6F78DC42C0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -48,6 +50,10 @@ Global
 		{81A0D5A4-1D7C-4893-9609-E68D8D5925B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81A0D5A4-1D7C-4893-9609-E68D8D5925B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81A0D5A4-1D7C-4893-9609-E68D8D5925B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B17971C9-2ABB-4668-B983-4F6F78DC42C0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B17971C9-2ABB-4668-B983-4F6F78DC42C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B17971C9-2ABB-4668-B983-4F6F78DC42C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B17971C9-2ABB-4668-B983-4F6F78DC42C0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
