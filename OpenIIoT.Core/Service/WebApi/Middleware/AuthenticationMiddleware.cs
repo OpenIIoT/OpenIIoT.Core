@@ -177,7 +177,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
                     SecurityManager.ExtendSession(session);
                 }
 
-                DateTime? expirationDate = ((DateTimeOffset)session.Ticket.Properties.ExpiresUtc).UtcDateTime;
+                DateTime? expirationDate = ((DateTimeOffset)session.Ticket.ExpiresUtc).UtcDateTime;
                 context.Response.Cookies.Append(WebApiConstants.SessionTokenCookieName, token, new CookieOptions() { Expires = expirationDate });
             }
         }
