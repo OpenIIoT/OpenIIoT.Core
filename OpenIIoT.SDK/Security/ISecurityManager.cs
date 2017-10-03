@@ -45,7 +45,6 @@ namespace OpenIIoT.SDK.Security
     using System.Collections.Generic;
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Common.OperationResult;
-    using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Common.Provider.EventProvider;
 
     /// <summary>

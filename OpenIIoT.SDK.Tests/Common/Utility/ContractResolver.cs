@@ -48,14 +48,14 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using Newtonsoft.Json;
-using OpenIIoT.SDK.Common;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Common
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using Newtonsoft.Json;
+    using OpenIIoT.SDK.Common;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Common.ContractResolver"/> class.
     /// </summary>

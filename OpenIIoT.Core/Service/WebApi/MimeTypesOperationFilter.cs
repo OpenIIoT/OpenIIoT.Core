@@ -48,11 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Web.Http.Description;
-using Swashbuckle.Swagger;
-
 namespace OpenIIoT.Core.Service.WebApi
 {
+    using System.Web.Http.Description;
+    using Swashbuckle.Swagger;
+
     /// <summary>
     ///     The Swashbuckle Operation Filter which determines the Accept and Content-Type types supported by the API.
     /// </summary>

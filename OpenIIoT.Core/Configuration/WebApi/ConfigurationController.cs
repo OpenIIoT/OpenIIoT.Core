@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using NLog;
-using OpenIIoT.Core.Service.WebApi;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Configuration;
-
-namespace OpenIIoT.Core.Configuration.WebApi
+﻿namespace OpenIIoT.Core.Configuration.WebApi
 {
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Web.Http;
+    using NLog;
+    using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Configuration;
+
     public class ConfigurationController : ApiBaseController
     {
         #region Private Fields

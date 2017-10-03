@@ -48,13 +48,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Moq;
-using OpenIIoT.SDK.Common.Provider;
-using OpenIIoT.SDK.Common.OperationResult;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Common.Provider
 {
+    using Moq;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="ProviderRegistry{T}"/> class.
     /// </summary>

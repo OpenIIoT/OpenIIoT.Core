@@ -39,16 +39,16 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using Newtonsoft.Json;
-using NLog.xLogger;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.Core.Configuration
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Collections.ObjectModel;
+    using Newtonsoft.Json;
+    using NLog.xLogger;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Configuration;
+
     /// <summary>
     ///     The configuration for the application and all instances of Types implementing the IConfigurable interface.
     /// </summary>

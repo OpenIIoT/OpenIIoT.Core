@@ -39,19 +39,19 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using NLog.xLogger;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.Core.Platform
 {
+    using System;
+    using System.Collections.Generic;
+    using NLog.xLogger;
+    using OpenIIoT.Core.Common;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Discovery;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Platform;
+
     /// <summary>
     ///     Manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>

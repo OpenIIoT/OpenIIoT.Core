@@ -1,7 +1,7 @@
-﻿using Xunit;
-
-namespace OpenIIoT.SDK.Common.OperationResult.Tests
+﻿namespace OpenIIoT.SDK.Common.OperationResult.Tests
 {
+    using Xunit;
+
     /// <summary>
     ///     Tests the <see cref="Message"/> class.
     /// </summary>

@@ -48,15 +48,15 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-
 namespace OpenIIoT.Core
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+
     /// <summary>
     ///     Provides application information.
     /// </summary>

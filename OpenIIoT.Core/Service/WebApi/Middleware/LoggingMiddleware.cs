@@ -48,15 +48,15 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Owin;
-using NLog.xLogger;
-using System.Diagnostics;
-
 namespace OpenIIoT.Core.Service.WebApi.Middleware
 {
+    using System;
+    using System.Diagnostics;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.Owin;
+    using NLog.xLogger;
+
     /// <summary>
     ///     Owin middleeware for HTTP request and response logging.
     /// </summary>

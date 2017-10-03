@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Diagnostics.CodeAnalysis;
-using System.ServiceProcess;
-
 namespace OpenIIoT.Core
 {
+    using System.Diagnostics.CodeAnalysis;
+    using System.ServiceProcess;
+
     /// <summary>
     ///     <para>The Windows Service class for the application.</para>
     ///     <para>

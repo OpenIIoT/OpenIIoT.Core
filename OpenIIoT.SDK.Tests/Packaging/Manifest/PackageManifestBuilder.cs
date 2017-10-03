@@ -48,11 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Packaging.Manifest
 {
+    using System.Collections.Generic;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Packaging.Manifest.PackageManifest"/> class.
     /// </summary>

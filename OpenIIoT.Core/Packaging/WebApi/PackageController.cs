@@ -39,24 +39,24 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using System.Web.Http;
-using OpenIIoT.Core.Service.WebApi;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging;
-using Swashbuckle.Swagger.Annotations;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.Core.Packaging.WebApi
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Threading.Tasks;
+    using System.Web.Http;
+    using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Packaging;
+    using Swashbuckle.Swagger.Annotations;
+
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>

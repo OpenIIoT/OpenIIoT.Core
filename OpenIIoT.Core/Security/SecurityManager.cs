@@ -39,26 +39,26 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading;
-using System.Threading.Tasks;
-using NLog.xLogger;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Common.Provider.EventProvider;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Security;
-using OpenIIoT.SDK.Common.OperationResult;
-using System.ComponentModel.DataAnnotations;
-
 namespace OpenIIoT.Core.Security
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Security.Claims;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using NLog.xLogger;
+    using OpenIIoT.Core.Common;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Discovery;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.EventProvider;
+    using OpenIIoT.SDK.Configuration;
+    using OpenIIoT.SDK.Security;
+
     /// <summary>
     ///     Manages the security subsystem.
     /// </summary>

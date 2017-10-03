@@ -1,24 +1,23 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Web.Http;
-using Microsoft.AspNet.SignalR;
-using Microsoft.Owin;
-using Microsoft.Owin.Cors;
-using Microsoft.Owin.FileSystems;
-using Microsoft.Owin.StaticFiles;
-using OpenIIoT.Core.Platform;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Service.WebApi;
-using Owin;
-
-using Swashbuckle.Application;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.Core.Service.WebApi.Middleware;
-using System.Reflection;
-
-namespace OpenIIoT.Core.Service.WebApi
+﻿namespace OpenIIoT.Core.Service.WebApi
 {
+    using System.Linq;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Reflection;
+    using System.Web.Http;
+    using Microsoft.AspNet.SignalR;
+    using Microsoft.Owin;
+    using Microsoft.Owin.Cors;
+    using Microsoft.Owin.FileSystems;
+    using Microsoft.Owin.StaticFiles;
+    using OpenIIoT.Core.Platform;
+    using OpenIIoT.Core.Service.WebApi.Middleware;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Platform;
+    using OpenIIoT.SDK.Service.WebApi;
+    using Owin;
+    using Swashbuckle.Application;
+
     public class OwinStartup
     {
         #region Private Fields

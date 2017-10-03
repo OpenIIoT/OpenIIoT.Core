@@ -57,10 +57,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Packaging.Operations.PackagingUpdateEventArgs"/> class.
     /// </summary>

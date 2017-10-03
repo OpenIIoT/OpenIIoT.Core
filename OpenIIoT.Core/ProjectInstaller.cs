@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-
 namespace OpenIIoT.Core
 {
+    using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     ///     The Windows Service installer for the application; allows the Windows Service to be installed and uninstalled from
     ///     within the application.

@@ -1,17 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.Core.Common;
-using OpenIIoT.Core.Service.WebApi;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Service;
-using OpenIIoT.SDK.Common.OperationResult;
-
-namespace OpenIIoT.Core.Service
+﻿namespace OpenIIoT.Core.Service
 {
+    using System;
+    using System.Collections.Generic;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.Core.Common;
+    using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Configuration;
+    using OpenIIoT.SDK.Service;
+
     public class ServiceManager : Manager, IServiceManager
     {
         #region Private Fields

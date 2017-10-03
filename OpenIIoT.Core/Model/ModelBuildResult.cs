@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.OperationResult;
-
-namespace OpenIIoT.Core.Model
+﻿namespace OpenIIoT.Core.Model
 {
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     The ModelBuildResult extends the Result class and adds properties to return various products of a model build operation.
     ///

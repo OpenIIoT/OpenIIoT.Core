@@ -1,13 +1,13 @@
-﻿using System.Linq;
-using NLog;
-using NLog.Config;
-using NLog.Targets;
-using Xunit;
-
-namespace OpenIIoT.SDK.Common.OperationResult.Tests
+﻿namespace OpenIIoT.SDK.Common.OperationResult.Tests
 {
+    using System.Linq;
+    using NLog;
+    using NLog.Config;
+    using NLog.Targets;
+    using Xunit;
+
     /// <summary>
-    ///     Tests the <see cref="ResultOfT"/> class.
+    ///     Tests the <see cref="SDK.Common.OperationResult.Result{T}"/> class.
     /// </summary>
     public class ResultOfTTests
     {

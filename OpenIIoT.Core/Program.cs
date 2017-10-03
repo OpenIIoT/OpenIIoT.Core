@@ -38,34 +38,34 @@
                                                                                                ▀█▄ ██ ▄█▀
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
-
-using System;
-using System.Diagnostics.CodeAnalysis;
-using System.Reflection;
-using System.ServiceProcess;
-using System.Text.RegularExpressions;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.Core.Configuration;
-using OpenIIoT.Core.Event;
-using OpenIIoT.Core.Model;
-using OpenIIoT.Core.Packaging;
-using OpenIIoT.Core.Platform;
-using OpenIIoT.Core.Plugin;
-using OpenIIoT.Core.Security;
-using OpenIIoT.Core.Service;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Model;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Plugin;
-using OpenIIoT.SDK.Plugin.Connector;
-using Utility.CommandLine;
-using OpenIIoT.SDK.Common.OperationResult;
+    using Utility.CommandLine;
 
 namespace OpenIIoT.Core
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Reflection;
+    using System.ServiceProcess;
+    using System.Text.RegularExpressions;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.Core.Configuration;
+    using OpenIIoT.Core.Event;
+    using OpenIIoT.Core.Model;
+    using OpenIIoT.Core.Packaging;
+    using OpenIIoT.Core.Platform;
+    using OpenIIoT.Core.Plugin;
+    using OpenIIoT.Core.Security;
+    using OpenIIoT.Core.Service;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Model;
+    using OpenIIoT.SDK.Platform;
+    using OpenIIoT.SDK.Plugin;
+    using OpenIIoT.SDK.Plugin.Connector;
+
     /// <summary>
     ///     The main Application class.
     /// </summary>

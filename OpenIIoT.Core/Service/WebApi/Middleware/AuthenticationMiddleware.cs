@@ -48,20 +48,20 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.Owin;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Security;
-using System.Net;
-
 namespace OpenIIoT.Core.Service.WebApi.Middleware
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Security.Claims;
+    using System.Threading.Tasks;
+    using Microsoft.Owin;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Security;
+
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.
     /// </summary>

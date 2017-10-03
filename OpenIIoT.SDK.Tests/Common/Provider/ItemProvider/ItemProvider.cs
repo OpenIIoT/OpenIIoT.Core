@@ -48,15 +48,15 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Threading.Tasks;
-using Moq;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Threading.Tasks;
+    using Moq;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider"/> class.
     /// </summary>

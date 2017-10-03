@@ -39,22 +39,22 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Timers;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Common.Provider.EventProvider;
-using OpenIIoT.SDK.Common.OperationResult;
-using OpenIIoT.SDK;
-
 namespace OpenIIoT.Core.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Timers;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Discovery;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.EventProvider;
+
     /// <summary>
     ///     The abstract base class from which Managers may inherit.
     /// </summary>

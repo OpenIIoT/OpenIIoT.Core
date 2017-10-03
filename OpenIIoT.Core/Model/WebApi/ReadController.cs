@@ -1,18 +1,18 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using NLog;
-using OpenIIoT.Core.Service.WebApi;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Model;
-using Newtonsoft.Json;
-using System;
-using System.Net.Http.Formatting;
-
-namespace OpenIIoT.Core.Model.WebApi
+﻿namespace OpenIIoT.Core.Model.WebApi
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Formatting;
+    using System.Web.Http;
+    using Newtonsoft.Json;
+    using NLog;
+    using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Model;
+
     [WebApiRoutePrefix("v1/item")]
     public class ReadController : ApiBaseController
     {

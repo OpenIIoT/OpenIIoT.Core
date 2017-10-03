@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Web.Http;
-using OpenIIoT.Core.Service.WebApi;
-
-namespace OpenIIoT.Core.Model.WebApi
+﻿namespace OpenIIoT.Core.Model.WebApi
 {
+    using System.Collections.Generic;
+    using System.Web.Http;
+    using OpenIIoT.Core.Service.WebApi;
+
     public class ValuesController : ApiBaseController
     {
         #region Public Methods

@@ -39,22 +39,22 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Provider.EventProvider;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Event;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.Core.Event
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.Core.Common;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.EventProvider;
+    using OpenIIoT.SDK.Configuration;
+    using OpenIIoT.SDK.Event;
+
     /// <summary>
     ///     Represents and controls the Event subsystem.
     /// </summary>

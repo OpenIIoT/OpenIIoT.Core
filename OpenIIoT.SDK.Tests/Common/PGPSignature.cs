@@ -53,14 +53,14 @@
                                                                                                 ▀████▀
                                                                                                   ▀▀                            */
 
-using System;
-using System.IO;
-using System.Text;
-using Org.BouncyCastle.Bcpg.OpenPgp;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Common
 {
+    using System;
+    using System.IO;
+    using System.Text;
+    using Org.BouncyCastle.Bcpg.OpenPgp;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="PGPSignature"/> class.
     /// </summary>

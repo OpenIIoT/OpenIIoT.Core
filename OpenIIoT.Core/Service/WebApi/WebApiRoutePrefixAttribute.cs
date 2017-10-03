@@ -48,11 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Web.Http;
-using OpenIIoT.SDK;
-
 namespace OpenIIoT.Core.Service.WebApi
 {
+    using System.Web.Http;
+    using OpenIIoT.SDK;
+
     /// <summary>
     ///     Annotates a controller with a WebRoot-prepended route prefix that applies to all actions within the controller.
     /// </summary>

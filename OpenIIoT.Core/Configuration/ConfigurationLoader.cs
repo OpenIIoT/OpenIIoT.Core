@@ -39,16 +39,16 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using NLog.xLogger;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.Core.Configuration
 {
+    using System;
+    using System.Collections.Generic;
+    using Newtonsoft.Json;
+    using NLog.xLogger;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Platform;
+
     /// <summary>
     ///     Handles the building, loading, and saving of application configuration files.
     /// </summary>

@@ -39,12 +39,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Platform;
-
 namespace OpenIIoT.Core.Platform.UNIX
 {
+    using System;
+    using OpenIIoT.SDK.Common.Discovery;
+    using OpenIIoT.SDK.Platform;
+
     /// <summary>
     ///     Allows file system I/O abstraction and metrics on UNIX platforms.
     /// </summary>

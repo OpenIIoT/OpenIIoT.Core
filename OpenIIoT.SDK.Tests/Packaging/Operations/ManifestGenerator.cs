@@ -48,14 +48,14 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.IO;
-using System.Linq;
-using OpenIIoT.SDK.Packaging.Manifest;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using OpenIIoT.SDK.Packaging.Manifest;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Packaging.Operations.ManifestGenerator"/> class.
     /// </summary>
