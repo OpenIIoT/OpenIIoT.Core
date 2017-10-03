@@ -59,7 +59,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Packaging;
 using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Package

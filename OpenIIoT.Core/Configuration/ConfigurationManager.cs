@@ -49,7 +49,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Configuration
 {

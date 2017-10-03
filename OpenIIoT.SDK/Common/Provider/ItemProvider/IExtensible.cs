@@ -23,7 +23,7 @@
 
 using System.Collections.Generic;
 using OpenIIoT.SDK.Plugin.Connector;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {

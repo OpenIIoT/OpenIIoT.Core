@@ -66,7 +66,7 @@ using System.Web.Http;
 using Moq;
 using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 using Xunit;
 using Microsoft.Owin.Security;
 using System.Security.Claims;

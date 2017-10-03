@@ -45,7 +45,7 @@ using Newtonsoft.Json;
 using NLog.xLogger;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Configuration
 {

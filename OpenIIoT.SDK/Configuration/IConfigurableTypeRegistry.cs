@@ -42,7 +42,7 @@
 using System;
 using System.Collections.Generic;
 using OpenIIoT.SDK.Common.Exceptions;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.SDK.Configuration
 {

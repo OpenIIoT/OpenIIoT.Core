@@ -53,7 +53,7 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 using Xunit;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]

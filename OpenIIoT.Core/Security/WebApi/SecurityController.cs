@@ -64,7 +64,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Security;
 
 using Swashbuckle.Swagger.Annotations;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Security.WebApi
 {

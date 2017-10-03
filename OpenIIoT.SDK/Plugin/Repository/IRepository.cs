@@ -1,5 +1,4 @@
 ﻿using OpenIIoT.SDK.Plugin;
-using Utility.OperationResult;
 
 namespace OpenIIoT.SDK.Plugin.Repository
 {

@@ -8,7 +8,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Service;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Service
 {

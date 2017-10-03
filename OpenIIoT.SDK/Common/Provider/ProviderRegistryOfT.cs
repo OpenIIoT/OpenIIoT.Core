@@ -43,7 +43,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OpenIIoT.SDK.Common.Discovery;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.SDK.Common.Provider
 {

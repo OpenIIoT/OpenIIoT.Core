@@ -8,7 +8,7 @@ using NLog;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Service;
 using OpenIIoT.SDK.Service.WebApi;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 using NLog.xLogger;
 
 [module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]

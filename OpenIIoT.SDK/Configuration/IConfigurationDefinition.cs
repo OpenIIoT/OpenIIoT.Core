@@ -40,7 +40,7 @@
                                                                                                    ▀▀                            */
 
 using System;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.SDK.Configuration
 {

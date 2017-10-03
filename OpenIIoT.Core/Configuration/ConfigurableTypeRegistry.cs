@@ -47,7 +47,7 @@ using NLog;
 using NLog.xLogger;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Configuration
 {

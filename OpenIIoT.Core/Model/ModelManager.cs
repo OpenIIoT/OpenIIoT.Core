@@ -54,7 +54,7 @@ using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Model;
 using OpenIIoT.SDK.Plugin;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Model
 {

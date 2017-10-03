@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using OpenIIoT.SDK.Common;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Model
 {

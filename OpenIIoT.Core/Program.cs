@@ -62,7 +62,7 @@ using OpenIIoT.SDK.Platform;
 using OpenIIoT.SDK.Plugin;
 using OpenIIoT.SDK.Plugin.Connector;
 using Utility.CommandLine;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core
 {

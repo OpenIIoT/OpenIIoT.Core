@@ -58,7 +58,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Exceptions;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Security;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Security

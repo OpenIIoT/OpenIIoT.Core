@@ -51,7 +51,7 @@ using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Common.Provider.EventProvider;
 using OpenIIoT.SDK.Configuration;
 using OpenIIoT.SDK.Event;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Event
 {

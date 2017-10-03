@@ -53,7 +53,7 @@ using OpenIIoT.SDK;
 using OpenIIoT.SDK.Common;
 using OpenIIoT.SDK.Packaging;
 using Swashbuckle.Swagger.Annotations;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Packaging.WebApi
 {

@@ -41,7 +41,7 @@
 
 using System.Collections.Generic;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.SDK.Platform
 {

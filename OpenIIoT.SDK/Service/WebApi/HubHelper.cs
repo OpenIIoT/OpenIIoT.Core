@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using NLog;
 using OpenIIoT.SDK;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.SDK.Service.WebApi
 {

@@ -61,6 +61,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.IO.Compression.FileSystem" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -70,12 +71,14 @@
       <HintPath>..\packages\Utility.BigFont.2.1.2\lib\Utility.BigFont.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Utility.OperationResult, Version=1.0.0.23118, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Utility.OperationResult.1.0.0.23118\lib\Utility.OperationResult.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\OperationResult\Enumerations.cs" />
+    <Compile Include="Common\OperationResult\IResult.cs" />
+    <Compile Include="Common\OperationResult\IResultOfT.cs" />
+    <Compile Include="Common\OperationResult\Message.cs" />
+    <Compile Include="Common\OperationResult\Result.cs" />
+    <Compile Include="Common\OperationResult\ResultOfT.cs" />
     <Compile Include="IApplicationSettings.cs" />
     <Compile Include="Common\ContractResolver.cs" />
     <Compile Include="Common\Exceptions\ConfigurationExceptions.cs" />

@@ -53,7 +53,7 @@ using OpenIIoT.SDK.Packaging;
 using OpenIIoT.SDK.Packaging.Manifest;
 using OpenIIoT.SDK.Packaging.Operations;
 using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.Core.Packaging
 {

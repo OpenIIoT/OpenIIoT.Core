@@ -1,4 +1,6 @@
-﻿using Utility.OperationResult;
+﻿using OpenIIoT.SDK.Common.OperationResult;
+
+using OpenIIoT.SDK.Common.OperationResult;
 
 namespace OpenIIoT.SDK.Service
 {
