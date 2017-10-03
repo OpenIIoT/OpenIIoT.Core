@@ -39,12 +39,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-
 namespace OpenIIoT.SDK.Packaging.Manifest
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+
     /// <summary>
     ///     Provides a fluent API with which to build <see cref="PackageManifest"/> instances.
     /// </summary>

@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using OpenIIoT.SDK.Common;
-
-namespace OpenIIoT.SDK.Service
+﻿namespace OpenIIoT.SDK.Service
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Common;
+
     public interface IServiceManager : IManager
     {
         #region Public Properties

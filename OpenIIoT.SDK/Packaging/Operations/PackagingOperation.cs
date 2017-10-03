@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-
 namespace OpenIIoT.SDK.Packaging.Operations
 {
+    using System;
+
     /// <summary>
     ///     The abstract base class from which Packaging Operations derive.
     /// </summary>

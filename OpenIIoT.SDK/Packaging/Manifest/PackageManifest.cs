@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
 namespace OpenIIoT.SDK.Packaging.Manifest
 {
+    using System.Collections.Generic;
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     A Manifest which describes the contents of a Package file.
     /// </summary>

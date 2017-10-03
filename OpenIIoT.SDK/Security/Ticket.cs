@@ -52,7 +52,8 @@ namespace OpenIIoT.SDK.Security
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an issue time equal to the current time, and an expiration time equal to the current time plus the default session length.
+        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an
+        ///     issue time equal to the current time, and an expiration time equal to the current time plus the default session length.
         /// </summary>
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
         public Ticket(ClaimsIdentity identity)
@@ -61,7 +62,9 @@ namespace OpenIIoT.SDK.Security
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <see cref="identity"/>, an issue time equal to the current time, and an expiration time equal to the current time plus the specified diration, in seconds.
+        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an
+        ///     issue time equal to the current time, and an expiration time equal to the current time plus the specified
+        ///     <paramref name="duration"/>, in seconds.
         /// </summary>
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
         /// <param name="duration">The duration of the Ticket, in seconds.</param>
@@ -71,12 +74,13 @@ namespace OpenIIoT.SDK.Security
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an issue time <paramref name="issuedUtc"/>, and expiration time <paramref name="expiresUtc"/>.
+        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an
+        ///     issue time <paramref name="issuedUtc"/>, and expiration time <paramref name="expiresUtc"/>.
         /// </summary>
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
         /// <param name="issuedUtc">The time at whcih the Ticket was issued, in UTC.</param>
         /// <param name="expiresUtc">The time at which the Ticket will expire, in UTC.</param>
-        public Ticket(ClaimsIdentity identity, DateTimeOffset issuedUtc, DateTimeOffset? expiresUtc)
+        public Ticket(ClaimsIdentity identity, DateTimeOffset issuedUtc, DateTimeOffset expiresUtc)
         {
             Identity = identity;
             IssuedUtc = issuedUtc;
@@ -90,7 +94,7 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Gets or sets the time at which the Ticket expires.
         /// </summary>
-        public DateTimeOffset? ExpiresUtc { get; set; }
+        public DateTimeOffset ExpiresUtc { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="ClaimsIdentity"/> instance associated with the Ticket.

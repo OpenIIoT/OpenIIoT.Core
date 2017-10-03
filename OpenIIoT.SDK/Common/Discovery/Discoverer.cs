@@ -40,14 +40,14 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-
 namespace OpenIIoT.SDK.Common.Discovery
 {
+    using System;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+
     /// <summary>
     ///     Recursively traverses the properties of the specified object and any subordinate objects and returns a list of object
     ///     instances whose <see cref="Type"/> is assignable from the specified <see cref="Type"/>.

@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Newtonsoft.Json;
-
 namespace OpenIIoT.SDK.Packaging.Manifest
 {
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     Contains the digital signature information for a Package file.
     /// </summary>

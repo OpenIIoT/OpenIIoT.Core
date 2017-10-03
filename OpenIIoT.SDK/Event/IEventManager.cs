@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.SDK.Event
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Defines the interface for the Event Manager.
     /// </summary>

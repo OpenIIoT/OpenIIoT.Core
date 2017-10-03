@@ -51,13 +51,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using NLog;
-
 namespace OpenIIoT.SDK.Common.OperationResult
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Runtime.CompilerServices;
+    using NLog;
+
     /// <summary>
     ///     Represents the result of an operation, including a result code and list of messages generated during the operation.
     /// </summary>

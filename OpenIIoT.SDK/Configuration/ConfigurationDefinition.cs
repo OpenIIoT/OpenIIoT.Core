@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.SDK.Configuration
 {
+    using System;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Configuration;
+
     /// <summary>
     ///     Establishes a common object to represent the configuration details for various application items.
     /// </summary>

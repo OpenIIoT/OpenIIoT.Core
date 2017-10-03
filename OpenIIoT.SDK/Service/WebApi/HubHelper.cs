@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using NLog;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common.OperationResult;
-
-namespace OpenIIoT.SDK.Service.WebApi
+﻿namespace OpenIIoT.SDK.Service.WebApi
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using NLog;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     The HubHelper acts as a static subscription and event manager for SignalR hubs.
     /// </summary>

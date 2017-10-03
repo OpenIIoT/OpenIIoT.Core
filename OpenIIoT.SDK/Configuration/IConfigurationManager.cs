@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.SDK.Configuration
 {
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Manages the configuration subsystem for the application and all plugins.
     /// </summary>

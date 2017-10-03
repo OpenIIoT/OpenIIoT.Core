@@ -48,20 +48,27 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Security.Claims;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Security
 {
+    using System;
+    using System.Security.Claims;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Security.Session"/> class.
     /// </summary>
     public class Session
     {
-        #region Public Methods
+        #region Public Properties
 
+        /// <summary>
+        ///     Gets or sets the User with which to conduct testing.
+        /// </summary>
         private SDK.Security.User User { get; set; }
+
+        #endregion Public Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Tests the constructor and all properties.
@@ -101,20 +108,7 @@ namespace OpenIIoT.SDK.Tests.Security
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.IsExpired"/> property with a Ticket which does not contain the ExpiresUtc property.
-        /// </summary>
-        [Fact]
-        public void IsExpiredNullProperty()
-        {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
-
-            Assert.True(test.IsExpired);
-            Assert.Null(test.Expires);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.Name"/> property.
+        ///     Tests the <see cref="SDK.Security.Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Name"/> claim.
         /// </summary>
         [Fact]
         public void Name()
@@ -128,7 +122,8 @@ namespace OpenIIoT.SDK.Tests.Security
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.Name"/> property with a Ticket missing the Name claim.
+        ///     Tests the <see cref="SDK.Security.Session.GetClaim(string)"/> method with a Ticket missing the
+        ///     <see cref="ClaimTypes.Name"/> claim.
         /// </summary>
         [Fact]
         public void NameNoClaim()
@@ -141,7 +136,7 @@ namespace OpenIIoT.SDK.Tests.Security
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.Role"/> property.
+        ///     Tests the <see cref="SDK.Security.Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Role"/> claim.
         /// </summary>
         [Fact]
         public void Role()
@@ -155,7 +150,7 @@ namespace OpenIIoT.SDK.Tests.Security
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.Role"/> property with a ticket missing the Role claim.
+        ///     Tests the <see cref="SDK.Security.Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Role"/> claim.
         /// </summary>
         [Fact]
         public void RoleNoClaim()

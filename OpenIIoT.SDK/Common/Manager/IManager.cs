@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common.Provider.EventProvider;
-
 namespace OpenIIoT.SDK.Common
 {
+    using OpenIIoT.SDK.Common.Provider.EventProvider;
+
     /// <summary>
     ///     Defines the interface for Manager objects.
     /// </summary>

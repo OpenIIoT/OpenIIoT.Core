@@ -39,15 +39,15 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Threading.Tasks;
-using NLog.xLogger;
-
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using NLog.xLogger;
+
     /// <summary>
     ///     The abstract base class from which ItemProviders may derive.
     /// </summary>

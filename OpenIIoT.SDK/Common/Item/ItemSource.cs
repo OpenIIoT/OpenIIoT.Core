@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-
 namespace OpenIIoT.SDK.Common
 {
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+
     /// <summary>
     ///     Enumeration of the different <see cref="Item"/> sources.
     /// </summary>

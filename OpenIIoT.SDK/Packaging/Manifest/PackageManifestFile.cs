@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Newtonsoft.Json;
-
 namespace OpenIIoT.SDK.Packaging.Manifest
 {
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     Represents a single file contained within a <see cref="PackageManifest"/> .
     /// </summary>

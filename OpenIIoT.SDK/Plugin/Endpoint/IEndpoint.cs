@@ -1,10 +1,9 @@
-﻿using OpenIIoT.SDK.Common.OperationResult;
-using OpenIIoT.SDK.Plugin;
-
-using OpenIIoT.SDK.Common.OperationResult;
-
-namespace OpenIIoT.SDK.Plugin.Endpoint
+﻿namespace OpenIIoT.SDK.Plugin.Endpoint
 {
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Plugin;
+
     public interface IEndpoint : IPluginInstance
     {
         #region Public Methods

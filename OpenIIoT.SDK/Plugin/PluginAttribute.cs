@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-
 namespace OpenIIoT.SDK.Plugin
 {
+    using System;
+
     /// <summary>
     ///     Identifies assemblies containing Plugins.
     /// </summary>

@@ -21,10 +21,10 @@
                                                                                                 ▀████▀
                                                                                                   ▀▀                            */
 
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-
 namespace OpenIIoT.SDK.Plugin.Connector
 {
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+
     /// <summary>
     ///     Defines the interface for Connector Plugins.
     /// </summary>

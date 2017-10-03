@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-
 namespace OpenIIoT.SDK.Platform
 {
+    using System.Collections.Generic;
+
     /// <summary>
     ///     Encapsulates the filesystem directories needed to run the application.
     /// </summary>

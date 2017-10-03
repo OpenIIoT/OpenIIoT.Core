@@ -39,14 +39,14 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.SDK.Common.Provider
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using OpenIIoT.SDK.Common.Discovery;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Facilitates the discovery and registration of all discoverable <see cref="IProvider"/> instances matching the
     ///     <see cref="Type"/> T contained within the application.

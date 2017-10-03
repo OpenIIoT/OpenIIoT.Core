@@ -39,16 +39,15 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NLog.xLogger;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.OperationResult;
-
-using OpenIIoT.SDK.Common.OperationResult;
-
 namespace OpenIIoT.SDK.Plugin
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using NLog.xLogger;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Defines the interface for the Plugin Manager.
     /// </summary>

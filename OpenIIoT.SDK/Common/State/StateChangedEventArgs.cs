@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-
 namespace OpenIIoT.SDK.Common
 {
+    using System;
+
     /// <summary>
     ///     Represents the event arguments for the StateChanged event of Stateful components.
     /// </summary>

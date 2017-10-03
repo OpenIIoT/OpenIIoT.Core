@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
-
 namespace OpenIIoT.SDK.Platform
 {
+    using OpenIIoT.SDK.Common;
+
     /// <summary>
     ///     Manages the application platform, specifically, the platform-dependent elements of the system.
     /// </summary>
