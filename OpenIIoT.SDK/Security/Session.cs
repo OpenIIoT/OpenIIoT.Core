@@ -39,14 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Linq;
-using System.Security.Claims;
-using Microsoft.Owin.Security;
-using Newtonsoft.Json;
-
 namespace OpenIIoT.SDK.Security
 {
+    using System;
+    using System.Linq;
+    using System.Security.Claims;
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     Session information for a <see cref="User"/> Session.
     /// </summary>
@@ -59,7 +58,7 @@ namespace OpenIIoT.SDK.Security
         /// </summary>
         /// <param name="user">The User to which the Session belongs.</param>
         /// <param name="ticket">The AuthenticationTicket for the Session.</param>
-        public Session(User user, AuthenticationTicket ticket)
+        public Session(User user, Ticket ticket)
         {
             User = user;
             Ticket = ticket;
@@ -73,37 +72,37 @@ namespace OpenIIoT.SDK.Security
         ///     Gets the expiration timestamp of the Ticket, in UTC.
         /// </summary>
         [JsonProperty(Order = 4)]
-        public DateTimeOffset? Expires => Ticket?.Properties.ExpiresUtc;
+        public DateTimeOffset? Expires => Ticket?.ExpiresUtc;
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
         /// </summary>
         [JsonProperty(Order = 5)]
-        public bool IsExpired => (Ticket?.Properties.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
+        public bool IsExpired => (Ticket?.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
 
         /// <summary>
         ///     Gets the issued timestamp of the Ticket, in UTC.
         /// </summary>
         [JsonProperty(Order = 3)]
-        public DateTimeOffset? Issued => Ticket?.Properties.IssuedUtc;
-
-        /// <summary>
-        ///     Gets the User to which the Session belongs.
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        public User User { get; }
+        public DateTimeOffset? Issued => Ticket?.IssuedUtc;
 
         /// <summary>
         ///     Gets the AuthenticationTicket for the Session.
         /// </summary>
         [JsonProperty(Order = 6)]
-        public AuthenticationTicket Ticket { get; }
+        public Ticket Ticket { get; }
 
         /// <summary>
         ///     Gets the token for the Session.
         /// </summary>
         [JsonProperty(Order = 2)]
         public string Token => GetClaim(ClaimTypes.Hash) ?? string.Empty;
+
+        /// <summary>
+        ///     Gets the User to which the Session belongs.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public User User { get; }
 
         #endregion Private Properties
 
