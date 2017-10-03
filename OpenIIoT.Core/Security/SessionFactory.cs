@@ -88,9 +88,7 @@ namespace OpenIIoT.Core.Security
 
             identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
 
-            DateTimeOffset? expires = DateTime.UtcNow.AddSeconds(sessionLength);
-
-            Ticket ticket = new Ticket(identity, expires);
+            Ticket ticket = new Ticket(identity, sessionLength);
 
             retVal = new Session(user, ticket);
 

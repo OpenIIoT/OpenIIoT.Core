@@ -69,9 +69,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            DateTimeOffset expiry = DateTime.UtcNow.AddMinutes(15);
-
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity(), expiry);
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity(), 15);
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
@@ -95,7 +93,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void IsExpiredExpired()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity(), DateTime.UtcNow.AddMinutes(-15));
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity(), -15);
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.True(test.IsExpired);
