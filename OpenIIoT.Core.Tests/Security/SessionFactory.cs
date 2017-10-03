@@ -48,13 +48,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Security.Claims;
-using Microsoft.Owin.Security;
-using Xunit;
-
 namespace OpenIIoT.Core.Tests.Security
 {
+    using System;
+    using System.Security.Claims;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="Core.Security.SessionFactory"/> class.
     /// </summary>

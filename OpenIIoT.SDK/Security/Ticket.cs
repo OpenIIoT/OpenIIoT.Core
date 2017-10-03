@@ -57,7 +57,7 @@ namespace OpenIIoT.SDK.Security
         /// </summary>
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
         public Ticket(ClaimsIdentity identity)
-            : this(identity, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(SecurityConstants.DefaultSessionLength))
+            : this(identity, DateTime.UtcNow, SecurityConstants.DefaultSessionLength)
         {
         }
 
@@ -69,22 +69,22 @@ namespace OpenIIoT.SDK.Security
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
         /// <param name="duration">The duration of the Ticket, in seconds.</param>
         public Ticket(ClaimsIdentity identity, int duration)
-            : this(identity, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(duration))
+            : this(identity, DateTime.UtcNow, duration)
         {
         }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an
-        ///     issue time <paramref name="issuedUtc"/>, and expiration time <paramref name="expiresUtc"/>.
+        ///     issue time <paramref name="issuedUtc"/>, and <paramref name="duration"/>.
         /// </summary>
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
         /// <param name="issuedUtc">The time at whcih the Ticket was issued, in UTC.</param>
-        /// <param name="expiresUtc">The time at which the Ticket will expire, in UTC.</param>
-        public Ticket(ClaimsIdentity identity, DateTimeOffset issuedUtc, DateTimeOffset expiresUtc)
+        /// <param name="duration">The duration of the Ticket, in seconds.</param>
+        public Ticket(ClaimsIdentity identity, DateTimeOffset issuedUtc, int duration)
         {
             Identity = identity;
             IssuedUtc = issuedUtc;
-            ExpiresUtc = expiresUtc;
+            ExpiresUtc = issuedUtc.AddSeconds(duration);
         }
 
         #endregion Public Constructors
