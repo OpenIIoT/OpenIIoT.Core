@@ -50,7 +50,6 @@
 
 using System;
 using System.Security.Claims;
-using Microsoft.Owin.Security;
 using Xunit;
 
 namespace OpenIIoT.SDK.Tests.Security
@@ -62,6 +61,8 @@ namespace OpenIIoT.SDK.Tests.Security
     {
         #region Public Methods
 
+        private SDK.Security.User User { get; set; }
+
         /// <summary>
         ///     Tests the constructor and all properties.
         /// </summary>
@@ -70,8 +71,7 @@ namespace OpenIIoT.SDK.Tests.Security
         {
             DateTimeOffset expiry = DateTime.UtcNow.AddMinutes(15);
 
-            AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = expiry };
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity(), expiry);
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
@@ -89,16 +89,13 @@ namespace OpenIIoT.SDK.Tests.Security
             Assert.NotNull(test.Expires);
         }
 
-        private SDK.Security.User User { get; set; }
-
         /// <summary>
         ///     Tests the <see cref="SDK.Security.Session.IsExpired"/> property with an expired Ticket.
         /// </summary>
         [Fact]
         public void IsExpiredExpired()
         {
-            AuthenticationProperties props = new AuthenticationProperties() { ExpiresUtc = DateTime.UtcNow.AddMinutes(-15) };
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity(), DateTime.UtcNow.AddMinutes(-15));
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.True(test.IsExpired);
@@ -111,8 +108,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void IsExpiredNullProperty()
         {
-            AuthenticationProperties props = new AuthenticationProperties();
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), props);
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
             Assert.True(test.IsExpired);
@@ -125,7 +121,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Name()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
@@ -139,7 +135,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void NameNoClaim()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
@@ -152,7 +148,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Role()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
@@ -166,7 +162,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void RoleNoClaim()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
@@ -179,7 +175,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Ticket()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 
@@ -203,7 +199,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Token()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "token"));
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
@@ -217,7 +213,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void TokenNoClaim()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
 
             SDK.Security.Session test = new SDK.Security.Session(User, ticket);
 

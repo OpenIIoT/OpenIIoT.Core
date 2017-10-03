@@ -243,18 +243,6 @@ namespace OpenIIoT.SDK.Common
         }
 
         /// <summary>
-        ///     Returns the last N elements of the supplied IEnumerable.
-        /// </summary>
-        /// <typeparam name="T">The type of the IEnumerable.</typeparam>
-        /// <param name="source">The IEnumerable.</param>
-        /// <param name="n">The number of elements to take from the end of the collection.</param>
-        /// <returns>An IEnumerable containing the last N elements of the supplied IEnumerable.</returns>
-        public static IEnumerable<T> TakeLast<T>(this IEnumerable<T> source, int n)
-        {
-            return source.Skip(Math.Max(0, source.Count() - n));
-        }
-
-        /// <summary>
         ///     Serializes and returns as json the specified object.
         /// </summary>
         /// <param name="obj">The object to serialize.</param>

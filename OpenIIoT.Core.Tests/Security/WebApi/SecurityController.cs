@@ -198,7 +198,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsGet()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
             SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session(User, ticket) }.ToList().AsReadOnly());
@@ -221,7 +221,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsGetCurrent()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
             SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, ticket));
@@ -240,7 +240,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsStart()
         {
-            AuthenticationTicket ticket = new AuthenticationTicket(new ClaimsIdentity(), new AuthenticationProperties());
+            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
             SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>().SetReturnValue(new Session(User, ticket)));

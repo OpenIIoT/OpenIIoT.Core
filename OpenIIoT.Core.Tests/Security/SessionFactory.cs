@@ -105,10 +105,10 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.IsType<SDK.Security.Session>(test);
             Assert.NotNull(test);
             Assert.Equal(128, test.Token.Length);
-            Assert.NotEqual(default(AuthenticationTicket), test.Ticket);
+            Assert.NotEqual(default(SDK.Security.Ticket), test.Ticket);
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Name, "test"));
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
-            Assert.Equal(test.Ticket.Properties.IssuedUtc.Value.AddSeconds(15), test.Ticket.Properties.ExpiresUtc.Value);
+            Assert.Equal(test.Ticket.IssuedUtc.AddSeconds(15), test.Ticket.ExpiresUtc);
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.IsType<SDK.Security.Session>(test);
             Assert.NotNull(test);
             Assert.Equal(128, test.Token.Length);
-            Assert.NotEqual(default(AuthenticationTicket), test.Ticket);
+            Assert.NotEqual(default(SDK.Security.Ticket), test.Ticket);
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Name, string.Empty));
             Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
         }
@@ -167,13 +167,13 @@ namespace OpenIIoT.Core.Tests.Security
             SDK.Security.User user = new SDK.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.ReadWriter);
             SDK.Security.Session test = Factory.CreateSession(user, 150);
 
-            DateTimeOffset initialtime = test.Ticket.Properties.ExpiresUtc.Value;
+            DateTimeOffset? initialtime = test.Ticket.ExpiresUtc;
 
             Factory.ExtendSession(test, 300);
 
-            DateTimeOffset newtime = test.Ticket.Properties.ExpiresUtc.Value;
+            DateTimeOffset? newtime = test.Ticket.ExpiresUtc;
 
-            Assert.True(initialtime < test.Ticket.Properties.ExpiresUtc.Value);
+            Assert.True(initialtime < test.Ticket.ExpiresUtc);
         }
 
         #endregion Public Methods
