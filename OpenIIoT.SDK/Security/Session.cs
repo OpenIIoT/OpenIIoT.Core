@@ -57,7 +57,7 @@ namespace OpenIIoT.SDK.Security
         ///     Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
         /// <param name="user">The User to which the Session belongs.</param>
-        /// <param name="ticket">The AuthenticationTicket for the Session.</param>
+        /// <param name="ticket">The SDK.Security.Ticket for the Session.</param>
         public Session(User user, Ticket ticket)
         {
             User = user;
@@ -87,7 +87,7 @@ namespace OpenIIoT.SDK.Security
         public DateTimeOffset? Issued => Ticket?.IssuedUtc;
 
         /// <summary>
-        ///     Gets the AuthenticationTicket for the Session.
+        ///     Gets the SDK.Security.Ticket for the Session.
         /// </summary>
         [JsonProperty(Order = 6)]
         public Ticket Ticket { get; }

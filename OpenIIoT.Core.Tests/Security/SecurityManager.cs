@@ -320,7 +320,7 @@ namespace OpenIIoT.Core.Tests.Security
             Manager.Start();
 
             IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
-            DateTimeOffset? offset = session.ReturnValue.Ticket.Properties.ExpiresUtc;
+            DateTimeOffset? offset = session.ReturnValue.Ticket.ExpiresUtc;
 
             Assert.Equal(ResultCode.Success, session.ResultCode);
 
@@ -329,7 +329,7 @@ namespace OpenIIoT.Core.Tests.Security
             IResult<SDK.Security.Session> result = Manager.ExtendSession(session.ReturnValue);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.True(result.ReturnValue.Ticket.Properties.ExpiresUtc > offset);
+            Assert.True(result.ReturnValue.Ticket.ExpiresUtc > offset);
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.Equal(ResultCode.Success, session.ResultCode);
 
-            session.ReturnValue.Ticket.Properties.ExpiresUtc = session.ReturnValue.Ticket.Properties.IssuedUtc.Value.AddMinutes(-1);
+            session.ReturnValue.Ticket.ExpiresUtc = session.ReturnValue.Ticket.IssuedUtc.AddMinutes(-1);
 
             IResult<SDK.Security.Session> result = Manager.ExtendSession(session.ReturnValue);
 
@@ -399,7 +399,7 @@ namespace OpenIIoT.Core.Tests.Security
             Manager.Start();
 
             IResult<SDK.Security.Session> session = Manager.StartSession("test", "test");
-            DateTimeOffset? offset = session.ReturnValue.Ticket.Properties.ExpiresUtc;
+            DateTimeOffset? offset = session.ReturnValue.Ticket.ExpiresUtc;
 
             Assert.Equal(ResultCode.Success, session.ResultCode);
 
@@ -565,7 +565,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Manager.CreateUser(name1, "test", "test@test.com", "test", Role.Reader);
             SDK.Security.Session session1 = Manager.StartSession(name1, "test").ReturnValue;
-            session1.Ticket.Properties.ExpiresUtc = session1.Ticket.Properties.IssuedUtc.Value.AddMinutes(-1);
+            session1.Ticket.ExpiresUtc = session1.Ticket.IssuedUtc.AddMinutes(-1);
 
             Assert.True(session1.IsExpired);
 
