@@ -52,23 +52,34 @@ namespace OpenIIoT.SDK.Security
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>.
+        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an issue time equal to the current time, and an expiration time equal to the current time plus the default session length.
         /// </summary>
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
         public Ticket(ClaimsIdentity identity)
-            : this(identity, null)
+            : this(identity, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(SecurityConstants.DefaultSessionLength))
         {
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/> and <paramref name="expiresUtc"/>.
+        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <see cref="identity"/>, an issue time equal to the current time, and an expiration time equal to the current time plus the specified diration, in seconds.
         /// </summary>
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
-        /// <param name="expiresUtc">The time at which the Ticket was issued, in UTC.</param>
-        public Ticket(ClaimsIdentity identity, DateTimeOffset? expiresUtc)
+        /// <param name="duration">The duration of the Ticket, in seconds.</param>
+        public Ticket(ClaimsIdentity identity, int duration)
+            : this(identity, DateTime.UtcNow, DateTime.UtcNow.AddSeconds(duration))
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an issue time <paramref name="issuedUtc"/>, and expiration time <paramref name="expiresUtc"/>.
+        /// </summary>
+        /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
+        /// <param name="issuedUtc">The time at whcih the Ticket was issued, in UTC.</param>
+        /// <param name="expiresUtc">The time at which the Ticket will expire, in UTC.</param>
+        public Ticket(ClaimsIdentity identity, DateTimeOffset issuedUtc, DateTimeOffset? expiresUtc)
         {
             Identity = identity;
-            IssuedUtc = DateTime.UtcNow;
+            IssuedUtc = issuedUtc;
             ExpiresUtc = expiresUtc;
         }
 

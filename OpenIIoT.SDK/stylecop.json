@@ -3,7 +3,7 @@
   "settings": {
     "orderingRules": {
       "systemUsingDirectivesFirst": true,
-      "usingDirectivesPlacement": "outsideNamespace"
+      "usingDirectivesPlacement": "insideNamespace"
     },
     "maintainabilityRules": {
       "topLevelTypes": [ "class", "delegate", "enum", "interface" ]
