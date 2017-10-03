@@ -113,7 +113,7 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets the list of Packages available for installation.
         /// </summary>
-        public IReadOnlyList<Package> Packages => ((List<Package>)PackageList).AsReadOnly();
+        public IReadOnlyList<Package> Packages => ((List<Package>)PackageList)?.AsReadOnly();
 
         #endregion Public Properties
 
