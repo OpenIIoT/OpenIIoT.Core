@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-
 namespace OpenIIoT.SDK
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+
     /// <summary>
     ///     Manages the various subsystem Managers.
     /// </summary>

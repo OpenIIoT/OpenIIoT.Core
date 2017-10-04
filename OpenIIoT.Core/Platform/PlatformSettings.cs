@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.Core.Common;
-
 namespace OpenIIoT.Core.Platform
 {
+    using OpenIIoT.Core.Common;
+
     /// <summary>
     ///     Application settings for the <see cref="Core.Platform"/> namespace, sourced from App.config.
     /// </summary>

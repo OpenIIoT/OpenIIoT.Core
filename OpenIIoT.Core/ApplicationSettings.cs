@@ -48,12 +48,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Reflection;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
-
 namespace OpenIIoT.Core
 {
+    using System.Reflection;
+    using OpenIIoT.Core.Common;
+    using OpenIIoT.SDK;
+
     /// <summary>
     ///     Application settings, sourced from App.config.
     /// </summary>

@@ -57,12 +57,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Security.Claims;
-using Microsoft.Owin.Security;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Security
 {
+    using System.Security.Claims;
+    using Microsoft.Owin.Security;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Security.SessionEventArgs"/> class.
     /// </summary>

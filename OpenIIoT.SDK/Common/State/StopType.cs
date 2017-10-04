@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-
 namespace OpenIIoT.SDK.Common
 {
+    using System;
+
     /// <summary>
     ///     Enumeration of the circumstances under which a Stateful component can stop.
     /// </summary>

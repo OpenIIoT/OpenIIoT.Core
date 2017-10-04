@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-using Utility.OperationResult;
-
 namespace OpenIIoT.SDK.Model
 {
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+
     /// <summary>
     ///     Defines the interface for the Model Manager.
     /// </summary>

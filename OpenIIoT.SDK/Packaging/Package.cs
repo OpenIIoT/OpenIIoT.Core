@@ -39,12 +39,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging.Manifest;
-
 namespace OpenIIoT.SDK.Packaging
 {
+    using System;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Packaging.Manifest;
+
     /// <summary>
     ///     Represents an installable extension archive.
     /// </summary>

@@ -39,24 +39,24 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
-
 namespace OpenIIoT.Core.Platform
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Linq;
+    using System.Security.Cryptography;
+    using System.Text;
+    using System.Text.RegularExpressions;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Discovery;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+    using OpenIIoT.SDK.Platform;
+
     /// <summary>
     ///     The abstract base class from which all Platforms inherit.
     /// </summary>

@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using OpenIIoT.SDK.Common;
-using Utility.OperationResult;
-
 namespace OpenIIoT.SDK.Packaging
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Handles the installation and file management of the Pacakges used to extend the functionality of the application.
     /// </summary>

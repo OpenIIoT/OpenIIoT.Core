@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Net.Http.Formatting;
-using System.Web.Http;
-using Newtonsoft.Json;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-
-namespace OpenIIoT.Core.Service.WebApi
+﻿namespace OpenIIoT.Core.Service.WebApi
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Net.Http.Formatting;
+    using System.Web.Http;
+    using Newtonsoft.Json;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+
     public class ApiBaseController : ApiController
     {
         #region Public Constructors

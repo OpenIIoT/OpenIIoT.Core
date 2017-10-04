@@ -48,26 +48,25 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Security.Claims;
-using System.Web;
-using System.Web.Http;
-using OpenIIoT.Core.Security.WebApi.DTO;
-using OpenIIoT.Core.Service.WebApi;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Security;
-
-using Swashbuckle.Swagger.Annotations;
-using Utility.OperationResult;
-
 namespace OpenIIoT.Core.Security.WebApi
 {
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Headers;
+    using System.Security.Claims;
+    using System.Web;
+    using System.Web.Http;
+    using OpenIIoT.Core.Security.WebApi.DTO;
+    using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Security;
+    using Swashbuckle.Swagger.Annotations;
+
     /// <summary>
     ///     WebAPI Controller for the Security namespace.
     /// </summary>

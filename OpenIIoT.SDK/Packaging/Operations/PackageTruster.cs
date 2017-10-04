@@ -39,15 +39,15 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging.Manifest;
-
 namespace OpenIIoT.SDK.Packaging.Operations
 {
+    using System;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Text;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Packaging.Manifest;
+
     /// <summary>
     ///     Adds a Trust to the <see cref="PackageManifest"/> of Packages.
     /// </summary>

@@ -48,11 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Utility.OperationResult;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Configuration
 {
+    using OpenIIoT.SDK.Common.OperationResult;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Configuration.ConfigurationDefinition"/> class.
     /// </summary>

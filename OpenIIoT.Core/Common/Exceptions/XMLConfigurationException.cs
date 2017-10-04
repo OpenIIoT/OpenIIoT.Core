@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Diagnostics.CodeAnalysis;
-
 namespace OpenIIoT.Core.Common.Exceptions
 {
+    using System;
+    using System.Diagnostics.CodeAnalysis;
+
     /// <summary>
     ///     Represents errors that occur when a Manager fails to stop.
     /// </summary>

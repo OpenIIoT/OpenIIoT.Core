@@ -39,12 +39,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.IO;
-using OpenIIoT.SDK.Common;
-
 namespace OpenIIoT.SDK.Packaging.Operations
 {
+    using System;
+    using System.IO;
+    using OpenIIoT.SDK.Common;
+
     /// <summary>
     ///     Contains methods used to validate arguments for packaging operations.
     /// </summary>

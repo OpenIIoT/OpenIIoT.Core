@@ -48,13 +48,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.IO;
-using System.Net;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
+    using System;
+    using System.IO;
+    using System.Net;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Packaging.Operations.PackageVerifier"/> class.
     /// </summary>

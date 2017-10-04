@@ -48,15 +48,15 @@
                                                                                                 ▀████▀
                                                                                                   ▀▀                            */
 
-using System;
-using System.IO;
-using System.Linq;
-using System.Text;
-using Org.BouncyCastle.Bcpg;
-using Org.BouncyCastle.Bcpg.OpenPgp;
-
 namespace OpenIIoT.SDK.Common
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+    using System.Text;
+    using Org.BouncyCastle.Bcpg;
+    using Org.BouncyCastle.Bcpg.OpenPgp;
+
     /// <summary>
     ///     Provides methods used to sign and verify payloads using PGP public/private key encryption.
     /// </summary>

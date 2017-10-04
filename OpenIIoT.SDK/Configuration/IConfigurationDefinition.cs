@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using Utility.OperationResult;
-
 namespace OpenIIoT.SDK.Configuration
 {
+    using System;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Establishes a common object to represent the configuration details for various application items.
     /// </summary>

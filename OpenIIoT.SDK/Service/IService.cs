@@ -1,7 +1,8 @@
-﻿using Utility.OperationResult;
-
-namespace OpenIIoT.SDK.Service
+﻿namespace OpenIIoT.SDK.Service
 {
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     public interface IService
     {
         #region Public Properties

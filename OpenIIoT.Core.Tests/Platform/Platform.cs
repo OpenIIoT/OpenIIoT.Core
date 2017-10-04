@@ -56,7 +56,7 @@ using System.Linq;
 using Moq;
 using OpenIIoT.SDK.Common.Provider.ItemProvider;
 using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
+using OpenIIoT.SDK.Common.OperationResult;
 using Xunit;
 
 namespace OpenIIoT.Core.Tests.Platform

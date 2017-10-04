@@ -48,16 +48,16 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using Moq;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-using Utility.OperationResult;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using Moq;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Common.Item"/> class.
     /// </summary>

@@ -48,14 +48,14 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.IO;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Bcpg.OpenPgp;
-using Xunit;
-
 namespace OpenIIoT.SDK.Packaging.Tests.Operations
 {
+    using System;
+    using System.IO;
+    using Newtonsoft.Json;
+    using Org.BouncyCastle.Bcpg.OpenPgp;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="Packaging.Operations.PackageTruster"/> class.
     /// </summary>

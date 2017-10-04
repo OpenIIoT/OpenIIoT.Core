@@ -1,8 +1,8 @@
-﻿using System;
-using System.Reflection;
-
-namespace OpenIIoT.SDK.Plugin
+﻿namespace OpenIIoT.SDK.Plugin
 {
+    using System;
+    using System.Reflection;
+
     /// <summary>
     ///     The PluginAssembly class represents a plugin for which the assembly file has been loaded.
     /// </summary>

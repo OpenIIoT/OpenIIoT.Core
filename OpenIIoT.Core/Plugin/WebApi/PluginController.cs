@@ -1,17 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
-using NLog;
-using OpenIIoT.Core.Service.WebApi;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Plugin;
-
-namespace OpenIIoT.Core.Plugin.WebApi
+﻿namespace OpenIIoT.Core.Plugin.WebApi
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Threading.Tasks;
+    using System.Web.Http;
+    using NLog;
+    using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Plugin;
+
     /// <summary>
     ///     Handles the API methods for AppPackages.
     /// </summary>

@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Security
 {
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Security.User"/> class.
     /// </summary>

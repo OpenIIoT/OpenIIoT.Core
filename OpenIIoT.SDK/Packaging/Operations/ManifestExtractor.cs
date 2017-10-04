@@ -39,16 +39,16 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.IO;
-using System.IO.Compression;
-using System.Linq;
-using Newtonsoft.Json;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging.Manifest;
-
 namespace OpenIIoT.SDK.Packaging.Operations
 {
+    using System;
+    using System.IO;
+    using System.IO.Compression;
+    using System.Linq;
+    using Newtonsoft.Json;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Packaging.Manifest;
+
     /// <summary>
     ///     Extracts <see cref="PackageManifest"/> objects from Packages.
     /// </summary>

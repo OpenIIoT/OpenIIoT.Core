@@ -48,12 +48,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using OpenIIoT.SDK.Packaging.Manifest;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Packaging
 {
+    using System;
+    using OpenIIoT.SDK.Packaging.Manifest;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Packaging.Package"/> class.
     /// </summary>

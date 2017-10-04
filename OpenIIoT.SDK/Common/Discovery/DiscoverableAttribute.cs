@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-
 namespace OpenIIoT.SDK.Common.Discovery
 {
+    using System;
+
     /// <summary>
     ///     Identifies classes and properties intended to be traversed by a <see cref="Discoverer"/>.
     /// </summary>

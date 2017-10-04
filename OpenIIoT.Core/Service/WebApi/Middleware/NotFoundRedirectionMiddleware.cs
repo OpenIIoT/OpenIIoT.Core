@@ -48,17 +48,17 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Owin;
-using NLog.xLogger;
-using System.Diagnostics;
-using System.Linq;
-using System.Collections.Generic;
-
 namespace OpenIIoT.Core.Service.WebApi
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.Owin;
+    using NLog.xLogger;
+
     /// <summary>
     ///     Owin middleware for 404 redirection.
     /// </summary>

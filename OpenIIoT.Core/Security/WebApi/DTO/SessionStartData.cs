@@ -39,11 +39,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Newtonsoft.Json;
-using OpenIIoT.SDK.Security;
-
 namespace OpenIIoT.Core.Security.WebApi.DTO
 {
+    using System.ComponentModel.DataAnnotations;
+    using Newtonsoft.Json;
+    using OpenIIoT.SDK.Security;
+
     /// <summary>
     ///     Data Transfer Object used when starting a <see cref="Session"/>.
     /// </summary>
@@ -55,12 +56,14 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         ///     Gets or sets the <see cref="User"/><see cref="User.Name"/> with which to start the <see cref="Session"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
+        [Required]
         public string Name { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/> password with which to start the <see cref="Session"/>.
         /// </summary>
         [JsonProperty(Order = 2)]
+        [Required]
         public string Password { get; set; }
 
         #endregion Public Properties

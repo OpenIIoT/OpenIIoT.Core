@@ -39,16 +39,16 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
-using OpenIIoT.Core.Common.Exceptions;
-
 namespace OpenIIoT.Core.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel;
+    using System.Diagnostics.CodeAnalysis;
+    using System.Linq;
+    using System.Reflection;
+    using OpenIIoT.Core.Common.Exceptions;
+
     /// <summary>
     ///     Application settings, sourced from App.config.
     /// </summary>

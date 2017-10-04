@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using Utility.OperationResult;
-
 namespace OpenIIoT.SDK.Common
 {
+    using System;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Defines the interface for Stateful components.
     /// </summary>

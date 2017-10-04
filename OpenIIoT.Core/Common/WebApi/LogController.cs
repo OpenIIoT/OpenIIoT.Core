@@ -1,13 +1,13 @@
-﻿using System.Net;
-using System.Net.Http;
-using System.Web.Http;
-using NLog;
-using NLog.RealtimeLogger;
-using OpenIIoT.Core.Service.WebApi;
-using OpenIIoT.SDK;
-
-namespace OpenIIoT.Core.Common.WebApi
+﻿namespace OpenIIoT.Core.Common.WebApi
 {
+    using System.Net;
+    using System.Net.Http;
+    using System.Web.Http;
+    using NLog;
+    using NLog.RealtimeLogger;
+    using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.SDK;
+
     public class LogController : ApiBaseController
     {
         #region Private Fields

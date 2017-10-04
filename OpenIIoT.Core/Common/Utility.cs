@@ -39,14 +39,14 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using OpenIIoT.SDK.Common;
-using Utility.BigFont;
-
+    using Utility.BigFont;
 namespace OpenIIoT.Core
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using OpenIIoT.SDK.Common;
+
     /// <summary>
     ///     Contains miscellaneous static methods.
     /// </summary>

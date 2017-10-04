@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Packaging.Manifest
 {
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Packaging.Manifest.PackageManifestFile"/> class.
     /// </summary>

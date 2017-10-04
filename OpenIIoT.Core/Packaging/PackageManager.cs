@@ -39,24 +39,24 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging;
-using OpenIIoT.SDK.Packaging.Manifest;
-using OpenIIoT.SDK.Packaging.Operations;
-using OpenIIoT.SDK.Platform;
-using Utility.OperationResult;
-
 namespace OpenIIoT.Core.Packaging
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.Core.Common;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
+    using OpenIIoT.SDK.Packaging.Operations;
+    using OpenIIoT.SDK.Platform;
+
     /// <summary>
     ///     Handles the installation and file management of the Packages used to extend the functionality of the application.
     /// </summary>

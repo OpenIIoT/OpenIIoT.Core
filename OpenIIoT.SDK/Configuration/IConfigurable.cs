@@ -39,10 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Utility.OperationResult;
-
 namespace OpenIIoT.SDK.Configuration
 {
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Defines the interface for Configurable objects.
     /// </summary>

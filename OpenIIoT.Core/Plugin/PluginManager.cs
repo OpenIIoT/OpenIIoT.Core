@@ -39,25 +39,25 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Plugin;
-using OpenIIoT.SDK.Plugin.Connector;
-using OpenIIoT.SDK.Plugin.Endpoint;
-using Utility.OperationResult;
-
 namespace OpenIIoT.Core.Plugin
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.Core.Common;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Discovery;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Configuration;
+    using OpenIIoT.SDK.Platform;
+    using OpenIIoT.SDK.Plugin;
+    using OpenIIoT.SDK.Plugin.Connector;
+    using OpenIIoT.SDK.Plugin.Endpoint;
+
     /// <summary>
     ///     Represents and manages the Plugin subsystem.
     /// </summary>

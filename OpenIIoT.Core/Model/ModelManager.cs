@@ -39,25 +39,25 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Discovery;
-using OpenIIoT.SDK.Common.Provider;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Model;
-using OpenIIoT.SDK.Plugin;
-using Utility.OperationResult;
-
 namespace OpenIIoT.Core.Model
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using Newtonsoft.Json;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.Core.Common;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Discovery;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+    using OpenIIoT.SDK.Configuration;
+    using OpenIIoT.SDK.Model;
+    using OpenIIoT.SDK.Plugin;
+
     /// <summary>
     ///     The ModelManager class manages the Model for the application.
     ///     TODO: pull the model stuff out into Model

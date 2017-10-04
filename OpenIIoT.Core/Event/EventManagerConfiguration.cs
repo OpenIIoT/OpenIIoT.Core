@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-
-namespace OpenIIoT.Core.Event
+﻿namespace OpenIIoT.Core.Event
 {
+    using System.Collections.Generic;
+
     public class EventManagerConfiguration
     {
         public EventManagerConfiguration()

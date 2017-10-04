@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
     /// <summary>
     ///     Defines the interface for Item Providers; classes capable of providing <see cref="Item"/> objects for use in the
     ///     application <see cref="Model"/>.

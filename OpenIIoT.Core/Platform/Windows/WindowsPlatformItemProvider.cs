@@ -48,15 +48,15 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading.Tasks;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-
 namespace OpenIIoT.Core.Platform.Windows
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+
     /// <summary>
     ///     Provides Platform statistics and metrics for the Windows Platform on which the application is run.
     /// </summary>

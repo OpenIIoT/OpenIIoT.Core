@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.IO;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Packaging.Manifest;
-
 namespace OpenIIoT.SDK.Packaging.Operations
 {
+    using System;
+    using System.IO;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Packaging.Manifest;
+
     /// <summary>
     ///     Generates and populates <see cref="PackageManifest"/> objects.
     /// </summary>

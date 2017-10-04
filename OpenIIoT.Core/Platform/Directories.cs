@@ -39,16 +39,16 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Platform;
-
 namespace OpenIIoT.Core.Platform
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Reflection;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Platform;
+
     /// <summary>
     ///     Encapsulates the filesystem directories needed to run the application.
     /// </summary>

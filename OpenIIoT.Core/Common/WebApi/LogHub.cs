@@ -1,14 +1,14 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
-using Newtonsoft.Json;
-using NLog;
-using NLog.RealtimeLogger;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Service.WebApi;
-
-namespace OpenIIoT.Core.Common.WebApi
+﻿namespace OpenIIoT.Core.Common.WebApi
 {
+    using System;
+    using System.Threading.Tasks;
+    using Microsoft.AspNet.SignalR;
+    using Newtonsoft.Json;
+    using NLog;
+    using NLog.RealtimeLogger;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Service.WebApi;
+
     /// <summary>
     ///     The LogHub provides realtime read access to logs.
     /// </summary>

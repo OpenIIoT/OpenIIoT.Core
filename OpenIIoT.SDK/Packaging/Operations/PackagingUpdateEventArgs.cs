@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-
 namespace OpenIIoT.SDK.Packaging.Operations
 {
+    using System;
+
     /// <summary>
     ///     Event arguments for the <see cref="PackagingOperation.Updated"/> event.
     /// </summary>

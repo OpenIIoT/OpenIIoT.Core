@@ -57,11 +57,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Common;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Common
 {
+    using OpenIIoT.SDK.Common;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Common.StateChangedEventArgs"/> class.
     /// </summary>

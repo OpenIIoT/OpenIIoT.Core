@@ -39,11 +39,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Newtonsoft.Json;
-using OpenIIoT.SDK.Security;
-
 namespace OpenIIoT.Core.Security.WebApi.DTO
 {
+    using Newtonsoft.Json;
+    using OpenIIoT.SDK.Security;
+
     /// <summary>
     ///     Data Transfer Object used when updating a <see cref="User"/> object.
     /// </summary>

@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using OpenIIoT.SDK.Plugin.Connector;
-using Utility.OperationResult;
-
 namespace OpenIIoT.SDK.Common.Provider.ItemProvider
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Plugin.Connector;
+
     /// <summary>
     ///     Defines the interface for Connector Plugins which are capable of producing unsolicited value updates to configured Items.
     /// </summary>

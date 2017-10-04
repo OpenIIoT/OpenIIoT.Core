@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using OpenIIoT.SDK.Common.Exceptions;
-using Utility.OperationResult;
-
 namespace OpenIIoT.SDK.Configuration
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+
     /// <summary>
     ///     Maintains a registry of Types implementing the IConfigurable interface.
     /// </summary>

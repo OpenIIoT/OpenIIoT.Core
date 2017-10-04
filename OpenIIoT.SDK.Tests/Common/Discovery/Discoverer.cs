@@ -48,13 +48,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using OpenIIoT.SDK.Common.Discovery;
-using Xunit;
-
 namespace OpenIIoT.SDK.Tests.Common.Discovery
 {
+    using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
+    using OpenIIoT.SDK.Common.Discovery;
+    using Xunit;
+
     /// <summary>
     ///     Defines the interface used for the DiscoverableChild class.
     /// </summary>

@@ -107,6 +107,9 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
+    <Compile Include="Common\OperationResult\MessageTests.cs" />
+    <Compile Include="Common\OperationResult\ResultOfTTests.cs" />
+    <Compile Include="Common\OperationResult\ResultTests.cs" />
     <Compile Include="Common\PGPSignature.cs" />
     <Compile Include="Common\Provider\ItemProvider\ItemProvider.cs" />
     <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />

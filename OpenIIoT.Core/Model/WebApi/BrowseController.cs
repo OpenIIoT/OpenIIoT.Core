@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Web.Http;
-using NLog;
-using OpenIIoT.Core.Service.WebApi;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Model;
-
-namespace OpenIIoT.Core.Model.WebApi
+﻿namespace OpenIIoT.Core.Model.WebApi
 {
+    using System.Collections.Generic;
+    using System.Net;
+    using System.Net.Http;
+    using System.Net.Http.Formatting;
+    using System.Web.Http;
+    using NLog;
+    using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Model;
+
     public class BrowseController : ApiBaseController
     {
         #region Private Fields

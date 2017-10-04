@@ -39,18 +39,18 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using NLog;
-using NLog.xLogger;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Configuration;
-using Utility.OperationResult;
-
 namespace OpenIIoT.Core.Configuration
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using NLog;
+    using NLog.xLogger;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Configuration;
+
     /// <summary>
     ///     Maintains a registry of Types implementing the <see cref="IConfigurable{T}"/> interface.
     /// </summary>

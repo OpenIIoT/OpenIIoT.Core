@@ -1,8 +1,8 @@
-﻿using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-
-namespace OpenIIoT.SDK.Plugin
+﻿namespace OpenIIoT.SDK.Plugin
 {
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+
     /// <summary>
     ///     Defines the interface for PluginInstance objects.
     /// </summary>

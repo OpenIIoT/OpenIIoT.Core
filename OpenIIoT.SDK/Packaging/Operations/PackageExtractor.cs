@@ -39,12 +39,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.IO;
-using System.IO.Compression;
-
 namespace OpenIIoT.SDK.Packaging.Operations
 {
+    using System;
+    using System.IO;
+    using System.IO.Compression;
+
     /// <summary>
     ///     Extracts Package files.
     /// </summary>

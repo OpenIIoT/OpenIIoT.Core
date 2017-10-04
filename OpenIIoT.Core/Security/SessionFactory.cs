@@ -39,14 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Security.Claims;
-using Microsoft.Owin.Security;
-using NLog.xLogger;
-using OpenIIoT.SDK.Security;
-
 namespace OpenIIoT.Core.Security
 {
+    using System;
+    using System.Security.Claims;
+    using NLog.xLogger;
+    using OpenIIoT.SDK.Security;
+
     /// <summary>
     ///     Creates and extends <see cref="Session"/> s.
     /// </summary>
@@ -88,9 +87,7 @@ namespace OpenIIoT.Core.Security
 
             identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
 
-            DateTimeOffset? expires = DateTime.UtcNow.AddSeconds(sessionLength);
-
-            Ticket ticket = new Ticket(identity, expires);
+            Ticket ticket = new Ticket(identity, sessionLength);
 
             retVal = new Session(user, ticket);
 

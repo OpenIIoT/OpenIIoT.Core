@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNet.SignalR;
-using Newtonsoft.Json;
-using NLog;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Model;
-using OpenIIoT.SDK.Service.WebApi;
-
-namespace OpenIIoT.Core.Model.WebApi
+﻿namespace OpenIIoT.Core.Model.WebApi
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
+    using Microsoft.AspNet.SignalR;
+    using Newtonsoft.Json;
+    using NLog;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Model;
+    using OpenIIoT.SDK.Service.WebApi;
+
     /// <summary>
     ///     The ItemHub provides realtime data access to Model Items.
     /// </summary>

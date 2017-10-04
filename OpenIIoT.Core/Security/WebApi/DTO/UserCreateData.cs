@@ -39,11 +39,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Newtonsoft.Json;
-using OpenIIoT.SDK.Security;
-
 namespace OpenIIoT.Core.Security.WebApi.DTO
 {
+    using System.ComponentModel.DataAnnotations;
+    using Newtonsoft.Json;
+    using OpenIIoT.SDK.Security;
+
     /// <summary>
     ///     Data Transfer Object used when creating a <see cref="User"/> object.
     /// </summary>
@@ -55,30 +56,35 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
         [JsonProperty(Order = 2)]
+        [Required]
         public string DisplayName { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
         /// </summary>
         [JsonProperty(Order = 3)]
+        [Required]
         public string Email { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Name"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
+        [Required]
         public string Name { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/> password.
         /// </summary>
         [JsonProperty(Order = 5)]
+        [Required]
         public string Password { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
         /// </summary>
         [JsonProperty(Order = 4)]
+        [Required]
         public Role Role { get; set; }
 
         #endregion Public Properties

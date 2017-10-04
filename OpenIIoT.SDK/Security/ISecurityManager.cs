@@ -39,14 +39,14 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Provider.EventProvider;
-using Utility.OperationResult;
-
 namespace OpenIIoT.SDK.Security
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.EventProvider;
+
     /// <summary>
     ///     Manages the security subsystem.
     /// </summary>
