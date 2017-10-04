@@ -17,6 +17,7 @@
     using OpenIIoT.SDK.Service.WebApi;
     using Owin;
     using Swashbuckle.Application;
+    using System.Net.Http.Formatting;
 
     public class OwinStartup
     {
