@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Annotates a controller with a WebRoot-prepended route prefix that applies to all actions within the controller.
+      █  Prepends the configured WebRoot route to all actions within a controller.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -52,9 +52,10 @@ namespace OpenIIoT.Core.Service.WebApi
 {
     using System.Web.Http;
     using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Service;
 
     /// <summary>
-    ///     Annotates a controller with a WebRoot-prepended route prefix that applies to all actions within the controller.
+    ///     Prepends the configured WebRoot route to all actions within a controller.
     /// </summary>
     public class WebApiRoutePrefixAttribute : RoutePrefixAttribute
     {
@@ -80,7 +81,7 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             get
             {
-                string root = WebApiService.StaticConfiguration.Root.TrimEnd('/');
+                string root = WebApiService.GetConfiguration().Root.TrimEnd('/');
                 return $"{root}/{WebApiConstants.ApiRoutePrefix}/{base.Prefix}".TrimStart('/');
             }
         }

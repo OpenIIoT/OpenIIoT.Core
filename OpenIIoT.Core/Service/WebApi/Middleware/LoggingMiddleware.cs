@@ -56,6 +56,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using System.Threading.Tasks;
     using Microsoft.Owin;
     using NLog.xLogger;
+    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin middleeware for HTTP request and response logging.
@@ -77,10 +78,13 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
         ///     Initializes a new instance of the <see cref="LoggingMiddleware"/> class.
         /// </summary>
         /// <param name="next">The middlware component which follows.</param>
-        public LoggingMiddleware(OwinMiddleware next)
+        public LoggingMiddleware(OwinMiddleware next, WebApiServiceConfiguration configuration)
         : base(next)
         {
+            Configuration = configuration;
         }
+
+        private WebApiServiceConfiguration Configuration { get; set; }
 
         /// <summary>
         ///     Invokes the middleware function and transfers execution to the next middleware component.
@@ -99,7 +103,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             if (logger.IsInfoEnabled)
             {
                 string logString = GetLogString(context, benchmark.Elapsed);
-                PathString apiPathString = new PathString("/" + (WebApiService.StaticConfiguration.Root + "/" + WebApiConstants.ApiRoutePrefix).Trim('/'));
+                PathString apiPathString = new PathString("/" + (Configuration.Root + "/" + WebApiConstants.ApiRoutePrefix).Trim('/'));
 
                 if (context.Request.Path.StartsWithSegments(apiPathString))
                 {

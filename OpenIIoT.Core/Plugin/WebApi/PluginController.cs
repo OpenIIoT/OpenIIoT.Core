@@ -27,7 +27,7 @@
         /// <summary>
         ///     The default serialization properties for an AppPackage.
         /// </summary>
-        private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { "Files" });
+        private static string[] pluginPackageSerializationProperties = new[] { "Files" };
 
         /// <summary>
         ///     The ApplicationManager for the application.

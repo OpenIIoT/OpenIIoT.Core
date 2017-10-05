@@ -53,7 +53,6 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.Owin;
@@ -61,6 +60,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using NLog.xLogger;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Security;
+    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.
@@ -82,14 +82,17 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
         ///     Initializes a new instance of the <see cref="AuthenticationMiddleware"/> class.
         /// </summary>
         /// <param name="next">The next middleware in the chain.</param>
-        public AuthenticationMiddleware(OwinMiddleware next)
+        public AuthenticationMiddleware(OwinMiddleware next, WebApiServiceConfiguration configuration)
             : base(next)
         {
+            Configuration = configuration;
         }
 
         #endregion Public Constructors
 
         #region Private Properties
+
+        private WebApiServiceConfiguration Configuration { get; set; }
 
         private IApplicationManager Manager => ApplicationManager.GetInstance();
 
@@ -194,16 +197,30 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             return retVal;
         }
 
+        /// <summary>
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
         private PathString GetPathString(string path)
         {
-            return new PathString("/" + (WebApiService.StaticConfiguration.Root + "/" + path).Trim('/'));
+            return new PathString("/" + (Configuration.Root + "/" + path).Trim('/'));
         }
 
+        /// <summary>
+        ///     Retrieves the <see cref="Session.Token"/> from the specified <see cref="IOwinRequest"/>.
+        /// </summary>
+        /// <param name="request">The request to examine.</param>
+        /// <returns>The <see cref="Session.Token"/>, if present.</returns>
         private string GetSessionToken(IOwinRequest request)
         {
             return request.Cookies[WebApiConstants.SessionTokenCookieName];
         }
 
+        /// <summary>
+        ///     Determines whether the specified <see cref="IOwinRequest"/> is authenticated.
+        /// </summary>
+        /// <param name="request">The request to examine.</param>
+        /// <returns>A value indicating whether the request is authenticated.</returns>
         private bool IsAuthenticated(IOwinRequest request)
         {
             return request.User != default(ClaimsPrincipal);

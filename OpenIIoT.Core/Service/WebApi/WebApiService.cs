@@ -1,32 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Web.Http;
-using Microsoft.AspNet.SignalR;
-using Microsoft.Owin.Hosting;
-using NLog;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Service;
-using OpenIIoT.SDK.Service.WebApi;
-using OpenIIoT.SDK.Common.OperationResult;
-using NLog.xLogger;
-
-[module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleType", Justification = "Reviewed.")]
-
-namespace OpenIIoT.Core.Service.WebApi
+﻿namespace OpenIIoT.Core.Service.WebApi
 {
+    using System;
+    using System.Collections.Generic;
+    using Microsoft.AspNet.SignalR;
+    using Microsoft.Owin.Hosting;
+    using NLog.xLogger;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Configuration;
+    using OpenIIoT.SDK.Service;
+    using OpenIIoT.SDK.Service.WebApi;
+
     public class WebApiService : IService, IConfigurable<WebApiServiceConfiguration>
     {
-        #region Internal Fields
-
-        /// <summary>
-        ///     The configuration for this Service.
-        /// </summary>
-        /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
-        private static WebApiServiceConfiguration configuration;
-
-        #endregion Internal Fields
-
         #region Private Fields
 
         private static WebApiService instance;
@@ -34,6 +19,12 @@ namespace OpenIIoT.Core.Service.WebApi
         private static xLogger logger = xLogManager.GetCurrentClassxLogger();
 
         private static IDisposable server;
+
+        /// <summary>
+        ///     The configuration for this Service.
+        /// </summary>
+        /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
+        private static WebApiServiceConfiguration staticConfiguration;
 
         private ApplicationManager manager;
 
@@ -45,17 +36,13 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             this.manager = manager;
             Hubs = new Dictionary<string, Hub>();
-            ApiControllers = new Dictionary<string, ApiController>();
         }
 
         #endregion Private Constructors
 
         #region Public Properties
 
-        public Dictionary<string, ApiController> ApiControllers { get; private set; }
-
         public WebApiServiceConfiguration Configuration { get; private set; }
-
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
 
         public Dictionary<string, Hub> Hubs { get; private set; }
@@ -66,27 +53,9 @@ namespace OpenIIoT.Core.Service.WebApi
 
         #endregion Public Properties
 
-        #region Internal Properties
-
-        /// <summary>
-        ///     Provies configuration accessibility to the Owin startup class.
-        /// </summary>
-        internal static WebApiServiceConfiguration StaticConfiguration
-        {
-            get
-            {
-                return configuration;
-            }
-
-            set
-            {
-                configuration = value;
-            }
-        }
-
-        #endregion Internal Properties
-
         #region Public Methods
+
+        public static WebApiServiceConfiguration GetConfiguration() => staticConfiguration;
 
         public static IConfigurationDefinition GetConfigurationDefinition()
         {
@@ -141,13 +110,13 @@ namespace OpenIIoT.Core.Service.WebApi
         public IResult Configure(WebApiServiceConfiguration configuration)
         {
             Configuration = configuration;
-            StaticConfiguration = Configuration;
+            staticConfiguration = Configuration;
+
             return new Result();
         }
 
         public IResult SaveConfiguration()
         {
-            StaticConfiguration = Configuration;
             return manager.GetManager<IConfigurationManager>().Configuration.UpdateInstance(this.GetType(), Configuration);
         }
 
@@ -161,7 +130,7 @@ namespace OpenIIoT.Core.Service.WebApi
 
             try
             {
-                server = WebApp.Start<OwinStartup>(URL);
+                server = WebApp.Start<Startup>(URL);
                 logger.Info("Web server listening at '" + URL + "/" + Configuration.Root + "'.");
                 logger.Info("The Web server was started successfully.");
             }

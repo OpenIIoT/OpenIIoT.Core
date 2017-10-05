@@ -1,4 +1,45 @@
-﻿namespace OpenIIoT.Core.Service.WebApi
+﻿/*
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
+      █
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀      ██      ▄█████     █████     ██    ██   █     █████▄
+      █     ███        ▀███████▄   ██   ██   ██  ██ ▀███████▄ ██   ██   ██   ██
+      █   ▀███████████     ██  ▀   ██   ██  ▄██▄▄█▀     ██  ▀ ██   ██   ██   ██
+      █            ███     ██    ▀████████ ▀███████     ██    ██   ██ ▀██████▀
+      █      ▄█    ███     ██      ██   ██   ██  ██     ██    ██   ██   ██
+      █    ▄████████▀     ▄██▀     ██   █▀   ██  ██    ▄██▀   ██████   ▄███▀
+      █
+ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
+ █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
+      ▄
+      █  The Owin startup class.
+      █
+      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
+      █  The GNU Affero General Public License (GNU AGPL)
+      █
+      █  Copyright (C) 2016-2017 JP Dillingham (jp@dillingham.ws)
+      █
+      █  This program is free software: you can redistribute it and/or modify
+      █  it under the terms of the GNU Affero General Public License as published by
+      █  the Free Software Foundation, either version 3 of the License, or
+      █  (at your option) any later version.
+      █
+      █  This program is distributed in the hope that it will be useful,
+      █  but WITHOUT ANY WARRANTY; without even the implied warranty of
+      █  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      █  GNU Affero General Public License for more details.
+      █
+      █  You should have received a copy of the GNU Affero General Public License
+      █  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+      █
+      ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀  ▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀██
+                                                                                                   ██
+                                                                                               ▀█▄ ██ ▄█▀
+                                                                                                 ▀████▀
+                                                                                                   ▀▀                            */
+
+namespace OpenIIoT.Core.Service.WebApi
 {
     using System.Linq;
     using System.Net.Http;
@@ -10,16 +51,18 @@
     using Microsoft.Owin.Cors;
     using Microsoft.Owin.FileSystems;
     using Microsoft.Owin.StaticFiles;
-    using OpenIIoT.Core.Platform;
     using OpenIIoT.Core.Service.WebApi.Middleware;
+    using OpenIIoT.Core.Service.WebApi.Swagger;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Platform;
     using OpenIIoT.SDK.Service.WebApi;
     using Owin;
     using Swashbuckle.Application;
-    using System.Net.Http.Formatting;
 
-    public class OwinStartup
+    /// <summary>
+    ///     The <see cref="Owin"/> startup class.
+    /// </summary>
+    public class Startup
     {
         #region Private Fields
 
@@ -27,17 +70,15 @@
 
         #endregion Private Fields
 
-        #region Private Properties
 
-        private WebApiServiceConfiguration WebServiceConfiguration { get; set; }
-
-        #endregion Private Properties
 
         #region Public Methods
 
         public void Configuration(IAppBuilder app)
         {
-            string webRoot = WebApiService.StaticConfiguration.Root.TrimStart('/').TrimEnd('/');
+            WebApiServiceConfiguration configuration = WebApiService.GetConfiguration();
+
+            string webRoot = configuration.Root.TrimStart('/').TrimEnd('/');
 
             // openiiot/signalr openiiot/help openiiot/help/docs/ openiiot/help/ui openiiot/help/ui/index openiiot/api/
 
@@ -47,11 +88,11 @@
             string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
             string helpShortcut = $"{helpPath}/ui/index";
 
-            app.Use(typeof(LoggingMiddleware));
-            app.Use(typeof(NotFoundRedirectionMiddleware));
+            app.Use(typeof(LoggingMiddleware), configuration);
+            app.Use(typeof(NotFoundRedirectionMiddleware), configuration);
 
             app.UseCors(CorsOptions.AllowAll);
-            app.Use(typeof(AuthenticationMiddleware));
+            app.Use(typeof(AuthenticationMiddleware), configuration);
 
             app.MapSignalR(signalRPath, new HubConfiguration());
 
@@ -70,8 +111,8 @@
                 .EnableSwaggerUi(swaggerUiPath, c =>
                 {
                     Assembly containingAssembly = Assembly.GetExecutingAssembly();
-                    c.CustomAsset("index", containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.index.html");
-                    c.InjectStylesheet(containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.style.css");
+                    c.CustomAsset("index", containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.Content.index.html");
+                    c.InjectStylesheet(containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.Content.style.css");
                     c.EnableApiKeySupport(WebApiConstants.ApiKeyHeaderName, "header");
                     c.DisableValidator();
                 });

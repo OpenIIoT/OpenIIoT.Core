@@ -1,11 +1,5 @@
-﻿namespace OpenIIoT.SDK.Service.WebApi
+﻿namespace OpenIIoT.Core.Service.WebApi
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
-
     public class WebApiServiceConfiguration
     {
         #region Public Properties

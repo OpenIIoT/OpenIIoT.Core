@@ -253,10 +253,11 @@
     <Compile Include="Service\WebApi\ModelValidation\ValidateModelAttribute.cs" />
     <Compile Include="Service\WebApi\WebApiRoutePrefixAttribute.cs" />
     <Compile Include="Service\WebApi\Middleware\LoggingMiddleware.cs" />
-    <Compile Include="Service\WebApi\MimeTypesOperationFilter.cs" />
-    <Compile Include="Service\WebApi\OwinStartup.cs" />
+    <Compile Include="Service\WebApi\Swagger\MimeTypesOperationFilter.cs" />
+    <Compile Include="Service\WebApi\Startup.cs" />
     <Compile Include="Service\WebApi\WebApiConstants.cs" />
     <Compile Include="Service\WebApi\WebApiService.cs" />
+    <Compile Include="Service\WebApi\WebApiServiceConfiguration.cs" />
     <Compile Include="WindowsService.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -298,10 +299,10 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Service\WebApi\Swagger\index.html" />
+    <EmbeddedResource Include="Service\WebApi\Swagger\Content\index.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Service\WebApi\Swagger\style.css" />
+    <EmbeddedResource Include="Service\WebApi\Swagger\Content\style.css" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\OpenIIoT.SDK\OpenIIoT.SDK.csproj">

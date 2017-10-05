@@ -58,6 +58,7 @@ namespace OpenIIoT.Core.Service.WebApi
     using System.Threading.Tasks;
     using Microsoft.Owin;
     using NLog.xLogger;
+    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin middleware for 404 redirection.
@@ -79,10 +80,13 @@ namespace OpenIIoT.Core.Service.WebApi
         ///     Initializes a new instance of the <see cref="NotFoundRedirectionMiddleware"/> class.
         /// </summary>
         /// <param name="next">The middlware component which follows.</param>
-        public NotFoundRedirectionMiddleware(OwinMiddleware next)
+        public NotFoundRedirectionMiddleware(OwinMiddleware next, WebApiServiceConfiguration configuration)
         : base(next)
         {
+            Configuration = configuration;
         }
+
+        private WebApiServiceConfiguration Configuration { get; set; }
 
         /// <summary>
         ///     Invokes the middleware function and transfers execution to the next middleware component.
@@ -105,7 +109,7 @@ namespace OpenIIoT.Core.Service.WebApi
 
         private PathString GetPathString(string path)
         {
-            return new PathString("/" + (WebApiService.StaticConfiguration.Root + "/" + path).Trim('/'));
+            return new PathString("/" + (Configuration.Root + "/" + path).Trim('/'));
         }
 
         private bool IsRedirectSuppressedRoute(PathString route)
