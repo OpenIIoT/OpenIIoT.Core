@@ -250,7 +250,6 @@
     <Compile Include="Service\WebApi\ModelValidation\ModelValidationResult.cs" />
     <Compile Include="Service\WebApi\Middleware\AuthenticationMiddleware.cs" />
     <Compile Include="Service\WebApi\Middleware\NotFoundRedirectionMiddleware.cs" />
-    <Compile Include="Service\WebApi\ModelValidation\NullOrNonEmptyAttribute.cs" />
     <Compile Include="Service\WebApi\ModelValidation\ValidateModelAttribute.cs" />
     <Compile Include="Service\WebApi\WebApiRoutePrefixAttribute.cs" />
     <Compile Include="Service\WebApi\Middleware\LoggingMiddleware.cs" />
