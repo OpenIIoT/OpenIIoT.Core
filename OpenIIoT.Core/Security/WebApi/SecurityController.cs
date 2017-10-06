@@ -64,7 +64,7 @@ namespace OpenIIoT.Core.Security.WebApi
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Security;
-    using OpenIIoT.SDK.Service.WebApi.ModelValidation;
+    using OpenIIoT.Core.Service.WebApi.ModelValidation;
     using Swashbuckle.Swagger.Annotations;
 
     /// <summary>
