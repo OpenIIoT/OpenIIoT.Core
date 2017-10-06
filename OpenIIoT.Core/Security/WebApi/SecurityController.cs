@@ -51,7 +51,6 @@
 namespace OpenIIoT.Core.Security.WebApi
 {
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
@@ -65,9 +64,8 @@ namespace OpenIIoT.Core.Security.WebApi
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Security;
+    using OpenIIoT.SDK.Service.WebApi.ModelValidation;
     using Swashbuckle.Swagger.Annotations;
-    using System.Web.Http.ModelBinding;
-    using OpenIIoT.Core.Service.WebApi.ModelValidation;
 
     /// <summary>
     ///     WebAPI Controller for the Security namespace.

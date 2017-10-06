@@ -3,17 +3,17 @@
       █
       █      ▄▄▄▄███▄▄▄▄                                         ▄█    █▄                                                                              ▄████████
       █    ▄██▀▀▀███▀▀▀██▄                                      ███    ███                                                                            ███    ███
-      █    ███   ███   ███  ██████  ██████▄     ▄█████  █       ███    ███   ▄█████   █        █  ██████▄    ▄█████      ██     █   ██████  ██▄▄▄▄   ▄███▄▄▄▄██▀    ▄█████   ▄█████ ██   █   █           ██
-      █    ███   ███   ███ ██    ██ ██   ▀██   ██   █  ██       ███    ███   ██   ██ ██       ██  ██   ▀██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄ ▀▀███▀▀▀▀▀     ██   █    ██  ▀  ██   ██ ██       ▀███████▄
-      █    ███   ███   ███ ██    ██ ██    ██  ▄██▄▄    ██       ███    ███   ██   ██ ██       ██▌ ██    ██   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀███████████  ▄██▄▄      ██     ██   ██ ██           ██  ▀
-      █    ███   ███   ███ ██    ██ ██    ██ ▀▀██▀▀    ██       ███    ███ ▀████████ ██       ██  ██    ██ ▀████████     ██    ██  ██    ██ ██   ██   ███    ███ ▀▀██▀▀    ▀███████ ██   ██ ██           ██
-      █    ███   ███   ███ ██    ██ ██   ▄██   ██   █  ██▌    ▄  ██▄  ▄██    ██   ██ ██▌    ▄ ██  ██   ▄██   ██   ██     ██    ██  ██    ██ ██   ██   ███    ███   ██   █     ▄  ██ ██   ██ ██▌    ▄     ██
-      █     ▀█   ███   █▀   ██████  ██████▀    ███████ ████▄▄██   ▀████▀     ██   █▀ ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █    ███    ███   ███████  ▄████▀  ██████  ████▄▄██    ▄██▀
+      █    ███   ███   ███  ██████  ██████▄     ▄█████  █       ███    ███   ▄█████   █        █  ██████▄    ▄█████      ██     █   ██████  ██▄▄▄▄    ███    █▀   █     ▄█████  █       ██████▄
+      █    ███   ███   ███ ██    ██ ██   ▀██   ██   █  ██       ███    ███   ██   ██ ██       ██  ██   ▀██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄  ▄███▄▄▄     ██    ██   █  ██       ██   ▀██
+      █    ███   ███   ███ ██    ██ ██    ██  ▄██▄▄    ██       ███    ███   ██   ██ ██       ██▌ ██    ██   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀▀███▀▀▀     ██▌  ▄██▄▄    ██       ██    ██
+      █    ███   ███   ███ ██    ██ ██    ██ ▀▀██▀▀    ██       ███    ███ ▀████████ ██       ██  ██    ██ ▀████████     ██    ██  ██    ██ ██   ██   ███        ██  ▀▀██▀▀    ██       ██    ██
+      █    ███   ███   ███ ██    ██ ██   ▄██   ██   █  ██▌    ▄  ██▄  ▄██    ██   ██ ██▌    ▄ ██  ██   ▄██   ██   ██     ██    ██  ██    ██ ██   ██   ███        ██    ██   █  ██▌    ▄ ██   ▄██
+      █     ▀█   ███   █▀   ██████  ██████▀    ███████ ████▄▄██   ▀████▀     ██   █▀ ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █    ███        █     ███████ ████▄▄██ ██████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object containing model validation information for a data model.
+      █  Data Transfer Object containing model validation details for a single data model field.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,26 +39,26 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Service.WebApi.ModelValidation
+namespace OpenIIoT.SDK.Service.WebApi.ModelValidation
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
 
     /// <summary>
-    ///     Data Transfer Object containing model validation information for a data model.
+    ///     Data Transfer Object containing model validation details for a single data model field.
     /// </summary>
     [DataContract]
-    public class ModelValidationResult
+    public class ModelValidationField
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ModelValidationResult"/> class.
+        ///     Initializes a new instance of the <see cref="ModelValidationField"/> class.
         /// </summary>
-        public ModelValidationResult()
+        public ModelValidationField()
         {
-            Model = new List<ModelValidationField>();
+            Messages = new List<string>();
         }
 
         #endregion Public Constructors
@@ -66,18 +66,18 @@ namespace OpenIIoT.Core.Service.WebApi.ModelValidation
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets a message describing the overall state of the model with respect to validation.
+        ///     Gets or sets the name of the field.
         /// </summary>
         [DataMember(Order = 1)]
         [JsonProperty(Order = 1)]
-        public string Message { get; set; }
+        public string Field { get; set; }
 
         /// <summary>
-        ///     Gets or sets the list of model fields and their respective validation results.
+        ///     Gets or sets the list of validation messages for the field.
         /// </summary>
         [DataMember(Order = 2)]
         [JsonProperty(Order = 2)]
-        public List<ModelValidationField> Model { get; set; }
+        public List<string> Messages { get; set; }
 
         #endregion Public Properties
     }

@@ -52,7 +52,6 @@ namespace OpenIIoT.Core.Service.WebApi
 {
     using System.Web.Http;
     using OpenIIoT.SDK;
-    using OpenIIoT.SDK.Service;
 
     /// <summary>
     ///     Prepends the configured WebRoot route to all actions within a controller.

@@ -55,7 +55,6 @@ namespace OpenIIoT.Core.Service.WebApi
     using OpenIIoT.Core.Service.WebApi.Swagger;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Platform;
-    using OpenIIoT.SDK.Service.WebApi;
     using Owin;
     using Swashbuckle.Application;
 
@@ -66,20 +65,24 @@ namespace OpenIIoT.Core.Service.WebApi
     {
         #region Private Fields
 
-        private IApplicationManager manager = ApplicationManager.GetInstance();
+        /// <summary>
+        ///     Gets the <see cref="IApplicationManager"/> instance for the application.
+        /// </summary>
+        private IApplicationManager Manager => ApplicationManager.GetInstance();
 
         #endregion Private Fields
 
         #region Public Methods
 
+        /// <summary>
+        ///     Configures the <see cref="Owin"/> application.
+        /// </summary>
+        /// <param name="app">The <see cref="IAppBuilder"/> instance to configure.</param>
         public void Configuration(IAppBuilder app)
         {
             WebApiServiceConfiguration configuration = WebApiService.GetConfiguration();
 
             string webRoot = configuration.Root.TrimStart('/').TrimEnd('/');
-
-            // openiiot/signalr openiiot/help openiiot/help/docs/ openiiot/help/ui openiiot/help/ui/index openiiot/api/
-
             string signalRPath = $"/{webRoot}/{WebApiConstants.SignalRRoutePrefix}".Replace("//", "/");
             string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
             string swaggerPath = $"{helpPath}/docs/{{apiVersion}}";
@@ -96,14 +99,15 @@ namespace OpenIIoT.Core.Service.WebApi
             app.MapSignalR(signalRPath, new HubConfiguration());
 
             HttpConfiguration config = new HttpConfiguration();
+
             config.MapHttpAttributeRoutes();
 
             config
                 .EnableSwagger(swaggerPath, c =>
                 {
                     c.RootUrl(req => ComputeHostAsSeenByOriginalClient(req));
-                    c.SingleApiVersion("v1", manager.ProductName);
-                    c.IncludeXmlComments($"{manager.ProductName}.XML");
+                    c.SingleApiVersion("v1", Manager.ProductName);
+                    c.IncludeXmlComments($"{Manager.ProductName}.XML");
                     c.DescribeAllEnumsAsStrings();
                     c.OperationFilter<MimeTypeOperationFilter>();
                 })
@@ -126,11 +130,9 @@ namespace OpenIIoT.Core.Service.WebApi
 
             app.UseWebApi(config);
 
-            // use Path.Combine to build the path to the filesystem for cross platform compatibility windows uses web\content,
-            // linux uses web/content.
             app.UseFileServer(new FileServerOptions()
             {
-                FileSystem = new PhysicalFileSystem(manager.GetManager<IPlatformManager>().Directories.Web),
+                FileSystem = new PhysicalFileSystem(Manager.GetManager<IPlatformManager>().Directories.Web),
                 RequestPath = PathString.FromUriComponent($"/{webRoot}".TrimEnd('/')),
             });
         }
