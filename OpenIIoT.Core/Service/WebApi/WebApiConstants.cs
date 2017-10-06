@@ -100,7 +100,7 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <summary>
         ///     The route prefix for SignalR.
         /// </summary>
-        public const string SignalRRoutePrefix = "signalr";
+        public const string SignalRRoutePrefix = "live";
 
         /// <summary>
         ///     The list of routes for which authentication is not required.

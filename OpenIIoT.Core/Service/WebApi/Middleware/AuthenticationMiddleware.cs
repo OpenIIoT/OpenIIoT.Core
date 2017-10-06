@@ -56,8 +56,6 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.Owin;
-    using NLog;
-    using NLog.xLogger;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Security;
 
@@ -66,15 +64,6 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     /// </summary>
     public class AuthenticationMiddleware : OwinMiddleware
     {
-        #region Private Fields
-
-        /// <summary>
-        ///     Gets the main logger for this class.
-        /// </summary>
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        #endregion Private Fields
-
         #region Public Constructors
 
         /// <summary>

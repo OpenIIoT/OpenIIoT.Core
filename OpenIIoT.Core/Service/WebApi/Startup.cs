@@ -70,8 +70,6 @@ namespace OpenIIoT.Core.Service.WebApi
 
         #endregion Private Fields
 
-
-
         #region Public Methods
 
         public void Configuration(IAppBuilder app)
@@ -82,16 +80,17 @@ namespace OpenIIoT.Core.Service.WebApi
 
             // openiiot/signalr openiiot/help openiiot/help/docs/ openiiot/help/ui openiiot/help/ui/index openiiot/api/
 
-            string signalRPath = $"/{webRoot}/{WebApiConstants.SignalRRoutePrefix}";
-            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}";
+            string signalRPath = $"/{webRoot}/{WebApiConstants.SignalRRoutePrefix}".Replace("//", "/");
+            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
             string swaggerPath = $"{helpPath}/docs/{{apiVersion}}";
             string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
             string helpShortcut = $"{helpPath}/ui/index";
 
             app.Use(typeof(LoggingMiddleware), configuration);
-            app.Use(typeof(NotFoundRedirectionMiddleware), configuration);
 
             app.UseCors(CorsOptions.AllowAll);
+
+            app.Use(typeof(NotFoundRedirectionMiddleware), configuration);
             app.Use(typeof(AuthenticationMiddleware), configuration);
 
             app.MapSignalR(signalRPath, new HubConfiguration());
@@ -132,7 +131,7 @@ namespace OpenIIoT.Core.Service.WebApi
             app.UseFileServer(new FileServerOptions()
             {
                 FileSystem = new PhysicalFileSystem(manager.GetManager<IPlatformManager>().Directories.Web),
-                RequestPath = PathString.FromUriComponent($"/{webRoot}"),
+                RequestPath = PathString.FromUriComponent($"/{webRoot}".TrimEnd('/')),
             });
         }
 

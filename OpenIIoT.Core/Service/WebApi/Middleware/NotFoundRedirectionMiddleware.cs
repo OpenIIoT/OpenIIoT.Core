@@ -54,22 +54,12 @@ namespace OpenIIoT.Core.Service.WebApi
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Owin;
-    using NLog.xLogger;
 
     /// <summary>
     ///     Owin middleware for 404 redirection.
     /// </summary>
     public class NotFoundRedirectionMiddleware : OwinMiddleware
     {
-        #region Private Fields
-
-        /// <summary>
-        ///     The Logger for this class.
-        /// </summary>
-        private static xLogger logger = xLogManager.GetCurrentClassxLogger();
-
-        #endregion Private Fields
-
         #region Public Methods
 
         /// <summary>
