@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Service.WebApi.ModelValidation
+namespace OpenIIoT.Core.Service.WebApi.ModelValidation
 {
     using System.Net;
     using System.Net.Http;
