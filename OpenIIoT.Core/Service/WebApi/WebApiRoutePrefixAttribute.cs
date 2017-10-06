@@ -51,7 +51,6 @@
 namespace OpenIIoT.Core.Service.WebApi
 {
     using System.Web.Http;
-    using OpenIIoT.SDK;
 
     /// <summary>
     ///     Prepends the configured WebRoot route to all actions within a controller.
@@ -86,14 +85,5 @@ namespace OpenIIoT.Core.Service.WebApi
         }
 
         #endregion Public Properties
-
-        #region Private Properties
-
-        /// <summary>
-        ///     Gets the settings for the application.
-        /// </summary>
-        private IApplicationSettings Settings => ApplicationManager.GetInstance().Settings;
-
-        #endregion Private Properties
     }
 }
