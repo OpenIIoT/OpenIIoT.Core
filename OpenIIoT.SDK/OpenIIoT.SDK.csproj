@@ -70,6 +70,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Exceptions\SecurityExceptions.cs" />
     <Compile Include="Common\OperationResult\Enumerations.cs" />
     <Compile Include="Common\OperationResult\IResult.cs" />
     <Compile Include="Common\OperationResult\IResultOfT.cs" />

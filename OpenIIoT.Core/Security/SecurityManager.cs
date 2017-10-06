@@ -788,9 +788,16 @@ namespace OpenIIoT.Core.Security
 
             IResult retVal = Configure();
 
-            SessionExpiryTimer = new System.Timers.Timer(Configuration.SessionPurgeInterval);
-            SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
-            SessionExpiryTimer.Start();
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                throw new SecurityManagerConfigurationException("Failed to configure the SecurityManager: " + retVal.GetLastError());
+            }
+            else
+            {
+                SessionExpiryTimer = new System.Timers.Timer(Configuration.SessionPurgeInterval);
+                SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
+                SessionExpiryTimer.Start();
+            }
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
