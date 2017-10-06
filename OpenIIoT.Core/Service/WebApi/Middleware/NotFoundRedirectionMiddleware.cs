@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█
-      █   ███
-      █   ███        ██████     ▄████▄     ▄████▄   █  ██▄▄▄▄     ▄████▄
-      █   ███       ██    ██   ██    ▀    ██    ▀  ██  ██▀▀▀█▄   ██    ▀
-      █   ███       ██    ██  ▄██        ▄██       ██▌ ██   ██  ▄██
-      █   ███       ██    ██ ▀▀██ ███▄  ▀▀██ ███▄  ██  ██   ██ ▀▀██ ███▄
-      █   ███▌    ▄ ██    ██   ██    ██   ██    ██ ██  ██   ██   ██    ██
-      █   █████▄▄██  ██████    ██████▀    ██████▀  █    █   █    ██████▀
+      █   ███▄▄▄▄                         ▄████████                                      ▄████████
+      █   ███▀▀▀██▄                      ███    ███                                     ███    ███
+      █   ███   ███  ██████      ██      ███    █▀   ██████  ██   █  ██▄▄▄▄  ██████▄   ▄███▄▄▄▄██▀    ▄█████ ██████▄   █     █████    ▄█████  ▄██████     ██     █   ██████  ██▄▄▄▄
+      █   ███   ███ ██    ██ ▀███████▄  ▄███▄▄▄     ██    ██ ██   ██ ██▀▀▀█▄ ██   ▀██ ▀▀███▀▀▀▀▀     ██   █  ██   ▀██ ██    ██  ██   ██   █  ██    ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄
+      █   ███   ███ ██    ██     ██  ▀ ▀▀███▀▀▀     ██    ██ ██   ██ ██   ██ ██    ██ ▀███████████  ▄██▄▄    ██    ██ ██▌  ▄██▄▄█▀  ▄██▄▄    ██    ▀      ██  ▀ ██▌ ██    ██ ██   ██
+      █   ███   ███ ██    ██     ██      ███        ██    ██ ██   ██ ██   ██ ██    ██   ███    ███ ▀▀██▀▀    ██    ██ ██  ▀███████ ▀▀██▀▀    ██    ▄      ██    ██  ██    ██ ██   ██
+      █   ███   ███ ██    ██     ██      ███        ██    ██ ██   ██ ██   ██ ██   ▄██   ███    ███   ██   █  ██   ▄██ ██    ██  ██   ██   █  ██    ██     ██    ██  ██    ██ ██   ██
+      █    ▀█   █▀   ██████     ▄██▀     ███         ██████  ██████   █   █  ██████▀    ███    ███   ███████ ██████▀  █     ██  ██   ███████ ██████▀     ▄██▀   █    ██████   █   █
       █
       █      ▄▄▄▄███▄▄▄▄
       █    ▄██▀▀▀███▀▀▀██▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Owin middleeware for HTTP request and response logging.
+      █  Owin middleware for redirection of 404/Not Found responses.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -50,15 +50,11 @@
 
 namespace OpenIIoT.Core.Service.WebApi
 {
-    using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Linq;
-    using System.Text;
     using System.Threading.Tasks;
     using Microsoft.Owin;
     using NLog.xLogger;
-    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin middleware for 404 redirection.
@@ -80,12 +76,16 @@ namespace OpenIIoT.Core.Service.WebApi
         ///     Initializes a new instance of the <see cref="NotFoundRedirectionMiddleware"/> class.
         /// </summary>
         /// <param name="next">The middlware component which follows.</param>
+        /// <param name="configuration">The active configuration for the <see cref="WebApiService"/>.</param>
         public NotFoundRedirectionMiddleware(OwinMiddleware next, WebApiServiceConfiguration configuration)
         : base(next)
         {
             Configuration = configuration;
         }
 
+        /// <summary>
+        ///     Gets or sets the active configuration for the <see cref="WebApiService"/>.
+        /// </summary>
         private WebApiServiceConfiguration Configuration { get; set; }
 
         /// <summary>
@@ -107,11 +107,21 @@ namespace OpenIIoT.Core.Service.WebApi
 
         #region Private Methods
 
+        /// <summary>
+        ///     Builds and returns a <see cref="PathString"/> from the specified <paramref name="path"/>.
+        /// </summary>
+        /// <param name="path">The path from which the <see cref="PathString"/> is to be built.</param>
+        /// <returns>The built <see cref="PathString"/>.</returns>
         private PathString GetPathString(string path)
         {
             return new PathString("/" + (Configuration.Root + "/" + path).Trim('/'));
         }
 
+        /// <summary>
+        ///     Determines whether the specified <paramref name="route"/> is among the list of routes for which 404 redirection is suppressed.
+        /// </summary>
+        /// <param name="route">The route to examine.</param>
+        /// <returns>A value indicating whether 404 redirection is suppressed for the route.</returns>
         private bool IsRedirectSuppressedRoute(PathString route)
         {
             List<PathString> redirectSuppressedPaths = WebApiConstants.RedirectSuppressedRoutes.Select(r => GetPathString(r)).ToList();

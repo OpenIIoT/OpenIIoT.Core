@@ -105,7 +105,7 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <summary>
         ///     The list of routes for which authentication is not required.
         /// </summary>
-        public static readonly string[] AnonymousRoutes = { ApiRoutePrefix, SignalRRoutePrefix, HelpRoutePrefix, LoginRoutePrefix, HelpRoutePrefix, NotFoundRoutePrefix, AssetPath, ModulePath };
+        public static readonly string[] AnonymousRoutes = { ApiRoutePrefix, SignalRRoutePrefix, HelpRoutePrefix, LoginRoutePrefix, NotFoundRoutePrefix, AssetPath, ModulePath };
 
         /// <summary>
         ///     The list of routes for which the <see cref="SDK.Security.Session"/> will not be extended, regardless of configuration.
@@ -115,7 +115,7 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <summary>
         ///     The list of routes which will not be redirected upon a 404 or <see cref="SDK.Security.Session"/> error.
         /// </summary>
-        public static readonly string[] RedirectSuppressedRoutes = { ApiRoutePrefix, SignalRRoutePrefix };
+        public static readonly string[] RedirectSuppressedRoutes = { ApiRoutePrefix, SignalRRoutePrefix, HelpRoutePrefix, LoginRoutePrefix, NotFoundRoutePrefix, AssetPath, ModulePath };
 
         #endregion Public Fields
     }

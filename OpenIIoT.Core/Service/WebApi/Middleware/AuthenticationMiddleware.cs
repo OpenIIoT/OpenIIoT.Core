@@ -60,7 +60,6 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using NLog.xLogger;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Security;
-    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.
@@ -82,6 +81,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
         ///     Initializes a new instance of the <see cref="AuthenticationMiddleware"/> class.
         /// </summary>
         /// <param name="next">The next middleware in the chain.</param>
+        /// <param name="configuration">The active <see cref="WebApiService"/> configuration.</param>
         public AuthenticationMiddleware(OwinMiddleware next, WebApiServiceConfiguration configuration)
             : base(next)
         {
@@ -92,8 +92,14 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
 
         #region Private Properties
 
+        /// <summary>
+        ///     Gets or sets the active configuration for the <see cref="WebApiService"/>.
+        /// </summary>
         private WebApiServiceConfiguration Configuration { get; set; }
 
+        /// <summary>
+        ///     Gets the <see cref="IApplicationManager"/> instance for the application.
+        /// </summary>
         private IApplicationManager Manager => ApplicationManager.GetInstance();
 
         /// <summary>
@@ -143,6 +149,11 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             }
         }
 
+        /// <summary>
+        ///     Determines whether the specified <paramref name="route"/> is among the list of routes configured for anonymous access.
+        /// </summary>
+        /// <param name="route">The route to examine.</param>
+        /// <returns>A value indicating whether the speciifed route is configured for anonymous access.</returns>
         private bool IsAnonymousRoute(PathString route)
         {
             List<PathString> anonymousPaths = WebApiConstants.AnonymousRoutes.Select(r => GetPathString(r)).ToList();
@@ -150,6 +161,12 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             return anonymousPaths.Any(p => route.StartsWithSegments(p));
         }
 
+        /// <summary>
+        ///     Determines whether the specified <paramref name="route"/> is among the list of routes which do not extend the
+        ///     active <see cref="Session"/> when accessed.
+        /// </summary>
+        /// <param name="route">The route to examine.</param>
+        /// <returns>A value indicating whether the specified route extends the active <see cref="Session"/> when accessed.</returns>
         private bool IsNonExtendableRoute(PathString route)
         {
             List<PathString> nonExtendablePaths = WebApiConstants.NonExtendableRoutes.Select(r => GetPathString(r)).ToList();
@@ -160,11 +177,20 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
 
         #region Private Methods
 
+        /// <summary>
+        ///     Authenticates the specified <paramref name="context"/>.
+        /// </summary>
+        /// <remarks>
+        ///     The <see cref="Session.Token"/> is initially retrieved from the Api Key header from the request. If the Api Key
+        ///     header is null or contains an empty string, the token is then retrieved from the Session Token cookie. If the token
+        ///     is present in both the Api Key header and the Session Token cookie, the Api Key header takes precendece.
+        /// </remarks>
+        /// <param name="context">The <see cref="IOwinContext"/> to authenticate.</param>
         private void Authenticate(IOwinContext context)
         {
             string token = GetApiKey(context.Request);
 
-            if (token == string.Empty)
+            if (string.IsNullOrEmpty(token))
             {
                 token = GetSessionToken(context.Request);
             }
@@ -185,9 +211,14 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             }
         }
 
+        /// <summary>
+        ///     Retrieves the <see cref="Session.Token"/> from the Api Key header of the specified <paramref name="request"/>.
+        /// </summary>
+        /// <param name="request">The <see cref="IOwinRequest"/> from which to retrieve the Api Key.</param>
+        /// <returns>The retrieved Api Key.</returns>
         private string GetApiKey(IOwinRequest request)
         {
-            string retVal = string.Empty;
+            string retVal = default(string);
 
             if (request.Headers.ContainsKey(WebApiConstants.ApiKeyHeaderName))
             {
@@ -198,18 +229,19 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
         }
 
         /// <summary>
+        ///     Builds and returns a <see cref="PathString"/> from the specified <paramref name="path"/>.
         /// </summary>
-        /// <param name="path"></param>
-        /// <returns></returns>
+        /// <param name="path">The path from which the <see cref="PathString"/> is to be built.</param>
+        /// <returns>The built <see cref="PathString"/>.</returns>
         private PathString GetPathString(string path)
         {
             return new PathString("/" + (Configuration.Root + "/" + path).Trim('/'));
         }
 
         /// <summary>
-        ///     Retrieves the <see cref="Session.Token"/> from the specified <see cref="IOwinRequest"/>.
+        ///     Retrieves the <see cref="Session.Token"/> from the specified <paramref name="request"/>.
         /// </summary>
-        /// <param name="request">The request to examine.</param>
+        /// <param name="request">The <see cref="IOwinRequest"/> from which to retrieve the Session Token cookie.</param>
         /// <returns>The <see cref="Session.Token"/>, if present.</returns>
         private string GetSessionToken(IOwinRequest request)
         {
@@ -217,9 +249,9 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
         }
 
         /// <summary>
-        ///     Determines whether the specified <see cref="IOwinRequest"/> is authenticated.
+        ///     Determines whether the specified <paramref name="request"/> is authenticated.
         /// </summary>
-        /// <param name="request">The request to examine.</param>
+        /// <param name="request">The <see cref="IOwinRequest"/> to examine.</param>
         /// <returns>A value indicating whether the request is authenticated.</returns>
         private bool IsAuthenticated(IOwinRequest request)
         {
