@@ -1,4 +1,4 @@
-﻿namespace OpenIIoT.Core.Service.WebApi
+﻿namespace OpenIIoT.SDK.Service.WebApi
 {
     public class WebApiServiceConfiguration
     {

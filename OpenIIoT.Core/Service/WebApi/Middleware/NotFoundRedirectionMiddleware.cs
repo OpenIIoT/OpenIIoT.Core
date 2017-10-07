@@ -54,6 +54,7 @@ namespace OpenIIoT.Core.Service.WebApi
     using System.Linq;
     using System.Threading.Tasks;
     using Microsoft.Owin;
+    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin middleware for 404 redirection.

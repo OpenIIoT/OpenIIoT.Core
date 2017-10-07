@@ -10,7 +10,7 @@
     using OpenIIoT.SDK.Service;
     using OpenIIoT.SDK.Service.WebApi;
 
-    public class WebApiService : IService, IConfigurable<WebApiServiceConfiguration>
+    public class WebApiService : IWebApiService, IConfigurable<WebApiServiceConfiguration>
     {
         #region Private Fields
 
@@ -25,6 +25,8 @@
         /// </summary>
         /// <remarks>Decorated as [ThreadStatic] so that it is accessible to the Owin startup class.</remarks>
         private static WebApiServiceConfiguration staticConfiguration;
+
+        private static IRoutes staticRoutes;
 
         private ApplicationManager manager;
 
@@ -44,11 +46,9 @@
 
         public WebApiServiceConfiguration Configuration { get; private set; }
         public IConfigurationDefinition ConfigurationDefinition => GetConfigurationDefinition();
-
         public Dictionary<string, Hub> Hubs { get; private set; }
-
         public bool IsRunning => server != null;
-
+        public IRoutes Routes { get; private set; }
         public string URL { get; private set; }
 
         #endregion Public Properties
@@ -72,6 +72,8 @@
 
             return retVal;
         }
+
+        public static IRoutes GetRoutes() => staticRoutes;
 
         public static WebApiService Instance(ApplicationManager manager)
         {
@@ -112,6 +114,9 @@
             Configuration = configuration;
             staticConfiguration = Configuration;
 
+            Routes = new Routes(Configuration);
+            staticRoutes = Routes;
+
             return new Result();
         }
 
@@ -124,6 +129,7 @@
         {
             logger.Info("Starting Web server...");
             Configure();
+
             Result retVal = new Result();
 
             URL = "http://*:" + Configuration.Port;

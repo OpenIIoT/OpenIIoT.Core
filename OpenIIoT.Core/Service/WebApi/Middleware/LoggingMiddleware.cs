@@ -56,6 +56,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using System.Threading.Tasks;
     using Microsoft.Owin;
     using NLog.xLogger;
+    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin middleeware for HTTP request and response logging.

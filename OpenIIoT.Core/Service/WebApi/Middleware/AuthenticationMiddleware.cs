@@ -58,6 +58,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using Microsoft.Owin;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Security;
+    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.

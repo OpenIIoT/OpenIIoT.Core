@@ -50,6 +50,7 @@
 
 namespace OpenIIoT.Core.Service.WebApi
 {
+    using OpenIIoT.SDK.Service.WebApi;
     using System.Web.Http;
 
     /// <summary>
@@ -79,8 +80,9 @@ namespace OpenIIoT.Core.Service.WebApi
         {
             get
             {
-                string root = WebApiService.GetConfiguration().Root.TrimEnd('/');
-                return $"{root}/{WebApiConstants.ApiRoutePrefix}/{base.Prefix}".TrimStart('/');
+                IRoutes routes = WebApiService.GetRoutes();
+
+                return $"{routes.Api}/{base.Prefix}".TrimStart('/');
             }
         }
 

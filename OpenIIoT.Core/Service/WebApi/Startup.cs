@@ -55,6 +55,7 @@ namespace OpenIIoT.Core.Service.WebApi
     using OpenIIoT.Core.Service.WebApi.Swagger;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Platform;
+    using OpenIIoT.SDK.Service.WebApi;
     using Owin;
     using Swashbuckle.Application;
 
@@ -81,13 +82,7 @@ namespace OpenIIoT.Core.Service.WebApi
         public void Configuration(IAppBuilder app)
         {
             WebApiServiceConfiguration configuration = WebApiService.GetConfiguration();
-
-            string webRoot = configuration.Root.TrimStart('/').TrimEnd('/');
-            string signalRPath = $"/{webRoot}/{WebApiConstants.SignalRRoutePrefix}".Replace("//", "/");
-            string helpPath = $"{webRoot}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
-            string swaggerPath = $"{helpPath}/docs/{{apiVersion}}";
-            string swaggerUiPath = $"{helpPath}/ui/{{*assetPath}}";
-            string helpShortcut = $"{helpPath}/ui/index";
+            IRoutes routes = new Routes(configuration);
 
             app.Use(typeof(LoggingMiddleware), configuration);
 
@@ -96,14 +91,14 @@ namespace OpenIIoT.Core.Service.WebApi
             app.Use(typeof(NotFoundRedirectionMiddleware), configuration);
             app.Use(typeof(AuthenticationMiddleware), configuration);
 
-            app.MapSignalR(signalRPath, new HubConfiguration());
+            app.MapSignalR(routes.SignalR, new HubConfiguration());
 
             HttpConfiguration config = new HttpConfiguration();
 
             config.MapHttpAttributeRoutes();
 
             config
-                .EnableSwagger(swaggerPath, c =>
+                .EnableSwagger(routes.Swagger, c =>
                 {
                     c.RootUrl(req => ComputeHostAsSeenByOriginalClient(req));
                     c.SingleApiVersion("v1", Manager.ProductName);
@@ -111,7 +106,7 @@ namespace OpenIIoT.Core.Service.WebApi
                     c.DescribeAllEnumsAsStrings();
                     c.OperationFilter<MimeTypeOperationFilter>();
                 })
-                .EnableSwaggerUi(swaggerUiPath, c =>
+                .EnableSwaggerUi(routes.SwaggerUi, c =>
                 {
                     Assembly containingAssembly = Assembly.GetExecutingAssembly();
                     c.CustomAsset("index", containingAssembly, "OpenIIoT.Core.Service.WebApi.Swagger.Content.index.html");
@@ -123,17 +118,17 @@ namespace OpenIIoT.Core.Service.WebApi
             config
                 .Routes.MapHttpRoute(
                     name: "HelpShortcut",
-                    routeTemplate: helpPath,
+                    routeTemplate: routes.HelpRoot,
                     defaults: null,
                     constraints: null,
-                    handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, helpShortcut));
+                    handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, routes.Help));
 
             app.UseWebApi(config);
 
             app.UseFileServer(new FileServerOptions()
             {
                 FileSystem = new PhysicalFileSystem(Manager.GetManager<IPlatformManager>().Directories.Web),
-                RequestPath = PathString.FromUriComponent($"/{webRoot}".TrimEnd('/')),
+                RequestPath = PathString.FromUriComponent($"/{routes.Root}".TrimEnd('/')),
             });
         }
 

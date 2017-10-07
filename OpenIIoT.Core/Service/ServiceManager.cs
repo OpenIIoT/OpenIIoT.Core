@@ -169,7 +169,7 @@
             try
             {
                 logger.Trace("Registering Web Services...");
-                retVal.ReturnValue.Add("Web Services", typeof(WebApi.WebApiService));
+                retVal.ReturnValue.Add("WebApiService", typeof(WebApi.WebApiService));
                 configurationManager.ConfigurableTypeRegistry.RegisterType(typeof(WebApi.WebApiService));
             }
             catch (Exception ex)
