@@ -161,12 +161,12 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the list of active <see cref="Session"/> s.
         /// </summary>
-        public IReadOnlyList<ISession> Sessions => ((List<Session>)SessionList).AsReadOnly();
+        public IReadOnlyList<ISession> Sessions => ((List<ISession>)SessionList).AsReadOnly();
 
         /// <summary>
         ///     Gets the list of configured <see cref="User"/> s.
         /// </summary>
-        public IReadOnlyList<IUser> Users => ((List<User>)Configuration?.Users)?.AsReadOnly();
+        public IReadOnlyList<IUser> Users => ((List<IUser>)Configuration?.Users)?.AsReadOnly();
 
         #endregion Public Properties
 
