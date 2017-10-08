@@ -201,10 +201,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsGet()
         {
-            ITicket ticket = new Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
-            SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session(User, ticket) }.ToList().AsReadOnly());
+            SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session(User, identity) }.ToList().AsReadOnly());
 
             HttpResponseMessage response = Controller.SessionsGet();
 
@@ -224,10 +224,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsGetCurrent()
         {
-            ITicket ticket = new Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
-            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, ticket));
+            SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, identity));
 
             HttpResponseMessage response = Controller.SessionsGetCurrent();
 
@@ -243,10 +243,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsStart()
         {
-            ITicket ticket = new Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
-            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<ISession>().SetReturnValue(new Session(User, ticket)));
+            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<ISession>().SetReturnValue(new Session(User, identity)));
 
             HttpResponseMessage response = Controller.SessionsStart(new SessionStartData() { Name = "user", Password = "password" });
 

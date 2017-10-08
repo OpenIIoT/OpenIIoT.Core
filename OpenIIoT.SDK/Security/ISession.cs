@@ -1,6 +1,7 @@
 ﻿namespace OpenIIoT.SDK.Security
 {
     using System;
+    using System.Security.Claims;
 
     public interface ISession
     {
@@ -15,6 +16,11 @@
         ///     Gets or sets the time at which the Session expires, in Utc.
         /// </summary>
         DateTimeOffset Expires { get; set; }
+
+        /// <summary>
+        ///     Gets the <see cref="ClaimsIdentity"/> instance associated with the Session.
+        /// </summary>
+        ClaimsIdentity Identity { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.

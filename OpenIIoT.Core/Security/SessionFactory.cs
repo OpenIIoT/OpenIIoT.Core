@@ -87,9 +87,7 @@ namespace OpenIIoT.Core.Security
 
             identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
 
-            Ticket ticket = new Ticket(identity, sessionLength);
-
-            retVal = new Session(user, ticket);
+            retVal = new Session(user, identity);
 
             logger.ExitMethod(retVal);
             return retVal;
@@ -105,7 +103,7 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod(xLogger.Params(session, sessionLength));
 
-            session.Ticket.ExpiresUtc = DateTime.UtcNow.AddSeconds(sessionLength);
+            session.Expires = DateTime.UtcNow.AddSeconds(sessionLength);
 
             logger.ExitMethod(session);
             return session;

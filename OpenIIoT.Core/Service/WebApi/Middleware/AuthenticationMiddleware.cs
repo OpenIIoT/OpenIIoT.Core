@@ -190,14 +190,14 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
 
             if (session != default(Session) && !session.IsExpired)
             {
-                context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
+                context.Request.User = new ClaimsPrincipal(session.Identity);
 
                 if (!IsNonExtendableRoute(new PathString(context.Request.Path.Value)))
                 {
                     SecurityManager.ExtendSession(session);
                 }
 
-                DateTime? expirationDate = ((DateTimeOffset)session.Ticket.ExpiresUtc).UtcDateTime;
+                DateTime? expirationDate = ((DateTimeOffset)session.Expires).UtcDateTime;
                 context.Response.Cookies.Append(WebApiConstants.SessionTokenCookieName, token, new CookieOptions() { Expires = expirationDate });
             }
         }

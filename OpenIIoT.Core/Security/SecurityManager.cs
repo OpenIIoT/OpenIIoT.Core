@@ -541,7 +541,7 @@ namespace OpenIIoT.Core.Security
         public ISession FindSession(string token)
         {
             return SessionList
-                .Where(s => s.Ticket.Identity.Claims
+                .Where(s => s.Identity.Claims
                     .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == token).FirstOrDefault();
         }
 
@@ -563,7 +563,7 @@ namespace OpenIIoT.Core.Security
         public ISession FindUserSession(string name)
         {
             return SessionList
-                .Where(s => s.Ticket.Identity.Claims
+                .Where(s => s.Identity.Claims
                     .Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value == name).FirstOrDefault();
         }
 

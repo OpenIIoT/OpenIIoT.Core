@@ -57,12 +57,12 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using OpenIIoT.SDK.Security;
-using System.Collections.Generic;
-using Xunit;
-
 namespace OpenIIoT.Core.Tests.Security
 {
+    using System.Collections.Generic;
+    using OpenIIoT.Core.Security;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="Core.Security.SecurityManagerConfiguration"/> class.
     /// </summary>
@@ -80,7 +80,7 @@ namespace OpenIIoT.Core.Tests.Security
             Core.Security.User user = new Core.Security.User("name", "user", "test@test.com", "password", SDK.Security.Role.Reader);
             Core.Security.SecurityManagerConfiguration test = new Core.Security.SecurityManagerConfiguration()
             {
-                Users = new List<IUser>(new[] { user }),
+                Users = new List<User>(new[] { user }),
                 SessionLength = 1,
                 SessionPurgeInterval = 2,
                 SlidingSessions = false,

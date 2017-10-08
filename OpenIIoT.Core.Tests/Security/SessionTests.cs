@@ -78,19 +78,18 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Ticket ticket = new Ticket(new ClaimsIdentity(), 15);
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
+            identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
 
             User = new User("name", "displayName", "name@test.com", "hash", SDK.Security.Role.Reader);
 
-            ISession test = new Session(User, ticket);
+            ISession test = new Session(User, identity);
 
             Assert.IsType<Session>(test);
             Assert.IsAssignableFrom<ISession>(test);
             Assert.Equal("hash", test.Token);
-            Assert.Equal(ticket, test.Ticket);
             Assert.False(test.IsExpired);
             Assert.Equal("name", test.GetClaim(ClaimTypes.Name));
             Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(Role), test.GetClaim(ClaimTypes.Role)));
@@ -103,8 +102,8 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void IsExpiredExpired()
         {
-            Ticket ticket = new Ticket(new ClaimsIdentity(), -15);
-            ISession test = new Session(User, ticket);
+            ClaimsIdentity identity = new ClaimsIdentity();
+            ISession test = new Session(User, identity, DateTime.UtcNow, -15);
 
             Assert.True(test.IsExpired);
             Assert.NotNull(test.Expires);
@@ -116,10 +115,10 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Name()
         {
-            Ticket ticket = new Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
 
-            Session test = new Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Equal("name", test.GetClaim(ClaimTypes.Name));
         }
@@ -130,9 +129,9 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void NameNoClaim()
         {
-            Ticket ticket = new Ticket(new ClaimsIdentity());
+            ClaimsIdentity identity = new ClaimsIdentity();
 
-            Session test = new Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Equal(null, test.GetClaim(ClaimTypes.Name));
         }
@@ -143,10 +142,10 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Role()
         {
-            Ticket ticket = new Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
 
-            Session test = new Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(Role), test.GetClaim(ClaimTypes.Role)));
         }
@@ -157,35 +156,11 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void RoleNoClaim()
         {
-            Ticket ticket = new Ticket(new ClaimsIdentity());
+            ClaimsIdentity identity = new ClaimsIdentity();
 
-            Session test = new Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Null(test.GetClaim(ClaimTypes.Role));
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Session.Ticket"/> property.
-        /// </summary>
-        [Fact]
-        public void Ticket()
-        {
-            Ticket ticket = new Ticket(new ClaimsIdentity());
-
-            Session test = new Session(User, ticket);
-
-            Assert.Equal(ticket, test.Ticket);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="Session.Ticket"/> property with a null ticket.
-        /// </summary>
-        [Fact]
-        public void TicketNull()
-        {
-            Session test = new Session(User, null);
-
-            Assert.Equal(null, test.Ticket);
         }
 
         /// <summary>
@@ -194,10 +169,10 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Token()
         {
-            Ticket ticket = new Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "token"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "token"));
 
-            Session test = new Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Equal("token", test.Token);
         }
@@ -208,9 +183,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void TokenNoClaim()
         {
-            Ticket ticket = new Ticket(new ClaimsIdentity());
-
-            Session test = new Session(User, ticket);
+            Session test = new Session(User, new ClaimsIdentity());
 
             Assert.Equal(string.Empty, test.Token);
         }

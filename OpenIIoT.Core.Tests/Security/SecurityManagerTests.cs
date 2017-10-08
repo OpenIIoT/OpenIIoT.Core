@@ -63,6 +63,7 @@ namespace OpenIIoT.Core.Tests.Security
     using OpenIIoT.SDK.Configuration;
     using OpenIIoT.SDK.Security;
     using Xunit;
+    using System.Security.Claims;
 
     /// <summary>
     ///     Unit tests for the <see cref="SecurityManager"/> class.
@@ -282,7 +283,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void EndSessionNotRunning()
         {
-            IResult result = Manager.EndSession(new Session(User, null));
+            IResult result = Manager.EndSession(new Session(User, new ClaimsIdentity()));
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -322,7 +323,7 @@ namespace OpenIIoT.Core.Tests.Security
             Manager.Start();
 
             IResult<ISession> session = Manager.StartSession("test", "test");
-            DateTimeOffset? offset = session.ReturnValue.Ticket.ExpiresUtc;
+            DateTimeOffset? offset = session.ReturnValue.Expires;
 
             Assert.Equal(ResultCode.Success, session.ResultCode);
 
@@ -331,7 +332,7 @@ namespace OpenIIoT.Core.Tests.Security
             IResult<ISession> result = Manager.ExtendSession(session.ReturnValue);
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.True(result.ReturnValue.Ticket.ExpiresUtc > offset);
+            Assert.True(result.ReturnValue.Expires > offset);
         }
 
         /// <summary>
@@ -346,7 +347,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Assert.Equal(ResultCode.Success, session.ResultCode);
 
-            session.ReturnValue.Ticket.ExpiresUtc = session.ReturnValue.Ticket.IssuedUtc.AddMinutes(-1);
+            session.ReturnValue.Expires = session.ReturnValue.Created.AddMinutes(-1);
 
             IResult<ISession> result = Manager.ExtendSession(session.ReturnValue);
 
@@ -401,7 +402,7 @@ namespace OpenIIoT.Core.Tests.Security
             Manager.Start();
 
             IResult<ISession> session = Manager.StartSession("test", "test");
-            DateTimeOffset? offset = session.ReturnValue.Ticket.ExpiresUtc;
+            DateTimeOffset? offset = session.ReturnValue.Expires;
 
             Assert.Equal(ResultCode.Success, session.ResultCode);
 
@@ -427,7 +428,7 @@ namespace OpenIIoT.Core.Tests.Security
             ISession foundSession = Manager.FindSession(session.ReturnValue.Token);
 
             Assert.NotEqual(default(ISession), foundSession);
-            Assert.Equal("test", foundSession.Ticket.Identity.Name);
+            Assert.Equal("test", foundSession.Identity.Name);
         }
 
         /// <summary>
@@ -488,7 +489,7 @@ namespace OpenIIoT.Core.Tests.Security
             ISession foundSession = Manager.FindUserSession("test");
 
             Assert.NotEqual(default(ISession), foundSession);
-            Assert.Equal("test", foundSession.Ticket.Identity.Name);
+            Assert.Equal("test", foundSession.Identity.Name);
         }
 
         /// <summary>
@@ -565,7 +566,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Manager.CreateUser(name1, "test", "test@test.com", "test", Role.Reader);
             ISession session1 = Manager.StartSession(name1, "test").ReturnValue;
-            session1.Ticket.ExpiresUtc = session1.Ticket.IssuedUtc.AddMinutes(-1);
+            session1.Expires = session1.Created.AddMinutes(-1);
 
             Assert.True(session1.IsExpired);
 
@@ -663,7 +664,7 @@ namespace OpenIIoT.Core.Tests.Security
             IResult<ISession> result = Manager.StartSession("test", "test");
 
             Assert.Equal(ResultCode.Success, result.ResultCode);
-            Assert.Equal("test", result.ReturnValue.Ticket.Identity.Name);
+            Assert.Equal("test", result.ReturnValue.Identity.Name);
         }
 
         /// <summary>
@@ -690,7 +691,7 @@ namespace OpenIIoT.Core.Tests.Security
             IResult<ISession> session1 = Manager.StartSession("test", "test");
 
             Assert.Equal(ResultCode.Success, session1.ResultCode);
-            Assert.Equal("test", session1.ReturnValue.Ticket.Identity.Name);
+            Assert.Equal("test", session1.ReturnValue.Identity.Name);
 
             IResult<ISession> session2 = Manager.StartSession("test", "test");
 

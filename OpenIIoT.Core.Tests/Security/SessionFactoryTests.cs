@@ -106,10 +106,9 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.IsType<Core.Security.Session>(test);
             Assert.NotNull(test);
             Assert.Equal(128, test.Token.Length);
-            Assert.NotEqual(default(Core.Security.Ticket), test.Ticket);
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Name, "test"));
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
-            Assert.Equal(test.Ticket.IssuedUtc.AddSeconds(15), test.Ticket.ExpiresUtc);
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Name, "test"));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            Assert.Equal(test.Created.AddSeconds(15), test.Expires);
         }
 
         /// <summary>
@@ -122,9 +121,9 @@ namespace OpenIIoT.Core.Tests.Security
             Core.Security.User user = new Core.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.Administrator);
             ISession test = Factory.CreateSession(user, 15);
 
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.ReadWriter.ToString()));
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Administrator.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.ReadWriter.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Administrator.ToString()));
         }
 
         /// <summary>
@@ -140,9 +139,8 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.IsType<Core.Security.Session>(test);
             Assert.NotNull(test);
             Assert.Equal(128, test.Token.Length);
-            Assert.NotEqual(default(Core.Security.Ticket), test.Ticket);
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Name, string.Empty));
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Name, string.Empty));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
         }
 
         /// <summary>
@@ -155,8 +153,8 @@ namespace OpenIIoT.Core.Tests.Security
             Core.Security.User user = new Core.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.ReadWriter);
             ISession test = Factory.CreateSession(user, 15);
 
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
-            Assert.True(test.Ticket.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.ReadWriter.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.ReadWriter.ToString()));
         }
 
         /// <summary>
@@ -168,13 +166,13 @@ namespace OpenIIoT.Core.Tests.Security
             Core.Security.User user = new Core.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.ReadWriter);
             ISession test = Factory.CreateSession(user, 150);
 
-            DateTimeOffset? initialtime = test.Ticket.ExpiresUtc;
+            DateTimeOffset? initialtime = test.Expires;
 
             Factory.ExtendSession(test, 300);
 
-            DateTimeOffset? newtime = test.Ticket.ExpiresUtc;
+            DateTimeOffset? newtime = test.Expires;
 
-            Assert.True(initialtime < test.Ticket.ExpiresUtc);
+            Assert.True(initialtime < test.Expires);
         }
 
         #endregion Public Methods

@@ -59,9 +59,9 @@
 
 namespace OpenIIoT.SDK.Tests.Security
 {
-    using Xunit;
-    using SDK.Security;
     using Moq;
+    using SDK.Security;
+    using Xunit;
 
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Security.SessionEventArgs"/> class.
@@ -76,10 +76,7 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Mock<ITicket> ticket = new Mock<ITicket>();
             Mock<ISession> session = new Mock<ISession>();
-
-            session.Setup(s => s.Ticket).Returns(ticket.Object);
 
             SDK.Security.SessionEventArgs test = new SDK.Security.SessionEventArgs(session.Object);
 
