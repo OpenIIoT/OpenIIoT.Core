@@ -42,9 +42,7 @@
 namespace OpenIIoT.Core.Security.WebApi.DTO
 {
     using System.ComponentModel.DataAnnotations;
-    using System.Runtime.Serialization;
     using Newtonsoft.Json;
-    using OpenIIoT.SDK.Security;
 
     /// <summary>
     ///     Data Transfer Object used when starting a <see cref="Session"/>.

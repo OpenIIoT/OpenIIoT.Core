@@ -878,7 +878,7 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void UsersEmpty()
         {
-            Configuration.Users = new List<IUser>();
+            Configuration.Users = new List<User>();
 
             Manager.Start();
 
@@ -903,7 +903,7 @@ namespace OpenIIoT.Core.Tests.Security
             Configuration.SessionLength = 900;
             Configuration.SessionPurgeInterval = 90000;
             Configuration.SlidingSessions = true;
-            Configuration.Users = new List<IUser>(new[] { new User("test", "user", "test@test.com", Utility.ComputeSHA512Hash("test"), Role.Reader) });
+            Configuration.Users = new[] { new User("test", "user", "test@test.com", Utility.ComputeSHA512Hash("test"), Role.Reader) }.ToList();
 
             ApplicationConfiguration = new Mock<IConfiguration>();
 

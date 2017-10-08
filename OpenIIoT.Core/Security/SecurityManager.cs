@@ -260,9 +260,10 @@ namespace OpenIIoT.Core.Security
             Result retVal = new Result();
 
             IResult<SecurityManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<SecurityManagerConfiguration>(GetType());
+            retVal.Incorporate(fetchResult);
 
             // if the fetch succeeded, configure this instance with the result.
-            if (fetchResult.ResultCode != ResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
                 Configure(fetchResult.ReturnValue);
@@ -271,14 +272,15 @@ namespace OpenIIoT.Core.Security
             {
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
+
                 IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(GetType(), GetConfigurationDefinition().DefaultConfiguration);
-                if (createResult.ResultCode != ResultCode.Failure)
+                retVal.Incorporate(createResult);
+
+                if (retVal.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.ReturnValue);
                 }
-
-                retVal.Incorporate(createResult);
             }
 
             retVal.LogResult(logger.Debug);
@@ -355,7 +357,7 @@ namespace OpenIIoT.Core.Security
                 if (FindUser(name) == default(User))
                 {
                     retVal.ReturnValue = new User(name, displayName, email, SDK.Common.Utility.ComputeSHA512Hash(password), role);
-                    Configuration.Users.Add(retVal.ReturnValue);
+                    Configuration.Users.Add((User)retVal.ReturnValue);
                     SaveConfiguration();
                 }
                 else
@@ -401,7 +403,7 @@ namespace OpenIIoT.Core.Security
 
                 if (foundUser != default(User))
                 {
-                    Configuration.Users.Remove(foundUser);
+                    Configuration.Users.Remove((User)foundUser);
                 }
                 else
                 {

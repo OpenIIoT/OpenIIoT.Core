@@ -66,7 +66,7 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         public SecurityManagerConfiguration()
         {
-            Users = new List<IUser>();
+            Users = new List<User>();
         }
 
         #endregion Public Constructors
@@ -95,7 +95,7 @@ namespace OpenIIoT.Core.Security
         ///     Gets or sets the list of configured <see cref="User"/> s.
         /// </summary>
         [JsonProperty(Order = 4)]
-        public IList<IUser> Users { get; set; }
+        public IList<User> Users { get; set; }
 
         #endregion Public Properties
     }
