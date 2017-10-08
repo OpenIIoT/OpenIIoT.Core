@@ -87,7 +87,7 @@ namespace OpenIIoT.Core.Security
 
             identity.AddClaim(new Claim(ClaimTypes.Hash, hash));
 
-            retVal = new Session(user, identity);
+            retVal = new Session(user, identity, sessionLength);
 
             logger.ExitMethod(retVal);
             return retVal;

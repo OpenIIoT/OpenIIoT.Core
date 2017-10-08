@@ -166,11 +166,11 @@ namespace OpenIIoT.Core.Tests.Security
             Core.Security.User user = new Core.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.ReadWriter);
             ISession test = Factory.CreateSession(user, 150);
 
-            DateTimeOffset? initialtime = test.Expires;
+            DateTimeOffset initialtime = test.Expires;
 
             Factory.ExtendSession(test, 300);
 
-            DateTimeOffset? newtime = test.Expires;
+            DateTimeOffset newtime = test.Expires;
 
             Assert.True(initialtime < test.Expires);
         }

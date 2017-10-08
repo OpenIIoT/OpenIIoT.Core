@@ -166,7 +166,7 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the list of configured <see cref="User"/> s.
         /// </summary>
-        public IReadOnlyList<IUser> Users => ((List<IUser>)Configuration?.Users)?.AsReadOnly();
+        public IReadOnlyList<IUser> Users => ((List<User>)Configuration?.Users)?.AsReadOnly();
 
         #endregion Public Properties
 
@@ -260,16 +260,18 @@ namespace OpenIIoT.Core.Security
             Result retVal = new Result();
 
             IResult<SecurityManagerConfiguration> fetchResult = Dependency<IConfigurationManager>().Configuration.GetInstance<SecurityManagerConfiguration>(GetType());
-            retVal.Incorporate(fetchResult);
 
             // if the fetch succeeded, configure this instance with the result.
-            if (retVal.ResultCode != ResultCode.Failure)
+            if (fetchResult.ResultCode != ResultCode.Failure)
             {
                 logger.Debug("Successfully fetched the configuration from the Configuration Manager.");
                 Configure(fetchResult.ReturnValue);
             }
             else
             {
+                logger.Debug("Failed to fetch the configuration from the Configuration Manager.");
+                fetchResult.LogResult(logger.Debug);
+
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
 
