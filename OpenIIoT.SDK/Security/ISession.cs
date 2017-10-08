@@ -7,24 +7,19 @@
         #region Public Properties
 
         /// <summary>
-        ///     Gets the expiration timestamp of the Ticket, in UTC.
+        ///     Gets the time at which the Session was created, in Utc.
         /// </summary>
-        DateTimeOffset Expires { get; }
+        DateTimeOffset Created { get; }
+
+        /// <summary>
+        ///     Gets or sets the time at which the Session expires, in Utc.
+        /// </summary>
+        DateTimeOffset Expires { get; set; }
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
         /// </summary>
         bool IsExpired { get; }
-
-        /// <summary>
-        ///     Gets the issued timestamp of the Ticket, in UTC.
-        /// </summary>
-        DateTimeOffset Issued { get; }
-
-        /// <summary>
-        ///     Gets the SDK.Security.Ticket for the Session.
-        /// </summary>
-        ITicket Ticket { get; }
 
         /// <summary>
         ///     Gets the token for the Session.

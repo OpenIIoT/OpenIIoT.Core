@@ -124,7 +124,6 @@
     <Compile Include="Security\Role.cs" />
     <Compile Include="Security\ISession.cs" />
     <Compile Include="Security\SessionEventArgs.cs" />
-    <Compile Include="Security\ITicket.cs" />
     <Compile Include="Security\IUser.cs" />
     <Compile Include="Security\UserEventArgs.cs" />
     <Compile Include="Service\IService.cs" />

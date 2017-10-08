@@ -55,43 +55,83 @@ namespace OpenIIoT.Core.Security
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Session"/> class.
+        ///     Initializes a new instance of the <see cref="Session"/> class with the specified <paramref name="user"/> and
+        ///     <paramref name="identity"/>, an issue time of now, and default duration <see cref="SecurityConstants.DefaultSessionLength"/>.
         /// </summary>
-        /// <param name="user">The User to which the Session belongs.</param>
-        /// <param name="ticket">The SDK.Security.Ticket for the Session.</param>
-        public Session(IUser user, ITicket ticket)
+        /// <param name="user">The <see cref="User"/> instance asssociated with the Session.</param>
+        /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Session.</param>
+        public Session(IUser user, ClaimsIdentity identity)
+            : this(user, identity, DateTime.UtcNow, SecurityConstants.DefaultSessionLength)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Session"/> class with the specified <paramref name="user"/> and
+        ///     <paramref name="identity"/>, an issue time of now, and with the specified <paramref name="duration"/>.
+        /// </summary>
+        /// <param name="user">The <see cref="User"/> instance asssociated with the Session.</param>
+        /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Session.</param>
+        /// <param name="duration">The duration of the Session, in seconds.</param>
+        public Session(IUser user, ClaimsIdentity identity, int duration)
+            : this(user, identity, DateTime.UtcNow, duration)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Session"/> class with the specified <paramref name="user"/> and
+        ///     <paramref name="identity"/>, a creation time <paramref name="created"/>, and default duration <see cref="SecurityConstants.DefaultSessionLength"/>.
+        /// </summary>
+        /// <param name="user">The <see cref="User"/> instance asssociated with the Session.</param>
+        /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Session.</param>
+        /// <param name="created">The time at which the Session was created, in Utc.</param>
+        public Session(IUser user, ClaimsIdentity identity, DateTimeOffset created)
+            : this(user, identity, created, SecurityConstants.DefaultSessionLength)
+        {
+        }
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Session"/> class with the specified <paramref name="user"/> and
+        ///     <paramref name="identity"/>, a creation time <paramref name="created"/>, and with the specified <paramref name="duration"/>.
+        /// </summary>
+        /// <param name="user">The <see cref="User"/> instance asssociated with the Session.</param>
+        /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Session.</param>
+        /// <param name="created">The time at which the Session was created, in Utc.</param>
+        /// <param name="duration">The duration of the Session, in seconds.</param>
+        public Session(IUser user, ClaimsIdentity identity, DateTimeOffset created, int duration)
         {
             User = user;
-            Ticket = ticket;
+            Identity = identity;
+            Created = created;
+            Expires = Created.AddSeconds(duration);
         }
 
         #endregion Public Constructors
 
-        #region Private Properties
+        #region Public Properties
 
         /// <summary>
-        ///     Gets the expiration timestamp of the Ticket, in UTC.
+        ///     Gets the time at which the Session was created, in Utc.
         /// </summary>
-        [JsonProperty(Order = 4)]
-        public DateTimeOffset Expires => Ticket.ExpiresUtc;
+        [JsonProperty(Order = 3)]
+        public DateTimeOffset Created { get; private set; }
+
+        /// <summary>
+        ///     Gets or sets the time at which the Session expires, in Utc.
+        /// </summary>
+        [JsonProperty(Order = 6)]
+        public DateTimeOffset Expires { get; set; }
+
+        /// <summary>
+        ///     Gets the <see cref="ClaimsIdentity"/> instance associated with the Session.
+        /// </summary>
+        [JsonIgnore]
+        public ClaimsIdentity Identity { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
         /// </summary>
         [JsonProperty(Order = 5)]
-        public bool IsExpired => (Ticket?.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
-
-        /// <summary>
-        ///     Gets the issued timestamp of the Ticket, in UTC.
-        /// </summary>
-        [JsonProperty(Order = 3)]
-        public DateTimeOffset Issued => Ticket.IssuedUtc;
-
-        /// <summary>
-        ///     Gets the SDK.Security.Ticket for the Session.
-        /// </summary>
-        [JsonProperty(Order = 6)]
-        public ITicket Ticket { get; }
+        public bool IsExpired => Expires < DateTime.UtcNow;
 
         /// <summary>
         ///     Gets the token for the Session.
@@ -105,9 +145,9 @@ namespace OpenIIoT.Core.Security
         [JsonProperty(Order = 1)]
         public IUser User { get; }
 
-        #endregion Private Properties
+        #endregion Public Properties
 
-        #region Private Methods
+        #region Public Methods
 
         /// <summary>
         ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Ticket"/> .
@@ -116,9 +156,9 @@ namespace OpenIIoT.Core.Security
         /// <returns>The retrieved Claim value.</returns>
         public string GetClaim(string type)
         {
-            return Ticket?.Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;
+            return Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;
         }
 
-        #endregion Private Methods
+        #endregion Public Methods
     }
 }
