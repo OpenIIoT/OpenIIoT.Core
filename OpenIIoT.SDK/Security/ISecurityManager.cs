@@ -94,21 +94,21 @@ namespace OpenIIoT.SDK.Security
         IReadOnlyList<Role> Roles { get; }
 
         /// <summary>
-        ///     Gets the list of active <see cref="Session"/> s.
+        ///     Gets the list of active <see cref="ISession"/> s.
         /// </summary>
-        IReadOnlyList<Session> Sessions { get; }
+        IReadOnlyList<ISession> Sessions { get; }
 
         /// <summary>
-        ///     Gets the list of configured <see cref="User"/> s.
+        ///     Gets the list of configured <see cref="IUser"/> s.
         /// </summary>
-        IReadOnlyList<User> Users { get; }
+        IReadOnlyList<IUser> Users { get; }
 
         #endregion Public Properties
 
         #region Public Methods
 
         /// <summary>
-        ///     Creates a new <see cref="User"/>.
+        ///     Creates a new <see cref="IUser"/>.
         /// </summary>
         /// <param name="name">The name of the new User.</param>
         /// <param name="displayName">The display name of the new User.</param>
@@ -116,60 +116,60 @@ namespace OpenIIoT.SDK.Security
         /// <param name="password">The plaintext password for the new User.</param>
         /// <param name="role">The Role of the new User.</param>
         /// <returns>A Result containing the result of the operation and the newly created User.</returns>
-        IResult<User> CreateUser(string name, string displayName, string email, string password, Role role);
+        IResult<IUser> CreateUser(string name, string displayName, string email, string password, Role role);
 
         /// <summary>
-        ///     Deletes the specified <see cref="User"/> from the list of <see cref="Users"/>.
+        ///     Deletes the specified <see cref="IUser"/> from the list of <see cref="Users"/>.
         /// </summary>
         /// <param name="name">The name of the User to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         IResult DeleteUser(string name);
 
         /// <summary>
-        ///     Ends the specified <see cref="Session"/>.
+        ///     Ends the specified <see cref="ISession"/>.
         /// </summary>
         /// <param name="session">The Session to end.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        IResult EndSession(Session session);
+        IResult EndSession(ISession session);
 
         /// <summary>
-        ///     Extends the specified <see cref="Session"/> to the configured session length.
+        ///     Extends the specified <see cref="ISession"/> to the configured session length.
         /// </summary>
         /// <param name="session">The Session to extend.</param>
         /// <returns>A Result containing the result of the operation and the extended Session.</returns>
-        IResult<Session> ExtendSession(Session session);
+        IResult<ISession> ExtendSession(ISession session);
 
         /// <summary>
-        ///     Finds the <see cref="Session"/> matching the specified <paramref name="token"/>.
+        ///     Finds the <see cref="ISession"/> matching the specified <paramref name="token"/>.
         /// </summary>
         /// <param name="token">The token for the requested Session.</param>
         /// <returns>The found Session.</returns>
-        Session FindSession(string token);
+        ISession FindSession(string token);
 
         /// <summary>
-        ///     Finds the <see cref="User"/> matching the specified <paramref name="name"/>.
+        ///     Finds the <see cref="IUser"/> matching the specified <paramref name="name"/>.
         /// </summary>
         /// <param name="name">The name of the requested User.</param>
         /// <returns>The found User.</returns>
-        User FindUser(string name);
+        IUser FindUser(string name);
 
         /// <summary>
-        ///     Finds the <see cref="Session"/> belonging to the <see cref="User"/> of the specified <see paramref="name"/>.
+        ///     Finds the <see cref="ISession"/> belonging to the <see cref="IUser"/> of the specified <see paramref="name"/>.
         /// </summary>
         /// <param name="name">The User for which the Session is to be retrieved.</param>
         /// <returns>The found Session.</returns>
-        Session FindUserSession(string name);
+        ISession FindUserSession(string name);
 
         /// <summary>
-        ///     Starts a new <see cref="Session"/> with the specified <paramref name="userName"/> and <paramref name="password"/>
+        ///     Starts a new <see cref="ISession"/> with the specified <paramref name="userName"/> and <paramref name="password"/>
         /// </summary>
         /// <param name="userName">The user for which the Session is to be started.</param>
         /// <param name="password">The password with which to authenticate the user.</param>
         /// <returns>A Result containing the result of the operation and the created Session.</returns>
-        IResult<Session> StartSession(string userName, string password);
+        IResult<ISession> StartSession(string userName, string password);
 
         /// <summary>
-        ///     Updates the specified <see cref="User"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
+        ///     Updates the specified <see cref="IUser"/> with the optionally specified <paramref name="password"/> and/or <paramref name="role"/>.
         /// </summary>
         /// <param name="name">The name of the User to update.</param>
         /// <param name="displayName">The display name of the new User.</param>
@@ -177,7 +177,7 @@ namespace OpenIIoT.SDK.Security
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        IResult<User> UpdateUser(string name, string displayName = null, string email = null, string password = null, Role? role = null);
+        IResult<IUser> UpdateUser(string name, string displayName = null, string email = null, string password = null, Role? role = null);
 
         #endregion Public Methods
     }

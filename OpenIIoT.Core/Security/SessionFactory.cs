@@ -68,7 +68,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="user">The User for which the Session is to be created.</param>
         /// <param name="sessionLength">The length of the Session, in seconds.</param>
         /// <returns>The created Session.</returns>
-        public Session CreateSession(User user, int sessionLength)
+        public ISession CreateSession(IUser user, int sessionLength)
         {
             logger.EnterMethod(xLogger.Params(user, sessionLength));
             Session retVal;
@@ -101,7 +101,7 @@ namespace OpenIIoT.Core.Security
         /// <param name="session">The Session to extend.</param>
         /// <param name="sessionLength">The length of the Session, in seconds.</param>
         /// <returns>The extended Session.</returns>
-        public Session ExtendSession(Session session, int sessionLength)
+        public ISession ExtendSession(ISession session, int sessionLength)
         {
             logger.EnterMethod(xLogger.Params(session, sessionLength));
 

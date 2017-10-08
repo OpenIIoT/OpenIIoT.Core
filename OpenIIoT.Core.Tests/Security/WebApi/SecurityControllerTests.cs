@@ -70,6 +70,7 @@ using OpenIIoT.SDK.Common.OperationResult;
 using Xunit;
 using Microsoft.Owin.Security;
 using System.Security.Claims;
+using OpenIIoT.Core.Security;
 
 namespace OpenIIoT.Core.Tests.Security.WebApi
 {
@@ -77,14 +78,14 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
     ///     Unit tests for the <see cref="Core.Security.WebApi.SecurityController"/> class.
     /// </summary>
     [Collection("SecurityController")]
-    public class SecurityController
+    public class SecurityControllerTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SecurityController"/> class.
+        ///     Initializes a new instance of the <see cref="SecurityControllerTests"/> class.
         /// </summary>
-        public SecurityController()
+        public SecurityControllerTests()
         {
             SecurityManager = new Mock<ISecurityManager>();
 
@@ -95,14 +96,14 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Controller.Request = new HttpRequestMessage();
             Controller.Configuration = new HttpConfiguration();
 
-            User = new SDK.Security.User("name", "displayName", "name@test.com", "hash", Role.Reader);
+            User = new Core.Security.User("name", "displayName", "name@test.com", "hash", Role.Reader);
         }
 
         #endregion Public Constructors
 
         #region Private Properties
 
-        private SDK.Security.User User { get; set; }
+        private Core.Security.User User { get; set; }
 
         /// <summary>
         ///     Gets or sets the WebApi Controller under test.
@@ -163,14 +164,14 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         public void SessionsEnd()
         {
             SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, null));
-            SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result());
+            SecurityManager.Setup(s => s.EndSession(It.IsAny<ISession>())).Returns(new Result());
 
             HttpResponseMessage response = Controller.SessionsEnd();
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
-            SecurityManager.Verify(s => s.EndSession(It.IsAny<Session>()), Times.Once);
+            SecurityManager.Verify(s => s.EndSession(It.IsAny<ISession>()), Times.Once);
         }
 
         /// <summary>
@@ -181,7 +182,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         public void SessionsEndFailure()
         {
             SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, null));
-            SecurityManager.Setup(s => s.EndSession(It.IsAny<Session>())).Returns(new Result(ResultCode.Failure));
+            SecurityManager.Setup(s => s.EndSession(It.IsAny<ISession>())).Returns(new Result(ResultCode.Failure));
 
             HttpResponseMessage response = Controller.SessionsEnd();
 
@@ -189,7 +190,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
 
             SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
-            SecurityManager.Verify(s => s.EndSession(It.IsAny<Session>()), Times.Once);
+            SecurityManager.Verify(s => s.EndSession(It.IsAny<ISession>()), Times.Once);
         }
 
         /// <summary>
@@ -198,7 +199,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsGet()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
+            ITicket ticket = new Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
             SecurityManager.Setup(s => s.Sessions).Returns(new[] { new Session(User, ticket) }.ToList().AsReadOnly());
@@ -221,7 +222,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsGetCurrent()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
+            ITicket ticket = new Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
             SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, ticket));
@@ -240,10 +241,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsStart()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
+            ITicket ticket = new Ticket(new ClaimsIdentity());
             ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
 
-            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>().SetReturnValue(new Session(User, ticket)));
+            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<ISession>().SetReturnValue(new Session(User, ticket)));
 
             HttpResponseMessage response = Controller.SessionsStart(new Core.Security.WebApi.DTO.SessionStartData() { Name = "user", Password = "password" });
 
@@ -286,7 +287,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void SessionsStartFailure()
         {
-            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<Session>(ResultCode.Failure));
+            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<ISession>(ResultCode.Failure));
 
             HttpResponseMessage response = Controller.SessionsStart(new Core.Security.WebApi.DTO.SessionStartData() { Name = "user", Password = "password" });
 
@@ -303,9 +304,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         public void UsersCreate()
         {
             string hash = "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86";
-            SDK.Security.User user = new User("user", "user", "test@test.com", hash, Role.Reader);
+            Core.Security.User user = new Core.Security.User("user", "user", "test@test.com", hash, Role.Reader);
 
-            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>().SetReturnValue(user));
+            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<IUser>().SetReturnValue(user));
 
             HttpResponseMessage response = Controller.UsersCreate(new Core.Security.WebApi.DTO.UserCreateData() { Name = "user", DisplayName = "name", Email = "test@test.com", Password = "password", Role = Role.Reader });
 
@@ -352,8 +353,8 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersCreateFailure()
         {
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(SDK.Security.User));
-            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<User>(ResultCode.Failure));
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(Core.Security.User));
+            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<IUser>(ResultCode.Failure));
 
             Core.Security.WebApi.DTO.UserCreateData newUser = new Core.Security.WebApi.DTO.UserCreateData() { Name = "user", DisplayName = "name", Email = "test@test.com", Password = "password", Role = Role.Reader };
             HttpResponseMessage response = Controller.UsersCreate(newUser);
@@ -371,7 +372,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersCreateUserExists()
         {
-            SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            Core.Security.User user = new Core.Security.User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
 
             HttpResponseMessage response = Controller.UsersCreate(new Core.Security.WebApi.DTO.UserCreateData() { Name = "user", DisplayName = "name", Email = "test@test.com", Password = "password", Role = Role.Reader });
@@ -386,7 +387,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersDelete()
         {
-            SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            Core.Security.User user = new Core.Security.User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.DeleteUser(It.IsAny<string>())).Returns(new Result());
 
@@ -417,7 +418,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersDeleteFailure()
         {
-            SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            Core.Security.User user = new Core.Security.User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.DeleteUser(It.IsAny<string>())).Returns(new Result(ResultCode.Failure));
 
@@ -436,7 +437,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersDeleteUserNotFound()
         {
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(User));
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(IUser));
 
             HttpResponseMessage response = Controller.UsersDelete("user");
 
@@ -451,7 +452,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersGet()
         {
-            SecurityManager.Setup(s => s.Users).Returns(new[] { new User("user", "user", "test@test.com", "hash", Role.Reader) }.ToList().AsReadOnly());
+            SecurityManager.Setup(s => s.Users).Returns(new[] { new Core.Security.User("user", "user", "test@test.com", "hash", Role.Reader) }.ToList().AsReadOnly());
 
             HttpResponseMessage response = Controller.UsersGet();
 
@@ -472,7 +473,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersGetName()
         {
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(new User("user", "user", "test@test.com", "hash", Role.Reader));
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(new Core.Security.User("user", "user", "test@test.com", "hash", Role.Reader));
 
             HttpResponseMessage response = Controller.UsersGetName("user");
 
@@ -502,7 +503,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersGetNameNotFound()
         {
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(User));
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(IUser));
 
             HttpResponseMessage response = Controller.UsersGetName(Guid.NewGuid().ToString());
 
@@ -517,9 +518,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersUpdate()
         {
-            SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            Core.Security.User user = new Core.Security.User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.DTO.UserUpdateData() { Password = "newpassword", Role = Role.ReadWriter });
 
@@ -566,9 +567,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersUpdateFailure()
         {
-            SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            Core.Security.User user = new Core.Security.User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>(ResultCode.Failure));
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>(ResultCode.Failure));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.DTO.UserUpdateData() { Password = "newpassword", Role = Role.ReadWriter });
 
@@ -601,9 +602,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersUpdatePassword()
         {
-            SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            Core.Security.User user = new Core.Security.User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.DTO.UserUpdateData() { Password = "newpassword", Role = null });
 
@@ -624,9 +625,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersUpdateRole()
         {
-            SDK.Security.User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            Core.Security.User user = new Core.Security.User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
-            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<User>().SetReturnValue(user));
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.DTO.UserUpdateData() { Password = null, Role = Role.ReadWriter });
 
@@ -649,7 +650,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersUpdateUserNotFound()
         {
-            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(User));
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(Core.Security.User));
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new Core.Security.WebApi.DTO.UserUpdateData() { Password = "newpassword", Role = Role.ReadWriter });
 

@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Security
+namespace OpenIIoT.Core.Security
 {
     /// <summary>
     ///     Constants for the <see cref="Security"/> namespace.

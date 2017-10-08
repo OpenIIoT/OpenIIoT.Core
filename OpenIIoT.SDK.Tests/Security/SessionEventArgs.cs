@@ -59,9 +59,9 @@
 
 namespace OpenIIoT.SDK.Tests.Security
 {
-    using System.Security.Claims;
-    using Microsoft.Owin.Security;
     using Xunit;
+    using SDK.Security;
+    using Moq;
 
     /// <summary>
     ///     Unit tests for the <see cref="SDK.Security.SessionEventArgs"/> class.
@@ -76,12 +76,15 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.User user = new SDK.Security.User("name", "displayName", "name@test.com", "hash", SDK.Security.Role.Reader);
-            SDK.Security.Session session = new SDK.Security.Session(user, new SDK.Security.Ticket(new ClaimsIdentity()));
-            SDK.Security.SessionEventArgs test = new SDK.Security.SessionEventArgs(session);
+            Mock<ITicket> ticket = new Mock<ITicket>();
+            Mock<ISession> session = new Mock<ISession>();
+
+            session.Setup(s => s.Ticket).Returns(ticket.Object);
+
+            SDK.Security.SessionEventArgs test = new SDK.Security.SessionEventArgs(session.Object);
 
             Assert.IsType<SDK.Security.SessionEventArgs>(test);
-            Assert.Equal(session, test.Session);
+            Assert.Equal(session.Object, test.Session);
         }
 
         #endregion Public Methods

@@ -220,9 +220,13 @@
     </Compile>
     <Compile Include="Scripting\ScriptManager.cs" />
     <Compile Include="ApplicationSettings.cs" />
+    <Compile Include="Security\SecurityConstants.cs" />
     <Compile Include="Security\SecurityManager.cs" />
     <Compile Include="Security\SecurityManagerConfiguration.cs" />
+    <Compile Include="Security\Session.cs" />
     <Compile Include="Security\SessionFactory.cs" />
+    <Compile Include="Security\Ticket.cs" />
+    <Compile Include="Security\User.cs" />
     <Compile Include="Security\WebApi\SecurityController.cs" />
     <Compile Include="Security\WebApi\DTO\SessionData.cs" />
     <Compile Include="Security\WebApi\DTO\SessionStartData.cs" />
@@ -246,6 +250,8 @@
     <Compile Include="Common\WebApi\LogController.cs" />
     <Compile Include="Common\WebApi\LogHub.cs" />
     <Compile Include="Service\WebApi\ApiBaseController.cs" />
+    <Compile Include="Service\WebApi\HubHelper.cs" />
+    <Compile Include="Service\WebApi\IHub.cs" />
     <Compile Include="Service\WebApi\Middleware\AuthenticationMiddleware.cs" />
     <Compile Include="Service\WebApi\Middleware\NotFoundRedirectionMiddleware.cs" />
     <Compile Include="Service\WebApi\ModelValidation\ModelValidationField.cs" />
@@ -258,6 +264,7 @@
     <Compile Include="Service\WebApi\Startup.cs" />
     <Compile Include="Service\WebApi\WebApiConstants.cs" />
     <Compile Include="Service\WebApi\WebApiService.cs" />
+    <Compile Include="Service\WebApi\WebApiServiceConfiguration.cs" />
     <Compile Include="WindowsService.cs">
       <SubType>Component</SubType>
     </Compile>

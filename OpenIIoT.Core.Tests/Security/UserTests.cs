@@ -48,14 +48,16 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Tests.Security
+namespace OpenIIoT.Core.Tests.Security
 {
+    using Core.Security;
+    using SDK.Security;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Security.User"/> class.
+    ///     Unit tests for the <see cref="User"/> class.
     /// </summary>
-    public class User
+    public class UserTests
     {
         #region Public Methods
 
@@ -65,14 +67,14 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.User test = new SDK.Security.User("test", "Test", "test@test.com", "password", SDK.Security.Role.Reader);
+            User test = new User("test", "Test", "test@test.com", "password", Role.Reader);
 
-            Assert.IsType<SDK.Security.User>(test);
+            Assert.IsType<User>(test);
             Assert.Equal("test", test.Name);
             Assert.Equal("Test", test.DisplayName);
             Assert.Equal("test@test.com", test.Email);
             Assert.Equal("password", test.PasswordHash);
-            Assert.Equal(SDK.Security.Role.Reader, test.Role);
+            Assert.Equal(Role.Reader, test.Role);
         }
 
         #endregion Public Methods

@@ -39,15 +39,16 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Security
+namespace OpenIIoT.Core.Security
 {
     using System;
     using System.Security.Claims;
+    using SDK.Security;
 
     /// <summary>
     ///     An authentication Ticket.
     /// </summary>
-    public class Ticket
+    public class Ticket : ITicket
     {
         #region Public Constructors
 
@@ -78,7 +79,7 @@ namespace OpenIIoT.SDK.Security
         ///     issue time <paramref name="issuedUtc"/>, and <paramref name="duration"/>.
         /// </summary>
         /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
-        /// <param name="issuedUtc">The time at whcih the Ticket was issued, in UTC.</param>
+        /// <param name="issuedUtc">The time at which the Ticket was issued, in UTC.</param>
         /// <param name="duration">The duration of the Ticket, in seconds.</param>
         public Ticket(ClaimsIdentity identity, DateTimeOffset issuedUtc, int duration)
         {

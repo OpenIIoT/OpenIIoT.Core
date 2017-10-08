@@ -63,7 +63,7 @@ namespace OpenIIoT.SDK.Security
         ///     Initializes a new instance of the <see cref="UserEventArgs"/> class.
         /// </summary>
         /// <param name="user">The User associated with the event.</param>
-        public UserEventArgs(User user)
+        public UserEventArgs(IUser user)
         {
             User = user;
         }
@@ -75,7 +75,7 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Gets the User associated with the event.
         /// </summary>
-        public User User { get; }
+        public IUser User { get; }
 
         #endregion Public Properties
     }

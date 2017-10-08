@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄
-      █   ███    ███
-      █   ███    ███   ▄█████    ▄█████    █████
-      █   ███    ███   ██  ▀    ██   █    ██  ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
-      █   ███    ███    ▄  ██   ██   █    ██  ██
-      █   ████████▀   ▄████▀    ███████   ██  ██
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
+      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
+      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
+      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
+      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
+      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  An application User.
+      █  Session information for a User Session.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,30 +39,30 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Security
+namespace OpenIIoT.Core.Security
 {
+    using System;
+    using System.Linq;
+    using System.Security.Claims;
+    using Newtonsoft.Json;
+    using SDK.Security;
+
     /// <summary>
-    ///     An application User.
+    ///     Session information for a <see cref="User"/> Session.
     /// </summary>
-    public class User
+    public class Session : ISession
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="User"/> class.
+        ///     Initializes a new instance of the <see cref="Session"/> class.
         /// </summary>
-        /// <param name="name">The name of the User.</param>
-        /// <param name="displayName">The display name of the User.</param>
-        /// <param name="email">The email address of the User.</param>
-        /// <param name="passwordHash">The SHA512 hash of the password for the User.</param>
-        /// <param name="role">The Role of the User.</param>
-        public User(string name, string displayName, string email, string passwordHash, Role role)
+        /// <param name="user">The User to which the Session belongs.</param>
+        /// <param name="ticket">The SDK.Security.Ticket for the Session.</param>
+        public Session(IUser user, ITicket ticket)
         {
-            Name = name;
-            DisplayName = displayName;
-            Email = email;
-            PasswordHash = passwordHash;
-            Role = role;
+            User = user;
+            Ticket = ticket;
         }
 
         #endregion Public Constructors
@@ -70,30 +70,55 @@ namespace OpenIIoT.SDK.Security
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the display name of the User.
+        ///     Gets the expiration timestamp of the Ticket, in UTC.
         /// </summary>
-        public string DisplayName { get; set; }
+        [JsonProperty(Order = 4)]
+        public DateTimeOffset Expires => Ticket.ExpiresUtc;
 
         /// <summary>
-        ///     Gets or sets the email address of the User.
+        ///     Gets a value indicating whether the Session is expired.
         /// </summary>
-        public string Email { get; set; }
+        [JsonProperty(Order = 5)]
+        public bool IsExpired => (Ticket?.ExpiresUtc ?? default(DateTimeOffset)) < DateTime.UtcNow;
 
         /// <summary>
-        ///     Gets the name of the User.
+        ///     Gets the issued timestamp of the Ticket, in UTC.
         /// </summary>
-        public string Name { get; }
+        [JsonProperty(Order = 3)]
+        public DateTimeOffset Issued => Ticket.IssuedUtc;
 
         /// <summary>
-        ///     Gets or sets the SHA512 hash of the password for the User.
+        ///     Gets the SDK.Security.Ticket for the Session.
         /// </summary>
-        public string PasswordHash { get; set; }
+        [JsonProperty(Order = 6)]
+        public ITicket Ticket { get; }
 
         /// <summary>
-        ///     Gets or sets the Role of the User.
+        ///     Gets the token for the Session.
         /// </summary>
-        public Role Role { get; set; }
+        [JsonProperty(Order = 2)]
+        public string Token => GetClaim(ClaimTypes.Hash) ?? string.Empty;
+
+        /// <summary>
+        ///     Gets the User to which the Session belongs.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public IUser User { get; }
 
         #endregion Private Properties
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Ticket"/> .
+        /// </summary>
+        /// <param name="type">The type of Claim to retrieve.</param>
+        /// <returns>The retrieved Claim value.</returns>
+        public string GetClaim(string type)
+        {
+            return Ticket?.Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;
+        }
+
+        #endregion Private Methods
     }
 }

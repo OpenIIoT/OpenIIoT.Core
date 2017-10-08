@@ -138,7 +138,7 @@ namespace OpenIIoT.Core.Security.WebApi
             HttpResponseMessage retVal;
 
             string token = GetSessionToken(Request);
-            Session session = SecurityManager.FindSession(token);
+            ISession session = SecurityManager.FindSession(token);
             IResult endSessionResult = SecurityManager.EndSession(session);
 
             if (endSessionResult.ResultCode != ResultCode.Failure)
@@ -180,7 +180,7 @@ namespace OpenIIoT.Core.Security.WebApi
         public HttpResponseMessage SessionsGetCurrent()
         {
             string token = GetSessionToken(Request);
-            Session session = SecurityManager.FindSession(token);
+            ISession session = SecurityManager.FindSession(token);
 
             return Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
         }
@@ -202,11 +202,11 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            IResult<Session> startSessionResult = SecurityManager.StartSession(data.Name, data.Password);
+            IResult<ISession> startSessionResult = SecurityManager.StartSession(data.Name, data.Password);
 
             if (startSessionResult.ResultCode != ResultCode.Failure)
             {
-                Session session = startSessionResult.ReturnValue;
+                ISession session = startSessionResult.ReturnValue;
 
                 retVal = Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
 
@@ -244,11 +244,11 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            User user = SecurityManager.FindUser(data.Name);
+            IUser user = SecurityManager.FindUser(data.Name);
 
             if (user == default(User))
             {
-                IResult<User> createResult = SecurityManager.CreateUser(data.Name, data.DisplayName, data.Email, data.Password, data.Role);
+                IResult<IUser> createResult = SecurityManager.CreateUser(data.Name, data.DisplayName, data.Email, data.Password, data.Role);
 
                 if (createResult.ResultCode != ResultCode.Failure)
                 {
@@ -292,7 +292,7 @@ namespace OpenIIoT.Core.Security.WebApi
             }
             else
             {
-                User user = SecurityManager.FindUser(name);
+                IUser user = SecurityManager.FindUser(name);
 
                 if (user != default(User))
                 {
@@ -353,7 +353,7 @@ namespace OpenIIoT.Core.Security.WebApi
             }
             else
             {
-                User user = SecurityManager.FindUser(name);
+                IUser user = SecurityManager.FindUser(name);
 
                 if (user != default(User))
                 {
@@ -396,11 +396,11 @@ namespace OpenIIoT.Core.Security.WebApi
             }
             else
             {
-                User user = SecurityManager.FindUser(name);
+                IUser user = SecurityManager.FindUser(name);
 
                 if (user != default(User))
                 {
-                    IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, data.DisplayName, data.Email, data.Password, data.Role);
+                    IResult<IUser> updateResult = SecurityManager.UpdateUser(user.Name, data.DisplayName, data.Email, data.Password, data.Role);
 
                     if (updateResult.ResultCode != ResultCode.Failure)
                     {

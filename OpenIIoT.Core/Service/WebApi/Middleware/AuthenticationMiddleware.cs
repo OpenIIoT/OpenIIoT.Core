@@ -59,6 +59,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Security;
     using OpenIIoT.SDK.Service.WebApi;
+    using Security;
 
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.
@@ -185,7 +186,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
                 token = GetSessionToken(context.Request);
             }
 
-            Session session = SecurityManager.FindSession(token);
+            ISession session = SecurityManager.FindSession(token);
 
             if (session != default(Session) && !session.IsExpired)
             {

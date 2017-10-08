@@ -63,7 +63,7 @@ namespace OpenIIoT.SDK.Security
         ///     Initializes a new instance of the <see cref="SessionEventArgs"/> class.
         /// </summary>
         /// <param name="session">The Session associated with the event.</param>
-        public SessionEventArgs(Session session)
+        public SessionEventArgs(ISession session)
         {
             Session = session;
         }
@@ -75,7 +75,7 @@ namespace OpenIIoT.SDK.Security
         /// <summary>
         ///     Gets the Session associated with the event.
         /// </summary>
-        public Session Session { get; }
+        public ISession Session { get; }
 
         #endregion Public Properties
     }
