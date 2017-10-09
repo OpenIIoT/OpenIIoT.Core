@@ -51,7 +51,6 @@
 namespace OpenIIoT.Core.Security.WebApi
 {
     using System.Collections.Generic;
-    using System.ComponentModel.DataAnnotations;
     using System.Diagnostics.CodeAnalysis;
     using System.Linq;
     using System.Net;
@@ -65,6 +64,7 @@ namespace OpenIIoT.Core.Security.WebApi
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Security;
+    using OpenIIoT.Core.Service.WebApi.ModelValidation;
     using Swashbuckle.Swagger.Annotations;
 
     /// <summary>
@@ -138,7 +138,7 @@ namespace OpenIIoT.Core.Security.WebApi
             HttpResponseMessage retVal;
 
             string token = GetSessionToken(Request);
-            Session session = SecurityManager.FindSession(token);
+            ISession session = SecurityManager.FindSession(token);
             IResult endSessionResult = SecurityManager.EndSession(session);
 
             if (endSessionResult.ResultCode != ResultCode.Failure)
@@ -180,7 +180,7 @@ namespace OpenIIoT.Core.Security.WebApi
         public HttpResponseMessage SessionsGetCurrent()
         {
             string token = GetSessionToken(Request);
-            Session session = SecurityManager.FindSession(token);
+            ISession session = SecurityManager.FindSession(token);
 
             return Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
         }
@@ -193,47 +193,33 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPost]
         [Route("sessions")]
         [AllowAnonymous]
+        [ValidateModel]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.Created, "The Session was successfully started.", typeof(SessionData))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(ModelValidationResult))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be started.", typeof(Result))]
         public HttpResponseMessage SessionsStart([FromBody]SessionStartData data)
         {
             HttpResponseMessage retVal;
 
-            if (!(data is SessionStartData))
+            IResult<ISession> startSessionResult = SecurityManager.StartSession(data.Name, data.Password);
+
+            if (startSessionResult.ResultCode != ResultCode.Failure)
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
-            }
-            else if (string.IsNullOrEmpty(data.Name))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified User name is null or empty.");
-            }
-            else if (string.IsNullOrEmpty(data.Password))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
+                ISession session = startSessionResult.ReturnValue;
+
+                retVal = Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
+
+                CookieHeaderValue cookie = new CookieHeaderValue(WebApiConstants.SessionTokenCookieName, session.Token);
+                cookie.Expires = session.Expires;
+                cookie.Path = "/";
+
+                retVal.Headers.AddCookies(new[] { cookie });
             }
             else
             {
-                IResult<Session> startSessionResult = SecurityManager.StartSession(data.Name, data.Password);
-
-                if (startSessionResult.ResultCode != ResultCode.Failure)
-                {
-                    Session session = startSessionResult.ReturnValue;
-
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
-
-                    CookieHeaderValue cookie = new CookieHeaderValue(WebApiConstants.SessionTokenCookieName, session.Token);
-                    cookie.Expires = session.Expires;
-                    cookie.Path = "/";
-
-                    retVal.Headers.AddCookies(new[] { cookie });
-                }
-                else
-                {
-                    IResult result = (Result)startSessionResult;
-                    retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
-                }
+                IResult result = (Result)startSessionResult;
+                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
             }
 
             return retVal;
@@ -247,9 +233,10 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPost]
         [Route("users")]
         [Authorize(Roles = nameof(Role.Administrator))]
+        [ValidateModel]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.Created, "The User was created.", typeof(UserData))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ModelValidationResult))]
         [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
@@ -257,52 +244,25 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            if (!(data is UserCreateData))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
-            }
-            else if (string.IsNullOrEmpty(data.Name))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
-            }
-            else if (string.IsNullOrEmpty(data.DisplayName))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified display name is null or empty.");
-            }
-            else if (string.IsNullOrEmpty(data.Email))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified email address is null or empty.");
-            }
-            else if (!new EmailAddressAttribute().IsValid(data.Email))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified email address does not match the pattern of a valid address.");
-            }
-            else if (string.IsNullOrEmpty(data.Password))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is null or empty.");
-            }
-            else
-            {
-                User user = SecurityManager.FindUser(data.Name);
+            IUser user = SecurityManager.FindUser(data.Name);
 
-                if (user == default(User))
+            if (user == default(User))
+            {
+                IResult<IUser> createResult = SecurityManager.CreateUser(data.Name, data.DisplayName, data.Email, data.Password, data.Role);
+
+                if (createResult.ResultCode != ResultCode.Failure)
                 {
-                    IResult<User> createResult = SecurityManager.CreateUser(data.Name, data.DisplayName, data.Email, data.Password, data.Role);
-
-                    if (createResult.ResultCode != ResultCode.Failure)
-                    {
-                        retVal = Request.CreateResponse(HttpStatusCode.Created, new UserData(createResult.ReturnValue), JsonFormatter());
-                    }
-                    else
-                    {
-                        IResult result = (Result)createResult;
-                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
-                    }
+                    retVal = Request.CreateResponse(HttpStatusCode.Created, new UserData(createResult.ReturnValue), JsonFormatter());
                 }
                 else
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.Conflict, "The specified User already exists.");
+                    IResult result = (Result)createResult;
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                 }
+            }
+            else
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.Conflict, "The specified User already exists.");
             }
 
             return retVal;
@@ -332,7 +292,7 @@ namespace OpenIIoT.Core.Security.WebApi
             }
             else
             {
-                User user = SecurityManager.FindUser(name);
+                IUser user = SecurityManager.FindUser(name);
 
                 if (user != default(User))
                 {
@@ -368,7 +328,7 @@ namespace OpenIIoT.Core.Security.WebApi
         public HttpResponseMessage UsersGet()
         {
             IReadOnlyList<UserData> users = SecurityManager.Users.Select(u => new UserData(u)).ToList().AsReadOnly();
-            return Request.CreateResponse(HttpStatusCode.OK, users, JsonFormatter());
+            return Request.CreateResponse(HttpStatusCode.OK, users);
         }
 
         /// <summary>
@@ -393,7 +353,7 @@ namespace OpenIIoT.Core.Security.WebApi
             }
             else
             {
-                User user = SecurityManager.FindUser(name);
+                IUser user = SecurityManager.FindUser(name);
 
                 if (user != default(User))
                 {
@@ -417,6 +377,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPatch]
         [Route("users/{name}")]
         [Authorize]
+        [ValidateModel]
         [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(UserData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
@@ -426,37 +387,20 @@ namespace OpenIIoT.Core.Security.WebApi
         {
             HttpResponseMessage retVal;
 
-            if (string.IsNullOrEmpty(name))
+            if (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null)
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified name is null or empty.");
-            }
-            else if (!(data is UserUpdateData))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified data is not of the correct Type.");
-            }
-            else if (data.DisplayName != null && data.DisplayName == string.Empty)
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified display name is empty.");
-            }
-            else if (data.Email != null && !new EmailAddressAttribute().IsValid(data.Email))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified email address does not match the pattern of a valid address.");
-            }
-            else if (data.Password != null && data.Password == string.Empty)
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified password is empty.");
-            }
-            else if (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null)
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "No data supplied; nothing to update.");
+                ModelValidationResult validationResult = new ModelValidationResult();
+                validationResult.Message = "The request data is invalid.";
+                validationResult.Model.Add(new ModelValidationField() { Field = "data", Messages = new[] { "At least one field must be supplied." }.ToList() });
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validationResult);
             }
             else
             {
-                User user = SecurityManager.FindUser(name);
+                IUser user = SecurityManager.FindUser(name);
 
                 if (user != default(User))
                 {
-                    IResult<User> updateResult = SecurityManager.UpdateUser(user.Name, data.DisplayName, data.Email, data.Password, data.Role);
+                    IResult<IUser> updateResult = SecurityManager.UpdateUser(user.Name, data.DisplayName, data.Email, data.Password, data.Role);
 
                     if (updateResult.ResultCode != ResultCode.Failure)
                     {

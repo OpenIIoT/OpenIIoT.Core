@@ -59,12 +59,14 @@
 
 namespace OpenIIoT.SDK.Tests.Security
 {
+    using Moq;
+    using SDK.Security;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Security.UserEventArgs"/> class.
+    ///     Unit tests for the <see cref="UserEventArgs"/> class.
     /// </summary>
-    public class UserEventArgs
+    public class UserEventArgsTests
     {
         #region Public Methods
 
@@ -74,11 +76,17 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.User user = new SDK.Security.User("name", "name", "name@test.com", "password", SDK.Security.Role.Reader);
-            SDK.Security.UserEventArgs test = new SDK.Security.UserEventArgs(user);
+            Mock<IUser> user = new Mock<IUser>();
+            user.Setup(u => u.Name).Returns("name");
+            user.Setup(u => u.DisplayName).Returns("DisplayName");
+            user.Setup(u => u.Email).Returns("name@test.com");
+            user.Setup(u => u.PasswordHash).Returns("hash");
+            user.Setup(u => u.Role).Returns(Role.Reader);
 
-            Assert.IsType<SDK.Security.UserEventArgs>(test);
-            Assert.Equal(user, test.User);
+            UserEventArgs test = new UserEventArgs(user.Object);
+
+            Assert.IsType<UserEventArgs>(test);
+            Assert.Equal(user.Object, test.User);
         }
 
         #endregion Public Methods

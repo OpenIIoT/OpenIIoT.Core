@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█     █▄                        ▄████████                   ▄████████                                         ▄███████▄
-      █   ███     ███                       ███    ███                 ███    ███                                        ███    ███
-      █   ███     ███    ▄█████ ▀██████▄    ███    ███    █████▄  █   ▄███▄▄▄▄██▀  ██████  ██   █      ██       ▄█████   ███    ███    █████    ▄█████    ▄█████  █  ▀███  ▐██▀
-      █   ███     ███   ██   █    ██   ██   ███    ███   ██   ██ ██  ▀▀███▀▀▀▀▀   ██    ██ ██   ██ ▀███████▄   ██   █    ███    ███   ██  ██   ██   █    ██   ▀█ ██    ██  ██
-      █   ███     ███  ▄██▄▄     ▄██▄▄█▀  ▀███████████   ██   ██ ██▌ ▀███████████ ██    ██ ██   ██     ██  ▀  ▄██▄▄    ▀█████████▀   ▄██▄▄█▀  ▄██▄▄     ▄██▄▄    ██▌    ████▀
-      █   ███     ███ ▀▀██▀▀    ▀▀██▀▀█▄    ███    ███ ▀██████▀  ██    ███    ███ ██    ██ ██   ██     ██    ▀▀██▀▀      ███        ▀███████ ▀▀██▀▀    ▀▀██▀▀    ██     ████
-      █   ███ ▄█▄ ███   ██   █    ██   ██   ███    ███   ██      ██    ███    ███ ██    ██ ██   ██     ██      ██   █    ███          ██  ██   ██   █    ██      ██   ▄██ ▀██
-      █    ▀███▀███▀    ███████ ▄██████▀    ███    █▀   ▄███▀    █     ███    ███  ██████  ██████     ▄██▀     ███████  ▄████▀        ██  ██   ███████   ██      █   ███    ██▄
+      █    ▄█    █▄                                                                   ▄▄▄▄███▄▄▄▄
+      █   ███    ███                                                                ▄██▀▀▀███▀▀▀██▄
+      █   ███    ███   ▄█████   █        █  ██████▄    ▄█████      ██       ▄█████  ███   ███   ███  ██████  ██████▄     ▄█████  █
+      █   ███    ███   ██   ██ ██       ██  ██   ▀██   ██   ██ ▀███████▄   ██   █   ███   ███   ███ ██    ██ ██   ▀██   ██   █  ██
+      █   ███    ███   ██   ██ ██       ██▌ ██    ██   ██   ██     ██  ▀  ▄██▄▄     ███   ███   ███ ██    ██ ██    ██  ▄██▄▄    ██
+      █   ███    ███ ▀████████ ██       ██  ██    ██ ▀████████     ██    ▀▀██▀▀     ███   ███   ███ ██    ██ ██    ██ ▀▀██▀▀    ██
+      █    ██▄  ▄██    ██   ██ ██▌    ▄ ██  ██   ▄██   ██   ██     ██      ██   █   ███   ███   ███ ██    ██ ██   ▄██   ██   █  ██▌    ▄
+      █     ▀████▀     ██   █▀ ████▄▄██ █   ██████▀    ██   █▀    ▄██▀     ███████   ▀█   ███   █▀   ██████  ██████▀    ███████ ████▄▄██
       █
       █     ▄████████
       █     ███    ███
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Prepends the configured WebRoot route to all actions within a controller.
+      █  Validates the data model parameter of designated WebApi controllers.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,44 +48,73 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Service.WebApi
+namespace OpenIIoT.Core.Service.WebApi.ModelValidation
 {
-    using OpenIIoT.SDK.Service.WebApi;
-    using System.Web.Http;
+    using System.Net;
+    using System.Net.Http;
+    using System.Web.Http.Controllers;
+    using System.Web.Http.Filters;
+    using System.Web.Http.ModelBinding;
 
     /// <summary>
-    ///     Prepends the configured WebRoot route to all actions within a controller.
+    ///     Validates the data model parameter of designated WebApi controllers.
     /// </summary>
-    public class WebApiRoutePrefixAttribute : RoutePrefixAttribute
+    public class ValidateModelAttribute : ActionFilterAttribute
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="WebApiRoutePrefixAttribute"/> class.
+        ///     Invoked prior to the execution of the WebApi controller.
         /// </summary>
-        /// <param name="prefix">The route prefix for the controller.</param>
-        public WebApiRoutePrefixAttribute(string prefix)
-            : base(prefix)
+        /// <param name="actionContext">The context in which the controller has been invoked.</param>
+        public override void OnActionExecuting(HttpActionContext actionContext)
         {
-        }
-
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the route prefix.
-        /// </summary>
-        public override string Prefix
-        {
-            get
+            if (!actionContext.ModelState.IsValid)
             {
-                IRoutes routes = WebApiService.GetRoutes();
-
-                return $"{routes.Api}/{base.Prefix}".TrimStart('/');
+                actionContext.Response = actionContext.Request.CreateResponse(HttpStatusCode.BadRequest, GetResult(actionContext.ModelState));
             }
         }
 
-        #endregion Public Properties
+        #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Transforms the specified <see cref="ModelStateDictionary"/><paramref name="state"/> into a strongly typed data
+        ///     transfer object containing the same information.
+        /// </summary>
+        /// <param name="state">The <see cref="ModelStateDictionary"/> to transform.</param>
+        /// <returns>The transformed model state dictionary.</returns>
+        private ModelValidationResult GetResult(ModelStateDictionary state)
+        {
+            ModelValidationResult retVal = new ModelValidationResult() { Message = "The request data is invalid." };
+
+            foreach (string key in state.Keys)
+            {
+                ModelValidationField property = new ModelValidationField() { Field = key };
+
+                foreach (ModelError error in state[key].Errors)
+                {
+                    if (!string.IsNullOrEmpty(error.ErrorMessage))
+                    {
+                        property.Messages.Add(error.ErrorMessage);
+                    }
+
+                    if (!string.IsNullOrEmpty(error.Exception?.Message))
+                    {
+                        property.Messages.Add(error.Exception.Message);
+                    }
+                }
+
+                if (property.Messages.Count > 0)
+                {
+                    retVal.Model.Add(property);
+                }
+            }
+
+            return retVal;
+        }
+
+        #endregion Private Methods
     }
 }

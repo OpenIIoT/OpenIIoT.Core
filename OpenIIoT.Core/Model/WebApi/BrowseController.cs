@@ -15,11 +15,11 @@
     {
         #region Private Fields
 
-        private static List<string> conciseSerializationProperties = new List<string>(new string[] { "FQN", "Children" });
+        private static string[] conciseSerializationProperties = new[] { "FQN", "Children" };
         private static Logger logger = LogManager.GetCurrentClassLogger();
         private static IApplicationManager manager = ApplicationManager.GetInstance();
         private static Item model = manager.GetManager<ModelManager>().Model;
-        private static List<string> verboseSerializationProperties = new List<string>(new string[] { "Parent", "SourceItem", "Lock", "HasChildren", "IsOrphaned" });
+        private static string[] verboseSerializationProperties = new[] { "Parent", "SourceItem", "Lock", "HasChildren", "IsOrphaned" };
 
         #endregion Private Fields
 

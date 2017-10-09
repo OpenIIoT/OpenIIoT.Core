@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █       ███
-      █   ▀█████████▄
-      █      ▀███▀▀██  █   ▄██████    █  █▄      ▄█████     ██
-      █       ███   ▀ ██  ██    ██   ██ ▄██▀    ██   █  ▀███████▄
-      █       ███     ██▌ ██    ▀    ██▐█▀     ▄██▄▄        ██  ▀
-      █       ███     ██  ██    ▄  ▀▀████     ▀▀██▀▀        ██
-      █       ███     ██  ██    ██   ██ ▀██▄    ██   █      ██
-      █      ▄████▀   █   ██████▀    ▀█   ▀█▀   ███████    ▄██▀
+      █    ▄█     ▄████████
+      █   ███    ███    ███
+      █   ███▌   ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
+      █   ███▌   ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
+      █   ███▌ ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
+      █   ███           ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
+      █   ███     ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
+      █   █▀    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  An authentication Ticket.
+      █  Session information for a User Session.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -45,67 +45,53 @@ namespace OpenIIoT.SDK.Security
     using System.Security.Claims;
 
     /// <summary>
-    ///     An authentication Ticket.
+    ///     Session information for a <see cref="User"/> Session.
     /// </summary>
-    public class Ticket
+    public interface ISession
     {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an
-        ///     issue time equal to the current time, and an expiration time equal to the current time plus the default session length.
-        /// </summary>
-        /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
-        public Ticket(ClaimsIdentity identity)
-            : this(identity, DateTime.UtcNow, SecurityConstants.DefaultSessionLength)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an
-        ///     issue time equal to the current time, and an expiration time equal to the current time plus the specified
-        ///     <paramref name="duration"/>, in seconds.
-        /// </summary>
-        /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
-        /// <param name="duration">The duration of the Ticket, in seconds.</param>
-        public Ticket(ClaimsIdentity identity, int duration)
-            : this(identity, DateTime.UtcNow, duration)
-        {
-        }
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Ticket"/> class with the specified <paramref name="identity"/>, an
-        ///     issue time <paramref name="issuedUtc"/>, and <paramref name="duration"/>.
-        /// </summary>
-        /// <param name="identity">The <see cref="ClaimsIdentity"/> instance associated with the Ticket.</param>
-        /// <param name="issuedUtc">The time at whcih the Ticket was issued, in UTC.</param>
-        /// <param name="duration">The duration of the Ticket, in seconds.</param>
-        public Ticket(ClaimsIdentity identity, DateTimeOffset issuedUtc, int duration)
-        {
-            Identity = identity;
-            IssuedUtc = issuedUtc;
-            ExpiresUtc = issuedUtc.AddSeconds(duration);
-        }
-
-        #endregion Public Constructors
-
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the time at which the Ticket expires.
+        ///     Gets the time at which the Session was created, in Utc.
         /// </summary>
-        public DateTimeOffset ExpiresUtc { get; set; }
+        DateTimeOffset Created { get; }
 
         /// <summary>
-        ///     Gets the <see cref="ClaimsIdentity"/> instance associated with the Ticket.
+        ///     Gets or sets the time at which the Session expires, in Utc.
         /// </summary>
-        public ClaimsIdentity Identity { get; private set; }
+        DateTimeOffset Expires { get; set; }
 
         /// <summary>
-        ///     Gets the time at which the Ticket was issued.
+        ///     Gets the <see cref="ClaimsIdentity"/> instance associated with the Session.
         /// </summary>
-        public DateTimeOffset IssuedUtc { get; private set; }
+        ClaimsIdentity Identity { get; }
+
+        /// <summary>
+        ///     Gets a value indicating whether the Session is expired.
+        /// </summary>
+        bool IsExpired { get; }
+
+        /// <summary>
+        ///     Gets the token for the Session.
+        /// </summary>
+        string Token { get; }
+
+        /// <summary>
+        ///     Gets the User to which the Session belongs.
+        /// </summary>
+        IUser User { get; }
 
         #endregion Public Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Ticket"/> .
+        /// </summary>
+        /// <param name="type">The type of Claim to retrieve.</param>
+        /// <returns>The retrieved Claim value.</returns>
+        string GetClaim(string type);
+
+        #endregion Public Methods
     }
 }

@@ -56,7 +56,7 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         ///     Initializes a new instance of the <see cref="UserData"/> class with the specified <see cref="User"/>.
         /// </summary>
         /// <param name="user">The <see cref="User"/> from which data is sourced.</param>
-        public UserData(User user)
+        public UserData(IUser user)
         {
             this.CopyPropertyValuesFrom(user);
         }

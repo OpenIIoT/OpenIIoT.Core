@@ -57,7 +57,7 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         ///     Initializes a new instance of the <see cref="SessionData"/> class with the specified <see cref="Session"/>.
         /// </summary>
         /// <param name="session">The <see cref="Session"/> from which data is sourced.</param>
-        public SessionData(Session session)
+        public SessionData(ISession session)
         {
             this.CopyPropertyValuesFrom(session);
 

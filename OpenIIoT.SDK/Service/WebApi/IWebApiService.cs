@@ -1,12 +1,13 @@
 ﻿namespace OpenIIoT.SDK.Service.WebApi
 {
-    using OpenIIoT.SDK.Service.WebApi;
+    using OpenIIoT.SDK.Configuration;
+    using OpenIIoT.SDK.Service;
 
     public interface IWebApiService : IService
     {
         #region Public Properties
 
-        WebApiServiceConfiguration Configuration { get; }
+        IRoutes Routes { get; }
 
         #endregion Public Properties
     }

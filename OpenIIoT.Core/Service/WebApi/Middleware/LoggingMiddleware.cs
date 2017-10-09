@@ -56,6 +56,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using System.Threading.Tasks;
     using Microsoft.Owin;
     using NLog.xLogger;
+    using OpenIIoT.SDK.Service.WebApi;
 
     /// <summary>
     ///     Owin middleeware for HTTP request and response logging.
@@ -71,16 +72,31 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
 
         #endregion Private Fields
 
-        #region Public Methods
+        #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LoggingMiddleware"/> class.
         /// </summary>
         /// <param name="next">The middlware component which follows.</param>
-        public LoggingMiddleware(OwinMiddleware next)
+        /// <param name="configuration">The active configuration for the <see cref="WebApiService"/>.</param>
+        public LoggingMiddleware(OwinMiddleware next, WebApiServiceConfiguration configuration)
         : base(next)
         {
+            Configuration = configuration;
         }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the active configuration for the <see cref="WebApiService"/>.
+        /// </summary>
+        private WebApiServiceConfiguration Configuration { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
 
         /// <summary>
         ///     Invokes the middleware function and transfers execution to the next middleware component.
@@ -99,7 +115,7 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             if (logger.IsInfoEnabled)
             {
                 string logString = GetLogString(context, benchmark.Elapsed);
-                PathString apiPathString = new PathString("/" + (WebApiService.StaticConfiguration.Root + "/" + WebApiConstants.ApiRoutePrefix).Trim('/'));
+                PathString apiPathString = new PathString("/" + (Configuration.Root + "/" + WebApiConstants.ApiRoutePrefix).Trim('/'));
 
                 if (context.Request.Path.StartsWithSegments(apiPathString))
                 {
@@ -117,6 +133,36 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
         #region Private Methods
 
         /// <summary>
+        ///     Returns the specified <paramref name="value"/> formatted as a binary size representation, with suffix.
+        /// </summary>
+        /// <param name="value">The value to format.</param>
+        /// <param name="decimalPlaces">The number of decimal places to which the value is to be rounded.</param>
+        /// <returns>The specified value with the size suffix appended.</returns>
+        private string GetFormattedSize(double value, int decimalPlaces = 1)
+        {
+            string[] sizeSuffixes = { "bytes", "KB", "MB", "GB" };
+
+            if (value <= 0)
+            {
+                return "0 bytes";
+            }
+
+            int mag = (int)Math.Log(value, 1024);
+            decimal adjustedSize = (decimal)value / (1L << (mag * 10));
+
+            if (Math.Round(adjustedSize, decimalPlaces) >= 1000)
+            {
+                mag += 1;
+                adjustedSize /= 1024;
+            }
+
+            return string.Format(
+                "{0:n" + decimalPlaces + "} {1}",
+                adjustedSize,
+                sizeSuffixes[mag]);
+        }
+
+        /// <summary>
         ///     Constructs the logger string for the specified <paramref name="context"/>.
         /// </summary>
         /// <param name="context">The context from which the log information is retrieved.</param>
@@ -130,33 +176,9 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             message.Append(context.Request.Method + " ");
             message.Append(context.Request.Path.Value);
             message.Append(" (" + (context.Request.RemoteIpAddress + "/" + GetTruncatedSessionToken(context.Response, 20)).Trim('/') + ") ");
-            message.Append(GetSizeSuffix((double)(context.Response.ContentLength ?? 0), 2) + ", " + duration.TotalMilliseconds + "ms");
+            message.Append(GetFormattedSize((double)(context.Response.ContentLength ?? 0), 2) + ", " + duration.TotalMilliseconds + "ms");
 
             return message.ToString();
-        }
-
-        private string GetSizeSuffix(double value, int decimalPlaces = 1)
-        {
-            string[] sizeSuffixes = { "bytes", "KB", "MB", "GB" };
-
-            if (value <= 0) { return "0 bytes"; }
-
-            // mag is 0 for bytes, 1 for KB, 2, for MB, etc.
-            int mag = (int)Math.Log(value, 1024);
-
-            // 1L << (mag * 10) == 2 ^ (10 * mag) [i.e. the number of bytes in the unit corresponding to mag]
-            decimal adjustedSize = (decimal)value / (1L << (mag * 10));
-
-            // make adjustment when the value is large enough that it would round up to 1000 or more
-            if (Math.Round(adjustedSize, decimalPlaces) >= 1000)
-            {
-                mag += 1;
-                adjustedSize /= 1024;
-            }
-
-            return string.Format("{0:n" + decimalPlaces + "} {1}",
-                adjustedSize,
-                sizeSuffixes[mag]);
         }
 
         /// <summary>

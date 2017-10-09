@@ -57,16 +57,17 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Collections.Generic;
-using Xunit;
-
 namespace OpenIIoT.Core.Tests.Security
 {
+    using System.Collections.Generic;
+    using OpenIIoT.Core.Security;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the <see cref="Core.Security.SecurityManagerConfiguration"/> class.
     /// </summary>
     [Collection("SecurityManagerConfiguration")]
-    public class SecurityManagerConfiguration
+    public class SecurityManagerConfigurationTests
     {
         #region Public Methods
 
@@ -76,10 +77,10 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.User user = new SDK.Security.User("name", "user", "test@test.com", "password", SDK.Security.Role.Reader);
+            Core.Security.User user = new Core.Security.User("name", "user", "test@test.com", "password", SDK.Security.Role.Reader);
             Core.Security.SecurityManagerConfiguration test = new Core.Security.SecurityManagerConfiguration()
             {
-                Users = new List<SDK.Security.User>(new[] { user }),
+                Users = new List<User>(new[] { user }),
                 SessionLength = 1,
                 SessionPurgeInterval = 2,
                 SlidingSessions = false,

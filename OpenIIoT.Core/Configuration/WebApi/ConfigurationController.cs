@@ -28,7 +28,7 @@
         {
             IConfiguration configuration = manager.GetManager<ConfigurationManager>().Configuration;
 
-            return Request.CreateResponse(HttpStatusCode.OK, configuration, JsonFormatter(ContractResolverType.OptOut, serializationProperties));
+            return Request.CreateResponse(HttpStatusCode.OK, configuration, JsonFormatter());
         }
 
         #endregion Public Methods

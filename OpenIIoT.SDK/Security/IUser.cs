@@ -1,28 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
-      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
-      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
-      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
-      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
-      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
-      █
-      █      ▄████████                                        ▄████████
-      █     ███    ███                                        ███    ███
-      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
-      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
-      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
-      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
-      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
-      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
+      █    ▄█  ███    █▄
+      █   ███  ███    ███
+      █   ███▌ ███    ███   ▄█████    ▄█████    █████
+      █   ███▌ ███    ███   ██  ▀    ██   █    ██  ██
+      █   ███▌ ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
+      █   ███  ███    ███ ▀███████ ▀▀██▀▀    ▀███████
+      █   ███  ███    ███    ▄  ██   ██   █    ██  ██
+      █   █▀   ████████▀   ▄████▀    ███████   ██  ██
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Event arguments for Session events.
+      █  An application User.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -50,33 +41,38 @@
 
 namespace OpenIIoT.SDK.Security
 {
-    using System;
-
     /// <summary>
-    ///     Event arguments for <see cref="Session"/> events.
+    ///     An application User.
     /// </summary>
-    public class SessionEventArgs : EventArgs
+    public interface IUser
     {
-        #region Public Constructors
+        #region Private Properties
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionEventArgs"/> class.
+        ///     Gets or sets the display name of the User.
         /// </summary>
-        /// <param name="session">The Session associated with the event.</param>
-        public SessionEventArgs(ISession session)
-        {
-            Session = session;
-        }
-
-        #endregion Public Constructors
-
-        #region Public Properties
+        string DisplayName { get; set; }
 
         /// <summary>
-        ///     Gets the Session associated with the event.
+        ///     Gets or sets the email address of the User.
         /// </summary>
-        public ISession Session { get; }
+        string Email { get; set; }
 
-        #endregion Public Properties
+        /// <summary>
+        ///     Gets the name of the User.
+        /// </summary>
+        string Name { get; }
+
+        /// <summary>
+        ///     Gets or sets the SHA512 hash of the password for the User.
+        /// </summary>
+        string PasswordHash { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the Role of the User.
+        /// </summary>
+        Role Role { get; set; }
+
+        #endregion Private Properties
     }
 }

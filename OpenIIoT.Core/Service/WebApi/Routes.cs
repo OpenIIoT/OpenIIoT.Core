@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄
-      █   ███    ███
-      █   ███    ███   ▄█████    ▄█████    █████
-      █   ███    ███   ██  ▀    ██   █    ██  ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
-      █   ███    ███    ▄  ██   ██   █    ██  ██
-      █   ████████▀   ▄████▀    ███████   ██  ██
+      █      ▄████████
+      █     ███    ███
+      █    ▄███▄▄▄▄██▀  ██████  ██   █      ██       ▄█████   ▄█████
+      █   ▀▀███▀▀▀▀▀   ██    ██ ██   ██ ▀███████▄   ██   █    ██  ▀
+      █   ▀███████████ ██    ██ ██   ██     ██  ▀  ▄██▄▄      ██
+      █     ███    ███ ██    ██ ██   ██     ██    ▀▀██▀▀    ▀███████
+      █     ███    ███ ██    ██ ██   ██     ██      ██   █     ▄  ██
+      █     ███    ███  ██████  ██████     ▄██▀     ███████  ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  An application User.
+      █  Web Routes for the Web Service.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,61 +39,74 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Security
+namespace OpenIIoT.Core.Service.WebApi
 {
+    using OpenIIoT.SDK.Service.WebApi;
+
     /// <summary>
-    ///     An application User.
+    ///     Web Routes for the <see cref="WebApiService"/>.
     /// </summary>
-    public class User
+    public class Routes : IRoutes
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="User"/> class.
+        ///     Initializes a new instance of the <see cref="Routes"/> class using the specified <paramref name="configuration"/>.
         /// </summary>
-        /// <param name="name">The name of the User.</param>
-        /// <param name="displayName">The display name of the User.</param>
-        /// <param name="email">The email address of the User.</param>
-        /// <param name="passwordHash">The SHA512 hash of the password for the User.</param>
-        /// <param name="role">The Role of the User.</param>
-        public User(string name, string displayName, string email, string passwordHash, Role role)
+        /// <param name="configuration">
+        ///     The configuration for the <see cref="WebApiService"/> containing user-defined route information.
+        /// </param>
+        public Routes(WebApiServiceConfiguration configuration)
         {
-            Name = name;
-            DisplayName = displayName;
-            Email = email;
-            PasswordHash = passwordHash;
-            Role = role;
+            Root = configuration.Root.TrimStart('/').TrimEnd('/');
+
+            Api = $"{Root}/{WebApiConstants.ApiRoutePrefix}".TrimStart('/');
+            SignalR = $"/{Root}/{WebApiConstants.SignalRRoutePrefix}".Replace("//", "/");
+            HelpRoot = $"{Root}/{WebApiConstants.HelpRoutePrefix}".TrimStart('/');
+            Swagger = $"{HelpRoot}/docs/{{apiVersion}}";
+            SwaggerUi = $"{HelpRoot}/ui/{{*assetPath}}";
+            Help = $"{HelpRoot}/ui/index";
         }
 
         #endregion Public Constructors
 
-        #region Private Properties
+        #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the display name of the User.
+        ///     Gets the base route for Api endpoints.
         /// </summary>
-        public string DisplayName { get; set; }
+        public string Api { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the email address of the User.
+        ///     Gets the user-friendly route for SwaggerUi.
         /// </summary>
-        public string Email { get; set; }
+        public string Help { get; private set; }
 
         /// <summary>
-        ///     Gets the name of the User.
+        ///     Gets the base route for Swagger components.
         /// </summary>
-        public string Name { get; }
+        public string HelpRoot { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the SHA512 hash of the password for the User.
+        ///     Gets the user-defined web root.
         /// </summary>
-        public string PasswordHash { get; set; }
+        public string Root { get; private set; }
 
         /// <summary>
-        ///     Gets or sets the Role of the User.
+        ///     Gets the route for SignalR.
         /// </summary>
-        public Role Role { get; set; }
+        public string SignalR { get; private set; }
 
-        #endregion Private Properties
+        /// <summary>
+        ///     Gets the route for the Swagger json file.
+        /// </summary>
+        public string Swagger { get; private set; }
+
+        /// <summary>
+        ///     Gets the route for SwaggerUi.
+        /// </summary>
+        public string SwaggerUi { get; private set; }
+
+        #endregion Public Properties
     }
 }

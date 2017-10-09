@@ -57,6 +57,7 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         /// </summary>
         [JsonProperty(Order = 2)]
         [Required]
+        [MinLength(1)]
         public string DisplayName { get; set; }
 
         /// <summary>
@@ -64,6 +65,7 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         /// </summary>
         [JsonProperty(Order = 3)]
         [Required]
+        [EmailAddress]
         public string Email { get; set; }
 
         /// <summary>
@@ -71,6 +73,7 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         /// </summary>
         [JsonProperty(Order = 1)]
         [Required]
+        [MinLength(1)]
         public string Name { get; set; }
 
         /// <summary>
@@ -78,6 +81,7 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         /// </summary>
         [JsonProperty(Order = 5)]
         [Required]
+        [MinLength(1)]
         public string Password { get; set; }
 
         /// <summary>

@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Service.WebApi
+namespace OpenIIoT.Core.Service.WebApi.Swagger
 {
     using System.Web.Http.Description;
     using Swashbuckle.Swagger;

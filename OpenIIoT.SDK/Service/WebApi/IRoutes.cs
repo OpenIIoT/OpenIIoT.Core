@@ -1,28 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄
-      █   ███    ███
-      █   ███    ███   ▄█████    ▄█████    █████
-      █   ███    ███   ██  ▀    ██   █    ██  ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
-      █   ███    ███    ▄  ██   ██   █    ██  ██
-      █   ████████▀   ▄████▀    ███████   ██  ██
-      █
-      █       ███
-      █   ▀█████████▄
-      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
-      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
-      █       ███      ▄██▄▄      ██         ██  ▀   ██
-      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
-      █       ███       ██   █     ▄  ██     ██       ▄  ██
-      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █    ▄█     ▄████████
+      █   ███    ███    ███
+      █   ███▌  ▄███▄▄▄▄██▀  ██████  ██   █      ██       ▄█████   ▄█████
+      █   ███▌ ▀▀███▀▀▀▀▀   ██    ██ ██   ██ ▀███████▄   ██   █    ██  ▀
+      █   ███▌ ▀███████████ ██    ██ ██   ██     ██  ▀  ▄██▄▄      ██
+      █   ███    ███    ███ ██    ██ ██   ██     ██    ▀▀██▀▀    ▀███████
+      █   ███    ███    ███ ██    ██ ██   ██     ██      ██   █     ▄  ██
+      █   █▀     ███    ███  ██████  ██████     ▄██▀     ███████  ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the User class.
+      █  Web Routes for the Web Service.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,33 +39,50 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Tests.Security
+namespace OpenIIoT.SDK.Service.WebApi
 {
-    using Xunit;
-
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Security.User"/> class.
+    ///     Web Routes for the <see cref="IWebApiService"/>.
     /// </summary>
-    public class User
+    public interface IRoutes
     {
-        #region Public Methods
+        #region Public Properties
 
         /// <summary>
-        ///     Tests the constructor and all properties.
+        ///     Gets the base route for Api endpoints.
         /// </summary>
-        [Fact]
-        public void Constructor()
-        {
-            SDK.Security.User test = new SDK.Security.User("test", "Test", "test@test.com", "password", SDK.Security.Role.Reader);
+        string Api { get; }
 
-            Assert.IsType<SDK.Security.User>(test);
-            Assert.Equal("test", test.Name);
-            Assert.Equal("Test", test.DisplayName);
-            Assert.Equal("test@test.com", test.Email);
-            Assert.Equal("password", test.PasswordHash);
-            Assert.Equal(SDK.Security.Role.Reader, test.Role);
-        }
+        /// <summary>
+        ///     Gets the user-friendly route for SwaggerUi.
+        /// </summary>
+        string Help { get; }
 
-        #endregion Public Methods
+        /// <summary>
+        ///     Gets the base route for Swagger components.
+        /// </summary>
+        string HelpRoot { get; }
+
+        /// <summary>
+        ///     Gets the user-defined web root.
+        /// </summary>
+        string Root { get; }
+
+        /// <summary>
+        ///     Gets the route for SignalR.
+        /// </summary>
+        string SignalR { get; }
+
+        /// <summary>
+        ///     Gets the route for the Swagger json file.
+        /// </summary>
+        string Swagger { get; }
+
+        /// <summary>
+        ///     Gets the route for SwaggerUi.
+        /// </summary>
+        string SwaggerUi { get; }
+
+        #endregion Public Properties
     }
 }

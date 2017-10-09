@@ -1,28 +1,28 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
-      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
-      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
-      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
-      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
-      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
+      █   ███    █▄
+      █   ███    ███
+      █   ███    ███   ▄█████    ▄█████    █████
+      █   ███    ███   ██  ▀    ██   █    ██  ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
+      █   ███    ███    ▄  ██   ██   █    ██  ██
+      █   ████████▀   ▄████▀    ███████   ██  ██
       █
-      █      ▄████████                                        ▄████████
-      █     ███    ███                                        ███    ███
-      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
-      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
-      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
-      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
-      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
-      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Event arguments for Session events.
+      █  Unit tests for the User class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,35 +48,35 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Security
+namespace OpenIIoT.Core.Tests.Security
 {
-    using System;
+    using Core.Security;
+    using SDK.Security;
+    using Xunit;
 
     /// <summary>
-    ///     Event arguments for <see cref="Session"/> events.
+    ///     Unit tests for the <see cref="User"/> class.
     /// </summary>
-    public class SessionEventArgs : EventArgs
+    public class UserTests
     {
-        #region Public Constructors
+        #region Public Methods
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionEventArgs"/> class.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        /// <param name="session">The Session associated with the event.</param>
-        public SessionEventArgs(ISession session)
+        [Fact]
+        public void Constructor()
         {
-            Session = session;
+            User test = new User("test", "Test", "test@test.com", "password", Role.Reader);
+
+            Assert.IsType<User>(test);
+            Assert.Equal("test", test.Name);
+            Assert.Equal("Test", test.DisplayName);
+            Assert.Equal("test@test.com", test.Email);
+            Assert.Equal("password", test.PasswordHash);
+            Assert.Equal(Role.Reader, test.Role);
         }
 
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the Session associated with the event.
-        /// </summary>
-        public ISession Session { get; }
-
-        #endregion Public Properties
+        #endregion Public Methods
     }
 }

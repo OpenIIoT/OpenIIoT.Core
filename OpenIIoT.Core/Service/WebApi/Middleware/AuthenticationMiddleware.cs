@@ -53,44 +53,44 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using System.Net;
     using System.Security.Claims;
     using System.Threading.Tasks;
     using Microsoft.Owin;
-    using NLog;
-    using NLog.xLogger;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Security;
+    using OpenIIoT.SDK.Service.WebApi;
+    using Security;
 
     /// <summary>
     ///     Owin Authentication middleware using basic session management provided by <see cref="ISecurityManager"/>.
     /// </summary>
     public class AuthenticationMiddleware : OwinMiddleware
     {
-        #region Private Fields
-
-        /// <summary>
-        ///     Gets the main logger for this class.
-        /// </summary>
-        private static xLogger logger = (xLogger)LogManager.GetCurrentClassLogger(typeof(xLogger));
-
-        #endregion Private Fields
-
         #region Public Constructors
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="AuthenticationMiddleware"/> class.
         /// </summary>
         /// <param name="next">The next middleware in the chain.</param>
-        public AuthenticationMiddleware(OwinMiddleware next)
+        /// <param name="configuration">The active <see cref="WebApiService"/> configuration.</param>
+        public AuthenticationMiddleware(OwinMiddleware next, WebApiServiceConfiguration configuration)
             : base(next)
         {
+            Configuration = configuration;
         }
 
         #endregion Public Constructors
 
         #region Private Properties
 
+        /// <summary>
+        ///     Gets or sets the active configuration for the <see cref="WebApiService"/>.
+        /// </summary>
+        private WebApiServiceConfiguration Configuration { get; set; }
+
+        /// <summary>
+        ///     Gets the <see cref="IApplicationManager"/> instance for the application.
+        /// </summary>
         private IApplicationManager Manager => ApplicationManager.GetInstance();
 
         /// <summary>
@@ -140,6 +140,11 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             }
         }
 
+        /// <summary>
+        ///     Determines whether the specified <paramref name="route"/> is among the list of routes configured for anonymous access.
+        /// </summary>
+        /// <param name="route">The route to examine.</param>
+        /// <returns>A value indicating whether the speciifed route is configured for anonymous access.</returns>
         private bool IsAnonymousRoute(PathString route)
         {
             List<PathString> anonymousPaths = WebApiConstants.AnonymousRoutes.Select(r => GetPathString(r)).ToList();
@@ -147,6 +152,12 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             return anonymousPaths.Any(p => route.StartsWithSegments(p));
         }
 
+        /// <summary>
+        ///     Determines whether the specified <paramref name="route"/> is among the list of routes which do not extend the
+        ///     active <see cref="Session"/> when accessed.
+        /// </summary>
+        /// <param name="route">The route to examine.</param>
+        /// <returns>A value indicating whether the specified route extends the active <see cref="Session"/> when accessed.</returns>
         private bool IsNonExtendableRoute(PathString route)
         {
             List<PathString> nonExtendablePaths = WebApiConstants.NonExtendableRoutes.Select(r => GetPathString(r)).ToList();
@@ -157,34 +168,48 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
 
         #region Private Methods
 
+        /// <summary>
+        ///     Authenticates the specified <paramref name="context"/>.
+        /// </summary>
+        /// <remarks>
+        ///     The <see cref="Session.Token"/> is initially retrieved from the Api Key header from the request. If the Api Key
+        ///     header is null or contains an empty string, the token is then retrieved from the Session Token cookie. If the token
+        ///     is present in both the Api Key header and the Session Token cookie, the Api Key header takes precendece.
+        /// </remarks>
+        /// <param name="context">The <see cref="IOwinContext"/> to authenticate.</param>
         private void Authenticate(IOwinContext context)
         {
             string token = GetApiKey(context.Request);
 
-            if (token == string.Empty)
+            if (string.IsNullOrEmpty(token))
             {
                 token = GetSessionToken(context.Request);
             }
 
-            Session session = SecurityManager.FindSession(token);
+            ISession session = SecurityManager.FindSession(token);
 
             if (session != default(Session) && !session.IsExpired)
             {
-                context.Request.User = new ClaimsPrincipal(session.Ticket.Identity);
+                context.Request.User = new ClaimsPrincipal(session.Identity);
 
                 if (!IsNonExtendableRoute(new PathString(context.Request.Path.Value)))
                 {
                     SecurityManager.ExtendSession(session);
                 }
 
-                DateTime? expirationDate = ((DateTimeOffset)session.Ticket.ExpiresUtc).UtcDateTime;
+                DateTime? expirationDate = ((DateTimeOffset)session.Expires).UtcDateTime;
                 context.Response.Cookies.Append(WebApiConstants.SessionTokenCookieName, token, new CookieOptions() { Expires = expirationDate });
             }
         }
 
+        /// <summary>
+        ///     Retrieves the <see cref="Session.Token"/> from the Api Key header of the specified <paramref name="request"/>.
+        /// </summary>
+        /// <param name="request">The <see cref="IOwinRequest"/> from which to retrieve the Api Key.</param>
+        /// <returns>The retrieved Api Key.</returns>
         private string GetApiKey(IOwinRequest request)
         {
-            string retVal = string.Empty;
+            string retVal = default(string);
 
             if (request.Headers.ContainsKey(WebApiConstants.ApiKeyHeaderName))
             {
@@ -194,16 +219,31 @@ namespace OpenIIoT.Core.Service.WebApi.Middleware
             return retVal;
         }
 
+        /// <summary>
+        ///     Builds and returns a <see cref="PathString"/> from the specified <paramref name="path"/>.
+        /// </summary>
+        /// <param name="path">The path from which the <see cref="PathString"/> is to be built.</param>
+        /// <returns>The built <see cref="PathString"/>.</returns>
         private PathString GetPathString(string path)
         {
-            return new PathString("/" + (WebApiService.StaticConfiguration.Root + "/" + path).Trim('/'));
+            return new PathString("/" + (Configuration.Root + "/" + path).Trim('/'));
         }
 
+        /// <summary>
+        ///     Retrieves the <see cref="Session.Token"/> from the specified <paramref name="request"/>.
+        /// </summary>
+        /// <param name="request">The <see cref="IOwinRequest"/> from which to retrieve the Session Token cookie.</param>
+        /// <returns>The <see cref="Session.Token"/>, if present.</returns>
         private string GetSessionToken(IOwinRequest request)
         {
             return request.Cookies[WebApiConstants.SessionTokenCookieName];
         }
 
+        /// <summary>
+        ///     Determines whether the specified <paramref name="request"/> is authenticated.
+        /// </summary>
+        /// <param name="request">The <see cref="IOwinRequest"/> to examine.</param>
+        /// <returns>A value indicating whether the request is authenticated.</returns>
         private bool IsAuthenticated(IOwinRequest request)
         {
             return request.User != default(ClaimsPrincipal);

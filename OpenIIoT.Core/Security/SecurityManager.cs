@@ -103,7 +103,7 @@ namespace OpenIIoT.Core.Security
             RegisterDependency<IConfigurationManager>(configurationManager);
 
             SessionFactory = new SessionFactory();
-            SessionList = new List<Session>();
+            SessionList = new List<ISession>();
 
             ChangeState(State.Initialized);
 
@@ -161,12 +161,12 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the list of active <see cref="Session"/> s.
         /// </summary>
-        public IReadOnlyList<Session> Sessions => ((List<Session>)SessionList).AsReadOnly();
+        public IReadOnlyList<ISession> Sessions => ((List<ISession>)SessionList).AsReadOnly();
 
         /// <summary>
         ///     Gets the list of configured <see cref="User"/> s.
         /// </summary>
-        public IReadOnlyList<User> Users => ((List<User>)Configuration?.Users)?.AsReadOnly();
+        public IReadOnlyList<IUser> Users => ((List<User>)Configuration?.Users)?.AsReadOnly();
 
         #endregion Public Properties
 
@@ -185,7 +185,7 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets or sets the list of active <see cref="Session"/> s.
         /// </summary>
-        private IList<Session> SessionList { get; set; }
+        private IList<ISession> SessionList { get; set; }
 
         #endregion Private Properties
 
@@ -269,16 +269,20 @@ namespace OpenIIoT.Core.Security
             }
             else
             {
+                logger.Debug("Failed to fetch the configuration from the Configuration Manager.");
+                fetchResult.LogResult(logger.Debug);
+
                 // if the fetch failed, add a new default instance to the configuration and try again.
                 logger.Debug("Unable to fetch the configuration.  Adding the default configuration to the Configuration Manager...");
+
                 IResult<SecurityManagerConfiguration> createResult = Dependency<IConfigurationManager>().Configuration.AddInstance<SecurityManagerConfiguration>(GetType(), GetConfigurationDefinition().DefaultConfiguration);
-                if (createResult.ResultCode != ResultCode.Failure)
+                retVal.Incorporate(createResult);
+
+                if (retVal.ResultCode != ResultCode.Failure)
                 {
                     logger.Debug("Successfully added the configuration.  Configuring...");
                     Configure(createResult.ReturnValue);
                 }
-
-                retVal.Incorporate(createResult);
             }
 
             retVal.LogResult(logger.Debug);
@@ -318,12 +322,12 @@ namespace OpenIIoT.Core.Security
         /// <param name="password">The plaintext password for the new User.</param>
         /// <param name="role">The Role of the new User.</param>
         /// <returns>A Result containing the result of the operation and the newly created User.</returns>
-        public IResult<User> CreateUser(string name, string displayName, string email, string password, Role role)
+        public IResult<IUser> CreateUser(string name, string displayName, string email, string password, Role role)
         {
             logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
             logger.Info($"Creating new User '{name}' with Role '{role}'...");
 
-            IResult<User> retVal = new Result<User>();
+            IResult<IUser> retVal = new Result<IUser>();
             retVal.ReturnValue = default(User);
 
             if (State != State.Running)
@@ -355,7 +359,7 @@ namespace OpenIIoT.Core.Security
                 if (FindUser(name) == default(User))
                 {
                     retVal.ReturnValue = new User(name, displayName, email, SDK.Common.Utility.ComputeSHA512Hash(password), role);
-                    Configuration.Users.Add(retVal.ReturnValue);
+                    Configuration.Users.Add((User)retVal.ReturnValue);
                     SaveConfiguration();
                 }
                 else
@@ -389,7 +393,7 @@ namespace OpenIIoT.Core.Security
             logger.Info($"Deleting User '{name}'...");
 
             IResult retVal = new Result();
-            User foundUser = default(User);
+            IUser foundUser = default(User);
 
             if (State != State.Running)
             {
@@ -401,7 +405,7 @@ namespace OpenIIoT.Core.Security
 
                 if (foundUser != default(User))
                 {
-                    Configuration.Users.Remove(foundUser);
+                    Configuration.Users.Remove((User)foundUser);
                 }
                 else
                 {
@@ -428,13 +432,13 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         /// <param name="session">The Session to end.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public IResult EndSession(Session session)
+        public IResult EndSession(ISession session)
         {
             logger.EnterMethod();
             logger.Debug($"Ending Session '{session?.Token}'...");
 
             IResult retVal = new Result();
-            Session foundSession = default(Session);
+            ISession foundSession = default(Session);
 
             if (State != State.Running)
             {
@@ -482,13 +486,13 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         /// <param name="session">The Session to extend.</param>
         /// <returns>A Result containing the result of the operation and the extended Session.</returns>
-        public IResult<Session> ExtendSession(Session session)
+        public IResult<ISession> ExtendSession(ISession session)
         {
             logger.EnterMethod();
             logger.Trace($"Extending Session '{session?.Token}'...");
 
-            IResult<Session> retVal = new Result<Session>();
-            Session foundSession = default(Session);
+            IResult<ISession> retVal = new Result<ISession>();
+            ISession foundSession = default(Session);
 
             if (State != State.Running)
             {
@@ -536,10 +540,10 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         /// <param name="token">The token for the requested Session.</param>
         /// <returns>The found Session.</returns>
-        public Session FindSession(string token)
+        public ISession FindSession(string token)
         {
             return SessionList
-                .Where(s => s.Ticket.Identity.Claims
+                .Where(s => s.Identity.Claims
                     .Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value == token).FirstOrDefault();
         }
 
@@ -548,7 +552,7 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         /// <param name="name">The name of the requested User.</param>
         /// <returns>The found User.</returns>
-        public User FindUser(string name)
+        public IUser FindUser(string name)
         {
             return Configuration?.Users?.Where(u => u.Name == name).FirstOrDefault();
         }
@@ -558,10 +562,10 @@ namespace OpenIIoT.Core.Security
         /// </summary>
         /// <param name="name">The name of the <see cref="User"/> for which the Session is to be retrieved.</param>
         /// <returns>The found Session.</returns>
-        public Session FindUserSession(string name)
+        public ISession FindUserSession(string name)
         {
             return SessionList
-                .Where(s => s.Ticket.Identity.Claims
+                .Where(s => s.Identity.Claims
                     .Where(c => c.Type == ClaimTypes.Name).FirstOrDefault().Value == name).FirstOrDefault();
         }
 
@@ -587,12 +591,12 @@ namespace OpenIIoT.Core.Security
         /// <param name="userName">The user for which the Session is to be started.</param>
         /// <param name="password">The password with which to authenticate the user.</param>
         /// <returns>A Result containing the result of the operation and the created Session.</returns>
-        public IResult<Session> StartSession(string userName, string password)
+        public IResult<ISession> StartSession(string userName, string password)
         {
             logger.EnterMethod(xLogger.Params(userName, xLogger.Exclude()));
             logger.Info($"Starting Session for User '{userName}'...");
 
-            IResult<Session> retVal = new Result<Session>();
+            IResult<ISession> retVal = new Result<ISession>();
 
             if (State != State.Running)
             {
@@ -600,7 +604,7 @@ namespace OpenIIoT.Core.Security
             }
             else
             {
-                User foundUser = FindUser(userName);
+                IUser foundUser = FindUser(userName);
 
                 if (foundUser != default(User))
                 {
@@ -608,7 +612,7 @@ namespace OpenIIoT.Core.Security
 
                     if (foundUser.PasswordHash == hash)
                     {
-                        Session foundSession = FindUserSession(foundUser.Name);
+                        ISession foundSession = FindUserSession(foundUser.Name);
 
                         if (foundSession == default(Session))
                         {
@@ -668,13 +672,13 @@ namespace OpenIIoT.Core.Security
         /// <param name="password">The updated plaintext password for the User.</param>
         /// <param name="role">The updated Role for the user.</param>
         /// <returns>A Result containing the result of the operation and the updated User.</returns>
-        public IResult<User> UpdateUser(string name, string displayName = null, string email = null, string password = null, Role? role = null)
+        public IResult<IUser> UpdateUser(string name, string displayName = null, string email = null, string password = null, Role? role = null)
         {
             logger.EnterMethod(xLogger.Params(name, xLogger.Exclude(), role));
             logger.Info($"Updating User '{name}'...");
 
-            IResult<User> retVal = new Result<User>();
-            User foundUser;
+            IResult<IUser> retVal = new Result<IUser>();
+            IUser foundUser;
 
             if (State != State.Running)
             {
@@ -788,9 +792,16 @@ namespace OpenIIoT.Core.Security
 
             IResult retVal = Configure();
 
-            SessionExpiryTimer = new System.Timers.Timer(Configuration.SessionPurgeInterval);
-            SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
-            SessionExpiryTimer.Start();
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                throw new SecurityManagerConfigurationException("Failed to configure the SecurityManager: " + retVal.GetLastError());
+            }
+            else
+            {
+                SessionExpiryTimer = new System.Timers.Timer(Configuration.SessionPurgeInterval);
+                SessionExpiryTimer.Elapsed += (sender, args) => PurgeExpiredSessions();
+                SessionExpiryTimer.Start();
+            }
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -808,7 +819,7 @@ namespace OpenIIoT.Core.Security
         {
             logger.EnterMethod();
 
-            IList<Session> sessions = new List<Session>();
+            IList<ISession> sessions = new List<ISession>();
 
             sessionLock.EnterReadLock();
 

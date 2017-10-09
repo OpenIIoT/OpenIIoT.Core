@@ -48,23 +48,25 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Tests.Security
+namespace OpenIIoT.Core.Tests.Security
 {
     using System;
     using System.Security.Claims;
+    using OpenIIoT.Core.Security;
+    using OpenIIoT.SDK.Security;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Security.Session"/> class.
+    ///     Unit tests for the <see cref="Session"/> class.
     /// </summary>
-    public class Session
+    public class SessionTests
     {
         #region Public Properties
 
         /// <summary>
         ///     Gets or sets the User with which to conduct testing.
         /// </summary>
-        private SDK.Security.User User { get; set; }
+        private IUser User { get; set; }
 
         #endregion Public Properties
 
@@ -76,139 +78,112 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity(), 15);
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
+            identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
 
-            User = new SDK.Security.User("name", "displayName", "name@test.com", "hash", SDK.Security.Role.Reader);
+            User = new User("name", "displayName", "name@test.com", "hash", SDK.Security.Role.Reader);
 
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
+            ISession test = new Session(User, identity);
 
-            Assert.IsType<SDK.Security.Session>(test);
+            Assert.IsType<Session>(test);
+            Assert.IsAssignableFrom<ISession>(test);
             Assert.Equal("hash", test.Token);
-            Assert.Equal(ticket, test.Ticket);
             Assert.False(test.IsExpired);
             Assert.Equal("name", test.GetClaim(ClaimTypes.Name));
-            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim(ClaimTypes.Role)));
+            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(Role), test.GetClaim(ClaimTypes.Role)));
             Assert.NotNull(test.Expires);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.IsExpired"/> property with an expired Ticket.
+        ///     Tests the <see cref="ISession.IsExpired"/> property with an expired Ticket.
         /// </summary>
         [Fact]
         public void IsExpiredExpired()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity(), -15);
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
+            ClaimsIdentity identity = new ClaimsIdentity();
+            ISession test = new Session(User, identity, DateTime.UtcNow, -15);
 
             Assert.True(test.IsExpired);
             Assert.NotNull(test.Expires);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Name"/> claim.
+        ///     Tests the <see cref="Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Name"/> claim.
         /// </summary>
         [Fact]
         public void Name()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
 
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Equal("name", test.GetClaim(ClaimTypes.Name));
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.GetClaim(string)"/> method with a Ticket missing the
-        ///     <see cref="ClaimTypes.Name"/> claim.
+        ///     Tests the <see cref="Session.GetClaim(string)"/> method with a Ticket missing the <see cref="ClaimTypes.Name"/> claim.
         /// </summary>
         [Fact]
         public void NameNoClaim()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
+            ClaimsIdentity identity = new ClaimsIdentity();
 
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Equal(null, test.GetClaim(ClaimTypes.Name));
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Role"/> claim.
+        ///     Tests the <see cref="Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Role"/> claim.
         /// </summary>
         [Fact]
         public void Role()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
 
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
+            Session test = new Session(User, identity);
 
-            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(SDK.Security.Role), test.GetClaim(ClaimTypes.Role)));
+            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(Role), test.GetClaim(ClaimTypes.Role)));
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Role"/> claim.
+        ///     Tests the <see cref="Session.GetClaim(string)"/> method for the <see cref="ClaimTypes.Role"/> claim.
         /// </summary>
         [Fact]
         public void RoleNoClaim()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
+            ClaimsIdentity identity = new ClaimsIdentity();
 
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Null(test.GetClaim(ClaimTypes.Role));
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.Ticket"/> property.
-        /// </summary>
-        [Fact]
-        public void Ticket()
-        {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
-
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
-
-            Assert.Equal(ticket, test.Ticket);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.Ticket"/> property with a null ticket.
-        /// </summary>
-        [Fact]
-        public void TicketNull()
-        {
-            SDK.Security.Session test = new SDK.Security.Session(User, null);
-
-            Assert.Equal(null, test.Ticket);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.Token"/> property.
+        ///     Tests the <see cref="Session.Token"/> property.
         /// </summary>
         [Fact]
         public void Token()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
-            ticket.Identity.AddClaim(new Claim(ClaimTypes.Hash, "token"));
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "token"));
 
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
+            Session test = new Session(User, identity);
 
             Assert.Equal("token", test.Token);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Security.Session.Token"/> property with a ticket missing the Hash claim..
+        ///     Tests the <see cref="Session.Token"/> property with a ticket missing the Hash claim..
         /// </summary>
         [Fact]
         public void TokenNoClaim()
         {
-            SDK.Security.Ticket ticket = new SDK.Security.Ticket(new ClaimsIdentity());
-
-            SDK.Security.Session test = new SDK.Security.Session(User, ticket);
+            Session test = new Session(User, new ClaimsIdentity());
 
             Assert.Equal(string.Empty, test.Token);
         }
