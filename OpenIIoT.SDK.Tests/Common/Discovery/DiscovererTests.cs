@@ -128,42 +128,42 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
     }
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Common.Discovery.Discoverer"/> class.
+    ///     Unit tests for the <see cref="Discoverer"/> class.
     /// </summary>
     [Collection("Discovery")]
-    public class Discoverer
+    public class DiscovererTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Discovery.Discoverer.Discover{T}(object)"/> method.
+        ///     Tests the <see cref="Discoverer.Discover{T}(object)"/> method.
         /// </summary>
         [Fact]
         public void Discover()
         {
             DiscoverableParent parent = new DiscoverableParent();
 
-            IList<IDiscoverableChild> list = SDK.Common.Discovery.Discoverer.Discover<IDiscoverableChild>(parent);
+            IList<IDiscoverableChild> list = Discoverer.Discover<IDiscoverableChild>(parent);
 
             Assert.Equal(3, list.Count);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Discovery.Discoverer.Discover{T}(object)"/> method with an object which does not
-        ///     include the <see cref="DiscoverableAttribute"/> attribute.
+        ///     Tests the <see cref=".Discoverer.Discover{T}(object)"/> method with an object which does not include the
+        ///     <see cref="DiscoverableAttribute"/> attribute.
         /// </summary>
         [Fact]
         public void DiscoverNotDiscoverable()
         {
             string astring = string.Empty;
 
-            IList<string> list = SDK.Common.Discovery.Discoverer.Discover<string>(astring);
+            IList<string> list = Discoverer.Discover<string>(astring);
 
             Assert.Empty(list);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Discovery.Discoverer.Discover{T}(object)"/> method with a self-referencing object.
+        ///     Tests the <see cref="Discoverer.Discover{T}(object)"/> method with a self-referencing object.
         /// </summary>
         [Fact]
         public void DiscoverSelfReferential()
@@ -172,13 +172,13 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
 
             parent.Parent = new DiscoverableParent();
 
-            IList<IDiscoverableParent> list = SDK.Common.Discovery.Discoverer.Discover<IDiscoverableParent>(parent);
+            IList<IDiscoverableParent> list = Discoverer.Discover<IDiscoverableParent>(parent);
 
             Assert.Equal(2, list.Count);
 
             parent.Parent = parent;
 
-            list = SDK.Common.Discovery.Discoverer.Discover<IDiscoverableParent>(parent);
+            list = Discoverer.Discover<IDiscoverableParent>(parent);
 
             Assert.Equal(1, list.Count);
         }

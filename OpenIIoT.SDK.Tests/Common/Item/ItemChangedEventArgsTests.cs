@@ -63,10 +63,9 @@ namespace OpenIIoT.SDK.Tests.Common
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Common.ItemChangedEventArgs"/> class.
+    ///     Unit tests for the <see cref="ItemChangedEventArgs"/> class.
     /// </summary>
-    [Collection("ItemChangedEventArgs")]
-    public class ItemChangedEventArgs
+    public class ItemChangedEventArgsTests
     {
         #region Public Methods
 
@@ -76,11 +75,11 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void Constructor()
         {
-            SDK.Common.ItemChangedEventArgs args;
+            ItemChangedEventArgs args;
 
-            args = new SDK.Common.ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
+            args = new ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
 
-            Assert.IsType<SDK.Common.ItemChangedEventArgs>(args);
+            Assert.IsType<ItemChangedEventArgs>(args);
         }
 
         /// <summary>
@@ -89,7 +88,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void Properties()
         {
-            SDK.Common.ItemChangedEventArgs args = new SDK.Common.ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
+            ItemChangedEventArgs args = new ItemChangedEventArgs("new", "previous", ItemQuality.Good, ItemQuality.Good);
 
             Assert.Equal("previous", args.PreviousValue);
             Assert.Equal("new", args.Value);

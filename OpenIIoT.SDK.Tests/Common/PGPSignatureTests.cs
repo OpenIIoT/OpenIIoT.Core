@@ -58,13 +58,14 @@ namespace OpenIIoT.SDK.Tests.Common
     using System;
     using System.IO;
     using System.Text;
+    using OpenIIoT.SDK.Common;
     using Org.BouncyCastle.Bcpg.OpenPgp;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="PGPSignature"/> class.
+    ///     Unit tests for the <see cref="PGPSignatureTests"/> class.
     /// </summary>
-    public class PGPSignature
+    public class PGPSignatureTests
     {
         #region Private Fields
 
@@ -93,9 +94,9 @@ namespace OpenIIoT.SDK.Tests.Common
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PGPSignature"/> class.
+        ///     Initializes a new instance of the <see cref="PGPSignatureTests"/> class.
         /// </summary>
-        public PGPSignature()
+        public PGPSignatureTests()
         {
             privateKey = File.ReadAllText(Path.Combine("Data", "Key", "privateKey.asc"));
             publicKey = File.ReadAllText(Path.Combine("Data", "Key", "publicKey.asc"));
@@ -107,7 +108,7 @@ namespace OpenIIoT.SDK.Tests.Common
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Sign(byte[], string, string)"/> method.
+        ///     Tests the <see cref="PGPSignature.Sign(byte[], string, string)"/> method.
         /// </summary>
         [Fact]
         public void Sign()
@@ -115,7 +116,7 @@ namespace OpenIIoT.SDK.Tests.Common
             string text = "hello world!";
 
             byte[] bytes = Encoding.ASCII.GetBytes(text);
-            byte[] signatureBytes = SDK.Common.PGPSignature.Sign(bytes, privateKey, Password);
+            byte[] signatureBytes = PGPSignature.Sign(bytes, privateKey, Password);
 
             string signature = Encoding.ASCII.GetString(signatureBytes);
 
@@ -124,81 +125,80 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Sign(byte[], string, string)"/> method with a blank string in place of
-        ///     the password.
+        ///     Tests the <see cref="PGPSignature.Sign(byte[], string, string)"/> method with a blank string in place of the password.
         /// </summary>
         /// <remarks>Assumes that the password is not an empty string.</remarks>
         [Fact]
         public void SignBadPassword()
         {
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Sign(new byte[0], privateKey, string.Empty));
+            Exception ex = Record.Exception(() => PGPSignature.Sign(new byte[0], privateKey, string.Empty));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpException>(ex);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Sign(byte[], string, string)"/> method with a blank string in place of
-        ///     the private key.
+        ///     Tests the <see cref="PGPSignature.Sign(byte[], string, string)"/> method with a blank string in place of the
+        ///     private key.
         /// </summary>
         [Fact]
         public void SignBlankKey()
         {
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Sign(new byte[0], string.Empty, Password));
+            Exception ex = Record.Exception(() => PGPSignature.Sign(new byte[0], string.Empty, Password));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpKeyValidationException>(ex);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Sign(byte[], string, string)"/> method with null bytes.
+        ///     Tests the <see cref="PGPSignature.Sign(byte[], string, string)"/> method with null bytes.
         /// </summary>
         [Fact]
         public void SignNullBytes()
         {
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Sign(null, privateKey, Password));
+            Exception ex = Record.Exception(() => PGPSignature.Sign(null, privateKey, Password));
 
             Assert.NotNull(ex);
             Assert.IsType<NullReferenceException>(ex);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Sign(byte[], string, string)"/> method with a null private key.
+        ///     Tests the <see cref="PGPSignature.Sign(byte[], string, string)"/> method with a null private key.
         /// </summary>
         [Fact]
         public void SignNullKey()
         {
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Sign(new byte[0], null, Password));
+            Exception ex = Record.Exception(() => PGPSignature.Sign(new byte[0], null, Password));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpKeyValidationException>(ex);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Sign(byte[], string, string)"/> method with a null password.
+        ///     Tests the <see cref="PGPSignature.Sign(byte[], string, string)"/> method with a null password.
         /// </summary>
         [Fact]
         public void SignNullPassword()
         {
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Sign(new byte[0], privateKey, null));
+            Exception ex = Record.Exception(() => PGPSignature.Sign(new byte[0], privateKey, null));
 
             Assert.NotNull(ex);
             Assert.IsType<NullReferenceException>(ex);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Sign(byte[], string, string)"/> method with a zero-length byte array.
+        ///     Tests the <see cref="PGPSignature.Sign(byte[], string, string)"/> method with a zero-length byte array.
         /// </summary>
         [Fact]
         public void SignZeroBytes()
         {
-            byte[] signature = SDK.Common.PGPSignature.Sign(new byte[0], privateKey, Password);
+            byte[] signature = PGPSignature.Sign(new byte[0], privateKey, Password);
 
             Assert.NotNull(Encoding.ASCII.GetString(signature));
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Verify(byte[], string)"/> method.
+        ///     Tests the <see cref="PGPSignature.Verify(byte[], string)"/> method.
         /// </summary>
         [Fact]
         public void Verify()
@@ -209,7 +209,7 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.NotNull(signature);
             Assert.NotEqual(0, signature.Length);
 
-            byte[] message = SDK.Common.PGPSignature.Verify(signature, publicKey);
+            byte[] message = PGPSignature.Verify(signature, publicKey);
 
             Assert.NotNull(message);
             Assert.NotEqual(0, message.Length);
@@ -217,7 +217,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Verify(byte[], string)"/> method with a known bad PGP public key.
+        ///     Tests the <see cref="PGPSignature.Verify(byte[], string)"/> method with a known bad PGP public key.
         /// </summary>
         [Fact]
         public void VerifyBadKey()
@@ -228,38 +228,38 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.NotNull(signature);
             Assert.NotEqual(0, signature.Length);
 
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Verify(signature, string.Empty));
+            Exception ex = Record.Exception(() => PGPSignature.Verify(signature, string.Empty));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpDataValidationException>(ex);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Verify(byte[], string)"/> method with a known bad PGP signature.
+        ///     Tests the <see cref="PGPSignature.Verify(byte[], string)"/> method with a known bad PGP signature.
         /// </summary>
         [Fact]
         public void VerifyBadSignature()
         {
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Verify(new byte[0], publicKey));
+            Exception ex = Record.Exception(() => PGPSignature.Verify(new byte[0], publicKey));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpDataValidationException>(ex);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Verify(byte[], string)"/> method with null strings.
+        ///     Tests the <see cref="PGPSignature.Verify(byte[], string)"/> method with null strings.
         /// </summary>
         [Fact]
         public void VerifyNulls()
         {
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Verify(default(string), null));
+            Exception ex = Record.Exception(() => PGPSignature.Verify(default(string), null));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpDataValidationException>(ex);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Verify(string, string)"/> method.
+        ///     Tests the <see cref="PGPSignature.Verify(string, string)"/> method.
         /// </summary>
         [Fact]
         public void VerifyString()
@@ -270,7 +270,7 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.NotNull(signature);
             Assert.NotEqual(string.Empty, signature);
 
-            byte[] message = SDK.Common.PGPSignature.Verify(signature, publicKey);
+            byte[] message = PGPSignature.Verify(signature, publicKey);
 
             Assert.NotNull(message);
             Assert.NotEqual(0, message.Length);
@@ -278,8 +278,8 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.PGPSignature.Verify(byte[], string)"/> method with a valid PGP public key that does
-        ///     not match the private key which was used to generate the signature.
+        ///     Tests the <see cref="PGPSignature.Verify(byte[], string)"/> method with a valid PGP public key that does not match
+        ///     the private key which was used to generate the signature.
         /// </summary>
         [Fact]
         public void VerifyWrongKey()
@@ -290,7 +290,7 @@ namespace OpenIIoT.SDK.Tests.Common
             Assert.NotNull(signature);
             Assert.NotEqual(0, signature.Length);
 
-            Exception ex = Record.Exception(() => SDK.Common.PGPSignature.Verify(signature, newPublicKey));
+            Exception ex = Record.Exception(() => PGPSignature.Verify(signature, newPublicKey));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpDataValidationException>(ex);
@@ -308,7 +308,7 @@ namespace OpenIIoT.SDK.Tests.Common
         private byte[] GetSignature(string text)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(text);
-            return SDK.Common.PGPSignature.Sign(bytes, privateKey, Password);
+            return PGPSignature.Sign(bytes, privateKey, Password);
         }
 
         /// <summary>
