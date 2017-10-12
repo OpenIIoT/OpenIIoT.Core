@@ -39,8 +39,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-    using Utility.BigFont;
-namespace OpenIIoT.Core
+using Utility.BigFont;
+
+namespace OpenIIoT.Core.Common
 {
     using System;
     using System.Collections.Generic;

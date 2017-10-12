@@ -59,6 +59,8 @@ using Xunit;
 
 namespace OpenIIoT.SDK.Tests.Common
 {
+    using OpenIIoT.SDK.Common;
+
     /// <summary>
     ///     Mocks a class containing the <see cref="AttributeTestAttribute"/> Attribute.
     /// </summary>
@@ -83,15 +85,14 @@ namespace OpenIIoT.SDK.Tests.Common
     }
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Common.Utility"/> class.
+    ///     Unit tests for the <see cref="Utility"/> class.
     /// </summary>
-    [Collection("Utility")]
-    public class Utility
+    public class UtilityTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.Clone"/> extension method.
+        ///     Tests the <see cref="Utility.Clone"/> extension method.
         /// </summary>
         [Fact]
         public void Clone()
@@ -111,21 +112,21 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.ComputeSHA512Hash(string)"/> method.
+        ///     Tests the <see cref="Utility.ComputeSHA512Hash(string)"/> method.
         /// </summary>
         [Fact]
         public void ComputeSHA512Hash()
         {
             string unsaltedResult = "EE26B0DD4AF7E749AA1A8EE3C10AE9923F618980772E473F8819A5D4940E0DB27AC185F8A0E1D5F84F88BC887FD67B143732C304CC5FA9AD8E6F57F50028A8FF";
 
-            string unsaltedHash = SDK.Common.Utility.ComputeSHA512Hash("test");
+            string unsaltedHash = Utility.ComputeSHA512Hash("test");
 
             Assert.Equal(128, unsaltedHash.Length);
             Assert.Equal(unsaltedResult, unsaltedHash);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.HasCustomAttribute{T}(System.Reflection.MemberInfo)"/> extension method.
+        ///     Tests the <see cref="Utility.HasCustomAttribute{T}(System.Reflection.MemberInfo)"/> extension method.
         /// </summary>
         [Fact]
         public void HasAttribute()
@@ -139,7 +140,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.IsValidJson(string)"/> extension method with known good values.
+        ///     Tests the <see cref="Utility.IsValidJson(string)"/> extension method with known good values.
         /// </summary>
         /// <param name="json">The Json string to test.</param>
         [Theory]
@@ -151,7 +152,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.IsValidJson(string)"/> extension method with a known bad value.
+        ///     Tests the <see cref="Utility.IsValidJson(string)"/> extension method with a known bad value.
         /// </summary>
         public void IsValidJsonInvalid()
         {
@@ -160,13 +161,13 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.ShortGuid"/> method.
+        ///     Tests the <see cref="Utility.ShortGuid"/> method.
         /// </summary>
         [Fact]
         public void ShortGuid()
         {
-            string guid1 = SDK.Common.Utility.ShortGuid();
-            string guid2 = SDK.Common.Utility.ShortGuid();
+            string guid1 = Utility.ShortGuid();
+            string guid2 = Utility.ShortGuid();
 
             Assert.Equal(8, guid1.Length);
             Assert.Equal(8, guid2.Length);
@@ -174,7 +175,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.SubArray{T}(T[], int, int)"/> extension method.
+        ///     Tests the <see cref="Utility.SubArray{T}(T[], int, int)"/> extension method.
         /// </summary>
         [Fact]
         public void SubArray()
@@ -199,7 +200,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.TakeLast{T}(IEnumerable{T}, int)"/> extension method.
+        ///     Tests the <see cref="Utility.TakeLast{T}(IEnumerable{T}, int)"/> extension method.
         /// </summary>
         [Fact]
         public void TakeLast()
@@ -213,7 +214,7 @@ namespace OpenIIoT.SDK.Tests.Common
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Utility.WildcardToRegex(string)"/> method.
+        ///     Tests the <see cref="Utility.WildcardToRegex(string)"/> method.
         /// </summary>
         [Fact]
         public void WildcardToRegex()
@@ -221,7 +222,7 @@ namespace OpenIIoT.SDK.Tests.Common
             string wildcard = "test*string?";
             string regex = "^test.*string.$";
 
-            Assert.Equal(regex, SDK.Common.Utility.WildcardToRegex(wildcard));
+            Assert.Equal(regex, Utility.WildcardToRegex(wildcard));
         }
 
         #endregion Public Methods
