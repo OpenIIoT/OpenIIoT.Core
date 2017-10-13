@@ -54,21 +54,22 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
     using System.IO;
     using Newtonsoft.Json;
     using OpenIIoT.SDK.Packaging.Manifest;
+    using OpenIIoT.SDK.Packaging.Operations;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Packaging.Operations.ManifestExtractor"/> class.
+    ///     Unit tests for the <see cref="ManifestExtractor"/> class.
     /// </summary>
-    public sealed class ManifestExtractor : IDisposable
+    public sealed class ManifestExtractorTests : IDisposable
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManifestExtractor"/> class.
+        ///     Initializes a new instance of the <see cref="ManifestExtractorTests"/> class.
         /// </summary>
-        public ManifestExtractor()
+        public ManifestExtractorTests()
         {
-            Extractor = new SDK.Packaging.Operations.ManifestExtractor();
+            Extractor = new ManifestExtractor();
 
             Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
@@ -93,7 +94,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         /// <summary>
         ///     Gets or sets the Manifest generator to test.
         /// </summary>
-        private SDK.Packaging.Operations.ManifestExtractor Extractor { get; set; }
+        private ManifestExtractor Extractor { get; set; }
 
         /// <summary>
         ///     Gets or sets the temporary directory used for tests.
@@ -105,7 +106,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         #region Public Methods
 
         /// <summary>
-        ///     Disposes this instance of <see cref="ManifestExtractor"/>.
+        ///     Disposes this instance of <see cref="ManifestExtractorTests"/>.
         /// </summary>
         public void Dispose()
         {
@@ -113,7 +114,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method.
         /// </summary>
         [Fact]
         public void ExtractManifest()
@@ -126,8 +127,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with a
-        ///     package with a known bad manifest file as input.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with a package with a known bad
+        ///     manifest file as input.
         /// </summary>
         [Fact]
         public void ExtractManifestBadManifest()
@@ -139,8 +140,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with an
-        ///     empty string as input.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with an empty string as input.
         /// </summary>
         [Fact]
         public void ExtractManifestBlankPackage()
@@ -152,8 +152,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with a
-        ///     file which is not a zip archive.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with a file which is not a zip archive.
         /// </summary>
         [Fact]
         public void ExtractManifestNotAPackage()
@@ -165,8 +164,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with an
-        ///     input package file known not to exist.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with an input package file known
+        ///     not to exist.
         /// </summary>
         [Fact]
         public void ExtractManifestNotFoundPackage()
@@ -178,8 +177,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with a
-        ///     null value as input.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with a null value as input.
         /// </summary>
         [Fact]
         public void ExtractManifestNullPackage()
@@ -191,8 +189,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with a
-        ///     non-package zip file as input.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with a non-package zip file as input.
         /// </summary>
         [Fact]
         public void ExtractManifestPlainZip()
@@ -204,8 +201,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with an
-        ///     invalid output file argument.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with an invalid output file argument.
         /// </summary>
         [Fact]
         public void ExtractManifestToBadFile()
@@ -219,8 +215,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with a
-        ///     valid output file argument
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with a valid output file argument
         /// </summary>
         [Fact]
         public void ExtractManifestToFile()
@@ -234,8 +229,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestExtractor.ExtractManifest(string, string)"/> method with the
-        ///     Update event bound.
+        ///     Tests the <see cref="ManifestExtractor.ExtractManifest(string, string)"/> method with the Update event bound.
         /// </summary>
         [Fact]
         public void ExtractManifestWithUpdate()
@@ -254,11 +248,11 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         #region Private Methods
 
         /// <summary>
-        ///     Handles <see cref="SDK.Packaging.Operations.PackagingOperation.Updated"/> events.
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event args.</param>
-        private void Extractor_Updated(object sender, SDK.Packaging.Operations.PackagingUpdateEventArgs e)
+        private void Extractor_Updated(object sender, PackagingUpdateEventArgs e)
         {
         }
 

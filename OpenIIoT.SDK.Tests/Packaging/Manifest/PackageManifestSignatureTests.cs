@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄
-      █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀
+      █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄                                                                   ▄████████
+      █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄                                                                ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██      ███    █▀   █     ▄████▄  ██▄▄▄▄    ▄█████      ██    ██   █     █████    ▄█████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄   ███        ██    ██    ▀  ██▀▀▀█▄   ██   ██ ▀███████▄ ██   ██   ██  ██   ██   █
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀ ▀███████████ ██▌  ▄██       ██   ██   ██   ██     ██  ▀ ██   ██  ▄██▄▄█▀  ▄██▄▄
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██             ███ ██  ▀▀██ ███▄  ██   ██ ▀████████     ██    ██   ██ ▀███████ ▀▀██▀▀
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██       ▄█    ███ ██    ██    ██ ██   ██   ██   ██     ██    ██   ██   ██  ██   ██   █
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀    ▄████████▀  █     ██████▀   █   █    ██   █▀    ▄██▀   ██████    ██  ██   ███████
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the PackageManifest class.
+      █  Unit tests for the PackageManifestSignature class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -50,13 +50,13 @@
 
 namespace OpenIIoT.SDK.Tests.Packaging.Manifest
 {
-    using System.Collections.Generic;
+    using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Packaging.Manifest.PackageManifest"/> class.
+    ///     Unit tests for the <see cref="PackageManifestSignature"/> class.
     /// </summary>
-    public class PackageManifest
+    public class PackageManifestSignatureTests
     {
         #region Public Methods
 
@@ -66,32 +66,17 @@ namespace OpenIIoT.SDK.Tests.Packaging.Manifest
         [Fact]
         public void Constructor()
         {
-            SDK.Packaging.Manifest.PackageManifest test = new SDK.Packaging.Manifest.PackageManifest();
+            PackageManifestSignature test = new PackageManifestSignature();
 
-            test.Checksum = "checksum";
-            test.Copyright = "copyright";
-            test.Description = "description";
-            test.Files = new List<SDK.Packaging.Manifest.PackageManifestFile>();
-            test.License = "license";
-            test.Namespace = "namespace";
-            test.Publisher = "publisher";
-            test.Signature = new SDK.Packaging.Manifest.PackageManifestSignature();
-            test.Title = "title";
-            test.Url = "url";
-            test.Version = "version";
+            test.Digest = "digest";
+            test.Issuer = "issuer";
+            test.Subject = "subject";
+            test.Trust = "trust";
 
-            Assert.Equal(test.Checksum, "checksum");
-            Assert.Equal(test.Copyright, "copyright");
-            Assert.Equal(test.Description, "description");
-            Assert.NotNull(test.Files);
-            Assert.Empty(test.Files);
-            Assert.Equal(test.License, "license");
-            Assert.Equal(test.Namespace, "namespace");
-            Assert.Equal(test.Publisher, "publisher");
-            Assert.NotNull(test.Signature);
-            Assert.Equal(test.Title, "title");
-            Assert.Equal(test.Url, "url");
-            Assert.Equal(test.Version, "version");
+            Assert.Equal(test.Digest, "digest");
+            Assert.Equal(test.Issuer, "issuer");
+            Assert.Equal(test.Subject, "subject");
+            Assert.Equal(test.Trust, "trust");
         }
 
         #endregion Public Methods

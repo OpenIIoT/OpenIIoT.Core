@@ -52,21 +52,22 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
     using System;
     using System.IO;
+    using OpenIIoT.SDK.Packaging.Operations;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Packaging.Operations.PackageCreator"/> class.
+    ///     Unit tests for the <see cref="PackageCreator"/> class.
     /// </summary>
-    public sealed class PackageCreator : IDisposable
+    public sealed class PackageCreatorTests : IDisposable
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageCreator"/> class.
+        ///     Initializes a new instance of the <see cref="PackageCreatorTests"/> class.
         /// </summary>
-        public PackageCreator()
+        public PackageCreatorTests()
         {
-            Creator = new SDK.Packaging.Operations.PackageCreator();
+            Creator = new PackageCreator();
 
             Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
@@ -86,7 +87,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         /// <summary>
         ///     Gets or sets the Package Creator to test.
         /// </summary>
-        private SDK.Packaging.Operations.PackageCreator Creator { get; set; }
+        private PackageCreator Creator { get; set; }
 
         /// <summary>
         ///     Gets or sets the data directory used for tests.
@@ -108,7 +109,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method.
         /// </summary>
         [Fact]
         public void CreatePackage()
@@ -122,15 +123,14 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
             bool verified = false;
 
-            ex = Record.Exception(() => verified = new SDK.Packaging.Operations.PackageVerifier().VerifyPackage(package));
+            ex = Record.Exception(() => verified = new PackageVerifier().VerifyPackage(package));
 
             Assert.Null(ex);
             Assert.True(verified);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a blank directory.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a blank directory.
         /// </summary>
         [Fact]
         public void CreatePackageDirectoryBlank()
@@ -142,8 +142,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a directory containing no files.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a directory
+        ///     containing no files.
         /// </summary>
         [Fact]
         public void CreatePackageDirectoryEmpty()
@@ -158,8 +158,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a directory which does not exist.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a directory which
+        ///     does not exist.
         /// </summary>
         [Fact]
         public void CreatePackageDirectoryNotFound()
@@ -171,8 +171,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a null directory.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a null directory.
         /// </summary>
         [Fact]
         public void CreatePackageDirectoryNull()
@@ -184,8 +183,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a manifest containing no data.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a manifest
+        ///     containing no data.
         /// </summary>
         [Fact]
         public void CreatePackageManifestEmpty()
@@ -198,8 +197,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a manifest containing invalid json data.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a manifest
+        ///     containing invalid json data.
         /// </summary>
         [Fact]
         public void CreatePackageManifestInvalid()
@@ -212,8 +211,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a manifest which does not exist.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a manifest which
+        ///     does not exist.
         /// </summary>
         [Fact]
         public void CreatePackageManifestNotFound()
@@ -225,8 +224,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a null manifest argument.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a null manifest argument.
         /// </summary>
         [Fact]
         public void CreatePackageManifestNull()
@@ -238,8 +236,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a manifest containing a file missing from the specified payload.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a manifest
+        ///     containing a file missing from the specified payload.
         /// </summary>
         [Fact]
         public void CreatePackageMissingFile()
@@ -253,8 +251,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a manifest containing no checksum properties for non-binary files.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a manifest
+        ///     containing no checksum properties for non-binary files.
         /// </summary>
         [Fact]
         public void CreatePackageNoChecksum()
@@ -268,15 +266,14 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
             bool verified = false;
 
-            ex = Record.Exception(() => verified = new SDK.Packaging.Operations.PackageVerifier().VerifyPackage(package));
+            ex = Record.Exception(() => verified = new PackageVerifier().VerifyPackage(package));
 
             Assert.Null(ex);
             Assert.True(verified);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a blank package argument.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a blank package argument.
         /// </summary>
         [Fact]
         public void CreatePackagePackageBlank()
@@ -291,8 +288,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a package argument containing a file which already exists.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a package argument
+        ///     containing a file which already exists.
         /// </summary>
         [Fact]
         public void CreatePackagePackageExists()
@@ -309,8 +306,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a a package argument containing a file which already exists, and with the overwrite option set to true.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a a package argument
+        ///     containing a file which already exists, and with the overwrite option set to true.
         /// </summary>
         [Fact]
         public void CreatePackagePackageExistsOverwrite()
@@ -326,15 +323,14 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
             bool verified = false;
 
-            ex = Record.Exception(() => verified = new SDK.Packaging.Operations.PackageVerifier().VerifyPackage(package));
+            ex = Record.Exception(() => verified = new PackageVerifier().VerifyPackage(package));
 
             Assert.Null(ex);
             Assert.True(verified);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with a null package argument.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with a null package argument.
         /// </summary>
         [Fact]
         public void CreatePackagePackageNull()
@@ -349,8 +345,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool)"/> method
-        ///     with the Update event bound.
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool)"/> method with the Update event bound.
         /// </summary>
         [Fact]
         public void CreatePackageWithUpdate()
@@ -366,15 +361,14 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
             bool verified = false;
 
-            ex = Record.Exception(() => verified = new SDK.Packaging.Operations.PackageVerifier().VerifyPackage(package));
+            ex = Record.Exception(() => verified = new PackageVerifier().VerifyPackage(package));
 
             Assert.Null(ex);
             Assert.True(verified);
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with arguments required to create a signed package.
         /// </summary>
         [Fact]
@@ -393,15 +387,14 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 
             bool verified = false;
 
-            ex = Record.Exception(() => verified = new SDK.Packaging.Operations.PackageVerifier().VerifyPackage(package));
+            ex = Record.Exception(() => verified = new PackageVerifier().VerifyPackage(package));
 
             Assert.Null(ex);
             Assert.True(verified);
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a blank keybaseUsername argument.
         /// </summary>
         [Fact]
@@ -419,8 +412,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a null keybaseUsername argument.
         /// </summary>
         [Fact]
@@ -438,8 +430,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a blank passphrase argument.
         /// </summary>
         [Fact]
@@ -457,8 +448,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a password argument which does not match the specified PGP private key.
         /// </summary>
         [Fact]
@@ -476,8 +466,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a null passphrase argument.
         /// </summary>
         [Fact]
@@ -495,8 +484,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a blank privateKey argument.
         /// </summary>
         [Fact]
@@ -514,8 +502,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a privateKey argument containing a file which is blank.
         /// </summary>
         [Fact]
@@ -533,8 +520,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a privateKey argument containing a file which does not exist.
         /// </summary>
         [Fact]
@@ -552,8 +538,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="SDK.Packaging.Operations.PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
+        ///     Tests the <see cref="PackageCreator.CreatePackage(string, string, string, bool, string, string, string, bool)"/>
         ///     method with a null privateKey argument.
         /// </summary>
         [Fact]
@@ -571,7 +556,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Disposes this instance of <see cref="PackageCreator"/>.
+        ///     Disposes this instance of <see cref="PackageCreatorTests"/>.
         /// </summary>
         public void Dispose()
         {
@@ -583,11 +568,11 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         #region Private Methods
 
         /// <summary>
-        ///     Handles <see cref="SDK.Packaging.Operations.PackagingOperation.Updated"/> events.
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event args.</param>
-        private void Creator_Updated(object sender, SDK.Packaging.Operations.PackagingUpdateEventArgs e)
+        private void Creator_Updated(object sender, PackagingUpdateEventArgs e)
         {
         }
 

@@ -50,12 +50,13 @@
 
 namespace OpenIIoT.SDK.Tests.Packaging.Manifest
 {
+    using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Packaging.Manifest.PackageManifestFile"/> class.
+    ///     Unit tests for the <see cref="PackageManifestFile"/> class.
     /// </summary>
-    public class PackageManifestFile
+    public class PackageManifestFileTests
     {
         #region Public Methods
 
@@ -65,7 +66,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Manifest
         [Fact]
         public void Constructor()
         {
-            SDK.Packaging.Manifest.PackageManifestFile test = new SDK.Packaging.Manifest.PackageManifestFile();
+            PackageManifestFile test = new PackageManifestFile();
 
             test.Checksum = "checksum";
             test.Source = "source";

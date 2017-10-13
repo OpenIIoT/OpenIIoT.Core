@@ -53,22 +53,23 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
     using System;
     using System.IO;
     using Newtonsoft.Json;
+    using OpenIIoT.SDK.Packaging.Operations;
     using Org.BouncyCastle.Bcpg.OpenPgp;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Packaging.Operations.PackageTruster"/> class.
+    ///     Unit tests for the <see cref="PackageTruster"/> class.
     /// </summary>
-    public sealed class PackageTruster : IDisposable
+    public sealed class PackageTrusterTests : IDisposable
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageTruster"/> class.
+        ///     Initializes a new instance of the <see cref="PackageTrusterTests"/> class.
         /// </summary>
-        public PackageTruster()
+        public PackageTrusterTests()
         {
-            Truster = new Packaging.Operations.PackageTruster();
+            Truster = new PackageTruster();
 
             Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
@@ -98,7 +99,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         /// <summary>
         ///     Gets or sets the Package Truster to test.
         /// </summary>
-        private Packaging.Operations.PackageTruster Truster { get; set; }
+        private PackageTruster Truster { get; set; }
 
         #endregion Private Properties
 
@@ -113,7 +114,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method.
         /// </summary>
         [Fact]
         public void TrustPackage()
@@ -133,7 +134,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
             bool verified = false;
 
-            Packaging.Operations.PackageVerifier verifier = new Packaging.Operations.PackageVerifier();
+            PackageVerifier verifier = new PackageVerifier();
             verifier.TrustPGPPublicKey = publicKey;
 
             ex = Record.Exception(() => verified = verifier.VerifyPackage(temp));
@@ -143,8 +144,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
-        ///     package which contains a bad manifest.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a package which contains a
+        ///     bad manifest.
         /// </summary>
         [Fact]
         public void TrustPackagePackageBadManifest()
@@ -165,8 +166,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with an
-        ///     empty package argument.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with an empty package argument.
         /// </summary>
         [Fact]
         public void TrustPackagePackageEmpty()
@@ -178,8 +178,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
-        ///     package which is in use.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a package which is in use.
         /// </summary>
         [Fact]
         public void TrustPackagePackageInUse()
@@ -204,8 +203,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
-        ///     package which is not a valid package.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a package which is not a
+        ///     valid package.
         /// </summary>
         [Fact]
         public void TrustPackagePackageNotAPackage()
@@ -226,8 +225,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
-        ///     package argument which can't be found on the local filesystem.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a package argument which
+        ///     can't be found on the local filesystem.
         /// </summary>
         [Fact]
         public void TrustPackagePackageNotFound()
@@ -239,8 +238,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
-        ///     package which has not been signed.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a package which has not
+        ///     been signed.
         /// </summary>
         [Fact]
         public void TrustPackagePackageNotSigned()
@@ -261,8 +260,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a null
-        ///     package argument.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a null package argument.
         /// </summary>
         [Fact]
         public void TrustPackagePackageNull()
@@ -274,8 +272,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with an
-        ///     empty passphrase argument.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with an empty passphrase argument.
         /// </summary>
         [Fact]
         public void TrustPackagePassphraseEmpty()
@@ -291,8 +288,8 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
-        ///     passphrase which does not match the key.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a passphrase which does not
+        ///     match the key.
         /// </summary>
         [Fact]
         public void TrustPackagePassphraseMismatch()
@@ -308,8 +305,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a null
-        ///     passphrase argument.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a null passphrase argument.
         /// </summary>
         [Fact]
         public void TrustPackagePassphraseNull()
@@ -325,8 +321,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a
-        ///     private key file which is empty.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a private key file which is empty.
         /// </summary>
         [Fact]
         public void TrustPackagePrivateKeyEmpty()
@@ -340,8 +335,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with an
-        ///     empty private key argument.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with an empty private key argument.
         /// </summary>
         [Fact]
         public void TrustPackagePrivateKeyEmptyFile()
@@ -357,8 +351,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with a null
-        ///     private key file.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with a null private key file.
         /// </summary>
         [Fact]
         public void TrustPackagePrivateKeyNull()
@@ -372,8 +365,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="Packaging.Operations.PackageTruster.TrustPackage(string, string, string)"/> method with the
-        ///     Update event bound.
+        ///     Tests the <see cref="PackageTruster.TrustPackage(string, string, string)"/> method with the Update event bound.
         /// </summary>
         [Fact]
         public void TrustPackageWithUpdate()
@@ -395,7 +387,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
 
             bool verified = false;
 
-            Packaging.Operations.PackageVerifier verifier = new Packaging.Operations.PackageVerifier();
+            PackageVerifier verifier = new PackageVerifier();
             verifier.TrustPGPPublicKey = publicKey;
 
             ex = Record.Exception(() => verified = verifier.VerifyPackage(temp));
@@ -409,11 +401,11 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         #region Private Methods
 
         /// <summary>
-        ///     Handles <see cref="SDK.Packaging.Operations.PackagingOperation.Updated"/> events.
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event args.</param>
-        private void Truster_Updated(object sender, SDK.Packaging.Operations.PackagingUpdateEventArgs e)
+        private void Truster_Updated(object sender, PackagingUpdateEventArgs e)
         {
         }
 

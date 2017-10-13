@@ -55,20 +55,21 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
     using System.Linq;
     using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
+    using OpenIIoT.SDK.Packaging.Operations;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Packaging.Operations.ManifestGenerator"/> class.
+    ///     Unit tests for the <see cref="ManifestGenerator"/> class.
     /// </summary>
-    public sealed class ManifestGenerator : IDisposable
+    public sealed class ManifestGeneratorTests : IDisposable
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ManifestGenerator"/> class.
+        ///     Initializes a new instance of the <see cref="ManifestGeneratorTests"/> class.
         /// </summary>
-        public ManifestGenerator()
+        public ManifestGeneratorTests()
         {
-            Generator = new SDK.Packaging.Operations.ManifestGenerator();
+            Generator = new ManifestGenerator();
             TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
             Directory.CreateDirectory(TempDirectory);
@@ -81,7 +82,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         /// <summary>
         ///     Gets or sets the Manifest generator to test.
         /// </summary>
-        private SDK.Packaging.Operations.ManifestGenerator Generator { get; set; }
+        private ManifestGenerator Generator { get; set; }
 
         /// <summary>
         ///     Gets or sets the temporary directory used for tests.
@@ -93,7 +94,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         #region Public Methods
 
         /// <summary>
-        ///     Disposes this instance of <see cref="ManifestGenerator"/>.
+        ///     Disposes this instance of <see cref="ManifestGeneratorTests"/>.
         /// </summary>
         public void Dispose()
         {
@@ -101,8 +102,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with an empty string.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with an empty string.
         /// </summary>
         [Fact]
         public void GenerateBlankDirectory()
@@ -114,8 +114,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with an empty directory.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with an empty directory.
         /// </summary>
         [Fact]
         public void GenerateEmptyDirectory()
@@ -127,8 +126,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with a directory containing three files; one of each type.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with a directory containing
+        ///     three files; one of each type.
         /// </summary>
         [Fact]
         public void GenerateManifest()
@@ -148,8 +147,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with an output file containing an invalid character.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with an output file
+        ///     containing an invalid character.
         /// </summary>
         [Fact]
         public void GenerateManifestToBadFile()
@@ -165,8 +164,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with a directory containing three files; one of each type, and with an output file specified.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with a directory containing
+        ///     three files; one of each type, and with an output file specified.
         /// </summary>
         [Fact]
         public void GenerateManifestToFile()
@@ -186,8 +185,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with a directory containing three files; one of each type, and using the checksum option.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with a directory containing
+        ///     three files; one of each type, and using the checksum option.
         /// </summary>
         [Fact]
         public void GenerateManifestWithChecksums()
@@ -207,8 +206,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with a directory containing three files; one of each type with the Update event bound.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with a directory containing
+        ///     three files; one of each type with the Update event bound.
         /// </summary>
         [Fact]
         public void GenerateManifestWithUpdate()
@@ -229,8 +228,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with a directory which does not exist.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with a directory which does
+        ///     not exist.
         /// </summary>
         [Fact]
         public void GenerateNonExistentDirectory()
@@ -242,8 +241,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.ManifestGenerator.GenerateManifest(string, bool, string)"/> method
-        ///     with a null directory.
+        ///     Tests the <see cref="ManifestGenerator.GenerateManifest(string, bool, string)"/> method with a null directory.
         /// </summary>
         [Fact]
         public void GenerateNullDirectory()
@@ -259,11 +257,11 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         #region Private Methods
 
         /// <summary>
-        ///     Handles <see cref="SDK.Packaging.Operations.PackagingOperation.Updated"/> events.
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event args.</param>
-        private void Generator_Updated(object sender, SDK.Packaging.Operations.PackagingUpdateEventArgs e)
+        private void Generator_Updated(object sender, PackagingUpdateEventArgs e)
         {
         }
 

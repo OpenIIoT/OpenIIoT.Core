@@ -59,26 +59,26 @@
 
 namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
+    using OpenIIoT.SDK.Packaging.Operations;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Packaging.Operations.PackagingUpdateEventArgs"/> class.
+    ///     Unit tests for the <see cref="PackagingUpdateEventArgs"/> class.
     /// </summary>
-    [Collection("PackagingUpdateEventArgs")]
-    public class PackagingUpdateEventArgs
+    public class PackagingUpdateEventArgsTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the constructor and all properties of <see cref="SDK.Packaging.Operations.PackagingUpdateEventArgs"/>.
+        ///     Tests the constructor and all properties of <see cref="PackagingUpdateEventArgs"/>.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            SDK.Packaging.Operations.PackagingUpdateEventArgs args = new SDK.Packaging.Operations.PackagingUpdateEventArgs(SDK.Packaging.Operations.PackagingOperationType.Package, SDK.Packaging.Operations.PackagingUpdateType.Info, "test");
+            PackagingUpdateEventArgs args = new PackagingUpdateEventArgs(PackagingOperationType.Package, PackagingUpdateType.Info, "test");
 
-            Assert.Equal(SDK.Packaging.Operations.PackagingOperationType.Package, args.Operation);
-            Assert.Equal(SDK.Packaging.Operations.PackagingUpdateType.Info, args.Type);
+            Assert.Equal(PackagingOperationType.Package, args.Operation);
+            Assert.Equal(PackagingUpdateType.Info, args.Type);
             Assert.Equal("test", args.Message);
         }
 

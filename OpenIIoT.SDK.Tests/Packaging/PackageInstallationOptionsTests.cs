@@ -50,12 +50,13 @@
 
 namespace OpenIIoT.SDK.Tests.Packaging
 {
+    using OpenIIoT.SDK.Packaging;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Packaging.PackageInstallationOptions"/> class.
+    ///     Unit tests for the <see cref="PackageInstallationOptions"/> class.
     /// </summary>
-    public class PackageInstallationOptions
+    public class PackageInstallationOptionsTests
     {
         #region Public Methods
 
@@ -65,14 +66,14 @@ namespace OpenIIoT.SDK.Tests.Packaging
         [Fact]
         public void Constructor()
         {
-            SDK.Packaging.PackageInstallationOptions test = new SDK.Packaging.PackageInstallationOptions()
+            PackageInstallationOptions test = new PackageInstallationOptions()
             {
                 Overwrite = false,
                 PublicKey = string.Empty,
                 SkipVerification = false,
             };
 
-            Assert.IsType<SDK.Packaging.PackageInstallationOptions>(test);
+            Assert.IsType<PackageInstallationOptions>(test);
             Assert.False(test.Overwrite);
             Assert.Equal(string.Empty, test.PublicKey);
             Assert.False(test.SkipVerification);

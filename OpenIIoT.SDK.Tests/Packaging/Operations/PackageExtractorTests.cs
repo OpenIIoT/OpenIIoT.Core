@@ -52,21 +52,22 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
     using System;
     using System.IO;
+    using OpenIIoT.SDK.Packaging.Operations;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Packaging.Operations.PackageExtractor"/> class.
+    ///     Unit tests for the <see cref="PackageExtractor"/> class.
     /// </summary>
-    public sealed class PackageExtractor : IDisposable
+    public sealed class PackageExtractorTests : IDisposable
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageExtractor"/> class.
+        ///     Initializes a new instance of the <see cref="PackageExtractorTests"/> class.
         /// </summary>
-        public PackageExtractor()
+        public PackageExtractorTests()
         {
-            Extractor = new SDK.Packaging.Operations.PackageExtractor();
+            Extractor = new PackageExtractor();
 
             Uri codeBaseUri = new Uri(System.Reflection.Assembly.GetExecutingAssembly().CodeBase);
             string codeBasePath = Uri.UnescapeDataString(codeBaseUri.AbsolutePath);
@@ -91,7 +92,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         /// <summary>
         ///     Gets or sets the Package Extractor to test.
         /// </summary>
-        private SDK.Packaging.Operations.PackageExtractor Extractor { get; set; }
+        private PackageExtractor Extractor { get; set; }
 
         /// <summary>
         ///     Gets or sets the temporary directory used for tests.
@@ -103,7 +104,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         #region Public Methods
 
         /// <summary>
-        ///     Disposes this instance of <see cref="PackageExtractor"/>.
+        ///     Disposes this instance of <see cref="PackageExtractorTests"/>.
         /// </summary>
         public void Dispose()
         {
@@ -111,7 +112,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
         /// </summary>
         [Fact]
         public void ExtractPackage()
@@ -126,8 +127,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with an invalid package.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with an invalid package.
         /// </summary>
         [Fact]
         public void ExtractPackageBadPackage()
@@ -144,8 +144,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with a blank output directory argument.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with a blank output
+        ///     directory argument.
         /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryBlank()
@@ -159,7 +159,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
         /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryExistsButEmptyNoOverwrite()
@@ -176,7 +176,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method.
         /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryExistsButEmptyWithOverwrite()
@@ -193,8 +193,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with an output directory which already exists, and with the overwrite option not used.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with an output directory
+        ///     which already exists, and with the overwrite option not used.
         /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryExistsNoOverwrite()
@@ -213,8 +213,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with an output directory which already exists, and with the overwrite option set to true.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with an output directory
+        ///     which already exists, and with the overwrite option set to true.
         /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryExistsWithOverwrite()
@@ -231,8 +231,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with a null output directory argument.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with a null output
+        ///     directory argument.
         /// </summary>
         [Fact]
         public void ExtractPackageOutputDirectoryNull()
@@ -246,8 +246,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with a blank output directory argument.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with a blank output
+        ///     directory argument.
         /// </summary>
         [Fact]
         public void ExtractPackagePackageBlank()
@@ -259,8 +259,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with a package file argument which contains an empty (zero byte) file.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with a package file
+        ///     argument which contains an empty (zero byte) file.
         /// </summary>
         [Fact]
         public void ExtractPackagePackageEmpty()
@@ -274,8 +274,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with a package file argument which can not be found on the local file system.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with a package file
+        ///     argument which can not be found on the local file system.
         /// </summary>
         [Fact]
         public void ExtractPackagePackageNotFound()
@@ -287,8 +287,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with a package file argument which contains a file that can not be read.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with a package file
+        ///     argument which contains a file that can not be read.
         /// </summary>
         [Fact]
         public void ExtractPackagePackageNotReadable()
@@ -316,8 +316,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with a null package argument.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with a null package argument.
         /// </summary>
         [Fact]
         public void ExtractPackagePackageNull()
@@ -329,8 +328,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with the skip verification option set to true.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with the skip
+        ///     verification option set to true.
         /// </summary>
         [Fact]
         public void ExtractPackageSkipVerification()
@@ -345,8 +344,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Packaging.Operations.PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method
-        ///     with the Update event bound.
+        ///     Tests the <see cref="PackageExtractor.ExtractPackage(string, string, bool, bool)"/> method with the Update event bound.
         /// </summary>
         [Fact]
         public void ExtractPackageWithUpdate()
@@ -367,11 +365,11 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         #region Private Methods
 
         /// <summary>
-        ///     Handles <see cref="SDK.Packaging.Operations.PackagingOperation.Updated"/> events.
+        ///     Handles <see cref="PackagingOperation.Updated"/> events.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event args.</param>
-        private void Extractor_Updated(object sender, SDK.Packaging.Operations.PackagingUpdateEventArgs e)
+        private void Extractor_Updated(object sender, PackagingUpdateEventArgs e)
         {
         }
 
