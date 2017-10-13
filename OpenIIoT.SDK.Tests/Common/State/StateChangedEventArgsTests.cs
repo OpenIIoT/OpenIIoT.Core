@@ -63,10 +63,9 @@ namespace OpenIIoT.SDK.Tests.Common
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Common.StateChangedEventArgs"/> class.
+    ///     Unit tests for the <see cref="StateChangedEventArgs"/> class.
     /// </summary>
-    [Collection("StateChangedEventArgs")]
-    public class StateChangedEventArgs
+    public class StateChangedEventArgsTests
     {
         #region Public Methods
 
@@ -76,16 +75,16 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void Constructor()
         {
-            SDK.Common.StateChangedEventArgs args;
+            StateChangedEventArgs args;
 
-            args = new SDK.Common.StateChangedEventArgs(State.Initialized, State.Undefined);
-            Assert.IsType<SDK.Common.StateChangedEventArgs>(args);
+            args = new StateChangedEventArgs(State.Initialized, State.Undefined);
+            Assert.IsType<StateChangedEventArgs>(args);
 
-            args = new SDK.Common.StateChangedEventArgs(State.Initialized, State.Undefined, "message");
-            Assert.IsType<SDK.Common.StateChangedEventArgs>(args);
+            args = new StateChangedEventArgs(State.Initialized, State.Undefined, "message");
+            Assert.IsType<StateChangedEventArgs>(args);
 
-            args = new SDK.Common.StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
-            Assert.IsType<SDK.Common.StateChangedEventArgs>(args);
+            args = new StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
+            Assert.IsType<StateChangedEventArgs>(args);
         }
 
         /// <summary>
@@ -94,7 +93,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void Properties()
         {
-            SDK.Common.StateChangedEventArgs args = new SDK.Common.StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
+            StateChangedEventArgs args = new StateChangedEventArgs(State.Initialized, State.Undefined, "message", StopType.Shutdown);
 
             Assert.Equal(State.Initialized, args.State);
             Assert.Equal(State.Undefined, args.PreviousState);

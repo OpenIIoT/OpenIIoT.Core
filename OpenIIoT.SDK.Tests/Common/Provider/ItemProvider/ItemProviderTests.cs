@@ -48,43 +48,44 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+
 namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using System.Threading.Tasks;
     using Moq;
+    using SDK.Common.Provider.ItemProvider;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider"/> class.
+    ///     Unit tests for the <see cref="ItemProvider"/> class.
     /// </summary>
-    [Collection("ItemProvider")]
-    public class ItemProvider
+    public class ItemProviderTests
     {
         #region Private Fields
 
         /// <summary>
-        ///     The mockup of the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider"/> class.
+        ///     The mockup of the <see cref="ItemProvider"/> class.
         /// </summary>
-        private Mock<SDK.Common.Provider.ItemProvider.ItemProvider> itemProvider;
+        private Mock<ItemProvider> itemProvider;
 
         /// <summary>
         ///     The concrete mockup of the <see cref="MockItemProvider"/> class.
         /// </summary>
-        private SDK.Common.Provider.ItemProvider.ItemProvider mockProvider;
+        private ItemProvider mockProvider;
 
         #endregion Private Fields
 
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ItemProvider"/> class.
+        ///     Initializes a new instance of the <see cref="ItemProviderTests"/> class.
         /// </summary>
-        public ItemProvider()
+        public ItemProviderTests()
         {
-            itemProvider = new Mock<SDK.Common.Provider.ItemProvider.ItemProvider>("test");
+            itemProvider = new Mock<ItemProvider>("test");
             itemProvider.CallBase = true;
 
             mockProvider = new MockItemProvider("mock");
@@ -95,7 +96,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Browse(SDK.Common.Item)"/> method.
+        ///     Tests the <see cref="ItemProvider.Browse(SDK.Common.Item)"/> method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -106,7 +107,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.BrowseAsync(SDK.Common.Item)"/> method.
+        ///     Tests the <see cref="ItemProvider.BrowseAsync(SDK.Common.Item)"/> method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -118,7 +119,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.BrowseAsync(SDK.Common.Item)"/> method.
+        ///     Tests the <see cref="ItemProvider.BrowseAsync(SDK.Common.Item)"/> method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -131,7 +132,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Browse(SDK.Common.Item)"/> method.
+        ///     Tests the <see cref="ItemProvider.Browse(SDK.Common.Item)"/> method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -143,16 +144,16 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the constructor of <see cref="SDK.Common.Provider.ItemProvider.ItemProvider"/>.
+        ///     Tests the constructor of <see cref="ItemProvider"/>.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            Assert.IsAssignableFrom<SDK.Common.Provider.ItemProvider.ItemProvider>(itemProvider.Object);
+            Assert.IsAssignableFrom<ItemProvider>(itemProvider.Object);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.FindAsync(string)"/> method.
+        ///     Tests the <see cref="ItemProvider.FindAsync(string)"/> method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -164,7 +165,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Find(string)"/> method with a known good search string.
+        ///     Tests the <see cref="ItemProvider.Find(string)"/> method with a known good search string.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -176,8 +177,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Find(string)"/> method with a string that is not
-        ///     expected to be found.
+        ///     Tests the <see cref="ItemProvider.Find(string)"/> method with a string that is not expected to be found.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -189,8 +189,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Find(string)"/> method with the search string
-        ///     matching the root Item.
+        ///     Tests the <see cref="ItemProvider.Find(string)"/> method with the search string matching the root Item.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockItemProvider"/> class to simulate the behavior under test.</remarks>
         [Fact]
@@ -202,7 +201,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.ItemProviderName"/> property.
+        ///     Tests the <see cref="ItemProvider.ItemProviderName"/> property.
         /// </summary>
         [Fact]
         public void ItemProviderName()
@@ -211,7 +210,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/> method.
+        ///     Tests the <see cref="ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/> method.
         /// </summary>
         [Fact]
         public void Subscribe()
@@ -230,8 +229,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/>
-        ///     method with a duplicate subscription.
+        ///     Tests the <see cref="ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/> method with a duplicate subscription.
         /// </summary>
         [Fact]
         public void SubscribeDuplicateSubscription()
@@ -251,8 +249,8 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/>
-        ///     with a second subscription to a previously subscribed Item.
+        ///     Tests the <see cref="ItemProvider.Subscribe(SDK.Common.Item, Action{object})"/> with a second subscription to a
+        ///     previously subscribed Item.
         /// </summary>
         [Fact]
         public void SubscribeSecondSubscriber()
@@ -277,7 +275,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.Subscriptions"/> property.
+        ///     Tests the <see cref="ItemProvider.Subscriptions"/> property.
         /// </summary>
         [Fact]
         public void Subscriptions()
@@ -287,7 +285,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/> method.
+        ///     Tests the <see cref="ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/> method.
         /// </summary>
         [Fact]
         public void UnSubscribe()
@@ -306,8 +304,8 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
         }
 
         /// <summary>
-        ///     Tests the <see cref="SDK.Common.Provider.ItemProvider.ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/>
-        ///     method with an Item to which there are no subscriptions.
+        ///     Tests the <see cref="ItemProvider.UnSubscribe(SDK.Common.Item, Action{object})"/> method with an Item to which
+        ///     there are no subscriptions.
         /// </summary>
         [Fact]
         public void UnSubscribeNotSubscribed()
@@ -329,10 +327,9 @@ namespace OpenIIoT.SDK.Tests.Common.Provider.ItemProvider
     /// </summary>
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the abstract nature of the
-    ///     <see cref="SDK.Common.Provider.ItemProvider.ItemProvider"/> class and some of its methods.
+    ///     <see cref="ItemProvider"/> class and some of its methods.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockItemProvider : SDK.Common.Provider.ItemProvider.ItemProvider
+    public class MockItemProvider : ItemProvider
     {
         #region Public Constructors
 

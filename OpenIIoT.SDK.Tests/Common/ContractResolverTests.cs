@@ -48,9 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+
 namespace OpenIIoT.SDK.Tests.Common
 {
-    using System.Diagnostics.CodeAnalysis;
     using Newtonsoft.Json;
     using OpenIIoT.SDK.Common;
     using Xunit;
@@ -61,7 +62,6 @@ namespace OpenIIoT.SDK.Tests.Common
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the complexity in creating a new type.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class ContractResolverTestObject
     {
         #region Public Constructors
@@ -101,7 +101,6 @@ namespace OpenIIoT.SDK.Tests.Common
     /// <summary>
     ///     Unit tests for the <see cref="ContractResolver"/> class.
     /// </summary>
-    [Collection("ContractResolver")]
     public class ContractResolverTests
     {
         #region Private Fields

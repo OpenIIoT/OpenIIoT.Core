@@ -111,12 +111,12 @@
     <Compile Include="Common\OperationResult\ResultOfTTests.cs" />
     <Compile Include="Common\OperationResult\ResultTests.cs" />
     <Compile Include="Common\PGPSignatureTests.cs" />
-    <Compile Include="Common\Provider\ItemProvider\ItemProvider.cs" />
-    <Compile Include="Common\Provider\ProviderRegistryOfT.cs" />
+    <Compile Include="Common\Provider\ItemProvider\ItemProviderTests.cs" />
+    <Compile Include="Common\Provider\ProviderRegistryOfTTests.cs" />
     <Compile Include="Common\Discovery\DiscovererTests.cs" />
     <Compile Include="Common\Item\ItemChangedEventArgsTests.cs" />
     <Compile Include="Common\Item\ItemTests.cs" />
-    <Compile Include="Common\State\StateChangedEventArgs.cs" />
+    <Compile Include="Common\State\StateChangedEventArgsTests.cs" />
     <Compile Include="Common\ContractResolverTests.cs" />
     <Compile Include="Common\UtilityTests.cs" />
     <Compile Include="Configuration\ConfigurationDefinition.cs" />

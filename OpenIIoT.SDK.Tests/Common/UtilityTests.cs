@@ -48,18 +48,15 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using OpenIIoT.SDK.Common;
-using Xunit;
-
-[module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
 namespace OpenIIoT.SDK.Tests.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
     using OpenIIoT.SDK.Common;
+    using Xunit;
 
     /// <summary>
     ///     Mocks a class containing the <see cref="AttributeTestAttribute"/> Attribute.

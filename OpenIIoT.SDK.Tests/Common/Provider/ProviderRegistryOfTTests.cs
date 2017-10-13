@@ -58,8 +58,7 @@ namespace OpenIIoT.SDK.Tests.Common.Provider
     /// <summary>
     ///     Unit tests for the <see cref="ProviderRegistry{T}"/> class.
     /// </summary>
-    [Collection("ProviderRegistryOfT")]
-    public class ProviderRegistryOfT
+    public class ProviderRegistryOfTTests
     {
         #region Public Methods
 

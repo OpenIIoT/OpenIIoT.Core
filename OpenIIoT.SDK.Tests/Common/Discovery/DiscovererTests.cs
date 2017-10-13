@@ -48,10 +48,11 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+
 namespace OpenIIoT.SDK.Tests.Common.Discovery
 {
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using OpenIIoT.SDK.Common.Discovery;
     using Xunit;
 
@@ -72,7 +73,6 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
     /// <summary>
     ///     Mocks a class implementing a discoverable interface.
     /// </summary>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [Discoverable]
     public class DiscoverableChild : IDiscoverableChild
     {
@@ -84,7 +84,6 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
     /// <remarks>
     ///     It is not feasible to use a mocking framework due to the difficulty in appending attributes at run time.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     [Discoverable]
     public class DiscoverableParent : IDiscoverableParent
     {
@@ -130,7 +129,6 @@ namespace OpenIIoT.SDK.Tests.Common.Discovery
     /// <summary>
     ///     Unit tests for the <see cref="Discoverer"/> class.
     /// </summary>
-    [Collection("Discovery")]
     public class DiscovererTests
     {
         #region Public Methods
