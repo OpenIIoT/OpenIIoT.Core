@@ -39,8 +39,6 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Utility.BigFont;
-
 namespace OpenIIoT.Core.Common
 {
     using System;
@@ -126,7 +124,7 @@ namespace OpenIIoT.Core.Common
             logger.Info(@"      █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀ ");
             logger.Info(@"      █   ");
 
-            foreach (string s in BigFontGenerator.GenerateCaseSensitive("OpenIIoT", Font.Graffiti, FontSize.Large))
+            foreach (string s in global::Utility.BigFont.BigFontGenerator.GenerateCaseSensitive("OpenIIoT", global::Utility.BigFont.Font.Graffiti, global::Utility.BigFont.FontSize.Large))
             {
                 logger.Info(@"      █  " + s);
             }

@@ -48,22 +48,22 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using NLog;
-using NLog.Targets;
-using Xunit;
-
 namespace OpenIIoT.Core.Tests
 {
+    using NLog;
+    using NLog.Targets;
+    using OpenIIoT.Core.Common;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Utility"/> class.
+    ///     Unit tests for the <see cref="Utility"/> class.
     /// </summary>
-    [Collection("Utility")]
-    public class Utility
+    public class UtilityTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.Utility.PrintLogo(Logger)"/> method.
+        ///     Tests the <see cref="Utility.PrintLogo(Logger)"/> method.
         /// </summary>
         [Fact]
         public void PrintLogo()
@@ -73,11 +73,11 @@ namespace OpenIIoT.Core.Tests
             LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
             Logger logger = LogManager.GetLogger("test");
 
-            Core.Utility.PrintLogo(logger);
+            Utility.PrintLogo(logger);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Utility.PrintLogoFooter(Logger)"/> method.
+        ///     Tests the <see cref="Utility.PrintLogoFooter(Logger)"/> method.
         /// </summary>
         [Fact]
         public void PrintLogoFooter()
@@ -87,12 +87,12 @@ namespace OpenIIoT.Core.Tests
             LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
             Logger logger = LogManager.GetLogger("test");
 
-            Core.Utility.PrintLogoFooter(logger);
+            Core.Common.Utility.PrintLogoFooter(logger);
         }
 
         /// <summary>
         ///     Tests the
-        ///     <see cref="Core.Utility.PrintModel(Logger, SDK.Common.Item, int, System.Collections.Generic.List{bool}, bool)"/> method.
+        ///     <see cref="Utility.PrintModel(Logger, SDK.Common.Item, int, System.Collections.Generic.List{bool}, bool)"/> method.
         /// </summary>
         [Fact]
         public void PrintModel()
@@ -109,7 +109,7 @@ namespace OpenIIoT.Core.Tests
             root.AddChild(child1);
             root.AddChild(child2);
 
-            Core.Utility.PrintModel(logger, root, 0);
+            Utility.PrintModel(logger, root, 0);
         }
 
         #endregion Public Methods

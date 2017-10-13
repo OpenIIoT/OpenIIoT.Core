@@ -135,7 +135,7 @@
     <Compile Include="ApplicationManager.cs" />
     <Compile Include="ApplicationSettings.cs" />
     <Compile Include="Common\Manager\Manager.cs" />
-    <Compile Include="Common\Utility.cs" />
+    <Compile Include="Common\UtilityTests.cs" />
     <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
     <Compile Include="Configuration\Configuration.cs" />
     <Compile Include="Configuration\ConfigurationManager.cs" />
