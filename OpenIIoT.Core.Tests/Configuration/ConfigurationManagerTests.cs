@@ -48,39 +48,39 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Reflection;
-using Moq;
-using OpenIIoT.Core.Platform;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Common.OperationResult;
-using Xunit;
-
 namespace OpenIIoT.Core.Tests.Configuration
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Reflection;
+    using Moq;
+    using OpenIIoT.Core.Configuration;
+    using OpenIIoT.Core.Platform;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Configuration;
+    using OpenIIoT.SDK.Platform;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Configuration.ConfigurationManager"/> class.
+    ///     Unit tests for the <see cref="ConfigurationManager"/> class.
     /// </summary>
-    [Collection("ConfigurationManager")]
-    public class ConfigurationManager
+    public class ConfigurationManagerTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ConfigurationManager"/> class.
+        ///     Initializes a new instance of the <see cref="ConfigurationManagerTests"/> class.
         /// </summary>
-        public ConfigurationManager()
+        public ConfigurationManagerTests()
         {
             SetupMocks();
 
-            Core.Configuration.ConfigurationManager.Terminate();
+            ConfigurationManager.Terminate();
 
-            Manager = Core.Configuration.ConfigurationManager.Instantiate(ApplicationManager.Object, PlatformManager.Object);
+            Manager = ConfigurationManager.Instantiate(ApplicationManager.Object, PlatformManager.Object);
         }
 
         #endregion Public Constructors
@@ -117,35 +117,34 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<Core.Configuration.ConfigurationManager>(Manager);
+            Assert.IsType<ConfigurationManager>(Manager);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Instantiate(IApplicationManager, IPlatformManager)"/> method.
+        ///     Tests the <see cref="ConfigurationManager.Instantiate(IApplicationManager, IPlatformManager)"/> method.
         /// </summary>
         [Fact]
         public void Instantiate()
         {
             SetupMocks();
 
-            Core.Configuration.ConfigurationManager.Terminate();
+            ConfigurationManager.Terminate();
 
-            Manager = Core.Configuration.ConfigurationManager.Instantiate(ApplicationManager.Object, PlatformManager.Object);
+            Manager = ConfigurationManager.Instantiate(ApplicationManager.Object, PlatformManager.Object);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Setup"/> method using reflection.
+        ///     Tests the <see cref="ConfigurationManager.Setup"/> method using reflection.
         /// </summary>
         [Fact]
         public void Setup()
         {
-            MethodInfo setup = typeof(Core.Configuration.ConfigurationManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo setup = typeof(ConfigurationManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
             setup.Invoke(Manager, new object[] { });
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method via
-        ///     <see cref="Core.Common.Manager.Start()"/> .
+        ///     Tests the <see cref="ConfigurationManager.Startup()"/> method via <see cref="Core.Common.Manager.Start()"/> .
         /// </summary>
         [Fact]
         public void Start()
@@ -157,13 +156,12 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method with conditions which should force
-        ///     an exception.
+        ///     Tests the <see cref="ConfigurationManager.Startup()"/> method with conditions which should force an exception.
         /// </summary>
         [Fact]
         public void StartFailure()
         {
-            Core.Configuration.ConfigurationManager.Terminate();
+            ConfigurationManager.Terminate();
 
             Mock<IPlatform> platform = new Mock<IPlatform>();
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
@@ -171,7 +169,7 @@ namespace OpenIIoT.Core.Tests.Configuration
 
             PlatformManager.Setup(p => p.Platform).Returns(platform.Object);
 
-            Manager = Core.Configuration.ConfigurationManager.Instantiate(ApplicationManager.Object, PlatformManager.Object);
+            Manager = ConfigurationManager.Instantiate(ApplicationManager.Object, PlatformManager.Object);
 
             Exception ex = Assert.Throws<ManagerStartException>(() => Manager.Start());
 
@@ -180,13 +178,12 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Startup()"/> method with conditions which should force
-        ///     a rebuild of the configuration.
+        ///     Tests the <see cref="ConfigurationManager.Startup()"/> method with conditions which should force a rebuild of the configuration.
         /// </summary>
         [Fact]
         public void StartRebuildConfiguration()
         {
-            Core.Configuration.ConfigurationManager.Terminate();
+            ConfigurationManager.Terminate();
 
             // prepare a platform mockup which returns false for any call to FileExists() and a good result for WriteFile(). these
             // two return values should force a rebuild of the config.
@@ -198,7 +195,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             PlatformManager.Setup(p => p.Platform).Returns(platform.Object);
 
             // re-instantiate the manager with the mocked platform manager and platform
-            Manager = Core.Configuration.ConfigurationManager.Instantiate(ApplicationManager.Object, PlatformManager.Object);
+            Manager = ConfigurationManager.Instantiate(ApplicationManager.Object, PlatformManager.Object);
 
             IResult result = Manager.Start();
 
@@ -207,7 +204,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Shutdown(StopType)"/> method via
+        ///     Tests the <see cref="ConfigurationManager.Shutdown(StopType)"/> method via
         ///     <see cref="Core.Common.Manager.Stop(StopType)"/> .
         /// </summary>
         [Fact]
@@ -224,12 +221,12 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationManager.Terminate()"/> method.
+        ///     Tests the <see cref="ConfigurationManager.Terminate()"/> method.
         /// </summary>
         [Fact]
         public void Terminate()
         {
-            Core.Configuration.ConfigurationManager.Terminate();
+            ConfigurationManager.Terminate();
         }
 
         #endregion Public Methods

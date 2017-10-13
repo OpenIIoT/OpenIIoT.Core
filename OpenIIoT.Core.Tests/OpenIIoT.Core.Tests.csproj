@@ -136,10 +136,10 @@
     <Compile Include="ApplicationSettings.cs" />
     <Compile Include="Common\Manager\ManagerTests.cs" />
     <Compile Include="Common\UtilityTests.cs" />
-    <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
-    <Compile Include="Configuration\Configuration.cs" />
-    <Compile Include="Configuration\ConfigurationManager.cs" />
-    <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="Configuration\ConfigurableTypeRegistryTests.cs" />
+    <Compile Include="Configuration\ConfigurationTests.cs" />
+    <Compile Include="Configuration\ConfigurationManagerTests.cs" />
+    <Compile Include="Configuration\ConfigurationLoaderTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Package\PackageManager.cs" />
     <Compile Include="Platform\PlatformManager.cs" />

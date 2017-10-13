@@ -48,33 +48,33 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using Moq;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Common.OperationResult;
-using Xunit;
-
 namespace OpenIIoT.Core.Tests.Configuration
 {
+    using System;
+    using System.Collections.Generic;
+    using Moq;
+    using OpenIIoT.Core.Configuration;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Platform;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Configuration.ConfigurationLoader"/> class.
+    ///     Unit tests for the <see cref="ConfigurationLoader"/> class.
     /// </summary>
-    [Collection("ConfigurationLoader")]
-    public class ConfigurationLoader
+    public class ConfigurationLoaderTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.BuildNew"/> method.
+        ///     Tests the <see cref="ConfigurationLoader.BuildNew"/> method.
         /// </summary>
         [Fact]
         public void BuildNew()
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
 
-            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+            ConfigurationLoader loader = new ConfigurationLoader(platform.Object);
 
             IResult<IDictionary<string, IDictionary<string, object>>> result = loader.BuildNew();
 
@@ -91,13 +91,13 @@ namespace OpenIIoT.Core.Tests.Configuration
         {
             Mock<IPlatform> platform = new Mock<IPlatform>();
 
-            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+            ConfigurationLoader loader = new ConfigurationLoader(platform.Object);
 
-            Assert.IsType<Core.Configuration.ConfigurationLoader>(loader);
+            Assert.IsType<ConfigurationLoader>(loader);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Load(string)"/> method.
+        ///     Tests the <see cref="ConfigurationLoader.Load(string)"/> method.
         /// </summary>
         [Fact]
         public void Load()
@@ -107,7 +107,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
             platform.Setup(p => p.ReadFileText(It.IsAny<string>())).Returns(new Result<string>().SetReturnValue("{}"));
 
-            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+            ConfigurationLoader loader = new ConfigurationLoader(platform.Object);
 
             IResult result = loader.Load("file.ext");
 
@@ -115,8 +115,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Load(string)"/> method with a mockup which indicates
-        ///     the specified file could not be found.
+        ///     Tests the <see cref="ConfigurationLoader.Load(string)"/> method with a mockup which indicates the specified file
+        ///     could not be found.
         /// </summary>
         [Fact]
         public void LoadFileNotFound()
@@ -125,7 +125,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             platform.Setup(p => p.WriteFileText(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
 
-            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+            ConfigurationLoader loader = new ConfigurationLoader(platform.Object);
 
             IResult result = loader.Load("file.ext");
 
@@ -133,8 +133,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurationLoader.Load(string)"/> method with a mockup which simulates a
-        ///     failure to read the specified file.
+        ///     Tests the <see cref="ConfigurationLoader.Load(string)"/> method with a mockup which simulates a failure to read the
+        ///     specified file.
         /// </summary>
         [Fact]
         public void LoadReadFailure()
@@ -144,7 +144,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             platform.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
             platform.Setup(p => p.ReadFileText(It.IsAny<string>())).Returns(new Result<string>().SetResultCode(ResultCode.Failure));
 
-            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+            ConfigurationLoader loader = new ConfigurationLoader(platform.Object);
 
             Exception ex = Record.Exception(() => loader.Load("file.ext"));
 
@@ -153,8 +153,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the
-        ///     <see cref="Core.Configuration.ConfigurationLoader.Save(IDictionary{string, IDictionary{string, object}}, string)"/> method.
+        ///     Tests the <see cref="ConfigurationLoader.Save(IDictionary{string, IDictionary{string, object}}, string)"/> method.
         /// </summary>
         [Fact]
         public void Save()
@@ -162,7 +161,7 @@ namespace OpenIIoT.Core.Tests.Configuration
             Mock<IPlatform> platform = new Mock<IPlatform>();
             platform.Setup(p => p.WriteFileText(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<string>());
 
-            Core.Configuration.ConfigurationLoader loader = new Core.Configuration.ConfigurationLoader(platform.Object);
+            ConfigurationLoader loader = new ConfigurationLoader(platform.Object);
 
             IDictionary<string, IDictionary<string, object>> configuration = new Dictionary<string, IDictionary<string, object>>();
 

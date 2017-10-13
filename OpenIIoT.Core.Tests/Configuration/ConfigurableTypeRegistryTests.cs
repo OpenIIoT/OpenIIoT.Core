@@ -48,41 +48,40 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Configuration;
-using OpenIIoT.SDK.Common.OperationResult;
-using Xunit;
-
-[module: SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
 namespace OpenIIoT.Core.Tests.Configuration
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenIIoT.Core.Configuration;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Configuration;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Configuration.ConfigurableTypeRegistry"/> class.
+    ///     Unit tests for the <see cref="ConfigurableTypeRegistry"/> class.
     /// </summary>
-    [Collection("ConfigurableTypeRegistry")]
-    public class ConfigurableTypeRegistry
+    public class ConfigurableTypeRegistryTests
     {
         #region Private Fields
 
         /// <summary>
         ///     The instance under test.
         /// </summary>
-        private Core.Configuration.ConfigurableTypeRegistry registry;
+        private ConfigurableTypeRegistry registry;
 
         #endregion Private Fields
 
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ConfigurableTypeRegistry"/> class.
+        ///     Initializes a new instance of the <see cref="ConfigurableTypeRegistryTests"/> class.
         /// </summary>
-        public ConfigurableTypeRegistry()
+        public ConfigurableTypeRegistryTests()
         {
-            registry = new Core.Configuration.ConfigurableTypeRegistry();
+            registry = new ConfigurableTypeRegistry();
         }
 
         #endregion Public Constructors
@@ -95,11 +94,11 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<Core.Configuration.ConfigurableTypeRegistry>(registry);
+            Assert.IsType<ConfigurableTypeRegistry>(registry);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.IsRegistered(Type)"/> method.
+        ///     Tests the <see cref="ConfigurableTypeRegistry.IsRegistered(Type)"/> method.
         /// </summary>
         [Fact]
         public void IsRegistered()
@@ -113,12 +112,12 @@ namespace OpenIIoT.Core.Tests.Configuration
         [Fact]
         public void Properties()
         {
-            Assert.IsType<Dictionary<Type, SDK.Configuration.IConfigurationDefinition>>(registry.RegisteredTypes);
+            Assert.IsType<Dictionary<Type, IConfigurationDefinition>>(registry.RegisteredTypes);
             Assert.Empty(registry.RegisteredTypes);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method.
+        ///     Tests the <see cref="ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method.
         /// </summary>
         [Fact]
         public void Register()
@@ -128,8 +127,7 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a
-        ///     duplicate Type.
+        ///     Tests the <see cref="ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a duplicate Type.
         /// </summary>
         [Fact]
         public void RegisterDuplicate()
@@ -142,8 +140,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
-        ///     which throws an exception from the GetConfigurationDefinition method.
+        ///     Tests the <see cref="ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type which throws an
+        ///     exception from the GetConfigurationDefinition method.
         /// </summary>
         [Fact]
         public void RegisterExceptionDefinition()
@@ -153,8 +151,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
-        ///     missing the GetConfigurationDefinition method
+        ///     Tests the <see cref="ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type missing the
+        ///     GetConfigurationDefinition method
         /// </summary>
         [Fact]
         public void RegisterMissingDefinition()
@@ -164,8 +162,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
-        ///     which does not implement <see cref="IConfigurable{T}"/> .
+        ///     Tests the <see cref="ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type which does not
+        ///     implement <see cref="IConfigurable{T}"/> .
         /// </summary>
         [Fact]
         public void RegisterNotConfigurable()
@@ -175,8 +173,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a
-        ///     non-configurable Type and using the throwsExceptionOnFailure flag.
+        ///     Tests the <see cref="ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a non-configurable Type and
+        ///     using the throwsExceptionOnFailure flag.
         /// </summary>
         [Fact]
         public void RegisterNotConfigurableThrowsException()
@@ -185,8 +183,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type
-        ///     returning a null value from the GetConfigurationDefinition method
+        ///     Tests the <see cref="ConfigurableTypeRegistry.RegisterType(Type, bool)"/> method with a Type returning a null value
+        ///     from the GetConfigurationDefinition method
         /// </summary>
         [Fact]
         public void RegisterNullDefinition()
@@ -196,8 +194,8 @@ namespace OpenIIoT.Core.Tests.Configuration
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Configuration.ConfigurableTypeRegistry.RegisterTypes(List{Type}, bool)"/> method with
-        ///     both a configurable and non-configurable Type.
+        ///     Tests the <see cref="ConfigurableTypeRegistry.RegisterTypes(List{Type}, bool)"/> method with both a configurable
+        ///     and non-configurable Type.
         /// </summary>
         [Fact]
         public void RegisterTypes()
