@@ -134,8 +134,8 @@
     <Compile Include="Packaging\PackageTests.cs" />
     <Compile Include="Packaging\PackageInstallationOptionsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Security\SessionEventArgs.cs" />
-    <Compile Include="Security\UserEventArgs.cs" />
+    <Compile Include="Security\SessionEventArgsTests.cs" />
+    <Compile Include="Security\UserEventArgsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

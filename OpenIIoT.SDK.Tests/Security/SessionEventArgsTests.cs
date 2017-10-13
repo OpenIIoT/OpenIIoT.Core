@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄
-      █   ███    ███
-      █   ███    ███   ▄█████    ▄█████    █████
-      █   ███    ███   ██  ▀    ██   █    ██  ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
-      █   ███    ███    ▄  ██   ██   █    ██  ██
-      █   ████████▀   ▄████▀    ███████   ██  ██
+      █      ▄████████
+      █     ███    ███
+      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
+      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
+      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
+      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
+      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
+      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
       █
       █      ▄████████                                        ▄████████
       █     ███    ███                                        ███    ███
@@ -31,7 +31,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the UserEventArgs class.
+      █  Unit tests for the SessionEventArgs class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -60,13 +60,13 @@
 namespace OpenIIoT.SDK.Tests.Security
 {
     using Moq;
-    using SDK.Security;
+    using OpenIIoT.SDK.Security;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="UserEventArgs"/> class.
+    ///     Unit tests for the <see cref="SessionEventArgs"/> class.
     /// </summary>
-    public class UserEventArgsTests
+    public class SessionEventArgsTests
     {
         #region Public Methods
 
@@ -76,17 +76,12 @@ namespace OpenIIoT.SDK.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Mock<IUser> user = new Mock<IUser>();
-            user.Setup(u => u.Name).Returns("name");
-            user.Setup(u => u.DisplayName).Returns("DisplayName");
-            user.Setup(u => u.Email).Returns("name@test.com");
-            user.Setup(u => u.PasswordHash).Returns("hash");
-            user.Setup(u => u.Role).Returns(Role.Reader);
+            Mock<ISession> session = new Mock<ISession>();
 
-            UserEventArgs test = new UserEventArgs(user.Object);
+            SessionEventArgs test = new SessionEventArgs(session.Object);
 
-            Assert.IsType<UserEventArgs>(test);
-            Assert.Equal(user.Object, test.User);
+            Assert.IsType<SessionEventArgs>(test);
+            Assert.Equal(session.Object, test.Session);
         }
 
         #endregion Public Methods
