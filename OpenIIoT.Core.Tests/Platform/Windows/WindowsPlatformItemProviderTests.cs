@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄  ███▄▄▄▄    ▄█  ▀████    ▐████▀    ▄███████▄
-      █   ███    ███ ███▀▀▀██▄ ███    ███▌   ████▀    ███    ███
-      █   ███    ███ ███   ███ ███▌    ███  ▐███      ███    ███  █         ▄█████      ██       ▄█████  ██████     █████    ▄▄██▄▄▄
-      █   ███    ███ ███   ███ ███▌    ▀███▄███▀      ███    ███ ██         ██   ██ ▀███████▄   ██   ▀█ ██    ██   ██  ██  ▄█▀▀██▀▀█▄
-      █   ███    ███ ███   ███ ███▌    ████▀██▄     ▀█████████▀  ██         ██   ██     ██  ▀  ▄██▄▄    ██    ██  ▄██▄▄█▀  ██  ██  ██
-      █   ███    ███ ███   ███ ███     ▐███  ▀███     ███        ██       ▀████████     ██    ▀▀██▀▀    ██    ██ ▀███████  ██  ██  ██
-      █   ███    ███ ███   ███ ███   ▄███     ███▄    ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██
-      █   ████████▀   ▀█   █▀  █▀   ████       ███▄  ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █
+      █    ▄█     █▄                                                      ▄███████▄
+      █   ███     ███                                                    ███    ███
+      █   ███     ███  █  ██▄▄▄▄  ██████▄   ██████   █     █    ▄█████   ███    ███  █         ▄█████      ██       ▄█████  ██████     █████    ▄▄██▄▄▄
+      █   ███     ███ ██  ██▀▀▀█▄ ██   ▀██ ██    ██ ██     ██   ██  ▀    ███    ███ ██         ██   ██ ▀███████▄   ██   ▀█ ██    ██   ██  ██  ▄█▀▀██▀▀█▄
+      █   ███     ███ ██▌ ██   ██ ██    ██ ██    ██ ██     ██   ██     ▀█████████▀  ██         ██   ██     ██  ▀  ▄██▄▄    ██    ██  ▄██▄▄█▀  ██  ██  ██
+      █   ███     ███ ██  ██   ██ ██    ██ ██    ██ ██     ██ ▀███████   ███        ██       ▀████████     ██    ▀▀██▀▀    ██    ██ ▀███████  ██  ██  ██
+      █   ███ ▄█▄ ███ ██  ██   ██ ██   ▄██ ██    ██ ██ ▄█▄ ██    ▄  ██   ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██
+      █    ▀███▀███▀  █    █   █  ██████▀   ██████   ███▀███   ▄████▀   ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █
       █
       █    ▄█                                     ▄███████▄
       █   ███                                    ███    ███
@@ -31,7 +31,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the UNIXPlatformItemProvider class.
+      █  Unit tests for the WindowsPlatformItemProvider class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -57,39 +57,40 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using Xunit;
-
-namespace OpenIIoT.Core.Tests.Platform.UNIX
+namespace OpenIIoT.Core.Tests.Platform.Windows
 {
+    using System;
+    using OpenIIoT.Core.Platform.Windows;
+    using OpenIIoT.SDK.Common;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider"/> class.
+    ///     Unit tests for the <see cref="WindowsPlatformItemProvider"/> class.
     /// </summary>
-    [Collection("UNIXPlatformItemProvider")]
-    public sealed class UNIXPlatformItemProvider : IDisposable
+    public sealed class WindowsPlatformItemProviderTests : IDisposable
     {
         #region Private Fields
 
         /// <summary>
         ///     An item used for testing; allows for disposal.
         /// </summary>
-        private SDK.Common.Item item;
+        private Item item;
 
         /// <summary>
-        ///     The instance of <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider"/> under test.
+        ///     The instance of <see cref="WindowsPlatformItemProvider"/> under test.
         /// </summary>
-        private Core.Platform.UNIX.UNIXPlatformItemProvider provider;
+        private WindowsPlatformItemProvider provider;
 
         #endregion Private Fields
 
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="UNIXPlatformItemProvider"/> class.
+        ///     Initializes a new instance of the <see cref="WindowsPlatformItemProviderTests"/> class.
         /// </summary>
-        public UNIXPlatformItemProvider()
+        public WindowsPlatformItemProviderTests()
         {
-            provider = new Core.Platform.UNIX.UNIXPlatformItemProvider("UNIX");
+            provider = new WindowsPlatformItemProvider("Windows");
         }
 
         #endregion Public Constructors
@@ -102,29 +103,29 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<Core.Platform.UNIX.UNIXPlatformItemProvider>(provider);
+            Assert.IsType<WindowsPlatformItemProvider>(provider);
         }
 
         /// <summary>
-        ///     Disposes of this <see cref="UNIXPlatformItemProvider"/>.
+        ///     Disposes this <see cref="WindowsPlatformItemProviderTests"/> .
         /// </summary>
         public void Dispose()
         {
             provider.Dispose();
 
-            if (item != default(SDK.Common.Item))
+            if (item != default(Item))
             {
                 item.Dispose();
             }
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.Read(SDK.Common.Item)"/> method.
+        ///     Tests the <see cref="WindowsPlatformItemProvider.Read(Item)"/> method.
         /// </summary>
         [Fact]
         public void Read()
         {
-            item = new SDK.Common.Item("UNIX.CPU.% Processor Time", provider);
+            item = new Item("Windows.CPU.% Processor Time", provider);
 
             object result = provider.Read(item);
 
@@ -132,12 +133,12 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.ReadAsync(SDK.Common.Item)"/> method.
+        ///     Tests the <see cref="WindowsPlatformItemProvider.ReadAsync(Item)"/> method.
         /// </summary>
         [Fact]
         public async void ReadAsync()
         {
-            item = new SDK.Common.Item("UNIX.CPU.% Processor Time", provider);
+            item = new Item("Windows.CPU.% Processor Time", provider);
 
             object result = await provider.ReadAsync(item);
 
@@ -145,12 +146,12 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.Read(SDK.Common.Item)"/> method with a known bad Item.
+        ///     Tests the <see cref="WindowsPlatformItemProvider.Read(Item)"/> method with a known bad Item.
         /// </summary>
         [Fact]
         public void ReadBad()
         {
-            item = new SDK.Common.Item("bad value", provider);
+            item = new Item("bad value", provider);
 
             object result = provider.Read(item);
 
@@ -158,7 +159,7 @@ namespace OpenIIoT.Core.Tests.Platform.UNIX
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.UNIX.UNIXPlatformItemProvider.Dispose()"/> method.
+        ///     Tests the <see cref="WindowsPlatformItemProvider.Dispose()"/> method.
         /// </summary>
         [Fact]
         public void TestDispose()

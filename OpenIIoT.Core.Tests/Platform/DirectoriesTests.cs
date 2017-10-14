@@ -48,27 +48,26 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using Moq;
-using OpenIIoT.Core.Platform;
-using OpenIIoT.SDK.Common.Exceptions;
-using Xunit;
-
 namespace OpenIIoT.Core.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using Moq;
+    using OpenIIoT.Core.Platform;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Platform.Directories"/> class.
+    ///     Unit tests for the <see cref="Directories"/> class.
     /// </summary>
-    [Collection("Directories")]
-    public class Directories
+    public class DirectoriesTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Directories"/> class.
+        ///     Initializes a new instance of the <see cref="DirectoriesTests"/> class.
         /// </summary>
-        public Directories()
+        public DirectoriesTests()
         {
             SetupMocks();
         }
@@ -92,9 +91,9 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Constructor()
         {
-            Core.Platform.Directories test = new Core.Platform.Directories(Settings.Object);
+            Directories test = new Directories(Settings.Object);
 
-            Assert.IsType<Core.Platform.Directories>(test);
+            Assert.IsType<Directories>(test);
         }
 
         /// <summary>
@@ -105,7 +104,7 @@ namespace OpenIIoT.Core.Tests
         {
             Settings.Setup(s => s.DirectoryData).Returns(default(string));
 
-            Exception ex = Record.Exception(() => new Core.Platform.Directories(Settings.Object));
+            Exception ex = Record.Exception(() => new Directories(Settings.Object));
 
             Assert.IsType<DirectoryConfigurationException>(ex);
         }
@@ -116,7 +115,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Properties()
         {
-            Core.Platform.Directories test = new Core.Platform.Directories(Settings.Object);
+            Directories test = new Directories(Settings.Object);
 
             Assert.NotNull(test.Data);
             Assert.NotNull(test.Logs);
@@ -129,12 +128,12 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Directories.ToDictionary()"/> method.
+        ///     Tests the <see cref="Directories.ToDictionary()"/> method.
         /// </summary>
         [Fact]
         public void ToDictionary()
         {
-            Core.Platform.Directories test = new Core.Platform.Directories(Settings.Object);
+            Directories test = new Directories(Settings.Object);
 
             IDictionary<string, string> dict = test.ToDictionary();
 

@@ -48,28 +48,53 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Linq;
-using Moq;
-using OpenIIoT.SDK.Common.Provider.ItemProvider;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Common.OperationResult;
-using Xunit;
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
 namespace OpenIIoT.Core.Tests.Platform
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
+    using Moq;
+    using OpenIIoT.Core.Platform;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+    using OpenIIoT.SDK.Platform;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Platform.Platform"/> class.
+    ///     Mocks a <see cref="Platform"/> of type <see cref="PlatformType.Unknown"/>.
+    /// </summary>
+    /// <remarks>
+    ///     It is not feasible to use a mocking framework for this mockup due to the abstract nature of the base class.
+    /// </remarks>
+    public class PlatformMock : Platform
+    {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PlatformMock"/> class.
+        /// </summary>
+        public PlatformMock()
+            : base()
+        {
+            PlatformType = PlatformType.Unknown;
+            Version = "1.0";
+            ItemProvider = new Mock<IItemProvider>().Object;
+        }
+
+        #endregion Public Constructors
+    }
+
+    /// <summary>
+    ///     Unit tests for the <see cref="Platform"/> class.
     /// </summary>
     /// <remarks>
     ///     Many of the unit tests in this class are actually integration tests due to the fact that the underlying file system is
     ///     not abstracted from the tests.
     /// </remarks>
-    [Collection("Platform")]
-    public sealed class Platform : IDisposable
+    public sealed class PlatformTests : IDisposable
     {
         #region Private Fields
 
@@ -83,9 +108,9 @@ namespace OpenIIoT.Core.Tests.Platform
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Platform"/> class.
+        ///     Initializes a new instance of the <see cref="PlatformTests"/> class.
         /// </summary>
-        public Platform()
+        public PlatformTests()
         {
             SetupMocks();
 
@@ -112,7 +137,7 @@ namespace OpenIIoT.Core.Tests.Platform
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ClearDirectory(string)"/> method.
+        ///     Tests the <see cref="Platform.ClearDirectory(string)"/> method.
         /// </summary>
         [Fact]
         public void ClearDirectory()
@@ -140,7 +165,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ClearDirectory(string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.ClearDirectory(string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ClearDirectoryFailure()
@@ -150,7 +175,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ComputeFileChecksum(string)"/> method.
+        ///     Tests the <see cref="Platform.ComputeFileChecksum(string)"/> method.
         /// </summary>
         [Fact]
         public void ComputeFileChecksum()
@@ -168,7 +193,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ComputeFileChecksum(string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.ComputeFileChecksum(string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ComputeFileChecksumFailure()
@@ -185,11 +210,11 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Constructor()
         {
-            Assert.IsAssignableFrom<Core.Platform.Platform>(PlatformMock);
+            Assert.IsAssignableFrom<Platform>(PlatformMock);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.CopyFile(string, string)"/> method.
+        ///     Tests the <see cref="Platform.CopyFile(string, string)"/> method.
         /// </summary>
         [Fact]
         public void CopyFile()
@@ -207,7 +232,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.CopyFile(string, string)"/> method with an existing file.
+        ///     Tests the <see cref="Platform.CopyFile(string, string)"/> method with an existing file.
         /// </summary>
         [Fact]
         public void CopyFileDestinationExists()
@@ -226,8 +251,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.CopyFile(string, string)"/> method with an existing file and using the
-        ///     overwrite option.
+        ///     Tests the <see cref="Platform.CopyFile(string, string)"/> method with an existing file and using the overwrite option.
         /// </summary>
         [Fact]
         public void CopyFileDestinationOverwrite()
@@ -246,7 +270,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.CreateDirectory(string)"/> method.
+        ///     Tests the <see cref="Platform.CreateDirectory(string)"/> method.
         /// </summary>
         [Fact]
         public void CreateDirectory()
@@ -264,7 +288,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.CreateDirectory(string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.CreateDirectory(string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void CreateDirectoryFailure()
@@ -275,7 +299,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.CreateZip(string, string)"/> method.
+        ///     Tests the <see cref="Platform.CreateZip(string, string)"/> method.
         /// </summary>
         [Fact]
         public void CreateZip()
@@ -303,7 +327,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.CreateZip(string, string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.CreateZip(string, string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void CreateZipFailing()
@@ -314,7 +338,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.DeleteDirectory(string, bool)"/> method.
+        ///     Tests the <see cref="Platform.DeleteDirectory(string, bool)"/> method.
         /// </summary>
         [Fact]
         public void DeleteDirectory()
@@ -332,7 +356,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.DeleteDirectory(string, bool)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.DeleteDirectory(string, bool)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void DeleteDirectoryFailure()
@@ -343,7 +367,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Test <see cref="Core.Platform.Platform.DeleteFile(string)"/> method.
+        ///     Test <see cref="Platform.DeleteFile(string)"/> method.
         /// </summary>
         [Fact]
         public void DeleteFile()
@@ -361,7 +385,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.DeleteFile(string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.DeleteFile(string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void DeleteFileFailure()
@@ -372,7 +396,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.DeleteDirectory(string, bool)"/> method.
+        ///     Tests the <see cref="Platform.DeleteDirectory(string, bool)"/> method.
         /// </summary>
         [Fact]
         public void DirectoryExists()
@@ -421,7 +445,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ExtractZipFile(string, string, string, bool)"/> method.
+        ///     Tests the <see cref="Platform.ExtractZipFile(string, string, string, bool)"/> method.
         /// </summary>
         [Fact]
         public void ExtractZip()
@@ -463,8 +487,8 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ExtractZipFile(string, string, string, bool)"/> method with an existing
-        ///     destination and with the clearDestination set to false.
+        ///     Tests the <see cref="Platform.ExtractZipFile(string, string, string, bool)"/> method with an existing destination
+        ///     and with the clearDestination set to false.
         /// </summary>
         [Fact]
         public void ExtractZipDestinationExistsDoNotclear()
@@ -507,8 +531,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ExtractZipFile(string, string, string, bool)"/> method under expected
-        ///     failing conditions.
+        ///     Tests the <see cref="Platform.ExtractZipFile(string, string, string, bool)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ExtractZipFailure()
@@ -519,7 +542,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ExtractZipFile(string, string, string, bool)"/> method.
+        ///     Tests the <see cref="Platform.ExtractZipFile(string, string, string, bool)"/> method.
         /// </summary>
         [Fact]
         public void ExtractZipFile()
@@ -561,8 +584,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ExtractZipFile(string, string, string, bool)"/> method under expected
-        ///     failing conditions.
+        ///     Tests the <see cref="Platform.ExtractZipFile(string, string, string, bool)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ExtractZipFileFailure()
@@ -573,7 +595,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.FileExists(string)"/> method.
+        ///     Tests the <see cref="Platform.FileExists(string)"/> method.
         /// </summary>
         [Fact]
         public void FileExists()
@@ -591,7 +613,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ListDirectories(string, string)"/> method.
+        ///     Tests the <see cref="Platform.ListDirectories(string, string)"/> method.
         /// </summary>
         [Fact]
         public void ListDirectories()
@@ -614,7 +636,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ListDirectories(string, string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.ListDirectories(string, string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ListDirectoriesFailure()
@@ -625,7 +647,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ListFiles(string, string)"/> method.
+        ///     Tests the <see cref="Platform.ListFiles(string, string)"/> method.
         /// </summary>
         [Fact]
         public void ListFiles()
@@ -653,7 +675,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ListFiles(string, string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.ListFiles(string, string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ListFilesFailure()
@@ -664,7 +686,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ListZipFiles(string, string)"/> method.
+        ///     Tests the <see cref="Platform.ListZipFiles(string, string)"/> method.
         /// </summary>
         [Fact]
         public void ListZipFiles()
@@ -698,7 +720,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ListZipFiles(string, string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.ListZipFiles(string, string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ListZipFilesFailure()
@@ -709,8 +731,8 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ListZipFiles(string, string)"/> method with search string which does
-        ///     not match any files in the zip.
+        ///     Tests the <see cref="Platform.ListZipFiles(string, string)"/> method with search string which does not match any
+        ///     files in the zip.
         /// </summary>
         [Fact]
         public void ListZipFilesNoMatches()
@@ -753,7 +775,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ReadFileText(string)"/> method.
+        ///     Tests the <see cref="Platform.ReadFileText(string)"/> method.
         /// </summary>
         [Fact]
         public void ReadFile()
@@ -772,7 +794,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ReadFileBytes(string)"/> method.
+        ///     Tests the <see cref="Platform.ReadFileBytes(string)"/> method.
         /// </summary>
         [Fact]
         public void ReadFileBytes()
@@ -788,7 +810,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ReadFileBytes(string)"/> method with a bad filename.
+        ///     Tests the <see cref="Platform.ReadFileBytes(string)"/> method with a bad filename.
         /// </summary>
         [Fact]
         public void ReadFileBytesFailure()
@@ -801,7 +823,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ReadFileText(string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.ReadFileText(string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ReadFileFailure()
@@ -814,7 +836,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ReadFileLines(string)"/> method.
+        ///     Tests the <see cref="Platform.ReadFileLines(string)"/> method.
         /// </summary>
         [Fact]
         public void ReadFileLines()
@@ -833,7 +855,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.ReadFileLines(string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.ReadFileLines(string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void ReadFileLinesFailure()
@@ -846,7 +868,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFileText(string, string)"/> method.
+        ///     Tests the <see cref="Platform.WriteFileText(string, string)"/> method.
         /// </summary>
         [Fact]
         public void WriteFile()
@@ -868,7 +890,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFileBytes(string, byte[])"/> method.
+        ///     Tests the <see cref="Platform.WriteFileBytes(string, byte[])"/> method.
         /// </summary>
         [Fact]
         public void WriteFileBytes()
@@ -882,7 +904,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFileBytes(string, byte[])"/> method with a bad filename.
+        ///     Tests the <see cref="Platform.WriteFileBytes(string, byte[])"/> method with a bad filename.
         /// </summary>
         [Fact]
         public void WriteFileBytesFailure()
@@ -895,7 +917,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFileText(string, string)"/> method by writing an existing file.
+        ///     Tests the <see cref="Platform.WriteFileText(string, string)"/> method by writing an existing file.
         /// </summary>
         [Fact]
         public void WriteFileExisting()
@@ -926,7 +948,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFileText(string, string)"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.WriteFileText(string, string)"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void WriteFileFailure()
@@ -939,7 +961,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFileLines(string, string[])"/> method.
+        ///     Tests the <see cref="Platform.WriteFileLines(string, string[])"/> method.
         /// </summary>
         [Fact]
         public void WriteFileLines()
@@ -961,7 +983,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFileLines(string, string[])"/> method by writing an existing file.
+        ///     Tests the <see cref="Platform.WriteFileLines(string, string[])"/> method by writing an existing file.
         /// </summary>
         [Fact]
         public void WriteFileLinesExisting()
@@ -992,7 +1014,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.Platform.WriteFileLines(string, string[])"/> method under expected failing conditions.
+        ///     Tests the <see cref="Platform.WriteFileLines(string, string[])"/> method under expected failing conditions.
         /// </summary>
         [Fact]
         public void WriteFileLinesFailure()
@@ -1017,30 +1039,5 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         #endregion Private Methods
-    }
-
-    /// <summary>
-    ///     Mocks a <see cref="Core.Platform.Platform"/> of type <see cref="PlatformType.Unknown"/>.
-    /// </summary>
-    /// <remarks>
-    ///     It is not feasible to use a mocking framework for this mockup due to the abstract nature of the base class.
-    /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class PlatformMock : Core.Platform.Platform
-    {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PlatformMock"/> class.
-        /// </summary>
-        public PlatformMock()
-            : base()
-        {
-            PlatformType = PlatformType.Unknown;
-            Version = "1.0";
-            ItemProvider = new Mock<IItemProvider>().Object;
-        }
-
-        #endregion Public Constructors
     }
 }
