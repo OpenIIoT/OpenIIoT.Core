@@ -97,6 +97,75 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void ConstructorCreatedTime()
+        {
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Name, "name"));
+            identity.AddClaim(new Claim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "hash"));
+
+            User = new User("name", "displayName", "name@test.com", "hash", SDK.Security.Role.Reader);
+
+            DateTimeOffset created = DateTime.Now.AddMinutes(-5);
+
+            ISession test = new Session(User, identity, created);
+
+            Assert.IsType<Session>(test);
+            Assert.IsAssignableFrom<ISession>(test);
+            Assert.Equal("hash", test.Token);
+            Assert.False(test.IsExpired);
+            Assert.Equal("name", test.GetClaim(ClaimTypes.Name));
+            Assert.Equal(SDK.Security.Role.Reader, Enum.Parse(typeof(Role), test.GetClaim(ClaimTypes.Role)));
+            Assert.NotNull(test.Expires);
+            Assert.Equal(created, test.Created);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Session.GetClaim(string)"/> method with a claim which can not be found.
+        /// </summary>
+        [Fact]
+        public void GetClaimClaimNotFound()
+        {
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Role, "Reader"));
+
+            ISession test = new Session(User, identity);
+
+            string name = test.GetClaim(ClaimTypes.Name);
+
+            Assert.Null(name);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Session.GetClaim(string)"/> method with a Session containing no claims.
+        /// </summary>
+        [Fact]
+        public void GetClaimNoClaims()
+        {
+            ISession test = new Session(User, new ClaimsIdentity());
+
+            string name = test.GetClaim(ClaimTypes.Name);
+
+            Assert.Null(name);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="Session.GetClaim(string)"/> method with a Session containing no Identity.
+        /// </summary>
+        [Fact]
+        public void GetClaimNoIdentity()
+        {
+            ISession test = new Session(User, null);
+
+            string name = test.GetClaim(ClaimTypes.Name);
+
+            Assert.Null(name);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="ISession.IsExpired"/> property with an expired Ticket.
         /// </summary>
         [Fact]

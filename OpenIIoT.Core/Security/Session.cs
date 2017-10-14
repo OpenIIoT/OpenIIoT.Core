@@ -156,7 +156,17 @@ namespace OpenIIoT.Core.Security
         /// <returns>The retrieved Claim value.</returns>
         public string GetClaim(string type)
         {
-            return Identity?.Claims?.Where(c => c.Type == type).FirstOrDefault()?.Value;
+            string retVal = default(string);
+
+            if (Identity != default(ClaimsIdentity))
+            {
+                if (Identity.Claims.Count() > 0)
+                {
+                    retVal = Identity.Claims.Where(c => c.Type == type).FirstOrDefault()?.Value;
+                }
+            }
+
+            return retVal;
         }
 
         #endregion Public Methods
