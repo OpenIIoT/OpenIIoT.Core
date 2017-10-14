@@ -48,33 +48,34 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using OpenIIoT.Core.Common;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Common.Exceptions;
-using OpenIIoT.SDK.Common.OperationResult;
-using Xunit;
+[module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Exceptions;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.Core;
+    using OpenIIoT.Core.Common;
+    using Xunit;
+
     /// <summary>
     ///     Unit tests for the ApplicationManager class.
     /// </summary>
-    [Collection("ApplicationManager")]
-    public class ApplicationManager
+    public class ApplicationManagerTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationManager"/> class.
+        ///     Initializes a new instance of the <see cref="ApplicationManagerTests"/> class.
         /// </summary>
         /// <remarks>Terminates any previous instantiation of the ApplicationManager prior to each test.</remarks>
-        public ApplicationManager()
+        public ApplicationManagerTests()
         {
-            Core.ApplicationManager.Terminate();
+            ApplicationManager.Terminate();
         }
 
         #endregion Public Constructors
@@ -82,25 +83,25 @@ namespace OpenIIoT.Core.Tests
         #region Public Methods
 
         /// <summary>
-        ///     Test <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list.
+        ///     Test <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type defined twice in the constructor Type list.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManager"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void DoubleManagers()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager), typeof(MockManager) }));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManager), typeof(MockManager) }));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerInstantiationException>(ex);
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.GetInstance"/> prior to invocation of <see cref="Core.ApplicationManager.Instantiate(Type[])"/>.
+        ///     Tests <see cref="ApplicationManager.GetInstance"/> prior to invocation of <see cref="ApplicationManager.Instantiate(Type[])"/>.
         /// </summary>
         [Fact]
         public void GetInstanceBeforeInstantiation()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.GetInstance());
+            Exception ex = Record.Exception(() => ApplicationManager.GetInstance());
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerNotInitializedException>(ex);
@@ -112,97 +113,96 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void InstanceName()
         {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Assert.NotNull(manager.InstanceName);
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.GetInstance()"/> after first invoking <see cref="Core.ApplicationManager.Instantiate(Type[])"/>.
+        ///     Tests <see cref="ApplicationManager.GetInstance()"/> after first invoking <see cref="ApplicationManager.Instantiate(Type[])"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManager"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void InstantiateAndGetInstance()
         {
-            IApplicationManager manager1 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-            IApplicationManager manager2 = Core.ApplicationManager.GetInstance();
+            IApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager2 = ApplicationManager.GetInstance();
 
             Assert.Equal(manager1, manager2);
         }
 
         /// <summary>
-        ///     Tests successive invocations of <see cref="Core.ApplicationManager.Instantiate(Type[])"/>.
+        ///     Tests successive invocations of <see cref="ApplicationManager.Instantiate(Type[])"/>.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManager"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void InstantiateTwice()
         {
-            IApplicationManager manager1 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
-            IApplicationManager manager2 = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager1 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager2 = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Type array containing an instance of
-        ///     IManager with the Setup() method returning a null Result.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing an instance of IManager
+        ///     with the Setup() method returning a null Result.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManagerBroken"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void InstantiateWithBrokenSetupMethod()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBroken) }));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerSetupException>(ex);
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with an empty Type array.
         /// </summary>
         [Fact]
         public void InstantiateWithEmptyArray()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { }));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(new Type[] { }));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerTypeListException>(ex);
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not
-        ///     implementing IManager.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a Type not implementing IManager.
         /// </summary>
         [Fact]
         public void InstantiateWithNonIManager()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(int) }));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(new Type[] { typeof(int) }));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerTypeListException>(ex);
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a null Type array.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a null Type array.
         /// </summary>
         [Fact]
         public void InstantiateWithNull()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(null));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(null));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerTypeListException>(ex);
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Type array containing a valid, functioning
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Type array containing a valid, functioning
         ///     IManager instance.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManager"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void InstantiateWithValidIManager()
         {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
-            Assert.IsType<Core.ApplicationManager>(manager);
+            Assert.IsType<ApplicationManager>(manager);
             Assert.NotNull(manager);
 
             IReadOnlyList<IManager> managers = manager.Managers;
@@ -214,7 +214,7 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
         /// </summary>
         /// <remarks>
         ///     Depends upon the <see cref="MockManagerDoesntImplementIManager"/> class to simulate the behavior under test.
@@ -222,7 +222,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void ManagerDoesntImplementIManager()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerDoesntImplementIManager) }));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerDoesntImplementIManager) }));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerTypeListException>(ex);
@@ -234,47 +234,47 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Managers()
         {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             Assert.Equal(2, manager.Managers.Count);
-            Assert.Equal(manager.Managers[0].GetType(), typeof(Core.ApplicationManager));
+            Assert.Equal(manager.Managers[0].GetType(), typeof(ApplicationManager));
             Assert.Equal(manager.Managers[1].GetType(), typeof(MockManager));
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with a known bad dependency.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManagerBadDependency"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void ManagerWithBadDepdency()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadDependency) }));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadDependency) }));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerInstantiationException>(ex);
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no Instantiate() method.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManagerBadInstantiate"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void ManagerWithBadInstantiate()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadInstantiate) }));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerBadInstantiate) }));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerInstantiationException>(ex);
         }
 
         /// <summary>
-        ///     Tests <see cref="Core.ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
+        ///     Tests <see cref="ApplicationManager.Instantiate(Type[])"/> with a Manager with no dependencies defined.
         /// </summary>
         /// <remarks>Depends upon the <see cref="MockManagerNoDependencies"/> class to simulate the behavior under test.</remarks>
         [Fact]
         public void ManagerWithNoDependencies()
         {
-            Exception ex = Record.Exception(() => Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoDependencies) }));
+            Exception ex = Record.Exception(() => ApplicationManager.Instantiate(new Type[] { typeof(MockManagerNoDependencies) }));
 
             Assert.NotNull(ex);
             Assert.IsType<ManagerInstantiationException>(ex);
@@ -287,7 +287,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StartBadReturn()
         {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartBadReturn) });
+            IApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartBadReturn) });
 
             Exception ex = Record.Exception(() => manager.Start());
 
@@ -302,7 +302,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StartFail()
         {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartFail) });
+            IApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStartFail) });
 
             Exception ex = Record.Exception(() => manager.Start());
 
@@ -317,7 +317,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StartStop()
         {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
+            IApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManager) });
 
             IResult startResult = manager.Start();
 
@@ -337,7 +337,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StopBadReturn()
         {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopBadReturn) });
+            IApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopBadReturn) });
 
             IResult startResult = manager.Start();
 
@@ -357,7 +357,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void StopFail()
         {
-            IApplicationManager manager = Core.ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopFail) });
+            IApplicationManager manager = ApplicationManager.Instantiate(new Type[] { typeof(MockManagerStopFail) });
 
             IResult startResult = manager.Start();
 
@@ -380,8 +380,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the Type parameter requirement of the
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManager : Core.Common.Manager
+    public class MockManager : Manager
     {
         #region Private Fields
 
@@ -464,8 +463,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the need to modify the constructor and
     ///     <see cref="Instantiate(MockManager)"/> method.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBadDependency : Core.Common.Manager
+    public class MockManagerBadDependency : Manager
     {
         #region Private Constructors
 
@@ -503,8 +501,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the need to remove the Instantiate() method to
     ///     simulate the behavior under test.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBadInstantiate : Core.Common.Manager
+    public class MockManagerBadInstantiate : Manager
     {
     }
 
@@ -515,8 +512,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the <see langword="protected"/> access level of
     ///     the <see cref="Manager.Setup()"/> method.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerBroken : Core.Common.Manager
+    public class MockManagerBroken : Manager
     {
         #region Private Fields
 
@@ -583,7 +579,6 @@ namespace OpenIIoT.Core.Tests
     /// <remarks>
     ///     It is not feasible to use a mocking framework for this mockup due to the need to change the interface(s) implemented.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
     public class MockManagerDoesntImplementIManager
     {
     }
@@ -595,9 +590,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the need to change the dependencies specified by
     ///     the <see cref="Instantiate"/> method and constructor.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    [SuppressMessage("StyleCop.CSharp.DocumentationRules", "SA1642:ConstructorSummaryDocumentationMustBeginWithStandardText", Justification = "Reviewed.")]
-    public class MockManagerNoDependencies : Core.Common.Manager
+    public class MockManagerNoDependencies : Manager
     {
         #region Private Constructors
 
@@ -632,8 +625,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the Type parameter requirement of the
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerRunning : Core.Common.Manager
+    public class MockManagerRunning : Manager
     {
         #region Private Constructors
 
@@ -673,8 +665,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the Type parameter requirement of the
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStartBadReturn : Core.Common.Manager
+    public class MockManagerStartBadReturn : Manager
     {
         #region Private Constructors
 
@@ -727,8 +718,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the Type parameter requirement of the
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStartFail : Core.Common.Manager
+    public class MockManagerStartFail : Manager
     {
         #region Private Constructors
 
@@ -781,8 +771,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the Type parameter requirement of the
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStopBadReturn : Core.Common.Manager
+    public class MockManagerStopBadReturn : Manager
     {
         #region Private Constructors
 
@@ -836,8 +825,7 @@ namespace OpenIIoT.Core.Tests
     ///     It is not feasible to use a mocking framework for this mockup due to the Type parameter requirement of the
     ///     ApplicationManager class; this class is instantiated by the ApplicationManager via reflection.
     /// </remarks>
-    [SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
-    public class MockManagerStopFail : Core.Common.Manager
+    public class MockManagerStopFail : Manager
     {
         #region Private Constructors
 

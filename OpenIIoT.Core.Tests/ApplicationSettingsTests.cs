@@ -48,24 +48,24 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using Xunit;
-
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Tests
 {
+    using OpenIIoT.Core;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="ApplicationSettings"/> class.
+    ///     Unit tests for the <see cref="ApplicationSettingsTests"/> class.
     /// </summary>
-    [Collection("ApplicationSettings")]
-    public class ApplicationSettings
+    public class ApplicationSettingsTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ApplicationSettings"/> class.
+        ///     Initializes a new instance of the <see cref="ApplicationSettingsTests"/> class.
         /// </summary>
-        public ApplicationSettings()
+        public ApplicationSettingsTests()
         {
-            Settings = new Core.ApplicationSettings();
+            Settings = new ApplicationSettings();
         }
 
         #endregion Public Constructors
@@ -75,14 +75,14 @@ namespace OpenIIoT.Core.Tests
         /// <summary>
         ///     Gets or sets the application settings.
         /// </summary>
-        private Core.ApplicationSettings Settings { get; set; }
+        private ApplicationSettings Settings { get; set; }
 
         #endregion Private Properties
 
         #region Public Methods
 
         /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.ApplicationInstanceName"/> property.
+        ///     Tests the <see cref="ApplicationSettings.ApplicationInstanceName"/> property.
         /// </summary>
         [Fact]
         public void ApplicationInstanceName()
@@ -93,8 +93,8 @@ namespace OpenIIoT.Core.Tests
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.ApplicationSettings.ApplicationInstanceName"/> property twice to ensure setting caching
-        ///     is working properly.
+        ///     Tests the <see cref="ApplicationSettings.ApplicationInstanceName"/> property twice to ensure setting caching is
+        ///     working properly.
         /// </summary>
         [Fact]
         public void ApplicationInstanceNameCached()
@@ -113,7 +113,7 @@ namespace OpenIIoT.Core.Tests
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<Core.ApplicationSettings>(Settings);
+            Assert.IsType<ApplicationSettings>(Settings);
         }
 
         #endregion Public Methods

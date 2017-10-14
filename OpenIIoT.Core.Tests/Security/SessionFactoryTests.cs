@@ -50,16 +50,15 @@
 
 namespace OpenIIoT.Core.Tests.Security
 {
-    using Core.Security;
-    using SDK.Security;
     using System;
     using System.Security.Claims;
+    using Core.Security;
+    using SDK.Security;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Security.SessionFactory"/> class.
+    ///     Unit tests for the <see cref="SessionFactory"/> class.
     /// </summary>
-    [Collection("SessionFactory")]
     public class SessionFactoryTests
     {
         #region Public Constructors
@@ -69,7 +68,7 @@ namespace OpenIIoT.Core.Tests.Security
         /// </summary>
         public SessionFactoryTests()
         {
-            Factory = new Core.Security.SessionFactory();
+            Factory = new SessionFactory();
         }
 
         #endregion Public Constructors
@@ -77,9 +76,9 @@ namespace OpenIIoT.Core.Tests.Security
         #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the <see cref="Core.Security.SessionFactory"/> under test.
+        ///     Gets or sets the <see cref="SessionFactory"/> under test.
         /// </summary>
-        private Core.Security.SessionFactory Factory { get; set; }
+        private SessionFactory Factory { get; set; }
 
         #endregion Private Properties
 
@@ -91,11 +90,11 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<Core.Security.SessionFactory>(Factory);
+            Assert.IsType<SessionFactory>(Factory);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SessionFactoryTests.CreateSession(User, int)"/> method.
+        ///     Tests the <see cref="SessionFactory.CreateSession(IUser, int)"/> method.
         /// </summary>
         [Fact]
         public void CreateSession()
@@ -103,67 +102,64 @@ namespace OpenIIoT.Core.Tests.Security
             IUser user = new User("test", "user", "test@test.com", "hash", Role.Reader);
             ISession test = Factory.CreateSession(user, 15);
 
-            Assert.IsType<Core.Security.Session>(test);
+            Assert.IsType<Session>(test);
             Assert.NotNull(test);
             Assert.Equal(128, test.Token.Length);
             Assert.True(test.Identity.HasClaim(ClaimTypes.Name, "test"));
-            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, Role.Reader.ToString()));
             Assert.Equal(test.Created.AddSeconds(15), test.Expires);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.SessionFactory.CreateSession(Core.Security.User, int)"/> method with an
-        ///     administrative user.
+        ///     Tests the <see cref="SessionFactory.CreateSession(IUser, int)"/> method with an administrative user.
         /// </summary>
         [Fact]
         public void CreateSessionAdmin()
         {
-            Core.Security.User user = new Core.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.Administrator);
+            User user = new User("admin", "user", "test@test.com", "hash", Role.Administrator);
             ISession test = Factory.CreateSession(user, 15);
 
-            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
-            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.ReadWriter.ToString()));
-            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Administrator.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, Role.Reader.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, Role.ReadWriter.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, Role.Administrator.ToString()));
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.SessionFactory.CreateSession(Core.Security.User, int)"/> method with a
-        ///     null/default user.
+        ///     Tests the <see cref="SessionFactory.CreateSession(IUser, int)"/> method with a null/default user.
         /// </summary>
         [Fact]
         public void CreateSessionNullUser()
         {
-            Core.Security.User user = default(Core.Security.User);
+            User user = default(User);
             ISession test = Factory.CreateSession(user, 15);
 
-            Assert.IsType<Core.Security.Session>(test);
+            Assert.IsType<Session>(test);
             Assert.NotNull(test);
             Assert.Equal(128, test.Token.Length);
             Assert.True(test.Identity.HasClaim(ClaimTypes.Name, string.Empty));
-            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, Role.Reader.ToString()));
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.SessionFactory.CreateSession(Core.Security.User, int)"/> method with a user with
-        ///     the ReadWrite role.
+        ///     Tests the <see cref="SessionFactory.CreateSession(IUser, int)"/> method with a user with the ReadWrite role.
         /// </summary>
         [Fact]
         public void CreateSessionReadWriter()
         {
-            Core.Security.User user = new Core.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.ReadWriter);
+            User user = new User("admin", "user", "test@test.com", "hash", Role.ReadWriter);
             ISession test = Factory.CreateSession(user, 15);
 
-            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.Reader.ToString()));
-            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, SDK.Security.Role.ReadWriter.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, Role.Reader.ToString()));
+            Assert.True(test.Identity.HasClaim(ClaimTypes.Role, Role.ReadWriter.ToString()));
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Security.SessionFactory.ExtendSession(SDK.Security.Session, int)"/> method.
+        ///     Tests the <see cref="SessionFactory.ExtendSession(ISession, int)"/> method.
         /// </summary>
         [Fact]
         public void ExtendSession()
         {
-            Core.Security.User user = new Core.Security.User("admin", "user", "test@test.com", "hash", SDK.Security.Role.ReadWriter);
+            User user = new User("admin", "user", "test@test.com", "hash", Role.ReadWriter);
             ISession test = Factory.CreateSession(user, 150);
 
             DateTimeOffset initialtime = test.Expires;

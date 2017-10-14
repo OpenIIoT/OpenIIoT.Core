@@ -132,8 +132,8 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ApplicationManager.cs" />
-    <Compile Include="ApplicationSettings.cs" />
+    <Compile Include="ApplicationManagerTests.cs" />
+    <Compile Include="ApplicationSettingsTests.cs" />
     <Compile Include="Common\Manager\ManagerTests.cs" />
     <Compile Include="Common\UtilityTests.cs" />
     <Compile Include="Configuration\ConfigurableTypeRegistryTests.cs" />
@@ -142,7 +142,7 @@
     <Compile Include="Configuration\ConfigurationLoaderTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Package\PackageManagerTests.cs" />
-    <Compile Include="Platform\PlatformManager.cs" />
+    <Compile Include="Platform\PlatformManagerTests.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformTests.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProviderTests.cs" />
     <Compile Include="Platform\Windows\WindowsPlatformItemProviderTests.cs" />

@@ -48,34 +48,34 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System.Reflection;
-using Moq;
-using OpenIIoT.SDK;
-using OpenIIoT.SDK.Common;
-using OpenIIoT.SDK.Platform;
-using OpenIIoT.SDK.Common.OperationResult;
-using Xunit;
-
 namespace OpenIIoT.Core.Tests.Platform
 {
+    using System.Reflection;
+    using Moq;
+    using OpenIIoT.Core.Platform;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Platform;
+    using Xunit;
+
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Platform.PlatformManager"/> class.
+    ///     Unit tests for the <see cref="PlatformManager"/> class.
     /// </summary>
-    [Collection("PlatformManager")]
-    public class PlatformManager
+    public class PlatformManagerTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PlatformManager"/> class.
+        ///     Initializes a new instance of the <see cref="PlatformManagerTests"/> class.
         /// </summary>
-        public PlatformManager()
+        public PlatformManagerTests()
         {
             SetupMocks();
 
-            Core.Platform.PlatformManager.Terminate();
+            PlatformManager.Terminate();
 
-            Manager = Core.Platform.PlatformManager.Instantiate(ApplicationManager.Object);
+            Manager = PlatformManager.Instantiate(ApplicationManager.Object);
         }
 
         #endregion Public Constructors
@@ -102,24 +102,24 @@ namespace OpenIIoT.Core.Tests.Platform
         [Fact]
         public void Constructor()
         {
-            Assert.IsType<Core.Platform.PlatformManager>(Manager);
+            Assert.IsType<PlatformManager>(Manager);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Instantiate(IApplicationManager)"/> method.
+        ///     Tests the <see cref="PlatformManager.Instantiate(IApplicationManager)"/> method.
         /// </summary>
         [Fact]
         public void Instantiate()
         {
             SetupMocks();
 
-            Core.Platform.PlatformManager.Terminate();
+            PlatformManager.Terminate();
 
-            Manager = Core.Platform.PlatformManager.Instantiate(ApplicationManager.Object);
+            Manager = PlatformManager.Instantiate(ApplicationManager.Object);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Instantiate(IApplicationManager)"/> method.
+        ///     Tests the <see cref="PlatformManager.Instantiate(IApplicationManager)"/> method.
         /// </summary>
         [Fact]
         public void InstantiateTwice()
@@ -129,28 +129,27 @@ namespace OpenIIoT.Core.Tests.Platform
             ApplicationManager.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
             ApplicationManager.Setup(a => a.Settings).Returns(new Core.ApplicationSettings());
 
-            Core.Platform.PlatformManager.Terminate();
+            PlatformManager.Terminate();
 
-            Manager = Core.Platform.PlatformManager.Instantiate(ApplicationManager.Object);
+            Manager = PlatformManager.Instantiate(ApplicationManager.Object);
 
-            IPlatformManager manager2 = Core.Platform.PlatformManager.Instantiate(ApplicationManager.Object);
+            IPlatformManager manager2 = PlatformManager.Instantiate(ApplicationManager.Object);
 
             Assert.Equal(Manager, manager2);
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Setup"/> method using reflection.
+        ///     Tests the <see cref="PlatformManager.Setup"/> method using reflection.
         /// </summary>
         [Fact]
         public void Setup()
         {
-            MethodInfo setup = typeof(Core.Platform.PlatformManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo setup = typeof(PlatformManager).GetMethod("Setup", BindingFlags.NonPublic | BindingFlags.Instance);
             setup.Invoke(Manager, new object[] { });
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Startup()"/> method via
-        ///     <see cref="Core.Common.Manager.Start()"/> .
+        ///     Tests the <see cref="PlatformManager.Startup()"/> method via <see cref="Core.Common.Manager.Start()"/> .
         /// </summary>
         [Fact]
         public void Start()
@@ -162,7 +161,7 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Shutdown(StopType)"/> method via
+        ///     Tests the <see cref="PlatformManager.Shutdown(StopType)"/> method via
         ///     <see cref="Core.Common.Manager.Stop(StopType)"/> .
         /// </summary>
         [Fact]
@@ -176,12 +175,12 @@ namespace OpenIIoT.Core.Tests.Platform
         }
 
         /// <summary>
-        ///     Tests the <see cref="Core.Platform.PlatformManager.Terminate()"/> method.
+        ///     Tests the <see cref="PlatformManager.Terminate()"/> method.
         /// </summary>
         [Fact]
         public void Terminate()
         {
-            Core.Platform.PlatformManager.Terminate();
+            PlatformManager.Terminate();
         }
 
         #endregion Public Methods
