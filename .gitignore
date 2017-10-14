@@ -214,3 +214,6 @@ ModelManifest.xml
 
 # OpenCover
 OpenCover/*
+
+# AxoCover
+.axoCover/*

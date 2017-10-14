@@ -1,4 +1,4 @@
-﻿namespace OpenIIoT.SDK.Service.WebApi
+﻿namespace OpenIIoT.Core.Service.WebApi
 {
     using System;
     using System.Collections.Generic;

@@ -70,16 +70,15 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
     using OpenIIoT.Core.Security;
     using OpenIIoT.Core.Security.WebApi;
     using OpenIIoT.Core.Security.WebApi.DTO;
+    using OpenIIoT.Core.Service.WebApi.ModelValidation;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Security;
     using Xunit;
-    using OpenIIoT.Core.Service.WebApi.ModelValidation;
 
     /// <summary>
     ///     Unit tests for the <see cref="SecurityController"/> class.
     /// </summary>
-    [Collection("SecurityController")]
     public class SecurityControllerTests
     {
         #region Public Constructors
@@ -461,7 +460,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="SecurityController.UsersUpdate(string, string, Role?)"/> method.
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method.
         /// </summary>
         [Fact]
         public void UsersUpdate()
@@ -483,7 +482,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="SecurityController.UsersUpdate(string, string, Role?)"/> method with an
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with an
         ///     <see cref="ISecurityManager"/> returning a failing result.
         /// </summary>
         [Fact]
@@ -505,7 +504,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="SecurityController.UsersUpdate(string, string, Role?)"/> method with neither an updated
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with neither an updated
         ///     <see cref="Role"/> nor password.
         /// </summary>
         [Fact]
@@ -518,7 +517,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="SecurityController.UsersUpdate(string, string, Role?)"/> method with an updated password.
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with an updated password.
         /// </summary>
         [Fact]
         public void UsersUpdatePassword()
@@ -540,7 +539,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="SecurityController.UsersUpdate(string, string, Role?)"/> method with an updated <see cref="Role"/>.
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with an updated <see cref="Role"/>.
         /// </summary>
         [Fact]
         public void UsersUpdateRole()
@@ -564,7 +563,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="SecurityController.UsersUpdate(string, string, Role?)"/> method with an
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with an
         ///     <see cref="ISecurityManager"/> unable to locate the specified user..
         /// </summary>
         [Fact]

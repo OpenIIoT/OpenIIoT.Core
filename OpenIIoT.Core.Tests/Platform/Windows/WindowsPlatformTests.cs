@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄
-      █    ▄██▀▀▀███▀▀▀██▄
-      █    ███   ███   ███    ▄█████   ▄█████   ▄█████   ▄█████     ▄████▄     ▄█████
-      █    ███   ███   ███   ██   █    ██  ▀    ██  ▀    ██   ██   ██    ▀    ██   █
-      █    ███   ███   ███  ▄██▄▄      ██       ██       ██   ██  ▄██        ▄██▄▄
-      █    ███   ███   ███ ▀▀██▀▀    ▀███████ ▀███████ ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █    ███   ███   ███   ██   █     ▄  ██    ▄  ██   ██   ██   ██    ██   ██   █
-      █     ▀█   ███   █▀    ███████  ▄████▀   ▄████▀    ██   █▀   ██████▀    ███████
+      █    ▄█     █▄                                                      ▄███████▄
+      █   ███     ███                                                    ███    ███
+      █   ███     ███  █  ██▄▄▄▄  ██████▄   ██████   █     █    ▄█████   ███    ███  █         ▄█████      ██       ▄█████  ██████     █████    ▄▄██▄▄▄
+      █   ███     ███ ██  ██▀▀▀█▄ ██   ▀██ ██    ██ ██     ██   ██  ▀    ███    ███ ██         ██   ██ ▀███████▄   ██   ▀█ ██    ██   ██  ██  ▄█▀▀██▀▀█▄
+      █   ███     ███ ██▌ ██   ██ ██    ██ ██    ██ ██     ██   ██     ▀█████████▀  ██         ██   ██     ██  ▀  ▄██▄▄    ██    ██  ▄██▄▄█▀  ██  ██  ██
+      █   ███     ███ ██  ██   ██ ██    ██ ██    ██ ██     ██ ▀███████   ███        ██       ▀████████     ██    ▀▀██▀▀    ██    ██ ▀███████  ██  ██  ██
+      █   ███ ▄█▄ ███ ██  ██   ██ ██   ▄██ ██    ██ ██ ▄█▄ ██    ▄  ██   ███        ██▌    ▄   ██   ██     ██      ██      ██    ██   ██  ██  ██  ██  ██
+      █    ▀███▀███▀  █    █   █  ██████▀   ██████   ███▀███   ▄████▀   ▄████▀      ████▄▄██   ██   █▀    ▄██▀     ██       ██████    ██  ██   █  ██  █
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the Message class.
+      █  Unit tests for the WindowsPlatform class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,48 +48,40 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Common.OperationResult.Tests
+namespace OpenIIoT.Core.Tests
 {
+    using OpenIIoT.Core.Platform.Windows;
+    using OpenIIoT.SDK.Common.Provider.ItemProvider;
+    using OpenIIoT.SDK.Platform;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Message"/> class.
+    ///     Unit tests for the <see cref="WindowsPlatform"/> class.
     /// </summary>
-    public class MessageTests
+    public class WindowsPlatformTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the constructor of <see cref="Message"/>.
+        ///     Tests all constructor overloads.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            Message testblank = new Message();
-
-            Assert.Equal(MessageType.Info, testblank.Type);
-            Assert.Equal(string.Empty, testblank.Text);
-
-            Message testtype = new Message(MessageType.Warning);
-
-            Assert.Equal(MessageType.Warning, testtype.Type);
-            Assert.Equal(string.Empty, testtype.Text);
-
-            Message test = new Message(MessageType.Error, "test!");
-
-            Assert.Equal(MessageType.Error, test.Type);
-            Assert.Equal("test!", test.Text);
+            WindowsPlatform platform = new WindowsPlatform();
+            Assert.IsAssignableFrom<WindowsPlatform>(platform);
         }
 
         /// <summary>
-        ///     Tests <see cref="Message.ToString"/>.
+        ///     Tests all properties.
         /// </summary>
         [Fact]
-        public void ToStringTest()
+        public void Properties()
         {
-            Message test = new Message(MessageType.Info, "Test");
-
-            Assert.Equal("[INFO] Test", test.ToString());
+            WindowsPlatform platform = new WindowsPlatform();
+            Assert.IsAssignableFrom<IItemProvider>(platform.ItemProvider);
+            Assert.Equal(PlatformType.Windows, platform.PlatformType);
+            Assert.NotNull(platform.Version);
         }
 
         #endregion Public Methods

@@ -64,9 +64,8 @@ namespace OpenIIoT.Core.Tests.Security
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Core.Security.SecurityManagerConfiguration"/> class.
+    ///     Unit tests for the <see cref="SecurityManagerConfiguration"/> class.
     /// </summary>
-    [Collection("SecurityManagerConfiguration")]
     public class SecurityManagerConfigurationTests
     {
         #region Public Methods
@@ -77,8 +76,8 @@ namespace OpenIIoT.Core.Tests.Security
         [Fact]
         public void Constructor()
         {
-            Core.Security.User user = new Core.Security.User("name", "user", "test@test.com", "password", SDK.Security.Role.Reader);
-            Core.Security.SecurityManagerConfiguration test = new Core.Security.SecurityManagerConfiguration()
+            User user = new User("name", "user", "test@test.com", "password", SDK.Security.Role.Reader);
+            SecurityManagerConfiguration test = new SecurityManagerConfiguration()
             {
                 Users = new List<User>(new[] { user }),
                 SessionLength = 1,
@@ -86,7 +85,7 @@ namespace OpenIIoT.Core.Tests.Security
                 SlidingSessions = false,
             };
 
-            Assert.IsType<Core.Security.SecurityManagerConfiguration>(test);
+            Assert.IsType<SecurityManagerConfiguration>(test);
 
             Assert.NotEmpty(test.Users);
             Assert.Equal(user, test.Users[0]);

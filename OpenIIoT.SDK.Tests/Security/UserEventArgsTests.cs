@@ -1,14 +1,23 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄
-      █    ▄██▀▀▀███▀▀▀██▄
-      █    ███   ███   ███    ▄█████   ▄█████   ▄█████   ▄█████     ▄████▄     ▄█████
-      █    ███   ███   ███   ██   █    ██  ▀    ██  ▀    ██   ██   ██    ▀    ██   █
-      █    ███   ███   ███  ▄██▄▄      ██       ██       ██   ██  ▄██        ▄██▄▄
-      █    ███   ███   ███ ▀▀██▀▀    ▀███████ ▀███████ ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █    ███   ███   ███   ██   █     ▄  ██    ▄  ██   ██   ██   ██    ██   ██   █
-      █     ▀█   ███   █▀    ███████  ▄████▀   ▄████▀    ██   █▀   ██████▀    ███████
+      █   ███    █▄
+      █   ███    ███
+      █   ███    ███   ▄█████    ▄█████    █████
+      █   ███    ███   ██  ▀    ██   █    ██  ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████
+      █   ███    ███    ▄  ██   ██   █    ██  ██
+      █   ████████▀   ▄████▀    ███████   ██  ██
+      █
+      █      ▄████████                                        ▄████████
+      █     ███    ███                                        ███    ███
+      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
+      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
+      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
+      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
+      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
+      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +31,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the Message class.
+      █  Unit tests for the UserEventArgs class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,48 +57,36 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Common.OperationResult.Tests
+namespace OpenIIoT.SDK.Tests.Security
 {
+    using Moq;
+    using OpenIIoT.SDK.Security;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Message"/> class.
+    ///     Unit tests for the <see cref="UserEventArgs"/> class.
     /// </summary>
-    public class MessageTests
+    public class UserEventArgsTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the constructor of <see cref="Message"/>.
+        ///     Test the constructor and all properties.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            Message testblank = new Message();
+            Mock<IUser> user = new Mock<IUser>();
+            user.Setup(u => u.Name).Returns("name");
+            user.Setup(u => u.DisplayName).Returns("DisplayName");
+            user.Setup(u => u.Email).Returns("name@test.com");
+            user.Setup(u => u.PasswordHash).Returns("hash");
+            user.Setup(u => u.Role).Returns(Role.Reader);
 
-            Assert.Equal(MessageType.Info, testblank.Type);
-            Assert.Equal(string.Empty, testblank.Text);
+            UserEventArgs test = new UserEventArgs(user.Object);
 
-            Message testtype = new Message(MessageType.Warning);
-
-            Assert.Equal(MessageType.Warning, testtype.Type);
-            Assert.Equal(string.Empty, testtype.Text);
-
-            Message test = new Message(MessageType.Error, "test!");
-
-            Assert.Equal(MessageType.Error, test.Type);
-            Assert.Equal("test!", test.Text);
-        }
-
-        /// <summary>
-        ///     Tests <see cref="Message.ToString"/>.
-        /// </summary>
-        [Fact]
-        public void ToStringTest()
-        {
-            Message test = new Message(MessageType.Info, "Test");
-
-            Assert.Equal("[INFO] Test", test.ToString());
+            Assert.IsType<UserEventArgs>(test);
+            Assert.Equal(user.Object, test.User);
         }
 
         #endregion Public Methods

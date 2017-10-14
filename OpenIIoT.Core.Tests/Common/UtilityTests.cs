@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄
-      █    ▄██▀▀▀███▀▀▀██▄
-      █    ███   ███   ███    ▄█████   ▄█████   ▄█████   ▄█████     ▄████▄     ▄█████
-      █    ███   ███   ███   ██   █    ██  ▀    ██  ▀    ██   ██   ██    ▀    ██   █
-      █    ███   ███   ███  ▄██▄▄      ██       ██       ██   ██  ▄██        ▄██▄▄
-      █    ███   ███   ███ ▀▀██▀▀    ▀███████ ▀███████ ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █    ███   ███   ███   ██   █     ▄  ██    ▄  ██   ██   ██   ██    ██   ██   █
-      █     ▀█   ███   █▀    ███████  ▄████▀   ▄████▀    ██   █▀   ██████▀    ███████
+      █   ███    █▄
+      █   ███    ███
+      █   ███    ███     ██     █   █        █      ██    ▄█   ▄
+      █   ███    ███ ▀███████▄ ██  ██       ██  ▀███████▄ ██   █▄
+      █   ███    ███     ██  ▀ ██▌ ██       ██▌     ██  ▀ ▀▀▀▀▀██
+      █   ███    ███     ██    ██  ██       ██      ██    ▄█   ██
+      █   ███    ███     ██    ██  ██▌    ▄ ██      ██    ██   ██
+      █   ████████▀     ▄██▀   █   ████▄▄██ █      ▄██▀    █████
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the Message class.
+      █  Unit tests for the Utility class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,48 +48,68 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Common.OperationResult.Tests
+namespace OpenIIoT.Core.Tests
 {
+    using NLog;
+    using NLog.Targets;
+    using OpenIIoT.Core.Common;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Message"/> class.
+    ///     Unit tests for the <see cref="Utility"/> class.
     /// </summary>
-    public class MessageTests
+    public class UtilityTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the constructor of <see cref="Message"/>.
+        ///     Tests the <see cref="Utility.PrintLogo(Logger)"/> method.
         /// </summary>
         [Fact]
-        public void Constructor()
+        public void PrintLogo()
         {
-            Message testblank = new Message();
+            Target target = new ConsoleTarget();
+            LogManager.Configuration.AddTarget("test", target);
+            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
+            Logger logger = LogManager.GetLogger("test");
 
-            Assert.Equal(MessageType.Info, testblank.Type);
-            Assert.Equal(string.Empty, testblank.Text);
-
-            Message testtype = new Message(MessageType.Warning);
-
-            Assert.Equal(MessageType.Warning, testtype.Type);
-            Assert.Equal(string.Empty, testtype.Text);
-
-            Message test = new Message(MessageType.Error, "test!");
-
-            Assert.Equal(MessageType.Error, test.Type);
-            Assert.Equal("test!", test.Text);
+            Utility.PrintLogo(logger);
         }
 
         /// <summary>
-        ///     Tests <see cref="Message.ToString"/>.
+        ///     Tests the <see cref="Utility.PrintLogoFooter(Logger)"/> method.
         /// </summary>
         [Fact]
-        public void ToStringTest()
+        public void PrintLogoFooter()
         {
-            Message test = new Message(MessageType.Info, "Test");
+            Target target = new ConsoleTarget();
+            LogManager.Configuration.AddTarget("test", target);
+            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
+            Logger logger = LogManager.GetLogger("test");
 
-            Assert.Equal("[INFO] Test", test.ToString());
+            Core.Common.Utility.PrintLogoFooter(logger);
+        }
+
+        /// <summary>
+        ///     Tests the
+        ///     <see cref="Utility.PrintModel(Logger, SDK.Common.Item, int, System.Collections.Generic.List{bool}, bool)"/> method.
+        /// </summary>
+        [Fact]
+        public void PrintModel()
+        {
+            Target target = new ConsoleTarget();
+            LogManager.Configuration.AddTarget("test", target);
+            LogManager.Configuration.AddRule(LogLevel.Trace, LogLevel.Fatal, target);
+            Logger logger = LogManager.GetLogger("test");
+
+            SDK.Common.Item root = new SDK.Common.Item("Root");
+            SDK.Common.Item child1 = new SDK.Common.Item("Child1");
+            SDK.Common.Item child2 = new SDK.Common.Item("Child2");
+
+            root.AddChild(child1);
+            root.AddChild(child2);
+
+            Utility.PrintModel(logger, root, 0);
         }
 
         #endregion Public Methods

@@ -6,6 +6,7 @@
     using Newtonsoft.Json;
     using NLog;
     using NLog.RealtimeLogger;
+    using OpenIIoT.Core.Service.WebApi;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Service.WebApi;
 

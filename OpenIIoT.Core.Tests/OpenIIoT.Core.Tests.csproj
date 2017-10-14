@@ -132,23 +132,23 @@
     <Otherwise />
   </Choose>
   <ItemGroup>
-    <Compile Include="ApplicationManager.cs" />
-    <Compile Include="ApplicationSettings.cs" />
-    <Compile Include="Common\Manager\Manager.cs" />
-    <Compile Include="Common\Utility.cs" />
-    <Compile Include="Configuration\ConfigurableTypeRegistry.cs" />
-    <Compile Include="Configuration\Configuration.cs" />
-    <Compile Include="Configuration\ConfigurationManager.cs" />
-    <Compile Include="Configuration\ConfigurationLoader.cs" />
+    <Compile Include="ApplicationManagerTests.cs" />
+    <Compile Include="ApplicationSettingsTests.cs" />
+    <Compile Include="Common\Manager\ManagerTests.cs" />
+    <Compile Include="Common\UtilityTests.cs" />
+    <Compile Include="Configuration\ConfigurableTypeRegistryTests.cs" />
+    <Compile Include="Configuration\ConfigurationTests.cs" />
+    <Compile Include="Configuration\ConfigurationManagerTests.cs" />
+    <Compile Include="Configuration\ConfigurationLoaderTests.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Package\PackageManager.cs" />
-    <Compile Include="Platform\PlatformManager.cs" />
-    <Compile Include="Platform\UNIX\UNIXPlatform.cs" />
-    <Compile Include="Platform\UNIX\UNIXPlatformItemProvider.cs" />
-    <Compile Include="Platform\Windows\WindowsPlatformItemProvider.cs" />
-    <Compile Include="Platform\Windows\WindowsPlatform.cs" />
-    <Compile Include="Platform\Platform.cs" />
-    <Compile Include="Platform\Directories.cs" />
+    <Compile Include="Package\PackageManagerTests.cs" />
+    <Compile Include="Platform\PlatformManagerTests.cs" />
+    <Compile Include="Platform\UNIX\UNIXPlatformTests.cs" />
+    <Compile Include="Platform\UNIX\UNIXPlatformItemProviderTests.cs" />
+    <Compile Include="Platform\Windows\WindowsPlatformItemProviderTests.cs" />
+    <Compile Include="Platform\Windows\WindowsPlatformTests.cs" />
+    <Compile Include="Platform\PlatformTests.cs" />
+    <Compile Include="Platform\DirectoriesTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\SecurityManagerTests.cs" />
     <Compile Include="Security\SecurityManagerConfigurationTests.cs" />

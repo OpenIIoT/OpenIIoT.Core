@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄
-      █    ▄██▀▀▀███▀▀▀██▄
-      █    ███   ███   ███    ▄█████   ▄█████   ▄█████   ▄█████     ▄████▄     ▄█████
-      █    ███   ███   ███   ██   █    ██  ▀    ██  ▀    ██   ██   ██    ▀    ██   █
-      █    ███   ███   ███  ▄██▄▄      ██       ██       ██   ██  ▄██        ▄██▄▄
-      █    ███   ███   ███ ▀▀██▀▀    ▀███████ ▀███████ ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █    ███   ███   ███   ██   █     ▄  ██    ▄  ██   ██   ██   ██    ██   ██   █
-      █     ▀█   ███   █▀    ███████  ▄████▀   ▄████▀    ██   █▀   ██████▀    ███████
+      █      ▄███████▄
+      █     ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the Message class.
+      █  Unit tests for the Package class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,48 +48,73 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Common.OperationResult.Tests
+namespace OpenIIoT.SDK.Tests.Packaging
 {
+    using System;
+    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Message"/> class.
+    ///     Unit tests for the <see cref="Package"/> class.
     /// </summary>
-    public class MessageTests
+    public class PackageTests
     {
         #region Public Methods
 
         /// <summary>
-        ///     Tests the constructor of <see cref="Message"/>.
+        ///     Tests the constructor and all properties.
         /// </summary>
         [Fact]
         public void Constructor()
         {
-            Message testblank = new Message();
+            PackageManifest manifest = new PackageManifest()
+            {
+                Namespace = "namespace",
+                Title = "title",
+            };
 
-            Assert.Equal(MessageType.Info, testblank.Type);
-            Assert.Equal(string.Empty, testblank.Text);
+            DateTime now = DateTime.Now;
 
-            Message testtype = new Message(MessageType.Warning);
+            SDK.Packaging.Package test = new SDK.Packaging.Package("test", now, manifest);
 
-            Assert.Equal(MessageType.Warning, testtype.Type);
-            Assert.Equal(string.Empty, testtype.Text);
+            Assert.IsType<SDK.Packaging.Package>(test);
 
-            Message test = new Message(MessageType.Error, "test!");
-
-            Assert.Equal(MessageType.Error, test.Type);
-            Assert.Equal("test!", test.Text);
+            Assert.Equal("test", test.Filename);
+            Assert.Equal("namespace.title", test.FQN);
+            Assert.False(test.IsSigned);
+            Assert.False(test.IsTrusted);
+            Assert.Equal(now, test.ModifiedOn);
         }
 
         /// <summary>
-        ///     Tests <see cref="Message.ToString"/>.
+        ///     Tests the constructor and all properties.
         /// </summary>
         [Fact]
-        public void ToStringTest()
+        public void ConstructorSignedTrusted()
         {
-            Message test = new Message(MessageType.Info, "Test");
+            PackageManifest manifest = new PackageManifest()
+            {
+                Namespace = "namespace",
+                Title = "title",
+                Signature = new PackageManifestSignature()
+                {
+                    Digest = "digest",
+                    Trust = "trust",
+                },
+            };
 
-            Assert.Equal("[INFO] Test", test.ToString());
+            DateTime now = DateTime.Now;
+
+            Package test = new Package("test", now, manifest);
+
+            Assert.IsType<Package>(test);
+
+            Assert.Equal("test", test.Filename);
+            Assert.Equal("namespace.title", test.FQN);
+            Assert.True(test.IsSigned);
+            Assert.True(test.IsTrusted);
+            Assert.Equal(now, test.ModifiedOn);
         }
 
         #endregion Public Methods

@@ -38,7 +38,6 @@
                                                                                                ▀█▄ ██ ▄█▀
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
-    using Utility.CommandLine;
 
 namespace OpenIIoT.Core
 {
@@ -47,6 +46,7 @@ namespace OpenIIoT.Core
     using System.Reflection;
     using System.ServiceProcess;
     using System.Text.RegularExpressions;
+    using global::Utility.CommandLine;
     using NLog;
     using NLog.xLogger;
     using OpenIIoT.Core.Configuration;
@@ -396,11 +396,11 @@ namespace OpenIIoT.Core
 
                 if (InstallService)
                 {
-                    Utility.ModifyService("install");
+                    Common.Utility.ModifyService("install");
                 }
                 else
                 {
-                    Utility.ModifyService("uninstall");
+                    Common.Utility.ModifyService("uninstall");
                 }
 
                 logger.Info($"Successfully {(InstallService ? "installed" : "uninstalled")} Windows Service.");
@@ -420,7 +420,7 @@ namespace OpenIIoT.Core
                         // "info" "debug" and "trace" supplying any value will disable logging for any level beneath that level,
                         // from left to right as positioned above
                         logger.Info($"Reconfiguring logger to log level '{LoggingLevel}'...");
-                        Utility.SetLoggingLevel(LoggingLevel);
+                        Common.Utility.SetLoggingLevel(LoggingLevel);
                         logger.Info("Successfully reconfigured logger.");
                     }
                     else
@@ -511,9 +511,9 @@ namespace OpenIIoT.Core
                 applicationManager.GetManager<IModelManager>().AttachItem(((IConnector)applicationManager.GetManager<IPluginManager>().FindPluginInstance("SQL")).Browse(), symItem);
 
                 // show 'em what they've won!
-                Utility.PrintLogo(logger);
-                Utility.PrintModel(logger, applicationManager.GetManager<IModelManager>().Model, 0, null, true);
-                Utility.PrintLogoFooter(logger);
+                Common.Utility.PrintLogo(logger);
+                Common.Utility.PrintModel(logger, applicationManager.GetManager<IModelManager>().Model, 0, null, true);
+                Common.Utility.PrintLogoFooter(logger);
 
                 // subscribe to the datetime item
                 Result subscribe = applicationManager.GetManager<IModelManager>().FindItem("OpenIIoT.Simulation.DateTime.Time").SubscribeToSource();

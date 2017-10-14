@@ -54,6 +54,7 @@ namespace OpenIIoT.Core.Tests.Security
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
+    using System.Security.Claims;
     using Moq;
     using OpenIIoT.Core.Security;
     using OpenIIoT.SDK;
@@ -63,12 +64,10 @@ namespace OpenIIoT.Core.Tests.Security
     using OpenIIoT.SDK.Configuration;
     using OpenIIoT.SDK.Security;
     using Xunit;
-    using System.Security.Claims;
 
     /// <summary>
     ///     Unit tests for the <see cref="SecurityManager"/> class.
     /// </summary>
-    [Collection("SecurityManager")]
     public class SecurityManagerTests
     {
         #region Public Constructors
