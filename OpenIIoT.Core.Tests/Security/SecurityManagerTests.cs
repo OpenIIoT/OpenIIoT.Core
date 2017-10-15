@@ -158,6 +158,33 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         /// <summary>
+        ///     Tests the <see cref="SecurityManager.CreateUser(string, string, string, string, Role)"/> method with a known bad
+        ///     display name.
+        /// </summary>
+        [Fact]
+        public void CreateUserBadDisplayName()
+        {
+            Manager.Start();
+
+            IResult<IUser> result = Manager.CreateUser("name", null, "test@test.com", string.Empty, Role.Reader);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SecurityManager.CreateUser(string, string, string, string, Role)"/> method with a known bad email.
+        /// </summary>
+        [Fact]
+        public void CreateUserBadEmail()
+        {
+            Manager.Start();
+
+            IResult<IUser> result = Manager.CreateUser("name", "name", "email", string.Empty, Role.Reader);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SecurityManager.CreateUser(string, string, string, string, Role)"/> method with a known bad password.
         /// </summary>
         [Fact]
@@ -179,6 +206,19 @@ namespace OpenIIoT.Core.Tests.Security
             Manager.Start();
 
             IResult<IUser> result = Manager.CreateUser(string.Empty, "test", "test@test.com", "password", Role.Reader);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SecurityManager.CreateUser(string, string, string, string, Role)"/> method with a missing email.
+        /// </summary>
+        [Fact]
+        public void CreateUserNoEmail()
+        {
+            Manager.Start();
+
+            IResult<IUser> result = Manager.CreateUser("name", "name", null, string.Empty, Role.Reader);
 
             Assert.Equal(ResultCode.Failure, result.ResultCode);
         }
@@ -760,6 +800,33 @@ namespace OpenIIoT.Core.Tests.Security
             Assert.Equal(name, user.ReturnValue.Name);
             Assert.Equal(hash, user.ReturnValue.PasswordHash);
             Assert.Equal(Role.ReadWriter, user.ReturnValue.Role);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SecurityManager.UpdateUser(string, string, string, string, Role?)"/> method with a known bad
+        ///     display name.
+        /// </summary>
+        [Fact]
+        public void UpdateUserBadDisplayName()
+        {
+            Manager.Start();
+
+            IResult<IUser> user = Manager.UpdateUser("name", string.Empty, "test@test.com", "password", Role.ReadWriter);
+
+            Assert.Equal(ResultCode.Failure, user.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SecurityManager.UpdateUser(string, string, string, string, Role?)"/> method with a known bad email.
+        /// </summary>
+        [Fact]
+        public void UpdateUserBadEmail()
+        {
+            Manager.Start();
+
+            IResult<IUser> user = Manager.UpdateUser("name", "name", "test", "password", Role.ReadWriter);
+
+            Assert.Equal(ResultCode.Failure, user.ResultCode);
         }
 
         /// <summary>
