@@ -155,6 +155,7 @@
     <Compile Include="Security\SessionTests.cs" />
     <Compile Include="Security\SessionFactoryTests.cs" />
     <Compile Include="Security\UserTests.cs" />
+    <Compile Include="Security\WebApi\Data\SessionDataTests.cs" />
     <Compile Include="Security\WebApi\SecurityControllerTests.cs" />
     <Compile Include="Security\WebApi\SessionDataTests.cs" />
   </ItemGroup>
@@ -200,9 +201,7 @@
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.CodeFixes.dll" />
     <Analyzer Include="..\packages\StyleCop.Analyzers.1.1.0-beta001\analyzers\dotnet\cs\StyleCop.Analyzers.dll" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Security\WebApi\Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>

@@ -10,10 +10,19 @@
       █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██ ███   ▄███   ██   ██     ██      ██   ██
       █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █  ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used when returning Session objects.
+      █  Unit tests for the SessionData class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,65 +48,96 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security.WebApi.Data
+namespace OpenIIoT.Core.Tests.Security.WebApi.Data
 {
     using System;
-    using System.Runtime.Serialization;
-    using Newtonsoft.Json;
-    using OpenIIoT.SDK.Common;
+    using System.Security.Claims;
+    using Moq;
+    using OpenIIoT.Core.Security.WebApi.Data;
     using OpenIIoT.SDK.Security;
+    using Xunit;
 
     /// <summary>
-    ///     Data Transfer Object used when returning <see cref="Session"/> objects.
+    ///     Unit tests for the <see cref="SessionData"/> class.
     /// </summary>
-    [DataContract]
-    public class SessionData
+    public class SessionDataTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionData"/> class with the specified <see cref="Session"/>.
+        ///     Initializes a new instance of the <see cref="SessionDataTests"/> class.
         /// </summary>
-        /// <param name="session">The <see cref="Session"/> from which data is sourced.</param>
-        public SessionData(ISession session)
+        public SessionDataTests()
         {
-            this.CopyPropertyValuesFrom(session);
-
-            User = new UserData(session.User);
+            SetupMocks();
         }
 
         #endregion Public Constructors
 
-        #region Public Properties
+        #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.Created"/> date.
+        ///     Gets or sets the <see cref="ClaimsIdentity"/> for the unit tests.
         /// </summary>
-        [JsonProperty(Order = 3)]
-        [DataMember(Order = 3)]
-        public DateTimeOffset Created { get; set; }
+        private ClaimsIdentity Identity { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.Expires"/> date.
+        ///     Gets or sets the <see cref="ISession"/> mockup for the unit tests.
         /// </summary>
-        [JsonProperty(Order = 4)]
-        [DataMember(Order = 4)]
-        public DateTimeOffset Expires { get; set; }
+        private Mock<ISession> Session { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.Token"/>.
+        ///     Gets or sets the <see cref="IUser"/> mockup for the unit tests.
         /// </summary>
-        [JsonProperty(Order = 2)]
-        [DataMember(Order = 2)]
-        public string Token { get; set; }
+        private Mock<IUser> User { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
 
         /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.User"/>.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        [JsonProperty(Order = 1)]
-        [DataMember(Order = 1)]
-        public UserData User { get; set; }
+        [Fact]
+        public void Constructor()
+        {
+            SessionData test = new SessionData(Session.Object);
 
-        #endregion Public Properties
+            Assert.IsType<SessionData>(test);
+            Assert.Equal(User.Object.Name, test.User.Name);
+            Assert.Equal(Session.Object.Token, test.Token);
+            Assert.Equal(Session.Object.Created, test.Created);
+            Assert.Equal(Session.Object.Expires, test.Expires);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
+        private void SetupMocks()
+        {
+            User = new Mock<IUser>();
+            User.Setup(u => u.Name).Returns("name");
+            User.Setup(u => u.DisplayName).Returns("display name");
+            User.Setup(u => u.Email).Returns("name@email.com");
+            User.Setup(u => u.PasswordHash).Returns("hash");
+            User.Setup(u => u.Role).Returns(Role.Reader);
+
+            Identity = new ClaimsIdentity();
+            Identity.AddClaim(new Claim(ClaimTypes.Name, User.Object.Name));
+            Identity.AddClaim(new Claim(ClaimTypes.Role, User.Object.Role.ToString()));
+
+            Session = new Mock<ISession>();
+            Session.Setup(s => s.User).Returns(User.Object);
+            Session.Setup(s => s.Identity).Returns(Identity);
+            Session.Setup(s => s.Token).Returns("token");
+            Session.Setup(s => s.Created).Returns(DateTime.UtcNow);
+            Session.Setup(s => s.Expires).Returns(DateTime.UtcNow.AddHours(1));
+        }
+
+        #endregion Private Methods
     }
 }
