@@ -482,6 +482,25 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method.
+        /// </summary>
+        [Fact]
+        public void UsersUpdateBadModel()
+        {
+            User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
+
+            Controller.ModelState.AddModelError("error", "error");
+
+            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Role = Role.ReadWriter });
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Never);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with an
         ///     <see cref="ISecurityManager"/> returning a failing result.
         /// </summary>

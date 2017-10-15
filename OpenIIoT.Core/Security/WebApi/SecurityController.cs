@@ -193,7 +193,6 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPost]
         [Route("sessions")]
         [AllowAnonymous]
-        [ValidateModel]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.Created, "The Session was successfully started.", typeof(SessionData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(ModelValidationResult))]
@@ -201,25 +200,33 @@ namespace OpenIIoT.Core.Security.WebApi
         public HttpResponseMessage SessionsStart([FromBody]SessionStartData data)
         {
             HttpResponseMessage retVal;
+            ModelValidator validator = new ModelValidator(ModelState);
 
-            IResult<ISession> startSessionResult = SecurityManager.StartSession(data.Name, data.Password);
-
-            if (startSessionResult.ResultCode != ResultCode.Failure)
+            if (!validator.IsValid)
             {
-                ISession session = startSessionResult.ReturnValue;
-
-                retVal = Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
-
-                CookieHeaderValue cookie = new CookieHeaderValue(WebApiConstants.SessionTokenCookieName, session.Token);
-                cookie.Expires = session.Expires;
-                cookie.Path = "/";
-
-                retVal.Headers.AddCookies(new[] { cookie });
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
             }
             else
             {
-                IResult result = (Result)startSessionResult;
-                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
+                IResult<ISession> startSessionResult = SecurityManager.StartSession(data.Name, data.Password);
+
+                if (startSessionResult.ResultCode != ResultCode.Failure)
+                {
+                    ISession session = startSessionResult.ReturnValue;
+
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, new SessionData(session), JsonFormatter());
+
+                    CookieHeaderValue cookie = new CookieHeaderValue(WebApiConstants.SessionTokenCookieName, session.Token);
+                    cookie.Expires = session.Expires;
+                    cookie.Path = "/";
+
+                    retVal.Headers.AddCookies(new[] { cookie });
+                }
+                else
+                {
+                    IResult result = (Result)startSessionResult;
+                    retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
+                }
             }
 
             return retVal;
@@ -233,7 +240,6 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPost]
         [Route("users")]
         [Authorize(Roles = nameof(Role.Administrator))]
-        [ValidateModel]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.Created, "The User was created.", typeof(UserData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ModelValidationResult))]
@@ -243,26 +249,34 @@ namespace OpenIIoT.Core.Security.WebApi
         public HttpResponseMessage UsersCreate([FromBody]UserCreateData data)
         {
             HttpResponseMessage retVal;
+            ModelValidator validator = new ModelValidator(ModelState);
 
-            IUser user = SecurityManager.FindUser(data.Name);
-
-            if (user == default(User))
+            if (!validator.IsValid)
             {
-                IResult<IUser> createResult = SecurityManager.CreateUser(data.Name, data.DisplayName, data.Email, data.Password, data.Role);
-
-                if (createResult.ResultCode != ResultCode.Failure)
-                {
-                    retVal = Request.CreateResponse(HttpStatusCode.Created, new UserData(createResult.ReturnValue), JsonFormatter());
-                }
-                else
-                {
-                    IResult result = (Result)createResult;
-                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
-                }
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
             }
             else
             {
-                retVal = Request.CreateResponse(HttpStatusCode.Conflict, "The specified User already exists.");
+                IUser user = SecurityManager.FindUser(data.Name);
+
+                if (user == default(User))
+                {
+                    IResult<IUser> createResult = SecurityManager.CreateUser(data.Name, data.DisplayName, data.Email, data.Password, data.Role);
+
+                    if (createResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.Created, new UserData(createResult.ReturnValue), JsonFormatter());
+                    }
+                    else
+                    {
+                        IResult result = (Result)createResult;
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.Conflict, "The specified User already exists.");
+                }
             }
 
             return retVal;
@@ -377,7 +391,6 @@ namespace OpenIIoT.Core.Security.WebApi
         [HttpPatch]
         [Route("users/{name}")]
         [Authorize]
-        [ValidateModel]
         [SwaggerResponse(HttpStatusCode.OK, "The User was updated.", typeof(UserData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
@@ -386,13 +399,15 @@ namespace OpenIIoT.Core.Security.WebApi
         public HttpResponseMessage UsersUpdate(string name, [FromBody]UserUpdateData data)
         {
             HttpResponseMessage retVal;
+            ModelValidator validator = new ModelValidator(ModelState);
 
-            if (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null)
+            if (!validator.IsValid)
             {
-                ModelValidationResult validationResult = new ModelValidationResult();
-                validationResult.Message = "The request data is invalid.";
-                validationResult.Model.Add(new ModelValidationField() { Field = "data", Messages = new[] { "At least one field must be supplied." }.ToList() });
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validationResult);
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
+            }
+            else if (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.AddError("data", "At least one updated field must be supplied.").Result);
             }
             else
             {
