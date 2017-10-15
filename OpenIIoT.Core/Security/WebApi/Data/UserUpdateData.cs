@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████                                                  ████████▄
-      █     ███    ███                                                  ███   ▀███
-      █     ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄  ███    ███   ▄█████      ██      ▄█████
-      █     ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄ ███    ███   ██   ██ ▀███████▄   ██   ██
-      █   ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██ ███    ███   ██   ██     ██  ▀   ██   ██
-      █            ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██ ███    ███ ▀████████     ██    ▀████████
-      █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██ ███   ▄███   ██   ██     ██      ██   ██
-      █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █  ████████▀    ██   █▀    ▄██▀     ██   █▀
+      █   ███    █▄                              ███    █▄                                                   ████████▄
+      █   ███    ███                             ███    ███                                                  ███   ▀███
+      █   ███    ███   ▄█████    ▄█████    █████ ███    ███    █████▄ ██████▄    ▄█████      ██       ▄█████ ███    ███   ▄█████      ██      ▄█████
+      █   ███    ███   ██  ▀    ██   █    ██  ██ ███    ███   ██   ██ ██   ▀██   ██   ██ ▀███████▄   ██   █  ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀ ███    ███   ██   ██ ██    ██   ██   ██     ██  ▀  ▄██▄▄    ███    ███   ██   ██     ██  ▀   ██   ██
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████ ███    ███ ▀██████▀  ██    ██ ▀████████     ██    ▀▀██▀▀    ███    ███ ▀████████     ██    ▀████████
+      █   ███    ███    ▄  ██   ██   █    ██  ██ ███    ███   ██      ██   ▄██   ██   ██     ██      ██   █  ███   ▄███   ██   ██     ██      ██   ██
+      █   ████████▀   ▄████▀    ███████   ██  ██ ████████▀   ▄███▀    ██████▀    ██   █▀    ▄██▀     ███████ ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used when returning Session objects.
+      █  Data Transfer Object used when updating a User object.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,58 +39,46 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security.WebApi.DTO
+namespace OpenIIoT.Core.Security.WebApi.Data
 {
-    using System;
+    using System.ComponentModel.DataAnnotations;
     using Newtonsoft.Json;
-    using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Security;
 
     /// <summary>
-    ///     Data Transfer Object used when returning <see cref="Session"/> objects.
+    ///     Data Transfer Object used when updating a <see cref="User"/> object.
     /// </summary>
-    public class SessionData
+    public class UserUpdateData
     {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="SessionData"/> class with the specified <see cref="Session"/>.
-        /// </summary>
-        /// <param name="session">The <see cref="Session"/> from which data is sourced.</param>
-        public SessionData(ISession session)
-        {
-            this.CopyPropertyValuesFrom(session);
-
-            User = new UserData(session.User);
-        }
-
-        #endregion Public Constructors
-
         #region Public Properties
 
         /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.Expires"/> date.
-        /// </summary>
-        [JsonProperty(Order = 4)]
-        public DateTimeOffset? Expires { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.Issued"/> date.
-        /// </summary>
-        [JsonProperty(Order = 3)]
-        public DateTimeOffset? Issued { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.Token"/>.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        public string Token { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.User"/>.
+        ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
-        public UserData User { get; set; }
+        [MinLength(1)]
+        public string DisplayName { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
+        /// </summary>
+        [JsonProperty(Order = 2)]
+        [EmailAddress]
+        public string Email { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/> password.
+        /// </summary>
+        [JsonProperty(Order = 4)]
+        [MinLength(1)]
+        public string Password { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
+        /// </summary>
+        [JsonProperty(Order = 3)]
+        [EnumDataType(typeof(Role))]
+        public Role? Role { get; set; }
 
         #endregion Public Properties
     }
