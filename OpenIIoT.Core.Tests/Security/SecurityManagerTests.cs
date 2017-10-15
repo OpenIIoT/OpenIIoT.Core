@@ -50,11 +50,6 @@
 
 namespace OpenIIoT.Core.Tests.Security
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Security.Claims;
     using Moq;
     using OpenIIoT.Core.Security;
     using OpenIIoT.SDK;
@@ -63,6 +58,11 @@ namespace OpenIIoT.Core.Tests.Security
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Configuration;
     using OpenIIoT.SDK.Security;
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Security.Claims;
     using Xunit;
 
     /// <summary>
@@ -843,6 +843,47 @@ namespace OpenIIoT.Core.Tests.Security
         }
 
         /// <summary>
+        ///     Tests the <see cref="SecurityManager.UpdateUser(string, string, string, string, Role?)"/> method with an updated
+        ///     display name.
+        /// </summary>
+        [Fact]
+        public void UpdateUserDisplayName()
+        {
+            Manager.Start();
+
+            string name = Guid.NewGuid().ToString();
+
+            Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
+
+            IResult<IUser> user = Manager.UpdateUser(name, "display", null, null, null);
+
+            Assert.Equal(ResultCode.Success, user.ResultCode);
+            Assert.Equal(name, user.ReturnValue.Name);
+            Assert.Equal("display", user.ReturnValue.DisplayName);
+            Assert.Equal(Role.Reader, user.ReturnValue.Role);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SecurityManager.UpdateUser(string, string, string, string, Role?)"/> method with an updated email.
+        /// </summary>
+        [Fact]
+        public void UpdateUserEmail()
+        {
+            Manager.Start();
+
+            string name = Guid.NewGuid().ToString();
+
+            Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
+
+            IResult<IUser> user = Manager.UpdateUser(name, null, "email@email.com", null, null);
+
+            Assert.Equal(ResultCode.Success, user.ResultCode);
+            Assert.Equal(name, user.ReturnValue.Name);
+            Assert.Equal("email@email.com", user.ReturnValue.Email);
+            Assert.Equal(Role.Reader, user.ReturnValue.Role);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SecurityManager.UpdateUser(string, string, string, string, Role?)"/> method with neither an
         ///     updated password nor Role.
         /// </summary>
@@ -881,7 +922,7 @@ namespace OpenIIoT.Core.Tests.Security
 
             Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
 
-            IResult<IUser> user = Manager.UpdateUser(name, "test", "test@test.com", "test2", null);
+            IResult<IUser> user = Manager.UpdateUser(name, null, null, "test2", null);
 
             Assert.Equal(ResultCode.Success, user.ResultCode);
             Assert.Equal(name, user.ReturnValue.Name);
@@ -898,15 +939,13 @@ namespace OpenIIoT.Core.Tests.Security
             Manager.Start();
 
             string name = Guid.NewGuid().ToString();
-            string hash = SDK.Common.Utility.ComputeSHA512Hash("test");
 
             Manager.CreateUser(name, "test", "test@test.com", "test", Role.Reader);
 
-            IResult<IUser> user = Manager.UpdateUser(name, "test", "test@test.com", null, Role.ReadWriter);
+            IResult<IUser> user = Manager.UpdateUser(name, null, null, null, Role.ReadWriter);
 
             Assert.Equal(ResultCode.Success, user.ResultCode);
             Assert.Equal(name, user.ReturnValue.Name);
-            Assert.Equal(hash, user.ReturnValue.PasswordHash);
             Assert.Equal(Role.ReadWriter, user.ReturnValue.Role);
         }
 
