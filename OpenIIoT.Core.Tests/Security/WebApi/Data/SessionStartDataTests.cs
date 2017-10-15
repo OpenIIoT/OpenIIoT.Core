@@ -10,10 +10,19 @@
       █      ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██    ▄█    ███     ██      ██   ██   ██  ██     ██    ███   ▄███   ██   ██     ██      ██   ██
       █    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █   ▄████████▀     ▄██▀     ██   █▀   ██  ██    ▄██▀   ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used when starting a Session.
+      █  Unit tests for the SessionStartData class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,38 +48,77 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security.WebApi.Data
+namespace OpenIIoT.Core.Tests.Security.WebApi.Data
 {
-    using System.ComponentModel.DataAnnotations;
-    using System.Runtime.Serialization;
-    using Newtonsoft.Json;
+    using OpenIIoT.Core.Security.WebApi.Data;
+    using Xunit;
 
     /// <summary>
-    ///     Data Transfer Object used when starting a <see cref="Session"/>.
+    ///     Unit tests for the <see cref="SessionStartData"/> class.
     /// </summary>
-    [DataContract]
-    public class SessionStartData
+    public class SessionStartDataTests
     {
-        #region Public Properties
+        #region Public Methods
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/> with which to start the <see cref="Session"/>.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        [JsonProperty(Order = 1)]
-        [DataMember(Order = 1)]
-        [Required]
-        [StringLength(512, MinimumLength = 1)]
-        public string Name { get; set; }
+        [Fact]
+        public void Constructor()
+        {
+            SessionStartData test = new SessionStartData() { Name = "name", Password = "password" };
+
+            Assert.IsType<SessionStartData>(test);
+            Assert.Equal("name", test.Name);
+            Assert.Equal("password", test.Password);
+
+            Assert.True(test.DataAnnotationIsValid());
+        }
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/> password with which to start the <see cref="Session"/>.
+        ///     Tests data annotation validation with an empty <see cref="SessionStartData.Name"/>.
         /// </summary>
-        [JsonProperty(Order = 2)]
-        [DataMember(Order = 2)]
-        [Required]
-        [StringLength(512, MinimumLength = 1)]
-        public string Password { get; set; }
+        [Fact]
+        public void NameEmpty()
+        {
+            SessionStartData test = new SessionStartData() { Name = string.Empty, Password = "password" };
 
-        #endregion Public Properties
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        /// <summary>
+        ///     Tests data annotation validation with a null <see cref="SessionStartData.Name"/>.
+        /// </summary>
+        [Fact]
+        public void NameNull()
+        {
+            SessionStartData test = new SessionStartData() { Password = "password" };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        /// <summary>
+        ///     Tests data annotation validation with an empty <see cref="SessionStartData.Password"/>.
+        /// </summary>
+        [Fact]
+        public void PasswordEmpty()
+        {
+            SessionStartData test = new SessionStartData() { Name = "name", Password = string.Empty };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        /// <summary>
+        ///     Tests data annotation validation with a null <see cref="SessionStartData.Password"/>.
+        /// </summary>
+        [Fact]
+        public void PasswordNull()
+        {
+            SessionStartData test = new SessionStartData() { Name = "name" };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        #endregion Public Methods
     }
 }

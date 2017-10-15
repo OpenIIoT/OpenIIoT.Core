@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Tests
+namespace OpenIIoT.Core.Tests
 {
     using OpenIIoT.Core;
     using Xunit;

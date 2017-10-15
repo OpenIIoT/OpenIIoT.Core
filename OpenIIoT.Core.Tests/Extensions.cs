@@ -40,6 +40,8 @@
                                                                                                    ▀▀                            */
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Net.Http;
 
 namespace OpenIIoT.Core.Tests
@@ -50,6 +52,22 @@ namespace OpenIIoT.Core.Tests
     public static class Extensions
     {
         #region Public Methods
+
+        /// <summary>
+        ///     Returns a value incidating whether the specified <paramref name="instance"/> contains valid data according to the
+        ///     data annotation attributes contained within the Type.
+        /// </summary>
+        /// <param name="instance">The instance to validate.</param>
+        /// <returns>A value indicating whether the instance data is valid.</returns>
+        public static bool DataAnnotationIsValid(this object instance)
+        {
+            ValidationContext context = new ValidationContext(instance, null, null);
+            List<ValidationResult> results = new List<ValidationResult>();
+
+            bool retVal = Validator.TryValidateObject(instance, context, results, true);
+
+            return retVal;
+        }
 
         /// <summary>
         ///     Returns the typed Content of the specified <see paramref="response"/>.
