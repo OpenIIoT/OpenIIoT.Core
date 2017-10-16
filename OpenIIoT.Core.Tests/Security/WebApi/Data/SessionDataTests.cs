@@ -108,6 +108,8 @@ namespace OpenIIoT.Core.Tests.Security.WebApi.Data
             Assert.Equal(Session.Object.Token, test.Token);
             Assert.Equal(Session.Object.Created, test.Created);
             Assert.Equal(Session.Object.Expires, test.Expires);
+
+            Assert.True(test.DataAnnotationIsValid());
         }
 
         #endregion Public Methods

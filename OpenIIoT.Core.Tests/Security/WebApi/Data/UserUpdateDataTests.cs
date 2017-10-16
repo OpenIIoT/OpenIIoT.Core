@@ -50,7 +50,6 @@
 
 namespace OpenIIoT.Core.Tests.Security.WebApi.Data
 {
-    using System;
     using OpenIIoT.Core.Security.WebApi.Data;
     using OpenIIoT.SDK.Security;
     using Xunit;
