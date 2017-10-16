@@ -135,7 +135,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi.Data
         {
             UserUpdateData test = new UserUpdateData()
             {
-                Password = new String('a', 513),
+                Password = new string('a', 513),
             };
 
             Assert.False(test.DataAnnotationIsValid());
