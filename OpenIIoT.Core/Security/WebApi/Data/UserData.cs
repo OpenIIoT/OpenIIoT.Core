@@ -41,6 +41,7 @@
 
 namespace OpenIIoT.Core.Security.WebApi.Data
 {
+    using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Security;
@@ -48,6 +49,7 @@ namespace OpenIIoT.Core.Security.WebApi.Data
     /// <summary>
     ///     Data Transfer Object used when returning <see cref="User"/> objects.
     /// </summary>
+    [DataContract]
     public class UserData
     {
         #region Public Constructors
@@ -69,24 +71,28 @@ namespace OpenIIoT.Core.Security.WebApi.Data
         ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
         [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
         public string DisplayName { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
         /// </summary>
         [JsonProperty(Order = 3)]
+        [DataMember(Order = 3)]
         public string Email { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Name"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
         public string Name { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
         /// </summary>
         [JsonProperty(Order = 4)]
+        [DataMember(Order = 4)]
         public Role Role { get; set; }
 
         #endregion Public Properties
