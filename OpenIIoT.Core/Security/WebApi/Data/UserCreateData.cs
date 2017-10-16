@@ -42,12 +42,14 @@
 namespace OpenIIoT.Core.Security.WebApi.Data
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using OpenIIoT.SDK.Security;
 
     /// <summary>
     ///     Data Transfer Object used when creating a <see cref="User"/> object.
     /// </summary>
+    [DataContract]
     public class UserCreateData
     {
         #region Public Properties
@@ -57,7 +59,7 @@ namespace OpenIIoT.Core.Security.WebApi.Data
         /// </summary>
         [JsonProperty(Order = 2)]
         [Required]
-        [MinLength(1)]
+        [StringLength(128, MinimumLength = 1)]
         public string DisplayName { get; set; }
 
         /// <summary>
@@ -73,7 +75,7 @@ namespace OpenIIoT.Core.Security.WebApi.Data
         /// </summary>
         [JsonProperty(Order = 1)]
         [Required]
-        [MinLength(1)]
+        [StringLength(128, MinimumLength = 1)]
         public string Name { get; set; }
 
         /// <summary>
@@ -81,7 +83,7 @@ namespace OpenIIoT.Core.Security.WebApi.Data
         /// </summary>
         [JsonProperty(Order = 5)]
         [Required]
-        [MinLength(1)]
+        [StringLength(512, MinimumLength = 1)]
         public string Password { get; set; }
 
         /// <summary>

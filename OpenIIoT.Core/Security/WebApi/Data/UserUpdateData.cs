@@ -42,12 +42,14 @@
 namespace OpenIIoT.Core.Security.WebApi.Data
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using OpenIIoT.SDK.Security;
 
     /// <summary>
     ///     Data Transfer Object used when updating a <see cref="User"/> object.
     /// </summary>
+    [DataContract]
     public class UserUpdateData
     {
         #region Public Properties
@@ -56,13 +58,15 @@ namespace OpenIIoT.Core.Security.WebApi.Data
         ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
-        [MinLength(1)]
+        [DataMember(Order = 1)]
+        [StringLength(128, MinimumLength = 1)]
         public string DisplayName { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
         /// </summary>
         [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
         [EmailAddress]
         public string Email { get; set; }
 
@@ -70,7 +74,8 @@ namespace OpenIIoT.Core.Security.WebApi.Data
         ///     Gets or sets the <see cref="User"/> password.
         /// </summary>
         [JsonProperty(Order = 4)]
-        [MinLength(1)]
+        [DataMember(Order = 4)]
+        [StringLength(512, MinimumLength = 1)]
         public string Password { get; set; }
 
         /// <summary>

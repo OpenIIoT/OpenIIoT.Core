@@ -98,6 +98,17 @@ namespace OpenIIoT.Core.Tests.Security.WebApi.Data
         }
 
         /// <summary>
+        ///     Tests data annotation validation with a <see cref="SessionStartData.Name"/> exceeding the length limit.
+        /// </summary>
+        [Fact]
+        public void NameTooLong()
+        {
+            SessionStartData test = new SessionStartData() { Name = new string('a', 129) };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        /// <summary>
         ///     Tests data annotation validation with an empty <see cref="SessionStartData.Password"/>.
         /// </summary>
         [Fact]
@@ -115,6 +126,17 @@ namespace OpenIIoT.Core.Tests.Security.WebApi.Data
         public void PasswordNull()
         {
             SessionStartData test = new SessionStartData() { Name = "name" };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        /// <summary>
+        ///     Tests data annotation validation with a <see cref="SessionStartData.Password"/> exceeding the length limit.
+        /// </summary>
+        [Fact]
+        public void PasswordTooLong()
+        {
+            SessionStartData test = new SessionStartData() { Name = new string('a', 513) };
 
             Assert.False(test.DataAnnotationIsValid());
         }

@@ -59,7 +59,7 @@ namespace OpenIIoT.Core.Security.WebApi.Data
         [JsonProperty(Order = 1)]
         [DataMember(Order = 1)]
         [Required]
-        [StringLength(512, MinimumLength = 1)]
+        [StringLength(128, MinimumLength = 1)]
         public string Name { get; set; }
 
         /// <summary>
