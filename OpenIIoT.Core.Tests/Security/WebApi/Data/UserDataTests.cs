@@ -10,10 +10,19 @@
       █   ███    ███    ▄  ██   ██   █    ██  ██ ███   ▄███   ██   ██     ██      ██   ██
       █   ████████▀   ▄████▀    ███████   ██  ██ ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used when returning User objects.
+      █  Unit tests for the UserData class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,56 +48,73 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security.WebApi.DTO
+namespace OpenIIoT.Core.Tests.Security.WebApi.Data
 {
-    using Newtonsoft.Json;
-    using OpenIIoT.SDK.Common;
+    using Moq;
+    using OpenIIoT.Core.Security.WebApi.Data;
     using OpenIIoT.SDK.Security;
+    using Xunit;
 
     /// <summary>
-    ///     Data Transfer Object used when returning <see cref="User"/> objects.
+    ///     Unit tests for the <see cref="UserData"/> class.
     /// </summary>
-    public class UserData
+    public class UserDataTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="UserData"/> class with the specified <see cref="User"/>.
+        ///     Initializes a new instance of the <see cref="UserDataTests"/> class.
         /// </summary>
-        /// <param name="user">The <see cref="User"/> from which data is sourced.</param>
-        public UserData(IUser user)
+        public UserDataTests()
         {
-            this.CopyPropertyValuesFrom(user);
+            SetupMocks();
         }
 
         #endregion Public Constructors
 
-        #region Public Properties
+        #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
+        ///     Gets or sets the <see cref="IUser"/> mockup for the unit tests.
         /// </summary>
-        [JsonProperty(Order = 2)]
-        public string DisplayName { get; set; }
+        private Mock<IUser> User { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        [JsonProperty(Order = 3)]
-        public string Email { get; set; }
+        [Fact]
+        public void Constructor()
+        {
+            UserData test = new UserData(User.Object);
+
+            Assert.IsType<UserData>(test);
+            Assert.Equal(User.Object.Name, test.Name);
+            Assert.Equal(User.Object.DisplayName, test.DisplayName);
+            Assert.Equal(User.Object.Email, test.Email);
+            Assert.Equal(User.Object.Role, test.Role);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/>.
+        ///     Configres the mockups for the unit tests.
         /// </summary>
-        [JsonProperty(Order = 1)]
-        public string Name { get; set; }
+        private void SetupMocks()
+        {
+            User = new Mock<IUser>();
+            User.Setup(u => u.Name).Returns("name");
+            User.Setup(u => u.DisplayName).Returns("display name");
+            User.Setup(u => u.Email).Returns("name@email.com");
+            User.Setup(u => u.PasswordHash).Returns("hash");
+            User.Setup(u => u.Role).Returns(Role.Reader);
+        }
 
-        /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
-        /// </summary>
-        [JsonProperty(Order = 4)]
-        public Role Role { get; set; }
-
-        #endregion Public Properties
+        #endregion Private Methods
     }
 }

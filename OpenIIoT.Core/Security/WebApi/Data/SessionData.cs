@@ -39,9 +39,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security.WebApi.DTO
+namespace OpenIIoT.Core.Security.WebApi.Data
 {
     using System;
+    using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Security;
@@ -49,6 +50,7 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
     /// <summary>
     ///     Data Transfer Object used when returning <see cref="Session"/> objects.
     /// </summary>
+    [DataContract]
     public class SessionData
     {
         #region Public Constructors
@@ -69,27 +71,31 @@ namespace OpenIIoT.Core.Security.WebApi.DTO
         #region Public Properties
 
         /// <summary>
+        ///     Gets or sets the <see cref="Session"/><see cref="Session.Created"/> date.
+        /// </summary>
+        [JsonProperty(Order = 3)]
+        [DataMember(Order = 3)]
+        public DateTimeOffset Created { get; set; }
+
+        /// <summary>
         ///     Gets or sets the <see cref="Session"/><see cref="Session.Expires"/> date.
         /// </summary>
         [JsonProperty(Order = 4)]
-        public DateTimeOffset? Expires { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the <see cref="Session"/><see cref="Session.Issued"/> date.
-        /// </summary>
-        [JsonProperty(Order = 3)]
-        public DateTimeOffset? Issued { get; set; }
+        [DataMember(Order = 4)]
+        public DateTimeOffset Expires { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="Session"/><see cref="Session.Token"/>.
         /// </summary>
         [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
         public string Token { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="Session"/><see cref="Session.User"/>.
         /// </summary>
         [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
         public UserData User { get; set; }
 
         #endregion Public Properties

@@ -10,10 +10,19 @@
       █   ███    ███    ▄  ██   ██   █    ██  ██ ███    ███   ██      ██   ▄██   ██   ██     ██      ██   █  ███   ▄███   ██   ██     ██      ██   ██
       █   ████████▀   ▄████▀    ███████   ██  ██ ████████▀   ▄███▀    ██████▀    ██   █▀    ▄██▀     ███████ ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used when updating a User object.
+      █  Unit tests for the UserUpdateData class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,47 +48,112 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security.WebApi.DTO
+namespace OpenIIoT.Core.Tests.Security.WebApi.Data
 {
-    using System.ComponentModel.DataAnnotations;
-    using Newtonsoft.Json;
+    using OpenIIoT.Core.Security.WebApi.Data;
     using OpenIIoT.SDK.Security;
+    using Xunit;
 
     /// <summary>
-    ///     Data Transfer Object used when updating a <see cref="User"/> object.
+    ///     Unit tests for the <see cref="UserUpdateData"/> class.
     /// </summary>
-    public class UserUpdateData
+    public class UserUpdateDataTests
     {
-        #region Public Properties
+        #region Public Methods
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        [JsonProperty(Order = 1)]
-        [MinLength(1)]
-        public string DisplayName { get; set; }
+        [Fact]
+        public void Constructor()
+        {
+            UserUpdateData test = new UserUpdateData()
+            {
+                DisplayName = "display name",
+                Email = "email@email.com",
+                Password = "password",
+                Role = Role.Reader,
+            };
+
+            Assert.IsType<UserUpdateData>(test);
+            Assert.Equal("display name", test.DisplayName);
+            Assert.Equal("email@email.com", test.Email);
+            Assert.Equal("password", test.Password);
+            Assert.Equal(Role.Reader, test.Role);
+
+            Assert.True(test.DataAnnotationIsValid());
+        }
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
+        ///     Tests data annotation validation with a <see cref="UserUpdateData.DisplayName"/> exceeding the length limit.
         /// </summary>
-        [JsonProperty(Order = 2)]
-        [EmailAddress]
-        public string Email { get; set; }
+        [Fact]
+        public void DisplayNameTooLong()
+        {
+            UserUpdateData test = new UserUpdateData()
+            {
+                DisplayName = new string('a', 129),
+            };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/> password.
+        ///     Tests data annotation validation with a <see cref="UserUpdateData.DisplayName"/> of length less than the length minimum.
         /// </summary>
-        [JsonProperty(Order = 4)]
-        [MinLength(1)]
-        public string Password { get; set; }
+        [Fact]
+        public void DisplayNameTooShort()
+        {
+            UserUpdateData test = new UserUpdateData()
+            {
+                DisplayName = string.Empty,
+            };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
+        ///     Tests data annotation validation with a <see cref="UserUpdateData.Email"/> which is not a valid email address.
         /// </summary>
-        [JsonProperty(Order = 3)]
-        [EnumDataType(typeof(Role))]
-        public Role? Role { get; set; }
+        [Fact]
+        public void EmailInvalid()
+        {
+            UserUpdateData test = new UserUpdateData()
+            {
+                Email = "email",
+            };
 
-        #endregion Public Properties
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        /// <summary>
+        ///     Tests data annotation validation with a <see cref="UserUpdateData.Password"/> exceeding the length limit.
+        /// </summary>
+        [Fact]
+        public void PasswordTooLong()
+        {
+            UserUpdateData test = new UserUpdateData()
+            {
+                Password = new string('a', 513),
+            };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        /// <summary>
+        ///     Tests data annotation validation with a <see cref="UserUpdateData.Password"/> of length less than the length minimum.
+        /// </summary>
+        [Fact]
+        public void PasswordTooShort()
+        {
+            UserUpdateData test = new UserUpdateData()
+            {
+                Password = string.Empty,
+            };
+
+            Assert.False(test.DataAnnotationIsValid());
+        }
+
+        #endregion Public Methods
     }
 }

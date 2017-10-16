@@ -69,7 +69,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
     using Moq;
     using OpenIIoT.Core.Security;
     using OpenIIoT.Core.Security.WebApi;
-    using OpenIIoT.Core.Security.WebApi.DTO;
+    using OpenIIoT.Core.Security.WebApi.Data;
     using OpenIIoT.Core.Service.WebApi.ModelValidation;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common.OperationResult;
@@ -256,6 +256,26 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
+        ///     Tests the <see cref="SecurityController.SessionsStart(SessionStartData)"/> method with a simulated bad model.
+        /// </summary>
+        [Fact]
+        public void SessionsStartBadModel()
+        {
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Hash, "key"));
+
+            SecurityManager.Setup(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>())).Returns(new Result<ISession>().SetReturnValue(new Session(User, identity)));
+
+            Controller.ModelState.AddModelError("error", "error");
+
+            HttpResponseMessage response = Controller.SessionsStart(new SessionStartData() { Name = "user", Password = "password" });
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SecurityController.SessionsStart(SessionStartData)"/> method with an
         ///     <see cref="ISecurityManager"/> returning a failing result.
         /// </summary>
@@ -293,6 +313,26 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             Assert.Equal(Role.Reader, responseUser.Role);
 
             SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SecurityController.UsersCreate(UserCreateData)"/> method with a simulated bad model.
+        /// </summary>
+        [Fact]
+        public void UsersCreateBadModel()
+        {
+            string hash = "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86";
+            User user = new User("user", "user", "test@test.com", hash, Role.Reader);
+
+            SecurityManager.Setup(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>())).Returns(new Result<IUser>().SetReturnValue(user));
+
+            Controller.ModelState.AddModelError("error", "error");
+
+            HttpResponseMessage response = Controller.UsersCreate(new UserCreateData() { Name = "user", DisplayName = "name", Email = "test@test.com", Password = "password", Role = Role.Reader });
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+
+            SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Never());
         }
 
         /// <summary>

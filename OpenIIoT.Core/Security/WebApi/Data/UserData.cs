@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄████████
-      █     ███    ███
-      █     ███    █▀  ▀███  ▐██▀     ██       ▄█████ ██▄▄▄▄    ▄█████  █   ██████  ██▄▄▄▄    ▄█████
-      █    ▄███▄▄▄       ██  ██   ▀███████▄   ██   █  ██▀▀▀█▄   ██  ▀  ██  ██    ██ ██▀▀▀█▄   ██  ▀
-      █   ▀▀███▀▀▀        ████▀       ██  ▀  ▄██▄▄    ██   ██   ██     ██▌ ██    ██ ██   ██   ██
-      █     ███    █▄     ████        ██    ▀▀██▀▀    ██   ██ ▀███████ ██  ██    ██ ██   ██ ▀███████
-      █     ███    ███  ▄██ ▀██       ██      ██   █  ██   ██    ▄  ██ ██  ██    ██ ██   ██    ▄  ██
-      █     ██████████ ███    ██▄    ▄██▀     ███████  █   █   ▄████▀  █    ██████   █   █   ▄████▀
+      █   ███    █▄                              ████████▄
+      █   ███    ███                             ███   ▀███
+      █   ███    ███   ▄█████    ▄█████    █████ ███    ███   ▄█████      ██      ▄█████
+      █   ███    ███   ██  ▀    ██   █    ██  ██ ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀ ███    ███   ██   ██     ██  ▀   ██   ██
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████ ███    ███ ▀████████     ██    ▀████████
+      █   ███    ███    ▄  ██   ██   █    ██  ██ ███   ▄███   ██   ██     ██      ██   ██
+      █   ████████▀   ▄████▀    ███████   ██  ██ ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Extension methods to assist with testing and assertions.
+      █  Data Transfer Object used when returning User objects.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,54 +39,62 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
-
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Core.Security.WebApi.Data
 {
+    using System.Runtime.Serialization;
+    using Newtonsoft.Json;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Security;
+
     /// <summary>
-    ///     Extension methods to assist with testing and assertions.
+    ///     Data Transfer Object used when returning <see cref="User"/> objects.
     /// </summary>
-    public static class Extensions
+    [DataContract]
+    public class UserData
     {
-        #region Public Methods
+        #region Public Constructors
 
         /// <summary>
-        ///     Returns a value incidating whether the specified <paramref name="instance"/> contains valid data according to the
-        ///     data annotation attributes contained within the Type.
+        ///     Initializes a new instance of the <see cref="UserData"/> class with the specified <see cref="User"/>.
         /// </summary>
-        /// <param name="instance">The instance to validate.</param>
-        /// <returns>A value indicating whether the instance data is valid.</returns>
-        public static bool DataAnnotationIsValid(this object instance)
+        /// <param name="user">The <see cref="User"/> from which data is sourced.</param>
+        public UserData(IUser user)
         {
-            ValidationContext context = new ValidationContext(instance, null, null);
-            List<ValidationResult> results = new List<ValidationResult>();
-
-            bool retVal = Validator.TryValidateObject(instance, context, results, true);
-
-            return retVal;
+            this.CopyPropertyValuesFrom(user);
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
 
         /// <summary>
-        ///     Returns the typed Content of the specified <see paramref="response"/>.
+        ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
-        /// <typeparam name="T">The desired Type of the Content.</typeparam>
-        /// <param name="response">The response from which the Content is to be retrieved.</param>
-        /// <returns>The typed Content, or default(T) if the Content can not be retrieved or cast.</returns>
-        public static T GetContent<T>(this HttpResponseMessage response)
-        {
-            try
-            {
-                return (T)((ObjectContent<T>)response.Content).Value;
-            }
-            catch (Exception)
-            {
-                return default(T);
-            }
-        }
+        [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
+        public string DisplayName { get; set; }
 
-        #endregion Public Methods
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
+        /// </summary>
+        [JsonProperty(Order = 3)]
+        [DataMember(Order = 3)]
+        public string Email { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/>.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
+        public string Name { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
+        /// </summary>
+        [JsonProperty(Order = 4)]
+        [DataMember(Order = 4)]
+        public Role Role { get; set; }
+
+        #endregion Public Properties
     }
 }

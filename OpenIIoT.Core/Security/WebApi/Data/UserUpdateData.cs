@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █   ███    █▄                              ▄████████                                                   ████████▄
+      █   ███    █▄                              ███    █▄                                                   ████████▄
       █   ███    ███                             ███    ███                                                  ███   ▀███
-      █   ███    ███   ▄█████    ▄█████    █████ ███    █▀     █████    ▄█████   ▄█████      ██       ▄█████ ███    ███   ▄█████      ██      ▄█████
-      █   ███    ███   ██  ▀    ██   █    ██  ██ ███          ██  ██   ██   █    ██   ██ ▀███████▄   ██   █  ███    ███   ██   ██ ▀███████▄   ██   ██
-      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀ ███         ▄██▄▄█▀  ▄██▄▄      ██   ██     ██  ▀  ▄██▄▄    ███    ███   ██   ██     ██  ▀   ██   ██
-      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████ ███    █▄  ▀███████ ▀▀██▀▀    ▀████████     ██    ▀▀██▀▀    ███    ███ ▀████████     ██    ▀████████
-      █   ███    ███    ▄  ██   ██   █    ██  ██ ███    ███   ██  ██   ██   █    ██   ██     ██      ██   █  ███   ▄███   ██   ██     ██      ██   ██
-      █   ████████▀   ▄████▀    ███████   ██  ██ ████████▀    ██  ██   ███████   ██   █▀    ▄██▀     ███████ ████████▀    ██   █▀    ▄██▀     ██   █▀
+      █   ███    ███   ▄█████    ▄█████    █████ ███    ███    █████▄ ██████▄    ▄█████      ██       ▄█████ ███    ███   ▄█████      ██      ▄█████
+      █   ███    ███   ██  ▀    ██   █    ██  ██ ███    ███   ██   ██ ██   ▀██   ██   ██ ▀███████▄   ██   █  ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ███    ███   ██      ▄██▄▄     ▄██▄▄█▀ ███    ███   ██   ██ ██    ██   ██   ██     ██  ▀  ▄██▄▄    ███    ███   ██   ██     ██  ▀   ██   ██
+      █   ███    ███ ▀███████ ▀▀██▀▀    ▀███████ ███    ███ ▀██████▀  ██    ██ ▀████████     ██    ▀▀██▀▀    ███    ███ ▀████████     ██    ▀████████
+      █   ███    ███    ▄  ██   ██   █    ██  ██ ███    ███   ██      ██   ▄██   ██   ██     ██      ██   █  ███   ▄███   ██   ██     ██      ██   ██
+      █   ████████▀   ▄████▀    ███████   ██  ██ ████████▀   ▄███▀    ██████▀    ██   █▀    ▄██▀     ███████ ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used when creating a User object.
+      █  Data Transfer Object used when updating a User object.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,57 +39,51 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Security.WebApi.DTO
+namespace OpenIIoT.Core.Security.WebApi.Data
 {
     using System.ComponentModel.DataAnnotations;
+    using System.Runtime.Serialization;
     using Newtonsoft.Json;
     using OpenIIoT.SDK.Security;
 
     /// <summary>
-    ///     Data Transfer Object used when creating a <see cref="User"/> object.
+    ///     Data Transfer Object used when updating a <see cref="User"/> object.
     /// </summary>
-    public class UserCreateData
+    [DataContract]
+    public class UserUpdateData
     {
         #region Public Properties
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.DisplayName"/>.
         /// </summary>
-        [JsonProperty(Order = 2)]
-        [Required]
-        [MinLength(1)]
+        [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
+        [StringLength(128, MinimumLength = 1)]
         public string DisplayName { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Email"/>.
         /// </summary>
-        [JsonProperty(Order = 3)]
-        [Required]
+        [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
         [EmailAddress]
         public string Email { get; set; }
 
         /// <summary>
-        ///     Gets or sets the <see cref="User"/><see cref="User.Name"/>.
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        [Required]
-        [MinLength(1)]
-        public string Name { get; set; }
-
-        /// <summary>
         ///     Gets or sets the <see cref="User"/> password.
         /// </summary>
-        [JsonProperty(Order = 5)]
-        [Required]
-        [MinLength(1)]
+        [JsonProperty(Order = 4)]
+        [DataMember(Order = 4)]
+        [StringLength(512, MinimumLength = 1)]
         public string Password { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="User"/><see cref="User.Role"/>.
         /// </summary>
-        [JsonProperty(Order = 4)]
-        [Required]
-        public Role Role { get; set; }
+        [JsonProperty(Order = 3)]
+        [EnumDataType(typeof(Role))]
+        public Role? Role { get; set; }
 
         #endregion Public Properties
     }

@@ -50,7 +50,7 @@
 
 [module: System.Diagnostics.CodeAnalysis.SuppressMessage("StyleCop.CSharp.MaintainabilityRules", "SA1402:FileMayOnlyContainASingleClass", Justification = "Reviewed.")]
 
-namespace OpenIIoT.Tests
+namespace OpenIIoT.Core.Tests
 {
     using System;
     using System.Collections.Generic;
