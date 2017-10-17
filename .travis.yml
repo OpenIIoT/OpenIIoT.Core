@@ -1,6 +1,7 @@
 os:
   - linux
 language: csharp
+mono: 5.2.0
 solution: OpenIIoT.Core.sln
 install:
   - nuget restore OpenIIoT.Core.sln
