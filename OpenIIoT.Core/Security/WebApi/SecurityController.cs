@@ -450,6 +450,16 @@ namespace OpenIIoT.Core.Security.WebApi
             return Request.GetOwinContext()?.Authentication?.User?.Claims?.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
         }
 
+        /// <summary>
+        ///     Retrieves the name of the current user from the specified <paramref name="request"/>.
+        /// </summary>
+        /// <param name="request">The request from which to retrieve the name.</param>
+        /// <returns>The retrieved user name.</returns>
+        private ClaimsPrincipal GetSessionUser(HttpRequestMessage request)
+        {
+            return Request.GetOwinContext()?.Authentication?.User;
+        }
+
         #endregion Private Methods
     }
 }
