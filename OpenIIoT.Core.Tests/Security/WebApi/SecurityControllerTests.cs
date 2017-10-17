@@ -119,6 +119,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         /// </summary>
         private Mock<ISecurityManager> SecurityManager { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the <see cref="IUser"/> mockup.
+        /// </summary>
         private IUser User { get; set; }
 
         #endregion Private Properties
@@ -509,7 +512,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
 
-            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword", Role = Role.ReadWriter });
+            Controller.User = GetClaimsPrincipal(user.Name, user.Role);
+
+            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword" });
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -531,9 +536,10 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
 
+            Controller.User = GetClaimsPrincipal(user.Name, user.Role);
             Controller.ModelState.AddModelError("error", "error");
 
-            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Role = Role.ReadWriter });
+            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { });
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
 
@@ -551,7 +557,9 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>(ResultCode.Failure));
 
-            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword", Role = Role.ReadWriter });
+            Controller.User = GetClaimsPrincipal(user.Name, user.Role);
+
+            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword" });
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 
@@ -569,10 +577,51 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         [Fact]
         public void UsersUpdateNothingToUpdate()
         {
+            Controller.User = GetClaimsPrincipal("user", Role.Reader);
+
             HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = null, Role = null });
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             Assert.NotNull(response.GetContent<ModelValidationResult>());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method.
+        /// </summary>
+        [Fact]
+        public void UsersUpdateOtherUserAdministrator()
+        {
+            User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
+
+            Controller.User = GetClaimsPrincipal("admin", Role.Administrator);
+
+            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword" });
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            UserData result = response.GetContent<UserData>();
+
+            Assert.Equal(user.Name, result.Name);
+            Assert.Equal(user.Role, result.Role);
+
+            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method.
+        /// </summary>
+        [Fact]
+        public void UsersUpdateOtherUserNotAdministrator()
+        {
+            Controller.User = GetClaimsPrincipal("user", Role.Reader);
+
+            HttpResponseMessage response = Controller.UsersUpdate("user2", new UserUpdateData() { Password = "newpassword" });
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+
+            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Never);
         }
 
         /// <summary>
@@ -584,6 +633,8 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
+
+            Controller.User = GetClaimsPrincipal(user.Name, user.Role);
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword", Role = null });
 
@@ -601,11 +652,13 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with an updated <see cref="Role"/>.
         /// </summary>
         [Fact]
-        public void UsersUpdateRole()
+        public void UsersUpdateRoleAdministrator()
         {
             User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
             SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
+
+            Controller.User = GetClaimsPrincipal("admin", Role.Administrator);
 
             HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = null, Role = Role.ReadWriter });
 
@@ -622,6 +675,25 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
+        ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with an updated <see cref="Role"/>.
+        /// </summary>
+        [Fact]
+        public void UsersUpdateRoleNotAdministrator()
+        {
+            User user = new User("user", "user", "test@test.com", "B109F3BBBC244EB82441917ED06D618B9008DD09B3BEFD1B5E07394C706A8BB980B1D7785E5976EC049B46DF5F1326AF5A2EA6D103FD07C95385FFAB0CACBC86", Role.Reader);
+            SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(user);
+            SecurityManager.Setup(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>())).Returns(new Result<IUser>().SetReturnValue(user));
+
+            Controller.User = GetClaimsPrincipal(user.Name, Role.Reader);
+
+            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = null, Role = Role.ReadWriter });
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+
+            SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Never);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="SecurityController.UsersUpdate(string, UserUpdateData)"/> method with an
         ///     <see cref="ISecurityManager"/> unable to locate the specified user..
         /// </summary>
@@ -630,11 +702,32 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         {
             SecurityManager.Setup(s => s.FindUser(It.IsAny<string>())).Returns(default(User));
 
-            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword", Role = Role.ReadWriter });
+            Controller.User = GetClaimsPrincipal("user", Role.ReadWriter);
+
+            HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword" });
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Generates a <see cref="ClaimsPrincipal"/> containing a <see cref="ClaimsIdentity"/> with claims Name and Role.
+        /// </summary>
+        /// <param name="name">The name to be assigned to the name claim.</param>
+        /// <param name="role">The Role to be assigned to the role claim.</param>
+        /// <returns>The generated <see cref="ClaimsPrincipal"/>.</returns>
+        private ClaimsPrincipal GetClaimsPrincipal(string name, Role role)
+        {
+            ClaimsIdentity identity = new ClaimsIdentity();
+            identity.AddClaim(new Claim(ClaimTypes.Name, name));
+            identity.AddClaim(new Claim(ClaimTypes.Role, role.ToString()));
+
+            return new ClaimsPrincipal(identity);
+        }
+
+        #endregion Private Methods
     }
 }

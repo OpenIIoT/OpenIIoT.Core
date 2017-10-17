@@ -398,54 +398,46 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public HttpResponseMessage UsersUpdate(string name, [FromBody]UserUpdateData data)
         {
-            HttpResponseMessage retVal = default(HttpResponseMessage);
+            HttpResponseMessage retVal;
             ModelValidator validator = new ModelValidator(ModelState);
 
-            ClaimsPrincipal requestingUser = GetSessionUser(Request);
-
-            if (!requestingUser.IsInRole("Administrator"))
+            if (!User.IsInRole("Administrator") && (User.Identity.Name != name))
             {
-                if (requestingUser.Identity.Name != name)
-                {
-                    retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, "Insufficient rights to modify data for other Users.");
-                }
-                else if (data.Role != null)
-                {
-                    retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, "Insufficient rights to modify User Role.");
-                }
+                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, "Insufficient rights to modify data for other Users.");
+            }
+            else if (!User.IsInRole("Administrator") && data.Role != null)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, "Insufficient rights to modify User Role.");
+            }
+            else if (!validator.IsValid)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
+            }
+            else if (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.AddError("data", "At least one updated field must be supplied.").Result);
             }
             else
             {
-                if (!validator.IsValid)
-                {
-                    retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
-                }
-                else if (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null)
-                {
-                    retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.AddError("data", "At least one updated field must be supplied.").Result);
-                }
-                else
-                {
-                    IUser user = SecurityManager.FindUser(name);
+                IUser user = SecurityManager.FindUser(name);
 
-                    if (user != default(User))
+                if (user != default(User))
+                {
+                    IResult<IUser> updateResult = SecurityManager.UpdateUser(user.Name, data.DisplayName, data.Email, data.Password, data.Role);
+
+                    if (updateResult.ResultCode != ResultCode.Failure)
                     {
-                        IResult<IUser> updateResult = SecurityManager.UpdateUser(user.Name, data.DisplayName, data.Email, data.Password, data.Role);
-
-                        if (updateResult.ResultCode != ResultCode.Failure)
-                        {
-                            retVal = Request.CreateResponse(HttpStatusCode.OK, new UserData(updateResult.ReturnValue), JsonFormatter());
-                        }
-                        else
-                        {
-                            Result result = (Result)updateResult;
-                            retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
-                        }
+                        retVal = Request.CreateResponse(HttpStatusCode.OK, new UserData(updateResult.ReturnValue), JsonFormatter());
                     }
                     else
                     {
-                        retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                        Result result = (Result)updateResult;
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                     }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
                 }
             }
 
@@ -464,16 +456,6 @@ namespace OpenIIoT.Core.Security.WebApi
         private string GetSessionToken(HttpRequestMessage request)
         {
             return Request.GetOwinContext()?.Authentication?.User?.Claims?.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
-        }
-
-        /// <summary>
-        ///     Retrieves the name of the current user from the specified <paramref name="request"/>.
-        /// </summary>
-        /// <param name="request">The request from which to retrieve the name.</param>
-        /// <returns>The retrieved user name.</returns>
-        private ClaimsPrincipal GetSessionUser(HttpRequestMessage request)
-        {
-            return Request.GetOwinContext()?.Authentication?.User;
         }
 
         #endregion Private Methods
