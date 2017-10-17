@@ -401,7 +401,15 @@ namespace OpenIIoT.Core.Security.WebApi
             HttpResponseMessage retVal;
             ModelValidator validator = new ModelValidator(ModelState);
 
-            if (!validator.IsValid)
+            if (!User.IsInRole("Administrator") && (User.Identity.Name != name))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, "Insufficient rights to modify data for other Users.");
+            }
+            else if (!User.IsInRole("Administrator") && data.Role != null)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, "Insufficient rights to modify User Role.");
+            }
+            else if (!validator.IsValid)
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
             }
