@@ -257,7 +257,7 @@
     <Compile Include="Service\WebApi\ModelValidation\ModelValidationResult.cs" />
     <Compile Include="Service\WebApi\ModelValidation\ModelValidator.cs" />
     <Compile Include="Service\WebApi\Routes.cs" />
-    <Compile Include="Service\WebApi\WebApiRoutePrefixAttribute.cs" />
+    <Compile Include="Service\WebApi\ControllerRoutePrefixAttribute.cs" />
     <Compile Include="Service\WebApi\Middleware\LoggingMiddleware.cs" />
     <Compile Include="Service\WebApi\Swagger\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebApi\Startup.cs" />

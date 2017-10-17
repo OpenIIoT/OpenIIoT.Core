@@ -71,7 +71,7 @@ namespace OpenIIoT.Core.Security.WebApi
     ///     WebAPI Controller for the Security namespace.
     /// </summary>
     [Authorize]
-    [WebApiRoutePrefix("v1/security")]
+    [ControllerRoutePrefix("v1/security")]
     public class SecurityController : ApiBaseController
     {
         #region Public Constructors
