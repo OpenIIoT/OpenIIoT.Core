@@ -368,11 +368,7 @@ namespace OpenIIoT.Core.Security
                 }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to create User '{name}'.");
-            }
-            else
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 Task.Run(() => UserCreated?.Invoke(this, new UserEventArgs(retVal.ReturnValue)));
             }
@@ -413,11 +409,7 @@ namespace OpenIIoT.Core.Security
                 }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to delete User '{name}'.");
-            }
-            else
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 Task.Run(() => UserDeleted?.Invoke(this, new UserEventArgs(foundUser)));
             }
@@ -467,11 +459,7 @@ namespace OpenIIoT.Core.Security
                 }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to end Session.");
-            }
-            else
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 Task.Run(() => SessionEnded?.Invoke(this, new SessionEventArgs(foundSession)));
             }
@@ -523,11 +511,6 @@ namespace OpenIIoT.Core.Security
                 {
                     retVal.AddError($"Session matching Token '{session?.Token}' does not exist.");
                 }
-            }
-
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to extend Session.");
             }
 
             retVal.LogResult(logger.Trace);
@@ -646,11 +629,7 @@ namespace OpenIIoT.Core.Security
                 }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to start Session for User '{userName}'.");
-            }
-            else
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 if (retVal.ResultCode == ResultCode.Success)
                 {
@@ -734,11 +713,7 @@ namespace OpenIIoT.Core.Security
                 }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to update User '{name}'.");
-            }
-            else
+            if (retVal.ResultCode != ResultCode.Failure)
             {
                 Task.Run(() => UserUpdated?.Invoke(this, new UserEventArgs(retVal.ReturnValue)));
             }
