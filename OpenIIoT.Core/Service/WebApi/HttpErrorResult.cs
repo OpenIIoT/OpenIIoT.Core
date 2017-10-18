@@ -43,11 +43,14 @@ namespace OpenIIoT.Core.Service.WebApi
 {
     using System.Collections.Generic;
     using System.Linq;
+    using System.Runtime.Serialization;
+    using Newtonsoft.Json;
     using OpenIIoT.SDK.Common.OperationResult;
 
     /// <summary>
     ///     Data Transfer Object used when relaying error messages.
     /// </summary>
+    [DataContract]
     public class HttpErrorResult
     {
         #region Public Constructors
@@ -81,11 +84,15 @@ namespace OpenIIoT.Core.Service.WebApi
         /// <summary>
         ///     Gets the list of error details.
         /// </summary>
+        [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
         public IList<string> Details { get; }
 
         /// <summary>
         ///     Gets the error message.
         /// </summary>
+        [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
         public string Message { get; }
 
         #endregion Public Constructors
