@@ -132,7 +132,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.NoContent, "The Session was successfully ended.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public HttpResponseMessage SessionsEnd()
         {
             HttpResponseMessage retVal;
@@ -147,7 +147,7 @@ namespace OpenIIoT.Core.Security.WebApi
             }
             else
             {
-                retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, endSessionResult, JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, new HttpErrorResult("Failed to end the Session.", endSessionResult), JsonFormatter());
             }
 
             return retVal;
@@ -196,7 +196,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.Created, "The Session was successfully started.", typeof(SessionData))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(ModelValidationResult))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be started.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "The Session could not be started.", typeof(HttpErrorResult))]
         public HttpResponseMessage SessionsStart([FromBody]SessionStartData data)
         {
             HttpResponseMessage retVal;
@@ -224,8 +224,7 @@ namespace OpenIIoT.Core.Security.WebApi
                 }
                 else
                 {
-                    IResult result = (Result)startSessionResult;
-                    retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, result, JsonFormatter());
+                    retVal = Request.CreateResponse(HttpStatusCode.Unauthorized, new HttpErrorResult("Failed to Start the Session.", startSessionResult), JsonFormatter());
                 }
             }
 
@@ -245,7 +244,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ModelValidationResult))]
         [SwaggerResponse(HttpStatusCode.Conflict, "The specified User already exists.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public HttpResponseMessage UsersCreate([FromBody]UserCreateData data)
         {
             HttpResponseMessage retVal;
@@ -269,8 +268,7 @@ namespace OpenIIoT.Core.Security.WebApi
                     }
                     else
                     {
-                        IResult result = (Result)createResult;
-                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, new HttpErrorResult($"Failed to create User '{data.Name}'.", createResult), JsonFormatter());
                     }
                 }
                 else
@@ -295,7 +293,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public HttpResponseMessage UsersDelete(string name)
         {
             HttpResponseMessage retVal;
@@ -318,7 +316,7 @@ namespace OpenIIoT.Core.Security.WebApi
                     }
                     else
                     {
-                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, deleteResult, JsonFormatter());
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, new HttpErrorResult($"Failed to delete User '{name}'.", deleteResult), JsonFormatter());
                     }
                 }
                 else
@@ -395,7 +393,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public HttpResponseMessage UsersUpdate(string name, [FromBody]UserUpdateData data)
         {
             HttpResponseMessage retVal;
@@ -431,8 +429,7 @@ namespace OpenIIoT.Core.Security.WebApi
                     }
                     else
                     {
-                        Result result = (Result)updateResult;
-                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, new HttpErrorResult($"Failed to update User '{name}'.", updateResult), JsonFormatter());
                     }
                 }
                 else
