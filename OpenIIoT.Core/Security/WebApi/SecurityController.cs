@@ -452,7 +452,7 @@ namespace OpenIIoT.Core.Security.WebApi
         /// <returns>The retrieved token, or an empty string if it does not exist.</returns>
         private string GetSessionToken(HttpRequestMessage request)
         {
-            return Request.GetOwinContext()?.Authentication.User.Claims.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
+            return Request.GetOwinContext()?.Authentication?.User?.Claims?.Where(c => c.Type == ClaimTypes.Hash).FirstOrDefault().Value ?? string.Empty;
         }
 
         #endregion Private Methods
