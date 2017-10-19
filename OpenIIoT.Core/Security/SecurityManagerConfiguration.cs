@@ -52,7 +52,6 @@ namespace OpenIIoT.Core.Security
 {
     using System.Collections.Generic;
     using Newtonsoft.Json;
-    using OpenIIoT.SDK.Security;
 
     /// <summary>
     ///     The configuration for the SecurityManager.

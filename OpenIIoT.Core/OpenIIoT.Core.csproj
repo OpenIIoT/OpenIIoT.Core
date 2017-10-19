@@ -249,6 +249,7 @@
     <Compile Include="Common\WebApi\LogController.cs" />
     <Compile Include="Common\WebApi\LogHub.cs" />
     <Compile Include="Service\WebApi\ApiBaseController.cs" />
+    <Compile Include="Service\WebApi\HttpErrorResult.cs" />
     <Compile Include="Service\WebApi\HubHelper.cs" />
     <Compile Include="Service\WebApi\IHub.cs" />
     <Compile Include="Service\WebApi\Middleware\AuthenticationMiddleware.cs" />
@@ -257,7 +258,7 @@
     <Compile Include="Service\WebApi\ModelValidation\ModelValidationResult.cs" />
     <Compile Include="Service\WebApi\ModelValidation\ModelValidator.cs" />
     <Compile Include="Service\WebApi\Routes.cs" />
-    <Compile Include="Service\WebApi\WebApiRoutePrefixAttribute.cs" />
+    <Compile Include="Service\WebApi\ControllerRoutePrefixAttribute.cs" />
     <Compile Include="Service\WebApi\Middleware\LoggingMiddleware.cs" />
     <Compile Include="Service\WebApi\Swagger\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebApi\Startup.cs" />

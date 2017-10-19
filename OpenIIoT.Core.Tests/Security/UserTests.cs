@@ -50,8 +50,8 @@
 
 namespace OpenIIoT.Core.Tests.Security
 {
-    using Core.Security;
-    using SDK.Security;
+    using OpenIIoT.Core.Security;
+    using OpenIIoT.SDK.Security;
     using Xunit;
 
     /// <summary>

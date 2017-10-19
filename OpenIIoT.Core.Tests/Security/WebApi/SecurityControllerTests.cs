@@ -191,7 +191,6 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.SessionsEnd();
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
 
             SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
             SecurityManager.Verify(s => s.EndSession(It.IsAny<ISession>()), Times.Once);
@@ -290,7 +289,6 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.SessionsStart(new SessionStartData() { Name = "user", Password = "password" });
 
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
-            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
 
             SecurityManager.Verify(s => s.StartSession(It.IsAny<string>(), It.IsAny<string>()), Times.Once);
         }
@@ -352,7 +350,6 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.UsersCreate(newUser);
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
 
             SecurityManager.Verify(s => s.CreateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role>()), Times.Once);
         }
@@ -416,7 +413,6 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.UsersDelete("user");
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-            Assert.Equal(ResultCode.Failure, response.GetContent<IResult>().ResultCode);
 
             SecurityManager.Verify(s => s.FindUser(It.IsAny<string>()), Times.Once);
             SecurityManager.Verify(s => s.DeleteUser(It.IsAny<string>()), Times.Once);
@@ -562,10 +558,6 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = "newpassword" });
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-
-            IResult result = response.GetContent<Result>(); // failures downcast generic Results
-
-            Assert.Equal(ResultCode.Failure, result.ResultCode);
 
             SecurityManager.Verify(s => s.UpdateUser(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<Role?>()), Times.Once);
         }
