@@ -44,8 +44,7 @@ namespace OpenIIoT.Core.Security
     using System;
     using System.Linq;
     using System.Security.Claims;
-    using Newtonsoft.Json;
-    using SDK.Security;
+    using OpenIIoT.SDK.Security;
 
     /// <summary>
     ///     Session information for a <see cref="User"/> Session.
@@ -112,37 +111,31 @@ namespace OpenIIoT.Core.Security
         /// <summary>
         ///     Gets the time at which the Session was created, in Utc.
         /// </summary>
-        [JsonProperty(Order = 3)]
         public DateTimeOffset Created { get; private set; }
 
         /// <summary>
         ///     Gets or sets the time at which the Session expires, in Utc.
         /// </summary>
-        [JsonProperty(Order = 6)]
         public DateTimeOffset Expires { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="ClaimsIdentity"/> instance associated with the Session.
         /// </summary>
-        [JsonIgnore]
         public ClaimsIdentity Identity { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether the Session is expired.
         /// </summary>
-        [JsonProperty(Order = 5)]
         public bool IsExpired => Expires < DateTime.UtcNow;
 
         /// <summary>
         ///     Gets the token for the Session.
         /// </summary>
-        [JsonProperty(Order = 2)]
         public string Token => GetClaim(ClaimTypes.Hash) ?? string.Empty;
 
         /// <summary>
         ///     Gets the User to which the Session belongs.
         /// </summary>
-        [JsonProperty(Order = 1)]
         public IUser User { get; }
 
         #endregion Public Properties
@@ -150,7 +143,7 @@ namespace OpenIIoT.Core.Security
         #region Public Methods
 
         /// <summary>
-        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Ticket"/> .
+        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Identity"/> .
         /// </summary>
         /// <param name="type">The type of Claim to retrieve.</param>
         /// <returns>The retrieved Claim value.</returns>

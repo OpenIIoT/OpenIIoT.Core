@@ -162,7 +162,6 @@
     <Compile Include="Security\WebApi\Data\UserDataTests.cs" />
     <Compile Include="Security\WebApi\Data\UserUpdateDataTests.cs" />
     <Compile Include="Security\WebApi\SecurityControllerTests.cs" />
-    <Compile Include="Security\WebApi\SessionDataTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

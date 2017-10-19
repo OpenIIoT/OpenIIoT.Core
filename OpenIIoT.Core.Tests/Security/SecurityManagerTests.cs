@@ -50,6 +50,11 @@
 
 namespace OpenIIoT.Core.Tests.Security
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Reflection;
+    using System.Security.Claims;
     using Moq;
     using OpenIIoT.Core.Security;
     using OpenIIoT.SDK;
@@ -58,11 +63,6 @@ namespace OpenIIoT.Core.Tests.Security
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Configuration;
     using OpenIIoT.SDK.Security;
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Reflection;
-    using System.Security.Claims;
     using Xunit;
 
     /// <summary>
