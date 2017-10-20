@@ -115,31 +115,31 @@ namespace OpenIIoT.Core.Security
         #region Public Events
 
         /// <summary>
-        ///     Occurs when a Session is ended.
+        ///     Occurs when a <see cref="ISession"/> is ended.
         /// </summary>
         [Event(Description = "Occurs when a Session is ended.")]
         public event EventHandler<SessionEventArgs> SessionEnded;
 
         /// <summary>
-        ///     Occurs when a Session is started.
+        ///     Occurs when a <see cref="ISession"/> is started.
         /// </summary>
         [Event(Description = "Occurs when a Session is started.")]
         public event EventHandler<SessionEventArgs> SessionStarted;
 
         /// <summary>
-        ///     Occurs when a User is created.
+        ///     Occurs when a <see cref="IUser"/> is created.
         /// </summary>
         [Event(Description = "Occurs when a User is created.")]
         public event EventHandler<UserEventArgs> UserCreated;
 
         /// <summary>
-        ///     Occurs when a User is deleted.
+        ///     Occurs when a <see cref="IUser"/> is deleted.
         /// </summary>
         [Event(Description = "Occurs when a User is deleted.")]
         public event EventHandler<UserEventArgs> UserDeleted;
 
         /// <summary>
-        ///     Occurs when a User is updated.
+        ///     Occurs when a <see cref="IUser"/> is updated.
         /// </summary>
         [Event(Description = "Occurs when a User is updated.")]
         public event EventHandler<UserEventArgs> UserUpdated;
