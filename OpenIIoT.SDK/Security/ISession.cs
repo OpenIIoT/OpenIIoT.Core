@@ -86,7 +86,7 @@ namespace OpenIIoT.SDK.Security
         #region Public Methods
 
         /// <summary>
-        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Ticket"/> .
+        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Identity"/> .
         /// </summary>
         /// <param name="type">The type of Claim to retrieve.</param>
         /// <returns>The retrieved Claim value.</returns>

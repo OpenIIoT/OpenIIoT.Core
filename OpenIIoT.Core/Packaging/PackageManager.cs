@@ -208,46 +208,52 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
         public IResult<IPackage> AddPackage(byte[] data)
         {
-            logger.EnterMethod();
-            logger.Info($"Creating new Package...");
+            Guid guid = logger.EnterMethod();
+            logger.Info("Creating new Package...");
 
             IResult<IPackage> retVal = new Result<IPackage>();
-
             string tempFile = Path.Combine(PlatformManager.Directories.Temp, Guid.NewGuid().ToString());
 
-            logger.Debug($"Saving new Package to '{tempFile}'...");
-
-            retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
-
-            if (retVal.ResultCode != ResultCode.Failure)
+            if (data.Length == 0)
             {
-                IResult<IPackage> readResult = Read(tempFile);
+                retVal.AddError($"The specified binary payload is empty.");
+            }
+            else
+            {
+                logger.Debug($"Saving new Package to '{tempFile}'...");
 
-                retVal.Incorporate(readResult);
+                retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
 
                 if (retVal.ResultCode != ResultCode.Failure)
                 {
-                    string destinationFilename = GetPackageFilename(readResult.ReturnValue);
+                    IResult<IPackage> readResult = Read(tempFile);
 
-                    retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
+                    retVal.Incorporate(readResult);
 
                     if (retVal.ResultCode != ResultCode.Failure)
                     {
-                        PackageList.Add(readResult.ReturnValue);
+                        string destinationFilename = GetPackageFilename(readResult.ReturnValue);
 
-                        retVal.ReturnValue = readResult.ReturnValue;
-                        retVal.ReturnValue.Filename = destinationFilename;
+                        retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
+
+                        if (retVal.ResultCode != ResultCode.Failure)
+                        {
+                            PackageList.Add(readResult.ReturnValue);
+
+                            retVal.ReturnValue = readResult.ReturnValue;
+                            retVal.ReturnValue.Filename = destinationFilename;
+                        }
                     }
                 }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
-                retVal.AddError("Failed to create a Package from the supplied data.");
+                Task.Run(() => PackageAdded?.Invoke(this, new PackageEventArgs(retVal.ReturnValue)));
             }
 
             retVal.LogResult(logger);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
             return retVal;
         }
 
