@@ -97,6 +97,7 @@
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility.cs" />
     <Compile Include="Packaging\IPackageManager.cs" />
+    <Compile Include="Packaging\Manifest\IPackageManifest.cs" />
     <Compile Include="Packaging\Manifest\PackageManifest.cs" />
     <Compile Include="Packaging\Manifest\PackageManifestBuilder.cs" />
     <Compile Include="Packaging\Manifest\PackageManifestFile.cs" />
