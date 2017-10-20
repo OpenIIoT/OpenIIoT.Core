@@ -51,7 +51,9 @@ namespace OpenIIoT.Core.Packaging
     using OpenIIoT.Core.Common;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Discovery;
     using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.EventProvider;
     using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
     using OpenIIoT.SDK.Packaging.Operations;
@@ -60,6 +62,7 @@ namespace OpenIIoT.Core.Packaging
     /// <summary>
     ///     Handles the installation and file management of the Packages used to extend the functionality of the application.
     /// </summary>
+    [Discoverable]
     public sealed class PackageManager : Manager, IPackageManager
     {
         #region Private Fields
@@ -91,11 +94,10 @@ namespace OpenIIoT.Core.Packaging
         private PackageManager(IApplicationManager manager, IPlatformManager platformManager)
         {
             base.logger = logger;
-            logger.EnterMethod();
+            Guid guid = logger.EnterMethod();
 
             ManagerName = "Package Manager";
 
-            // register dependencies
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
 
@@ -103,10 +105,38 @@ namespace OpenIIoT.Core.Packaging
 
             PackageList = new List<Package>();
 
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
         }
 
         #endregion Private Constructors
+
+        #region Public Events
+
+        /// <summary>
+        ///     Occurs when a <see cref="Package"/> is added.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is added.")]
+        public event EventHandler<PackageEventArgs> PackageAdded;
+
+        /// <summary>
+        ///     Occurs when a <see cref="Package"/> is deleted.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is deleted.")]
+        public event EventHandler<PackageEventArgs> PackageDeleted;
+
+        /// <summary>
+        ///     Occurs when a <see cref="Package"/> is installed.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is installed.")]
+        public event EventHandler<PackageEventArgs> PackageInstalled;
+
+        /// <summary>
+        ///     Occurs when a <see cref="Package"/> is uninstalled.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is uninstalled.")]
+        public event EventHandler<PackageEventArgs> PackageUninstalled;
+
+        #endregion Public Events
 
         #region Public Properties
 
