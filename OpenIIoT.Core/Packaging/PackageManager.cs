@@ -198,15 +198,15 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Creates a <see cref="Package"/> file with the specified data.
+        ///     Adds a <see cref="Package"/> file from the specified binary <paramref name="data"/>.
         /// </summary>
         /// <remarks>
         ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
         ///     and Version of the Package.
         /// </remarks>
-        /// <param name="data">The data to save.</param>
+        /// <param name="data">The binary data to save.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public IResult<Package> CreatePackage(byte[] data)
+        public IResult<Package> AddPackage(byte[] data)
         {
             logger.EnterMethod();
             logger.Info($"Creating new Package...");
@@ -252,17 +252,17 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously creates a <see cref="Package"/> file with the specified data.
+        ///     Asynchronously adds a <see cref="Package"/> file from the specified binary <paramref name="data"/>.
         /// </summary>
         /// <remarks>
         ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
         ///     and Version of the Package.
         /// </remarks>
-        /// <param name="data">The data to save.</param>
+        /// <param name="data">The binary data to save.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public async Task<IResult<Package>> CreatePackageAsync(byte[] data)
+        public async Task<IResult<Package>> AddPackageAsync(byte[] data)
         {
-            return await Task.Run(() => CreatePackage(data));
+            return await Task.Run(() => AddPackage(data));
         }
 
         /// <summary>

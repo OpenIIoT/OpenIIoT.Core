@@ -63,26 +63,26 @@ namespace OpenIIoT.SDK.Packaging
         #region Public Methods
 
         /// <summary>
-        ///     Creates a <see cref="Package"/> file with the specified data.
+        ///     Adds a <see cref="Package"/> file from the specified binary <paramref name="data"/>.
         /// </summary>
         /// <remarks>
         ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
         ///     and Version of the Package.
         /// </remarks>
-        /// <param name="data">The data to save.</param>
+        /// <param name="data">The binary data to save.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        IResult<Package> CreatePackage(byte[] data);
+        IResult<Package> AddPackage(byte[] data);
 
         /// <summary>
-        ///     Asynchronously creates a <see cref="Package"/> file with the specified data.
+        ///     Asynchronously adds a <see cref="Package"/> file from the specified binary <paramref name="data"/>.
         /// </summary>
         /// <remarks>
         ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
         ///     and Version of the Package.
         /// </remarks>
-        /// <param name="data">The data to save.</param>
+        /// <param name="data">The binary data to save.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        Task<IResult<Package>> CreatePackageAsync(byte[] data);
+        Task<IResult<Package>> AddPackageAsync(byte[] data);
 
         /// <summary>
         ///     Deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
