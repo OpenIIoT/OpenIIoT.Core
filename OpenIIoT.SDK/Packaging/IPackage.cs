@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄
-      █     ███    ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
+      █    ▄█     ▄███████▄
+      █   ███    ███    ███
+      █   ███▌   ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
+      █   ███▌   ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
+      █   ███▌ ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
+      █   ███    ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
+      █   ███    ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
+      █   █▀    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
@@ -42,58 +42,39 @@
 namespace OpenIIoT.SDK.Packaging
 {
     using System;
-    using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
     ///     Represents an installable extension archive.
     /// </summary>
-    public class Package : PackageManifest, IPackage
+    public interface IPackage : IPackageManifest
     {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="Package"/> class.
-        /// </summary>
-        /// <param name="filename">The fully qualified filename of the archive file.</param>
-        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
-        /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
-        {
-            this.CopyPropertyValuesFrom(manifest);
-
-            Filename = filename;
-            ModifiedOn = modifiedOn;
-        }
-
-        #endregion Public Constructors
-
         #region Public Properties
 
         /// <summary>
         ///     Gets or sets the fully qualified filename of the archive file.
         /// </summary>
-        public string Filename { get; set; }
+        string Filename { get; set; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
         /// </summary>
-        public string FQN => Namespace + "." + Title;
+        string FQN { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the Package is signed.
         /// </summary>
-        public bool IsSigned => Signature?.Digest != default(string);
+        bool IsSigned { get; }
 
         /// <summary>
         ///     Gets a value indicating whether the Package is trusted.
         /// </summary>
-        public bool IsTrusted => Signature?.Trust != default(string);
+        bool IsTrusted { get; }
 
         /// <summary>
         ///     Gets the time at which the archive was last modified, according to the host filesystem.
         /// </summary>
-        public DateTime ModifiedOn { get; }
+        DateTime ModifiedOn { get; }
 
         #endregion Public Properties
     }
