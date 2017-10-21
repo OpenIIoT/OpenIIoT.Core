@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Tests.Packaging
+namespace OpenIIoT.Core.Tests.Packaging
 {
     using OpenIIoT.SDK.Packaging;
     using Xunit;

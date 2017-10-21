@@ -1,19 +1,28 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█     ▄████████
-      █   ███    ███    ███
-      █   ███▌   ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
-      █   ███▌   ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
-      █   ███▌ ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
-      █   ███           ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
-      █   ███     ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
-      █   █▀    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
+      █      ▄███████▄
+      █     ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
+      █
+      █      ▄████████                                        ▄████████
+      █     ███    ███                                        ███    ███
+      █     ███    █▀   █    █     ▄█████ ██▄▄▄▄      ██      ███    ███    █████    ▄████▄    ▄█████
+      █    ▄███▄▄▄     ██    ██   ██   █  ██▀▀▀█▄ ▀███████▄   ███    ███   ██  ██   ██    ▀    ██  ▀
+      █   ▀▀███▀▀▀     ██    ██  ▄██▄▄    ██   ██     ██  ▀ ▀███████████  ▄██▄▄█▀  ▄██         ██
+      █     ███    █▄  ██    ██ ▀▀██▀▀    ██   ██     ██      ███    ███ ▀███████ ▀▀██ ███▄  ▀███████
+      █     ███    ███  █▄  ▄█    ██   █  ██   ██     ██      ███    ███   ██  ██   ██    ██    ▄  ██
+      █     ██████████   ▀██▀     ███████  █   █     ▄██▀     ███    █▀    ██  ██   ██████▀   ▄████▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Session information for a User Session.
+      █  Event arguments for Package events.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,59 +48,35 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Security
+namespace OpenIIoT.SDK.Packaging
 {
     using System;
-    using System.Security.Claims;
 
     /// <summary>
-    ///     Session information for a <see cref="User"/> Session.
+    ///     Event arguments for <see cref="Package"/> events.
     /// </summary>
-    public interface ISession
+    public class PackageEventArgs : EventArgs
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PackageEventArgs"/> class.
+        /// </summary>
+        /// <param name="package">The <see cref="IPackage"/> associated with the event.</param>
+        public PackageEventArgs(IPackage package)
+        {
+            Package = package;
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>
-        ///     Gets the time at which the Session was created, in Utc.
+        ///     Gets the <see cref="IPackage"/> associated with the event.
         /// </summary>
-        DateTimeOffset Created { get; }
-
-        /// <summary>
-        ///     Gets or sets the time at which the Session expires, in Utc.
-        /// </summary>
-        DateTimeOffset Expires { get; set; }
-
-        /// <summary>
-        ///     Gets the <see cref="ClaimsIdentity"/> instance associated with the Session.
-        /// </summary>
-        ClaimsIdentity Identity { get; }
-
-        /// <summary>
-        ///     Gets a value indicating whether the Session is expired.
-        /// </summary>
-        bool IsExpired { get; }
-
-        /// <summary>
-        ///     Gets the token for the Session.
-        /// </summary>
-        string Token { get; }
-
-        /// <summary>
-        ///     Gets the User to which the Session belongs.
-        /// </summary>
-        IUser User { get; }
+        public IPackage Package { get; }
 
         #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Identity"/> .
-        /// </summary>
-        /// <param name="type">The type of Claim to retrieve.</param>
-        /// <returns>The retrieved Claim value.</returns>
-        string GetClaim(string type);
-
-        #endregion Public Methods
     }
 }

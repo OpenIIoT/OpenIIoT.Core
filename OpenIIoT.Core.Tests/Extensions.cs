@@ -39,13 +39,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Net.Http;
-
 namespace OpenIIoT.Core.Tests
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Net.Http;
+
     /// <summary>
     ///     Extension methods to assist with testing and assertions.
     /// </summary>

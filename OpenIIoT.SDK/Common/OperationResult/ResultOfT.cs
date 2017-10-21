@@ -114,7 +114,9 @@ namespace OpenIIoT.SDK.Common.OperationResult
         /// <summary>
         ///     Initializes a new instance of the <see cref="Result{T}"/> class.
         /// </summary>
-        public Result(ResultCode initialResultCode = ResultCode.Success) : base(initialResultCode)
+        /// <param name="initialResultCode">The initial result code for the instance.</param>
+        public Result(ResultCode initialResultCode = ResultCode.Success)
+            : base(initialResultCode)
         {
             ReturnValue = default(T);
         }

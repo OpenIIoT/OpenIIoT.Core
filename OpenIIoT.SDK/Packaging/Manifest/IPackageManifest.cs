@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄
-      █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀
+      █    ▄█     ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄
+      █   ███    ███    ███                                                               ▄██▀▀▀███▀▀▀██▄
+      █   ███▌   ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██
+      █   ███▌   ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄
+      █   ███▌ ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀
+      █   ███    ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██
+      █   ███    ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██
+      █   █▀    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
@@ -47,7 +47,7 @@ namespace OpenIIoT.SDK.Packaging.Manifest
     /// <summary>
     ///     A Manifest which describes the contents of a Package file.
     /// </summary>
-    public class PackageManifest : IPackageManifest
+    public interface IPackageManifest
     {
         #region Public Properties
 
@@ -55,67 +55,67 @@ namespace OpenIIoT.SDK.Packaging.Manifest
         ///     Gets or sets the checksum of the payload file.
         /// </summary>
         [JsonProperty(Order = 9)]
-        public string Checksum { get; set; }
+        string Checksum { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package copyright.
         /// </summary>
         [JsonProperty(Order = 6)]
-        public string Copyright { get; set; }
+        string Copyright { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package description.
         /// </summary>
         [JsonProperty(Order = 4)]
-        public string Description { get; set; }
+        string Description { get; set; }
 
         /// <summary>
         ///     Gets or sets the collection of <see cref="PackageManifestFile"/> instances representing the files in the Package payload.
         /// </summary>
         [JsonProperty(Order = 11)]
-        public IList<PackageManifestFile> Files { get; set; }
+        IList<PackageManifestFile> Files { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package license.
         /// </summary>
         [JsonProperty(Order = 7)]
-        public string License { get; set; }
+        string License { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package namespace.
         /// </summary>
         [JsonProperty(Order = 3)]
-        public string Namespace { get; set; }
+        string Namespace { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package publisher.
         /// </summary>
         [JsonProperty(Order = 5)]
-        public string Publisher { get; set; }
+        string Publisher { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package <see cref="PackageManifestSignature"/>.
         /// </summary>
         [JsonProperty(Order = 10)]
-        public PackageManifestSignature Signature { get; set; }
+        PackageManifestSignature Signature { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package title.
         /// </summary>
         [JsonProperty(Order = 1)]
-        public string Title { get; set; }
+        string Title { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package url.
         /// </summary>
         [JsonProperty(Order = 8)]
-        public string Url { get; set; }
+        string Url { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package version.
         /// </summary>
         [JsonProperty(Order = 2)]
-        public string Version { get; set; }
+        string Version { get; set; }
 
         #endregion Public Properties
     }

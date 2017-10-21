@@ -48,10 +48,10 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Tests.Packaging
+namespace OpenIIoT.Core.Tests.Packaging
 {
     using System;
-    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.Core.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
 
@@ -76,9 +76,9 @@ namespace OpenIIoT.SDK.Tests.Packaging
 
             DateTime now = DateTime.Now;
 
-            SDK.Packaging.Package test = new SDK.Packaging.Package("test", now, manifest);
+            Package test = new Package("test", now, manifest);
 
-            Assert.IsType<SDK.Packaging.Package>(test);
+            Assert.IsType<Package>(test);
 
             Assert.Equal("test", test.Filename);
             Assert.Equal("namespace.title", test.FQN);

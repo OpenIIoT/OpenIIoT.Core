@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █    ▄█     ▄████████
-      █   ███    ███    ███
-      █   ███▌   ███    █▀     ▄█████   ▄█████   ▄█████  █   ██████  ██▄▄▄▄
-      █   ███▌   ███          ██   █    ██  ▀    ██  ▀  ██  ██    ██ ██▀▀▀█▄
-      █   ███▌ ▀███████████  ▄██▄▄      ██       ██     ██▌ ██    ██ ██   ██
-      █   ███           ███ ▀▀██▀▀    ▀███████ ▀███████ ██  ██    ██ ██   ██
-      █   ███     ▄█    ███   ██   █     ▄  ██    ▄  ██ ██  ██    ██ ██   ██
-      █   █▀    ▄████████▀    ███████  ▄████▀   ▄████▀  █    ██████   █   █
+      █      ▄███████▄
+      █     ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Session information for a User Session.
+      █  Represents an installable extension archive.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,59 +39,63 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Security
+namespace OpenIIoT.Core.Packaging
 {
     using System;
-    using System.Security.Claims;
+    using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Packaging.Manifest;
+    using OpenIIoT.SDK.Packaging;
 
     /// <summary>
-    ///     Session information for a <see cref="User"/> Session.
+    ///     Represents an installable extension archive.
     /// </summary>
-    public interface ISession
+    public class Package : PackageManifest, IPackage
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="Package"/> class.
+        /// </summary>
+        /// <param name="filename">The fully qualified filename of the archive file.</param>
+        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
+        /// <param name="manifest">The manifest contained within the archive.</param>
+        public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
+        {
+            this.CopyPropertyValuesFrom(manifest);
+
+            Filename = filename;
+            ModifiedOn = modifiedOn;
+        }
+
+        #endregion Public Constructors
+
         #region Public Properties
 
         /// <summary>
-        ///     Gets the time at which the Session was created, in Utc.
+        ///     Gets or sets the fully qualified filename of the archive file.
         /// </summary>
-        DateTimeOffset Created { get; }
+        public string Filename { get; set; }
 
         /// <summary>
-        ///     Gets or sets the time at which the Session expires, in Utc.
+        ///     Gets the Fully Qualified Name of the Package.
         /// </summary>
-        DateTimeOffset Expires { get; set; }
+        public string FQN => Namespace + "." + Title;
 
         /// <summary>
-        ///     Gets the <see cref="ClaimsIdentity"/> instance associated with the Session.
+        ///     Gets a value indicating whether the Package is signed.
         /// </summary>
-        ClaimsIdentity Identity { get; }
+        public bool IsSigned => Signature?.Digest != default(string);
 
         /// <summary>
-        ///     Gets a value indicating whether the Session is expired.
+        ///     Gets a value indicating whether the Package is trusted.
         /// </summary>
-        bool IsExpired { get; }
+        public bool IsTrusted => Signature?.Trust != default(string);
 
         /// <summary>
-        ///     Gets the token for the Session.
+        ///     Gets the time at which the archive was last modified, according to the host filesystem.
         /// </summary>
-        string Token { get; }
-
-        /// <summary>
-        ///     Gets the User to which the Session belongs.
-        /// </summary>
-        IUser User { get; }
+        public DateTime ModifiedOn { get; }
 
         #endregion Public Properties
-
-        #region Public Methods
-
-        /// <summary>
-        ///     Returns the specified Claim <paramref name="type"/> within the Session's <see cref="Identity"/> .
-        /// </summary>
-        /// <param name="type">The type of Claim to retrieve.</param>
-        /// <returns>The retrieved Claim value.</returns>
-        string GetClaim(string type);
-
-        #endregion Public Methods
     }
 }

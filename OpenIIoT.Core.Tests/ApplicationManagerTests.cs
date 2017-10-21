@@ -54,12 +54,12 @@ namespace OpenIIoT.Core.Tests
 {
     using System;
     using System.Collections.Generic;
+    using OpenIIoT.Core;
+    using OpenIIoT.Core.Common;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Common.Exceptions;
     using OpenIIoT.SDK.Common.OperationResult;
-    using OpenIIoT.Core;
-    using OpenIIoT.Core.Common;
     using Xunit;
 
     /// <summary>

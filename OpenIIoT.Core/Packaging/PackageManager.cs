@@ -51,7 +51,9 @@ namespace OpenIIoT.Core.Packaging
     using OpenIIoT.Core.Common;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common;
+    using OpenIIoT.SDK.Common.Discovery;
     using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.EventProvider;
     using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
     using OpenIIoT.SDK.Packaging.Operations;
@@ -60,6 +62,7 @@ namespace OpenIIoT.Core.Packaging
     /// <summary>
     ///     Handles the installation and file management of the Packages used to extend the functionality of the application.
     /// </summary>
+    [Discoverable]
     public sealed class PackageManager : Manager, IPackageManager
     {
         #region Private Fields
@@ -91,29 +94,56 @@ namespace OpenIIoT.Core.Packaging
         private PackageManager(IApplicationManager manager, IPlatformManager platformManager)
         {
             base.logger = logger;
-            logger.EnterMethod();
+            Guid guid = logger.EnterMethod();
 
             ManagerName = "Package Manager";
 
-            // register dependencies
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
 
             ChangeState(State.Initialized);
 
-            PackageList = new List<Package>();
+            PackageList = new List<IPackage>();
 
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
         }
 
         #endregion Private Constructors
+
+        #region Public Events
+
+        /// <summary>
+        ///     Occurs when a <see cref="IPackage"/> is added.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is added.")]
+        public event EventHandler<PackageEventArgs> PackageAdded;
+
+        /// <summary>
+        ///     Occurs when a <see cref="IPackage"/> is deleted.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is deleted.")]
+        public event EventHandler<PackageEventArgs> PackageDeleted;
+
+        /// <summary>
+        ///     Occurs when a <see cref="IPackage"/> is installed.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is installed.")]
+        public event EventHandler<PackageEventArgs> PackageInstalled;
+
+        /// <summary>
+        ///     Occurs when a <see cref="IPackage"/> is uninstalled.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is uninstalled.")]
+        public event EventHandler<PackageEventArgs> PackageUninstalled;
+
+        #endregion Public Events
 
         #region Public Properties
 
         /// <summary>
         ///     Gets the list of Packages available for installation.
         /// </summary>
-        public IReadOnlyList<Package> Packages => ((List<Package>)PackageList).AsReadOnly();
+        public IReadOnlyList<IPackage> Packages => ((List<IPackage>)PackageList).AsReadOnly();
 
         #endregion Public Properties
 
@@ -127,7 +157,7 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets or sets the list of Packages available for installation.
         /// </summary>
-        private IList<Package> PackageList { get; set; }
+        private IList<IPackage> PackageList { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="IPlatformManager"/> with which Platform operations are carried out.
@@ -168,112 +198,131 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Creates a <see cref="Package"/> file with the specified data.
+        ///     Adds a <see cref="IPackage"/> file from the specified binary <paramref name="data"/>.
         /// </summary>
         /// <remarks>
         ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
         ///     and Version of the Package.
         /// </remarks>
-        /// <param name="data">The data to save.</param>
+        /// <param name="data">The binary data to save.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public IResult<Package> CreatePackage(byte[] data)
+        public IResult<IPackage> AddPackage(byte[] data)
         {
-            logger.EnterMethod();
-            logger.Info($"Creating new Package...");
+            Guid guid = logger.EnterMethod();
+            logger.Info("Creating new Package...");
 
-            IResult<Package> retVal = new Result<Package>();
-
+            IResult<IPackage> retVal = new Result<IPackage>();
             string tempFile = Path.Combine(PlatformManager.Directories.Temp, Guid.NewGuid().ToString());
+            string destinationFilename = default(string);
 
-            logger.Debug($"Saving new Package to '{tempFile}'...");
-
-            retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
-
-            if (retVal.ResultCode != ResultCode.Failure)
+            if (data.Length == 0)
             {
-                IResult<Package> readResult = Read(tempFile);
+                retVal.AddError($"The specified binary payload is empty.");
+            }
+            else
+            {
+                logger.Debug($"Saving new Package to '{tempFile}'...");
 
-                retVal.Incorporate(readResult);
+                retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
 
                 if (retVal.ResultCode != ResultCode.Failure)
                 {
-                    string destinationFilename = GetPackageFilename(readResult.ReturnValue);
+                    IResult<IPackage> readResult = Read(tempFile);
 
-                    retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
+                    retVal.Incorporate(readResult);
 
                     if (retVal.ResultCode != ResultCode.Failure)
                     {
-                        PackageList.Add(readResult.ReturnValue);
+                        destinationFilename = GetPackageFilename(readResult.ReturnValue);
 
-                        retVal.ReturnValue = readResult.ReturnValue;
-                        retVal.ReturnValue.Filename = destinationFilename;
+                        logger.Debug($"Copying temporary Package '{tempFile}' to final destination '{destinationFilename}'...");
+
+                        retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
+
+                        if (retVal.ResultCode != ResultCode.Failure)
+                        {
+                            PackageList.Add(readResult.ReturnValue);
+
+                            retVal.ReturnValue = readResult.ReturnValue;
+                            retVal.ReturnValue.Filename = destinationFilename;
+                        }
                     }
                 }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
-                retVal.AddError("Failed to create a Package from the supplied data.");
+                logger.Debug($"Package successfully saved to {destinationFilename}.  Sending PackageAdded Event...");
+                Task.Run(() => PackageAdded?.Invoke(this, new PackageEventArgs(retVal.ReturnValue)));
             }
 
             retVal.LogResult(logger);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
             return retVal;
         }
 
         /// <summary>
-        ///     Asynchronously creates a <see cref="Package"/> file with the specified data.
+        ///     Asynchronously adds a <see cref="IPackage"/> file from the specified binary <paramref name="data"/>.
         /// </summary>
         /// <remarks>
         ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
         ///     and Version of the Package.
         /// </remarks>
-        /// <param name="data">The data to save.</param>
+        /// <param name="data">The binary data to save.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        public async Task<IResult<Package>> CreatePackageAsync(byte[] data)
+        public async Task<IResult<IPackage>> AddPackageAsync(byte[] data)
         {
-            return await Task.Run(() => CreatePackage(data));
+            return await Task.Run(() => AddPackage(data));
         }
 
         /// <summary>
-        ///     Deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
+        ///     Deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to delete.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult DeletePackage(string fqn)
         {
-            logger.EnterMethod(xLogger.Params(fqn));
+            Guid guid = logger.EnterMethod(xLogger.Params(fqn));
             logger.Info($"Deleting Package {fqn}...");
 
             IResult retVal = new Result();
-            Package findResult = FindPackage(fqn);
+            IPackage findResult = default(IPackage);
 
-            if (findResult != default(Package))
+            if (string.IsNullOrEmpty(fqn))
             {
-                string fileName = findResult.Filename;
-
-                IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
-                retVal.Incorporate(deleteResult);
+                retVal.AddError($"The specified Fully Qualified Name is null or empty.");
             }
             else
             {
-                retVal.AddError($"Failed to find Package '{fqn}'.");
+                findResult = FindPackage(fqn);
+
+                if (findResult != default(IPackage))
+                {
+                    logger.Debug($"Deleting Package file '{findResult.Filename}'...");
+
+                    retVal.Incorporate(Platform.DeleteFile(findResult.Filename));
+                }
+                else
+                {
+                    retVal.AddError($"Failed to find Package '{fqn}'.");
+                }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
-                retVal.AddError($"Failed to delete Package '{fqn}'.");
+                logger.Debug($"Package {fqn} deleted successfully.  Sending PackageDeleted Event...");
+                Task.Run(() => PackageDeleted?.Invoke(this, new PackageEventArgs(findResult)));
             }
 
             retVal.LogResult(logger);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
             return retVal;
         }
 
         /// <summary>
-        ///     Asynchronously deletes the <see cref="Package"/> matching the specified Fully Qualified Name from disk.
+        ///     Asynchronously deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to delete.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> DeletePackageAsync(string fqn)
         {
@@ -281,9 +330,9 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Fetches the <see cref="Package"/> file matching the specified Fully Qualified Name and returns the binary data.
+        ///     Fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to fetch.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
         /// <returns>A Result containing the result of the operation and the read binary data.</returns>
         public IResult<byte[]> FetchPackage(string fqn)
         {
@@ -291,24 +340,28 @@ namespace OpenIIoT.Core.Packaging
             logger.Info($"Fetching Package '{fqn}'...");
 
             IResult<byte[]> retVal = new Result<byte[]>();
-            Package findResult = FindPackage(fqn);
+            IPackage findResult = default(IPackage);
 
-            if (findResult != default(Package))
+            if (string.IsNullOrEmpty(fqn))
             {
-                IPlatform platform = Dependency<IPlatformManager>().Platform;
-
-                IResult<byte[]> readResult = platform.ReadFileBytes(findResult.Filename);
-                retVal.Incorporate(readResult);
-                retVal.ReturnValue = readResult.ReturnValue;
+                retVal.AddError($"The specified Fully Qualified Name is null or empty.");
             }
             else
             {
-                retVal.AddError($"Failed to find Package '{fqn}'.");
-            }
+                findResult = FindPackage(fqn);
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to fetch Package '{fqn}'");
+                if (findResult != default(IPackage))
+                {
+                    logger.Debug($"Package '{fqn}' found in '{findResult.Filename}'; reading from disk...");
+
+                    IResult<byte[]> readResult = Platform.ReadFileBytes(findResult.Filename);
+                    retVal.Incorporate(readResult);
+                    retVal.ReturnValue = readResult.ReturnValue;
+                }
+                else
+                {
+                    retVal.AddError($"Failed to find Package '{fqn}'.");
+                }
             }
 
             retVal.LogResult(logger);
@@ -317,10 +370,10 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously fetches the <see cref="Package"/> file matching the specified Fully Qualified Name and returns the
+        ///     Asynchronously fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
         ///     binary data.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="Package"/> to fetch.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
         /// <returns>A Result containing the result of the operation and the read binary data.</returns>
         public async Task<IResult<byte[]>> FetchPackageAsync(string fqn)
         {
@@ -339,7 +392,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
         /// <returns>The result of the operation and the found Package, if applicable.</returns>
-        public Package FindPackage(string fqn)
+        public IPackage FindPackage(string fqn)
         {
             return FindPackage(fqn, true);
         }
@@ -356,13 +409,13 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
         /// <returns>The result of the operation and the found Package, if applicable.</returns>
-        public async Task<Package> FindPackageAsync(string fqn)
+        public async Task<IPackage> FindPackageAsync(string fqn)
         {
             return await Task.Run(() => FindPackage(fqn));
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="Package"/> (extracts it to disk).
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -372,7 +425,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="Package"/> (extracts it to disk) using the specified <paramref name="options"/>.
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
@@ -383,7 +436,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="Package"/> (extracts it to disk) using the specified <paramref name="options"/>
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>
         ///     and PGP <paramref name="publicKey"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
@@ -396,7 +449,7 @@ namespace OpenIIoT.Core.Packaging
             logger.Info($"Installing Package '{fqn}'...");
 
             IResult retVal = new Result();
-            Package findResult = FindPackage(fqn);
+            IPackage findResult = FindPackage(fqn);
 
             if (findResult != default(Package))
             {
@@ -439,7 +492,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk).
+        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <returns>A Result containing the result of the operation.</returns>
@@ -449,7 +502,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Installs the specified <see cref="Package"/> (extracts it to disk) using the specified <paramref name="options"/>.
+        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
         /// <param name="options">The installation options for the operation.</param>
@@ -460,7 +513,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk) using the specified
+        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified
         ///     <paramref name="options"/> and PGP <paramref name="publicKey"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
@@ -476,13 +529,13 @@ namespace OpenIIoT.Core.Packaging
         ///     Scans for and returns a list of all Package files in the configured Packages directory.
         /// </summary>
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
-        public IResult<IList<Package>> ScanPackages()
+        public IResult<IList<IPackage>> ScanPackages()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Info("Scanning for Packages...");
 
-            IResult<IList<Package>> retVal = new Result<IList<Package>>();
-            retVal.ReturnValue = new List<Package>();
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
+            retVal.ReturnValue = new List<IPackage>();
 
             string directory = PlatformManager.Directories.Packages;
 
@@ -498,7 +551,7 @@ namespace OpenIIoT.Core.Packaging
             {
                 foreach (string file in fileListResult.ReturnValue)
                 {
-                    IResult<Package> readResult = Read(file);
+                    IResult<IPackage> readResult = Read(file);
 
                     if (readResult.ResultCode != ResultCode.Failure)
                     {
@@ -521,13 +574,13 @@ namespace OpenIIoT.Core.Packaging
         ///     Asynchronously scans for and returns a list of all Package files in the configured Package directory.
         /// </summary>
         /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
-        public async Task<IResult<IList<Package>>> ScanPackagesAsync()
+        public async Task<IResult<IList<IPackage>>> ScanPackagesAsync()
         {
             return await Task.Run(() => ScanPackages());
         }
 
         /// <summary>
-        ///     Verifies the specified <see cref="Package"/>.
+        ///     Verifies the specified <see cref="IPackage"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
@@ -537,7 +590,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Verifies the specified <see cref="Package"/> using the optionally specified PGP Public Key.
+        ///     Verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
@@ -548,7 +601,7 @@ namespace OpenIIoT.Core.Packaging
             logger.Info($"Verifying Package '{fqn}'...");
 
             IResult<bool> retVal = new Result<bool>();
-            Package findResult = FindPackage(fqn);
+            IPackage findResult = FindPackage(fqn);
 
             if (findResult != default(Package))
             {
@@ -581,7 +634,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously verifies the specified <see cref="Package"/> using the optionally specified PGP Public Key.
+        ///     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
@@ -592,7 +645,7 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Asynchronously verifies the specified <see cref="Package"/>.
+        ///     Asynchronously verifies the specified <see cref="IPackage"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
         /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
@@ -620,7 +673,7 @@ namespace OpenIIoT.Core.Packaging
 
             IResult retVal = new Result();
 
-            PackageList = default(IList<Package>);
+            PackageList = default(IList<IPackage>);
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
@@ -669,14 +722,14 @@ namespace OpenIIoT.Core.Packaging
         ///     specified Package.
         /// </param>
         /// <returns>The result of the operation and the found Package, if applicable.</returns>
-        private Package FindPackage(string fqn, bool rescanOnNotFound)
+        private IPackage FindPackage(string fqn, bool rescanOnNotFound)
         {
             logger.EnterMethod(xLogger.Params(fqn, rescanOnNotFound));
-            Package retVal;
+            IPackage retVal;
 
             retVal = PackageList.Where(p => p.FQN == fqn).FirstOrDefault();
 
-            if (retVal == default(Package))
+            if (retVal == default(IPackage))
             {
                 if (rescanOnNotFound)
                 {
@@ -690,13 +743,13 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Creates a <see cref="Package"/> instance with file metadata from the given file and the given
+        ///     Creates a <see cref="IPackage"/> instance with file metadata from the given file and the given
         ///     <see cref="PackageManifest"/> .
         /// </summary>
         /// <param name="fileName">The filename from which to retrieve the Package metadata.</param>
-        /// <param name="manifest">The Manifest with which to initialize the <see cref="Package"/> instance.</param>
+        /// <param name="manifest">The Manifest with which to initialize the <see cref="IPackage"/> instance.</param>
         /// <returns>The created Package.</returns>
-        private Package GetPackage(string fileName, PackageManifest manifest)
+        private IPackage GetPackage(string fileName, PackageManifest manifest)
         {
             FileInfo info = new FileInfo(fileName);
 
@@ -708,7 +761,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="package">The Package for which the filename is to be created.</param>
         /// <returns>The created filename.</returns>
-        private string GetPackageFilename(Package package)
+        private string GetPackageFilename(IPackage package)
         {
             string filename = package.FQN + "." + package.Version + PackagingConstants.PackageFilenameExtension;
 
@@ -721,17 +774,17 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Reads the specified file and, if it is a valid <see cref="Package"/>, returns an <see cref="Package"/> instance
+        ///     Reads the specified file and, if it is a valid <see cref="IPackage"/>, returns an <see cref="IPackage"/> instance
         ///     from the contents.
         /// </summary>
         /// <param name="fileName">The filename of the file to read.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        private IResult<Package> Read(string fileName)
+        private IResult<IPackage> Read(string fileName)
         {
             logger.EnterMethod(true);
             logger.Debug($"Reading Package '{fileName}'...");
 
-            IResult<Package> retVal = new Result<Package>();
+            IResult<IPackage> retVal = new Result<IPackage>();
             ManifestExtractor extractor = new ManifestExtractor();
 
             extractor.Updated += (sender, e) => logger.Debug(e.Message);

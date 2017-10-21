@@ -1,7 +1,6 @@
 ﻿namespace OpenIIoT.SDK.Service
 {
     using OpenIIoT.SDK.Common.OperationResult;
-    using OpenIIoT.SDK.Common.OperationResult;
 
     public interface IService
     {
