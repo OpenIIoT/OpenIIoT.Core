@@ -128,13 +128,13 @@ namespace OpenIIoT.Core.Packaging
         ///     Occurs when a <see cref="IPackage"/> is installed.
         /// </summary>
         [Event(Description = "Occurs when a Package is installed.")]
-        public event EventHandler<PackageEventArgs> PackageInstalled;
+        public event EventHandler<PackageInstallEventArgs> PackageInstalled;
 
         /// <summary>
         ///     Occurs when a <see cref="IPackage"/> is uninstalled.
         /// </summary>
         [Event(Description = "Occurs when a Package is uninstalled.")]
-        public event EventHandler<PackageEventArgs> PackageUninstalled;
+        public event EventHandler<PackageInstallEventArgs> PackageUninstalled;
 
         #endregion Public Events
 
@@ -227,7 +227,7 @@ namespace OpenIIoT.Core.Packaging
 
                 if (retVal.ResultCode != ResultCode.Failure)
                 {
-                    IResult<IPackage> readResult = Read(tempFile);
+                    IResult<IPackage> readResult = ReadPackage(tempFile);
 
                     retVal.Incorporate(readResult);
 
@@ -449,41 +449,51 @@ namespace OpenIIoT.Core.Packaging
             logger.Info($"Installing Package '{fqn}'...");
 
             IResult retVal = new Result();
-            IPackage findResult = FindPackage(fqn);
+            IPackage findResult = default(IPackage);
+            string destination = default(string);
 
-            if (findResult != default(Package))
+            if (string.IsNullOrEmpty(fqn))
             {
-                PackageExtractor extractor = new PackageExtractor();
-
-                extractor.Updated += (sender, e) => logger.Debug(e.Message);
-
-                // determine the installation directory; should look like \path\to\Plugins\FQN\
-                string destination = PlatformManager.Directories.Plugins;
-                destination = Path.Combine(destination, findResult.FQN);
-
-                bool overwrite = options?.Overwrite ?? false;
-                bool skipVerification = options?.SkipVerification ?? false;
-
-                logger.Debug($"Install directory: '{destination}'; overwrite={overwrite}, skipVerification={skipVerification}");
-
-                try
-                {
-                    extractor.ExtractPackage(findResult.Filename, destination, overwrite, skipVerification);
-                }
-                catch (Exception ex)
-                {
-                    logger.Exception(LogLevel.Debug, ex);
-                    retVal.AddError(ex.Message);
-                }
+                retVal.AddError($"The specified Fully Qualified Name is null or empty.");
             }
             else
             {
-                retVal.AddError($"Failed to find Package '{fqn}'.");
+                findResult = FindPackage(fqn);
+
+                if (findResult != default(IPackage))
+                {
+                    PackageExtractor extractor = new PackageExtractor();
+
+                    extractor.Updated += (sender, e) => logger.Debug($"PackageExtractor: {e.Message}");
+
+                    // determine the installation directory; should look like \path\to\Plugins\FQN\
+                    destination = Path.Combine(PlatformManager.Directories.Plugins, findResult.FQN);
+
+                    bool overwrite = options?.Overwrite ?? false;
+                    bool skipVerification = options?.SkipVerification ?? false;
+
+                    logger.Debug($"Install directory: '{destination}'; overwrite={overwrite}, skipVerification={skipVerification}");
+
+                    try
+                    {
+                        extractor.ExtractPackage(findResult.Filename, destination, overwrite, skipVerification);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Exception(LogLevel.Debug, ex);
+                        retVal.AddError(ex.Message);
+                    }
+                }
+                else
+                {
+                    retVal.AddError($"Failed to find Package '{fqn}'.");
+                }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
-                retVal.AddError($"Failed to install Package '{fqn}'.");
+                logger.Debug($"Package {fqn} installed successfully.  Sending PackageInstalled Event...");
+                Task.Run(() => PackageInstalled?.Invoke(this, new PackageInstallEventArgs(findResult, destination)));
             }
 
             retVal.LogResult(logger);
@@ -551,7 +561,7 @@ namespace OpenIIoT.Core.Packaging
             {
                 foreach (string file in fileListResult.ReturnValue)
                 {
-                    IResult<IPackage> readResult = Read(file);
+                    IResult<IPackage> readResult = ReadPackage(file);
 
                     if (readResult.ResultCode != ResultCode.Failure)
                     {
@@ -779,7 +789,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="fileName">The filename of the file to read.</param>
         /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        private IResult<IPackage> Read(string fileName)
+        private IResult<IPackage> ReadPackage(string fileName)
         {
             logger.EnterMethod(true);
             logger.Debug($"Reading Package '{fileName}'...");
