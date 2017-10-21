@@ -157,15 +157,6 @@ namespace OpenIIoT.SDK.Packaging
         IResult InstallPackage(string fqn, PackageInstallationOptions options);
 
         /// <summary>
-        ///     Installs the specified <see cref="Package"/> (extracts it to disk) using the specified options and PGP public key.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="options">The installation options for the operation.</param>
-        /// <param name="publicKey">The PGP public key with which to install the Package.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        IResult InstallPackage(string fqn, PackageInstallationOptions options, string publicKey);
-
-        /// <summary>
         ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
@@ -179,16 +170,6 @@ namespace OpenIIoT.SDK.Packaging
         /// <param name="options">The installation options for the operation.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options);
-
-        /// <summary>
-        ///     Asynchronously installs the specified <see cref="Package"/> (extracts it to disk) using the specified
-        ///     <paramref name="options"/> and PGP <paramref name="publicKey"/>.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="options">The installation options for the operation.</param>
-        /// <param name="publicKey">The PGP public key with which to install the Package.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options, string publicKey);
 
         /// <summary>
         ///     Scans for and returns a list of all Package files in the configured Packages directory.

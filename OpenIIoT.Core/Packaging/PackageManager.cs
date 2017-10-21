@@ -222,7 +222,6 @@ namespace OpenIIoT.Core.Packaging
             else
             {
                 logger.Debug($"Saving new Package to '{tempFile}'...");
-
                 retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
 
                 if (retVal.ResultCode != ResultCode.Failure)
@@ -236,7 +235,6 @@ namespace OpenIIoT.Core.Packaging
                         destinationFilename = GetPackageFilename(readResult.ReturnValue);
 
                         logger.Debug($"Copying temporary Package '{tempFile}' to final destination '{destinationFilename}'...");
-
                         retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
 
                         if (retVal.ResultCode != ResultCode.Failure)
@@ -299,7 +297,6 @@ namespace OpenIIoT.Core.Packaging
                 if (findResult != default(IPackage))
                 {
                     logger.Debug($"Deleting Package file '{findResult.Filename}'...");
-
                     retVal.Incorporate(Platform.DeleteFile(findResult.Filename));
                 }
                 else
@@ -421,7 +418,7 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult InstallPackage(string fqn)
         {
-            return InstallPackage(fqn, new PackageInstallationOptions(), string.Empty);
+            return InstallPackage(fqn, new PackageInstallationOptions());
         }
 
         /// <summary>
@@ -432,20 +429,7 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult InstallPackage(string fqn, PackageInstallationOptions options)
         {
-            return InstallPackage(fqn, options, string.Empty);
-        }
-
-        /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>
-        ///     and PGP <paramref name="publicKey"/>.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="options">The installation options for the operation.</param>
-        /// <param name="publicKey">The PGP public key with which to install the Package.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(string fqn, PackageInstallationOptions options, string publicKey)
-        {
-            logger.EnterMethod(xLogger.Params(fqn, options, publicKey));
+            logger.EnterMethod(xLogger.Params(fqn, options));
             logger.Info($"Installing Package '{fqn}'...");
 
             IResult retVal = new Result();
@@ -455,6 +439,14 @@ namespace OpenIIoT.Core.Packaging
             if (string.IsNullOrEmpty(fqn))
             {
                 retVal.AddError($"The specified Fully Qualified Name is null or empty.");
+            }
+            else if (options == default(PackageInstallationOptions))
+            {
+                retVal.AddError($"Installation options were specified but are null.");
+            }
+            else if (options?.PublicKey != default(string) && options.PublicKey == string.Empty)
+            {
+                retVal.AddError($"The PGP installation key is specified but is empty.");
             }
             else
             {
@@ -469,14 +461,11 @@ namespace OpenIIoT.Core.Packaging
                     // determine the installation directory; should look like \path\to\Plugins\FQN\
                     destination = Path.Combine(PlatformManager.Directories.Plugins, findResult.FQN);
 
-                    bool overwrite = options?.Overwrite ?? false;
-                    bool skipVerification = options?.SkipVerification ?? false;
-
-                    logger.Debug($"Install directory: '{destination}'; overwrite={overwrite}, skipVerification={skipVerification}");
+                    logger.Debug($"Install directory: '{destination}'; overwrite={options.Overwrite}, skipVerification={options.SkipVerification}");
 
                     try
                     {
-                        extractor.ExtractPackage(findResult.Filename, destination, overwrite, skipVerification);
+                        extractor.ExtractPackage(findResult.Filename, destination, options?.PublicKey, options.Overwrite, options.SkipVerification);
                     }
                     catch (Exception ex)
                     {
@@ -508,7 +497,7 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> InstallPackageAsync(string fqn)
         {
-            return await Task.Run(() => InstallPackage(fqn, new PackageInstallationOptions(), string.Empty));
+            return await Task.Run(() => InstallPackage(fqn, new PackageInstallationOptions()));
         }
 
         /// <summary>
@@ -519,20 +508,7 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation.</returns>
         public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options)
         {
-            return await Task.Run(() => InstallPackage(fqn, options, string.Empty));
-        }
-
-        /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified
-        ///     <paramref name="options"/> and PGP <paramref name="publicKey"/>.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="options">The installation options for the operation.</param>
-        /// <param name="publicKey">The PGP public key with which to install the Package.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options, string publicKey)
-        {
-            return await Task.Run(() => InstallPackage(fqn, options, publicKey));
+            return await Task.Run(() => InstallPackage(fqn, options));
         }
 
         /// <summary>
@@ -777,7 +753,7 @@ namespace OpenIIoT.Core.Packaging
 
             foreach (char c in Path.GetInvalidFileNameChars())
             {
-                filename = filename.Replace(c, SDK.Packaging.PackagingConstants.PackageFilenameInvalidCharacterSubstitution);
+                filename = filename.Replace(c, PackagingConstants.PackageFilenameInvalidCharacterSubstitution);
             }
 
             return Path.Combine(PlatformManager.Directories.Packages, filename);
