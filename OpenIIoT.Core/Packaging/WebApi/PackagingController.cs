@@ -61,8 +61,8 @@ namespace OpenIIoT.Core.Packaging.WebApi
     ///     Handles the API methods for AppPackages.
     /// </summary>
     [Authorize]
-    [Service.WebApi.ControllerRoutePrefixAttribute("v1/package")]
-    public class PackageController : ApiBaseController
+    [ControllerRoutePrefixAttribute("v1/packaging")]
+    public class PackagingController : ApiBaseController
     {
         #region Variables
 
@@ -186,11 +186,16 @@ namespace OpenIIoT.Core.Packaging.WebApi
         ///     Returns a list of Packages available for installation.
         /// </summary>
         /// <returns>A Result containing the result of the operation and a list of Packages.</returns>
-        [Route("")]
+        [Route("archive")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(List<Package>))]
-        public HttpResponseMessage GetPackages()
+        public async Task<HttpResponseMessage> GetPackages(bool? scan)
         {
+            if ((bool)scan)
+            {
+                await manager.GetManager<IPackageManager>().ScanPackagesAsync();
+            }
+
             IReadOnlyList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
 
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
@@ -206,26 +211,12 @@ namespace OpenIIoT.Core.Packaging.WebApi
         }
 
         /// <summary>
-        ///     Reloads the list of Packages from disk and returns the list.
-        /// </summary>
-        /// <returns>The reloaded list of available Packages.</returns>
-        [Authorize(Roles = "Administrator")]
-        [Route("scan")]
-        [HttpGet]
-        public async Task<HttpResponseMessage> ScanPackages()
-        {
-            IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
-
-            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
-        }
-
-        /// <summary>
         ///     Creates a new Package with the specified filename from the specified base 64 encoded binary data.
         /// </summary>
         /// <param name="data">The base 64 encoded binary package data.</param>
         /// <returns>A Result containing the result of the operation and the created Package.</returns>
         [Authorize]
-        [Route("")]
+        [Route("archive")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(Package))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.", typeof(string))]
