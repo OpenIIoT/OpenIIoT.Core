@@ -213,6 +213,7 @@ namespace OpenIIoT.Core.Packaging
 
             IResult<IPackage> retVal = new Result<IPackage>();
             string tempFile = Path.Combine(PlatformManager.Directories.Temp, Guid.NewGuid().ToString());
+            string destinationFilename = default(string);
 
             if (data.Length == 0)
             {
@@ -232,7 +233,9 @@ namespace OpenIIoT.Core.Packaging
 
                     if (retVal.ResultCode != ResultCode.Failure)
                     {
-                        string destinationFilename = GetPackageFilename(readResult.ReturnValue);
+                        destinationFilename = GetPackageFilename(readResult.ReturnValue);
+
+                        logger.Debug($"Copying temporary Package '{tempFile}' to final destination '{destinationFilename}'...");
 
                         retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
 
@@ -249,6 +252,7 @@ namespace OpenIIoT.Core.Packaging
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
+                logger.Debug($"Package successfully saved to {destinationFilename}.  Sending PackageAdded Event...");
                 Task.Run(() => PackageAdded?.Invoke(this, new PackageEventArgs(retVal.ReturnValue)));
             }
 
@@ -278,31 +282,40 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult DeletePackage(string fqn)
         {
-            logger.EnterMethod(xLogger.Params(fqn));
+            Guid guid = logger.EnterMethod(xLogger.Params(fqn));
             logger.Info($"Deleting Package {fqn}...");
 
             IResult retVal = new Result();
-            IPackage findResult = FindPackage(fqn);
+            IPackage findResult = default(IPackage);
 
-            if (findResult != default(IPackage))
+            if (string.IsNullOrEmpty(fqn))
             {
-                string fileName = findResult.Filename;
-
-                IResult deleteResult = Dependency<IPlatformManager>().Platform.DeleteFile(fileName);
-                retVal.Incorporate(deleteResult);
+                retVal.AddError($"The specified Fully Qualified Name is null or empty.");
             }
             else
             {
-                retVal.AddError($"Failed to find Package '{fqn}'.");
+                findResult = FindPackage(fqn);
+
+                if (findResult != default(IPackage))
+                {
+                    logger.Debug($"Deleting Package file '{findResult.Filename}'...");
+
+                    retVal.Incorporate(Platform.DeleteFile(findResult.Filename));
+                }
+                else
+                {
+                    retVal.AddError($"Failed to find Package '{fqn}'.");
+                }
             }
 
-            if (retVal.ResultCode == ResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
-                retVal.AddError($"Failed to delete Package '{fqn}'.");
+                logger.Debug($"Package {fqn} deleted successfully.  Sending PackageDeleted Event...");
+                Task.Run(() => PackageDeleted?.Invoke(this, new PackageEventArgs(findResult)));
             }
 
             retVal.LogResult(logger);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
             return retVal;
         }
 
@@ -327,24 +340,28 @@ namespace OpenIIoT.Core.Packaging
             logger.Info($"Fetching Package '{fqn}'...");
 
             IResult<byte[]> retVal = new Result<byte[]>();
-            IPackage findResult = FindPackage(fqn);
+            IPackage findResult = default(IPackage);
 
-            if (findResult != default(IPackage))
+            if (string.IsNullOrEmpty(fqn))
             {
-                IPlatform platform = Dependency<IPlatformManager>().Platform;
-
-                IResult<byte[]> readResult = platform.ReadFileBytes(findResult.Filename);
-                retVal.Incorporate(readResult);
-                retVal.ReturnValue = readResult.ReturnValue;
+                retVal.AddError($"The specified Fully Qualified Name is null or empty.");
             }
             else
             {
-                retVal.AddError($"Failed to find Package '{fqn}'.");
-            }
+                findResult = FindPackage(fqn);
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"Failed to fetch Package '{fqn}'");
+                if (findResult != default(IPackage))
+                {
+                    logger.Debug($"Package '{fqn}' found in '{findResult.Filename}'; reading from disk...");
+
+                    IResult<byte[]> readResult = Platform.ReadFileBytes(findResult.Filename);
+                    retVal.Incorporate(readResult);
+                    retVal.ReturnValue = readResult.ReturnValue;
+                }
+                else
+                {
+                    retVal.AddError($"Failed to find Package '{fqn}'.");
+                }
             }
 
             retVal.LogResult(logger);
