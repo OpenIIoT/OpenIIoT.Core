@@ -110,10 +110,9 @@
     <Compile Include="Packaging\Operations\PackageTruster.cs" />
     <Compile Include="Packaging\Operations\PackageVerifier.cs" />
     <Compile Include="Packaging\IPackage.cs" />
-    <Compile Include="Packaging\Package.cs" />
     <Compile Include="Packaging\PackageEventArgs.cs" />
-    <Compile Include="Packaging\PackagingConstants.cs" />
     <Compile Include="Packaging\PackageInstallationOptions.cs" />
+    <Compile Include="Packaging\PackagingConstants.cs" />
     <Compile Include="Packaging\Operations\PackagingOperation.cs" />
     <Compile Include="Packaging\Operations\PackagingOperationType.cs" />
     <Compile Include="Packaging\Operations\PackagingUpdateEventArgs.cs" />

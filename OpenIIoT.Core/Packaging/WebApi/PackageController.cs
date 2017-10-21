@@ -112,7 +112,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
             }
 
             // locate the Package
-            Package findResult = await PackageManager.FindPackageAsync(fqn);
+            IPackage findResult = await PackageManager.FindPackageAsync(fqn);
             var type = Request.Content.Headers.ContentType;
 
             if (findResult == default(Package))
@@ -139,7 +139,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         {
             HttpResponseMessage retVal;
 
-            Package findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
+            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
             if (findResult != default(Package))
             {
@@ -175,7 +175,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         public async Task<HttpResponseMessage> GetPackage(string fqn)
         {
             HttpResponseMessage retVal;
-            Package findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
+            IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
 
             retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(ContractResolverType.OptOut, "Files"));
 
@@ -191,7 +191,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(List<Package>))]
         public HttpResponseMessage GetPackages()
         {
-            IReadOnlyList<Package> packages = manager.GetManager<IPackageManager>().Packages;
+            IReadOnlyList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
 
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
@@ -214,7 +214,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [HttpGet]
         public async Task<HttpResponseMessage> ScanPackages()
         {
-            IResult<IList<Package>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
+            IResult<IList<IPackage>> packages = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
 
             return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter(ContractResolverType.OptOut, "Files"));
         }
@@ -251,7 +251,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
             }
 
             // try to create the Package
-            IResult<Package> result = await manager.GetManager<IPackageManager>().CreatePackageAsync(binaryData);
+            IResult<IPackage> result = await manager.GetManager<IPackageManager>().AddPackageAsync(binaryData);
 
             if (result.ResultCode != ResultCode.Failure)
             {

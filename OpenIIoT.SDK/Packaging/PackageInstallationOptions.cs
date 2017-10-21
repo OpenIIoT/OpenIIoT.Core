@@ -42,7 +42,7 @@
 namespace OpenIIoT.SDK.Packaging
 {
     /// <summary>
-    ///     Installation options for the <see cref="Package"/> installation operation.
+    ///     Installation options for the <see cref="IPackage"/> installation operation.
     /// </summary>
     public class PackageInstallationOptions
     {
@@ -54,12 +54,12 @@ namespace OpenIIoT.SDK.Packaging
         public bool Overwrite { get; set; }
 
         /// <summary>
-        ///     Gets or sets the PGP public key with which the <see cref="Package"/> is to be verified.
+        ///     Gets or sets the PGP public key with which the <see cref="IPackage"/> is to be verified.
         /// </summary>
         public string PublicKey { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether <see cref="Package"/> verification should be skipped prior to installation.
+        ///     Gets or sets a value indicating whether <see cref="IPackage"/> verification should be skipped prior to installation.
         /// </summary>
         public bool SkipVerification { get; set; }
 

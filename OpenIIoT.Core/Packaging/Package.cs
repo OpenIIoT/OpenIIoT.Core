@@ -10,19 +10,10 @@
       █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
       █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
       █
-      █       ███
-      █   ▀█████████▄
-      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
-      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
-      █       ███      ▄██▄▄      ██         ██  ▀   ██
-      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
-      █       ███       ██   █     ▄  ██     ██       ▄  ██
-      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
-      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the Package class.
+      █  Represents an installable extension archive.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,75 +39,63 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Tests.Packaging
+namespace OpenIIoT.Core.Packaging
 {
     using System;
-    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Packaging.Manifest;
-    using Xunit;
+    using OpenIIoT.SDK.Packaging;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Package"/> class.
+    ///     Represents an installable extension archive.
     /// </summary>
-    public class PackageTests
+    public class Package : PackageManifest, IPackage
     {
-        #region Public Methods
+        #region Public Constructors
 
         /// <summary>
-        ///     Tests the constructor and all properties.
+        ///     Initializes a new instance of the <see cref="Package"/> class.
         /// </summary>
-        [Fact]
-        public void Constructor()
+        /// <param name="filename">The fully qualified filename of the archive file.</param>
+        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
+        /// <param name="manifest">The manifest contained within the archive.</param>
+        public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
         {
-            PackageManifest manifest = new PackageManifest()
-            {
-                Namespace = "namespace",
-                Title = "title",
-            };
+            this.CopyPropertyValuesFrom(manifest);
 
-            DateTime now = DateTime.Now;
-
-            SDK.Packaging.Package test = new SDK.Packaging.Package("test", now, manifest);
-
-            Assert.IsType<SDK.Packaging.Package>(test);
-
-            Assert.Equal("test", test.Filename);
-            Assert.Equal("namespace.title", test.FQN);
-            Assert.False(test.IsSigned);
-            Assert.False(test.IsTrusted);
-            Assert.Equal(now, test.ModifiedOn);
+            Filename = filename;
+            ModifiedOn = modifiedOn;
         }
+
+        #endregion Public Constructors
+
+        #region Public Properties
 
         /// <summary>
-        ///     Tests the constructor and all properties.
+        ///     Gets or sets the fully qualified filename of the archive file.
         /// </summary>
-        [Fact]
-        public void ConstructorSignedTrusted()
-        {
-            PackageManifest manifest = new PackageManifest()
-            {
-                Namespace = "namespace",
-                Title = "title",
-                Signature = new PackageManifestSignature()
-                {
-                    Digest = "digest",
-                    Trust = "trust",
-                },
-            };
+        public string Filename { get; set; }
 
-            DateTime now = DateTime.Now;
+        /// <summary>
+        ///     Gets the Fully Qualified Name of the Package.
+        /// </summary>
+        public string FQN => Namespace + "." + Title;
 
-            Package test = new Package("test", now, manifest);
+        /// <summary>
+        ///     Gets a value indicating whether the Package is signed.
+        /// </summary>
+        public bool IsSigned => Signature?.Digest != default(string);
 
-            Assert.IsType<Package>(test);
+        /// <summary>
+        ///     Gets a value indicating whether the Package is trusted.
+        /// </summary>
+        public bool IsTrusted => Signature?.Trust != default(string);
 
-            Assert.Equal("test", test.Filename);
-            Assert.Equal("namespace.title", test.FQN);
-            Assert.True(test.IsSigned);
-            Assert.True(test.IsTrusted);
-            Assert.Equal(now, test.ModifiedOn);
-        }
+        /// <summary>
+        ///     Gets the time at which the archive was last modified, according to the host filesystem.
+        /// </summary>
+        public DateTime ModifiedOn { get; }
 
-        #endregion Public Methods
+        #endregion Public Properties
     }
 }

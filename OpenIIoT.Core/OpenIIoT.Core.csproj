@@ -204,6 +204,7 @@
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Model\WebApi\ReadController.cs" />
     <Compile Include="Model\WebApi\ValuesController.cs" />
+    <Compile Include="Packaging\Package.cs" />
     <Compile Include="Packaging\PackageManager.cs" />
     <Compile Include="Packaging\WebApi\PackageController.cs" />
     <Compile Include="Platform\Platform.cs" />
