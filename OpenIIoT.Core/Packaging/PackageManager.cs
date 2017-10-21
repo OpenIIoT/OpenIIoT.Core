@@ -550,6 +550,8 @@ namespace OpenIIoT.Core.Packaging
                 }
             }
 
+            PackageList = retVal.ReturnValue;
+
             retVal.LogResult(logger);
             logger.ExitMethod(guid);
 
