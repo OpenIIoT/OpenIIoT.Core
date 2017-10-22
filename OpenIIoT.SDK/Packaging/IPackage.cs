@@ -47,7 +47,7 @@ namespace OpenIIoT.SDK.Packaging
     /// <summary>
     ///     Represents an installable extension archive.
     /// </summary>
-    public interface IPackage : IPackageManifest
+    public interface IPackage
     {
         #region Public Properties
 

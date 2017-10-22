@@ -751,7 +751,7 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>The created filename.</returns>
         private string GetPackageFilename(IPackage package)
         {
-            string filename = package.FQN + "." + package.Version + PackagingConstants.PackageFilenameExtension;
+            string filename = package.FQN + "." + package.Manifest.Version + PackagingConstants.PackageFilenameExtension;
 
             foreach (char c in Path.GetInvalidFileNameChars())
             {

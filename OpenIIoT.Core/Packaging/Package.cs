@@ -49,7 +49,7 @@ namespace OpenIIoT.Core.Packaging
     /// <summary>
     ///     Represents an installable extension archive.
     /// </summary>
-    public class Package : PackageManifest, IPackage
+    public class Package : IPackage
     {
         #region Public Constructors
 
@@ -61,8 +61,6 @@ namespace OpenIIoT.Core.Packaging
         /// <param name="manifest">The manifest contained within the archive.</param>
         public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
         {
-            this.CopyPropertyValuesFrom(manifest);
-
             Manifest = manifest;
             Filename = filename;
             ModifiedOn = modifiedOn;
@@ -80,17 +78,17 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
         /// </summary>
-        public string FQN => Namespace + "." + Title;
+        public string FQN => Manifest.Namespace + "." + Manifest.Title;
 
         /// <summary>
         ///     Gets a value indicating whether the Package is signed.
         /// </summary>
-        public bool IsSigned => Signature?.Digest != default(string);
+        public bool IsSigned => Manifest.Signature?.Digest != default(string);
 
         /// <summary>
         ///     Gets a value indicating whether the Package is trusted.
         /// </summary>
-        public bool IsTrusted => Signature?.Trust != default(string);
+        public bool IsTrusted => Manifest.Signature?.Trust != default(string);
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
