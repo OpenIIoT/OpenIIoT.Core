@@ -43,8 +43,8 @@ namespace OpenIIoT.Core.Packaging
 {
     using System;
     using OpenIIoT.SDK.Common;
-    using OpenIIoT.SDK.Packaging.Manifest;
     using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
     ///     Represents an installable extension archive.
@@ -63,6 +63,7 @@ namespace OpenIIoT.Core.Packaging
         {
             this.CopyPropertyValuesFrom(manifest);
 
+            Manifest = manifest;
             Filename = filename;
             ModifiedOn = modifiedOn;
         }
@@ -90,6 +91,11 @@ namespace OpenIIoT.Core.Packaging
         ///     Gets a value indicating whether the Package is trusted.
         /// </summary>
         public bool IsTrusted => Signature?.Trust != default(string);
+
+        /// <summary>
+        ///     Gets the <see cref="IPackageManifest"/> for the Package.
+        /// </summary>
+        public IPackageManifest Manifest { get; }
 
         /// <summary>
         ///     Gets the time at which the archive was last modified, according to the host filesystem.

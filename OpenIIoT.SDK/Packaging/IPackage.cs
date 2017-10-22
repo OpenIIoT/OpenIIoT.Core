@@ -72,6 +72,11 @@ namespace OpenIIoT.SDK.Packaging
         bool IsTrusted { get; }
 
         /// <summary>
+        ///     Gets the <see cref="IPackageManifest"/> for the Package.
+        /// </summary>
+        IPackageManifest Manifest { get; }
+
+        /// <summary>
         ///     Gets the time at which the archive was last modified, according to the host filesystem.
         /// </summary>
         DateTime ModifiedOn { get; }
