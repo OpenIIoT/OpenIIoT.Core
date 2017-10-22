@@ -95,7 +95,7 @@ namespace OpenIIoT.Core.Service.WebApi
 
             HttpConfiguration config = new HttpConfiguration();
 
-            config.MapHttpAttributeRoutes();
+            config.MapHttpAttributeRoutes(new GlobalPrefixProvider(routes.Api));
 
             config
                 .EnableSwagger(routes.Swagger, c =>
