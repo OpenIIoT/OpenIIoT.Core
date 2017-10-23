@@ -278,7 +278,7 @@ namespace OpenIIoT.Core.Packaging
         /// </remarks>
         /// <param name="data">The binary data to save.</param>
         /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
-        public Task<IResult<IPackageArchive>> AddPackageAsync(byte[] data)
+        public Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data)
         {
             return Task.Run(() => AddPackageArchive(data));
         }
@@ -294,7 +294,6 @@ namespace OpenIIoT.Core.Packaging
             logger.Info($"Deleting Package {packageArchive.FQN}...");
 
             IResult retVal = new Result();
-            IPackage findResult = default(IPackage);
 
             if (packageArchive == default(IPackageArchive))
             {
@@ -310,8 +309,8 @@ namespace OpenIIoT.Core.Packaging
             }
             else
             {
-                logger.Debug($"Deleting Package file '{findResult.Filename}'...");
-                retVal.Incorporate(Platform.DeleteFile(findResult.Filename));
+                logger.Debug($"Deleting Package file '{packageArchive.Filename}'...");
+                retVal = Platform.DeleteFile(packageArchive.Filename);
             }
 
             if (retVal.ResultCode != ResultCode.Failure)
@@ -347,7 +346,7 @@ namespace OpenIIoT.Core.Packaging
 
                 if (findResult != default(IPackageArchive))
                 {
-                    retVal.Incorporate(DeletePackageArchive(findResult));
+                    retVal = DeletePackageArchive(findResult);
                 }
                 else
                 {
@@ -381,17 +380,55 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
+        ///     Fetches the specified <paramref name="packageArchive"/> and returns the binary data.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
-        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        public IResult<byte[]> FetchPackage(string fqn)
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        public IResult<byte[]> FetchPackageArchive(IPackageArchive packageArchive)
         {
-            logger.EnterMethod(xLogger.Params(fqn));
-            logger.Info($"Fetching Package '{fqn}'...");
+            Guid guid = logger.EnterMethod(xLogger.Params(packageArchive));
+            logger.Info($"Fetching Package Archive '{packageArchive.FQN}'...");
 
             IResult<byte[]> retVal = new Result<byte[]>();
-            IPackage findResult = default(IPackage);
+
+            if (packageArchive == default(IPackageArchive))
+            {
+                retVal.AddError($"The specified Package Archive is null.");
+            }
+            else if (string.IsNullOrEmpty(packageArchive.Filename))
+            {
+                retVal.AddError($"The specified Package Archive contains an null or empty Filename.");
+            }
+            else if (!Platform.FileExists(packageArchive.Filename))
+            {
+                retVal.AddError($"The specified Package Archive file '{packageArchive.Filename}' can not be found.");
+            }
+            else
+            {
+                logger.Debug($"Package Archive '{packageArchive.FQN}' found in '{packageArchive.Filename}'; reading from disk...");
+                retVal = Platform.ReadFileBytes(packageArchive.Filename);
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns the binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        public IResult<byte[]> FetchPackageArchive(string fqn)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(fqn));
+            logger.Info($"Fetching Package '{fqn}' by FQN...");
+
+            IResult<byte[]> retVal = new Result<byte[]>();
 
             if (string.IsNullOrEmpty(fqn))
             {
@@ -399,36 +436,46 @@ namespace OpenIIoT.Core.Packaging
             }
             else
             {
-                findResult = FindPackage(fqn);
+                IPackageArchive findResult = FindPackageArchive(fqn);
 
-                if (findResult != default(IPackage))
+                if (findResult != default(IPackageArchive))
                 {
-                    logger.Debug($"Package '{fqn}' found in '{findResult.Filename}'; reading from disk...");
-
-                    IResult<byte[]> readResult = Platform.ReadFileBytes(findResult.Filename);
-                    retVal.Incorporate(readResult);
-                    retVal.ReturnValue = readResult.ReturnValue;
+                    retVal = FetchPackageArchive(findResult);
                 }
                 else
                 {
-                    retVal.AddError($"Failed to find Package '{fqn}'.");
+                    retVal.AddError($"Failed to find Package Archive '{fqn}'.");
                 }
             }
 
             retVal.LogResult(logger);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
             return retVal;
         }
 
         /// <summary>
-        ///     Asynchronously fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
-        ///     binary data.
+        ///     Asynchronously fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns
+        ///     the binary data.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
-        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        public Task<IResult<byte[]>> FetchPackageAsync(string fqn)
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        public Task<IResult<byte[]>> FetchPackageArchiveAsync(string fqn)
         {
-            return Task.Run(() => FetchPackage(fqn));
+            return Task.Run(() => FetchPackageArchive(fqn));
+        }
+
+        /// <summary>
+        ///     Asynchronously fetches the specified <paramref name="packageArchive"/> and returns the binary data.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        public Task<IResult<byte[]>> FetchPackageArchiveAsync(IPackageArchive packageArchive)
+        {
+            return Task.Run(() => FetchPackageArchive(packageArchive));
         }
 
         /// <summary>
