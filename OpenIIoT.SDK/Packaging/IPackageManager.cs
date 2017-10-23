@@ -56,16 +56,16 @@ namespace OpenIIoT.SDK.Packaging
         #region Public Events
 
         /// <summary>
-        ///     Occurs when a <see cref="IPackage"/> is added.
+        ///     Occurs when a <see cref="IPackageArchive"/> is added.
         /// </summary>
-        [Event(Description = "Occurs when a Package is added.")]
-        event EventHandler<PackageEventArgs> PackageAdded;
+        [Event(Description = "Occurs when a Package archive is added.")]
+        event EventHandler<PackageArchiveEventArgs> PackageArchiveAdded;
 
         /// <summary>
-        ///     Occurs when a <see cref="IPackage"/> is deleted.
+        ///     Occurs when a <see cref="IPackageArchive"/> is deleted.
         /// </summary>
-        [Event(Description = "Occurs when a Package is deleted.")]
-        event EventHandler<PackageEventArgs> PackageDeleted;
+        [Event(Description = "Occurs when a Package archive is deleted.")]
+        event EventHandler<PackageArchiveEventArgs> PackageArchiveDeleted;
 
         /// <summary>
         ///     Occurs when a <see cref="IPackage"/> is installed.
