@@ -41,20 +41,55 @@
 
 namespace OpenIIoT.SDK.Packaging
 {
+    using System;
     using System.Collections.Generic;
     using System.Threading.Tasks;
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Common.Provider.EventProvider;
 
     /// <summary>
     ///     Handles the installation and file management of the Pacakges used to extend the functionality of the application.
     /// </summary>
     public interface IPackageManager : IManager
     {
+        #region Public Events
+
+        /// <summary>
+        ///     Occurs when a <see cref="IPackage"/> is added.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is added.")]
+        event EventHandler<PackageEventArgs> PackageAdded;
+
+        /// <summary>
+        ///     Occurs when a <see cref="IPackage"/> is deleted.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is deleted.")]
+        event EventHandler<PackageEventArgs> PackageDeleted;
+
+        /// <summary>
+        ///     Occurs when a <see cref="IPackage"/> is installed.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is installed.")]
+        event EventHandler<PackageInstallEventArgs> PackageInstalled;
+
+        /// <summary>
+        ///     Occurs when a <see cref="IPackage"/> is uninstalled.
+        /// </summary>
+        [Event(Description = "Occurs when a Package is uninstalled.")]
+        event EventHandler<PackageInstallEventArgs> PackageUninstalled;
+
+        #endregion Public Events
+
         #region Public Properties
 
         /// <summary>
-        ///     Gets the list of Packages available for installation.
+        ///     Gets the list of <see cref="IPackageArchive"/> files available for installation.
+        /// </summary>
+        IReadOnlyList<IPackageArchive> PackageArchives { get; }
+
+        /// <summary>
+        ///     Gets the list of installed <see cref="IPackage"/> s.
         /// </summary>
         IReadOnlyList<IPackage> Packages { get; }
 
@@ -63,155 +98,340 @@ namespace OpenIIoT.SDK.Packaging
         #region Public Methods
 
         /// <summary>
-        ///     Adds a <see cref="IPackage"/> file from the specified binary <paramref name="data"/>.
+        ///     Adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
         /// </summary>
         /// <remarks>
-        ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
-        ///     and Version of the Package.
+        ///     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
+        ///     Qualified Name and Version of the Package.
         /// </remarks>
         /// <param name="data">The binary data to save.</param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        IResult<IPackage> AddPackage(byte[] data);
+        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        IResult<IPackageArchive> AddPackageArchive(byte[] data);
 
         /// <summary>
-        ///     Asynchronously adds a <see cref="IPackage"/> file from the specified binary <paramref name="data"/>.
+        ///     Asynchronously adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
         /// </summary>
         /// <remarks>
-        ///     The resulting Package file is saved to the Packages directory with a filename composed of the Fully Qualified Name
-        ///     and Version of the Package.
+        ///     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
+        ///     Qualified Name and Version of the Package.
         /// </remarks>
         /// <param name="data">The binary data to save.</param>
-        /// <returns>A Result containing the result of the operation and the created IPackage instance.</returns>
-        Task<IResult<IPackage>> AddPackageAsync(byte[] data);
+        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data);
 
         /// <summary>
-        ///     Deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.
+        ///     Deletes the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> from disk.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to delete.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        IResult DeletePackage(string fqn);
+        IResult DeletePackageArchive(string fqn);
 
         /// <summary>
-        ///     Asynchronously deletes the <see cref="IPackage"/> matching the specified Fully Qualified Name from disk.
+        ///     Deletes the specified <see cref="IPackageArchive"/> from disk.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to delete.</param>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Task<IResult> DeletePackageAsync(string fqn);
+        IResult DeletePackageArchive(IPackageArchive packageArchive);
 
         /// <summary>
-        ///     Fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the binary data.
+        ///     Asynchronously deletes the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> from disk.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
-        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        IResult<byte[]> FetchPackage(string fqn);
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> DeletePackageArchiveAsync(string fqn);
 
         /// <summary>
-        ///     Asynchronously fetches the <see cref="IPackage"/> file matching the specified Fully Qualified Name and returns the
-        ///     binary data.
+        ///     Asynchronously deletes the specified <see cref="IPackageArchive"/> from disk.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to fetch.</param>
-        /// <returns>A Result containing the result of the operation and the read binary data.</returns>
-        Task<IResult<byte[]>> FetchPackageAsync(string fqn);
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> DeletePackageArchiveAsync(IPackageArchive packageArchive);
+
+        /// <summary>
+        ///     Fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns the binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        IResult<byte[]> FetchPackageArchive(string fqn);
+
+        /// <summary>
+        ///     Fetches the specified <paramref name="packageArchive"/> and returns the binary data.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        IResult<byte[]> FetchPackageArchive(IPackageArchive packageArchive);
+
+        /// <summary>
+        ///     Asynchronously fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns
+        ///     the binary data.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        Task<IResult<byte[]>> FetchPackageArchiveAsync(string fqn);
+
+        /// <summary>
+        ///     Asynchronously fetches the specified <paramref name="packageArchive"/> and returns the binary data.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        Task<IResult<byte[]>> FetchPackageArchiveAsync(IPackageArchive packageArchive);
 
         /// <summary>
         ///     <para>
-        ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
-        ///         returns the found Package.
+        ///         Searches the <see cref="Packages"/> list for a <see cref="IPackage"/> matching the specified
+        ///         <paramref name="fqn"/> and, if found, returns the found instance.
         ///     </para>
         ///     <para>
         ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
         ///         <see cref="Packages"/> list from disk.
         ///     </para>
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <returns>The found Package, if applicable.</returns>
-        IPackage FindPackage(string fqn);
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to find.</param>
+        /// <returns>The found <see cref="IPackage"/>.</returns>
+        IPackageArchive FindPackage(string fqn);
 
         /// <summary>
         ///     <para>
-        ///         Asynchronously scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name
-        ///         and, if found, returns the found Package.
+        ///         Searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the specified
+        ///         <paramref name="fqn"/> and, if found, returns the found instance.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
+        ///         refresh the <see cref="PackageArchives"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
+        /// <returns>The found <see cref="IPackageArchive"/>.</returns>
+        IPackageArchive FindPackageArchive(string fqn);
+
+        /// <summary>
+        ///     <para>
+        ///         Asynchronously searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the
+        ///         specified <paramref name="fqn"/> and, if found, returns the found instance.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
+        ///         refresh the <see cref="PackageArchives"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
+        /// <returns>The found <see cref="IPackageArchive"/>.</returns>
+        Task<IPackageArchive> FindPackageArchiveAsync(string fqn);
+
+        /// <summary>
+        ///     <para>
+        ///         Asynchronously searches the <see cref="Packages"/> list for a <see cref="IPackage"/> matching the specified
+        ///         <paramref name="fqn"/> and, if found, returns the found instance.
         ///     </para>
         ///     <para>
         ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
         ///         <see cref="Packages"/> list from disk.
         ///     </para>
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <returns>The found Package, if applicable.</returns>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to find.</param>
+        /// <returns>The found <see cref="IPackage"/>.</returns>
         Task<IPackage> FindPackageAsync(string fqn);
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///     Installs the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to install.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         IResult InstallPackage(string fqn);
 
         /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options.
+        ///     Installs the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> with the specified <paramref name="options"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to install.</param>
+        /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         IResult InstallPackage(string fqn, PackageInstallationOptions options);
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///     Installs the specified <paramref name="packageArchive"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult InstallPackage(IPackageArchive packageArchive);
+
+        /// <summary>
+        ///     Installs the specified <paramref name="packageArchive"/> with the specified <paramref name="options"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
+        /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options);
+
+        /// <summary>
+        ///     Asynchronously installs the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> InstallPackageAsync(IPackageArchive packageArchive);
+
+        /// <summary>
+        ///     Asynchronously installs the specified <paramref name="packageArchive"/> with the specified <paramref name="options"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
+        /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options);
+
+        /// <summary>
+        ///     Asynchronously installs the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to install.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Task<IResult> InstallPackageAsync(string fqn);
 
         /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified options.
+        ///     Asynchronously installs the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="options">The installation options for the operation.</param>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to install.</param>
+        /// <param name="options">The options for the installation.</param>
         /// <returns>A Result containing the result of the operation.</returns>
         Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options);
 
         /// <summary>
-        ///     Scans for and returns a list of all Package files in the configured Packages directory.
+        ///     Scans for and returns a list of all Package archive files in the configured Packages directory.
         /// </summary>
-        /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
+        /// <returns>
+        ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s
+        /// </returns>
+        IResult<IList<IPackageArchive>> ScanPackageArchives();
+
+        /// <summary>
+        ///     Asynchronously scans for and returns a list of all Package archive files in the configured Packages directory.
+        /// </summary>
+        /// <returns>
+        ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s.
+        /// </returns>
+        Task<IResult<IList<IPackageArchive>>> ScanPackageArchivesAsync();
+
+        /// <summary>
+        ///     Scans for and returns a list of all installed Packages in the configured Packages directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
         IResult<IList<IPackage>> ScanPackages();
 
         /// <summary>
-        ///     Asynchronously scans for and returns a list of all Package files in the configured Package directory.
+        ///     Asynchronously scans for and returns a list of all installed Packages in the configured Packages directory.
         /// </summary>
-        /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
+        /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
         Task<IResult<IList<IPackage>>> ScanPackagesAsync();
 
         /// <summary>
-        ///     Verifies the specified <see cref="IPackage"/>.
+        ///     Uninstalls the <see cref="IPackage"/> matching the specified <paramref name="fqn"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        IResult<bool> VerifyPackage(string fqn);
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult UninstallPackage(string fqn);
 
         /// <summary>
-        ///     Verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
+        ///     Uninstalls the specified <paramref name="package"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
-        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        IResult<bool> VerifyPackage(string fqn, string publicKey);
+        /// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult UninstallPackage(IPackage package);
 
         /// <summary>
-        ///     Asynchronously verifies the specified <see cref="IPackage"/>.
+        ///     Asynchronously uninstalls the specified <paramref name="package"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        Task<IResult<bool>> VerifyPackageAsync(string fqn);
+        /// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> UninstallPackageAsync(IPackage package);
 
         /// <summary>
-        ///     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
+        ///     Asynchronously uninstalls the <see cref="IPackage"/> matching the specified <paramref name="fqn"/>.
         /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
-        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey);
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> UninstallPackageAsync(string fqn);
+
+        /// <summary>
+        ///     Verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> using the specified <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to verify.</param>
+        /// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        IResult<bool> VerifyPackageArchive(string fqn, string publicKey);
+
+        /// <summary>
+        ///     Verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to verify.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        IResult<bool> VerifyPackageArchive(string fqn);
+
+        /// <summary>
+        ///     Verifies the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        IResult<bool> VerifyPackageArchive(IPackageArchive packageArchive);
+
+        /// <summary>
+        ///     Verifies the specified <paramref name="packageArchive"/> using the specified <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        IResult<bool> VerifyPackageArchive(IPackageArchive packageArchive, string publicKey);
+
+        /// <summary>
+        ///     Asynchronously verifies the specified <paramref name="packageArchive"/> using the specified <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive, string publicKey);
+
+        /// <summary>
+        ///     Asynchronously verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> using the
+        ///     specified <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to verify.</param>
+        /// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        Task<IResult<bool>> VerifyPackageArchiveAsync(string fqn, string publicKey);
+
+        /// <summary>
+        ///     Asynchronously verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to verify.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        Task<IResult<bool>> VerifyPackageArchiveAsync(string fqn);
+
+        /// <summary>
+        ///     Asynchronously verifies the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive);
 
         #endregion Public Methods
     }
