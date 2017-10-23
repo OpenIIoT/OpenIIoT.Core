@@ -930,16 +930,24 @@ namespace OpenIIoT.Core.Packaging
             return Path.Combine(PlatformManager.Directories.Packages, filename);
         }
 
-        /// <summary>
-        ///     Reads the specified file and, if it is a valid <see cref="IPackageArchive"/>, returns a
-        ///     <see cref="IPackageArchive"/> instance from the contents.
-        /// </summary>
-        /// <param name="fileName">The filename of the file to read.</param>
-        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        private IResult<IPackage> ReadPackage(string fqn)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(fqn), true);
+            logger.Debug($"Reading Package '{fqn}'");
+
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(guid);
+
+            return retVal;
+        }
+
         private IResult<IPackageArchive> ReadPackageArchive(string fileName)
         {
-            logger.EnterMethod(true);
-            logger.Debug($"Reading Package '{fileName}'...");
+            Guid guid = logger.EnterMethod(xLogger.Params(fileName), true);
+
+            logger.Debug($"Reading Package Archive '{fileName}'...");
 
             IResult<IPackageArchive> retVal = new Result<IPackageArchive>();
             ManifestExtractor extractor = new ManifestExtractor();
@@ -961,7 +969,7 @@ namespace OpenIIoT.Core.Packaging
             }
 
             retVal.LogResult(logger.Debug);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
 
             return retVal;
         }
