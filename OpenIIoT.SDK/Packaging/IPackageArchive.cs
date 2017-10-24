@@ -59,7 +59,7 @@ namespace OpenIIoT.SDK.Packaging
         /// <summary>
         ///     Gets or sets the fully qualified filename of the archive file.
         /// </summary>
-        string Filename { get; set; }
+        string FileName { get; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
