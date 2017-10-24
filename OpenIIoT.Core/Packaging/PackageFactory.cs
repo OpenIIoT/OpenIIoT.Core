@@ -53,8 +53,9 @@ namespace OpenIIoT.Core.Packaging
 
         #region Public Methods
 
-        public IResult<IPackage> GetPackage(string fqn)
+        public IResult<IPackage> GetPackage(string directory)
         {
+            // TODO: read .manifest.json from the directory, deserialize to manifest
             return new Result<IPackage>();
         }
 
@@ -77,7 +78,7 @@ namespace OpenIIoT.Core.Packaging
                 manifest = extractor.ExtractManifest(fileName);
                 fileInfo = new FileInfo(fileName);
 
-                retVal.ReturnValue = new PackageArchive(fileName, manifest);
+                retVal.ReturnValue = new PackageArchive(fileInfo, manifest);
             }
             catch (Exception ex)
             {
