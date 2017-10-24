@@ -52,7 +52,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
     /// <summary>
     ///     Extracts <see cref="PackageManifest"/> objects from Packages.
     /// </summary>
-    public class ManifestExtractor : PackagingOperation
+    public class ManifestExtractor : PackagingOperation, IManifestExtractor
     {
         #region Public Constructors
 

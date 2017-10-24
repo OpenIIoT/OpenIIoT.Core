@@ -206,7 +206,10 @@
     <Compile Include="Model\WebApi\ValuesController.cs" />
     <Compile Include="Packaging\PackageArchive.cs" />
     <Compile Include="Packaging\Package.cs" />
+    <Compile Include="Packaging\IPackageFactory.cs" />
+    <Compile Include="Packaging\PackageFactory.cs" />
     <Compile Include="Packaging\PackageManager.cs" />
+    <Compile Include="Packaging\PackageScanner.cs" />
     <Compile Include="Packaging\WebApi\PackagingController.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />

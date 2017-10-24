@@ -101,9 +101,11 @@ namespace OpenIIoT.Core.Packaging
             RegisterDependency<IApplicationManager>(manager);
             RegisterDependency<IPlatformManager>(platformManager);
 
-            ChangeState(State.Initialized);
-
             PackageList = new List<IPackage>();
+            PackageFactory = new PackageFactory();
+            PackageScanner = new PackageScanner(PackageFactory);
+
+            ChangeState(State.Initialized);
 
             logger.ExitMethod(guid);
         }
@@ -164,10 +166,14 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         private IList<IPackageArchive> PackageArchiveList { get; set; }
 
+        private PackageFactory PackageFactory { get; set; }
+
         /// <summary>
         ///     Gets or sets the list of installed <see cref="IPackage"/> s.
         /// </summary>
         private IList<IPackage> PackageList { get; set; }
+
+        private PackageScanner PackageScanner { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="IPlatformManager"/> with which Platform operations are carried out.
@@ -647,62 +653,6 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
-        ///     Scans for and returns a list of all Package files in the configured Packages directory.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
-        public IResult<IList<IPackage>> ScanPackages()
-        {
-            Guid guid = logger.EnterMethod(true);
-            logger.Info("Scanning for Packages...");
-
-            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
-            retVal.ReturnValue = new List<IPackage>();
-
-            string directory = PlatformManager.Directories.Packages;
-
-            logger.Debug($"Scanning directory '{directory}'...");
-
-            ManifestExtractor extractor = new ManifestExtractor();
-            extractor.Updated += (sender, e) => logger.Debug(e.Message);
-
-            IResult<IList<string>> fileListResult = Platform.ListFiles(directory);
-            retVal.Incorporate(fileListResult);
-
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                foreach (string file in fileListResult.ReturnValue)
-                {
-                    IResult<IPackage> readResult = ReadPackage(file);
-
-                    if (readResult.ResultCode != ResultCode.Failure)
-                    {
-                        retVal.ReturnValue.Add(readResult.ReturnValue);
-                    }
-                    else
-                    {
-                        retVal.AddWarning(readResult.GetLastError());
-                    }
-                }
-            }
-
-            PackageList = retVal.ReturnValue;
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
-
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Asynchronously scans for and returns a list of all Package files in the configured Package directory.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation and the list of found Packages.</returns>
-        public async Task<IResult<IList<IPackage>>> ScanPackagesAsync()
-        {
-            return await Task.Run(() => ScanPackages());
-        }
-
-        /// <summary>
         ///     Verifies the specified <see cref="IPackage"/>.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
@@ -936,37 +886,6 @@ namespace OpenIIoT.Core.Packaging
             logger.Debug($"Reading Package '{fqn}'");
 
             IResult<IPackage> retVal = new Result<IPackage>();
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(guid);
-
-            return retVal;
-        }
-
-        private IResult<IPackageArchive> ReadPackageArchive(string fileName)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(fileName), true);
-
-            logger.Debug($"Reading Package Archive '{fileName}'...");
-
-            IResult<IPackageArchive> retVal = new Result<IPackageArchive>();
-            ManifestExtractor extractor = new ManifestExtractor();
-
-            extractor.Updated += (sender, e) => logger.Debug(e.Message);
-
-            PackageManifest manifest;
-
-            try
-            {
-                manifest = extractor.ExtractManifest(fileName);
-
-                retVal.ReturnValue = GetPackageArchive(fileName, manifest);
-            }
-            catch (Exception ex)
-            {
-                retVal.AddError(ex.Message);
-                retVal.AddError($"Unable to read Package archive '{Path.GetFileName(fileName)}'.");
-            }
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);

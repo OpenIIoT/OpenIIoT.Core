@@ -104,6 +104,7 @@
     <Compile Include="Packaging\Manifest\PackageManifestFile.cs" />
     <Compile Include="Packaging\Manifest\PackageManifestSignature.cs" />
     <Compile Include="Packaging\Operations\ArgumentValidator.cs" />
+    <Compile Include="Packaging\Operations\IManifestExtractor.cs" />
     <Compile Include="Packaging\Operations\ManifestExtractor.cs" />
     <Compile Include="Packaging\Operations\ManifestGenerator.cs" />
     <Compile Include="Packaging\Operations\PackageCreator.cs" />
