@@ -43,6 +43,7 @@ namespace OpenIIoT.SDK.Packaging
 {
     using System;
     using OpenIIoT.SDK.Packaging.Manifest;
+    using System.Collections.Generic;
 
     /// <summary>
     ///     Represents an installable extension archive.
@@ -51,35 +52,21 @@ namespace OpenIIoT.SDK.Packaging
     {
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets the fully qualified filename of the archive file.
-        /// </summary>
-        string Filename { get; set; }
+        string DirectoryName { get; }
+
+        IList<string> Files { get; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
         /// </summary>
         string FQN { get; }
 
-        /// <summary>
-        ///     Gets a value indicating whether the Package is signed.
-        /// </summary>
-        bool IsSigned { get; }
-
-        /// <summary>
-        ///     Gets a value indicating whether the Package is trusted.
-        /// </summary>
-        bool IsTrusted { get; }
+        DateTime InstalledOn { get; }
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
         /// </summary>
         IPackageManifest Manifest { get; }
-
-        /// <summary>
-        ///     Gets the time at which the archive was last modified, according to the host filesystem.
-        /// </summary>
-        DateTime ModifiedOn { get; }
 
         #endregion Public Properties
     }

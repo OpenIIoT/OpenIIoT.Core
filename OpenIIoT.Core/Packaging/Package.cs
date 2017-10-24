@@ -45,6 +45,10 @@ namespace OpenIIoT.Core.Packaging
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.IO;
+    using System.Linq;
 
     /// <summary>
     ///     Represents an installable extension archive.
@@ -59,21 +63,28 @@ namespace OpenIIoT.Core.Packaging
         /// <param name="filename">The fully qualified filename of the archive file.</param>
         /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
         /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(string filename, DateTime modifiedOn, PackageManifest manifest)
+        public Package(DirectoryInfo directoryInfo, PackageManifest manifest)
         {
+            DirectoryInfo = directoryInfo;
             Manifest = manifest;
-            Filename = filename;
-            ModifiedOn = modifiedOn;
+
+            IList<FileInfo> fileInfos = DirectoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).ToList();
+            Files = fileInfos.Select(f => GetRelativePath(f.FullName, DirectoryInfo.FullName)).ToList();
         }
 
         #endregion Public Constructors
 
+        #region Private Properties
+
+        private DirectoryInfo DirectoryInfo { get; set; }
+
+        #endregion Private Properties
+
         #region Public Properties
 
-        /// <summary>
-        ///     Gets or sets the fully qualified filename of the archive file.
-        /// </summary>
-        public string Filename { get; set; }
+        public string DirectoryName => DirectoryInfo.FullName;
+
+        public IList<string> Files { get; private set; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
@@ -81,25 +92,32 @@ namespace OpenIIoT.Core.Packaging
         public string FQN => Manifest.Namespace + "." + Manifest.Title;
 
         /// <summary>
-        ///     Gets a value indicating whether the Package is signed.
+        ///     Gets the time at which the archive was last modified, according to the host filesystem.
         /// </summary>
-        public bool IsSigned => Manifest.Signature?.Digest != default(string);
-
-        /// <summary>
-        ///     Gets a value indicating whether the Package is trusted.
-        /// </summary>
-        public bool IsTrusted => Manifest.Signature?.Trust != default(string);
+        public DateTime InstalledOn => DirectoryInfo.CreationTimeUtc;
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
         /// </summary>
         public IPackageManifest Manifest { get; }
 
-        /// <summary>
-        ///     Gets the time at which the archive was last modified, according to the host filesystem.
-        /// </summary>
-        public DateTime ModifiedOn { get; }
-
         #endregion Public Properties
+
+        #region Private Methods
+
+        private string GetRelativePath(string fileName, string folder)
+        {
+            Uri pathUri = new Uri(fileName);
+
+            if (!folder.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            {
+                folder += Path.DirectorySeparatorChar;
+            }
+
+            Uri folderUri = new Uri(folder);
+            return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
+        }
+
+        #endregion Private Methods
     }
 }

@@ -58,30 +58,31 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="filename">The fully qualified filename of the archive file.</param>
         /// <param name="manifest">The manifest contained within the archive.</param>
-        public PackageArchive(string filename, PackageManifest manifest)
+        public PackageArchive(FileInfo fileInfo, PackageManifest manifest)
         {
             Manifest = manifest;
-            Filename = filename;
-
-            FileInfo info = new FileInfo(Filename);
-
-            CreatedOn = info.CreationTimeUtc;
-            ModifiedOn = info.LastWriteTimeUtc;
+            FileInfo = fileInfo;
         }
 
         #endregion Public Constructors
+
+        #region Private Properties
+
+        private FileInfo FileInfo { get; set; }
+
+        #endregion Private Properties
 
         #region Public Properties
 
         /// <summary>
         ///     Gets the time at which the archive was created, in Utc.
         /// </summary>
-        public DateTime CreatedOn { get; }
+        public DateTime CreatedOn => FileInfo.CreationTimeUtc;
 
         /// <summary>
         ///     Gets or sets the fully qualified filename of the archive file.
         /// </summary>
-        public string Filename { get; set; }
+        public string FileName => FileInfo.FullName;
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
@@ -96,7 +97,7 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets the time at which the archive was last modified, in Utc.
         /// </summary>
-        public DateTime ModifiedOn { get; }
+        public DateTime ModifiedOn => FileInfo.LastWriteTimeUtc;
 
         #endregion Public Properties
     }
