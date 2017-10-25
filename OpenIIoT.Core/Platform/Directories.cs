@@ -87,32 +87,32 @@ namespace OpenIIoT.Core.Platform
         #region Public Properties
 
         /// <summary>
-        ///     Gets the data directory
+        ///     Gets the Data directory.
         /// </summary>
         public string Data { get; private set; }
 
         /// <summary>
-        ///     Gets the log directory
+        ///     Gets the Log directory.
         /// </summary>
         public string Logs { get; private set; }
 
         /// <summary>
-        ///     Gets the Package Archive directory
+        ///     Gets the Package Archive directory.
         /// </summary>
         public string PackageArchives { get; private set; }
 
         /// <summary>
-        ///     Gets the Package directory
+        ///     Gets the Package directory.
         /// </summary>
         public string Packages { get; private set; }
 
         /// <summary>
-        ///     Gets the persistence directory
+        ///     Gets the Persistence directory.
         /// </summary>
         public string Persistence { get; private set; }
 
         /// <summary>
-        ///     Gets the plugin directory
+        ///     Gets the Plugin directory.
         /// </summary>
         public string Plugins { get; private set; }
 
@@ -122,12 +122,12 @@ namespace OpenIIoT.Core.Platform
         public string Root { get; private set; }
 
         /// <summary>
-        ///     Gets the temporary directory
+        ///     Gets the Temporary directory.
         /// </summary>
         public string Temp { get; private set; }
 
         /// <summary>
-        ///     Gets the web directory
+        ///     Gets the Web directory.
         /// </summary>
         /// <remarks>Web content is served from this directory; anything placed here will be exposed.</remarks>
         public string Web { get; private set; }
