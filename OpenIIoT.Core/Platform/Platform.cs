@@ -169,7 +169,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to clear directory '{directory}'.");
             }
@@ -204,7 +204,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to compute checksum for file '{Path.GetFileName(file)}'.");
             }
@@ -246,7 +246,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to copy file '{Path.GetFileName(sourceFile)}' to '{Path.GetFileName(destinationFile)}'.");
             }
@@ -274,7 +274,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to create directory '{directory}'.");
             }
@@ -305,7 +305,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to create zip file '{Path.GetFileName(zipFile)}' from directory '{sourceDirectory}'.");
             }
@@ -337,7 +337,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to delete directory '{directory}'.");
             }
@@ -365,7 +365,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to delete file '{Path.GetFileName(file)}'.");
             }
@@ -427,7 +427,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to extract zip file '{Path.GetFileName(zipFile)}' to destination '{destination}'.");
             }
@@ -473,7 +473,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to extract file '{Path.GetFileName(file)}' from zip file '{Path.GetFileName(zipFile)}'.");
             }
@@ -526,7 +526,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (IOException ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to list subdirectories for root path '{directory}' using search pattern '{searchPattern}'.");
             }
@@ -569,7 +569,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (IOException ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to list files for directory '{directory}' using search pattern '{searchPattern}'.");
             }
@@ -617,7 +617,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to list files in zip file '{Path.GetFileName(zipFile)}'.");
             }
@@ -647,7 +647,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to read bytes from file '{Path.GetFileName(file)}'.");
             }
@@ -677,7 +677,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to read lines from file '{Path.GetFileName(file)}'.");
             }
@@ -707,7 +707,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Failed to read text from file '{Path.GetFileName(file)}'.");
             }
@@ -738,7 +738,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Error writing bytes to file '{file}'.");
             }
@@ -769,7 +769,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Error writing lines to file '{file}'.");
             }
@@ -800,7 +800,7 @@ namespace OpenIIoT.Core.Platform
             }
             catch (Exception ex)
             {
-                logger.Exception(LogLevel.Debug, ex);
+                logger.Exception(LogLevel.Trace, ex);
                 retVal.AddError(ex.Message);
                 retVal.AddError($"Error writing text to file '{file}'.");
             }
