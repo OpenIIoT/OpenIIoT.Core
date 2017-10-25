@@ -46,7 +46,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
     /// <summary>
     ///     Extracts <see cref="PackageManifest"/> objects from Packages.
     /// </summary>
-    public interface IManifestExtractor
+    public interface IManifestExtractor : IPackagingOperation
     {
         #region Public Methods
 

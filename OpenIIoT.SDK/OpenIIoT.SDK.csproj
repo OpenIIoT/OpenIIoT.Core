@@ -112,6 +112,7 @@
     <Compile Include="Packaging\Operations\PackageTruster.cs" />
     <Compile Include="Packaging\Operations\PackageVerifier.cs" />
     <Compile Include="Packaging\IPackage.cs" />
+    <Compile Include="Packaging\Operations\IPackagingOperation.cs" />
     <Compile Include="Packaging\PackageArchiveEventArgs.cs" />
     <Compile Include="Packaging\PackageInstallEventArgs.cs" />
     <Compile Include="Packaging\PackageEventArgs.cs" />

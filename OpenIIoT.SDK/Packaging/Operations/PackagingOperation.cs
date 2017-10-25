@@ -1,4 +1,5 @@
 ﻿/*
+/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
       █      ▄███████▄                                                                            ▄██████▄
@@ -46,7 +47,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
     /// <summary>
     ///     The abstract base class from which Packaging Operations derive.
     /// </summary>
-    public abstract class PackagingOperation
+    public abstract class PackagingOperation : IPackagingOperation
     {
         #region Public Constructors
 
