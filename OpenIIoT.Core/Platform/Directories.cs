@@ -69,6 +69,7 @@ namespace OpenIIoT.Core.Platform
                 Root = Path.GetDirectoryName(AppDomain.CurrentDomain.BaseDirectory);
                 Data = NormalizePath(Path.Combine(Root, Settings.DirectoryData));
                 Packages = NormalizePath(Path.Combine(Root, Settings.DirectoryPackages));
+                PackageArchives = NormalizePath(Path.Combine(Root, Settings.DirectoryPackageArchives));
                 Plugins = NormalizePath(Path.Combine(Root, Settings.DirectoryPlugins));
                 Temp = NormalizePath(Path.Combine(Root, Settings.DirectoryTemp));
                 Persistence = NormalizePath(Path.Combine(Root, Settings.DirectoryPersistence));
@@ -96,7 +97,12 @@ namespace OpenIIoT.Core.Platform
         public string Logs { get; private set; }
 
         /// <summary>
-        ///     Gets the archive directory
+        ///     Gets the Package Archive directory
+        /// </summary>
+        public string PackageArchives { get; private set; }
+
+        /// <summary>
+        ///     Gets the Package directory
         /// </summary>
         public string Packages { get; private set; }
 
