@@ -2,6 +2,7 @@
 {
     using System;
     using System.IO;
+    using Newtonsoft.Json;
     using NLog.xLogger;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
@@ -35,19 +36,44 @@
 
         #endregion Public Constructors
 
-        #region Private Properties
+        #region Private Properties$"Error deserializing Manifest in directory '{directory}': {ex.Message}."
 
+        private IPlatform Platform => PlatformManager.Platform;
         private IManifestExtractor ManifestExtractor { get; set; }
         private IPlatformManager PlatformManager { get; set; }
 
-        #endregion Private Properties
+        #endregion Private Properties$"Error deserializing Manifest in directory '{directory}': {ex.Message}."
 
         #region Public Methods
 
         public IResult<IPackage> GetPackage(string directory)
         {
-            // TODO: read .manifest.json from the directory, deserialize to manifest
-            return new Result<IPackage>();
+            Guid guid = logger.EnterMethod(xLogger.Params(directory), true);
+
+            IResult<IPackage> retVal = new Result<IPackage>();
+
+            string manifestFileName = Path.Combine(directory, ".manifest.json");
+
+            IResult<string> manifestReadResult = Platform.ReadFileText(manifestFileName);
+            retVal.Incorporate(manifestReadResult);
+
+            if (manifestReadResult.ResultCode != ResultCode.Failure)
+            {
+                try
+                {
+                    PackageManifest manifest = JsonConvert.DeserializeObject<PackageManifest>(manifestReadResult.ReturnValue);
+
+                    retVal.ReturnValue = new Package(new DirectoryInfo(directory), manifest);
+                }
+                catch (Exception ex)
+                {
+                    retVal.AddError($"Error deserializing Manifest in directory '{directory}': {ex.Message}.");
+                }
+            }
+
+            retVal.LogResult(logger.Debug);
+            logger.ExitMethod(guid);
+            return retVal;
         }
 
         public IResult<IPackageArchive> GetPackageArchive(string fileName)

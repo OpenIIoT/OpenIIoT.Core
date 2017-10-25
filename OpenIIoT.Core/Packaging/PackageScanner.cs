@@ -2,18 +2,14 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
+    using NLog.xLogger;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Packaging.Operations;
-    using NLog.xLogger;
     using OpenIIoT.SDK.Platform;
-    using OpenIIoT.SDK.Packaging.Manifest;
     using System.IO;
 
-    public class PackageScanner
+    public class PackageScanner : IPackageScanner
     {
         #region Private Fields
 
@@ -67,13 +63,11 @@
             IResult<IList<IPackageArchive>> retVal = new Result<IList<IPackageArchive>>();
             retVal.ReturnValue = new List<IPackageArchive>();
 
-            string directory = PlatformManager.Directories.Packages;
+            string searchDirectory = Path.Combine(PlatformManager.Directories.Packages, "Archive");
 
-            logger.Debug($"Scanning directory '{directory}'...");
+            logger.Debug($"Scanning directory '{searchDirectory}'...");
 
-            ManifestExtractor.Updated += (sender, e) => logger.Debug(e.Message);
-
-            IResult<IList<string>> fileListResult = Platform.ListFiles(directory);
+            IResult<IList<string>> fileListResult = Platform.ListFiles(searchDirectory);
             retVal.Incorporate(fileListResult);
 
             if (retVal.ResultCode != ResultCode.Failure)
@@ -81,6 +75,44 @@
                 foreach (string file in fileListResult.ReturnValue)
                 {
                     IResult<IPackageArchive> readResult = PackageFactory.GetPackageArchive(file);
+
+                    if (readResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal.ReturnValue.Add(readResult.ReturnValue);
+                    }
+                    else
+                    {
+                        retVal.AddWarning(readResult.GetLastError());
+                    }
+                }
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+
+            return retVal;
+        }
+
+        public IResult<IList<IPackage>> ScanPackages()
+        {
+            Guid guid = logger.EnterMethod(true);
+            logger.Info("Scanning for Packages...");
+
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
+            retVal.ReturnValue = new List<IPackage>();
+
+            string searchDirectory = PlatformManager.Directories.Packages;
+
+            logger.Debug($"Scanning directory '{searchDirectory}'...");
+
+            IResult<IList<string>> dirListResult = Platform.ListDirectories(searchDirectory, "*.*");
+            retVal.Incorporate(dirListResult);
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                foreach (string directory in dirListResult.ReturnValue)
+                {
+                    IResult<IPackage> readResult = PackageFactory.GetPackage(directory);
 
                     if (readResult.ResultCode != ResultCode.Failure)
                     {

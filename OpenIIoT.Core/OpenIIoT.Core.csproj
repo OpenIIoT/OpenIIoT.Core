@@ -209,6 +209,7 @@
     <Compile Include="Packaging\IPackageFactory.cs" />
     <Compile Include="Packaging\PackageFactory.cs" />
     <Compile Include="Packaging\PackageManager.cs" />
+    <Compile Include="Packaging\IPackageScanner.cs" />
     <Compile Include="Packaging\PackageScanner.cs" />
     <Compile Include="Packaging\WebApi\PackagingController.cs" />
     <Compile Include="Platform\Platform.cs" />

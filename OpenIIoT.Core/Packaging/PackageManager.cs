@@ -616,6 +616,46 @@ namespace OpenIIoT.Core.Packaging
 
         #region Protected Methods
 
+        public IResult<IList<IPackageArchive>> ScanPackageArchives()
+        {
+            IResult<IList<IPackageArchive>> retVal = new Result<IList<IPackageArchive>>();
+            retVal.ReturnValue = PackageArchiveList;
+
+            IResult<IList<IPackageArchive>> scanResult = PackageScanner.ScanPackageArchives();
+
+            if (scanResult.ResultCode != ResultCode.Failure)
+            {
+                PackageArchiveList = scanResult.ReturnValue;
+            }
+
+            return retVal;
+        }
+
+        public Task<IResult<IList<IPackageArchive>>> ScanPackageArchivesAsync()
+        {
+            return Task.Run(() => ScanPackageArchives());
+        }
+
+        public IResult<IList<IPackage>> ScanPackages()
+        {
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
+            retVal.ReturnValue = PackageList;
+
+            IResult<IList<IPackage>> scanResult = PackageScanner.ScanPackages();
+
+            if (scanResult.ResultCode != ResultCode.Failure)
+            {
+                PackageList = scanResult.ReturnValue;
+            }
+
+            return retVal;
+        }
+
+        public Task<IResult<IList<IPackage>>> ScanPackagesAsync()
+        {
+            return Task.Run(() => ScanPackages());
+        }
+
         /// <summary>
         ///     <para>Executed upon shutdown of the Manager.</para>
         ///     <para>
@@ -692,7 +732,6 @@ namespace OpenIIoT.Core.Packaging
             {
                 if (rescanOnNotFound)
                 {
-                    ScanPackages();
                     return FindPackage(fqn, false);
                 }
             }
@@ -724,58 +763,18 @@ namespace OpenIIoT.Core.Packaging
             {
                 if (rescanOnNotFound)
                 {
-                    ScanPackageArchives();
+                    IResult<IList<IPackageArchive>> scanResult = PackageScanner.ScanPackageArchives();
+
+                    if (scanResult.ResultCode != ResultCode.Failure)
+                    {
+                        PackageArchiveList = scanResult.ReturnValue;
+                    }
+
                     return FindPackageArchive(fqn, false);
                 }
             }
 
             logger.ExitMethod();
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Creates a <see cref="IPackageArchive"/> instance with file metadata from the given file and the given
-        ///     <see cref="PackageManifest"/> .
-        /// </summary>
-        /// <param name="fileName">The filename from which to retrieve the <see cref="IPackageArchive"/> metadata.</param>
-        /// <param name="manifest">
-        ///     The <see cref="PackageManifest"/> with which to initialize the <see cref="IPackage"/> instance.
-        /// </param>
-        /// <returns>The created Package.</returns>
-        private IPackageArchive GetPackageArchive(string fileName, PackageManifest manifest)
-        {
-            FileInfo info = new FileInfo(fileName);
-
-            return new PackageArchive(fileName, manifest);
-        }
-
-        /// <summary>
-        ///     Creates and returns a valid filename for the specified <see cref="IPackageArchive"/>.
-        /// </summary>
-        /// <param name="packageArchive">The <see cref="IPackageArchive"/> for which the filename is to be created.</param>
-        /// <returns>The created filename.</returns>
-        private string GetPackageArchiveFilename(IPackageArchive packageArchive)
-        {
-            string filename = packageArchive.FQN + "." + packageArchive.Manifest.Version + PackagingConstants.PackageFilenameExtension;
-
-            foreach (char c in Path.GetInvalidFileNameChars())
-            {
-                filename = filename.Replace(c, PackagingConstants.PackageFilenameInvalidCharacterSubstitution);
-            }
-
-            return Path.Combine(PlatformManager.Directories.Packages, filename);
-        }
-
-        private IResult<IPackage> ReadPackage(string fqn)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(fqn), true);
-            logger.Debug($"Reading Package '{fqn}'");
-
-            IResult<IPackage> retVal = new Result<IPackage>();
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(guid);
-
             return retVal;
         }
 
