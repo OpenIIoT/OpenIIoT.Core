@@ -238,6 +238,40 @@ namespace OpenIIoT.SDK.Common.OperationResult
         }
 
         /// <summary>
+        ///     Adds details from the specified Result to this Result, including all Error Messages and the failing ResultCode, if present.
+        /// </summary>
+        /// <param name="result">The Result from which to copy the Error Messages and failing ResultCode.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        /// <example>
+        ///     <code>
+        /// <![CDATA[
+        /// // create an "outer" Result
+        /// // the ResultCode of this instance is Success by default.
+        /// Result outer = new Result();
+        ///
+        /// // ... some logic ...
+        ///
+        /// // create an "inner" Result
+        /// // set this to the result of a different method
+        /// Result inner = MyMethod();
+        ///
+        /// // incorporate the inner Result into the outer
+        /// // this copies all error messages and the failing ResultCode, if present.
+        /// outer.Incorporate(inner);
+        ///
+        /// // log the result.  the combined list of messages from both inner and outer
+        /// // are logged, and the ResultCode is equal to the lesser of the two ResultCodes.
+        /// outer.LogResult(logger);
+        /// ]]>
+        ///     </code>
+        /// </example>
+        public new virtual Result<T> IncorporateErrors(IResult result)
+        {
+            base.IncorporateErrors(result);
+            return this;
+        }
+
+        /// <summary>
         ///     Logs all messages in the message list to the specified logging method. If specified, logs a header and footer
         ///     message before and after the list, respectively.
         /// </summary>
