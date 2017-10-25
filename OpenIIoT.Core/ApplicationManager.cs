@@ -341,7 +341,12 @@ namespace OpenIIoT.Core
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            retVal.Incorporate(StopManagers());
+            Result stopResult = StopManagers();
+
+            if (stopResult.ResultCode == ResultCode.Failure)
+            {
+                retVal.Incorporate(StopManagers());
+            }
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
@@ -358,8 +363,12 @@ namespace OpenIIoT.Core
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            // start all application managers.
-            retVal.Incorporate(StartManagers());
+            Result startResult = StartManagers();
+
+            if (startResult.ResultCode == ResultCode.Failure)
+            {
+                retVal.Incorporate(StartManagers());
+            }
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
