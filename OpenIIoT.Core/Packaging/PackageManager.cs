@@ -694,8 +694,8 @@ namespace OpenIIoT.Core.Packaging
             PackageFactory = new PackageFactory();
             PackageScanner = new PackageScanner(PackageFactory);
 
-            retVal.IncorporateErrors(PackageScanner.ScanPackageArchives());
-            retVal.IncorporateErrors(PackageScanner.ScanPackages());
+            retVal.Incorporate(PackageScanner.ScanPackageArchives());
+            retVal.Incorporate(PackageScanner.ScanPackages());
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
