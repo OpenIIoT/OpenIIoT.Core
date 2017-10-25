@@ -213,519 +213,404 @@ namespace OpenIIoT.Core.Packaging
             instance = null;
         }
 
-        /// <summary>
-        ///     Adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
-        /// </summary>
-        /// <remarks>
-        ///     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
-        ///     Qualified Name and Version of the Package.
-        /// </remarks>
-        /// <param name="data">The binary data to save.</param>
-        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
-        public IResult<IPackageArchive> AddPackageArchive(byte[] data)
-        {
-            Guid guid = logger.EnterMethod();
-            logger.Info("Creating new Package...");
+        ///// <summary>
+        /////     Adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
+        ///// </summary>
+        ///// <remarks>
+        /////     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
+        /////     Qualified Name and Version of the Package.
+        ///// </remarks>
+        ///// <param name="data">The binary data to save.</param>
+        ///// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        //public IResult<IPackageArchive> AddPackageArchive(byte[] data)
+        //{
+        //    Guid guid = logger.EnterMethod();
+        //    logger.Info("Creating new Package...");
 
-            IResult<IPackageArchive> retVal = new Result<IPackageArchive>();
-            string tempFile = Path.Combine(PlatformManager.Directories.Temp, Guid.NewGuid().ToString());
-            string destinationFilename = default(string);
+        // IResult<IPackageArchive> retVal = new Result<IPackageArchive>(); string tempFile =
+        // Path.Combine(PlatformManager.Directories.Temp, Guid.NewGuid().ToString()); string destinationFilename = default(string);
 
-            if (data.Length == 0)
-            {
-                retVal.AddError($"The specified binary payload is empty.");
-            }
-            else
-            {
-                logger.Debug($"Saving new Package to '{tempFile}'...");
-                retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
+        // if (data.Length == 0) { retVal.AddError($"The specified binary payload is empty."); } else { logger.Debug($"Saving new
+        // Package to '{tempFile}'..."); retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
 
-                if (retVal.ResultCode != ResultCode.Failure)
-                {
-                    IResult<IPackageArchive> readResult = ReadPackageArchive(tempFile);
+        // if (retVal.ResultCode != ResultCode.Failure) { IResult<IPackageArchive> readResult = ReadPackageArchive(tempFile);
 
-                    retVal.Incorporate(readResult);
+        // retVal.Incorporate(readResult);
 
-                    if (retVal.ResultCode != ResultCode.Failure)
-                    {
-                        destinationFilename = GetPackageArchiveFilename(readResult.ReturnValue);
+        // if (retVal.ResultCode != ResultCode.Failure) { destinationFilename = GetPackageArchiveFilename(readResult.ReturnValue);
 
-                        logger.Debug($"Copying temporary Package '{tempFile}' to final destination '{destinationFilename}'...");
-                        retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
+        // logger.Debug($"Copying temporary Package '{tempFile}' to final destination '{destinationFilename}'...");
+        // retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
 
-                        if (retVal.ResultCode != ResultCode.Failure)
-                        {
-                            PackageArchiveList.Add(readResult.ReturnValue);
+        // if (retVal.ResultCode != ResultCode.Failure) { PackageArchiveList.Add(readResult.ReturnValue);
 
-                            retVal.ReturnValue = readResult.ReturnValue;
-                            retVal.ReturnValue.Filename = destinationFilename;
-                        }
-                    }
-                }
-            }
+        // retVal.ReturnValue = readResult.ReturnValue; retVal.ReturnValue.Filename = destinationFilename; } } } }
 
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                logger.Debug($"Package Archive successfully saved to {destinationFilename}.  Sending PackageArchiveAdded Event...");
-                Task.Run(() => PackageArchiveAdded?.Invoke(this, new PackageArchiveEventArgs(retVal.ReturnValue)));
-            }
+        // if (retVal.ResultCode != ResultCode.Failure) { logger.Debug($"Package Archive successfully saved to
+        // {destinationFilename}. Sending PackageArchiveAdded Event..."); Task.Run(() => PackageArchiveAdded?.Invoke(this, new
+        // PackageArchiveEventArgs(retVal.ReturnValue))); }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
-            return retVal;
-        }
+        //    retVal.LogResult(logger);
+        //    logger.ExitMethod(guid);
+        //    return retVal;
+        //}
 
-        /// <summary>
-        ///     Asynchronously adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
-        /// </summary>
-        /// <remarks>
-        ///     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
-        ///     Qualified Name and Version of the Package.
-        /// </remarks>
-        /// <param name="data">The binary data to save.</param>
-        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
-        public Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data)
-        {
-            return Task.Run(() => AddPackageArchive(data));
-        }
+        ///// <summary>
+        /////     Asynchronously adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
+        ///// </summary>
+        ///// <remarks>
+        /////     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
+        /////     Qualified Name and Version of the Package.
+        ///// </remarks>
+        ///// <param name="data">The binary data to save.</param>
+        ///// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        //public Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data)
+        //{
+        //    return Task.Run(() => AddPackageArchive(data));
+        //}
 
-        /// <summary>
-        ///     Deletes the specified <see cref="IPackageArchive"/> from disk.
-        /// </summary>
-        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult DeletePackageArchive(IPackageArchive packageArchive)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(packageArchive));
-            logger.Info($"Deleting Package {packageArchive.FQN}...");
+        ///// <summary>
+        /////     Deletes the specified <see cref="IPackageArchive"/> from disk.
+        ///// </summary>
+        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
+        ///// <returns>A Result containing the result of the operation.</returns>
+        //public IResult DeletePackageArchive(IPackageArchive packageArchive)
+        //{
+        //    Guid guid = logger.EnterMethod(xLogger.Params(packageArchive));
+        //    logger.Info($"Deleting Package {packageArchive.FQN}...");
 
-            IResult retVal = new Result();
+        // IResult retVal = new Result();
 
-            if (packageArchive == default(IPackageArchive))
-            {
-                retVal.AddError($"The specified Package Archive is null.");
-            }
-            else if (string.IsNullOrEmpty(packageArchive.Filename))
-            {
-                retVal.AddError($"The specified Package Archive contains an null or empty Filename.");
-            }
-            else if (!Platform.FileExists(packageArchive.Filename))
-            {
-                retVal.AddError($"The specified Package Archive file '{packageArchive.Filename}' can not be found.");
-            }
-            else
-            {
-                logger.Debug($"Deleting Package file '{packageArchive.Filename}'...");
-                retVal = Platform.DeleteFile(packageArchive.Filename);
-            }
+        // if (packageArchive == default(IPackageArchive)) { retVal.AddError($"The specified Package Archive is null."); } else if
+        // (string.IsNullOrEmpty(packageArchive.Filename)) { retVal.AddError($"The specified Package Archive contains an null or
+        // empty Filename."); } else if (!Platform.FileExists(packageArchive.Filename)) { retVal.AddError($"The specified Package
+        // Archive file '{packageArchive.Filename}' can not be found."); } else { logger.Debug($"Deleting Package file
+        // '{packageArchive.Filename}'..."); retVal = Platform.DeleteFile(packageArchive.Filename); }
 
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                logger.Debug($"Package {packageArchive.Filename} deleted successfully.  Sending PackageArchiveDeleted Event...");
-                Task.Run(() => PackageArchiveDeleted?.Invoke(this, new PackageArchiveEventArgs(packageArchive)));
-            }
+        // if (retVal.ResultCode != ResultCode.Failure) { logger.Debug($"Package {packageArchive.Filename} deleted successfully.
+        // Sending PackageArchiveDeleted Event..."); Task.Run(() => PackageArchiveDeleted?.Invoke(this, new
+        // PackageArchiveEventArgs(packageArchive))); }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
-            return retVal;
-        }
+        //    retVal.LogResult(logger);
+        //    logger.ExitMethod(guid);
+        //    return retVal;
+        //}
 
-        /// <summary>
-        ///     Deletes the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> from disk.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to delete.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult DeletePackageArchive(string fqn)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(fqn));
-            logger.Info($"Deleting Package {fqn} by FQN...");
+        ///// <summary>
+        /////     Deletes the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> from disk.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to delete.</param>
+        ///// <returns>A Result containing the result of the operation.</returns>
+        //public IResult DeletePackageArchive(string fqn)
+        //{
+        //    Guid guid = logger.EnterMethod(xLogger.Params(fqn));
+        //    logger.Info($"Deleting Package {fqn} by FQN...");
 
-            IResult retVal = new Result();
+        // IResult retVal = new Result();
 
-            if (string.IsNullOrEmpty(fqn))
-            {
-                retVal.AddError($"The specified Fully Qualified Name is null or empty.");
-            }
-            else
-            {
-                IPackageArchive findResult = FindPackageArchive(fqn);
+        // if (string.IsNullOrEmpty(fqn)) { retVal.AddError($"The specified Fully Qualified Name is null or empty."); } else {
+        // IPackageArchive findResult = FindPackageArchive(fqn);
 
-                if (findResult != default(IPackageArchive))
-                {
-                    retVal = DeletePackageArchive(findResult);
-                }
-                else
-                {
-                    retVal.AddError($"Failed to find Package '{fqn}'.");
-                }
-            }
+        // if (findResult != default(IPackageArchive)) { retVal = DeletePackageArchive(findResult); } else {
+        // retVal.AddError($"Failed to find Package '{fqn}'."); } }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
-            return retVal;
-        }
+        //    retVal.LogResult(logger);
+        //    logger.ExitMethod(guid);
+        //    return retVal;
+        //}
 
-        /// <summary>
-        ///     Asynchronously deletes the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> from disk.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to delete.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Task<IResult> DeletePackageArchiveAsync(string fqn)
-        {
-            return Task.Run(() => DeletePackageArchive(fqn));
-        }
+        ///// <summary>
+        /////     Asynchronously deletes the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> from disk.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to delete.</param>
+        ///// <returns>A Result containing the result of the operation.</returns>
+        //public Task<IResult> DeletePackageArchiveAsync(string fqn)
+        //{
+        //    return Task.Run(() => DeletePackageArchive(fqn));
+        //}
 
-        /// <summary>
-        ///     Asynchronously deletes the specified <see cref="IPackageArchive"/> from disk.
-        /// </summary>
-        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public Task<IResult> DeletePackageArchiveAsync(IPackageArchive packageArchive)
-        {
-            return Task.Run(() => DeletePackageArchive(packageArchive));
-        }
+        ///// <summary>
+        /////     Asynchronously deletes the specified <see cref="IPackageArchive"/> from disk.
+        ///// </summary>
+        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
+        ///// <returns>A Result containing the result of the operation.</returns>
+        //public Task<IResult> DeletePackageArchiveAsync(IPackageArchive packageArchive)
+        //{
+        //    return Task.Run(() => DeletePackageArchive(packageArchive));
+        //}
 
-        /// <summary>
-        ///     Fetches the specified <paramref name="packageArchive"/> and returns the binary data.
-        /// </summary>
-        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
-        /// </returns>
-        public IResult<byte[]> FetchPackageArchive(IPackageArchive packageArchive)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(packageArchive));
-            logger.Info($"Fetching Package Archive '{packageArchive.FQN}'...");
+        ///// <summary>
+        /////     Fetches the specified <paramref name="packageArchive"/> and returns the binary data.
+        ///// </summary>
+        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
+        ///// <returns>
+        /////     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        ///// </returns>
+        //public IResult<byte[]> FetchPackageArchive(IPackageArchive packageArchive)
+        //{
+        //    Guid guid = logger.EnterMethod(xLogger.Params(packageArchive));
+        //    logger.Info($"Fetching Package Archive '{packageArchive.FQN}'...");
 
-            IResult<byte[]> retVal = new Result<byte[]>();
+        // IResult<byte[]> retVal = new Result<byte[]>();
 
-            if (packageArchive == default(IPackageArchive))
-            {
-                retVal.AddError($"The specified Package Archive is null.");
-            }
-            else if (string.IsNullOrEmpty(packageArchive.Filename))
-            {
-                retVal.AddError($"The specified Package Archive contains an null or empty Filename.");
-            }
-            else if (!Platform.FileExists(packageArchive.Filename))
-            {
-                retVal.AddError($"The specified Package Archive file '{packageArchive.Filename}' can not be found.");
-            }
-            else
-            {
-                logger.Debug($"Package Archive '{packageArchive.FQN}' found in '{packageArchive.Filename}'; reading from disk...");
-                retVal = Platform.ReadFileBytes(packageArchive.Filename);
-            }
+        // if (packageArchive == default(IPackageArchive)) { retVal.AddError($"The specified Package Archive is null."); } else if
+        // (string.IsNullOrEmpty(packageArchive.Filename)) { retVal.AddError($"The specified Package Archive contains an null or
+        // empty Filename."); } else if (!Platform.FileExists(packageArchive.Filename)) { retVal.AddError($"The specified Package
+        // Archive file '{packageArchive.Filename}' can not be found."); } else { logger.Debug($"Package Archive
+        // '{packageArchive.FQN}' found in '{packageArchive.Filename}'; reading from disk..."); retVal =
+        // Platform.ReadFileBytes(packageArchive.Filename); }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
-            return retVal;
-        }
+        //    retVal.LogResult(logger);
+        //    logger.ExitMethod(guid);
+        //    return retVal;
+        //}
 
-        /// <summary>
-        ///     Fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns the binary data.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
-        /// </returns>
-        public IResult<byte[]> FetchPackageArchive(string fqn)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(fqn));
-            logger.Info($"Fetching Package '{fqn}' by FQN...");
+        ///// <summary>
+        /////     Fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns the binary data.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
+        ///// <returns>
+        /////     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        ///// </returns>
+        //public IResult<byte[]> FetchPackageArchive(string fqn)
+        //{
+        //    Guid guid = logger.EnterMethod(xLogger.Params(fqn));
+        //    logger.Info($"Fetching Package '{fqn}' by FQN...");
 
-            IResult<byte[]> retVal = new Result<byte[]>();
+        // IResult<byte[]> retVal = new Result<byte[]>();
 
-            if (string.IsNullOrEmpty(fqn))
-            {
-                retVal.AddError($"The specified Fully Qualified Name is null or empty.");
-            }
-            else
-            {
-                IPackageArchive findResult = FindPackageArchive(fqn);
+        // if (string.IsNullOrEmpty(fqn)) { retVal.AddError($"The specified Fully Qualified Name is null or empty."); } else {
+        // IPackageArchive findResult = FindPackageArchive(fqn);
 
-                if (findResult != default(IPackageArchive))
-                {
-                    retVal = FetchPackageArchive(findResult);
-                }
-                else
-                {
-                    retVal.AddError($"Failed to find Package Archive '{fqn}'.");
-                }
-            }
+        // if (findResult != default(IPackageArchive)) { retVal = FetchPackageArchive(findResult); } else {
+        // retVal.AddError($"Failed to find Package Archive '{fqn}'."); } }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
-            return retVal;
-        }
+        //    retVal.LogResult(logger);
+        //    logger.ExitMethod(guid);
+        //    return retVal;
+        //}
 
-        /// <summary>
-        ///     Asynchronously fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns
-        ///     the binary data.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
-        /// </returns>
-        public Task<IResult<byte[]>> FetchPackageArchiveAsync(string fqn)
-        {
-            return Task.Run(() => FetchPackageArchive(fqn));
-        }
+        ///// <summary>
+        /////     Asynchronously fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns
+        /////     the binary data.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
+        ///// <returns>
+        /////     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        ///// </returns>
+        //public Task<IResult<byte[]>> FetchPackageArchiveAsync(string fqn)
+        //{
+        //    return Task.Run(() => FetchPackageArchive(fqn));
+        //}
 
-        /// <summary>
-        ///     Asynchronously fetches the specified <paramref name="packageArchive"/> and returns the binary data.
-        /// </summary>
-        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
-        /// <returns>
-        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
-        /// </returns>
-        public Task<IResult<byte[]>> FetchPackageArchiveAsync(IPackageArchive packageArchive)
-        {
-            return Task.Run(() => FetchPackageArchive(packageArchive));
-        }
+        ///// <summary>
+        /////     Asynchronously fetches the specified <paramref name="packageArchive"/> and returns the binary data.
+        ///// </summary>
+        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
+        ///// <returns>
+        /////     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        ///// </returns>
+        //public Task<IResult<byte[]>> FetchPackageArchiveAsync(IPackageArchive packageArchive)
+        //{
+        //    return Task.Run(() => FetchPackageArchive(packageArchive));
+        //}
 
-        /// <summary>
-        ///     <para>
-        ///         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
-        ///         returns the found Package.
-        ///     </para>
-        ///     <para>
-        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
-        ///         <see cref="Packages"/> list from disk.
-        ///     </para>
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <returns>The result of the operation and the found Package, if applicable.</returns>
-        public IPackage FindPackage(string fqn)
-        {
-            return FindPackage(fqn, true);
-        }
+        ///// <summary>
+        /////     <para>
+        /////         Scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name and, if found,
+        /////         returns the found Package.
+        /////     </para>
+        /////     <para>
+        /////         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        /////         <see cref="Packages"/> list from disk.
+        /////     </para>
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        ///// <returns>The result of the operation and the found Package, if applicable.</returns>
+        //public IPackage FindPackage(string fqn)
+        //{
+        //    return FindPackage(fqn, true);
+        //}
 
-        /// <summary>
-        ///     <para>
-        ///         Searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the specified
-        ///         <paramref name="fqn"/> and, if found, returns the found instance.
-        ///     </para>
-        ///     <para>
-        ///         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
-        ///         refresh the <see cref="PackageArchives"/> list from disk.
-        ///     </para>
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
-        /// <returns>The found <see cref="IPackageArchive"/>.</returns>
-        public IPackageArchive FindPackageArchive(string fqn)
-        {
-            return FindPackageArchive(fqn, true);
-        }
+        ///// <summary>
+        /////     <para>
+        /////         Searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the specified
+        /////         <paramref name="fqn"/> and, if found, returns the found instance.
+        /////     </para>
+        /////     <para>
+        /////         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
+        /////         refresh the <see cref="PackageArchives"/> list from disk.
+        /////     </para>
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
+        ///// <returns>The found <see cref="IPackageArchive"/>.</returns>
+        //public IPackageArchive FindPackageArchive(string fqn)
+        //{
+        //    return FindPackageArchive(fqn, true);
+        //}
 
-        /// <summary>
-        ///     <para>
-        ///         Asynchronously searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the
-        ///         specified <paramref name="fqn"/> and, if found, returns the found instance.
-        ///     </para>
-        ///     <para>
-        ///         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
-        ///         refresh the <see cref="PackageArchives"/> list from disk.
-        ///     </para>
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
-        /// <returns>The found <see cref="IPackageArchive"/>.</returns>
-        public Task<IPackageArchive> FindPackageArchiveAsync(string fqn)
-        {
-            return Task.Run(() => FindPackageArchive(fqn));
-        }
+        ///// <summary>
+        /////     <para>
+        /////         Asynchronously searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the
+        /////         specified <paramref name="fqn"/> and, if found, returns the found instance.
+        /////     </para>
+        /////     <para>
+        /////         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
+        /////         refresh the <see cref="PackageArchives"/> list from disk.
+        /////     </para>
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
+        ///// <returns>The found <see cref="IPackageArchive"/>.</returns>
+        //public Task<IPackageArchive> FindPackageArchiveAsync(string fqn)
+        //{
+        //    return Task.Run(() => FindPackageArchive(fqn));
+        //}
 
-        /// <summary>
-        ///     <para>
-        ///         Asynchronously scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name
-        ///         and, if found, returns the found Package.
-        ///     </para>
-        ///     <para>
-        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
-        ///         <see cref="Packages"/> list from disk.
-        ///     </para>
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
-        /// <returns>The result of the operation and the found Package, if applicable.</returns>
-        public Task<IPackage> FindPackageAsync(string fqn)
-        {
-            return Task.Run(() => FindPackage(fqn));
-        }
+        ///// <summary>
+        /////     <para>
+        /////         Asynchronously scans the <see cref="Packages"/> list for a Package matching the specified Fully Qualified Name
+        /////         and, if found, returns the found Package.
+        /////     </para>
+        /////     <para>
+        /////         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        /////         <see cref="Packages"/> list from disk.
+        /////     </para>
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to find.</param>
+        ///// <returns>The result of the operation and the found Package, if applicable.</returns>
+        //public Task<IPackage> FindPackageAsync(string fqn)
+        //{
+        //    return Task.Run(() => FindPackage(fqn));
+        //}
 
-        /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk).
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(string fqn)
-        {
-            return InstallPackage(fqn, new PackageInstallationOptions());
-        }
+        ///// <summary>
+        /////     Installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        ///// <returns>A Result containing the result of the operation.</returns>
+        //public IResult InstallPackage(string fqn)
+        //{
+        //    return InstallPackage(fqn, new PackageInstallationOptions());
+        //}
 
-        /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="options">The installation options for the operation.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(string fqn, PackageInstallationOptions options)
-        {
-            logger.EnterMethod(xLogger.Params(fqn, options));
-            logger.Info($"Installing Package '{fqn}'...");
+        ///// <summary>
+        /////     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        ///// <param name="options">The installation options for the operation.</param>
+        ///// <returns>A Result containing the result of the operation.</returns>
+        //public IResult InstallPackage(string fqn, PackageInstallationOptions options)
+        //{
+        //    logger.EnterMethod(xLogger.Params(fqn, options));
+        //    logger.Info($"Installing Package '{fqn}'...");
 
-            IResult retVal = new Result();
-            IPackage findResult = default(IPackage);
-            string destination = default(string);
+        // IResult retVal = new Result(); IPackage findResult = default(IPackage); string destination = default(string);
 
-            if (string.IsNullOrEmpty(fqn))
-            {
-                retVal.AddError($"The specified Fully Qualified Name is null or empty.");
-            }
-            else if (options == default(PackageInstallationOptions))
-            {
-                retVal.AddError($"Installation options were specified but are null.");
-            }
-            else if (options?.PublicKey != default(string) && options.PublicKey == string.Empty)
-            {
-                retVal.AddError($"The PGP installation key is specified but is empty.");
-            }
-            else
-            {
-                findResult = FindPackage(fqn);
+        // if (string.IsNullOrEmpty(fqn)) { retVal.AddError($"The specified Fully Qualified Name is null or empty."); } else if
+        // (options == default(PackageInstallationOptions)) { retVal.AddError($"Installation options were specified but are
+        // null."); } else if (options?.PublicKey != default(string) && options.PublicKey == string.Empty) { retVal.AddError($"The
+        // PGP installation key is specified but is empty."); } else { findResult = FindPackage(fqn);
 
-                if (findResult != default(IPackage))
-                {
-                    PackageExtractor extractor = new PackageExtractor();
+        // if (findResult != default(IPackage)) { PackageExtractor extractor = new PackageExtractor();
 
-                    extractor.Updated += (sender, e) => logger.Debug($"PackageExtractor: {e.Message}");
+        // extractor.Updated += (sender, e) => logger.Debug($"PackageExtractor: {e.Message}");
 
-                    // determine the installation directory; should look like \path\to\Plugins\FQN\
-                    destination = Path.Combine(PlatformManager.Directories.Plugins, findResult.FQN);
+        // // determine the installation directory; should look like \path\to\Plugins\FQN\ destination =
+        // Path.Combine(PlatformManager.Directories.Plugins, findResult.FQN);
 
-                    logger.Debug($"Install directory: '{destination}'; overwrite={options.Overwrite}, skipVerification={options.SkipVerification}");
+        // logger.Debug($"Install directory: '{destination}'; overwrite={options.Overwrite}, skipVerification={options.SkipVerification}");
 
-                    try
-                    {
-                        extractor.ExtractPackage(findResult.Filename, destination, options?.PublicKey, options.Overwrite, options.SkipVerification);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Exception(LogLevel.Debug, ex);
-                        retVal.AddError(ex.Message);
-                    }
-                }
-                else
-                {
-                    retVal.AddError($"Failed to find Package '{fqn}'.");
-                }
-            }
+        // try { extractor.ExtractPackage(findResult.Filename, destination, options?.PublicKey, options.Overwrite,
+        // options.SkipVerification); } catch (Exception ex) { logger.Exception(LogLevel.Debug, ex); retVal.AddError(ex.Message); }
+        // } else { retVal.AddError($"Failed to find Package '{fqn}'."); } }
 
-            if (retVal.ResultCode != ResultCode.Failure)
-            {
-                logger.Debug($"Package {fqn} installed successfully.  Sending PackageInstalled Event...");
-                Task.Run(() => PackageInstalled?.Invoke(this, new PackageInstallEventArgs(findResult, destination)));
-            }
+        // if (retVal.ResultCode != ResultCode.Failure) { logger.Debug($"Package {fqn} installed successfully. Sending
+        // PackageInstalled Event..."); Task.Run(() => PackageInstalled?.Invoke(this, new PackageInstallEventArgs(findResult,
+        // destination))); }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod();
-            return retVal;
-        }
+        //    retVal.LogResult(logger);
+        //    logger.ExitMethod();
+        //    return retVal;
+        //}
 
-        /// <summary>
-        ///     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<IResult> InstallPackageAsync(string fqn)
-        {
-            return await Task.Run(() => InstallPackage(fqn, new PackageInstallationOptions()));
-        }
+        ///// <summary>
+        /////     Asynchronously installs the specified <see cref="IPackage"/> (extracts it to disk).
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        ///// <returns>A Result containing the result of the operation.</returns>
+        //public async Task<IResult> InstallPackageAsync(string fqn)
+        //{
+        //    return await Task.Run(() => InstallPackage(fqn, new PackageInstallationOptions()));
+        //}
 
-        /// <summary>
-        ///     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
-        /// <param name="options">The installation options for the operation.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options)
-        {
-            return await Task.Run(() => InstallPackage(fqn, options));
-        }
+        ///// <summary>
+        /////     Installs the specified <see cref="IPackage"/> (extracts it to disk) using the specified <paramref name="options"/>.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to install.</param>
+        ///// <param name="options">The installation options for the operation.</param>
+        ///// <returns>A Result containing the result of the operation.</returns>
+        //public async Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options)
+        //{
+        //    return await Task.Run(() => InstallPackage(fqn, options));
+        //}
 
-        /// <summary>
-        ///     Verifies the specified <see cref="IPackage"/>.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        public IResult<bool> VerifyPackage(string fqn)
-        {
-            return VerifyPackage(fqn, string.Empty);
-        }
+        ///// <summary>
+        /////     Verifies the specified <see cref="IPackage"/>.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        //public IResult<bool> VerifyPackage(string fqn)
+        //{
+        //    return VerifyPackage(fqn, string.Empty);
+        //}
 
-        /// <summary>
-        ///     Verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
-        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        public IResult<bool> VerifyPackage(string fqn, string publicKey)
-        {
-            Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
-            logger.Info($"Verifying Package '{fqn}'...");
+        ///// <summary>
+        /////     Verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        ///// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        //public IResult<bool> VerifyPackage(string fqn, string publicKey)
+        //{
+        //    Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
+        //    logger.Info($"Verifying Package '{fqn}'...");
 
-            IResult<bool> retVal = new Result<bool>();
-            IPackage findResult = FindPackage(fqn);
+        // IResult<bool> retVal = new Result<bool>(); IPackage findResult = FindPackage(fqn);
 
-            if (findResult != default(Package))
-            {
-                PackageVerifier verifier = new PackageVerifier();
-                verifier.Updated += (sender, e) => logger.Debug(e.Message);
+        // if (findResult != default(Package)) { PackageVerifier verifier = new PackageVerifier(); verifier.Updated += (sender, e)
+        // => logger.Debug(e.Message);
 
-                try
-                {
-                    retVal.ReturnValue = verifier.VerifyPackage(findResult.Filename, publicKey);
-                }
-                catch (Exception ex)
-                {
-                    logger.Exception(LogLevel.Debug, ex);
-                    retVal.AddError(ex.Message);
-                }
-            }
-            else
-            {
-                retVal.AddError($"Failed to find Package '{fqn}'.");
-            }
+        // try { retVal.ReturnValue = verifier.VerifyPackage(findResult.Filename, publicKey); } catch (Exception ex) {
+        // logger.Exception(LogLevel.Debug, ex); retVal.AddError(ex.Message); } } else { retVal.AddError($"Failed to find Package
+        // '{fqn}'."); }
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                retVal.AddError($"The Package '{fqn}' is invalid.");
-            }
+        // if (retVal.ResultCode == ResultCode.Failure) { retVal.AddError($"The Package '{fqn}' is invalid."); }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(guid);
-            return retVal;
-        }
+        //    retVal.LogResult(logger);
+        //    logger.ExitMethod(guid);
+        //    return retVal;
+        //}
 
-        /// <summary>
-        ///     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        /// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
-        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey)
-        {
-            return await Task.Run(() => VerifyPackage(fqn, publicKey));
-        }
+        ///// <summary>
+        /////     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        ///// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        //public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey)
+        //{
+        //    return await Task.Run(() => VerifyPackage(fqn, publicKey));
+        //}
 
-        /// <summary>
-        ///     Asynchronously verifies the specified <see cref="IPackage"/>.
-        /// </summary>
-        /// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        /// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        public async Task<IResult<bool>> VerifyPackageAsync(string fqn)
-        {
-            return await Task.Run(() => VerifyPackage(fqn, string.Empty));
-        }
+        ///// <summary>
+        /////     Asynchronously verifies the specified <see cref="IPackage"/>.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        //public async Task<IResult<bool>> VerifyPackageAsync(string fqn)
+        //{
+        //    return await Task.Run(() => VerifyPackage(fqn, string.Empty));
+        //}
 
         #endregion Public Methods
 
@@ -768,7 +653,8 @@ namespace OpenIIoT.Core.Packaging
 
             IResult retVal = new Result();
 
-            retVal.Incorporate(ScanPackages());
+            retVal.Incorporate(PackageScanner.ScanPackageArchives());
+            retVal.Incorporate(PackageScanner.ScanPackages());
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
