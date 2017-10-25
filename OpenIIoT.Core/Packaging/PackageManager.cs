@@ -102,8 +102,6 @@ namespace OpenIIoT.Core.Packaging
             RegisterDependency<IPlatformManager>(platformManager);
 
             PackageList = new List<IPackage>();
-            PackageFactory = new PackageFactory();
-            PackageScanner = new PackageScanner(PackageFactory);
 
             ChangeState(State.Initialized);
 
@@ -693,8 +691,11 @@ namespace OpenIIoT.Core.Packaging
 
             IResult retVal = new Result();
 
-            retVal.Incorporate(PackageScanner.ScanPackageArchives());
-            retVal.Incorporate(PackageScanner.ScanPackages());
+            PackageFactory = new PackageFactory();
+            PackageScanner = new PackageScanner(PackageFactory);
+
+            retVal.IncorporateErrors(PackageScanner.ScanPackageArchives());
+            retVal.IncorporateErrors(PackageScanner.ScanPackages());
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);

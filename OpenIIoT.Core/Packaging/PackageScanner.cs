@@ -55,6 +55,13 @@
 
         #region Public Methods
 
+        /// <summary>
+        ///     Scans the directory specified in <see cref="Platform.Directories.PackageArchives"/> for
+        ///     <see cref="IPackageArchive"/> s.
+        /// </summary>
+        /// <returns>
+        ///     A Result containing the result of the operation and a <see cref="List{T}"/> of found <see cref="IPackageArchive"/> s.
+        /// </returns>
         public IResult<IList<IPackageArchive>> ScanPackageArchives()
         {
             Guid guid = logger.EnterMethod(true);
@@ -63,7 +70,7 @@
             IResult<IList<IPackageArchive>> retVal = new Result<IList<IPackageArchive>>();
             retVal.ReturnValue = new List<IPackageArchive>();
 
-            string searchDirectory = Path.Combine(PlatformManager.Directories.Packages, "Archive");
+            string searchDirectory = PlatformManager.Directories.PackageArchives;
 
             logger.Debug($"Scanning directory '{searchDirectory}'...");
 
@@ -78,6 +85,7 @@
 
                     if (readResult.ResultCode != ResultCode.Failure)
                     {
+                        retVal.Incorporate(readResult);
                         retVal.ReturnValue.Add(readResult.ReturnValue);
                     }
                     else
@@ -112,6 +120,11 @@
             {
                 foreach (string directory in dirListResult.ReturnValue)
                 {
+                    if (directory == PlatformManager.Directories.PackageArchives)
+                    {
+                        continue;
+                    }
+
                     IResult<IPackage> readResult = PackageFactory.GetPackage(directory);
 
                     if (readResult.ResultCode != ResultCode.Failure)
