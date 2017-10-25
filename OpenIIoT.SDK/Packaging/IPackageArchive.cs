@@ -57,7 +57,7 @@ namespace OpenIIoT.SDK.Packaging
         DateTime CreatedOn { get; }
 
         /// <summary>
-        ///     Gets or sets the fully qualified filename of the archive file.
+        ///     Gets the fully qualified filename of the archive file.
         /// </summary>
         string FileName { get; }
 

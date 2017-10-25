@@ -1,18 +1,14 @@
-﻿using NLog.xLogger;
-using OpenIIoT.SDK.Common.OperationResult;
-using OpenIIoT.SDK.Packaging;
-using OpenIIoT.SDK.Packaging.Manifest;
-using OpenIIoT.SDK.Packaging.Operations;
-using OpenIIoT.SDK.Platform;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace OpenIIoT.Core.Packaging
+﻿namespace OpenIIoT.Core.Packaging
 {
+    using System;
+    using System.IO;
+    using NLog.xLogger;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
+    using OpenIIoT.SDK.Packaging.Operations;
+    using OpenIIoT.SDK.Platform;
+
     public class PackageFactory : IPackageFactory
     {
         #region Private Fields
@@ -28,11 +24,6 @@ namespace OpenIIoT.Core.Packaging
 
         public PackageFactory()
             : this(ApplicationManager.GetInstance().GetManager<IPlatformManager>(), new ManifestExtractor())
-        {
-        }
-
-        public PackageFactory(IPlatformManager platformManager)
-            : this(platformManager, new ManifestExtractor())
         {
         }
 
