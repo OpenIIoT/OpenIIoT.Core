@@ -301,7 +301,7 @@ namespace OpenIIoT.SDK.Packaging
         //Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options);
 
         /// <summary>
-        ///     Scans for and returns a list of all Package archive files in the configured Packages directory.
+        ///     Scans for and returns a list of available <see cref="IPackageArchive"/> instances in the configured PackageArchive directory.
         /// </summary>
         /// <returns>
         ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s
@@ -309,7 +309,8 @@ namespace OpenIIoT.SDK.Packaging
         IResult<IList<IPackageArchive>> ScanPackageArchives();
 
         /// <summary>
-        ///     Asynchronously scans for and returns a list of all Package archive files in the configured Packages directory.
+        ///     Asynchronously scans for and returns a list of all <see cref="IPackageArchive"/> instances in the configured
+        ///     PackageArchives directory.
         /// </summary>
         /// <returns>
         ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s.
@@ -317,13 +318,14 @@ namespace OpenIIoT.SDK.Packaging
         Task<IResult<IList<IPackageArchive>>> ScanPackageArchivesAsync();
 
         /// <summary>
-        ///     Scans for and returns a list of all installed Packages in the configured Packages directory.
+        ///     Scans for and returns a list of installed <see cref="IPackage"/> instances in the configured Packages directory.
         /// </summary>
         /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
         IResult<IList<IPackage>> ScanPackages();
 
         /// <summary>
-        ///     Asynchronously scans for and returns a list of all installed Packages in the configured Packages directory.
+        ///     Asynchronously scans for and returns a list of installed <see cref="IPackage"/> instances in the configured
+        ///     Packages directory.
         /// </summary>
         /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
         Task<IResult<IList<IPackage>>> ScanPackagesAsync();

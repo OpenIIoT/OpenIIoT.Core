@@ -102,6 +102,8 @@ namespace OpenIIoT.Core.Packaging
             RegisterDependency<IPlatformManager>(platformManager);
 
             PackageList = new List<IPackage>();
+            PackageFactory = new PackageFactory(PlatformManager);
+            PackageScanner = new PackageScanner(PlatformManager, PackageFactory);
 
             ChangeState(State.Initialized);
 
@@ -164,6 +166,10 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         private IList<IPackageArchive> PackageArchiveList { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the <see cref="IPackageFactory"/> used to facilitate scanning of <see cref="IPackage"/> and
+        ///     <see cref="IPackageArchive"/> instances.
+        /// </summary>
         private PackageFactory PackageFactory { get; set; }
 
         /// <summary>
@@ -171,6 +177,10 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         private IList<IPackage> PackageList { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the <see cref="IPackageScanner"/> used to scan for <see cref="IPackage"/> and
+        ///     <see cref="IPackageArchive"/> instances.
+        /// </summary>
         private PackageScanner PackageScanner { get; set; }
 
         /// <summary>
@@ -610,10 +620,12 @@ namespace OpenIIoT.Core.Packaging
         //    return await Task.Run(() => VerifyPackage(fqn, string.Empty));
         //}
 
-        #endregion Public Methods
-
-        #region Protected Methods
-
+        /// <summary>
+        ///     Scans for and returns a list of available <see cref="IPackageArchive"/> instances in the configured PackageArchives directory.
+        /// </summary>
+        /// <returns>
+        ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s
+        /// </returns>
         public IResult<IList<IPackageArchive>> ScanPackageArchives()
         {
             IResult<IList<IPackageArchive>> retVal = new Result<IList<IPackageArchive>>();
@@ -629,11 +641,22 @@ namespace OpenIIoT.Core.Packaging
             return retVal;
         }
 
+        /// <summary>
+        ///     Asynchronously scans for and returns a list of all <see cref="IPackageArchive"/> instances in the configured
+        ///     PackageArchives directory.
+        /// </summary>
+        /// <returns>
+        ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s.
+        /// </returns>
         public Task<IResult<IList<IPackageArchive>>> ScanPackageArchivesAsync()
         {
             return Task.Run(() => ScanPackageArchives());
         }
 
+        /// <summary>
+        ///     Scans for and returns a list of installed <see cref="IPackage"/> instances in the configured Packages directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
         public IResult<IList<IPackage>> ScanPackages()
         {
             IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
@@ -649,10 +672,19 @@ namespace OpenIIoT.Core.Packaging
             return retVal;
         }
 
+        /// <summary>
+        ///     Asynchronously scans for and returns a list of installed <see cref="IPackage"/> instances in the configured
+        ///     Packages directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
         public Task<IResult<IList<IPackage>>> ScanPackagesAsync()
         {
             return Task.Run(() => ScanPackages());
         }
+
+        #endregion Public Methods
+
+        #region Protected Methods
 
         /// <summary>
         ///     <para>Executed upon shutdown of the Manager.</para>
@@ -690,9 +722,6 @@ namespace OpenIIoT.Core.Packaging
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
 
             IResult retVal = new Result();
-
-            PackageFactory = new PackageFactory();
-            PackageScanner = new PackageScanner(PackageFactory);
 
             retVal.Incorporate(PackageScanner.ScanPackageArchives());
             retVal.Incorporate(PackageScanner.ScanPackages());
