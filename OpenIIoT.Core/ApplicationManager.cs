@@ -363,12 +363,7 @@ namespace OpenIIoT.Core
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            Result startResult = StartManagers();
-
-            if (startResult.ResultCode == ResultCode.Failure)
-            {
-                retVal.Incorporate(StartManagers());
-            }
+            StartManagers();
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(guid);
@@ -776,54 +771,43 @@ namespace OpenIIoT.Core
         ///     Starts the specified <see cref="IManager"/> instance
         /// </summary>
         /// <param name="manager">The IManager instance to start.</param>
-        /// <returns>A Result containing the result of the operation and the specified IManager instance.</returns>
-        private Result<IManager> StartManager(IManager manager)
+        /// <exception cref="ManagerStartException">Thrown when the <see cref="IManager"/> fails to start.</exception>
+        private void StartManager(IManager manager)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
             logger.Debug("Starting " + manager.GetType().Name + "...");
 
             Result<IManager> retVal = new Result<IManager>();
-
-            // invoke the Start() method on the specified manager
             retVal.Incorporate(manager.Start());
 
-            // if the manager fails to start, throw an exception and halt the program
             if (retVal.ResultCode == ResultCode.Failure)
             {
                 throw new ManagerStartException("Failed to start Manager '" + manager.ManagerName + "': " + retVal.GetLastError());
             }
 
-            retVal.ReturnValue = manager;
-
             retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
+            logger.ExitMethod(guid);
         }
 
         /// <summary>
         ///     Starts each <see cref="IManager"/> contained within the specified list of Manager instances.
         /// </summary>
         /// <remarks>Does not Start the ApplicationManager instance.</remarks>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result StartManagers()
+        private void StartManagers()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Starting Managers...");
-            Result retVal = new Result();
 
-            // iterate over the Manager instance list and start each manager. skip the ApplicationManager as it has already been started.
             foreach (IManager manager in ManagerInstances)
             {
                 if (manager != this)
                 {
                     logger.SubHeading(LogLevel.Debug, manager.GetType().Name);
-                    retVal.Incorporate(StartManager(manager));
+                    StartManager(manager);
                 }
             }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
+            logger.ExitMethod(guid);
         }
 
         /// <summary>
