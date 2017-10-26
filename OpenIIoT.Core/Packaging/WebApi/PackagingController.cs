@@ -103,22 +103,65 @@ namespace OpenIIoT.Core.Packaging.WebApi
         //}
 
         /// <summary>
-        ///     Returns a list of Packages available for installation.
+        ///     Returns a list of Package Archives available for installation.
         /// </summary>
-        /// <returns>A Result containing the result of the operation and a list of Packages.</returns>
-        [Route("archive")]
+        /// <param name="scan">Refresh from disk.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Route("archives")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(List<IPackageArchive>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IList<IPackageArchive>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesGet(bool? scan)
         {
+            HttpResponseMessage retVal;
+
             if ((bool)scan)
             {
-                await manager.GetManager<IPackageManager>().ScanPackageArchivesAsync();
+                IResult scanResult = await manager.GetManager<IPackageManager>().ScanPackageArchivesAsync();
+
+                if (scanResult.ResultCode == ResultCode.Failure)
+                {
+                    HttpErrorResult err = new HttpErrorResult("Failed to refresh Package Archive list from disk", scanResult);
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                }
             }
 
             IReadOnlyList<IPackageArchive> packageArchives = manager.GetManager<IPackageManager>().PackageArchives;
+            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
 
-            return Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Returns a list of installed Packages.
+        /// </summary>
+        /// <param name="scan">Refresh from disk.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Route("packages")]
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IList<IPackage>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackagesGet(bool? scan)
+        {
+            HttpResponseMessage retVal;
+
+            if ((bool)scan)
+            {
+                IResult scanResult = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
+
+                if (scanResult.ResultCode == ResultCode.Failure)
+                {
+                    HttpErrorResult err = new HttpErrorResult("Failed to refresh Package list from disk", scanResult);
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                }
+            }
+
+            IReadOnlyList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
+            retVal = Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
+
+            return retVal;
         }
 
         //[Route("{fqn}")]
