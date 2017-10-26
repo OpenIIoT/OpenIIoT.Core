@@ -78,6 +78,15 @@ namespace OpenIIoT.Core.Packaging
         }
 
         /// <summary>
+        ///     Initializes a new instance of the <see cref="PackageFactory"/> class with the specified <paramref name="platformManager"/>.
+        /// </summary>
+        /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
+        public PackageFactory(IPlatformManager platformManager)
+            : this(platformManager, new ManifestExtractor())
+        {
+        }
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="PackageFactory"/> class with the specified
         ///     <paramref name="platformManager"/> and <paramref name="manifestExtractor"/>.
         /// </summary>
