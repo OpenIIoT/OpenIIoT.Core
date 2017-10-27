@@ -66,12 +66,6 @@ namespace OpenIIoT.Core.Packaging
 
         #endregion Public Constructors
 
-        #region Private Properties
-
-        private FileInfo FileInfo { get; set; }
-
-        #endregion Private Properties
-
         #region Public Properties
 
         /// <summary>
@@ -80,7 +74,7 @@ namespace OpenIIoT.Core.Packaging
         public DateTime CreatedOn => FileInfo.CreationTimeUtc;
 
         /// <summary>
-        ///     Gets or sets the fully qualified filename of the archive file.
+        ///     Gets the fully qualified filename of the archive file.
         /// </summary>
         public string FileName => FileInfo.FullName;
 
@@ -110,5 +104,11 @@ namespace OpenIIoT.Core.Packaging
         public DateTime ModifiedOn => FileInfo.LastWriteTimeUtc;
 
         #endregion Public Properties
+
+        #region Private Properties
+
+        private FileInfo FileInfo { get; set; }
+
+        #endregion Private Properties
     }
 }
