@@ -67,6 +67,16 @@ namespace OpenIIoT.SDK.Packaging
         string FQN { get; }
 
         /// <summary>
+        ///     Gets a value indicating whether the archive signature contains a trust.
+        /// </summary>
+        bool HasTrust { get; }
+
+        /// <summary>
+        ///     Gets a value indicating whether the archive is signed.
+        /// </summary>
+        bool IsSigned { get; }
+
+        /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
         /// </summary>
         IPackageManifest Manifest { get; }
