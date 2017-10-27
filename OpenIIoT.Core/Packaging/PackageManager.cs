@@ -102,6 +102,8 @@ namespace OpenIIoT.Core.Packaging
             RegisterDependency<IPlatformManager>(platformManager);
 
             PackageList = new List<IPackage>();
+            PackageArchiveList = new List<IPackageArchive>();
+
             PackageFactory = new PackageFactory(PlatformManager);
             PackageScanner = new PackageScanner(PlatformManager, PackageFactory);
 
@@ -440,39 +442,39 @@ namespace OpenIIoT.Core.Packaging
         //    return FindPackage(fqn, true);
         //}
 
-        ///// <summary>
-        /////     <para>
-        /////         Searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the specified
-        /////         <paramref name="fqn"/> and, if found, returns the found instance.
-        /////     </para>
-        /////     <para>
-        /////         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
-        /////         refresh the <see cref="PackageArchives"/> list from disk.
-        /////     </para>
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
-        ///// <returns>The found <see cref="IPackageArchive"/>.</returns>
-        //public IPackageArchive FindPackageArchive(string fqn)
-        //{
-        //    return FindPackageArchive(fqn, true);
-        //}
+        /// <summary>
+        ///     <para>
+        ///         Searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the specified
+        ///         <paramref name="fqn"/> and, if found, returns the found instance.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
+        ///         refresh the <see cref="PackageArchives"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
+        /// <returns>The found <see cref="IPackageArchive"/>.</returns>
+        public IPackageArchive FindPackageArchive(string fqn)
+        {
+            return FindPackageArchive(fqn, true);
+        }
 
-        ///// <summary>
-        /////     <para>
-        /////         Asynchronously searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the
-        /////         specified <paramref name="fqn"/> and, if found, returns the found instance.
-        /////     </para>
-        /////     <para>
-        /////         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
-        /////         refresh the <see cref="PackageArchives"/> list from disk.
-        /////     </para>
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
-        ///// <returns>The found <see cref="IPackageArchive"/>.</returns>
-        //public Task<IPackageArchive> FindPackageArchiveAsync(string fqn)
-        //{
-        //    return Task.Run(() => FindPackageArchive(fqn));
-        //}
+        /// <summary>
+        ///     <para>
+        ///         Asynchronously searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the
+        ///         specified <paramref name="fqn"/> and, if found, returns the found instance.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
+        ///         refresh the <see cref="PackageArchives"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
+        /// <returns>The found <see cref="IPackageArchive"/>.</returns>
+        public Task<IPackageArchive> FindPackageArchiveAsync(string fqn)
+        {
+            return Task.Run(() => FindPackageArchive(fqn));
+        }
 
         ///// <summary>
         /////     <para>
@@ -723,8 +725,13 @@ namespace OpenIIoT.Core.Packaging
 
             IResult retVal = new Result();
 
-            retVal.Incorporate(PackageScanner.ScanPackageArchives());
-            retVal.Incorporate(PackageScanner.ScanPackages());
+            IResult<IList<IPackage>> packageScanResult = PackageScanner.ScanPackages();
+            retVal.Incorporate(packageScanResult);
+            PackageList = packageScanResult.ReturnValue;
+
+            IResult<IList<IPackageArchive>> packageArchiveScanResult = PackageScanner.ScanPackageArchives();
+            retVal.Incorporate(packageArchiveScanResult);
+            PackageArchiveList = packageArchiveScanResult.ReturnValue;
 
             retVal.LogResult(logger.Debug);
             logger.ExitMethod(retVal, guid);
