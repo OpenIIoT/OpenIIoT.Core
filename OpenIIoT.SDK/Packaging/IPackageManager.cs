@@ -198,33 +198,33 @@ namespace OpenIIoT.SDK.Packaging
         ///// <returns>The found <see cref="IPackage"/>.</returns>
         //IPackageArchive FindPackage(string fqn);
 
-        ///// <summary>
-        /////     <para>
-        /////         Searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the specified
-        /////         <paramref name="fqn"/> and, if found, returns the found instance.
-        /////     </para>
-        /////     <para>
-        /////         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
-        /////         refresh the <see cref="PackageArchives"/> list from disk.
-        /////     </para>
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
-        ///// <returns>The found <see cref="IPackageArchive"/>.</returns>
-        //IPackageArchive FindPackageArchive(string fqn);
+        /// <summary>
+        ///     <para>
+        ///         Searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the specified
+        ///         <paramref name="fqn"/> and, if found, returns the found instance.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
+        ///         refresh the <see cref="PackageArchives"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
+        /// <returns>The found <see cref="IPackageArchive"/>.</returns>
+        IPackageArchive FindPackageArchive(string fqn);
 
-        ///// <summary>
-        /////     <para>
-        /////         Asynchronously searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the
-        /////         specified <paramref name="fqn"/> and, if found, returns the found instance.
-        /////     </para>
-        /////     <para>
-        /////         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
-        /////         refresh the <see cref="PackageArchives"/> list from disk.
-        /////     </para>
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
-        ///// <returns>The found <see cref="IPackageArchive"/>.</returns>
-        //Task<IPackageArchive> FindPackageArchiveAsync(string fqn);
+        /// <summary>
+        ///     <para>
+        ///         Asynchronously searches the <see cref="PackageArchives"/> list for a <see cref="IPackageArchive"/> matching the
+        ///         specified <paramref name="fqn"/> and, if found, returns the found instance.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package archive is not found, the <see cref="ScanPackageArchives()"/> method is invoked to
+        ///         refresh the <see cref="PackageArchives"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to find.</param>
+        /// <returns>The found <see cref="IPackageArchive"/>.</returns>
+        Task<IPackageArchive> FindPackageArchiveAsync(string fqn);
 
         ///// <summary>
         /////     <para>
