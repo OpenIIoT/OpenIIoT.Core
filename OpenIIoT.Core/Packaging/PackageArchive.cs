@@ -90,6 +90,16 @@ namespace OpenIIoT.Core.Packaging
         public string FQN => Manifest.Namespace + "." + Manifest.Title;
 
         /// <summary>
+        ///     Gets a value indicating whether the archive signature contains a trust.
+        /// </summary>
+        public bool HasTrust => !string.IsNullOrEmpty(Manifest.Signature.Trust);
+
+        /// <summary>
+        ///     Gets a value indicating whether the archive is signed.
+        /// </summary>
+        public bool IsSigned => Manifest.Signature != default(PackageManifestSignature);
+
+        /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
         /// </summary>
         public IPackageManifest Manifest { get; }
