@@ -86,12 +86,12 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets a value indicating whether the archive signature contains a trust.
         /// </summary>
-        public bool HasTrust => !string.IsNullOrEmpty(Manifest.Signature.Trust);
+        public bool HasTrust => !string.IsNullOrEmpty(Manifest?.Signature?.Trust);
 
         /// <summary>
         ///     Gets a value indicating whether the archive is signed.
         /// </summary>
-        public bool IsSigned => Manifest.Signature != default(PackageManifestSignature);
+        public bool IsSigned => Manifest?.Signature != default(PackageManifestSignature);
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
