@@ -151,15 +151,18 @@ namespace OpenIIoT.SDK.Common
         /// <param name="source">The object from which values are copied.</param>
         public static void CopyPropertyValuesFrom(this object destination, object source)
         {
-            PropertyInfo[] properties = destination.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
-
-            foreach (PropertyInfo destinationProperty in properties)
+            if (source != null)
             {
-                PropertyInfo sourceProperty = source.GetType().GetProperty(destinationProperty.Name);
+                PropertyInfo[] properties = destination.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public);
 
-                if (sourceProperty != default(PropertyInfo) && destinationProperty.PropertyType == sourceProperty.PropertyType)
+                foreach (PropertyInfo destinationProperty in properties)
                 {
-                    destinationProperty.SetValue(destination, sourceProperty.GetValue(source));
+                    PropertyInfo sourceProperty = source.GetType().GetProperty(destinationProperty.Name);
+
+                    if (sourceProperty != default(PropertyInfo) && destinationProperty.PropertyType == sourceProperty.PropertyType)
+                    {
+                        destinationProperty.SetValue(destination, sourceProperty.GetValue(source));
+                    }
                 }
             }
         }
