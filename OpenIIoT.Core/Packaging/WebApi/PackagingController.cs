@@ -56,6 +56,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
     using Swashbuckle.Swagger.Annotations;
+    using OpenIIoT.Core.Packaging.WebApi.Data;
 
     /// <summary>
     ///     Handles the API methods for AppPackages.
@@ -109,7 +110,8 @@ namespace OpenIIoT.Core.Packaging.WebApi
         /// <returns>An HTTP response message.</returns>
         [Route("archives")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IList<IPackageArchive>))]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesGet(bool? scan)
@@ -127,8 +129,45 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 }
             }
 
-            IReadOnlyList<IPackageArchive> packageArchives = manager.GetManager<IPackageManager>().PackageArchives;
-            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
+            IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
+            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives);
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Gets the specified Package Archive.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to retrieve.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Route("archives/{fqn}")]
+        [HttpGet]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was retrieved successfully.", typeof(PackageArchiveData))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "The PackageArchive could not be found.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        public async Task<HttpResponseMessage> PackageArchivesGetFqn(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified fqn is null or empty.");
+            }
+            else
+            {
+                IPackageArchive packageArchive = await PackageManager.FindPackageArchiveAsync(fqn);
+
+                if (packageArchive != default(IPackageArchive))
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, new PackageArchiveData(packageArchive));
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
 
             return retVal;
         }

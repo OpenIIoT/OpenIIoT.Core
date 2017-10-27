@@ -61,7 +61,7 @@
         /// </summary>
         [JsonProperty(Order = 7)]
         [DataMember(Order = 7)]
-        public PackageManifest Manifest { get; set; }
+        public IPackageManifest Manifest { get; set; }
 
         /// <summary>
         ///     Gets the time at which the archive was last modified, in Utc.
