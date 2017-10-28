@@ -62,7 +62,10 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
         {
             this.CopyPropertyValuesFrom(packageManifest);
 
-            Signature = new PackageManifestSignatureData(packageManifest.Signature);
+            if (packageManifest.Signature != default(PackageManifestSignature))
+            {
+                Signature = new PackageManifestSignatureData(packageManifest.Signature);
+            }
         }
 
         #endregion Public Constructors
