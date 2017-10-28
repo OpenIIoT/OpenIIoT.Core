@@ -13,7 +13,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  An installable Package archive.
+      █  An installable Package Archive.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -43,12 +43,15 @@ namespace OpenIIoT.Core.Packaging
 {
     using System;
     using System.IO;
+    using System.Runtime.Serialization;
+    using Newtonsoft.Json;
     using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
-    ///     Represents an installable extension archive.
+    ///     An installable Package Archive.
     /// </summary>
+    [DataContract]
     public class PackageArchive : IPackageArchive
     {
         #region Public Constructors
@@ -56,8 +59,8 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Initializes a new instance of the <see cref="PackageArchive"/> class.
         /// </summary>
-        /// <param name="filename">The fully qualified filename of the archive file.</param>
-        /// <param name="manifest">The manifest contained within the archive.</param>
+        /// <param name="fileInfo">The <see cref="FileInfo"/> instance of the Archive file.</param>
+        /// <param name="manifest">The manifest contained within the Archive.</param>
         public PackageArchive(FileInfo fileInfo, PackageManifest manifest)
         {
             Manifest = manifest;
@@ -71,42 +74,59 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets the time at which the archive was created, in Utc.
         /// </summary>
+        [JsonProperty(Order = 5)]
+        [DataMember(Order = 5)]
         public DateTime CreatedOn => FileInfo.CreationTimeUtc;
 
         /// <summary>
         ///     Gets the fully qualified filename of the archive file.
         /// </summary>
+        [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
         public string FileName => FileInfo.FullName;
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
         /// </summary>
+        [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
         public string FQN => Manifest.Namespace + "." + Manifest.Title;
 
         /// <summary>
         ///     Gets a value indicating whether the archive signature contains a trust.
         /// </summary>
+        [JsonProperty(Order = 3)]
+        [DataMember(Order = 3)]
         public bool HasTrust => !string.IsNullOrEmpty(Manifest?.Signature?.Trust);
 
         /// <summary>
         ///     Gets a value indicating whether the archive is signed.
         /// </summary>
+        [JsonProperty(Order = 4)]
+        [DataMember(Order = 4)]
         public bool IsSigned => Manifest?.Signature != default(PackageManifestSignature);
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
         /// </summary>
+        [JsonProperty(Order = 7)]
+        [DataMember(Order = 7)]
         public IPackageManifest Manifest { get; }
 
         /// <summary>
         ///     Gets the time at which the archive was last modified, in Utc.
         /// </summary>
+        [JsonProperty(Order = 6)]
+        [DataMember(Order = 6)]
         public DateTime ModifiedOn => FileInfo.LastWriteTimeUtc;
 
         #endregion Public Properties
 
         #region Private Properties
 
+        /// <summary>
+        ///     Gets or sets the <see cref="FileInfo"/> instance of the Archive file.
+        /// </summary>
         private FileInfo FileInfo { get; set; }
 
         #endregion Private Properties

@@ -111,7 +111,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("archives/{fqn}")]
         [HttpGet]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was retrieved successfully.", typeof(PackageArchiveData))]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was retrieved successfully.", typeof(PackageArchive))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The PackageArchive could not be found.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
@@ -129,7 +129,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
                 if (packageArchive != default(IPackageArchive))
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, new PackageArchiveData(packageArchive), JsonFormatter());
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchive, JsonFormatter());
                 }
                 else
                 {
