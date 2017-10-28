@@ -1,14 +1,23 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄                                                                ████████▄
-      █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄                                                              ███   ▀███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██    ███    ███   ▄█████      ██      ▄█████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄ ███    ███   ██   ██ ▀███████▄   ██   ██
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀ ███    ███   ██   ██     ██  ▀   ██   ██
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██    ███    ███ ▀████████     ██    ▀████████
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██    ███   ▄███   ██   ██     ██      ██   ██
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀   ████████▀    ██   █▀    ▄██▀     ██   █▀
+      █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄
+      █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀
+      █
+      █      ▄████████                                                            ████████▄
+      █     ███    ███                                                            ███   ▀███
+      █     ███    █▀  ██   █     ▄▄██▄▄▄     ▄▄██▄▄▄    ▄█████     █████ ▄█   ▄  ███    ███   ▄█████      ██      ▄█████
+      █     ███        ██   ██  ▄█▀▀██▀▀█▄  ▄█▀▀██▀▀█▄   ██   ██   ██  ██ ██   █▄ ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ▀███████████ ██   ██  ██  ██  ██  ██  ██  ██   ██   ██  ▄██▄▄█▀ ▀▀▀▀▀██ ███    ███   ██   ██     ██  ▀   ██   ██
+      █            ███ ██   ██  ██  ██  ██  ██  ██  ██ ▀████████ ▀███████ ▄█   ██ ███    ███ ▀████████     ██    ▀████████
+      █      ▄█    ███ ██   ██  ██  ██  ██  ██  ██  ██   ██   ██   ██  ██ ██   ██ ███   ▄███   ██   ██     ██      ██   ██
+      █    ▄████████▀  ██████    █  ██  █    █  ██  █    ██   █▀   ██  ██  █████  ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
@@ -50,21 +59,21 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
     ///     Data Transfer Object used when returning Package Manifest objects.
     /// </summary>
     [DataContract]
-    public class PackageManifestData
+    public class PackageManifestSummaryData
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageManifestData"/> class with the specified <paramref name="packageManifest"/>.
+        ///     Initializes a new instance of the <see cref="PackageManifestSummaryData"/> class with the specified <paramref name="packageManifest"/>.
         /// </summary>
         /// <param name="packageManifest">The <see cref="IPackageManifest"/> instance from which to copy values.</param>
-        public PackageManifestData(IPackageManifest packageManifest)
+        public PackageManifestSummaryData(IPackageManifest packageManifest)
         {
             this.CopyPropertyValuesFrom(packageManifest);
 
             if (packageManifest.Signature != default(PackageManifestSignature))
             {
-                Signature = new PackageManifestSignatureData(packageManifest.Signature);
+                Signature = new PackageManifestSummarySignatureData(packageManifest.Signature);
             }
         }
 
@@ -112,7 +121,7 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
         /// </summary>
         [JsonProperty(Order = 9)]
         [DataMember(Order = 9)]
-        public PackageManifestSignatureData Signature { get; set; }
+        public PackageManifestSummarySignatureData Signature { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package title.
