@@ -61,6 +61,11 @@ namespace OpenIIoT.Core.Platform
         public virtual string DirectoryLogs => GetSetting<string>("Directory.Logs", @"Data\Logs");
 
         /// <summary>
+        ///     Gets the value of the 'Directory.PackageArchives' key from the application's XML configuration file.
+        /// </summary>
+        public virtual string DirectoryPackageArchives => GetSetting<string>("Directory.PackageArchives", @"Data\Packages\Archives");
+
+        /// <summary>
         ///     Gets the value of the 'Directory.Packages' key from the application's XML configuration file.
         /// </summary>
         public virtual string DirectoryPackages => GetSetting<string>("Directory.Packages", @"Data\Packages");

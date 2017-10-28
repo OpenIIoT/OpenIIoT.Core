@@ -13,7 +13,7 @@
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Model;
 
-    [Service.WebApi.ControllerRoutePrefixAttribute("v1/item")]
+    [RoutePrefix("v1/item")]
     public class ReadController : ApiBaseController
     {
         #region Private Fields

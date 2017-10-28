@@ -1,19 +1,19 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄
-      █     ███    ███
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
+      █      ▄███████▄                                                                ▄████████
+      █     ███    ███                                                                ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████   ███    ███    █████  ▄██████   ██   █     █   █    █     ▄█████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █    ███    ███   ██  ██ ██    ██   ██   ██   ██  ██    ██   ██   █
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄    ▀███████████  ▄██▄▄█▀ ██    ▀   ▄██▄▄▄██▄▄ ██▌ ██    ██  ▄██▄▄
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀      ███    ███ ▀███████ ██    ▄  ▀▀██▀▀▀██▀  ██  ██    ██ ▀▀██▀▀
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █    ███    ███   ██  ██ ██    ██   ██   ██   ██   █▄  ▄█    ██   █
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ███    █▀    ██  ██ ██████▀    ██   ██   █     ▀██▀     ███████
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents an installable extension archive.
+      █  An installable Package archive.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -42,49 +42,41 @@
 namespace OpenIIoT.Core.Packaging
 {
     using System;
-    using OpenIIoT.SDK.Common;
+    using System.IO;
     using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
-    using System.Collections;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
 
     /// <summary>
     ///     Represents an installable extension archive.
     /// </summary>
-    public class Package : IPackage
+    public class PackageArchive : IPackageArchive
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Package"/> class.
+        ///     Initializes a new instance of the <see cref="PackageArchive"/> class.
         /// </summary>
         /// <param name="filename">The fully qualified filename of the archive file.</param>
-        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
         /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(DirectoryInfo directoryInfo, PackageManifest manifest)
+        public PackageArchive(FileInfo fileInfo, PackageManifest manifest)
         {
-            DirectoryInfo = directoryInfo;
             Manifest = manifest;
-
-            IList<FileInfo> fileInfos = DirectoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).ToList();
-            Files = fileInfos.Select(f => GetRelativePath(f.FullName, DirectoryInfo.FullName)).ToList();
+            FileInfo = fileInfo;
         }
 
         #endregion Public Constructors
 
-        #region Private Properties
-
-        private DirectoryInfo DirectoryInfo { get; set; }
-
-        #endregion Private Properties
-
         #region Public Properties
 
-        public string DirectoryName => DirectoryInfo.FullName;
+        /// <summary>
+        ///     Gets the time at which the archive was created, in Utc.
+        /// </summary>
+        public DateTime CreatedOn => FileInfo.CreationTimeUtc;
 
-        public IList<string> Files { get; private set; }
+        /// <summary>
+        ///     Gets the fully qualified filename of the archive file.
+        /// </summary>
+        public string FileName => FileInfo.FullName;
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
@@ -92,32 +84,31 @@ namespace OpenIIoT.Core.Packaging
         public string FQN => Manifest.Namespace + "." + Manifest.Title;
 
         /// <summary>
-        ///     Gets the time at which the archive was last modified, according to the host filesystem.
+        ///     Gets a value indicating whether the archive signature contains a trust.
         /// </summary>
-        public DateTime InstalledOn => DirectoryInfo.CreationTimeUtc;
+        public bool HasTrust => !string.IsNullOrEmpty(Manifest?.Signature?.Trust);
+
+        /// <summary>
+        ///     Gets a value indicating whether the archive is signed.
+        /// </summary>
+        public bool IsSigned => Manifest?.Signature != default(PackageManifestSignature);
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
         /// </summary>
         public IPackageManifest Manifest { get; }
 
+        /// <summary>
+        ///     Gets the time at which the archive was last modified, in Utc.
+        /// </summary>
+        public DateTime ModifiedOn => FileInfo.LastWriteTimeUtc;
+
         #endregion Public Properties
 
-        #region Private Methods
+        #region Private Properties
 
-        private string GetRelativePath(string fileName, string folder)
-        {
-            Uri pathUri = new Uri(fileName);
+        private FileInfo FileInfo { get; set; }
 
-            if (!folder.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                folder += Path.DirectorySeparatorChar;
-            }
-
-            Uri folderUri = new Uri(folder);
-            return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
-        }
-
-        #endregion Private Methods
+        #endregion Private Properties
     }
 }

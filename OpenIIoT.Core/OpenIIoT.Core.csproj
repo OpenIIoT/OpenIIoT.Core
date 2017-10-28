@@ -204,9 +204,18 @@
     <Compile Include="Model\ModelManagerConfiguration.cs" />
     <Compile Include="Model\WebApi\ReadController.cs" />
     <Compile Include="Model\WebApi\ValuesController.cs" />
+    <Compile Include="Packaging\PackageArchive.cs" />
     <Compile Include="Packaging\Package.cs" />
+    <Compile Include="Packaging\IPackageFactory.cs" />
+    <Compile Include="Packaging\PackageFactory.cs" />
     <Compile Include="Packaging\PackageManager.cs" />
-    <Compile Include="Packaging\WebApi\PackageController.cs" />
+    <Compile Include="Packaging\IPackageScanner.cs" />
+    <Compile Include="Packaging\PackageScanner.cs" />
+    <Compile Include="Packaging\WebApi\Data\PackageArchiveData.cs" />
+    <Compile Include="Packaging\WebApi\Data\PackageArchiveSummaryData.cs" />
+    <Compile Include="Packaging\WebApi\Data\PackageManifestData.cs" />
+    <Compile Include="Packaging\WebApi\Data\PackageManifestSignatureData.cs" />
+    <Compile Include="Packaging\WebApi\PackagingController.cs" />
     <Compile Include="Platform\Platform.cs" />
     <Compile Include="Platform\Directories.cs" />
     <Compile Include="Platform\PlatformSettings.cs" />
@@ -250,6 +259,7 @@
     <Compile Include="Common\WebApi\LogController.cs" />
     <Compile Include="Common\WebApi\LogHub.cs" />
     <Compile Include="Service\WebApi\ApiBaseController.cs" />
+    <Compile Include="Service\WebApi\GlobalPrefixProvider.cs" />
     <Compile Include="Service\WebApi\HttpErrorResult.cs" />
     <Compile Include="Service\WebApi\HubHelper.cs" />
     <Compile Include="Service\WebApi\IHub.cs" />
@@ -259,7 +269,6 @@
     <Compile Include="Service\WebApi\ModelValidation\ModelValidationResult.cs" />
     <Compile Include="Service\WebApi\ModelValidation\ModelValidator.cs" />
     <Compile Include="Service\WebApi\Routes.cs" />
-    <Compile Include="Service\WebApi\ControllerRoutePrefixAttribute.cs" />
     <Compile Include="Service\WebApi\Middleware\LoggingMiddleware.cs" />
     <Compile Include="Service\WebApi\Swagger\MimeTypesOperationFilter.cs" />
     <Compile Include="Service\WebApi\Startup.cs" />

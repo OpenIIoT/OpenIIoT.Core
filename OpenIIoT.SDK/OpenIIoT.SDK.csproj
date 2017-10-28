@@ -96,6 +96,7 @@
     <Compile Include="Common\State\StateChangedEventArgs.cs" />
     <Compile Include="Common\State\StopType.cs" />
     <Compile Include="Common\Utility.cs" />
+    <Compile Include="Packaging\IPackageArchive.cs" />
     <Compile Include="Packaging\IPackageManager.cs" />
     <Compile Include="Packaging\Manifest\IPackageManifest.cs" />
     <Compile Include="Packaging\Manifest\PackageManifest.cs" />
@@ -103,6 +104,7 @@
     <Compile Include="Packaging\Manifest\PackageManifestFile.cs" />
     <Compile Include="Packaging\Manifest\PackageManifestSignature.cs" />
     <Compile Include="Packaging\Operations\ArgumentValidator.cs" />
+    <Compile Include="Packaging\Operations\IManifestExtractor.cs" />
     <Compile Include="Packaging\Operations\ManifestExtractor.cs" />
     <Compile Include="Packaging\Operations\ManifestGenerator.cs" />
     <Compile Include="Packaging\Operations\PackageCreator.cs" />
@@ -110,6 +112,9 @@
     <Compile Include="Packaging\Operations\PackageTruster.cs" />
     <Compile Include="Packaging\Operations\PackageVerifier.cs" />
     <Compile Include="Packaging\IPackage.cs" />
+    <Compile Include="Packaging\Operations\IPackagingOperation.cs" />
+    <Compile Include="Packaging\PackageArchiveEventArgs.cs" />
+    <Compile Include="Packaging\PackageInstallEventArgs.cs" />
     <Compile Include="Packaging\PackageEventArgs.cs" />
     <Compile Include="Packaging\PackageInstallationOptions.cs" />
     <Compile Include="Packaging\PackagingConstants.cs" />

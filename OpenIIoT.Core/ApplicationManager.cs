@@ -341,9 +341,9 @@ namespace OpenIIoT.Core
             logger.Debug("Performing Shutdown for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            retVal.Incorporate(StopManagers());
+            StopManagers();
 
-            retVal.LogResult(logger.Debug);
+            retVal.LogResult(logger);
             logger.ExitMethod(guid);
             return retVal;
         }
@@ -358,10 +358,9 @@ namespace OpenIIoT.Core
             logger.Debug("Performing Startup for '" + GetType().Name + "'...");
             Result retVal = new Result();
 
-            // start all application managers.
-            retVal.Incorporate(StartManagers());
+            StartManagers();
 
-            retVal.LogResult(logger.Debug);
+            retVal.LogResult(logger);
             logger.ExitMethod(guid);
             return retVal;
         }
@@ -767,54 +766,41 @@ namespace OpenIIoT.Core
         ///     Starts the specified <see cref="IManager"/> instance
         /// </summary>
         /// <param name="manager">The IManager instance to start.</param>
-        /// <returns>A Result containing the result of the operation and the specified IManager instance.</returns>
-        private Result<IManager> StartManager(IManager manager)
+        /// <exception cref="ManagerStartException">Thrown when the <see cref="IManager"/> fails to start.</exception>
+        private void StartManager(IManager manager)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager), true);
             logger.Debug("Starting " + manager.GetType().Name + "...");
 
-            Result<IManager> retVal = new Result<IManager>();
+            IResult startResult = manager.Start();
 
-            // invoke the Start() method on the specified manager
-            retVal.Incorporate(manager.Start());
-
-            // if the manager fails to start, throw an exception and halt the program
-            if (retVal.ResultCode == ResultCode.Failure)
+            if (startResult.ResultCode == ResultCode.Failure)
             {
-                throw new ManagerStartException("Failed to start Manager '" + manager.ManagerName + "': " + retVal.GetLastError());
+                throw new ManagerStartException("Failed to start Manager '" + manager.ManagerName + "': " + startResult.GetLastError());
             }
 
-            retVal.ReturnValue = manager;
-
-            retVal.LogResult(logger.Debug);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
+            logger.ExitMethod(guid);
         }
 
         /// <summary>
         ///     Starts each <see cref="IManager"/> contained within the specified list of Manager instances.
         /// </summary>
         /// <remarks>Does not Start the ApplicationManager instance.</remarks>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result StartManagers()
+        private void StartManagers()
         {
             Guid guid = logger.EnterMethod(true);
             logger.Debug("Starting Managers...");
-            Result retVal = new Result();
 
-            // iterate over the Manager instance list and start each manager. skip the ApplicationManager as it has already been started.
             foreach (IManager manager in ManagerInstances)
             {
                 if (manager != this)
                 {
                     logger.SubHeading(LogLevel.Debug, manager.GetType().Name);
-                    retVal.Incorporate(StartManager(manager));
+                    StartManager(manager);
                 }
             }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
+            logger.ExitMethod(guid);
         }
 
         /// <summary>
@@ -822,22 +808,14 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <param name="manager">The IManager instance to stop.</param>
         /// <param name="stopType">The type of stoppage.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private IResult StopManager(IManager manager, StopType stopType = StopType.Stop)
+        private void StopManager(IManager manager, StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(manager, stopType), true);
             logger.Debug("Stopping " + manager.GetType().Name + "...");
 
-            IResult retVal = manager.Stop(stopType);
+            manager.Stop(stopType);
 
-            if (retVal.ResultCode == ResultCode.Failure)
-            {
-                throw new ManagerStopException("Failed to stop Manager '" + manager.ManagerName + "': " + retVal.GetLastError());
-            }
-
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
+            logger.ExitMethod(guid);
         }
 
         /// <summary>
@@ -845,27 +823,21 @@ namespace OpenIIoT.Core
         /// </summary>
         /// <remarks>Does not Stop the ApplicationManager instance.</remarks>
         /// <param name="stopType">The type of stoppage.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        private Result StopManagers(StopType stopType = StopType.Stop)
+        private void StopManagers(StopType stopType = StopType.Stop)
         {
             Guid guid = logger.EnterMethod();
             logger.Debug("Stopping Managers...");
-            Result retVal = new Result();
 
-            // iterate over the Manager instance list in reverse order, stopping each manager. skip the ApplicationManager as it
-            // will stop when this process is complete.
             for (int i = ManagerInstances.Count() - 1; i >= 0; i--)
             {
                 logger.SubHeading(LogLevel.Debug, ManagerInstances[i].GetType().Name);
                 if (ManagerInstances[i] != this)
                 {
-                    retVal.Incorporate(StopManager(ManagerInstances[i], StopType.Shutdown));
+                    StopManager(ManagerInstances[i], StopType.Shutdown);
                 }
             }
 
-            retVal.LogResult(logger);
-            logger.ExitMethod(retVal, guid);
-            return retVal;
+            logger.ExitMethod(guid);
         }
 
         #endregion Private Methods
