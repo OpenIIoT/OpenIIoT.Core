@@ -104,38 +104,6 @@ namespace OpenIIoT.Core.Packaging.WebApi
         //}
 
         /// <summary>
-        ///     Returns a list of Package Archives available for installation.
-        /// </summary>
-        /// <param name="scan">Refresh from disk.</param>
-        /// <returns>An HTTP response message.</returns>
-        [Route("archives")]
-        [HttpGet]
-        [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public async Task<HttpResponseMessage> PackageArchivesGet(bool? scan)
-        {
-            HttpResponseMessage retVal;
-
-            if ((bool)scan)
-            {
-                IResult scanResult = await manager.GetManager<IPackageManager>().ScanPackageArchivesAsync();
-
-                if (scanResult.ResultCode == ResultCode.Failure)
-                {
-                    HttpErrorResult err = new HttpErrorResult("Failed to refresh Package Archive list from disk", scanResult);
-                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
-                }
-            }
-
-            IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
-            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives);
-
-            return retVal;
-        }
-
-        /// <summary>
         ///     Gets the specified Package Archive.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package Archive to retrieve.</param>
@@ -153,7 +121,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified fqn is null or empty.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified fqn is null or empty.", JsonFormatter());
             }
             else
             {
@@ -161,13 +129,45 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
                 if (packageArchive != default(IPackageArchive))
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, new PackageArchiveData(packageArchive));
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, new PackageArchiveData(packageArchive), JsonFormatter());
                 }
                 else
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound, JsonFormatter());
                 }
             }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Returns a list of Package Archives available for installation.
+        /// </summary>
+        /// <param name="scan">Refresh from disk.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Route("archives")]
+        [HttpGet]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan)
+        {
+            HttpResponseMessage retVal;
+
+            if ((bool)scan)
+            {
+                IResult scanResult = await manager.GetManager<IPackageManager>().ScanPackageArchivesAsync();
+
+                if (scanResult.ResultCode == ResultCode.Failure)
+                {
+                    HttpErrorResult err = new HttpErrorResult("Failed to refresh Package Archive list from disk", scanResult);
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                }
+            }
+
+            IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
+            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
 
             return retVal;
         }
