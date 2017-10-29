@@ -223,61 +223,79 @@ namespace OpenIIoT.Core.Packaging
             instance = null;
         }
 
-        ///// <summary>
-        /////     Adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
-        ///// </summary>
-        ///// <remarks>
-        /////     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
-        /////     Qualified Name and Version of the Package.
-        ///// </remarks>
-        ///// <param name="data">The binary data to save.</param>
-        ///// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
-        //public IResult<IPackageArchive> AddPackageArchive(byte[] data)
-        //{
-        //    Guid guid = logger.EnterMethod();
-        //    logger.Info("Creating new Package...");
+        /// <summary>
+        ///     Adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
+        /// </summary>
+        /// <remarks>
+        ///     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
+        ///     Qualified Name and Version of the Package.
+        /// </remarks>
+        /// <param name="data">The binary data to save.</param>
+        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        public IResult<IPackageArchive> AddPackageArchive(byte[] data)
+        {
+            Guid guid = logger.EnterMethod();
+            logger.Info("Creating new Package...");
 
-        // IResult<IPackageArchive> retVal = new Result<IPackageArchive>(); string tempFile =
-        // Path.Combine(PlatformManager.Directories.Temp, Guid.NewGuid().ToString()); string destinationFilename = default(string);
+            IResult<IPackageArchive> retVal = new Result<IPackageArchive>();
+            string tempFile = Path.Combine(PlatformManager.Directories.Temp, Guid.NewGuid().ToString());
+            string destinationFilename = default(string);
 
-        // if (data.Length == 0) { retVal.AddError($"The specified binary payload is empty."); } else { logger.Debug($"Saving new
-        // Package to '{tempFile}'..."); retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
+            if (data.Length == 0)
+            {
+                retVal.AddError($"The specified binary payload is empty.");
+            }
+            else
+            {
+                logger.Debug($"Saving new Package to '{tempFile}'...");
+                retVal.Incorporate(Platform.WriteFileBytes(tempFile, data));
 
-        // if (retVal.ResultCode != ResultCode.Failure) { IResult<IPackageArchive> readResult = ReadPackageArchive(tempFile);
+                if (retVal.ResultCode != ResultCode.Failure)
+                {
+                    IResult<IPackageArchive> readResult = PackageFactory.GetPackageArchive(tempFile);
 
-        // retVal.Incorporate(readResult);
+                    retVal.Incorporate(readResult);
 
-        // if (retVal.ResultCode != ResultCode.Failure) { destinationFilename = GetPackageArchiveFilename(readResult.ReturnValue);
+                    if (retVal.ResultCode != ResultCode.Failure)
+                    {
+                        destinationFilename = GetPackageArchiveFilename(readResult.ReturnValue);
 
-        // logger.Debug($"Copying temporary Package '{tempFile}' to final destination '{destinationFilename}'...");
-        // retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
+                        logger.Debug($"Copying temporary Package '{tempFile}' to final destination '{destinationFilename}'...");
+                        retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
 
-        // if (retVal.ResultCode != ResultCode.Failure) { PackageArchiveList.Add(readResult.ReturnValue);
+                        if (retVal.ResultCode != ResultCode.Failure)
+                        {
+                            ScanPackageArchives();
+                            retVal.ReturnValue = FindPackageArchive(readResult.ReturnValue.FQN);
+                        }
+                    }
+                }
+            }
 
-        // retVal.ReturnValue = readResult.ReturnValue; retVal.ReturnValue.Filename = destinationFilename; } } } }
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                logger.Debug($"Package Archive successfully saved to {destinationFilename}. Sending PackageArchiveAdded Event...");
+                Task.Run(() => PackageArchiveAdded?.Invoke(this, new PackageArchiveEventArgs(retVal.ReturnValue)));
+            }
 
-        // if (retVal.ResultCode != ResultCode.Failure) { logger.Debug($"Package Archive successfully saved to
-        // {destinationFilename}. Sending PackageArchiveAdded Event..."); Task.Run(() => PackageArchiveAdded?.Invoke(this, new
-        // PackageArchiveEventArgs(retVal.ReturnValue))); }
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+            return retVal;
+        }
 
-        //    retVal.LogResult(logger);
-        //    logger.ExitMethod(guid);
-        //    return retVal;
-        //}
-
-        ///// <summary>
-        /////     Asynchronously adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
-        ///// </summary>
-        ///// <remarks>
-        /////     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
-        /////     Qualified Name and Version of the Package.
-        ///// </remarks>
-        ///// <param name="data">The binary data to save.</param>
-        ///// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
-        //public Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data)
-        //{
-        //    return Task.Run(() => AddPackageArchive(data));
-        //}
+        /// <summary>
+        ///     Asynchronously adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
+        /// </summary>
+        /// <remarks>
+        ///     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
+        ///     Qualified Name and Version of the Package.
+        /// </remarks>
+        /// <param name="data">The binary data to save.</param>
+        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        public Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data)
+        {
+            return Task.Run(() => AddPackageArchive(data));
+        }
 
         ///// <summary>
         /////     Deletes the specified <see cref="IPackageArchive"/> from disk.
@@ -812,6 +830,23 @@ namespace OpenIIoT.Core.Packaging
 
             logger.ExitMethod();
             return retVal;
+        }
+
+        /// <summary>
+        ///     Creates and returns a valid filename for the specified <see cref="IPackageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> instance for which the filename is to be created.</param>
+        /// <returns>The created filename.</returns>
+        private string GetPackageArchiveFilename(IPackageArchive packageArchive)
+        {
+            string filename = packageArchive.FQN + "." + packageArchive.Manifest.Version + PackagingConstants.PackageFilenameExtension;
+
+            foreach (char c in Path.GetInvalidFileNameChars())
+            {
+                filename = filename.Replace(c, PackagingConstants.PackageFilenameInvalidCharacterSubstitution);
+            }
+
+            return Path.Combine(PlatformManager.Directories.Packages, filename);
         }
 
         #endregion Private Methods

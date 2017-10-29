@@ -97,27 +97,27 @@ namespace OpenIIoT.SDK.Packaging
 
         #region Public Methods
 
-        ///// <summary>
-        /////     Adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
-        ///// </summary>
-        ///// <remarks>
-        /////     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
-        /////     Qualified Name and Version of the Package.
-        ///// </remarks>
-        ///// <param name="data">The binary data to save.</param>
-        ///// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
-        //IResult<IPackageArchive> AddPackageArchive(byte[] data);
+        /// <summary>
+        ///     Adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
+        /// </summary>
+        /// <remarks>
+        ///     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
+        ///     Qualified Name and Version of the Package.
+        /// </remarks>
+        /// <param name="data">The binary data to save.</param>
+        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        IResult<IPackageArchive> AddPackageArchive(byte[] data);
 
-        ///// <summary>
-        /////     Asynchronously adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
-        ///// </summary>
-        ///// <remarks>
-        /////     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
-        /////     Qualified Name and Version of the Package.
-        ///// </remarks>
-        ///// <param name="data">The binary data to save.</param>
-        ///// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
-        //Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data);
+        /// <summary>
+        ///     Asynchronously adds a <see cref="IPackageArchive"/> from the specified binary <paramref name="data"/>.
+        /// </summary>
+        /// <remarks>
+        ///     The resulting Package archive file is saved to the Packages directory with a filename composed of the Fully
+        ///     Qualified Name and Version of the Package.
+        /// </remarks>
+        /// <param name="data">The binary data to save.</param>
+        /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
+        Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data);
 
         ///// <summary>
         /////     Deletes the specified <see cref="IPackageArchive"/> from disk.
