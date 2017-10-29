@@ -120,13 +120,6 @@ namespace OpenIIoT.SDK.Packaging
         //Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data);
 
         ///// <summary>
-        /////     Deletes the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> from disk.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to delete.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //IResult DeletePackageArchive(string fqn);
-
-        ///// <summary>
         /////     Deletes the specified <see cref="IPackageArchive"/> from disk.
         ///// </summary>
         ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
@@ -134,27 +127,11 @@ namespace OpenIIoT.SDK.Packaging
         //IResult DeletePackageArchive(IPackageArchive packageArchive);
 
         ///// <summary>
-        /////     Asynchronously deletes the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> from disk.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to delete.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Task<IResult> DeletePackageArchiveAsync(string fqn);
-
-        ///// <summary>
         /////     Asynchronously deletes the specified <see cref="IPackageArchive"/> from disk.
         ///// </summary>
         ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
         ///// <returns>A Result containing the result of the operation.</returns>
         //Task<IResult> DeletePackageArchiveAsync(IPackageArchive packageArchive);
-
-        ///// <summary>
-        /////     Fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns the binary data.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
-        ///// </returns>
-        //IResult<byte[]> FetchPackageArchive(string fqn);
 
         ///// <summary>
         /////     Fetches the specified <paramref name="packageArchive"/> and returns the binary data.
@@ -166,16 +143,6 @@ namespace OpenIIoT.SDK.Packaging
         //IResult<byte[]> FetchPackageArchive(IPackageArchive packageArchive);
 
         ///// <summary>
-        /////     Asynchronously fetches the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> and returns
-        /////     the binary data.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to fetch.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
-        ///// </returns>
-        //Task<IResult<byte[]>> FetchPackageArchiveAsync(string fqn);
-
-        ///// <summary>
         /////     Asynchronously fetches the specified <paramref name="packageArchive"/> and returns the binary data.
         ///// </summary>
         ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
@@ -184,19 +151,19 @@ namespace OpenIIoT.SDK.Packaging
         ///// </returns>
         //Task<IResult<byte[]>> FetchPackageArchiveAsync(IPackageArchive packageArchive);
 
-        ///// <summary>
-        /////     <para>
-        /////         Searches the <see cref="Packages"/> list for a <see cref="IPackage"/> matching the specified
-        /////         <paramref name="fqn"/> and, if found, returns the found instance.
-        /////     </para>
-        /////     <para>
-        /////         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
-        /////         <see cref="Packages"/> list from disk.
-        /////     </para>
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to find.</param>
-        ///// <returns>The found <see cref="IPackage"/>.</returns>
-        //IPackageArchive FindPackage(string fqn);
+        /// <summary>
+        ///     <para>
+        ///         Searches the <see cref="Packages"/> list for a <see cref="IPackage"/> matching the specified
+        ///         <paramref name="fqn"/> and, if found, returns the found instance.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to find.</param>
+        /// <returns>The found <see cref="IPackage"/>.</returns>
+        IPackage FindPackage(string fqn);
 
         /// <summary>
         ///     <para>
@@ -226,34 +193,19 @@ namespace OpenIIoT.SDK.Packaging
         /// <returns>The found <see cref="IPackageArchive"/>.</returns>
         Task<IPackageArchive> FindPackageArchiveAsync(string fqn);
 
-        ///// <summary>
-        /////     <para>
-        /////         Asynchronously searches the <see cref="Packages"/> list for a <see cref="IPackage"/> matching the specified
-        /////         <paramref name="fqn"/> and, if found, returns the found instance.
-        /////     </para>
-        /////     <para>
-        /////         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
-        /////         <see cref="Packages"/> list from disk.
-        /////     </para>
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to find.</param>
-        ///// <returns>The found <see cref="IPackage"/>.</returns>
-        //Task<IPackage> FindPackageAsync(string fqn);
-
-        ///// <summary>
-        /////     Installs the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to install.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //IResult InstallPackage(string fqn);
-
-        ///// <summary>
-        /////     Installs the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> with the specified <paramref name="options"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to install.</param>
-        ///// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //IResult InstallPackage(string fqn, PackageInstallationOptions options);
+        /// <summary>
+        ///     <para>
+        ///         Asynchronously searches the <see cref="Packages"/> list for a <see cref="IPackage"/> matching the specified
+        ///         <paramref name="fqn"/> and, if found, returns the found instance.
+        ///     </para>
+        ///     <para>
+        ///         If a matching Package is not found, the <see cref="ScanPackages()"/> method is invoked to refresh the
+        ///         <see cref="Packages"/> list from disk.
+        ///     </para>
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to find.</param>
+        /// <returns>The found <see cref="IPackage"/>.</returns>
+        Task<IPackage> FindPackageAsync(string fqn);
 
         ///// <summary>
         /////     Installs the specified <paramref name="packageArchive"/>.
@@ -284,21 +236,6 @@ namespace OpenIIoT.SDK.Packaging
         ///// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
         ///// <returns>A Result containing the result of the operation.</returns>
         //Task<IResult> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options);
-
-        ///// <summary>
-        /////     Asynchronously installs the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to install.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Task<IResult> InstallPackageAsync(string fqn);
-
-        ///// <summary>
-        /////     Asynchronously installs the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to install.</param>
-        ///// <param name="options">The options for the installation.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Task<IResult> InstallPackageAsync(string fqn, PackageInstallationOptions options);
 
         /// <summary>
         ///     Scans for and returns a list of available <see cref="IPackageArchive"/> instances in the configured PackageArchive directory.
@@ -331,13 +268,6 @@ namespace OpenIIoT.SDK.Packaging
         Task<IResult<IList<IPackage>>> ScanPackagesAsync();
 
         ///// <summary>
-        /////     Uninstalls the <see cref="IPackage"/> matching the specified <paramref name="fqn"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to uninstall.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //IResult UninstallPackage(string fqn);
-
-        ///// <summary>
         /////     Uninstalls the specified <paramref name="package"/>.
         ///// </summary>
         ///// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
@@ -350,13 +280,6 @@ namespace OpenIIoT.SDK.Packaging
         ///// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
         ///// <returns>A Result containing the result of the operation.</returns>
         //Task<IResult> UninstallPackageAsync(IPackage package);
-
-        ///// <summary>
-        /////     Asynchronously uninstalls the <see cref="IPackage"/> matching the specified <paramref name="fqn"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackage"/> to uninstall.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Task<IResult> UninstallPackageAsync(string fqn);
 
         ///// <summary>
         /////     Verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> using the specified <paramref name="publicKey"/>.
