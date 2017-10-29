@@ -267,38 +267,19 @@ namespace OpenIIoT.SDK.Packaging
         /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
         Task<IResult<IList<IPackage>>> ScanPackagesAsync();
 
-        ///// <summary>
-        /////     Uninstalls the specified <paramref name="package"/>.
-        ///// </summary>
-        ///// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //IResult UninstallPackage(IPackage package);
+        /// <summary>
+        ///     Uninstalls the specified <paramref name="package"/>.
+        /// </summary>
+        /// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult UninstallPackage(IPackage package);
 
-        ///// <summary>
-        /////     Asynchronously uninstalls the specified <paramref name="package"/>.
-        ///// </summary>
-        ///// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Task<IResult> UninstallPackageAsync(IPackage package);
-
-        ///// <summary>
-        /////     Verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> using the specified <paramref name="publicKey"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to verify.</param>
-        ///// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
-        ///// </returns>
-        //IResult<bool> VerifyPackageArchive(string fqn, string publicKey);
-
-        ///// <summary>
-        /////     Verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to verify.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
-        ///// </returns>
-        //IResult<bool> VerifyPackageArchive(string fqn);
+        /// <summary>
+        ///     Asynchronously uninstalls the specified <paramref name="package"/>.
+        /// </summary>
+        /// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> UninstallPackageAsync(IPackage package);
 
         ///// <summary>
         /////     Verifies the specified <paramref name="packageArchive"/>.
@@ -328,26 +309,6 @@ namespace OpenIIoT.SDK.Packaging
         /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
         ///// </returns>
         //Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive, string publicKey);
-
-        ///// <summary>
-        /////     Asynchronously verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/> using the
-        /////     specified <paramref name="publicKey"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to verify.</param>
-        ///// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
-        ///// </returns>
-        //Task<IResult<bool>> VerifyPackageArchiveAsync(string fqn, string publicKey);
-
-        ///// <summary>
-        /////     Asynchronously verifies the <see cref="IPackageArchive"/> matching the specified <paramref name="fqn"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the <see cref="IPackageArchive"/> to verify.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
-        ///// </returns>
-        //Task<IResult<bool>> VerifyPackageArchiveAsync(string fqn);
 
         ///// <summary>
         /////     Asynchronously verifies the specified <paramref name="packageArchive"/>.

@@ -488,11 +488,11 @@ namespace OpenIIoT.Core.Packaging
         public IResult InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options)
         {
             logger.EnterMethod(xLogger.Params(packageArchive, options));
-            logger.Info($"Installing Package '{packageArchive.FQN}' from '{packageArchive.FileName}'...");
+            logger.Info($"Installing Package '{packageArchive?.FQN}' from '{packageArchive?.FileName}'...");
 
             IResult retVal = new Result();
-            IPackage findResult = default(IPackage);
             string destination = default(string);
+            IPackage package = default(IPackage);
 
             if (packageArchive == default(IPackageArchive))
             {
@@ -500,7 +500,7 @@ namespace OpenIIoT.Core.Packaging
             }
             else if (string.IsNullOrEmpty(packageArchive.FileName))
             {
-                retVal.AddError($"The specified Package Archive contains an null or empty Filename.");
+                retVal.AddError($"The specified Package Archive contains a null or empty FileName.");
             }
             else if (!Platform.FileExists(packageArchive.FileName))
             {
@@ -520,7 +520,7 @@ namespace OpenIIoT.Core.Packaging
                 extractor.Updated += (sender, e) => logger.Debug($"    PackageExtractor: {e.Message}");
 
                 // determine the installation directory; should look like \path\to\Plugins\FQN\
-                destination = Path.Combine(PlatformManager.Directories.Packages, findResult.FQN);
+                destination = Path.Combine(PlatformManager.Directories.Packages, packageArchive.FQN);
                 destination = ReplaceInvalidCharacters(destination);
 
                 logger.Debug($"Install directory: '{destination}'; overwrite={options.Overwrite}, skipVerification={options.SkipVerification}");
@@ -534,12 +534,21 @@ namespace OpenIIoT.Core.Packaging
                     logger.Exception(LogLevel.Debug, ex);
                     retVal.AddError(ex.Message);
                 }
+
+                ScanPackages();
+
+                package = FindPackage(packageArchive.FQN);
+
+                if (package == default(IPackage))
+                {
+                    retVal.AddError($"Extraction succeeded but no Package was installed.");
+                }
             }
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                logger.Debug($"Package {packageArchive.FQN} installed successfully. Sending PackageInstalled Event...");
-                Task.Run(() => PackageInstalled?.Invoke(this, new PackageInstallEventArgs(findResult, destination)));
+                logger.Debug($"Package {package.FQN} installed successfully. Sending PackageInstalled Event...");
+                Task.Run(() => PackageInstalled?.Invoke(this, new PackageInstallEventArgs(package, destination)));
             }
 
             retVal.LogResult(logger);
@@ -566,6 +575,141 @@ namespace OpenIIoT.Core.Packaging
         public async Task<IResult> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options)
         {
             return await Task.Run(() => InstallPackage(packageArchive, options));
+        }
+
+        /// <summary>
+        ///     Scans for and returns a list of available <see cref="IPackageArchive"/> instances in the configured PackageArchives directory.
+        /// </summary>
+        /// <returns>
+        ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s
+        /// </returns>
+        public IResult<IList<IPackageArchive>> ScanPackageArchives()
+        {
+            IResult<IList<IPackageArchive>> retVal = new Result<IList<IPackageArchive>>();
+            retVal.ReturnValue = PackageArchiveList;
+
+            IResult<IList<IPackageArchive>> scanResult = PackageScanner.ScanPackageArchives();
+
+            if (scanResult.ResultCode != ResultCode.Failure)
+            {
+                PackageArchiveList = scanResult.ReturnValue;
+            }
+
+            return retVal;
+        }
+
+        ///// <summary>
+        /////     Asynchronously verifies the specified <see cref="IPackage"/>.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        //public async Task<IResult<bool>> VerifyPackageAsync(string fqn)
+        //{
+        //    return await Task.Run(() => VerifyPackage(fqn, string.Empty));
+        //}
+        /// <summary>
+        ///     Asynchronously scans for and returns a list of all <see cref="IPackageArchive"/> instances in the configured
+        ///     PackageArchives directory.
+        /// </summary>
+        /// <returns>
+        ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s.
+        /// </returns>
+        public Task<IResult<IList<IPackageArchive>>> ScanPackageArchivesAsync()
+        {
+            return Task.Run(() => ScanPackageArchives());
+        }
+
+        ///// <summary>
+        /////     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
+        ///// </summary>
+        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
+        ///// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
+        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
+        //public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey)
+        //{
+        //    return await Task.Run(() => VerifyPackage(fqn, publicKey));
+        //}
+        /// <summary>
+        ///     Scans for and returns a list of installed <see cref="IPackage"/> instances in the configured Packages directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
+        public IResult<IList<IPackage>> ScanPackages()
+        {
+            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
+            retVal.ReturnValue = PackageList;
+
+            IResult<IList<IPackage>> scanResult = PackageScanner.ScanPackages();
+
+            if (scanResult.ResultCode != ResultCode.Failure)
+            {
+                PackageList = scanResult.ReturnValue;
+            }
+
+            return retVal;
+        }
+
+        //    retVal.LogResult(logger);
+        //    logger.ExitMethod(guid);
+        //    return retVal;
+        //}
+        /// <summary>
+        ///     Asynchronously scans for and returns a list of installed <see cref="IPackage"/> instances in the configured
+        ///     Packages directory.
+        /// </summary>
+        /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
+        public Task<IResult<IList<IPackage>>> ScanPackagesAsync()
+        {
+            return Task.Run(() => ScanPackages());
+        }
+
+        /// <summary>
+        ///     Uninstalls the specified <paramref name="package"/>.
+        /// </summary>
+        /// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public IResult UninstallPackage(IPackage package)
+        {
+            logger.EnterMethod(xLogger.Params(package));
+            logger.Info($"Uninstalling Package '{package?.FQN}' from '{package?.DirectoryName}'...");
+
+            IResult retVal = new Result();
+
+            if (package == default(IPackage))
+            {
+                retVal.AddError($"The specified Package is null.");
+            }
+            else if (string.IsNullOrEmpty(package.DirectoryName))
+            {
+                retVal.AddError($"The specified Package contains a null or empty DirectoryName.");
+            }
+            else if (!Platform.DirectoryExists(package.DirectoryName))
+            {
+                retVal.AddError($"The specified Package directory '{package.DirectoryName}' can not be found.");
+            }
+            else
+            {
+                retVal.Incorporate(Platform.DeleteDirectory(package.DirectoryName, true));
+            }
+
+            if (retVal.ResultCode != ResultCode.Failure)
+            {
+                logger.Debug($"Package {package.FQN} uninstalled successfully.  Sending PackageUninstalled Event...");
+                Task.Run(() => PackageUninstalled?.Invoke(this, new PackageInstallEventArgs(package, package.DirectoryName)));
+            }
+
+            retVal.LogResult(logger);
+            logger.ExitMethod();
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Asynchronously uninstalls the specified <paramref name="package"/>.
+        /// </summary>
+        /// <param name="package">The <see cref="IPackage"/> to uninstall.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public Task<IResult> UninstallPackageAsync(IPackage package)
+        {
+            return Task.Run(() => UninstallPackage(package));
         }
 
         ///// <summary>
@@ -599,94 +743,6 @@ namespace OpenIIoT.Core.Packaging
         // '{fqn}'."); }
 
         // if (retVal.ResultCode == ResultCode.Failure) { retVal.AddError($"The Package '{fqn}' is invalid."); }
-
-        //    retVal.LogResult(logger);
-        //    logger.ExitMethod(guid);
-        //    return retVal;
-        //}
-
-        ///// <summary>
-        /////     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        ///// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
-        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        //public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey)
-        //{
-        //    return await Task.Run(() => VerifyPackage(fqn, publicKey));
-        //}
-
-        ///// <summary>
-        /////     Asynchronously verifies the specified <see cref="IPackage"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        //public async Task<IResult<bool>> VerifyPackageAsync(string fqn)
-        //{
-        //    return await Task.Run(() => VerifyPackage(fqn, string.Empty));
-        //}
-
-        /// <summary>
-        ///     Scans for and returns a list of available <see cref="IPackageArchive"/> instances in the configured PackageArchives directory.
-        /// </summary>
-        /// <returns>
-        ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s
-        /// </returns>
-        public IResult<IList<IPackageArchive>> ScanPackageArchives()
-        {
-            IResult<IList<IPackageArchive>> retVal = new Result<IList<IPackageArchive>>();
-            retVal.ReturnValue = PackageArchiveList;
-
-            IResult<IList<IPackageArchive>> scanResult = PackageScanner.ScanPackageArchives();
-
-            if (scanResult.ResultCode != ResultCode.Failure)
-            {
-                PackageArchiveList = scanResult.ReturnValue;
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Asynchronously scans for and returns a list of all <see cref="IPackageArchive"/> instances in the configured
-        ///     PackageArchives directory.
-        /// </summary>
-        /// <returns>
-        ///     A Result containing the result of the operation and the list of found <see cref="IPackageArchive"/> s.
-        /// </returns>
-        public Task<IResult<IList<IPackageArchive>>> ScanPackageArchivesAsync()
-        {
-            return Task.Run(() => ScanPackageArchives());
-        }
-
-        /// <summary>
-        ///     Scans for and returns a list of installed <see cref="IPackage"/> instances in the configured Packages directory.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
-        public IResult<IList<IPackage>> ScanPackages()
-        {
-            IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
-            retVal.ReturnValue = PackageList;
-
-            IResult<IList<IPackage>> scanResult = PackageScanner.ScanPackages();
-
-            if (scanResult.ResultCode != ResultCode.Failure)
-            {
-                PackageList = scanResult.ReturnValue;
-            }
-
-            return retVal;
-        }
-
-        /// <summary>
-        ///     Asynchronously scans for and returns a list of installed <see cref="IPackage"/> instances in the configured
-        ///     Packages directory.
-        /// </summary>
-        /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
-        public Task<IResult<IList<IPackage>>> ScanPackagesAsync()
-        {
-            return Task.Run(() => ScanPackages());
-        }
 
         #endregion Public Methods
 
