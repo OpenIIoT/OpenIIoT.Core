@@ -217,7 +217,7 @@ namespace OpenIIoT.Core.Packaging
         /// <param name="e">The event arguments.</param>
         private void ManifestExtractorUpdated(object sender, PackagingUpdateEventArgs e)
         {
-            logger.Debug("  ManifestExtractor: " + e.Message);
+            logger.Debug("    ManifestExtractor: " + e.Message);
         }
 
         #endregion Private Methods

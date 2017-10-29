@@ -119,37 +119,37 @@ namespace OpenIIoT.SDK.Packaging
         /// <returns>A Result containing the result of the operation and the created <see cref="IPackageArchive"/> instance.</returns>
         Task<IResult<IPackageArchive>> AddPackageArchiveAsync(byte[] data);
 
-        ///// <summary>
-        /////     Deletes the specified <see cref="IPackageArchive"/> from disk.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //IResult DeletePackageArchive(IPackageArchive packageArchive);
+        /// <summary>
+        ///     Deletes the specified <see cref="IPackageArchive"/> from disk.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult DeletePackageArchive(IPackageArchive packageArchive);
 
-        ///// <summary>
-        /////     Asynchronously deletes the specified <see cref="IPackageArchive"/> from disk.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Task<IResult> DeletePackageArchiveAsync(IPackageArchive packageArchive);
+        /// <summary>
+        ///     Asynchronously deletes the specified <see cref="IPackageArchive"/> from disk.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> DeletePackageArchiveAsync(IPackageArchive packageArchive);
 
-        ///// <summary>
-        /////     Fetches the specified <paramref name="packageArchive"/> and returns the binary data.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
-        ///// </returns>
-        //IResult<byte[]> FetchPackageArchive(IPackageArchive packageArchive);
+        /// <summary>
+        ///     Fetches the specified <paramref name="packageArchive"/> and returns the binary data.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        IResult<byte[]> FetchPackageArchive(IPackageArchive packageArchive);
 
-        ///// <summary>
-        /////     Asynchronously fetches the specified <paramref name="packageArchive"/> and returns the binary data.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
-        ///// </returns>
-        //Task<IResult<byte[]>> FetchPackageArchiveAsync(IPackageArchive packageArchive);
+        /// <summary>
+        ///     Asynchronously fetches the specified <paramref name="packageArchive"/> and returns the binary data.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to fetch.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and the <see cref="byte"/> array containing the fetched data.
+        /// </returns>
+        Task<IResult<byte[]>> FetchPackageArchiveAsync(IPackageArchive packageArchive);
 
         /// <summary>
         ///     <para>
@@ -207,35 +207,35 @@ namespace OpenIIoT.SDK.Packaging
         /// <returns>The found <see cref="IPackage"/>.</returns>
         Task<IPackage> FindPackageAsync(string fqn);
 
-        ///// <summary>
-        /////     Installs the specified <paramref name="packageArchive"/>.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //IResult InstallPackage(IPackageArchive packageArchive);
+        /// <summary>
+        ///     Installs the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult InstallPackage(IPackageArchive packageArchive);
 
-        ///// <summary>
-        /////     Installs the specified <paramref name="packageArchive"/> with the specified <paramref name="options"/>.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
-        ///// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //IResult InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options);
+        /// <summary>
+        ///     Installs the specified <paramref name="packageArchive"/> with the specified <paramref name="options"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
+        /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options);
 
-        ///// <summary>
-        /////     Asynchronously installs the specified <paramref name="packageArchive"/>.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Task<IResult> InstallPackageAsync(IPackageArchive packageArchive);
+        /// <summary>
+        ///     Asynchronously installs the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> InstallPackageAsync(IPackageArchive packageArchive);
 
-        ///// <summary>
-        /////     Asynchronously installs the specified <paramref name="packageArchive"/> with the specified <paramref name="options"/>.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
-        ///// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
-        ///// <returns>A Result containing the result of the operation.</returns>
-        //Task<IResult> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options);
+        /// <summary>
+        ///     Asynchronously installs the specified <paramref name="packageArchive"/> with the specified <paramref name="options"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
+        /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        Task<IResult> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options);
 
         /// <summary>
         ///     Scans for and returns a list of available <see cref="IPackageArchive"/> instances in the configured PackageArchive directory.
