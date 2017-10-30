@@ -86,23 +86,6 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
         #region Instance Methods
 
-        ///// <summary>
-        /////     Returns the Package from the list of available Packages that matches the supplied Fully Qualified Name.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package to return.</param>
-        ///// <returns>The matching Package.</returns>
-        //[Route("{fqn}")]
-        //[HttpGet]
-        //public async Task<HttpResponseMessage> GetPackage(string fqn)
-        //{
-        //    HttpResponseMessage retVal;
-        //    IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
-
-        // retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(ContractResolverType.OptOut, "Files"));
-
-        //    return retVal;
-        //}
-
         /// <summary>
         ///     Gets the specified Package Archive.
         /// </summary>
@@ -130,6 +113,43 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 if (packageArchive != default(IPackageArchive))
                 {
                     retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchive, JsonFormatter());
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound, JsonFormatter());
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Gets the specified Package.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to retrieve.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Route("packages/{fqn}")]
+        [HttpGet]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package was retrieved successfully.", typeof(Package))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "The PackageArchive could not be found.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        public async Task<HttpResponseMessage> PackageGetFqn(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified fqn is null or empty.", JsonFormatter());
+            }
+            else
+            {
+                IPackage package = await PackageManager.FindPackageAsync(fqn);
+
+                if (package != default(IPackage))
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, package, JsonFormatter());
                 }
                 else
                 {
