@@ -487,7 +487,7 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options)
         {
-            logger.EnterMethod(xLogger.Params(packageArchive, options));
+            Guid guid = logger.EnterMethod(xLogger.Params(packageArchive, options), true);
             logger.Info($"Installing Package '{packageArchive?.FQN}' from '{packageArchive?.FileName}'...");
 
             IResult retVal = new Result();
@@ -552,7 +552,7 @@ namespace OpenIIoT.Core.Packaging
             }
 
             retVal.LogResult(logger);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
             return retVal;
         }
 
@@ -598,15 +598,6 @@ namespace OpenIIoT.Core.Packaging
             return retVal;
         }
 
-        ///// <summary>
-        /////     Asynchronously verifies the specified <see cref="IPackage"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        //public async Task<IResult<bool>> VerifyPackageAsync(string fqn)
-        //{
-        //    return await Task.Run(() => VerifyPackage(fqn, string.Empty));
-        //}
         /// <summary>
         ///     Asynchronously scans for and returns a list of all <see cref="IPackageArchive"/> instances in the configured
         ///     PackageArchives directory.
@@ -619,16 +610,6 @@ namespace OpenIIoT.Core.Packaging
             return Task.Run(() => ScanPackageArchives());
         }
 
-        ///// <summary>
-        /////     Asynchronously verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        ///// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
-        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        //public async Task<IResult<bool>> VerifyPackageAsync(string fqn, string publicKey)
-        //{
-        //    return await Task.Run(() => VerifyPackage(fqn, publicKey));
-        //}
         /// <summary>
         ///     Scans for and returns a list of installed <see cref="IPackage"/> instances in the configured Packages directory.
         /// </summary>
@@ -648,10 +629,6 @@ namespace OpenIIoT.Core.Packaging
             return retVal;
         }
 
-        //    retVal.LogResult(logger);
-        //    logger.ExitMethod(guid);
-        //    return retVal;
-        //}
         /// <summary>
         ///     Asynchronously scans for and returns a list of installed <see cref="IPackage"/> instances in the configured
         ///     Packages directory.
@@ -669,7 +646,7 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation.</returns>
         public IResult UninstallPackage(IPackage package)
         {
-            logger.EnterMethod(xLogger.Params(package));
+            Guid guid = logger.EnterMethod(xLogger.Params(package), true);
             logger.Info($"Uninstalling Package '{package?.FQN}' from '{package?.DirectoryName}'...");
 
             IResult retVal = new Result();
@@ -698,7 +675,7 @@ namespace OpenIIoT.Core.Packaging
             }
 
             retVal.LogResult(logger);
-            logger.ExitMethod();
+            logger.ExitMethod(guid);
             return retVal;
         }
 
@@ -712,37 +689,90 @@ namespace OpenIIoT.Core.Packaging
             return Task.Run(() => UninstallPackage(package));
         }
 
-        ///// <summary>
-        /////     Verifies the specified <see cref="IPackage"/>.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        //public IResult<bool> VerifyPackage(string fqn)
-        //{
-        //    return VerifyPackage(fqn, string.Empty);
-        //}
+        /// <summary>
+        ///     Verifies the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        public IResult<bool> VerifyPackageArchive(IPackageArchive packageArchive)
+        {
+            return VerifyPackageArchive(packageArchive, string.Empty);
+        }
 
-        ///// <summary>
-        /////     Verifies the specified <see cref="IPackage"/> using the optionally specified PGP Public Key.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package to verify.</param>
-        ///// <param name="publicKey">The optional PGP Public Key with which to verify the package.</param>
-        ///// <returns>A Result containing the result of the operation and a value indicating whether the Package is valid.</returns>
-        //public IResult<bool> VerifyPackage(string fqn, string publicKey)
-        //{
-        //    Guid guid = logger.EnterMethod(xLogger.Params(fqn, publicKey), true);
-        //    logger.Info($"Verifying Package '{fqn}'...");
+        /// <summary>
+        ///     Verifies the specified <paramref name="packageArchive"/> using the specified <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        public IResult<bool> VerifyPackageArchive(IPackageArchive packageArchive, string publicKey)
+        {
+            Guid guid = logger.EnterMethod(xLogger.Params(packageArchive, publicKey), true);
+            logger.Info($"Verifying Package '{packageArchive?.FQN}'...");
 
-        // IResult<bool> retVal = new Result<bool>(); IPackage findResult = FindPackage(fqn);
+            IResult<bool> retVal = new Result<bool>();
 
-        // if (findResult != default(Package)) { PackageVerifier verifier = new PackageVerifier(); verifier.Updated += (sender, e)
-        // => logger.Debug(e.Message);
+            if (packageArchive == default(IPackageArchive))
+            {
+                retVal.AddError($"The specified Package Archive is null.");
+            }
+            else if (string.IsNullOrEmpty(packageArchive.FileName))
+            {
+                retVal.AddError($"The specified Package Archive contains a null or empty FileName.");
+            }
+            else if (!Platform.FileExists(packageArchive.FileName))
+            {
+                retVal.AddError($"The specified Package Archive file '{packageArchive.FileName}' can not be found.");
+            }
+            else
+            {
+                PackageVerifier verifier = new PackageVerifier();
+                verifier.Updated += (sender, e) => logger.Debug($"    PackageVerifier: {e.Message}");
 
-        // try { retVal.ReturnValue = verifier.VerifyPackage(findResult.Filename, publicKey); } catch (Exception ex) {
-        // logger.Exception(LogLevel.Debug, ex); retVal.AddError(ex.Message); } } else { retVal.AddError($"Failed to find Package
-        // '{fqn}'."); }
+                try
+                {
+                    retVal.ReturnValue = verifier.VerifyPackage(packageArchive.FileName, publicKey);
+                }
+                catch (Exception ex)
+                {
+                    logger.Exception(LogLevel.Debug, ex);
+                    retVal.AddError(ex.Message);
+                }
+            }
 
-        // if (retVal.ResultCode == ResultCode.Failure) { retVal.AddError($"The Package '{fqn}' is invalid."); }
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Asynchronously verifies the specified <paramref name="packageArchive"/> using the specified <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        public Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive, string publicKey)
+        {
+            return Task.Run(() => VerifyPackageArchive(packageArchive, publicKey));
+        }
+
+        /// <summary>
+        ///     Asynchronously verifies the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        public Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive)
+        {
+            return Task.Run(() => VerifyPackageArchive(packageArchive));
+        }
 
         #endregion Public Methods
 

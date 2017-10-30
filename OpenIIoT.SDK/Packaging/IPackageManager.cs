@@ -281,43 +281,43 @@ namespace OpenIIoT.SDK.Packaging
         /// <returns>A Result containing the result of the operation.</returns>
         Task<IResult> UninstallPackageAsync(IPackage package);
 
-        ///// <summary>
-        /////     Verifies the specified <paramref name="packageArchive"/>.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
-        ///// </returns>
-        //IResult<bool> VerifyPackageArchive(IPackageArchive packageArchive);
+        /// <summary>
+        ///     Verifies the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        IResult<bool> VerifyPackageArchive(IPackageArchive packageArchive);
 
-        ///// <summary>
-        /////     Verifies the specified <paramref name="packageArchive"/> using the specified <paramref name="publicKey"/>.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
-        ///// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
-        ///// </returns>
-        //IResult<bool> VerifyPackageArchive(IPackageArchive packageArchive, string publicKey);
+        /// <summary>
+        ///     Verifies the specified <paramref name="packageArchive"/> using the specified <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        IResult<bool> VerifyPackageArchive(IPackageArchive packageArchive, string publicKey);
 
-        ///// <summary>
-        /////     Asynchronously verifies the specified <paramref name="packageArchive"/> using the specified <paramref name="publicKey"/>.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
-        ///// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
-        ///// </returns>
-        //Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive, string publicKey);
+        /// <summary>
+        ///     Asynchronously verifies the specified <paramref name="packageArchive"/> using the specified <paramref name="publicKey"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <param name="publicKey">The PGP Public Key with which to verify the package.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive, string publicKey);
 
-        ///// <summary>
-        /////     Asynchronously verifies the specified <paramref name="packageArchive"/>.
-        ///// </summary>
-        ///// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
-        ///// <returns>
-        /////     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
-        ///// </returns>
-        //Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive);
+        /// <summary>
+        ///     Asynchronously verifies the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> to verify.</param>
+        /// <returns>
+        ///     A Result containing the result of the operation and a value indicating whether the <see cref="IPackageArchive"/> is valid.
+        /// </returns>
+        Task<IResult<bool>> VerifyPackageArchiveAsync(IPackageArchive packageArchive);
 
         #endregion Public Methods
     }
