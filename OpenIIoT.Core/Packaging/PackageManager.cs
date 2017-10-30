@@ -585,6 +585,8 @@ namespace OpenIIoT.Core.Packaging
         /// </returns>
         public IResult<IList<IPackageArchive>> ScanPackageArchives()
         {
+            Guid guid = logger.EnterMethod(true);
+
             IResult<IList<IPackageArchive>> retVal = new Result<IList<IPackageArchive>>();
             retVal.ReturnValue = PackageArchiveList;
 
@@ -595,6 +597,8 @@ namespace OpenIIoT.Core.Packaging
                 PackageArchiveList = scanResult.ReturnValue;
             }
 
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
             return retVal;
         }
 
@@ -616,6 +620,8 @@ namespace OpenIIoT.Core.Packaging
         /// <returns>A Result containing the result of the operation and the list of found <see cref="IPackage"/> s.</returns>
         public IResult<IList<IPackage>> ScanPackages()
         {
+            Guid guid = logger.EnterMethod(true);
+
             IResult<IList<IPackage>> retVal = new Result<IList<IPackage>>();
             retVal.ReturnValue = PackageList;
 
@@ -626,6 +632,8 @@ namespace OpenIIoT.Core.Packaging
                 PackageList = scanResult.ReturnValue;
             }
 
+            retVal.LogResult(logger);
+            logger.ExitMethod(guid);
             return retVal;
         }
 
