@@ -185,7 +185,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         }
 
         /// <summary>
-        ///     Retrieves the specified Pachage Archive file.
+        ///     Retrieves the specified Package Archive file.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package Archive to retrieve.</param>
         /// <returns>An HTTP response message.</returns>
