@@ -91,6 +91,50 @@ namespace OpenIIoT.Core.Packaging.WebApi
         #region Public Methods
 
         /// <summary>
+        ///     Creates a new Package with the specified filename from the specified base 64 encoded binary data.
+        /// </summary>
+        /// <param name="data">The base 64 encoded binary package data.</param>
+        /// <returns>A Result containing the result of the operation and the created Package.</returns>
+        [Authorize]
+        [Route("archive")]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(PackageArchive))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        public async Task<HttpResponseMessage> PackageArchivesAdd([FromBody]string data)
+        {
+            HttpResponseMessage retVal;
+            Tuple<bool, byte[]> bytes = TryGetBytesFromBase64String(data);
+            bool isValidData = bytes.Item1;
+            byte[] binaryData = bytes.Item2;
+
+            if (data.Length == 0)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The data is of zero length.", JsonFormatter());
+            }
+            else if (!isValidData)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The data is not a valid base 64 encoded string.", JsonFormatter());
+            }
+            else
+            {
+                IResult<IPackageArchive> addResult = await PackageManager.AddPackageArchiveAsync(binaryData);
+
+                if (addResult.ResultCode != ResultCode.Failure)
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.Created, addResult.ReturnValue, JsonFormatter());
+                }
+                else
+                {
+                    HttpErrorResult err = new HttpErrorResult("Failed to create a Package Archive from the specified data.", addResult);
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
         ///     Deletes the specified Package Archive.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package Archive to delete.</param>
@@ -341,84 +385,32 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
         #endregion Public Methods
 
-        //[Route("{fqn}")]
-        //[HttpPut]
-        //public async Task<HttpResponseMessage> InstallPackage(string fqn, [FromBody]PackageInstallationOptions options)
-        //{
-        //    IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options);
+        #region Private Methods
 
-        //    return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        //}
-        ///// <summary>
-        /////     Gets the specified Pachage archive.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package archive to retrieve.</param>
-        ///// <returns>An HTTP response message.</returns>
-        //[HttpGet]
-        //[Route("archives/{fqn}")]
-        //[Authorize]
-        //[SwaggerResponse(HttpStatusCode.OK, "The Package archive was retrieved successfully.", typeof(IPackage))]
-        //[SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
-        //[SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        //public async Task<HttpResponseMessage> PackageArchivesGetFQN(string fqn)
-        //{
-        //    HttpResponseMessage retVal;
+        /// <summary>
+        ///     Attempts to retrieve a byte array from the specified <paramref name="data"/> and returns a <see cref="Tuple"/>
+        ///     containing the result of the attempt and, if successful, the retrieved array.
+        /// </summary>
+        /// <param name="data">The string from which to attempt to retrieve the byte array.</param>
+        /// <returns>A <see cref="Tuple"/> containing the result of the attempt and, if successful, the retrieved array.s</returns>
+        private Tuple<bool, byte[]> TryGetBytesFromBase64String(string data)
+        {
+            Tuple<bool, byte[]> retVal;
+            byte[] bytes = default(byte[]);
 
-        // if (string.IsNullOrEmpty(fqn)) { retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully
-        // Qualified Name is null or empty."); } else if (!fqn.Contains('.')) { retVal =
-        // Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated
-        // tuple."); } else { IPackage findResult = await PackageManager.FindPackageAsync(fqn);
+            try
+            {
+                bytes = Convert.FromBase64String(data);
+                retVal = new Tuple<bool, byte[]>(true, bytes);
+            }
+            catch (Exception)
+            {
+                retVal = new Tuple<bool, byte[]>(false, null);
+            }
 
-        // if (findResult != default(IPackage)) { retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter());
-        // } else { retVal = Request.CreateResponse(HttpStatusCode.NotFound); } }
+            return retVal;
+        }
 
-        //    return retVal;
-        //}
-        ///// <summary>
-        /////     Creates a new Package with the specified filename from the specified base 64 encoded binary data.
-        ///// </summary>
-        ///// <param name="data">The base 64 encoded binary package data.</param>
-        ///// <returns>A Result containing the result of the operation and the created Package.</returns>
-        //[Authorize]
-        //[Route("archive")]
-        //[HttpPost]
-        //[SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(Package))]
-        //[SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        //public async Task<HttpResponseMessage> UploadPackage([FromBody]string data)
-        //{
-        //    // validate the data length
-        //    if (data.Length == 0)
-        //    {
-        //        return Request.CreateResponse(HttpStatusCode.BadRequest, "The data is of zero length.", JsonFormatter());
-        //    }
-
-        // // try to decode the base64 input byte[] binaryData = default(byte[]);
-
-        // try { binaryData = Convert.FromBase64String(data.ToString()); } catch (Exception) { return
-        // Request.CreateResponse(HttpStatusCode.BadRequest, "The data is not base 64 encoded.", JsonFormatter()); }
-
-        // // try to create the Package IResult<IPackage> result = await manager.GetManager<IPackageManager>().AddPackageAsync(binaryData);
-
-        //    if (result.ResultCode != ResultCode.Failure)
-        //    {
-        //        return Request.CreateResponse(HttpStatusCode.Created, result.ReturnValue, JsonFormatter());
-        //    }
-        //    else
-        //    {
-        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
-        //    }
-        //}
-
-        //[Route("{fqn}/verify")]
-        //[HttpGet]
-        //public async Task<HttpResponseMessage> VerifyPackage(string fqn, string publicKey = "")
-        //{
-        //    IResult<bool> verifyResult = await manager.GetManager<IPackageManager>().VerifyPackageAsync(fqn, publicKey);
-
-        //    return Request.CreateResponse(HttpStatusCode.OK, verifyResult, JsonFormatter());
-        //}
+        #endregion Private Methods
     }
 }
