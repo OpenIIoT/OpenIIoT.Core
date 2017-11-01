@@ -92,7 +92,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         #region Public Methods
 
         /// <summary>
-        ///     Creates a new Package Archive from the specified base 64 encoded binary data.
+        ///     Creates a new Package Archive.
         /// </summary>
         /// <param name="data">The base 64 encoded binary data of the Package Archive.</param>
         /// <returns>A Result containing the result of the operation and the created Package Archive.</returns>
@@ -231,7 +231,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         }
 
         /// <summary>
-        ///     Retrieves the specified Package Archive file.
+        ///     Gets the specified Package Archive file.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package Archive to retrieve.</param>
         /// <returns>An HTTP response message.</returns>
@@ -286,9 +286,9 @@ namespace OpenIIoT.Core.Packaging.WebApi
         }
 
         /// <summary>
-        ///     Returns a list of Package Archives available for installation.
+        ///     Gets the list of available Package Archives.
         /// </summary>
-        /// <param name="scan">Refresh from disk.</param>
+        /// <param name="scan">Refresh the list from disk.</param>
         /// <returns>An HTTP response message.</returns>
         [Route("archives")]
         [HttpGet]
@@ -318,9 +318,9 @@ namespace OpenIIoT.Core.Packaging.WebApi
         }
 
         /// <summary>
-        ///     Returns a list of installed Packages.
+        ///     Gets the list of installed Packages.
         /// </summary>
-        /// <param name="scan">Refresh from disk.</param>
+        /// <param name="scan">Refresh the list from disk.</param>
         /// <returns>An HTTP response message.</returns>
         [Route("packages")]
         [HttpGet]
