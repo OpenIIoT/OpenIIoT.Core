@@ -41,9 +41,13 @@
 
 namespace OpenIIoT.SDK.Packaging
 {
+    using System.Runtime.Serialization;
+    using Newtonsoft.Json;
+
     /// <summary>
     ///     Installation options for the <see cref="IPackage"/> installation operation.
     /// </summary>
+    [DataContract]
     public class PackageInstallationOptions
     {
         #region Public Properties
@@ -51,16 +55,22 @@ namespace OpenIIoT.SDK.Packaging
         /// <summary>
         ///     Gets or sets a value indicating whether the destination folder should be overwritten if it exists.
         /// </summary>
+        [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
         public bool Overwrite { get; set; }
 
         /// <summary>
         ///     Gets or sets the PGP public key with which the <see cref="IPackage"/> is to be verified.
         /// </summary>
+        [JsonProperty(Order = 3)]
+        [DataMember(Order = 3)]
         public string PublicKey { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether <see cref="IPackage"/> verification should be skipped prior to installation.
         /// </summary>
+        [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
         public bool SkipVerification { get; set; }
 
         #endregion Public Properties
