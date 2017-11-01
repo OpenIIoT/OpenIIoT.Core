@@ -212,7 +212,7 @@ namespace OpenIIoT.SDK.Packaging
         /// </summary>
         /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        IResult InstallPackage(IPackageArchive packageArchive);
+        IResult<IPackage> InstallPackage(IPackageArchive packageArchive);
 
         /// <summary>
         ///     Installs the specified <paramref name="packageArchive"/> with the specified <paramref name="options"/>.
@@ -220,14 +220,14 @@ namespace OpenIIoT.SDK.Packaging
         /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
         /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        IResult InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options);
+        IResult<IPackage> InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options);
 
         /// <summary>
         ///     Asynchronously installs the specified <paramref name="packageArchive"/>.
         /// </summary>
         /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Task<IResult> InstallPackageAsync(IPackageArchive packageArchive);
+        Task<IResult<IPackage>> InstallPackageAsync(IPackageArchive packageArchive);
 
         /// <summary>
         ///     Asynchronously installs the specified <paramref name="packageArchive"/> with the specified <paramref name="options"/>.
@@ -235,7 +235,7 @@ namespace OpenIIoT.SDK.Packaging
         /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
         /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
         /// <returns>A Result containing the result of the operation.</returns>
-        Task<IResult> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options);
+        Task<IResult<IPackage>> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options);
 
         /// <summary>
         ///     Scans for and returns a list of available <see cref="IPackageArchive"/> instances in the configured PackageArchive directory.
