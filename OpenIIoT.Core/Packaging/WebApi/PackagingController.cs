@@ -57,6 +57,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
     using Swashbuckle.Swagger.Annotations;
+    using OpenIIoT.Core.Service.WebApi.ModelValidation;
 
     /// <summary>
     ///     Handles the API methods for AppPackages.
@@ -91,19 +92,20 @@ namespace OpenIIoT.Core.Packaging.WebApi
         #region Public Methods
 
         /// <summary>
-        ///     Creates a new Package with the specified filename from the specified base 64 encoded binary data.
+        ///     Creates a new Package Archive from the specified base 64 encoded binary data.
         /// </summary>
-        /// <param name="data">The base 64 encoded binary package data.</param>
-        /// <returns>A Result containing the result of the operation and the created Package.</returns>
+        /// <param name="data">The base 64 encoded binary data of the Package Archive.</param>
+        /// <returns>A Result containing the result of the operation and the created Package Archive.</returns>
         [Authorize]
         [Route("archive")]
         [HttpPost]
-        [SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(PackageArchive))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was created or overwritten.", typeof(PackageArchive))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data is of zero length or is not base 64 encoded.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public async Task<HttpResponseMessage> PackageArchivesAdd([FromBody]string data)
         {
             HttpResponseMessage retVal;
+
             Tuple<bool, byte[]> bytes = TryGetBytesFromBase64String(data);
             bool isValidData = bytes.Item1;
             byte[] binaryData = bytes.Item2;
@@ -145,7 +147,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.NoContent, "The Package Archive was successfully deleted.")]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
         public async Task<HttpResponseMessage> PackageArchivesDelete(string fqn)
@@ -377,6 +379,124 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 else
                 {
                     retVal = Request.CreateResponse(HttpStatusCode.NotFound, JsonFormatter());
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Installs the Package within the specified Package Archive.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to install.</param>
+        /// <param name="options">The installation options for the Package.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Authorize]
+        [Route("packages/{fqn}")]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package was successfully installed.", typeof(Package))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        public async Task<HttpResponseMessage> PackagesInstall(string fqn, [FromBody]PackageInstallationOptions options = null)
+        {
+            HttpResponseMessage retVal;
+            ModelValidator validator = new ModelValidator(ModelState);
+
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+            }
+            else if (!validator.IsValid)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
+            }
+            else
+            {
+                IPackageArchive findResult = await PackageManager.FindPackageArchiveAsync(fqn);
+
+                if (findResult != default(IPackageArchive))
+                {
+                    PackageInstallationOptions installOptions = new PackageInstallationOptions()
+                    {
+                        Overwrite = options.Overwrite,
+                        SkipVerification = options.SkipVerification,
+                        PublicKey = options.PublicKey,
+                    };
+
+                    IResult<IPackage> installResult = await PackageManager.InstallPackageAsync(findResult, installOptions);
+
+                    if (installResult.ResultCode != ResultCode.Failure)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, installResult.ReturnValue, JsonFormatter());
+                    }
+                    else
+                    {
+                        HttpErrorResult result = new HttpErrorResult($"Failed to install Package '{fqn}'.", installResult);
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Uninstalls the specified Package.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to uninstall.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Authorize]
+        [Route("packages/{fqn}")]
+        [HttpDelete]
+        [SwaggerResponseRemoveDefaults]
+        [SwaggerResponse(HttpStatusCode.NoContent, "The Package was successfully uninstalled.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        public async Task<HttpResponseMessage> PackagesUninstall(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+            }
+            else
+            {
+                IPackage findResult = await PackageManager.FindPackageAsync(fqn);
+
+                if (findResult != default(IPackage))
+                {
+                    IResult uninstallResult = await PackageManager.UninstallPackageAsync(findResult);
+
+                    if (uninstallResult.ResultCode != ResultCode.Failure)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.NoContent);
+                    }
+                    else
+                    {
+                        HttpErrorResult result = new HttpErrorResult($"Failed to uninstall Package '{fqn}'.", uninstallResult);
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
                 }
             }
 

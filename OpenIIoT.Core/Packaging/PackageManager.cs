@@ -473,8 +473,8 @@ namespace OpenIIoT.Core.Packaging
         ///     Installs the specified <paramref name="packageArchive"/>.
         /// </summary>
         /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(IPackageArchive packageArchive)
+        /// <returns>A Result containing the result of the operation and the installed <see cref="IPackage"/>.</returns>
+        public IResult<IPackage> InstallPackage(IPackageArchive packageArchive)
         {
             return InstallPackage(packageArchive, new PackageInstallationOptions());
         }
@@ -484,15 +484,14 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
         /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public IResult InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options)
+        /// <returns>A Result containing the result of the operation and the installed <see cref="IPackage"/>.</returns>
+        public IResult<IPackage> InstallPackage(IPackageArchive packageArchive, PackageInstallationOptions options)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(packageArchive, options), true);
             logger.Info($"Installing Package '{packageArchive?.FQN}' from '{packageArchive?.FileName}'...");
 
-            IResult retVal = new Result();
+            IResult<IPackage> retVal = new Result<IPackage>();
             string destination = default(string);
-            IPackage package = default(IPackage);
 
             if (packageArchive == default(IPackageArchive))
             {
@@ -537,9 +536,9 @@ namespace OpenIIoT.Core.Packaging
 
                 ScanPackages();
 
-                package = FindPackage(packageArchive.FQN);
+                retVal.ReturnValue = FindPackage(packageArchive.FQN);
 
-                if (package == default(IPackage))
+                if (retVal.ReturnValue == default(IPackage))
                 {
                     retVal.AddError($"Extraction succeeded but no Package was installed.");
                 }
@@ -547,8 +546,8 @@ namespace OpenIIoT.Core.Packaging
 
             if (retVal.ResultCode != ResultCode.Failure)
             {
-                logger.Debug($"Package {package.FQN} installed successfully. Sending PackageInstalled Event...");
-                Task.Run(() => PackageInstalled?.Invoke(this, new PackageInstallEventArgs(package, destination)));
+                logger.Debug($"Package {retVal.ReturnValue.FQN} installed successfully. Sending PackageInstalled Event...");
+                Task.Run(() => PackageInstalled?.Invoke(this, new PackageInstallEventArgs(retVal.ReturnValue, destination)));
             }
 
             retVal.LogResult(logger);
@@ -560,8 +559,8 @@ namespace OpenIIoT.Core.Packaging
         ///     Asynchronously installs the specified <paramref name="packageArchive"/>.
         /// </summary>
         /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<IResult> InstallPackageAsync(IPackageArchive packageArchive)
+        /// <returns>A Result containing the result of the operation and the installed <see cref="IPackage"/>.</returns>
+        public async Task<IResult<IPackage>> InstallPackageAsync(IPackageArchive packageArchive)
         {
             return await Task.Run(() => InstallPackage(packageArchive, new PackageInstallationOptions()));
         }
@@ -571,8 +570,8 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="packageArchive">The <see cref="IPackageArchive"/> to install.</param>
         /// <param name="options">The <see cref="PackageInstallationOptions"/> for the installation.</param>
-        /// <returns>A Result containing the result of the operation.</returns>
-        public async Task<IResult> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options)
+        /// <returns>A Result containing the result of the operation and the installed <see cref="IPackage"/>.</returns>
+        public async Task<IResult<IPackage>> InstallPackageAsync(IPackageArchive packageArchive, PackageInstallationOptions options)
         {
             return await Task.Run(() => InstallPackage(packageArchive, options));
         }
