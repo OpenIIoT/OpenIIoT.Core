@@ -738,7 +738,11 @@ namespace OpenIIoT.Core.Packaging
             else
             {
                 PackageVerifier verifier = new PackageVerifier();
-                verifier.Updated += (sender, e) => logger.Debug($"    PackageVerifier: {e.Message}");
+                verifier.Updated += (sender, e) =>
+                {
+                    logger.Debug($"     PackageVerifier: {e.Message}");
+                    retVal.AddInfo(e.Message);
+                };
 
                 try
                 {

@@ -212,6 +212,7 @@
     <Compile Include="Packaging\IPackageScanner.cs" />
     <Compile Include="Packaging\PackageScanner.cs" />
     <Compile Include="Packaging\WebApi\Data\PackageArchiveSummaryData.cs" />
+    <Compile Include="Packaging\WebApi\Data\PackageArchiveVerificationData.cs" />
     <Compile Include="Packaging\WebApi\Data\PackageManifestSummaryData.cs" />
     <Compile Include="Packaging\WebApi\Data\PackageManifestSummarySignatureData.cs" />
     <Compile Include="Packaging\WebApi\PackagingController.cs" />
