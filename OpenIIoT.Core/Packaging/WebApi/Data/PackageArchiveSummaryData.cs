@@ -82,8 +82,8 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
         /// <summary>
         ///     Gets or sets the time at which the Archive was created, in Utc.
         /// </summary>
-        [JsonProperty(Order = 5)]
-        [DataMember(Order = 5)]
+        [JsonProperty(Order = 6)]
+        [DataMember(Order = 6)]
         public DateTime CreatedOn { get; set; }
 
         /// <summary>
@@ -103,30 +103,37 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
         /// <summary>
         ///     Gets or sets a value indicating whether the Archive signature contains a trust.
         /// </summary>
-        [JsonProperty(Order = 3)]
-        [DataMember(Order = 3)]
+        [JsonProperty(Order = 4)]
+        [DataMember(Order = 4)]
         public bool HasTrust { get; set; }
 
         /// <summary>
         ///     Gets or sets a value indicating whether the Archive is signed.
         /// </summary>
-        [JsonProperty(Order = 4)]
-        [DataMember(Order = 4)]
+        [JsonProperty(Order = 5)]
+        [DataMember(Order = 5)]
         public bool IsSigned { get; set; }
 
         /// <summary>
         ///     Gets or sets the Manifest for the Package.
         /// </summary>
-        [JsonProperty(Order = 7)]
-        [DataMember(Order = 7)]
+        [JsonProperty(Order = 8)]
+        [DataMember(Order = 8)]
         public PackageManifestSummaryData Manifest { get; set; }
 
         /// <summary>
         ///     Gets or sets the time at which the Archive was last modified, in Utc.
         /// </summary>
-        [JsonProperty(Order = 6)]
-        [DataMember(Order = 6)]
+        [JsonProperty(Order = 7)]
+        [DataMember(Order = 7)]
         public DateTime ModifiedOn { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="PackageVerification"/> state of the Archive.
+        /// </summary>
+        [JsonProperty(Order = 3)]
+        [DataMember(Order = 3)]
+        public PackageVerification Verification { get; set; }
 
         #endregion Public Properties
     }
