@@ -52,12 +52,12 @@ namespace OpenIIoT.SDK.Packaging
         #region Public Properties
 
         /// <summary>
-        ///     Gets the time at which the archive was created, in Utc.
+        ///     Gets the time at which the Archive was created, in Utc.
         /// </summary>
         DateTime CreatedOn { get; }
 
         /// <summary>
-        ///     Gets the fully qualified filename of the archive file.
+        ///     Gets the fully qualified filename of the Archive file.
         /// </summary>
         string FileName { get; }
 
@@ -72,7 +72,7 @@ namespace OpenIIoT.SDK.Packaging
         bool HasTrust { get; }
 
         /// <summary>
-        ///     Gets a value indicating whether the archive is signed.
+        ///     Gets a value indicating whether the Archive is signed.
         /// </summary>
         bool IsSigned { get; }
 
@@ -85,6 +85,11 @@ namespace OpenIIoT.SDK.Packaging
         ///     Gets the time at which the archive was last modified, in Utc.
         /// </summary>
         DateTime ModifiedOn { get; }
+
+        /// <summary>
+        ///     Gets the <see cref="PackageVerification"/> state of the Archive.
+        /// </summary>
+        PackageVerification Verification { get; }
 
         #endregion Public Properties
     }

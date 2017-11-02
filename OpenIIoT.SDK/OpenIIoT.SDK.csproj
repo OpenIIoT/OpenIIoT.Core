@@ -117,6 +117,7 @@
     <Compile Include="Packaging\PackageInstallEventArgs.cs" />
     <Compile Include="Packaging\PackageEventArgs.cs" />
     <Compile Include="Packaging\PackageInstallationOptions.cs" />
+    <Compile Include="Packaging\PackageVerification.cs" />
     <Compile Include="Packaging\PackagingConstants.cs" />
     <Compile Include="Packaging\Operations\PackagingOperation.cs" />
     <Compile Include="Packaging\Operations\PackagingOperationType.cs" />
