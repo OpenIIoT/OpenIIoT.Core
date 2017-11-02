@@ -51,6 +51,8 @@ namespace OpenIIoT.Core.Packaging
     using OpenIIoT.SDK.Packaging.Manifest;
     using OpenIIoT.SDK.Packaging.Operations;
     using OpenIIoT.SDK.Platform;
+    using NLog;
+    using System.Net;
 
     /// <summary>
     ///     Creates instances of <see cref="IPackage"/> and <see cref="IPackageFactory"/> from disk.
@@ -73,7 +75,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         [ExcludeFromCodeCoverage]
         public PackageFactory()
-            : this(ApplicationManager.GetInstance().GetManager<IPlatformManager>(), new ManifestExtractor())
+            : this(ApplicationManager.GetInstance().GetManager<IPlatformManager>(), new ManifestExtractor(), new PackageVerifier())
         {
         }
 
@@ -82,7 +84,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
         public PackageFactory(IPlatformManager platformManager)
-            : this(platformManager, new ManifestExtractor())
+            : this(platformManager, new ManifestExtractor(), new PackageVerifier())
         {
         }
 
@@ -94,10 +96,14 @@ namespace OpenIIoT.Core.Packaging
         /// <param name="manifestExtractor">
         ///     The <see cref="IManifestExtractor"/> with which to create <see cref="IPackageArchive"/> instances.
         /// </param>
-        public PackageFactory(IPlatformManager platformManager, IManifestExtractor manifestExtractor)
+        /// <param name="packageVerifier">
+        ///     The <see cref="IPackageVerifier"/> instance with which to verify <see cref="IPackageArchive"/> instances.
+        /// </param>
+        public PackageFactory(IPlatformManager platformManager, IManifestExtractor manifestExtractor, IPackageVerifier packageVerifier)
         {
             PlatformManager = platformManager;
             ManifestExtractor = manifestExtractor;
+            PackageVerifier = packageVerifier;
         }
 
         #endregion Public Constructors
@@ -113,6 +119,11 @@ namespace OpenIIoT.Core.Packaging
         ///     Gets or sets the <see cref="IManifestExtractor"/> instance with which to create <see cref="IPackageArchive"/> instances.
         /// </summary>
         private IManifestExtractor ManifestExtractor { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="IPackageVerifier"/> instance with which to verify <see cref="IPackageArchive"/> instances.
+        /// </summary>
+        private IPackageVerifier PackageVerifier { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="IPlatformManager"/> for the application.
@@ -188,8 +199,10 @@ namespace OpenIIoT.Core.Packaging
                 fileInfo = new FileInfo(fileName);
 
                 retVal.ReturnValue = new PackageArchive(fileInfo, manifest);
-
                 retVal.AddInfo($"Found Package Archive '{manifest.Namespace + "." + manifest.Title}' in '{Path.GetFileName(fileName)}'.");
+
+                logger.Debug($"Attempting to verify Package Archive...");
+                retVal.ReturnValue.Verification = GetPackageArchiveVerification(retVal.ReturnValue);
             }
             catch (Exception ex)
             {
@@ -211,13 +224,59 @@ namespace OpenIIoT.Core.Packaging
         #region Private Methods
 
         /// <summary>
+        ///     Retrieves the <see cref="PackageVerification"/> for the specified <paramref name="packageArchive"/>.
+        /// </summary>
+        /// <param name="packageArchive">The <see cref="IPackageArchive"/> instance to verify.</param>
+        /// <returns>The <see cref="PackageVerification"/> result.</returns>
+        private PackageVerification GetPackageArchiveVerification(IPackageArchive packageArchive)
+        {
+            PackageVerification retVal;
+
+            try
+            {
+                PackageVerifier.Updated += PackageVerifierUpdated;
+                bool verification = PackageVerifier.VerifyPackage(packageArchive.FileName);
+
+                if (verification)
+                {
+                    retVal = PackageVerification.Verified;
+                }
+                else
+                {
+                    retVal = PackageVerification.Refuted;
+                }
+            }
+            catch (Exception ex)
+            {
+                logger.Debug($"Failed to verifiy Package Archive '{packageArchive.FQN}': {ex.Message}");
+                retVal = PackageVerification.Refuted;
+            }
+            finally
+            {
+                PackageVerifier.Updated -= PackageVerifierUpdated;
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
         ///     Event handler for <see cref="ManifestExtractor"/> updates.
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
         private void ManifestExtractorUpdated(object sender, PackagingUpdateEventArgs e)
         {
-            logger.Debug("    ManifestExtractor: " + e.Message);
+            logger.Debug("     ManifestExtractor: " + e.Message);
+        }
+
+        /// <summary>
+        ///     Event handler for <see cref="PackageVerifier"/> updates.
+        /// </summary>
+        /// <param name="sender">The event sender.</param>
+        /// <param name="e">The event arguments.</param>
+        private void PackageVerifierUpdated(object sender, PackagingUpdateEventArgs e)
+        {
+            logger.Debug("     PackageVerifier: " + e.Message);
         }
 
         #endregion Private Methods
