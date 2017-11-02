@@ -74,8 +74,8 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets the time at which the archive was created, in Utc.
         /// </summary>
-        [JsonProperty(Order = 5)]
-        [DataMember(Order = 5)]
+        [JsonProperty(Order = 6)]
+        [DataMember(Order = 6)]
         public DateTime CreatedOn => FileInfo.CreationTimeUtc;
 
         /// <summary>
@@ -95,30 +95,37 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Gets a value indicating whether the archive signature contains a trust.
         /// </summary>
-        [JsonProperty(Order = 3)]
-        [DataMember(Order = 3)]
+        [JsonProperty(Order = 4)]
+        [DataMember(Order = 4)]
         public bool HasTrust => !string.IsNullOrEmpty(Manifest?.Signature?.Trust);
 
         /// <summary>
         ///     Gets a value indicating whether the archive is signed.
         /// </summary>
-        [JsonProperty(Order = 4)]
-        [DataMember(Order = 4)]
+        [JsonProperty(Order = 5)]
+        [DataMember(Order = 5)]
         public bool IsSigned => Manifest?.Signature != default(PackageManifestSignature);
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
         /// </summary>
-        [JsonProperty(Order = 7)]
-        [DataMember(Order = 7)]
+        [JsonProperty(Order = 8)]
+        [DataMember(Order = 8)]
         public IPackageManifest Manifest { get; }
 
         /// <summary>
         ///     Gets the time at which the archive was last modified, in Utc.
         /// </summary>
-        [JsonProperty(Order = 6)]
-        [DataMember(Order = 6)]
+        [JsonProperty(Order = 7)]
+        [DataMember(Order = 7)]
         public DateTime ModifiedOn => FileInfo.LastWriteTimeUtc;
+
+        /// <summary>
+        ///     Gets the <see cref="PackageVerification"/> state of the Archive.
+        /// </summary>
+        [JsonProperty(Order = 3)]
+        [DataMember(Order = 3)]
+        public PackageVerification Verification { get; }
 
         #endregion Public Properties
 
