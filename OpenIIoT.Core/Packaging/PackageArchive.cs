@@ -121,11 +121,11 @@ namespace OpenIIoT.Core.Packaging
         public DateTime ModifiedOn => FileInfo.LastWriteTimeUtc;
 
         /// <summary>
-        ///     Gets the <see cref="PackageVerification"/> state of the Archive.
+        ///     Gets or sets the <see cref="PackageVerification"/> state of the Archive.
         /// </summary>
         [JsonProperty(Order = 3)]
         [DataMember(Order = 3)]
-        public PackageVerification Verification { get; }
+        public PackageVerification Verification { get; set; }
 
         #endregion Public Properties
 

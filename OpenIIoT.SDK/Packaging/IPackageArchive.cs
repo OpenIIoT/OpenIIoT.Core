@@ -87,9 +87,9 @@ namespace OpenIIoT.SDK.Packaging
         DateTime ModifiedOn { get; }
 
         /// <summary>
-        ///     Gets the <see cref="PackageVerification"/> state of the Archive.
+        ///     Gets or sets the <see cref="PackageVerification"/> state of the Archive.
         /// </summary>
-        PackageVerification Verification { get; }
+        PackageVerification Verification { get; set; }
 
         #endregion Public Properties
     }
