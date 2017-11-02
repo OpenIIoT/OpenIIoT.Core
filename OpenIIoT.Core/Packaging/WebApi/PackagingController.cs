@@ -272,7 +272,59 @@ namespace OpenIIoT.Core.Packaging.WebApi
                     }
                     else
                     {
-                        HttpErrorResult result = new HttpErrorResult($"Failed to retrieve contents of Package archive '{fqn}'.", readResult);
+                        HttpErrorResult result = new HttpErrorResult($"Failed to retrieve contents of Package Archive '{fqn}'.", readResult);
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Verifies the specified Package Archive.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to verify.</param>
+        /// <returns>An HTTP response message.</returns>
+        [HttpGet]
+        [Route("archives/{fqn}/verification")]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was verified successfully.", typeof(Result<bool>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackageArchivesGetFqnVerification(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+            }
+            else
+            {
+                IPackageArchive findResult = await PackageManager.FindPackageArchiveAsync(fqn);
+
+                if (findResult != default(IPackageArchive))
+                {
+                    IResult<bool> verifyResult = await PackageManager.VerifyPackageArchiveAsync(findResult);
+
+                    if (verifyResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.OK, new PackageArchiveVerificationData(verifyResult), JsonFormatter());
+                    }
+                    else
+                    {
+                        HttpErrorResult result = new HttpErrorResult($"Failed to verify Package Archive '{fqn}'.", verifyResult);
                         retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
                     }
                 }
