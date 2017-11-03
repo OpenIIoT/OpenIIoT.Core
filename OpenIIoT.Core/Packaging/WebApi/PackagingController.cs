@@ -97,30 +97,28 @@ namespace OpenIIoT.Core.Packaging.WebApi
         /// <param name="data">The base 64 encoded binary data of the Package Archive.</param>
         /// <returns>A Result containing the result of the operation and the created Package Archive.</returns>
         [Authorize]
-        [Route("archive")]
+        [Route("archives")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was created or overwritten.", typeof(PackageArchive))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data is of zero length or is not base 64 encoded.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesAdd([FromBody]string data)
         {
             HttpResponseMessage retVal;
 
-            Tuple<bool, byte[]> bytes = TryGetBytesFromBase64String(data);
-            bool isValidData = bytes.Item1;
-            byte[] binaryData = bytes.Item2;
+            byte[] decodedData = GetBytesFromBase64String(data);
 
             if (data.Length == 0)
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The data is of zero length.", JsonFormatter());
             }
-            else if (!isValidData)
+            else if (decodedData == default(byte[]))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The data is not a valid base 64 encoded string.", JsonFormatter());
             }
             else
             {
-                IResult<IPackageArchive> addResult = await PackageManager.AddPackageArchiveAsync(binaryData);
+                IResult<IPackageArchive> addResult = await PackageManager.AddPackageArchiveAsync(decodedData);
 
                 if (addResult.ResultCode != ResultCode.Failure)
                 {
@@ -146,10 +144,10 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Authorize]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.NoContent, "The Package Archive was successfully deleted.")]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesDelete(string fqn)
         {
             HttpResponseMessage retVal;
@@ -238,11 +236,11 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [HttpGet]
         [Route("archives/{fqn}/file")]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was retrieved successfully.", typeof(byte[]))]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive file was retrieved successfully.", typeof(byte[]))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesGetFqnFile(string fqn)
         {
             HttpResponseMessage retVal;
@@ -293,9 +291,9 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [HttpGet]
         [Route("archives/{fqn}/verification")]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was verified successfully.", typeof(Result<bool>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive verification completed successfully.", typeof(PackageArchiveVerificationData))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesGetFqnVerification(string fqn)
@@ -345,7 +343,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("archives")]
         [HttpGet]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan)
@@ -376,7 +374,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         /// <returns>An HTTP response message.</returns>
         [Route("packages")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IList<Package>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IList<PackageSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesGet(bool? scan)
@@ -394,7 +392,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 }
             }
 
-            IReadOnlyList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
+            IReadOnlyList<PackageSummaryData> packages = PackageManager.Packages.Select(p => new PackageSummaryData(p)).ToList().AsReadOnly();
             retVal = Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
 
             return retVal;
@@ -447,10 +445,10 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("packages/{fqn}")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was successfully installed.", typeof(Package))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesInstall(string fqn, [FromBody]PackageInstallationOptions options = null)
         {
             HttpResponseMessage retVal;
@@ -512,10 +510,10 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [HttpDelete]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.NoContent, "The Package was successfully uninstalled.")]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesUninstall(string fqn)
         {
             HttpResponseMessage retVal;
@@ -564,20 +562,19 @@ namespace OpenIIoT.Core.Packaging.WebApi
         ///     containing the result of the attempt and, if successful, the retrieved array.
         /// </summary>
         /// <param name="data">The string from which to attempt to retrieve the byte array.</param>
-        /// <returns>A <see cref="Tuple"/> containing the result of the attempt and, if successful, the retrieved array.s</returns>
-        private Tuple<bool, byte[]> TryGetBytesFromBase64String(string data)
+        /// <returns>
+        ///     The retrieved binary data, if the specified <paramref name="data"/> string is a base 64 encoded string.
+        /// </returns>
+        private byte[] GetBytesFromBase64String(string data)
         {
-            Tuple<bool, byte[]> retVal;
-            byte[] bytes = default(byte[]);
+            byte[] retVal = default(byte[]);
 
             try
             {
-                bytes = Convert.FromBase64String(data);
-                retVal = new Tuple<bool, byte[]>(true, bytes);
+                retVal = Convert.FromBase64String(data);
             }
             catch (Exception)
             {
-                retVal = new Tuple<bool, byte[]>(false, null);
             }
 
             return retVal;
