@@ -42,17 +42,18 @@
 namespace OpenIIoT.Core.Packaging
 {
     using System;
-    using OpenIIoT.SDK.Common;
-    using OpenIIoT.SDK.Packaging;
-    using OpenIIoT.SDK.Packaging.Manifest;
-    using System.Collections;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
+    using System.Runtime.Serialization;
+    using Newtonsoft.Json;
+    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
     ///     Represents an installable extension archive.
     /// </summary>
+    [DataContract]
     public class Package : IPackage
     {
         #region Public Constructors
@@ -60,8 +61,7 @@ namespace OpenIIoT.Core.Packaging
         /// <summary>
         ///     Initializes a new instance of the <see cref="Package"/> class.
         /// </summary>
-        /// <param name="filename">The fully qualified filename of the archive file.</param>
-        /// <param name="modifiedOn">The time at which the archive was last modified, according to the host filesystem.</param>
+        /// <param name="directoryInfo">The <see cref="DirectoryInfo"/> instance of the directory in which the Package resides.</param>
         /// <param name="manifest">The manifest contained within the archive.</param>
         public Package(DirectoryInfo directoryInfo, PackageManifest manifest)
         {
@@ -74,47 +74,72 @@ namespace OpenIIoT.Core.Packaging
 
         #endregion Public Constructors
 
-        #region Private Properties
-
-        private DirectoryInfo DirectoryInfo { get; set; }
-
-        #endregion Private Properties
-
         #region Public Properties
 
+        /// <summary>
+        ///     Gets the fully qualified name of the directory in which the Package resides.
+        /// </summary>
+        [JsonProperty(Order = 2)]
+        [DataMember(Order = 2)]
         public string DirectoryName => DirectoryInfo.FullName;
 
+        /// <summary>
+        ///     Gets the list of files contained within the Package directory.
+        /// </summary>
+        [JsonProperty(Order = 5)]
+        [DataMember(Order = 5)]
         public IList<string> Files { get; private set; }
 
         /// <summary>
         ///     Gets the Fully Qualified Name of the Package.
         /// </summary>
+        [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
         public string FQN => Manifest.Namespace + "." + Manifest.Title;
 
         /// <summary>
         ///     Gets the time at which the archive was last modified, according to the host filesystem.
         /// </summary>
+        [JsonProperty(Order = 3)]
+        [DataMember(Order = 3)]
         public DateTime InstalledOn => DirectoryInfo.CreationTimeUtc;
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.
         /// </summary>
+        [JsonProperty(Order = 4)]
+        [DataMember(Order = 4)]
         public IPackageManifest Manifest { get; }
 
         #endregion Public Properties
 
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the <see cref="DirectoryInfo"/> instance of the directory in which the Package resides.
+        /// </summary>
+        private DirectoryInfo DirectoryInfo { get; set; }
+
+        #endregion Private Properties
+
         #region Private Methods
 
-        private string GetRelativePath(string fileName, string folder)
+        /// <summary>
+        ///     Gets the path of the specified <paramref name="fileName"/> relative to the specified <paramref name="directory"/>
+        /// </summary>
+        /// <param name="fileName">The filename to make relative.</param>
+        /// <param name="directory">The root directory.</param>
+        /// <returns>The path of the specified filename relative to the specified directory.</returns>
+        private string GetRelativePath(string fileName, string directory)
         {
             Uri pathUri = new Uri(fileName);
 
-            if (!folder.EndsWith(Path.DirectorySeparatorChar.ToString()))
+            if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString()))
             {
-                folder += Path.DirectorySeparatorChar;
+                directory += Path.DirectorySeparatorChar;
             }
 
-            Uri folderUri = new Uri(folder);
+            Uri folderUri = new Uri(directory);
             return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
         }
 
