@@ -813,7 +813,12 @@ namespace OpenIIoT.Core
             Guid guid = logger.EnterMethod(xLogger.Params(manager, stopType), true);
             logger.Debug("Stopping " + manager.GetType().Name + "...");
 
-            manager.Stop(stopType);
+            IResult retVal = manager.Stop(stopType);
+
+            if (retVal.ResultCode == ResultCode.Failure)
+            {
+                throw new ManagerStopException("Failed to stop Manager '" + manager.ManagerName + "': " + retVal.GetLastError());
+            }
 
             logger.ExitMethod(guid);
         }
