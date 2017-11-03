@@ -52,12 +52,11 @@ namespace OpenIIoT.Core.Packaging.WebApi
     using System.Web.Http;
     using OpenIIoT.Core.Packaging.WebApi.Data;
     using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.Core.Service.WebApi.ModelValidation;
     using OpenIIoT.SDK;
-    using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
     using Swashbuckle.Swagger.Annotations;
-    using OpenIIoT.Core.Service.WebApi.ModelValidation;
 
     /// <summary>
     ///     Handles the API methods for AppPackages.
@@ -374,7 +373,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         /// <returns>An HTTP response message.</returns>
         [Route("packages")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IList<PackageSummaryData>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IList<PackageSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesGet(bool? scan)
