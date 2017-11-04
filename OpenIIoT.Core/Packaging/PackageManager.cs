@@ -362,7 +362,7 @@ namespace OpenIIoT.Core.Packaging
         public IResult<byte[]> FetchPackageArchive(IPackageArchive packageArchive)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(packageArchive));
-            logger.Info($"Fetching Package Archive '{packageArchive.FQN}'...");
+            logger.Info($"Fetching Package Archive '{packageArchive?.FQN}'...");
 
             IResult<byte[]> retVal = new Result<byte[]>();
 

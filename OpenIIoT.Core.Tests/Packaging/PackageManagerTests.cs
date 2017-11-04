@@ -361,31 +361,18 @@ namespace OpenIIoT.Core.Tests.Packaging
         ///     Tests the <see cref="PackageManager.FetchPackageArchive(IPackageArchive)"/> method with a known good Package.
         /// </summary>
         [Fact]
-        public void FetchPackage()
+        public void FetchPackageArchive()
         {
-            IResult<string> successResult = new Result<string>();
-
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            IResult<byte[]> dataResult = new Result<byte[]>();
-            dataResult.ReturnValue = data;
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(dataResult);
-            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
+            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>()))
+                .Returns(new Result<byte[]>().SetReturnValue(data));
 
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
             IResult<IPackageArchive> package = test.AddPackageArchive(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
@@ -402,31 +389,18 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
-        public async Task FetchPackageAsync()
+        public async Task FetchPackageArchiveAsync()
         {
-            IResult<string> successResult = new Result<string>();
-
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            IResult<byte[]> dataResult = new Result<byte[]>();
-            dataResult.ReturnValue = data;
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(dataResult);
-            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(true);
+            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>()))
+                .Returns(new Result<byte[]>().SetReturnValue(data));
 
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
             IResult<IPackageArchive> package = test.AddPackageArchive(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
@@ -443,56 +417,43 @@ namespace OpenIIoT.Core.Tests.Packaging
         ///     Packages list but not on disk.
         /// </summary>
         [Fact]
-        public void FetchPackageFileNotFound()
+        public void FetchPackageArchiveFileNotFound()
         {
-            IResult<string> successResult = new Result<string>();
-            IResult<byte[]> readByteResult = new Result<byte[]>(ResultCode.Failure);
-
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
             PlatformMock.Setup(p => p.FileExists(It.IsAny<string>())).Returns(false);
-            PlatformMock.Setup(p => p.ReadFileBytes(It.IsAny<string>())).Returns(readByteResult);
 
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IPackageArchive> package = test.AddPackageArchive(data);
 
-            Assert.Equal(ResultCode.Success, package.ResultCode);
-            Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
-
-            IResult<byte[]> readResult = test.FetchPackageArchive(package.ReturnValue);
+            IResult<byte[]> readResult = test.FetchPackageArchive(PackageArchiveMock.Object);
 
             Assert.Equal(ResultCode.Failure, readResult.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.FetchPackageArchive(IPackageArchive)"/> method with a Package not in the
-        ///     Packages list.
+        ///     Tests the <see cref="PackageManager.FetchPackageArchive(IPackageArchive)"/> method with a Package Archive missing a FileName.
         /// </summary>
         [Fact]
-        public void FetchPackagePackageNotFound()
+        public void FetchPackageArchiveNoFileName()
         {
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            IPackageArchive package = new PackageArchive(new FileInfo(Guid.NewGuid().ToString()), null);
+            PackageArchiveMock.Setup(p => p.FileName).Returns(string.Empty);
 
-            IResult<byte[]> readResult = test.FetchPackageArchive(package);
+            IResult<byte[]> readResult = test.FetchPackageArchive(PackageArchiveMock.Object);
+
+            Assert.Equal(ResultCode.Failure, readResult.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.FetchPackageArchive(IPackageArchive)"/> method with a null Package Archive.
+        /// </summary>
+        [Fact]
+        public void FetchPackageArchiveNull()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IResult<byte[]> readResult = test.FetchPackageArchive(null);
 
             Assert.Equal(ResultCode.Failure, readResult.ResultCode);
         }
@@ -526,8 +487,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.True(Directory.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin")));
         }
 
-        //    Assert.Equal(default(IPackage), test.FindPackage("test"));
-        //}
         /// <summary>
         ///     Tests the <see cref="PackageManager.InstallPackageAsync(IPackageArchive)"/> method with a known good Package and
         ///     default options.
@@ -559,7 +518,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.True(Directory.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin")));
         }
 
-        // IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
         /// <summary>
         ///     Tests the <see cref="PackageManager.InstallPackageAsync(IPackageArchive)"/> method with a known good Package and
         ///     null/default options.
@@ -591,7 +549,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(ResultCode.Failure, installResult.ResultCode);
         }
 
-        // PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object); PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
         /// <summary>
         ///     Tests the <see cref="PackageManager.InstallPackageAsync(IPackageArchive)"/> method with a known good Package and
         ///     blank options.
@@ -623,7 +580,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.True(Directory.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin")));
         }
 
-        // PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
         /// <summary>
         ///     Tests the <see cref="PackageManager.InstallPackage(IPackageArchive)"/> method with scenario known to raise an exception.
         /// </summary>
@@ -658,7 +614,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(ResultCode.Failure, installResult.ResultCode);
         }
 
-        // DirectoryMock.Setup(d => d.Packages).Returns(Temp); DirectoryMock.Setup(d => d.Temp).Returns(Temp);
         /// <summary>
         ///     Tests the <see cref="PackageManager.InstallPackage(IPackageArchive)"/> method with a Package which does not exist
         ///     in the collection.
@@ -679,14 +634,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(ResultCode.Failure, installResult.ResultCode);
         }
 
-        ///// <summary>
-        /////     Tests the <see cref="PackageManager.FindPackage(string)"/> method with a known non-existent Package.
-        ///// </summary>
-        //[Fact]
-        //public void FindPackageNotFound()
-        //{
-        //    IResult<IList<string>> dirResult = new Result<IList<string>>();
-        //    dirResult.ReturnValue = new List<string>();
         /// <summary>
         ///     Tests the <see cref="PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method.
         /// </summary>
@@ -702,8 +649,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(0, test.PackageArchives.Count);
         }
 
-        //    Assert.Equal(package.ReturnValue, foundPackage);
-        //}
         /// <summary>
         ///     Tests the <see cref="PackageManager.Instantiate(IApplicationManager, IPlatformManager)"/> method after having
         ///     already instantiated the Manager.
@@ -723,7 +668,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(test, test2);
         }
 
-        // IPackage foundPackage = await test.FindPackageAsync(package.ReturnValue.FQN);
         /// <summary>
         ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with a bad directory.
         /// </summary>
@@ -742,7 +686,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(ResultCode.Failure, list.ResultCode);
         }
 
-        // Assert.Equal(ResultCode.Success, package.ResultCode); Assert.True(File.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip")));
         /// <summary>
         ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with an empty directory.
         /// </summary>
@@ -765,8 +708,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(0, list.ReturnValue.Count);
         }
 
-        // IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-        // IResult<IPackageArchive> package = test.AddPackageArchive(data);
         /// <summary>
         ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with a directory containing files but no Packages.
         /// </summary>
@@ -787,7 +728,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(0, list.ReturnValue.Count);
         }
 
-        // PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object); PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
         /// <summary>
         ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with a directory containing Package files.
         /// </summary>
@@ -810,8 +750,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
         }
 
-        // PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true)) .Returns(successResult)
-        // .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
         /// <summary>
         ///     Tests the <see cref="PackageManager.ScanPackagesAsync()"/> method with a directory containing Package files.
         /// </summary>
@@ -835,8 +773,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
         }
 
-        // PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>())) .Returns(successResult)
-        // .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
         /// <summary>
         ///     Tests the Setup method using reflection.
         /// </summary>
@@ -852,7 +788,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             setup.Invoke(test, new object[] { });
         }
 
-        // DirectoryMock.Setup(d => d.Packages).Returns(Temp); DirectoryMock.Setup(d => d.Temp).Returns(Temp);
         /// <summary>
         ///     Tests the <see cref="PackageManager.Startup()"/> method via <see cref="Core.Common.Manager.Start()"/> .
         /// </summary>
@@ -882,7 +817,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(State.Running, test.State);
         }
 
-        // byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
         /// <summary>
         ///     Tests the <see cref="PackageManager.Shutdown(StopType)"/> method via
         ///     <see cref="Core.Common.Manager.Stop(StopType)"/> .
@@ -918,14 +852,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(State.Stopped, test.State);
         }
 
-        ///// <summary>
-        /////     Tests the <see cref="PackageManager.FindPackageAsync(string)"/> method with a known existing Package.
-        ///// </summary>
-        ///// <returns>The Task with which the execution is carried out.</returns>
-        //[Fact]
-        //public async Task FindPackageAsync()
-        //{
-        //    IResult<string> successResult = new Result<string>();
         /// <summary>
         ///     Tests the <see cref="PackageManager.Terminate()"/> method.
         /// </summary>
