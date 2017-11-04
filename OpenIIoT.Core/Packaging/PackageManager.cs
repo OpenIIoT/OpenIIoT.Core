@@ -590,10 +590,12 @@ namespace OpenIIoT.Core.Packaging
             retVal.ReturnValue = PackageArchiveList;
 
             IResult<IList<IPackageArchive>> scanResult = PackageScanner.ScanPackageArchives();
+            retVal.Incorporate(scanResult);
 
             if (scanResult.ResultCode != ResultCode.Failure)
             {
-                PackageArchiveList = scanResult.ReturnValue;
+                retVal.ReturnValue = scanResult.ReturnValue;
+                PackageArchiveList = retVal.ReturnValue;
             }
 
             retVal.LogResult(logger);
@@ -625,10 +627,12 @@ namespace OpenIIoT.Core.Packaging
             retVal.ReturnValue = PackageList;
 
             IResult<IList<IPackage>> scanResult = PackageScanner.ScanPackages();
+            retVal.Incorporate(scanResult);
 
-            if (scanResult.ResultCode != ResultCode.Failure)
+            if (retVal.ResultCode != ResultCode.Failure)
             {
-                PackageList = scanResult.ReturnValue;
+                retVal.ReturnValue = scanResult.ReturnValue;
+                PackageList = retVal.ReturnValue;
             }
 
             retVal.LogResult(logger);

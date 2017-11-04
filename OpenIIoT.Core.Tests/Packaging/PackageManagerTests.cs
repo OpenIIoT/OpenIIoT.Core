@@ -670,108 +670,93 @@ namespace OpenIIoT.Core.Tests.Packaging
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with a bad directory.
+        ///     Tests the <see cref="PackageManager.ScanPackageArchives()"/> method.
         /// </summary>
         [Fact]
-        public void ScanBadDirectory()
+        public void ScanPackageArchives()
         {
-            IResult<IList<string>> dirResult = new Result<IList<string>>(ResultCode.Failure);
-
-            DirectoryMock.Setup(d => d.Packages).Returns(Data);
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IList<IPackage>> list = test.ScanPackages();
 
-            Assert.Equal(ResultCode.Failure, list.ResultCode);
-        }
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
 
-        /// <summary>
-        ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with an empty directory.
-        /// </summary>
-        [Fact]
-        public void ScanEmptyDirectory()
-        {
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = new List<string>();
+            PackageScannerMock.Setup(s => s.ScanPackageArchives())
+                .Returns(new Result<IList<IPackageArchive>>().SetReturnValue(new[] { PackageArchiveMock.Object }.ToList()));
 
-            DirectoryMock.Setup(d => d.Packages).Returns(Data);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
 
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-
-            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IList<IPackage>> list = test.ScanPackages();
+            IResult<IList<IPackageArchive>> list = test.ScanPackageArchives();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
-
-            Assert.NotNull(list.ReturnValue);
-            Assert.Equal(0, list.ReturnValue.Count);
+            Assert.Equal(1, list.ReturnValue.Count);
+            Assert.Equal(PackageArchiveMock.Object, list.ReturnValue[0]);
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with a directory containing files but no Packages.
+        ///     Tests the <see cref="PackageManager.ScanPackagesAsync()"/> method.
         /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
-        public void ScanNoPackages()
+        public async Task ScanPackageArchivesAsync()
         {
-            File.WriteAllText(Path.Combine(Temp, "package.zip"), "hello world!");
-
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Temp).ToList();
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-            IResult<IList<IPackage>> list = test.ScanPackages();
 
-            Assert.Equal(ResultCode.Warning, list.ResultCode);
-            Assert.Equal(0, list.ReturnValue.Count);
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+
+            PackageScannerMock.Setup(s => s.ScanPackageArchives())
+                .Returns(new Result<IList<IPackageArchive>>().SetReturnValue(new[] { PackageArchiveMock.Object }.ToList()));
+
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
+            IResult<IList<IPackageArchive>> list = await test.ScanPackageArchivesAsync();
+
+            Assert.Equal(ResultCode.Success, list.ResultCode);
+            Assert.Equal(1, list.ReturnValue.Count);
+            Assert.Equal(PackageArchiveMock.Object, list.ReturnValue[0]);
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with a directory containing Package files.
+        ///     Tests the <see cref="PackageManager.ScanPackages()"/> method.
         /// </summary>
         [Fact]
         public void ScanPackages()
         {
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+
+            PackageScannerMock.Setup(s => s.ScanPackages())
+                .Returns(new Result<IList<IPackage>>().SetReturnValue(new[] { PackageMock.Object }.ToList()));
+
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
             IResult<IList<IPackage>> list = test.ScanPackages();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
-            Assert.Equal(3, list.ReturnValue.Count);
-
-            // spot check a few Manifest fields to see if the manifest was fetched properly
-            Assert.NotNull(list.ReturnValue[0].FQN);
-            Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
+            Assert.Equal(1, list.ReturnValue.Count);
+            Assert.Equal(PackageMock.Object, list.ReturnValue[0]);
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.ScanPackagesAsync()"/> method with a directory containing Package files.
+        ///     Tests the <see cref="PackageManager.ScanPackagesAsync()"/> method.
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
         public async Task ScanPackagesAsync()
         {
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
-
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+
+            PackageScannerMock.Setup(s => s.ScanPackages())
+                .Returns(new Result<IList<IPackage>>().SetReturnValue(new[] { PackageMock.Object }.ToList()));
+
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
             IResult<IList<IPackage>> list = await test.ScanPackagesAsync();
 
             Assert.Equal(ResultCode.Success, list.ResultCode);
-            Assert.Equal(3, list.ReturnValue.Count);
-
-            // spot check a few Manifest fields to see if the manifest was fetched properly
-            Assert.NotNull(list.ReturnValue[0].FQN);
-            Assert.NotEqual(0, list.ReturnValue[0].FQN.Length);
+            Assert.Equal(1, list.ReturnValue.Count);
+            Assert.Equal(PackageMock.Object, list.ReturnValue[0]);
         }
 
         /// <summary>
