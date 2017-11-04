@@ -309,7 +309,7 @@ namespace OpenIIoT.Core.Packaging
         public IResult DeletePackageArchive(IPackageArchive packageArchive)
         {
             Guid guid = logger.EnterMethod(xLogger.Params(packageArchive));
-            logger.Info($"Deleting Package {packageArchive.FQN}...");
+            logger.Info($"Deleting Package {packageArchive?.FQN}...");
 
             IResult retVal = new Result();
 

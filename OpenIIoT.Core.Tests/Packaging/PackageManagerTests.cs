@@ -259,30 +259,7 @@ namespace OpenIIoT.Core.Tests.Packaging
         [Fact]
         public void DeletePackageArchive()
         {
-            IResult<string> successResult = new Result<string>();
-
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
-
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
-                .Returns(successResult)
-                    .Callback<string>(s => File.Delete(s));
-
-            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>()))
-                .Returns(true);
-
-            PackageFactoryMock.Setup(p => p.GetPackageArchive(It.IsAny<string>()))
-                .Returns(new Result<IPackageArchive>().SetReturnValue(PackageArchiveMock.Object));
-
-            PackageScannerMock.Setup(p => p.ScanPackageArchives())
-                .Returns(new Result<IList<IPackageArchive>>().SetReturnValue(new[] { PackageArchiveMock.Object }.ToList()));
 
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
@@ -305,25 +282,15 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// </summary>
         /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
-        public async Task DeletePackageAsync()
+        public async Task DeletePackageArchiveAsync()
         {
-            IResult<string> successResult = new Result<string>();
-
             byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
 
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
-                .Returns(successResult)
-                    .Callback<string>(s => File.Delete(s));
-
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
             IResult<IPackageArchive> package = test.AddPackageArchive(data);
 
             Assert.Equal(ResultCode.Success, package.ResultCode);
@@ -336,21 +303,47 @@ namespace OpenIIoT.Core.Tests.Packaging
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.DeletePackageArchive(IPackageArchive)"/> method with a Package which does not exist.
+        ///     Tests the <see cref="PackageManager.DeletePackageArchive(IPackageArchive)"/> method with a Package Archive which
+        ///     contains a null or empty FileName.
         /// </summary>
         [Fact]
-        public void DeletePackageNotFound()
+        public void DeletePackageArchiveNoFileName()
         {
-            IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = new List<string>();
-
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PackageArchiveMock.Setup(p => p.FileName).Returns(string.Empty);
 
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            IPackageArchive package = new PackageArchive(new FileInfo(Guid.NewGuid().ToString()), null);
+            IResult deleteResult = test.DeletePackageArchive(PackageArchiveMock.Object);
 
-            IResult deleteResult = test.DeletePackageArchive(package);
+            Assert.Equal(ResultCode.Failure, deleteResult.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.DeletePackageArchive(IPackageArchive)"/> method with a Package Archive which
+        ///     does not exist.
+        /// </summary>
+        [Fact]
+        public void DeletePackageArchiveNotFound()
+        {
+            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>()))
+                .Returns(false);
+
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IResult deleteResult = test.DeletePackageArchive(PackageArchiveMock.Object);
+
+            Assert.Equal(ResultCode.Failure, deleteResult.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.DeletePackageArchive(IPackageArchive)"/> method with a null Package Archive.
+        /// </summary>
+        [Fact]
+        public void DeletePackageArchiveNull()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IResult deleteResult = test.DeletePackageArchive(null);
 
             Assert.Equal(ResultCode.Failure, deleteResult.ResultCode);
         }
@@ -706,6 +699,7 @@ namespace OpenIIoT.Core.Tests.Packaging
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
             Assert.Equal(0, test.Packages.Count);
+            Assert.Equal(0, test.PackageArchives.Count);
         }
 
         //    Assert.Equal(package.ReturnValue, foundPackage);
