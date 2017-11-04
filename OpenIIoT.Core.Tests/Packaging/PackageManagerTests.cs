@@ -1043,12 +1043,16 @@ namespace OpenIIoT.Core.Tests.Packaging
         [Fact]
         public void Start()
         {
+            IResult<IList<string>> fileResult = new Result<IList<string>>();
+            fileResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
             IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+            dirResult.ReturnValue = Directory.GetDirectories(Data).ToList();
 
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(fileResult);
+            PlatformMock.Setup(p => p.ListDirectories(It.IsAny<string>(), It.IsAny<string>())).Returns(dirResult);
 
             PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
@@ -1073,12 +1077,16 @@ namespace OpenIIoT.Core.Tests.Packaging
         [Fact]
         public void Stop()
         {
+            IResult<IList<string>> fileResult = new Result<IList<string>>();
+            fileResult.ReturnValue = Directory.GetFiles(Data).ToList();
+
             IResult<IList<string>> dirResult = new Result<IList<string>>();
-            dirResult.ReturnValue = Directory.GetFiles(Data).ToList();
+            dirResult.ReturnValue = Directory.GetDirectories(Data).ToList();
 
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
 
-            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(dirResult);
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>())).Returns(fileResult);
+            PlatformMock.Setup(p => p.ListDirectories(It.IsAny<string>(), It.IsAny<string>())).Returns(dirResult);
 
             PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
