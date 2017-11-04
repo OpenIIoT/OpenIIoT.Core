@@ -172,7 +172,7 @@ namespace OpenIIoT.Core.Packaging
         ///     Gets or sets the <see cref="IPackageFactory"/> used to facilitate scanning of <see cref="IPackage"/> and
         ///     <see cref="IPackageArchive"/> instances.
         /// </summary>
-        private PackageFactory PackageFactory { get; set; }
+        private IPackageFactory PackageFactory { get; set; }
 
         /// <summary>
         ///     Gets or sets the list of installed <see cref="IPackage"/> s.
@@ -183,7 +183,7 @@ namespace OpenIIoT.Core.Packaging
         ///     Gets or sets the <see cref="IPackageScanner"/> used to scan for <see cref="IPackage"/> and
         ///     <see cref="IPackageArchive"/> instances.
         /// </summary>
-        private PackageScanner PackageScanner { get; set; }
+        private IPackageScanner PackageScanner { get; set; }
 
         /// <summary>
         ///     Gets the <see cref="IPlatformManager"/> with which Platform operations are carried out.
@@ -260,9 +260,9 @@ namespace OpenIIoT.Core.Packaging
                     {
                         IPackageArchive package = readResult.ReturnValue;
 
-                        destinationFilename = package.FQN + "." + package.Manifest.Version + "." + PackagingConstants.PackageFilenameExtension;
-                        destinationFilename = Path.Combine(PlatformManager.Directories.PackageArchives, destinationFilename);
+                        destinationFilename = package.FQN + "." + package.Manifest.Version + PackagingConstants.PackageFilenameExtension;
                         destinationFilename = ReplaceInvalidCharacters(destinationFilename);
+                        destinationFilename = Path.Combine(PlatformManager.Directories.PackageArchives, destinationFilename);
 
                         logger.Debug($"Copying temporary Package '{tempFile}' to final destination '{destinationFilename}'...");
                         retVal.Incorporate(Platform.CopyFile(tempFile, destinationFilename, true));
