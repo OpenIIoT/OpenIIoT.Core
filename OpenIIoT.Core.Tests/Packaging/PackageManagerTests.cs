@@ -253,6 +253,28 @@ namespace OpenIIoT.Core.Tests.Packaging
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackageManager.AddPackageArchive(byte[])"/> method with a simulated failure to write the file
+        ///     to disk.
+        /// </summary>
+        [Fact]
+        public void AddPackageArchiveFailure()
+        {
+            byte[] data = File.ReadAllBytes(Path.Combine(Data, "package.zip"));
+
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(new Result<string>().SetResultCode(ResultCode.Failure));
+
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
+            IResult<IPackageArchive> package = test.AddPackageArchive(data);
+
+            Assert.Equal(ResultCode.Failure, package.ResultCode);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackageManager.AddPackageArchive(byte[])"/> method with a mocked platform simulating a failed
         ///     file write.
         /// </summary>
@@ -881,6 +903,26 @@ namespace OpenIIoT.Core.Tests.Packaging
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackageManager.ScanPackageArchives()"/> method with a simulated PackageScanner failure.
+        /// </summary>
+        [Fact]
+        public void ScanPackageArchivesFailure()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+
+            PackageScannerMock.Setup(s => s.ScanPackageArchives())
+                .Returns(new Result<IList<IPackageArchive>>().SetResultCode(ResultCode.Failure));
+
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
+            IResult<IList<IPackageArchive>> list = test.ScanPackageArchives();
+
+            Assert.Equal(ResultCode.Failure, list.ResultCode);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackageManager.ScanPackages()"/> method.
         /// </summary>
         [Fact]
@@ -923,6 +965,26 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(ResultCode.Success, list.ResultCode);
             Assert.Equal(1, list.ReturnValue.Count);
             Assert.Equal(PackageMock.Object, list.ReturnValue[0]);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.ScanPackages()"/> method with a simulated PackgeScanner failure.
+        /// </summary>
+        [Fact]
+        public void ScanPackagesFailure()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+
+            PackageScannerMock.Setup(s => s.ScanPackages())
+                .Returns(new Result<IList<IPackage>>().SetResultCode(ResultCode.Failure));
+
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
+            IResult<IList<IPackage>> list = test.ScanPackages();
+
+            Assert.Equal(ResultCode.Failure, list.ResultCode);
         }
 
         /// <summary>
