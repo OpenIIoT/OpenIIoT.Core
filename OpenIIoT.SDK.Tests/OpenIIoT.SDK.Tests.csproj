@@ -139,6 +139,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <AdditionalFiles Include="OpenIIoT.ruleset" />
+    <None Include="Data\Key\openiiot-public.asc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Data\Key\openiiottest-private.asc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
