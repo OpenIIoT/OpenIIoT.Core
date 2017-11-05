@@ -1,5 +1,5 @@
 {
-  "Title": "DefaultPlugin",
+  "Name": "DefaultPlugin",
   "Version": "1.0.0",
   "Namespace": "OpenIIoT.Plugin",
   "Description": "Default plugin.",

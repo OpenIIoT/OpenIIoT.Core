@@ -113,25 +113,6 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageVerifier.VerifyPackage(string, string)"/> method.
-        /// </summary>
-        [Fact]
-        public void VerifyPackage()
-        {
-            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
-
-            bool verified = false;
-
-            Verifier.TrustPGPPublicKey = publicKey;
-
-            Exception ex = Record.Exception(() => verified = Verifier.VerifyPackage(package));
-
-            Assert.Null(ex);
-            Assert.True(verified);
-        }
-
-        /// <summary>
         ///     Tests the <see cref="PackageVerifier.VerifyPackage(string, string)"/> method with an empty public key.
         /// </summary>
         [Fact]
@@ -156,8 +137,8 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         [Fact]
         public void VerifyPackageExplicitPublicKey()
         {
-            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
-            string publicKeyFile = Path.Combine(DataDirectory, "Key", "public.asc");
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string publicKeyFile = Path.Combine(DataDirectory, "Key", "openiiottest-public.asc");
             string publicKey = File.ReadAllText(publicKeyFile);
 
             bool verified = false;
@@ -449,7 +430,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         public void VerifyPackagePackageTrustDigestMismatch()
         {
             string package = Path.Combine(DataDirectory, "Package", "trustdigestmismatch.zip");
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
 
             Verifier.TrustPGPPublicKey = publicKey;
 
@@ -477,13 +458,51 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackageVerifier.VerifyPackage(string, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void VerifyPackageSigned()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
+
+            bool verified = false;
+
+            Verifier.TrustPGPPublicKey = publicKey;
+
+            Exception ex = Record.Exception(() => verified = Verifier.VerifyPackage(package));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageVerifier.VerifyPackage(string, string)"/> method.
+        /// </summary>
+        [Fact]
+        public void VerifyPackageTrusted()
+        {
+            string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
+
+            bool verified = false;
+
+            Verifier.TrustPGPPublicKey = publicKey;
+
+            Exception ex = Record.Exception(() => verified = Verifier.VerifyPackage(package));
+
+            Assert.Null(ex);
+            Assert.True(verified);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackageVerifier.VerifyPackage(string, string)"/> method with the Update event bound.
         /// </summary>
         [Fact]
         public void VerifyPackageWithUpdate()
         {
             string package = Path.Combine(DataDirectory, "Package", "trustedpackage.zip");
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
 
             bool verified = false;
 

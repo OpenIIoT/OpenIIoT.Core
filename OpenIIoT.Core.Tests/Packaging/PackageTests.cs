@@ -50,7 +50,7 @@
 
 namespace OpenIIoT.Core.Tests.Packaging
 {
-    using System;
+    using Moq;
     using OpenIIoT.Core.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
@@ -60,5 +60,18 @@ namespace OpenIIoT.Core.Tests.Packaging
     /// </summary>
     public class PackageTests
     {
+        #region Private Properties
+
+        private Mock<IPackageManifest> ManifestMock { get; set; }
+
+        #endregion Private Properties
+
+        #region Private Methods
+
+        private void SetupMocks()
+        {
+        }
+
+        #endregion Private Methods
     }
 }

@@ -122,7 +122,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
             PackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "package.zip"));
 
             Assert.NotNull(manifest);
-            Assert.Equal("DefaultPlugin", manifest.Title);
+            Assert.Equal("DefaultPlugin", manifest.Name);
             Assert.Equal(3, manifest.Files.Count);
         }
 
@@ -239,7 +239,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
             PackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "package.zip"));
 
             Assert.NotNull(manifest);
-            Assert.Equal("DefaultPlugin", manifest.Title);
+            Assert.Equal("DefaultPlugin", manifest.Name);
             Assert.Equal(3, manifest.Files.Count);
         }
 

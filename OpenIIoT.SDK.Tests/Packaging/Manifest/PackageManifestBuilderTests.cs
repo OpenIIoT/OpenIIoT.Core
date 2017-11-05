@@ -135,7 +135,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Manifest
         {
             PackageManifest manifest = Builder.BuildDefault().Manifest;
 
-            Assert.NotEqual(string.Empty, manifest.Title);
+            Assert.NotEqual(string.Empty, manifest.Name);
             Assert.NotEqual(string.Empty, manifest.Version);
             Assert.NotEqual(string.Empty, manifest.Namespace);
             Assert.NotEqual(string.Empty, manifest.Description);
@@ -186,15 +186,15 @@ namespace OpenIIoT.SDK.Tests.Packaging.Manifest
             PackageManifestBuilder test = new PackageManifestBuilder();
 
             Assert.NotNull(test.Manifest);
-            Assert.Null(test.Manifest.Title);
+            Assert.Null(test.Manifest.Name);
 
             PackageManifest manifest = new PackageManifest();
-            manifest.Title = "manifest";
+            manifest.Name = "manifest";
 
             test = new PackageManifestBuilder(manifest);
 
             Assert.NotNull(test.Manifest);
-            Assert.Equal(test.Manifest.Title, "manifest");
+            Assert.Equal(test.Manifest.Name, "manifest");
         }
 
         /// <summary>
@@ -252,6 +252,20 @@ namespace OpenIIoT.SDK.Tests.Packaging.Manifest
 
             Assert.Same(builder, Builder);
             Assert.Equal("License", Builder.Manifest.License);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManifestBuilder.Name(string)"/> method.
+        /// </summary>
+        [Fact]
+        public void Name()
+        {
+            Assert.Null(Builder.Manifest.Name);
+
+            PackageManifestBuilder builder = Builder.Name("Name");
+
+            Assert.Same(builder, Builder);
+            Assert.Equal("Name", Builder.Manifest.Name);
         }
 
         /// <summary>
@@ -363,20 +377,6 @@ namespace OpenIIoT.SDK.Tests.Packaging.Manifest
 
             Assert.Same(builder, Builder);
             Assert.Same(signature, Builder.Manifest.Signature);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="PackageManifestBuilder.Title(string)"/> method.
-        /// </summary>
-        [Fact]
-        public void Title()
-        {
-            Assert.Null(Builder.Manifest.Title);
-
-            PackageManifestBuilder builder = Builder.Title("Title");
-
-            Assert.Same(builder, Builder);
-            Assert.Equal("Title", Builder.Manifest.Title);
         }
 
         /// <summary>

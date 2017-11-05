@@ -10,10 +10,19 @@
       █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █    ███    ███   ██  ██ ██    ██   ██   ██   ██   █▄  ▄█    ██   █
       █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ███    █▀    ██  ██ ██████▀    ██   ██   █     ▀██▀     ███████
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  An installable Package Archive.
+      █  Unit tests for the PackageArchive class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,103 +48,30 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Packaging
+namespace OpenIIoT.Core.Tests.Packaging
 {
-    using System;
-    using System.IO;
-    using System.Runtime.Serialization;
-    using Newtonsoft.Json;
-    using OpenIIoT.SDK.Packaging;
+    using Moq;
+    using OpenIIoT.Core.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
+    using Xunit;
 
     /// <summary>
-    ///     An installable Package Archive.
+    ///     Unit tests for the <see cref="PackageArchive"/> class.
     /// </summary>
-    [DataContract]
-    public class PackageArchive : IPackageArchive
+    public class PackageArchiveTests
     {
-        #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageArchive"/> class.
-        /// </summary>
-        /// <param name="fileInfo">The <see cref="FileInfo"/> instance of the Archive file.</param>
-        /// <param name="manifest">The manifest contained within the Archive.</param>
-        public PackageArchive(FileInfo fileInfo, PackageManifest manifest)
-        {
-            Manifest = manifest;
-            FileInfo = fileInfo;
-        }
-
-        #endregion Public Constructors
-
-        #region Public Properties
-
-        /// <summary>
-        ///     Gets the time at which the archive was created, in Utc.
-        /// </summary>
-        [JsonProperty(Order = 6)]
-        [DataMember(Order = 6)]
-        public DateTime CreatedOn => FileInfo.CreationTimeUtc;
-
-        /// <summary>
-        ///     Gets the fully qualified filename of the archive file.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        [DataMember(Order = 2)]
-        public string FileName => FileInfo.FullName;
-
-        /// <summary>
-        ///     Gets the Fully Qualified Name of the Package.
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        [DataMember(Order = 1)]
-        public string FQN => Manifest.Namespace + "." + Manifest.Name;
-
-        /// <summary>
-        ///     Gets a value indicating whether the archive signature contains a trust.
-        /// </summary>
-        [JsonProperty(Order = 4)]
-        [DataMember(Order = 4)]
-        public bool HasTrust => !string.IsNullOrEmpty(Manifest?.Signature?.Trust);
-
-        /// <summary>
-        ///     Gets a value indicating whether the archive is signed.
-        /// </summary>
-        [JsonProperty(Order = 5)]
-        [DataMember(Order = 5)]
-        public bool IsSigned => Manifest?.Signature != default(PackageManifestSignature);
-
-        /// <summary>
-        ///     Gets the <see cref="IPackageManifest"/> for the Package.
-        /// </summary>
-        [JsonProperty(Order = 8)]
-        [DataMember(Order = 8)]
-        public IPackageManifest Manifest { get; }
-
-        /// <summary>
-        ///     Gets the time at which the archive was last modified, in Utc.
-        /// </summary>
-        [JsonProperty(Order = 7)]
-        [DataMember(Order = 7)]
-        public DateTime ModifiedOn => FileInfo.LastWriteTimeUtc;
-
-        /// <summary>
-        ///     Gets or sets the <see cref="PackageVerification"/> state of the Archive.
-        /// </summary>
-        [JsonProperty(Order = 3)]
-        [DataMember(Order = 3)]
-        public PackageVerification Verification { get; set; }
-
-        #endregion Public Properties
-
         #region Private Properties
 
-        /// <summary>
-        ///     Gets or sets the <see cref="FileInfo"/> instance of the Archive file.
-        /// </summary>
-        private FileInfo FileInfo { get; set; }
+        private Mock<IPackageManifest> ManifestMock { get; set; }
 
         #endregion Private Properties
+
+        #region Private Methods
+
+        private void SetupMocks()
+        {
+        }
+
+        #endregion Private Methods
     }
 }

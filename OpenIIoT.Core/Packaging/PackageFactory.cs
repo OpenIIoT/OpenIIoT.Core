@@ -199,7 +199,7 @@ namespace OpenIIoT.Core.Packaging
                 fileInfo = new FileInfo(fileName);
 
                 retVal.ReturnValue = new PackageArchive(fileInfo, manifest);
-                retVal.AddInfo($"Found Package Archive '{manifest.Namespace + "." + manifest.Title}' in '{Path.GetFileName(fileName)}'.");
+                retVal.AddInfo($"Found Package Archive '{manifest.Namespace + "." + manifest.Name}' in '{Path.GetFileName(fileName)}'.");
 
                 logger.Debug($"Attempting to verify Package Archive...");
                 retVal.ReturnValue.Verification = GetPackageArchiveVerification(retVal.ReturnValue);
