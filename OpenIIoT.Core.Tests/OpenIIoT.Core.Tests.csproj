@@ -142,6 +142,7 @@
     <Compile Include="Configuration\ConfigurationManagerTests.cs" />
     <Compile Include="Configuration\ConfigurationLoaderTests.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Packaging\PackageArchiveTests.cs" />
     <Compile Include="Packaging\PackageManagerTests.cs" />
     <Compile Include="Packaging\PackageTests.cs" />
     <Compile Include="Platform\PlatformManagerTests.cs" />
