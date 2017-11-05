@@ -519,8 +519,8 @@ namespace OpenIIoT.Core.Packaging
                 extractor.Updated += (sender, e) => logger.Debug($"    PackageExtractor: {e.Message}");
 
                 // determine the installation directory; should look like \path\to\Plugins\FQN\
-                destination = Path.Combine(PlatformManager.Directories.Packages, packageArchive.FQN);
-                destination = ReplaceInvalidCharacters(destination);
+                destination = ReplaceInvalidCharacters(packageArchive.FQN);
+                destination = Path.Combine(PlatformManager.Directories.Packages, destination);
 
                 logger.Debug($"Install directory: '{destination}'; overwrite={options.Overwrite}, skipVerification={options.SkipVerification}");
 
@@ -537,11 +537,6 @@ namespace OpenIIoT.Core.Packaging
                 ScanPackages();
 
                 retVal.ReturnValue = FindPackage(packageArchive.FQN);
-
-                if (retVal.ReturnValue == default(IPackage))
-                {
-                    retVal.AddError($"Extraction succeeded but no Package was installed.");
-                }
             }
 
             if (retVal.ResultCode != ResultCode.Failure)
