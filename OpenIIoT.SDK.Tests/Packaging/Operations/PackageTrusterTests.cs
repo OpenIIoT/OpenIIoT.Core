@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Packaging.Tests.Operations
+namespace OpenIIoT.SDK.Tests.Packaging.Operations
 {
     using System;
     using System.IO;
@@ -121,10 +121,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         {
             string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
             string temp = Path.Combine(TempDirectory, "signedpackage.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
 
             File.Copy(package, temp);
 
@@ -152,10 +152,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         {
             string package = Path.Combine(DataDirectory, "Package", "badmanifest.zip");
             string temp = Path.Combine(TempDirectory, "package.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
 
             File.Copy(package, temp);
 
@@ -185,10 +185,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         {
             string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
             string temp = Path.Combine(TempDirectory, "signedpackage.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
 
             File.Copy(package, temp);
 
@@ -211,10 +211,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         {
             string package = Path.Combine(DataDirectory, "Package", "notapackage.zip");
             string temp = Path.Combine(TempDirectory, "package.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
 
             File.Copy(package, temp);
 
@@ -246,10 +246,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         {
             string package = Path.Combine(DataDirectory, "Package", "package.zip");
             string temp = Path.Combine(TempDirectory, "package.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
 
             File.Copy(package, temp);
 
@@ -278,7 +278,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         public void TrustPackagePassphraseEmpty()
         {
             string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
 
             Exception ex = Record.Exception(() => Truster.TrustPackage(package, key, string.Empty));
@@ -295,7 +295,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         public void TrustPackagePassphraseMismatch()
         {
             string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
 
             Exception ex = Record.Exception(() => Truster.TrustPackage(package, key, "mismatch"));
@@ -311,7 +311,7 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         public void TrustPackagePassphraseNull()
         {
             string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
 
             Exception ex = Record.Exception(() => Truster.TrustPackage(package, key, null));
@@ -372,10 +372,10 @@ namespace OpenIIoT.SDK.Packaging.Tests.Operations
         {
             string package = Path.Combine(DataDirectory, "Package", "signedpackage.zip");
             string temp = Path.Combine(TempDirectory, "signedpackage.zip");
-            string keyFile = Path.Combine(DataDirectory, "Key", "private.asc");
+            string keyFile = Path.Combine(DataDirectory, "Key", "openiiottest-private.asc");
             string key = File.ReadAllText(keyFile);
-            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "passphrase.txt"));
-            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "public.asc"));
+            string passphrase = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-passphrase.txt"));
+            string publicKey = File.ReadAllText(Path.Combine(DataDirectory, "Key", "openiiottest-public.asc"));
 
             File.Copy(package, temp);
 

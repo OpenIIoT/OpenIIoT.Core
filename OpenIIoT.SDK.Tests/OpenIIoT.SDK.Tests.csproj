@@ -139,19 +139,10 @@
   <ItemGroup>
     <None Include="app.config" />
     <AdditionalFiles Include="OpenIIoT.ruleset" />
-    <None Include="Data\Key\newPublicKey.asc">
+    <None Include="Data\Key\openiiottest-private.asc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Data\Key\private.asc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\Key\privateKey.asc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\Key\public.asc">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Data\Key\publicKey.asc">
+    <None Include="Data\Key\openiiottest-public.asc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Data\Manifest\blankmanifest.json">
@@ -250,10 +241,7 @@
     <Content Include="Data\empty.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Data\Key\keybaseUsername.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Data\Key\passphrase.txt">
+    <Content Include="Data\Key\openiiottest-passphrase.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Data\Payload\binary.dll">

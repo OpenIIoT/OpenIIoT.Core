@@ -70,14 +70,14 @@ namespace OpenIIoT.SDK.Tests.Common
         #region Private Fields
 
         /// <summary>
-        ///     The password for the private key file.
-        /// </summary>
-        private const string Password = "8&$gy$8rrPO^tbE1m5";
-
-        /// <summary>
         ///     The contents of the new public key file.
         /// </summary>
         private string newPublicKey;
+
+        /// <summary>
+        ///     The password for the private key file.
+        /// </summary>
+        private string password;
 
         /// <summary>
         ///     The contents of the private key file.
@@ -98,9 +98,10 @@ namespace OpenIIoT.SDK.Tests.Common
         /// </summary>
         public PGPSignatureTests()
         {
-            privateKey = File.ReadAllText(Path.Combine("Data", "Key", "privateKey.asc"));
-            publicKey = File.ReadAllText(Path.Combine("Data", "Key", "publicKey.asc"));
-            newPublicKey = File.ReadAllText(Path.Combine("Data", "Key", "newPublicKey.asc"));
+            privateKey = File.ReadAllText(Path.Combine("Data", "Key", "openiiottest-private.asc"));
+            publicKey = File.ReadAllText(Path.Combine("Data", "Key", "openiiottest-public.asc"));
+            newPublicKey = File.ReadAllText(Path.Combine("Data", "Key", "openiiot-public.asc"));
+            password = File.ReadAllText(Path.Combine("Data", "Key", "openiiottest-passphrase.txt"));
         }
 
         #endregion Public Constructors
@@ -116,7 +117,7 @@ namespace OpenIIoT.SDK.Tests.Common
             string text = "hello world!";
 
             byte[] bytes = Encoding.ASCII.GetBytes(text);
-            byte[] signatureBytes = PGPSignature.Sign(bytes, privateKey, Password);
+            byte[] signatureBytes = PGPSignature.Sign(bytes, privateKey, password);
 
             string signature = Encoding.ASCII.GetString(signatureBytes);
 
@@ -144,7 +145,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void SignBlankKey()
         {
-            Exception ex = Record.Exception(() => PGPSignature.Sign(new byte[0], string.Empty, Password));
+            Exception ex = Record.Exception(() => PGPSignature.Sign(new byte[0], string.Empty, password));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpKeyValidationException>(ex);
@@ -156,7 +157,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void SignNullBytes()
         {
-            Exception ex = Record.Exception(() => PGPSignature.Sign(null, privateKey, Password));
+            Exception ex = Record.Exception(() => PGPSignature.Sign(null, privateKey, password));
 
             Assert.NotNull(ex);
             Assert.IsType<NullReferenceException>(ex);
@@ -168,7 +169,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void SignNullKey()
         {
-            Exception ex = Record.Exception(() => PGPSignature.Sign(new byte[0], null, Password));
+            Exception ex = Record.Exception(() => PGPSignature.Sign(new byte[0], null, password));
 
             Assert.NotNull(ex);
             Assert.IsType<PgpKeyValidationException>(ex);
@@ -192,7 +193,7 @@ namespace OpenIIoT.SDK.Tests.Common
         [Fact]
         public void SignZeroBytes()
         {
-            byte[] signature = PGPSignature.Sign(new byte[0], privateKey, Password);
+            byte[] signature = PGPSignature.Sign(new byte[0], privateKey, password);
 
             Assert.NotNull(Encoding.ASCII.GetString(signature));
         }
@@ -308,7 +309,7 @@ namespace OpenIIoT.SDK.Tests.Common
         private byte[] GetSignature(string text)
         {
             byte[] bytes = Encoding.ASCII.GetBytes(text);
-            return PGPSignature.Sign(bytes, privateKey, Password);
+            return PGPSignature.Sign(bytes, privateKey, password);
         }
 
         /// <summary>

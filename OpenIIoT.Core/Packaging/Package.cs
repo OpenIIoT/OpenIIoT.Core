@@ -95,7 +95,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         [JsonProperty(Order = 1)]
         [DataMember(Order = 1)]
-        public string FQN => Manifest.Namespace + "." + Manifest.Title;
+        public string FQN => Manifest.Namespace + "." + Manifest.Name;
 
         /// <summary>
         ///     Gets the time at which the archive was last modified, according to the host filesystem.

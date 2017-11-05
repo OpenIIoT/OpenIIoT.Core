@@ -1385,7 +1385,7 @@ namespace OpenIIoT.Core.Tests.Packaging
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             PackageManifestMock.Setup(p => p.Namespace).Returns("OpenIIoT.Plugin");
-            PackageManifestMock.Setup(p => p.Title).Returns("DefaultPlugin");
+            PackageManifestMock.Setup(p => p.Name).Returns("DefaultPlugin");
             PackageManifestMock.Setup(p => p.Version).Returns("1.0.0");
 
             PackageArchiveMock.Setup(p => p.FQN).Returns("OpenIIoT.Plugin.DefaultPlugin");
