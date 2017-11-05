@@ -52,6 +52,7 @@ namespace OpenIIoT.Core.Tests
 {
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using Moq;
     using OpenIIoT.Core.Platform;
     using OpenIIoT.SDK.Common.Exceptions;
@@ -169,6 +170,7 @@ namespace OpenIIoT.Core.Tests
             Settings.Setup(s => s.DirectoryData).Returns("Data");
             Settings.Setup(s => s.DirectoryLogs).Returns("Logs");
             Settings.Setup(s => s.DirectoryPackages).Returns("Packages");
+            Settings.Setup(s => s.DirectoryPackageArchives).Returns(Path.Combine("Packages", "Archives"));
             Settings.Setup(s => s.DirectoryPersistence).Returns("Persistence");
             Settings.Setup(s => s.DirectoryPlugins).Returns("Plugins");
             Settings.Setup(s => s.DirectoryTemp).Returns("Temp");

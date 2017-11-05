@@ -10,10 +10,19 @@
       █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
       █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
       █
+      █      ▄████████                                                            ████████▄
+      █     ███    ███                                                            ███   ▀███
+      █     ███    █▀  ██   █     ▄▄██▄▄▄     ▄▄██▄▄▄    ▄█████     █████ ▄█   ▄  ███    ███   ▄█████      ██      ▄█████
+      █     ███        ██   ██  ▄█▀▀██▀▀█▄  ▄█▀▀██▀▀█▄   ██   ██   ██  ██ ██   █▄ ███    ███   ██   ██ ▀███████▄   ██   ██
+      █   ▀███████████ ██   ██  ██  ██  ██  ██  ██  ██   ██   ██  ▄██▄▄█▀ ▀▀▀▀▀██ ███    ███   ██   ██     ██  ▀   ██   ██
+      █            ███ ██   ██  ██  ██  ██  ██  ██  ██ ▀████████ ▀███████ ▄█   ██ ███    ███ ▀████████     ██    ▀████████
+      █      ▄█    ███ ██   ██  ██  ██  ██  ██  ██  ██   ██   ██   ██  ██ ██   ██ ███   ▄███   ██   ██     ██      ██   ██
+      █    ▄████████▀  ██████    █  ██  █    █  ██  █    ██   █▀   ██  ██  █████  ████████▀    ██   █▀    ▄██▀     ██   █▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Represents an installable extension archive.
+      █  Data Transfer Object used when returning Package objects.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,37 +48,31 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Packaging
+namespace OpenIIoT.Core.Packaging.WebApi.Data
 {
     using System;
-    using System.Collections.Generic;
-    using System.IO;
-    using System.Linq;
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
+    using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Packaging;
-    using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
-    ///     Represents an installable extension archive.
+    ///     Data Transfer Object used when returning Package objects.
     /// </summary>
     [DataContract]
-    public class Package : IPackage
+    public class PackageSummaryData
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="Package"/> class.
+        ///     Initializes a new instance of the <see cref="PackageSummaryData"/> class with the specified <paramref name="package"/>.
         /// </summary>
-        /// <param name="directoryInfo">The <see cref="DirectoryInfo"/> instance of the directory in which the Package resides.</param>
-        /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(DirectoryInfo directoryInfo, PackageManifest manifest)
+        /// <param name="package">The <see cref="IPackage"/> instance from which to copy values.</param>
+        public PackageSummaryData(IPackage package)
         {
-            DirectoryInfo = directoryInfo;
-            Manifest = manifest;
+            this.CopyPropertyValuesFrom(package);
 
-            IList<FileInfo> fileInfos = DirectoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).ToList();
-            Files = fileInfos.Select(f => GetRelativePath(f.FullName, DirectoryInfo.FullName)).ToList();
+            Manifest = new PackageManifestSummaryData(package.Manifest);
         }
 
         #endregion Public Constructors
@@ -77,72 +80,33 @@ namespace OpenIIoT.Core.Packaging
         #region Public Properties
 
         /// <summary>
-        ///     Gets the fully qualified name of the directory in which the Package resides.
+        ///     Gets or sets the fully qualified name of the directory in which the Package resides.
         /// </summary>
         [JsonProperty(Order = 2)]
         [DataMember(Order = 2)]
-        public string DirectoryName => DirectoryInfo.FullName;
+        public string DirectoryName { get; set; }
 
         /// <summary>
-        ///     Gets the list of files contained within the Package directory.
-        /// </summary>
-        [JsonProperty(Order = 5)]
-        [DataMember(Order = 5)]
-        public IList<string> Files { get; private set; }
-
-        /// <summary>
-        ///     Gets the Fully Qualified Name of the Package.
+        ///     Gets or sets the Fully Qualified Name of the Package.
         /// </summary>
         [JsonProperty(Order = 1)]
         [DataMember(Order = 1)]
-        public string FQN => Manifest.Namespace + "." + Manifest.Title;
+        public string FQN { get; set; }
 
         /// <summary>
-        ///     Gets the time at which the archive was last modified, according to the host filesystem.
+        ///     Gets or sets the time at which the archive was last modified, according to the host filesystem.
         /// </summary>
         [JsonProperty(Order = 3)]
         [DataMember(Order = 3)]
-        public DateTime InstalledOn => DirectoryInfo.CreationTimeUtc;
+        public DateTime InstalledOn { get; set; }
 
         /// <summary>
-        ///     Gets the <see cref="IPackageManifest"/> for the Package.
+        ///     Gets or sets the Manifest for the Package.
         /// </summary>
         [JsonProperty(Order = 4)]
         [DataMember(Order = 4)]
-        public IPackageManifest Manifest { get; }
+        public PackageManifestSummaryData Manifest { get; set; }
 
         #endregion Public Properties
-
-        #region Private Properties
-
-        /// <summary>
-        ///     Gets or sets the <see cref="DirectoryInfo"/> instance of the directory in which the Package resides.
-        /// </summary>
-        private DirectoryInfo DirectoryInfo { get; set; }
-
-        #endregion Private Properties
-
-        #region Private Methods
-
-        /// <summary>
-        ///     Gets the path of the specified <paramref name="fileName"/> relative to the specified <paramref name="directory"/>
-        /// </summary>
-        /// <param name="fileName">The filename to make relative.</param>
-        /// <param name="directory">The root directory.</param>
-        /// <returns>The path of the specified filename relative to the specified directory.</returns>
-        private string GetRelativePath(string fileName, string directory)
-        {
-            Uri pathUri = new Uri(fileName);
-
-            if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                directory += Path.DirectorySeparatorChar;
-            }
-
-            Uri folderUri = new Uri(directory);
-            return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
-        }
-
-        #endregion Private Methods
     }
 }

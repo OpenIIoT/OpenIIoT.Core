@@ -55,7 +55,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
     /// <summary>
     ///     Verifies Packages.
     /// </summary>
-    public class PackageVerifier : PackagingOperation
+    public class PackageVerifier : PackagingOperation, IPackageVerifier
     {
         #region Public Constructors
 
@@ -122,6 +122,10 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// <param name="packageFile">The Package to verify.</param>
         /// <param name="publicKey">The ASCII armored PGP private key.</param>
         /// <returns>A value indicating whether the specified Package was verified successfully.</returns>
+        /// <exception cref="FileNotFoundException">
+        ///     Thrown when the specified file can not be found, is missing a manifest, or is missing a payload.
+        /// </exception>
+        /// <exception cref="InvalidDataException">Thrown when the Manifest checksum does not match the payload checksum.</exception>
         public bool VerifyPackage(string packageFile, string publicKey = "")
         {
             ArgumentValidator.ValidatePackageFileArgumentForReading(packageFile);

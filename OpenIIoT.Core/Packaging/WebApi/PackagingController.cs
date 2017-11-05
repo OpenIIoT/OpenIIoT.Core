@@ -50,13 +50,13 @@ namespace OpenIIoT.Core.Packaging.WebApi
     using System.Net.Http.Headers;
     using System.Threading.Tasks;
     using System.Web.Http;
+    using OpenIIoT.Core.Packaging.WebApi.Data;
     using OpenIIoT.Core.Service.WebApi;
+    using OpenIIoT.Core.Service.WebApi.ModelValidation;
     using OpenIIoT.SDK;
-    using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
     using Swashbuckle.Swagger.Annotations;
-    using OpenIIoT.Core.Packaging.WebApi.Data;
 
     /// <summary>
     ///     Handles the API methods for AppPackages.
@@ -65,7 +65,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
     [RoutePrefix("v1/packaging")]
     public class PackagingController : ApiBaseController
     {
-        #region Variables
+        #region Private Fields
 
         /// <summary>
         ///     The default serialization properties for an AppPackage.
@@ -77,60 +77,111 @@ namespace OpenIIoT.Core.Packaging.WebApi
         /// </summary>
         private IApplicationManager manager = ApplicationManager.GetInstance();
 
+        #endregion Private Fields
+
+        #region Private Properties
+
         /// <summary>
         ///     Gets the PackageManager for the application.
         /// </summary>
         private IPackageManager PackageManager => manager.GetManager<IPackageManager>();
 
-        #endregion Variables
+        #endregion Private Properties
 
-        #region Instance Methods
-
-        ///// <summary>
-        /////     Returns the Package from the list of available Packages that matches the supplied Fully Qualified Name.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package to return.</param>
-        ///// <returns>The matching Package.</returns>
-        //[Route("{fqn}")]
-        //[HttpGet]
-        //public async Task<HttpResponseMessage> GetPackage(string fqn)
-        //{
-        //    HttpResponseMessage retVal;
-        //    IPackage findResult = await manager.GetManager<IPackageManager>().FindPackageAsync(fqn);
-
-        // retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter(ContractResolverType.OptOut, "Files"));
-
-        //    return retVal;
-        //}
+        #region Public Methods
 
         /// <summary>
-        ///     Returns a list of Package Archives available for installation.
+        ///     Creates a new Package Archive.
         /// </summary>
-        /// <param name="scan">Refresh from disk.</param>
-        /// <returns>An HTTP response message.</returns>
-        [Route("archives")]
-        [HttpGet]
+        /// <param name="data">The base 64 encoded binary data of the Package Archive.</param>
+        /// <returns>A Result containing the result of the operation and the created Package Archive.</returns>
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [Route("archives")]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was created or overwritten.", typeof(PackageArchive))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data is of zero length or is not base 64 encoded.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public async Task<HttpResponseMessage> PackageArchivesGet(bool? scan)
+        public async Task<HttpResponseMessage> PackageArchivesAdd([FromBody]string data)
         {
             HttpResponseMessage retVal;
 
-            if ((bool)scan)
-            {
-                IResult scanResult = await manager.GetManager<IPackageManager>().ScanPackageArchivesAsync();
+            byte[] decodedData = GetBytesFromBase64String(data);
 
-                if (scanResult.ResultCode == ResultCode.Failure)
+            if (data.Length == 0)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The data is of zero length.", JsonFormatter());
+            }
+            else if (decodedData == default(byte[]))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The data is not a valid base 64 encoded string.", JsonFormatter());
+            }
+            else
+            {
+                IResult<IPackageArchive> addResult = await PackageManager.AddPackageArchiveAsync(decodedData);
+
+                if (addResult.ResultCode != ResultCode.Failure)
                 {
-                    HttpErrorResult err = new HttpErrorResult("Failed to refresh Package Archive list from disk", scanResult);
+                    retVal = Request.CreateResponse(HttpStatusCode.Created, addResult.ReturnValue, JsonFormatter());
+                }
+                else
+                {
+                    HttpErrorResult err = new HttpErrorResult("Failed to create a Package Archive from the specified data.", addResult);
                     retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
                 }
             }
 
-            IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
-            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives);
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Deletes the specified Package Archive.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to delete.</param>
+        /// <returns>An HTTP response message.</returns>
+        [HttpDelete]
+        [Route("archives/{fqn}")]
+        [Authorize]
+        [SwaggerResponseRemoveDefaults]
+        [SwaggerResponse(HttpStatusCode.NoContent, "The Package Archive was successfully deleted.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackageArchivesDelete(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+            }
+            else
+            {
+                IPackageArchive findResult = await PackageManager.FindPackageArchiveAsync(fqn);
+
+                if (findResult != default(IPackageArchive))
+                {
+                    IResult deleteResult = await PackageManager.DeletePackageArchiveAsync(findResult);
+
+                    if (deleteResult.ResultCode != ResultCode.Failure)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.NoContent);
+                    }
+                    else
+                    {
+                        HttpErrorResult result = new HttpErrorResult($"Failed to delete Package Archive '{fqn}'.", deleteResult);
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
 
             return retVal;
         }
@@ -143,7 +194,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("archives/{fqn}")]
         [HttpGet]
         [Authorize]
-        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was retrieved successfully.", typeof(PackageArchiveData))]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was retrieved successfully.", typeof(PackageArchive))]
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The PackageArchive could not be found.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
@@ -153,7 +204,11 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified fqn is null or empty.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.", JsonFormatter());
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
             }
             else
             {
@@ -161,7 +216,62 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
                 if (packageArchive != default(IPackageArchive))
                 {
-                    retVal = Request.CreateResponse(HttpStatusCode.OK, new PackageArchiveData(packageArchive));
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchive, JsonFormatter());
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound, JsonFormatter());
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Gets the specified Package Archive file.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to retrieve.</param>
+        /// <returns>An HTTP response message.</returns>
+        [HttpGet]
+        [Route("archives/{fqn}/file")]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive file was retrieved successfully.", typeof(byte[]))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackageArchivesGetFqnFile(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+            }
+            else
+            {
+                IPackageArchive findResult = await PackageManager.FindPackageArchiveAsync(fqn);
+
+                if (findResult != default(IPackageArchive))
+                {
+                    IResult<byte[]> readResult = await PackageManager.FetchPackageArchiveAsync(findResult);
+
+                    if (readResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.OK);
+                        retVal.Content = new ByteArrayContent(readResult.ReturnValue);
+                        retVal.Content.Headers.ContentDisposition = new ContentDispositionHeaderValue("attachment");
+                        retVal.Content.Headers.ContentDisposition.FileName = Path.GetFileName(findResult.FileName);
+                    }
+                    else
+                    {
+                        HttpErrorResult result = new HttpErrorResult($"Failed to retrieve contents of Package Archive '{fqn}'.", readResult);
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
                 }
                 else
                 {
@@ -173,13 +283,97 @@ namespace OpenIIoT.Core.Packaging.WebApi
         }
 
         /// <summary>
-        ///     Returns a list of installed Packages.
+        ///     Verifies the specified Package Archive.
         /// </summary>
-        /// <param name="scan">Refresh from disk.</param>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to verify.</param>
+        /// <returns>An HTTP response message.</returns>
+        [HttpGet]
+        [Route("archives/{fqn}/verification")]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package Archive verification completed successfully.", typeof(PackageArchiveVerificationData))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackageArchivesGetFqnVerification(string fqn)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+            }
+            else
+            {
+                IPackageArchive findResult = await PackageManager.FindPackageArchiveAsync(fqn);
+
+                if (findResult != default(IPackageArchive))
+                {
+                    IResult<bool> verifyResult = await PackageManager.VerifyPackageArchiveAsync(findResult);
+
+                    if (verifyResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.OK, new PackageArchiveVerificationData(verifyResult), JsonFormatter());
+                    }
+                    else
+                    {
+                        HttpErrorResult result = new HttpErrorResult($"Failed to verify Package Archive '{fqn}'.", verifyResult);
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Gets the list of available Package Archives.
+        /// </summary>
+        /// <param name="scan">Refresh the list from disk.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Route("archives")]
+        [HttpGet]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan)
+        {
+            HttpResponseMessage retVal;
+
+            if ((bool)scan)
+            {
+                IResult scanResult = await PackageManager.ScanPackageArchivesAsync();
+
+                if (scanResult.ResultCode == ResultCode.Failure)
+                {
+                    HttpErrorResult err = new HttpErrorResult("Failed to refresh Package Archive list from disk", scanResult);
+                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                }
+            }
+
+            IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
+            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Gets the list of installed Packages.
+        /// </summary>
+        /// <param name="scan">Refresh the list from disk.</param>
         /// <returns>An HTTP response message.</returns>
         [Route("packages")]
         [HttpGet]
-        [SwaggerResponse(HttpStatusCode.OK, "The list operation completed successfully.", typeof(IList<IPackage>))]
+        [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IList<PackageSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesGet(bool? scan)
@@ -197,161 +391,194 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 }
             }
 
-            IReadOnlyList<IPackage> packages = manager.GetManager<IPackageManager>().Packages;
+            IReadOnlyList<PackageSummaryData> packages = PackageManager.Packages.Select(p => new PackageSummaryData(p)).ToList().AsReadOnly();
             retVal = Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
 
             return retVal;
         }
 
-        //[Route("{fqn}")]
-        //[HttpPut]
-        //public async Task<HttpResponseMessage> InstallPackage(string fqn, [FromBody]PackageInstallationOptions options)
-        //{
-        //    IResult installResult = await manager.GetManager<IPackageManager>().InstallPackageAsync(fqn, options);
+        /// <summary>
+        ///     Gets the specified Package.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package to retrieve.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Route("packages/{fqn}")]
+        [HttpGet]
+        [Authorize]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package was retrieved successfully.", typeof(Package))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "The PackageArchive could not be found.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        public async Task<HttpResponseMessage> PackagesGetFqn(string fqn)
+        {
+            HttpResponseMessage retVal;
 
-        //    return Request.CreateResponse(HttpStatusCode.OK, installResult, JsonFormatter());
-        //}
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified fqn is null or empty.", JsonFormatter());
+            }
+            else
+            {
+                IPackage package = await PackageManager.FindPackageAsync(fqn);
 
-        ///// <summary>
-        /////     Deletes the specified Package archive.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package archive to delete.</param>
-        ///// <returns>An HTTP response message.</returns>
-        //[HttpDelete]
-        //[Route("archives/{fqn}")]
-        //[Authorize]
-        //[SwaggerResponseRemoveDefaults]
-        //[SwaggerResponse(HttpStatusCode.NoContent, "The Package archive was successfully deleted.")]
-        //[SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
-        //[SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        //public async Task<HttpResponseMessage> PackageArchivesDelete(string fqn)
-        //{
-        //    HttpResponseMessage retVal;
+                if (package != default(IPackage))
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.OK, package, JsonFormatter());
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound, JsonFormatter());
+                }
+            }
 
-        // if (string.IsNullOrEmpty(fqn)) { retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully
-        // Qualified Name is null or empty."); } else if (!fqn.Contains('.')) { retVal =
-        // Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated
-        // tuple."); } else { IPackage findResult = await PackageManager.FindPackageAsync(fqn);
+            return retVal;
+        }
 
-        // if (findResult != default(IPackage)) { IResult deleteResult = await PackageManager.DeletePackageAsync(fqn);
+        /// <summary>
+        ///     Installs the Package within the specified Package Archive.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to install.</param>
+        /// <param name="options">The installation options for the Package.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Authorize]
+        [Route("packages/{fqn}")]
+        [HttpPost]
+        [SwaggerResponse(HttpStatusCode.OK, "The Package was successfully installed.", typeof(Package))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackagesInstall(string fqn, [FromBody]PackageInstallationOptions options = null)
+        {
+            HttpResponseMessage retVal;
+            ModelValidator validator = new ModelValidator(ModelState);
 
-        // if (deleteResult.ResultCode != ResultCode.Failure) { return Request.CreateResponse(HttpStatusCode.NoContent); } else {
-        // HttpErrorResult result = new HttpErrorResult($"Failed to delete Package archive '{fqn}'.", deleteResult); return
-        // Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter()); } } else { retVal =
-        // Request.CreateResponse(HttpStatusCode.NotFound); } }
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+            }
+            else if (!validator.IsValid)
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
+            }
+            else
+            {
+                IPackageArchive findResult = await PackageManager.FindPackageArchiveAsync(fqn);
 
-        //    return retVal;
-        //}
+                if (findResult != default(IPackageArchive))
+                {
+                    PackageInstallationOptions installOptions = new PackageInstallationOptions()
+                    {
+                        Overwrite = options.Overwrite,
+                        SkipVerification = options.SkipVerification,
+                        PublicKey = options.PublicKey,
+                    };
 
-        ///// <summary>
-        /////     Gets the specified Pachage archive.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package archive to retrieve.</param>
-        ///// <returns>An HTTP response message.</returns>
-        //[HttpGet]
-        //[Route("archives/{fqn}")]
-        //[Authorize]
-        //[SwaggerResponse(HttpStatusCode.OK, "The Package archive was retrieved successfully.", typeof(IPackage))]
-        //[SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
-        //[SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        //public async Task<HttpResponseMessage> PackageArchivesGetFQN(string fqn)
-        //{
-        //    HttpResponseMessage retVal;
+                    IResult<IPackage> installResult = await PackageManager.InstallPackageAsync(findResult, installOptions);
 
-        // if (string.IsNullOrEmpty(fqn)) { retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully
-        // Qualified Name is null or empty."); } else if (!fqn.Contains('.')) { retVal =
-        // Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated
-        // tuple."); } else { IPackage findResult = await PackageManager.FindPackageAsync(fqn);
+                    if (installResult.ResultCode != ResultCode.Failure)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.OK, installResult.ReturnValue, JsonFormatter());
+                    }
+                    else
+                    {
+                        HttpErrorResult result = new HttpErrorResult($"Failed to install Package '{fqn}'.", installResult);
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
 
-        // if (findResult != default(IPackage)) { retVal = Request.CreateResponse(HttpStatusCode.OK, findResult, JsonFormatter());
-        // } else { retVal = Request.CreateResponse(HttpStatusCode.NotFound); } }
+            return retVal;
+        }
 
-        //    return retVal;
-        //}
+        /// <summary>
+        ///     Uninstalls the specified Package.
+        /// </summary>
+        /// <param name="fqn">The Fully Qualified Name of the Package Archive to uninstall.</param>
+        /// <returns>An HTTP response message.</returns>
+        [Authorize]
+        [Route("packages/{fqn}")]
+        [HttpDelete]
+        [SwaggerResponseRemoveDefaults]
+        [SwaggerResponse(HttpStatusCode.NoContent, "The Package was successfully uninstalled.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified Fully Qualified Name could not be found.")]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public async Task<HttpResponseMessage> PackagesUninstall(string fqn)
+        {
+            HttpResponseMessage retVal;
 
-        ///// <summary>
-        /////     Downloads the specified Pachage archive.
-        ///// </summary>
-        ///// <param name="fqn">The Fully Qualified Name of the Package archive to download.</param>
-        ///// <returns>An HTTP response message.</returns>
-        //[HttpGet]
-        //[Route("archives/{fqn}/download")]
-        //[Authorize]
-        //[SwaggerResponse(HttpStatusCode.OK, "The Package archive was retrieved successfully.", typeof(byte[]))]
-        //[SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is invalid.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
-        //[SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        //public async Task<HttpResponseMessage> PackageArchivesGetFQNDownload(string fqn)
-        //{
-        //    HttpResponseMessage retVal;
+            if (string.IsNullOrEmpty(fqn))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+            }
+            else if (!fqn.Contains('.'))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+            }
+            else
+            {
+                IPackage findResult = await PackageManager.FindPackageAsync(fqn);
 
-        // if (string.IsNullOrEmpty(fqn)) { retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully
-        // Qualified Name is null or empty."); } else if (!fqn.Contains('.')) { retVal =
-        // Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated
-        // tuple."); } else { IPackage findResult = await PackageManager.FindPackageAsync(fqn);
+                if (findResult != default(IPackage))
+                {
+                    IResult uninstallResult = await PackageManager.UninstallPackageAsync(findResult);
 
-        // if (findResult != default(IPackage)) { IResult<byte[]> readResult = await PackageManager.FetchPackageAsync(fqn);
+                    if (uninstallResult.ResultCode != ResultCode.Failure)
+                    {
+                        return Request.CreateResponse(HttpStatusCode.NoContent);
+                    }
+                    else
+                    {
+                        HttpErrorResult result = new HttpErrorResult($"Failed to uninstall Package '{fqn}'.", uninstallResult);
+                        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
+            }
 
-        // if (readResult.ResultCode != ResultCode.Failure) { retVal = Request.CreateResponse(HttpStatusCode.OK); retVal.Content =
-        // new ByteArrayContent(readResult.ReturnValue); retVal.Content.Headers.ContentDisposition = new
-        // ContentDispositionHeaderValue("attachment"); retVal.Content.Headers.ContentDisposition.FileName =
-        // Path.GetFileName(findResult.Filename); } else { HttpErrorResult result = new HttpErrorResult($"Failed to retrieve
-        // contents of Package archive '{fqn}'.", readResult); retVal = Request.CreateResponse(HttpStatusCode.InternalServerError,
-        // result, JsonFormatter()); } } else { retVal = Request.CreateResponse(HttpStatusCode.NotFound); } }
+            return retVal;
+        }
 
-        //    return retVal;
-        //}
+        #endregion Public Methods
 
-        ///// <summary>
-        /////     Creates a new Package with the specified filename from the specified base 64 encoded binary data.
-        ///// </summary>
-        ///// <param name="data">The base 64 encoded binary package data.</param>
-        ///// <returns>A Result containing the result of the operation and the created Package.</returns>
-        //[Authorize]
-        //[Route("archive")]
-        //[HttpPost]
-        //[SwaggerResponse(HttpStatusCode.OK, "The Package was created or overwritten.", typeof(Package))]
-        //[SwaggerResponse(HttpStatusCode.BadRequest, "The specified data does not contain a valid Package, is not base 64 encoded, or is of zero length.", typeof(string))]
-        //[SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(Result))]
-        //public async Task<HttpResponseMessage> UploadPackage([FromBody]string data)
-        //{
-        //    // validate the data length
-        //    if (data.Length == 0)
-        //    {
-        //        return Request.CreateResponse(HttpStatusCode.BadRequest, "The data is of zero length.", JsonFormatter());
-        //    }
+        #region Private Methods
 
-        // // try to decode the base64 input byte[] binaryData = default(byte[]);
+        /// <summary>
+        ///     Attempts to retrieve a byte array from the specified <paramref name="data"/> and returns a <see cref="Tuple"/>
+        ///     containing the result of the attempt and, if successful, the retrieved array.
+        /// </summary>
+        /// <param name="data">The string from which to attempt to retrieve the byte array.</param>
+        /// <returns>
+        ///     The retrieved binary data, if the specified <paramref name="data"/> string is a base 64 encoded string.
+        /// </returns>
+        private byte[] GetBytesFromBase64String(string data)
+        {
+            byte[] retVal = default(byte[]);
 
-        // try { binaryData = Convert.FromBase64String(data.ToString()); } catch (Exception) { return
-        // Request.CreateResponse(HttpStatusCode.BadRequest, "The data is not base 64 encoded.", JsonFormatter()); }
+            try
+            {
+                retVal = Convert.FromBase64String(data);
+            }
+            catch (Exception)
+            {
+            }
 
-        // // try to create the Package IResult<IPackage> result = await manager.GetManager<IPackageManager>().AddPackageAsync(binaryData);
+            return retVal;
+        }
 
-        //    if (result.ResultCode != ResultCode.Failure)
-        //    {
-        //        return Request.CreateResponse(HttpStatusCode.Created, result.ReturnValue, JsonFormatter());
-        //    }
-        //    else
-        //    {
-        //        return Request.CreateResponse(HttpStatusCode.InternalServerError, result, JsonFormatter());
-        //    }
-        //}
-
-        //[Route("{fqn}/verify")]
-        //[HttpGet]
-        //public async Task<HttpResponseMessage> VerifyPackage(string fqn, string publicKey = "")
-        //{
-        //    IResult<bool> verifyResult = await manager.GetManager<IPackageManager>().VerifyPackageAsync(fqn, publicKey);
-
-        //    return Request.CreateResponse(HttpStatusCode.OK, verifyResult, JsonFormatter());
-        //}
-
-        #endregion Instance Methods
+        #endregion Private Methods
     }
 }

@@ -316,6 +316,16 @@ namespace OpenIIoT.Core.Platform
         }
 
         /// <summary>
+        ///     Deletes the specified <paramref name="directory"/> recursively.
+        /// </summary>
+        /// <param name="directory">The directory to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        public virtual IResult DeleteDirectory(string directory)
+        {
+            return DeleteDirectory(directory, true);
+        }
+
+        /// <summary>
         ///     Deletes the specified <paramref name="directory"/>.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
@@ -323,7 +333,7 @@ namespace OpenIIoT.Core.Platform
         ///     A value indicating whether to recursively delete subdirectories and files contained within the directory.
         /// </param>
         /// <returns>A Result containing the result of the operation.</returns>
-        public virtual IResult DeleteDirectory(string directory, bool recursive = true)
+        public virtual IResult DeleteDirectory(string directory, bool recursive)
         {
             logger.EnterMethod(xLogger.Params(directory));
             logger.Debug($"Deleting directory '{directory}'...");

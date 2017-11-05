@@ -44,7 +44,9 @@ namespace OpenIIoT.Core.Tests
     using System;
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
+    using System.Linq;
     using System.Net.Http;
+    using System.Reflection;
 
     /// <summary>
     ///     Extension methods to assist with testing and assertions.
@@ -84,6 +86,27 @@ namespace OpenIIoT.Core.Tests
             catch (Exception)
             {
                 return default(T);
+            }
+        }
+
+        /// <summary>
+        ///     Injects the specified <paramref name="value"/> into the property matching the specified <paramref name="propertyName"/>.
+        /// </summary>
+        /// <param name="instance">The object instance into which the value is to be injected.</param>
+        /// <param name="propertyName">The name of the property to be injected.</param>
+        /// <param name="value">The value to be injected.</param>
+        public static void Inject(this object instance, string propertyName, object value)
+        {
+            PropertyInfo property = instance.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic)
+                .Where(p => p.Name == propertyName).FirstOrDefault();
+
+            if (property == default(PropertyInfo))
+            {
+                throw new Exception($"Unable to find property '{propertyName}' in Type {instance.GetType().Name}.");
+            }
+            else
+            {
+                property.SetValue(instance, value);
             }
         }
 
