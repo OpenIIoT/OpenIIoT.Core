@@ -62,9 +62,9 @@ namespace OpenIIoT.Core.Tests.Packaging
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
     using OpenIIoT.SDK.Platform;
     using Xunit;
-    using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
     ///     Unit tests for the <see cref="PackageManager"/> class.
@@ -128,10 +128,29 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// </summary>
         private Mock<IApplicationManager> ManagerMock { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the IPackageArchive mockup for testing.
+        /// </summary>
         private Mock<IPackageArchive> PackageArchiveMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackageFactory mockup for testing.
+        /// </summary>
         private Mock<IPackageFactory> PackageFactoryMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackageManifest mockup for testing.
+        /// </summary>
         private Mock<IPackageManifest> PackageManifestMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackage mockup for testing.
+        /// </summary>
         private Mock<IPackage> PackageMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackageScanner mockup for testing.
+        /// </summary>
         private Mock<IPackageScanner> PackageScannerMock { get; set; }
 
         /// <summary>
@@ -1262,6 +1281,9 @@ namespace OpenIIoT.Core.Tests.Packaging
 
         #region Private Methods
 
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
         private void SetupMocks()
         {
             DirectoryMock.Setup(d => d.Packages).Returns(Temp);
