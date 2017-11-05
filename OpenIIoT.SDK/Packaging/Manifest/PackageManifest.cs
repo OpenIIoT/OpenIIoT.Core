@@ -82,6 +82,12 @@ namespace OpenIIoT.SDK.Packaging.Manifest
         public string License { get; set; }
 
         /// <summary>
+        ///     Gets or sets the Package name.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        public string Name { get; set; }
+
+        /// <summary>
         ///     Gets or sets the Package namespace.
         /// </summary>
         [JsonProperty(Order = 3)]
@@ -98,12 +104,6 @@ namespace OpenIIoT.SDK.Packaging.Manifest
         /// </summary>
         [JsonProperty(Order = 10)]
         public PackageManifestSignature Signature { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package title.
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        public string Title { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package url.

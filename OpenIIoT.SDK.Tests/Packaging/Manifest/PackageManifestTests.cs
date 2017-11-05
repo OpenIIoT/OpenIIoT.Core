@@ -77,7 +77,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Manifest
             test.Namespace = "namespace";
             test.Publisher = "publisher";
             test.Signature = new PackageManifestSignature();
-            test.Title = "title";
+            test.Name = "name";
             test.Url = "url";
             test.Version = "version";
 
@@ -90,7 +90,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Manifest
             Assert.Equal(test.Namespace, "namespace");
             Assert.Equal(test.Publisher, "publisher");
             Assert.NotNull(test.Signature);
-            Assert.Equal(test.Title, "title");
+            Assert.Equal(test.Name, "name");
             Assert.Equal(test.Url, "url");
             Assert.Equal(test.Version, "version");
         }

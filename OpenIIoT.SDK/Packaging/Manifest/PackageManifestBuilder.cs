@@ -102,7 +102,7 @@ namespace OpenIIoT.SDK.Packaging.Manifest
         /// <returns>The built <see cref="PackageManifest"/> instance.</returns>
         public PackageManifestBuilder BuildDefault()
         {
-            this.Title("DefaultPlugin")
+            this.Name("DefaultPlugin")
                 .Version("1.0.0")
                 .Namespace("OpenIIoT.Plugin")
                 .Description("Default plugin.")
@@ -177,6 +177,18 @@ namespace OpenIIoT.SDK.Packaging.Manifest
         }
 
         /// <summary>
+        ///     Sets the <see cref="PackageManifest.Name"/> field to the <see cref="PackageManifest"/> under construction to the
+        ///     specified value.
+        /// </summary>
+        /// <param name="Name">The value to which the Name field is to be set.</param>
+        /// <returns>The modified <see cref="PackageManifest"/> instance.</returns>
+        public PackageManifestBuilder Name(string Name)
+        {
+            Manifest.Name = Name;
+            return this;
+        }
+
+        /// <summary>
         ///     Sets the <see cref="PackageManifest.Namespace"/> field to the <see cref="PackageManifest"/> under construction to
         ///     the specified value.
         /// </summary>
@@ -229,18 +241,6 @@ namespace OpenIIoT.SDK.Packaging.Manifest
         public PackageManifestBuilder Signature(PackageManifestSignature signature)
         {
             Manifest.Signature = signature;
-            return this;
-        }
-
-        /// <summary>
-        ///     Sets the <see cref="PackageManifest.Title"/> field to the <see cref="PackageManifest"/> under construction to the
-        ///     specified value.
-        /// </summary>
-        /// <param name="title">The value to which the Title field is to be set.</param>
-        /// <returns>The modified <see cref="PackageManifest"/> instance.</returns>
-        public PackageManifestBuilder Title(string title)
-        {
-            Manifest.Title = title;
             return this;
         }
 

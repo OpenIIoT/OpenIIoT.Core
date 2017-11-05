@@ -90,7 +90,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         [JsonProperty(Order = 1)]
         [DataMember(Order = 1)]
-        public string FQN => Manifest.Namespace + "." + Manifest.Title;
+        public string FQN => Manifest.Namespace + "." + Manifest.Name;
 
         /// <summary>
         ///     Gets a value indicating whether the archive signature contains a trust.
