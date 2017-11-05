@@ -124,6 +124,13 @@ namespace OpenIIoT.SDK.Platform
         IResult<string> CreateZip(string zipFile, string source);
 
         /// <summary>
+        ///     Deletes the specified <paramref name="directory"/> recursively.
+        /// </summary>
+        /// <param name="directory">The directory to delete.</param>
+        /// <returns>A Result containing the result of the operation.</returns>
+        IResult DeleteDirectory(string directory);
+
+        /// <summary>
         ///     Deletes the specified directory.
         /// </summary>
         /// <param name="directory">The directory to delete.</param>
@@ -131,7 +138,7 @@ namespace OpenIIoT.SDK.Platform
         ///     A value indicating whether to recursively delete subdirectories and files contained within the directory.
         /// </param>
         /// <returns>A Result containing the result of the operation.</returns>
-        IResult DeleteDirectory(string directory, bool recursive = true);
+        IResult DeleteDirectory(string directory, bool recursive);
 
         /// <summary>
         ///     Deletes the specified file.
