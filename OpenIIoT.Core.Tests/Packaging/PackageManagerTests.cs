@@ -460,6 +460,143 @@ namespace OpenIIoT.Core.Tests.Packaging
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackageManager.FindPackage(string)"/> method with a known existing Package.
+        /// </summary>
+        [Fact]
+        public void FindPackage()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IList<IPackage> list = new List<IPackage>(new[] { PackageMock.Object }.ToList());
+            test.Inject("PackageList", list);
+
+            IPackage foundPackage = test.FindPackage(PackageMock.Object.FQN);
+
+            Assert.Equal(PackageMock.Object, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.FindPackageArchive(string)"/> method with a known existing Package Archive.
+        /// </summary>
+        [Fact]
+        public void FindPackageArchive()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IList<IPackageArchive> list = new List<IPackageArchive>(new[] { PackageArchiveMock.Object }.ToList());
+            test.Inject("PackageArchiveList", list);
+
+            IPackageArchive foundPackage = test.FindPackageArchive(PackageArchiveMock.Object.FQN);
+
+            Assert.Equal(PackageArchiveMock.Object, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.FindPackageArchiveAsync(string)"/> method with a known existing Package Archive.
+        /// </summary>
+        [Fact]
+        public async void FindPackageArchiveAsync()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IList<IPackageArchive> list = new List<IPackageArchive>(new[] { PackageArchiveMock.Object }.ToList());
+            test.Inject("PackageArchiveList", list);
+
+            IPackageArchive foundPackage = await test.FindPackageArchiveAsync(PackageArchiveMock.Object.FQN);
+
+            Assert.Equal(PackageArchiveMock.Object, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.FindPackageArchive(string)"/> method with a known missing Package Archive that
+        ///     is not found upon a scan.
+        /// </summary>
+        [Fact]
+        public void FindPackageArchiveNotFound()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            PackageScannerMock.Setup(p => p.ScanPackageArchives())
+                .Returns(new Result<IList<IPackageArchive>>().SetReturnValue(new List<IPackageArchive>()));
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
+            IPackageArchive foundPackage = test.FindPackageArchive(PackageArchiveMock.Object.FQN);
+
+            Assert.Equal(default(IPackageArchive), foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.FindPackageArchive(string)"/> method with a known missing Package Archive that
+        ///     is found upon a scan.
+        /// </summary>
+        [Fact]
+        public void FindPackageArchiveScanned()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
+            IPackageArchive foundPackage = test.FindPackageArchive(PackageArchiveMock.Object.FQN);
+
+            Assert.Equal(PackageArchiveMock.Object, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.FindPackageAsync(string)"/> method with a known existing Package.
+        /// </summary>
+        [Fact]
+        public async void FindPackageAsync()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            IList<IPackage> list = new List<IPackage>(new[] { PackageMock.Object }.ToList());
+            test.Inject("PackageList", list);
+
+            IPackage foundPackage = await test.FindPackageAsync(PackageMock.Object.FQN);
+
+            Assert.Equal(PackageMock.Object, foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.FindPackage(string)"/> method with a known missing Package that is not found
+        ///     upon a scan.
+        /// </summary>
+        [Fact]
+        public void FindPackageNotFound()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            PackageScannerMock.Setup(p => p.ScanPackages())
+                .Returns(new Result<IList<IPackage>>().SetReturnValue(new List<IPackage>()));
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
+            IPackage foundPackage = test.FindPackage(PackageMock.Object.FQN);
+
+            Assert.Equal(default(IPackage), foundPackage);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageManager.FindPackage(string)"/> method with a known missing Package that is found upon a scan.
+        /// </summary>
+        [Fact]
+        public void FindPackageScanned()
+        {
+            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
+            IPackage foundPackage = test.FindPackage(PackageMock.Object.FQN);
+
+            Assert.Equal(PackageMock.Object, foundPackage);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackageManager.InstallPackage(IPackageArchive)"/> method with a known good Package and default options.
         /// </summary>
         [Fact]
@@ -857,211 +994,82 @@ namespace OpenIIoT.Core.Tests.Packaging
             PackageManager.Terminate();
         }
 
-        #endregion Public Methods
-
-        #region Protected Methods
-
         /// <summary>
-        ///     Disposes of this instance.
-        /// </summary>
-        /// <param name="disposing">A value indicating whether this method has been called directly or indirectly from code.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            Directory.Delete(Temp, true);
-
-            PackageManager.Terminate();
-        }
-
-        #endregion Protected Methods
-
-        #region Private Methods
-
-        private void SetupMocks()
-        {
-            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
-            DirectoryMock.Setup(d => d.PackageArchives).Returns(Temp);
-            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
-            DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
-
-            IResult<string> successResult = new Result<string>();
-
-            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
-                .Returns(successResult)
-                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
-
-            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
-                .Returns(successResult)
-                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
-
-            PlatformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
-                .Returns(successResult)
-                    .Callback<string>(s => File.Delete(s));
-
-            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>()))
-                .Returns(true);
-
-            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
-            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
-
-            PackageManifestMock.Setup(p => p.Namespace).Returns("OpenIIoT.Plugin");
-            PackageManifestMock.Setup(p => p.Title).Returns("DefaultPlugin");
-            PackageManifestMock.Setup(p => p.Version).Returns("1.0.0");
-
-            PackageArchiveMock.Setup(p => p.FQN).Returns("OpenIIoT.Plugin.DefaultPlugin");
-            PackageArchiveMock.Setup(p => p.FileName).Returns(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip"));
-            PackageArchiveMock.Setup(p => p.Manifest).Returns(PackageManifestMock.Object);
-
-            PackageMock.Setup(p => p.FQN).Returns("OpenIIoT.Plugin.DefaultPlugin");
-            PackageMock.Setup(p => p.DirectoryName).Returns(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin"));
-            PackageMock.Setup(p => p.Manifest).Returns(PackageManifestMock.Object);
-
-            PackageFactoryMock.Setup(p => p.GetPackageArchive(It.IsAny<string>()))
-                .Returns(new Result<IPackageArchive>().SetReturnValue(PackageArchiveMock.Object));
-
-            PackageScannerMock.Setup(p => p.ScanPackageArchives())
-                .Returns(new Result<IList<IPackageArchive>>().SetReturnValue(new[] { PackageArchiveMock.Object }.ToList()));
-
-            PackageScannerMock.Setup(s => s.ScanPackages())
-                .Returns(new Result<IList<IPackage>>().SetReturnValue(new[] { PackageMock.Object }.ToList()));
-        }
-
-        #endregion Private Methods
-
-        /// <summary>
-        ///     Tests the <see cref="PackageManager.FindPackage(string)"/> method with a known existing Package.
+        ///     Tests the <see cref="PackageManager.UninstallPackage(IPackage)"/> method with a known good Package.
         /// </summary>
         [Fact]
-        public void FindPackage()
+        public void UninstallPackage()
         {
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            IList<IPackage> list = new List<IPackage>(new[] { PackageMock.Object }.ToList());
-            test.Inject("PackageList", list);
+            Directory.CreateDirectory(Path.Combine(Temp, PackageMock.Object.DirectoryName));
+            Assert.True(Directory.Exists(Path.Combine(Temp, PackageMock.Object.DirectoryName)));
 
-            IPackage foundPackage = test.FindPackage(PackageMock.Object.FQN);
+            IResult uninstallResult = test.UninstallPackage(PackageMock.Object);
 
-            Assert.Equal(PackageMock.Object, foundPackage);
+            Assert.Equal(ResultCode.Success, uninstallResult.ResultCode);
+            Assert.False(Directory.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin")));
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.FindPackageArchive(string)"/> method with a known existing Package Archive.
+        ///     Tests the <see cref="PackageManager.UninstallPackageAsync(IPackage)"/> method with a known good Package.
         /// </summary>
+        /// <returns>The Task with which the execution is carried out.</returns>
         [Fact]
-        public void FindPackageArchive()
+        public async Task UninstallPackageAsync()
         {
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            IList<IPackageArchive> list = new List<IPackageArchive>(new[] { PackageArchiveMock.Object }.ToList());
-            test.Inject("PackageArchiveList", list);
+            Directory.CreateDirectory(Path.Combine(Temp, PackageMock.Object.DirectoryName));
+            Assert.True(Directory.Exists(Path.Combine(Temp, PackageMock.Object.DirectoryName)));
 
-            IPackageArchive foundPackage = test.FindPackageArchive(PackageArchiveMock.Object.FQN);
+            IResult uninstallResult = await test.UninstallPackageAsync(PackageMock.Object);
 
-            Assert.Equal(PackageArchiveMock.Object, foundPackage);
+            Assert.Equal(ResultCode.Success, uninstallResult.ResultCode);
+            Assert.False(Directory.Exists(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin")));
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.FindPackageArchiveAsync(string)"/> method with a known existing Package Archive.
+        ///     Tests the <see cref="PackageManager.UninstallPackage(IPackage)"/> method with Package missing a DirectoryName.
         /// </summary>
         [Fact]
-        public async void FindPackageArchiveAsync()
+        public void UninstallPackageNoDirectoryName()
         {
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            IList<IPackageArchive> list = new List<IPackageArchive>(new[] { PackageArchiveMock.Object }.ToList());
-            test.Inject("PackageArchiveList", list);
+            PackageMock.Setup(p => p.DirectoryName).Returns(string.Empty);
 
-            IPackageArchive foundPackage = await test.FindPackageArchiveAsync(PackageArchiveMock.Object.FQN);
+            IResult uninstallResult = test.UninstallPackage(PackageMock.Object);
 
-            Assert.Equal(PackageArchiveMock.Object, foundPackage);
+            Assert.Equal(ResultCode.Failure, uninstallResult.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.FindPackageArchive(string)"/> method with a known missing Package Archive that
-        ///     is not found upon a scan.
+        ///     Tests the <see cref="PackageManager.UninstallPackage(IPackage)"/> method with a Package which does not exist.
         /// </summary>
         [Fact]
-        public void FindPackageArchiveNotFound()
+        public void UninstallPackageNotFound()
         {
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            PackageScannerMock.Setup(p => p.ScanPackageArchives())
-                .Returns(new Result<IList<IPackageArchive>>().SetReturnValue(new List<IPackageArchive>()));
+            PlatformMock.Setup(p => p.DirectoryExists(It.IsAny<string>())).Returns(false);
 
-            test.Inject("PackageFactory", PackageFactoryMock.Object);
-            test.Inject("PackageScanner", PackageScannerMock.Object);
+            IResult uninstallResult = test.UninstallPackage(PackageMock.Object);
 
-            IPackageArchive foundPackage = test.FindPackageArchive(PackageArchiveMock.Object.FQN);
-
-            Assert.Equal(default(IPackageArchive), foundPackage);
+            Assert.Equal(ResultCode.Failure, uninstallResult.ResultCode);
         }
 
         /// <summary>
-        ///     Tests the <see cref="PackageManager.FindPackageArchive(string)"/> method with a known missing Package Archive that
-        ///     is found upon a scan.
+        ///     Tests the <see cref="PackageManager.UninstallPackage(IPackage)"/> method with a null Package.
         /// </summary>
         [Fact]
-        public void FindPackageArchiveScanned()
+        public void UninstallPackageNull()
         {
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
-            test.Inject("PackageFactory", PackageFactoryMock.Object);
-            test.Inject("PackageScanner", PackageScannerMock.Object);
+            IResult uninstallResult = test.UninstallPackage(null);
 
-            IPackageArchive foundPackage = test.FindPackageArchive(PackageArchiveMock.Object.FQN);
-
-            Assert.Equal(PackageArchiveMock.Object, foundPackage);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="PackageManager.FindPackageAsync(string)"/> method with a known existing Package.
-        /// </summary>
-        [Fact]
-        public async void FindPackageAsync()
-        {
-            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-
-            IList<IPackage> list = new List<IPackage>(new[] { PackageMock.Object }.ToList());
-            test.Inject("PackageList", list);
-
-            IPackage foundPackage = await test.FindPackageAsync(PackageMock.Object.FQN);
-
-            Assert.Equal(PackageMock.Object, foundPackage);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="PackageManager.FindPackage(string)"/> method with a known missing Package that is not found
-        ///     upon a scan.
-        /// </summary>
-        [Fact]
-        public void FindPackageNotFound()
-        {
-            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-
-            PackageScannerMock.Setup(p => p.ScanPackages())
-                .Returns(new Result<IList<IPackage>>().SetReturnValue(new List<IPackage>()));
-
-            test.Inject("PackageFactory", PackageFactoryMock.Object);
-            test.Inject("PackageScanner", PackageScannerMock.Object);
-
-            IPackage foundPackage = test.FindPackage(PackageMock.Object.FQN);
-
-            Assert.Equal(default(IPackage), foundPackage);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="PackageManager.FindPackage(string)"/> method with a known missing Package that is found upon a scan.
-        /// </summary>
-        [Fact]
-        public void FindPackageScanned()
-        {
-            IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
-
-            test.Inject("PackageFactory", PackageFactoryMock.Object);
-            test.Inject("PackageScanner", PackageScannerMock.Object);
-
-            IPackage foundPackage = test.FindPackage(PackageMock.Object.FQN);
-
-            Assert.Equal(PackageMock.Object, foundPackage);
+            Assert.Equal(ResultCode.Failure, uninstallResult.ResultCode);
         }
 
         /// <summary>
@@ -1234,5 +1242,86 @@ namespace OpenIIoT.Core.Tests.Packaging
 
             Assert.Equal(ResultCode.Failure, verifyResult.ResultCode);
         }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Disposes of this instance.
+        /// </summary>
+        /// <param name="disposing">A value indicating whether this method has been called directly or indirectly from code.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            Directory.Delete(Temp, true);
+
+            PackageManager.Terminate();
+        }
+
+        #endregion Protected Methods
+
+        #region Private Methods
+
+        private void SetupMocks()
+        {
+            DirectoryMock.Setup(d => d.Packages).Returns(Temp);
+            DirectoryMock.Setup(d => d.PackageArchives).Returns(Temp);
+            DirectoryMock.Setup(d => d.Temp).Returns(Temp);
+            DirectoryMock.Setup(d => d.Plugins).Returns(Temp);
+
+            IResult<string> successResult = new Result<string>();
+
+            PlatformMock.Setup(p => p.WriteFileBytes(It.IsAny<string>(), It.IsAny<byte[]>()))
+                .Returns(successResult)
+                    .Callback<string, byte[]>((f, b) => File.WriteAllBytes(f, b));
+
+            PlatformMock.Setup(p => p.CopyFile(It.IsAny<string>(), It.IsAny<string>(), true))
+                .Returns(successResult)
+                    .Callback<string, string, bool>((s, d, o) => File.Copy(s, d, o));
+
+            PlatformMock.Setup(p => p.DeleteFile(It.IsAny<string>()))
+                .Returns(successResult)
+                    .Callback<string>(s => File.Delete(s));
+
+            PlatformMock.Setup(p => p.FileExists(It.IsAny<string>()))
+                .Returns(true);
+
+            PlatformMock.Setup(p => p.DirectoryExists(It.IsAny<string>()))
+                .Returns(true);
+
+            PlatformMock.Setup(p => p.DeleteDirectory(It.IsAny<string>()))
+                .Returns(new Result())
+                    .Callback<string>(s => Directory.Delete(s, true));
+
+            PlatformMock.Setup(p => p.DeleteDirectory(It.IsAny<string>(), It.IsAny<bool>()))
+                .Returns(new Result())
+                    .Callback<string, bool>((s, r) => Directory.Delete(s, r));
+
+            PlatformManagerMock.Setup(p => p.Directories).Returns(DirectoryMock.Object);
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            PackageManifestMock.Setup(p => p.Namespace).Returns("OpenIIoT.Plugin");
+            PackageManifestMock.Setup(p => p.Title).Returns("DefaultPlugin");
+            PackageManifestMock.Setup(p => p.Version).Returns("1.0.0");
+
+            PackageArchiveMock.Setup(p => p.FQN).Returns("OpenIIoT.Plugin.DefaultPlugin");
+            PackageArchiveMock.Setup(p => p.FileName).Returns(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin.1.0.0.zip"));
+            PackageArchiveMock.Setup(p => p.Manifest).Returns(PackageManifestMock.Object);
+
+            PackageMock.Setup(p => p.FQN).Returns("OpenIIoT.Plugin.DefaultPlugin");
+            PackageMock.Setup(p => p.DirectoryName).Returns(Path.Combine(Temp, "OpenIIoT.Plugin.DefaultPlugin"));
+            PackageMock.Setup(p => p.Manifest).Returns(PackageManifestMock.Object);
+
+            PackageFactoryMock.Setup(p => p.GetPackageArchive(It.IsAny<string>()))
+                .Returns(new Result<IPackageArchive>().SetReturnValue(PackageArchiveMock.Object));
+
+            PackageScannerMock.Setup(p => p.ScanPackageArchives())
+                .Returns(new Result<IList<IPackageArchive>>().SetReturnValue(new[] { PackageArchiveMock.Object }.ToList()));
+
+            PackageScannerMock.Setup(s => s.ScanPackages())
+                .Returns(new Result<IList<IPackage>>().SetReturnValue(new[] { PackageMock.Object }.ToList()));
+        }
+
+        #endregion Private Methods
     }
 }
