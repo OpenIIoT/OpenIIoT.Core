@@ -63,13 +63,12 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="directoryInfo">The <see cref="DirectoryInfo"/> instance of the directory in which the Package resides.</param>
         /// <param name="manifest">The manifest contained within the archive.</param>
-        public Package(DirectoryInfo directoryInfo, PackageManifest manifest)
+        public Package(DirectoryInfo directoryInfo, IPackageManifest manifest)
         {
             DirectoryInfo = directoryInfo;
             Manifest = manifest;
 
-            IList<FileInfo> fileInfos = DirectoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).ToList();
-            Files = fileInfos.Select(f => GetRelativePath(f.FullName, DirectoryInfo.FullName)).ToList();
+            Files = DirectoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).Select(f => f.FullName).ToList();
         }
 
         #endregion Public Constructors
@@ -121,28 +120,5 @@ namespace OpenIIoT.Core.Packaging
         private DirectoryInfo DirectoryInfo { get; set; }
 
         #endregion Private Properties
-
-        #region Private Methods
-
-        /// <summary>
-        ///     Gets the path of the specified <paramref name="fileName"/> relative to the specified <paramref name="directory"/>
-        /// </summary>
-        /// <param name="fileName">The filename to make relative.</param>
-        /// <param name="directory">The root directory.</param>
-        /// <returns>The path of the specified filename relative to the specified directory.</returns>
-        private string GetRelativePath(string fileName, string directory)
-        {
-            Uri pathUri = new Uri(fileName);
-
-            if (!directory.EndsWith(Path.DirectorySeparatorChar.ToString()))
-            {
-                directory += Path.DirectorySeparatorChar;
-            }
-
-            Uri folderUri = new Uri(directory);
-            return Uri.UnescapeDataString(folderUri.MakeRelativeUri(pathUri).ToString().Replace('/', Path.DirectorySeparatorChar));
-        }
-
-        #endregion Private Methods
     }
 }

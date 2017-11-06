@@ -61,7 +61,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="fileInfo">The <see cref="FileInfo"/> instance of the Archive file.</param>
         /// <param name="manifest">The manifest contained within the Archive.</param>
-        public PackageArchive(FileInfo fileInfo, PackageManifest manifest)
+        public PackageArchive(FileInfo fileInfo, IPackageManifest manifest)
         {
             Manifest = manifest;
             FileInfo = fileInfo;
