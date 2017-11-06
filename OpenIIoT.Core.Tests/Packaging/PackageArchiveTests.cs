@@ -50,26 +50,115 @@
 
 namespace OpenIIoT.Core.Tests.Packaging
 {
+    using System;
+    using System.IO;
     using Moq;
     using OpenIIoT.Core.Packaging;
+    using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
 
     /// <summary>
     ///     Unit tests for the <see cref="PackageArchive"/> class.
     /// </summary>
-    public class PackageArchiveTests
+    public class PackageArchiveTests : IDisposable
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PackageArchiveTests"/> class.
+        /// </summary>
+        public PackageArchiveTests()
+        {
+            ManifestMock = new Mock<IPackageManifest>();
+
+            SetupMocks();
+
+            Temp = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(Temp);
+
+            File.WriteAllText(Path.Combine(Temp, "archive.zip"), string.Empty);
+        }
+
+        #endregion Public Constructors
+
         #region Private Properties
 
+        /// <summary>
+        ///     Gets or sets the IPackageManifest mockup.
+        /// </summary>
         private Mock<IPackageManifest> ManifestMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the temporary test directory.
+        /// </summary>
+        private string Temp { get; set; }
 
         #endregion Private Properties
 
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            FileInfo file = new FileInfo(Path.Combine(Temp, "archive.zip"));
+            PackageArchive test = new PackageArchive(file, ManifestMock.Object);
+
+            Assert.IsType<PackageArchive>(test);
+            Assert.NotNull(test);
+
+            Assert.Equal(file.CreationTimeUtc, test.CreatedOn);
+            Assert.Equal(file.FullName, test.FileName);
+            Assert.Equal("OpenIIoT.Tests.Test", test.FQN);
+            Assert.Equal(false, test.HasTrust);
+            Assert.Equal(false, test.IsSigned);
+            Assert.Equal(ManifestMock.Object, test.Manifest);
+            Assert.Equal(file.LastWriteTimeUtc, test.ModifiedOn);
+            Assert.Equal(PackageVerification.Unverified, test.Verification);
+        }
+
+        #endregion Public Methods
+
+
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Disposes of this instance.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        #endregion Public Methods
+
+        #region Protected Methods
+
+        /// <summary>
+        ///     Disposes of this instance.
+        /// </summary>
+        /// <param name="disposing">A value indicating whether this method has been called directly or indirectly from code.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            Directory.Delete(Temp, true);
+        }
+
+        #endregion Protected Methods
+
         #region Private Methods
 
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
         private void SetupMocks()
         {
+            ManifestMock.Setup(m => m.Name).Returns("Test");
+            ManifestMock.Setup(m => m.Namespace).Returns("OpenIIoT.Tests");
         }
 
         #endregion Private Methods
