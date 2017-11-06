@@ -97,14 +97,14 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         [JsonProperty(Order = 4)]
         [DataMember(Order = 4)]
-        public bool HasTrust => !string.IsNullOrEmpty(Manifest?.Signature?.Trust);
+        public bool HasTrust => !string.IsNullOrEmpty(Manifest.Signature?.Trust);
 
         /// <summary>
         ///     Gets a value indicating whether the archive is signed.
         /// </summary>
         [JsonProperty(Order = 5)]
         [DataMember(Order = 5)]
-        public bool IsSigned => Manifest?.Signature != default(PackageManifestSignature);
+        public bool IsSigned => Manifest.Signature != default(PackageManifestSignature);
 
         /// <summary>
         ///     Gets the <see cref="IPackageManifest"/> for the Package.

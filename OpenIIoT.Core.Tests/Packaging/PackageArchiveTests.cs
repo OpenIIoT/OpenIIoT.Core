@@ -120,12 +120,6 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(PackageVerification.Unverified, test.Verification);
         }
 
-        #endregion Public Methods
-
-
-
-        #region Public Methods
-
         /// <summary>
         ///     Disposes of this instance.
         /// </summary>
@@ -133,6 +127,52 @@ namespace OpenIIoT.Core.Tests.Packaging
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageArchive.HasTrust"/> property with a signed Package Archive containing a Trust.
+        /// </summary>
+        [Fact]
+        public void HasTrust()
+        {
+            ManifestMock.Setup(m => m.Signature)
+                .Returns(new PackageManifestSignature() { Trust = "trust" });
+
+            FileInfo file = new FileInfo(Path.Combine(Temp, "archive.zip"));
+            PackageArchive test = new PackageArchive(file, ManifestMock.Object);
+
+            Assert.Equal(true, test.HasTrust);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageArchive.IsSigned"/> property with a signed Package Archive.
+        /// </summary>
+        [Fact]
+        public void IsSigned()
+        {
+            ManifestMock.Setup(m => m.Signature).Returns(new PackageManifestSignature());
+
+            FileInfo file = new FileInfo(Path.Combine(Temp, "archive.zip"));
+            PackageArchive test = new PackageArchive(file, ManifestMock.Object);
+
+            Assert.Equal(true, test.IsSigned);
+            Assert.Equal(false, test.HasTrust);
+        }
+
+        /// <summary>
+        ///     Test the <see cref="PackageArchive.Verification"/> property.
+        /// </summary>
+        [Fact]
+        public void Verification()
+        {
+            FileInfo file = new FileInfo(Path.Combine(Temp, "archive.zip"));
+            PackageArchive test = new PackageArchive(file, ManifestMock.Object);
+
+            Assert.Equal(PackageVerification.Unverified, test.Verification);
+
+            test.Verification = PackageVerification.Verified;
+
+            Assert.Equal(PackageVerification.Verified, test.Verification);
         }
 
         #endregion Public Methods
