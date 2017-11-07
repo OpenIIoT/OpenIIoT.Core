@@ -48,8 +48,9 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Common.OperationResult.Tests
+namespace OpenIIoT.SDK.Tests.Common.OperationResult
 {
+    using OpenIIoT.SDK.Common.OperationResult;
     using Xunit;
 
     /// <summary>
