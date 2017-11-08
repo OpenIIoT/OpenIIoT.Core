@@ -103,6 +103,13 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
         public string License { get; set; }
 
         /// <summary>
+        ///     Gets or sets the Package name.
+        /// </summary>
+        [JsonProperty(Order = 1)]
+        [DataMember(Order = 1)]
+        public string Name { get; set; }
+
+        /// <summary>
         ///     Gets or sets the Package namespace.
         /// </summary>
         [JsonProperty(Order = 3)]
@@ -122,13 +129,6 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
         [JsonProperty(Order = 9)]
         [DataMember(Order = 9)]
         public PackageManifestSummarySignatureData Signature { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package title.
-        /// </summary>
-        [JsonProperty(Order = 1)]
-        [DataMember(Order = 1)]
-        public string Title { get; set; }
 
         /// <summary>
         ///     Gets or sets the Package url.
