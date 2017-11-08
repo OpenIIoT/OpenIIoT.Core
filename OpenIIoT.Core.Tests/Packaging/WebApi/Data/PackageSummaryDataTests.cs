@@ -59,7 +59,11 @@
 
 namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
 {
+    using System;
+    using Moq;
     using OpenIIoT.Core.Packaging.WebApi.Data;
+    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
 
     /// <summary>
@@ -67,5 +71,73 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
     /// </summary>
     public class PackageSummaryDataTests
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PackageSummaryDataTests"/> class.
+        /// </summary>
+        public PackageSummaryDataTests()
+        {
+            PackageManifestMock = new Mock<IPackageManifest>();
+            PackageMock = new Mock<IPackage>();
+
+            SetupMocks();
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the IPackageManifest mockup.
+        /// </summary>
+        private Mock<IPackageManifest> PackageManifestMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackage mockup.
+        /// </summary>
+        private Mock<IPackage> PackageMock { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            PackageSummaryData test = new PackageSummaryData(PackageMock.Object);
+
+            Assert.IsType<PackageSummaryData>(test);
+            Assert.NotNull(test);
+
+            Assert.Equal("name.namespace", test.FQN);
+            Assert.Equal("directoryName", test.DirectoryName);
+            Assert.Equal(PackageMock.Object.InstalledOn, test.InstalledOn);
+            Assert.Equal("name", test.Manifest.Name);
+            Assert.Equal("namespace", test.Manifest.Namespace);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
+        private void SetupMocks()
+        {
+            PackageManifestMock.Setup(p => p.Name).Returns("name");
+            PackageManifestMock.Setup(p => p.Namespace).Returns("namespace");
+
+            PackageMock.Setup(p => p.DirectoryName).Returns("directoryName");
+            PackageMock.Setup(p => p.FQN).Returns("name.namespace");
+            PackageMock.Setup(p => p.InstalledOn).Returns(DateTime.Now);
+            PackageMock.Setup(p => p.Manifest).Returns(PackageManifestMock.Object);
+        }
+
+        #endregion Private Methods
     }
 }
