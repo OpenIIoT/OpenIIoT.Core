@@ -60,6 +60,7 @@
 namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
 {
     using OpenIIoT.Core.Packaging.WebApi.Data;
+    using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
 
     /// <summary>
@@ -67,5 +68,31 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
     /// </summary>
     public class PackageManifestSummarySignatureDataTests
     {
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            PackageManifestSignature signature = new PackageManifestSignature()
+            {
+                Issuer = "issuer",
+                Subject = "subject",
+                Digest = "digest",
+                Trust = "trust",
+            };
+
+            PackageManifestSummarySignatureData test = new PackageManifestSummarySignatureData(signature);
+
+            Assert.IsType<PackageManifestSummarySignatureData>(test);
+            Assert.NotNull(test);
+
+            Assert.Equal(signature.Issuer, test.Issuer);
+            Assert.Equal(signature.Subject, test.Subject);
+        }
+
+        #endregion Public Methods
     }
 }
