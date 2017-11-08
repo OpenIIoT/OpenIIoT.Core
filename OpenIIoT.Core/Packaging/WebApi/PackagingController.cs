@@ -48,6 +48,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
     using System.Net;
     using System.Net.Http;
     using System.Net.Http.Headers;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using System.Web.Http;
     using OpenIIoT.Core.Packaging.WebApi.Data;
@@ -155,10 +156,6 @@ namespace OpenIIoT.Core.Packaging.WebApi
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
             }
-            else if (!fqn.Contains('.'))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
-            }
             else
             {
                 IPackageArchive findResult = await PackageManager.FindPackageArchiveAsync(fqn);
@@ -206,10 +203,6 @@ namespace OpenIIoT.Core.Packaging.WebApi
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.", JsonFormatter());
             }
-            else if (!fqn.Contains('.'))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
-            }
             else
             {
                 IPackageArchive packageArchive = await PackageManager.FindPackageArchiveAsync(fqn);
@@ -248,10 +241,6 @@ namespace OpenIIoT.Core.Packaging.WebApi
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
             }
-            else if (!fqn.Contains('.'))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
-            }
             else
             {
                 IPackageArchive findResult = await PackageManager.FindPackageArchiveAsync(fqn);
@@ -286,6 +275,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         ///     Verifies the specified Package Archive.
         /// </summary>
         /// <param name="fqn">The Fully Qualified Name of the Package Archive to verify.</param>
+        /// <param name="publicKey">The PGP public key to be used for verification.</param>
         /// <returns>An HTTP response message.</returns>
         [HttpGet]
         [Route("archives/{fqn}/verification")]
@@ -295,7 +285,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public async Task<HttpResponseMessage> PackageArchivesGetFqnVerification(string fqn)
+        public async Task<HttpResponseMessage> PackageArchivesGetFqnVerification(string fqn, string publicKey = default(string))
         {
             HttpResponseMessage retVal;
 
@@ -303,9 +293,9 @@ namespace OpenIIoT.Core.Packaging.WebApi
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
             }
-            else if (!fqn.Contains('.'))
+            else if (publicKey != default(string) && !new Regex(PackagingConstants.KeyRegEx).IsMatch(publicKey))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified PGP public key is not a valid key.");
             }
             else
             {
@@ -415,7 +405,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified fqn is null or empty.", JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
             }
             else
             {
@@ -444,22 +434,18 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("packages/{fqn}")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was successfully installed.", typeof(Package))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(ModelValidationResult))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public async Task<HttpResponseMessage> PackagesInstall(string fqn, [FromBody]PackageInstallationOptions options = null)
+        public async Task<HttpResponseMessage> PackagesInstall(string fqn, [FromBody]PackageInstallationOptions options)
         {
             HttpResponseMessage retVal;
             ModelValidator validator = new ModelValidator(ModelState);
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
-            }
-            else if (!fqn.Contains('.'))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ModelValidationResult() { Message = "The specified Fully Qualified Name is null or empty." }, JsonFormatter());
             }
             else if (!validator.IsValid)
             {
@@ -520,10 +506,6 @@ namespace OpenIIoT.Core.Packaging.WebApi
             if (string.IsNullOrEmpty(fqn))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
-            }
-            else if (!fqn.Contains('.'))
-            {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name contains only one dot-separated tuple.");
             }
             else
             {
