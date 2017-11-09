@@ -143,7 +143,9 @@
     <Compile Include="Configuration\ConfigurationLoaderTests.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Packaging\PackageArchiveTests.cs" />
+    <Compile Include="Packaging\PackageFactoryTests.cs" />
     <Compile Include="Packaging\PackageManagerTests.cs" />
+    <Compile Include="Packaging\PackageScannerTests.cs" />
     <Compile Include="Packaging\PackageTests.cs" />
     <Compile Include="Packaging\WebApi\Data\PackageArchiveSummaryDataTests.cs" />
     <Compile Include="Packaging\WebApi\Data\PackageArchiveVerificationDataTests.cs" />
