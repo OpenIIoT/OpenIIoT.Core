@@ -42,7 +42,6 @@
 namespace OpenIIoT.Core.Packaging
 {
     using System;
-    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using Newtonsoft.Json;
     using NLog.xLogger;
@@ -51,8 +50,6 @@ namespace OpenIIoT.Core.Packaging
     using OpenIIoT.SDK.Packaging.Manifest;
     using OpenIIoT.SDK.Packaging.Operations;
     using OpenIIoT.SDK.Platform;
-    using NLog;
-    using System.Net;
 
     /// <summary>
     ///     Creates instances of <see cref="IPackage"/> and <see cref="IPackageFactory"/> from disk.
@@ -69,15 +66,6 @@ namespace OpenIIoT.Core.Packaging
         #endregion Private Fields
 
         #region Public Constructors
-
-        /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageFactory"/> class.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        public PackageFactory()
-            : this(ApplicationManager.GetInstance().GetManager<IPlatformManager>(), new ManifestExtractor(), new PackageVerifier())
-        {
-        }
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="PackageFactory"/> class with the specified <paramref name="platformManager"/>.
