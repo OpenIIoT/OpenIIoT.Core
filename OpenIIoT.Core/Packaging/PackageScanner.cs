@@ -43,7 +43,6 @@ namespace OpenIIoT.Core.Packaging
 {
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics.CodeAnalysis;
     using NLog.xLogger;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
