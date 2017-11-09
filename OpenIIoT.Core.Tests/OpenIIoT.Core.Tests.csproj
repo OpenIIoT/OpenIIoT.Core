@@ -150,6 +150,7 @@
     <Compile Include="Packaging\WebApi\Data\PackageManifestSummaryDataTests.cs" />
     <Compile Include="Packaging\WebApi\Data\PackageManifestSummarySignatureDataTests.cs" />
     <Compile Include="Packaging\WebApi\Data\PackageSummaryDataTests.cs" />
+    <Compile Include="Packaging\WebApi\PackagingControllerTests.cs" />
     <Compile Include="Platform\PlatformManagerTests.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformTests.cs" />
     <Compile Include="Platform\UNIX\UNIXPlatformItemProviderTests.cs" />
