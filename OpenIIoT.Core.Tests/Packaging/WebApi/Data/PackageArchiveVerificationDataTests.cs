@@ -60,6 +60,8 @@
 namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
 {
     using OpenIIoT.Core.Packaging.WebApi.Data;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Packaging;
     using Xunit;
 
     /// <summary>
@@ -67,5 +69,36 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
     /// </summary>
     public class PackageArchiveVerificationDataTests
     {
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor with a failing Result.
+        /// </summary>
+        [Fact]
+        public void ConstructorBadResult()
+        {
+            PackageArchiveVerificationData test = new PackageArchiveVerificationData(
+                    new Result<bool>()
+                        .SetReturnValue(false)
+                        .AddError("failed"));
+
+            Assert.Equal(PackageVerification.Refuted, test.Verification);
+            Assert.Equal(1, test.Messages.Count);
+        }
+
+        /// <summary>
+        ///     Tests the constructor with a suceeding Result.
+        /// </summary>
+        [Fact]
+        public void ConstructorGoodResult()
+        {
+            PackageArchiveVerificationData test = new PackageArchiveVerificationData(
+                new Result<bool>()
+                    .SetReturnValue(true));
+
+            Assert.Equal(PackageVerification.Verified, test.Verification);
+        }
+
+        #endregion Public Methods
     }
 }
