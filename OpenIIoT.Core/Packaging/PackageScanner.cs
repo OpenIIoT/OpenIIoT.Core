@@ -43,6 +43,7 @@ namespace OpenIIoT.Core.Packaging
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using NLog.xLogger;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
@@ -68,6 +69,7 @@ namespace OpenIIoT.Core.Packaging
         ///     Initializes a new instance of the <see cref="PackageScanner"/> class with the specified <paramref name="platformManager"/>.
         /// </summary>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
+        [ExcludeFromCodeCoverage]
         public PackageScanner(IPlatformManager platformManager)
             : this(platformManager, new PackageFactory(platformManager))
         {

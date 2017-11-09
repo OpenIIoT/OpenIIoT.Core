@@ -42,6 +42,7 @@
 namespace OpenIIoT.Core.Packaging
 {
     using System;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using Newtonsoft.Json;
     using NLog.xLogger;
@@ -71,6 +72,7 @@ namespace OpenIIoT.Core.Packaging
         ///     Initializes a new instance of the <see cref="PackageFactory"/> class with the specified <paramref name="platformManager"/>.
         /// </summary>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
+        [ExcludeFromCodeCoverage]
         public PackageFactory(IPlatformManager platformManager)
             : this(platformManager, new ManifestExtractor(), new PackageVerifier())
         {
