@@ -59,7 +59,11 @@
 
 namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
 {
+    using System;
+    using Moq;
     using OpenIIoT.Core.Packaging.WebApi.Data;
+    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
     using Xunit;
 
     /// <summary>
@@ -67,5 +71,79 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
     /// </summary>
     public class PackageArchiveSummaryDataTests
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PackageArchiveSummaryDataTests"/> class.
+        /// </summary>
+        public PackageArchiveSummaryDataTests()
+        {
+            PackageManifestMock = new Mock<IPackageManifest>();
+            PackageArchiveMock = new Mock<IPackageArchive>();
+
+            SetupMocks();
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the IPackageArchive mockup.
+        /// </summary>
+        private Mock<IPackageArchive> PackageArchiveMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackageManifest mockup.
+        /// </summary>
+        private Mock<IPackageManifest> PackageManifestMock { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            PackageArchiveSummaryData test = new PackageArchiveSummaryData(PackageArchiveMock.Object);
+
+            Assert.NotNull(test);
+            Assert.Equal("name.namespace", test.FQN);
+            Assert.Equal("filename", test.FileName);
+            Assert.Equal(PackageVerification.Unverified, test.Verification);
+            Assert.Equal(false, test.HasTrust);
+            Assert.Equal(false, test.IsSigned);
+            Assert.Equal(PackageArchiveMock.Object.CreatedOn, test.CreatedOn);
+            Assert.Equal(PackageArchiveMock.Object.ModifiedOn, test.ModifiedOn);
+            Assert.Equal("name", test.Manifest.Name);
+            Assert.Equal("namespace", test.Manifest.Namespace);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
+        private void SetupMocks()
+        {
+            PackageManifestMock.Setup(p => p.Name).Returns("name");
+            PackageManifestMock.Setup(p => p.Namespace).Returns("namespace");
+
+            PackageArchiveMock.Setup(p => p.FQN).Returns("name.namespace");
+            PackageArchiveMock.Setup(p => p.FileName).Returns("filename");
+            PackageArchiveMock.Setup(p => p.Verification).Returns(PackageVerification.Unverified);
+            PackageArchiveMock.Setup(p => p.HasTrust).Returns(false);
+            PackageArchiveMock.Setup(p => p.IsSigned).Returns(false);
+            PackageArchiveMock.Setup(p => p.CreatedOn).Returns(DateTime.Now);
+            PackageArchiveMock.Setup(p => p.ModifiedOn).Returns(DateTime.Now);
+            PackageArchiveMock.Setup(p => p.Manifest).Returns(PackageManifestMock.Object);
+        }
+
+        #endregion Private Methods
     }
 }
