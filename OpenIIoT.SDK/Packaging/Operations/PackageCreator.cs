@@ -52,7 +52,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
     /// <summary>
     ///     Creates Package files.
     /// </summary>
-    public class PackageCreator : PackagingOperation
+    public class PackageCreator : PackagingOperation, IPackageCreator
     {
         #region Public Constructors
 
@@ -192,7 +192,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// </summary>
         /// <param name="manifest">The manifest for which validation and hash generation is to be performed.</param>
         /// <param name="directory">The directory containing payload files.</param>
-        internal void ValidateManifestAndGenerateHashes(PackageManifest manifest, string directory)
+        internal void ValidateManifestAndGenerateHashes(IPackageManifest manifest, string directory)
         {
             foreach (PackageManifestFile file in manifest.Files)
             {
@@ -214,7 +214,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// <summary>
         ///     Validates the manifestFile argument for
         ///     <see cref="CreatePackage(string, string, string, bool, string, string, string, bool)"/> and, if valid, retrieves
-        ///     the <see cref="PackageManifest"/> from the file and returns it.
+        ///     the <see cref="IPackageManifest"/> from the file and returns it.
         /// </summary>
         /// <param name="manifestFile">The value specified for the manifestFile argument.</param>
         /// <returns>The PackageManifest file retrieved from the file specified in the manifestFile argument.</returns>

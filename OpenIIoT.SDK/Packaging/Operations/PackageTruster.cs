@@ -49,9 +49,9 @@ namespace OpenIIoT.SDK.Packaging.Operations
     using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
-    ///     Adds a Trust to the <see cref="PackageManifest"/> of Packages.
+    ///     Adds a Trust to the <see cref="IPackageManifest"/> of Packages.
     /// </summary>
-    public class PackageTruster : PackagingOperation
+    public class PackageTruster : PackagingOperation, IPackageTruster
     {
         #region Public Constructors
 
@@ -68,7 +68,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         #region Public Methods
 
         /// <summary>
-        ///     Adds a Trust to the <see cref="PackageManifest"/> within the specified package using the PGP private key in the
+        ///     Adds a Trust to the <see cref="IPackageManifest"/> within the specified package using the PGP private key in the
         ///     specified file and the specified passphrase.
         /// </summary>
         /// <param name="packageFile">The Package for which the Trust is to be added.</param>
@@ -87,7 +87,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
 
             try
             {
-                PackageManifest manifest = new ManifestExtractor().ExtractManifest(packageFile);
+                IPackageManifest manifest = new ManifestExtractor().ExtractManifest(packageFile);
 
                 Verbose("Checking (but not validating) Digest...");
 
@@ -142,7 +142,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
         /// <param name="packageFile">The filename of the Package file to update.</param>
         /// <param name="manifest">The Manifest with which the Package file will be updated.</param>
         /// <param name="tempDirectory">The path to the temporary directory to use for file operations.</param>
-        private void UpdatePackageManifest(string packageFile, PackageManifest manifest, string tempDirectory)
+        private void UpdatePackageManifest(string packageFile, IPackageManifest manifest, string tempDirectory)
         {
             Verbose($"Updating Manifest in Package '{Path.GetFileName(packageFile)}'...");
 

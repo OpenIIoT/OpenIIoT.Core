@@ -47,9 +47,9 @@ namespace OpenIIoT.SDK.Packaging.Operations
     using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
-    ///     Generates and populates <see cref="PackageManifest"/> objects.
+    ///     Generates and populates <see cref="IPackageManifest"/> objects.
     /// </summary>
-    public class ManifestGenerator : PackagingOperation
+    public class ManifestGenerator : PackagingOperation, IManifestGenerator
     {
         #region Public Constructors
 
@@ -66,14 +66,14 @@ namespace OpenIIoT.SDK.Packaging.Operations
         #region Public Methods
 
         /// <summary>
-        ///     Generates and populates <see cref="PackageManifest"/> objects from the specified directory, including resource
+        ///     Generates and populates <see cref="IPackageManifest"/> objects from the specified directory, including resource
         ///     files and hashing file entries if those options are specified.
         /// </summary>
         /// <param name="inputDirectory">The directory from which to generate a list of files.</param>
         /// <param name="hashFiles">A value indicating whether files added to the manifest are to include a SHA512 hash.</param>
         /// <param name="manifestFile">The filename of the file to which the manifest is to be saved.</param>
         /// <returns>The generated manifest.</returns>
-        public PackageManifest GenerateManifest(string inputDirectory, bool hashFiles = false, string manifestFile = "")
+        public IPackageManifest GenerateManifest(string inputDirectory, bool hashFiles = false, string manifestFile = "")
         {
             ArgumentValidator.ValidateInputDirectoryArgument(inputDirectory);
 
