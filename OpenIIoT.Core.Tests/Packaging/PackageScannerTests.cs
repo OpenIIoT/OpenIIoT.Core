@@ -50,6 +50,7 @@
 
 namespace OpenIIoT.Core.Tests.Packaging
 {
+    using System;
     using Moq;
     using OpenIIoT.Core.Packaging;
     using OpenIIoT.SDK.Platform;
@@ -68,7 +69,7 @@ namespace OpenIIoT.Core.Tests.Packaging
         public PackageScannerTests()
         {
             PlatformManagerMock = new Mock<IPlatformManager>();
-            PlatformFactoryMock = new Mock<IPackageFactory>();
+            PackageFactoryMock = new Mock<IPackageFactory>();
         }
 
         #endregion Public Constructors
@@ -78,7 +79,7 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// <summary>
         ///     Gets or sets the IPlatformFactory mockup.
         /// </summary>
-        private Mock<IPackageFactory> PlatformFactoryMock { get; set; }
+        private Mock<IPackageFactory> PackageFactoryMock { get; set; }
 
         /// <summary>
         ///     Gets or sets the IPlatformManager mockup.
@@ -86,6 +87,22 @@ namespace OpenIIoT.Core.Tests.Packaging
         private Mock<IPlatformManager> PlatformManagerMock { get; set; }
 
         #endregion Private Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            PackageScanner test;
+            Exception ex = Record.Exception(() => test = new PackageScanner(PlatformManagerMock.Object, PackageFactoryMock.Object));
+
+            Assert.Null(ex);
+        }
+
+        #endregion Public Methods
 
         #region Private Methods
 
