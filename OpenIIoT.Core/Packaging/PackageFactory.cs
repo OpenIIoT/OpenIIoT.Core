@@ -180,7 +180,7 @@ namespace OpenIIoT.Core.Packaging
 
             ManifestExtractor.Updated += ManifestExtractorUpdated;
 
-            PackageManifest manifest;
+            IPackageManifest manifest;
             FileInfo fileInfo;
 
             try

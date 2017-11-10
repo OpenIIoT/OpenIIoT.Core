@@ -50,7 +50,10 @@
 
 namespace OpenIIoT.Core.Tests.Packaging
 {
+    using Moq;
     using OpenIIoT.Core.Packaging;
+    using OpenIIoT.SDK.Packaging.Operations;
+    using OpenIIoT.SDK.Platform;
     using Xunit;
 
     /// <summary>
@@ -58,5 +61,50 @@ namespace OpenIIoT.Core.Tests.Packaging
     /// </summary>
     public class PackageFactoryTests
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PackageFactoryTests"/> class.
+        /// </summary>
+        public PackageFactoryTests()
+        {
+            ManifestExtractorMock = new Mock<IManifestExtractor>();
+            PackageVerifierMock = new Mock<IPackageVerifier>();
+            PlatformManagerMock = new Mock<IPlatformManager>();
+
+            SetupMocks();
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the IManifestExtractor mockup.
+        /// </summary>
+        private Mock<IManifestExtractor> ManifestExtractorMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackageVerifier mockup.
+        /// </summary>
+        private Mock<IPackageVerifier> PackageVerifierMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets IPlatformManager mockup.
+        /// </summary>
+        private Mock<IPlatformManager> PlatformManagerMock { get; set; }
+
+        #endregion Private Properties
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
+        private void SetupMocks()
+        {
+        }
+
+        #endregion Private Methods
     }
 }
