@@ -178,7 +178,7 @@ namespace OpenIIoT.Core.Packaging
 
             logger.Debug($"Scanning directory '{searchDirectory}'...");
 
-            IResult<IList<string>> dirListResult = Platform.ListDirectories(searchDirectory, "*.*");
+            IResult<IList<string>> dirListResult = Platform.ListDirectories(searchDirectory);
             retVal.Incorporate(dirListResult);
 
             if (retVal.ResultCode != ResultCode.Failure)
