@@ -51,14 +51,13 @@
 namespace OpenIIoT.Core.Tests.Packaging
 {
     using System;
+    using System.Collections.Generic;
     using Moq;
     using OpenIIoT.Core.Packaging;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Platform;
     using Xunit;
-    using OpenIIoT.SDK.Common.OperationResult;
-    using System.Collections.Generic;
-    using OpenIIoT.SDK.Packaging;
-    using OpenIIoT.Core.Platform;
 
     /// <summary>
     ///     Unit tests for the <see cref="PackageScanner"/> class.
@@ -135,6 +134,9 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(PackageArchiveMock.Object, result.ReturnValue[0]);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackageScanner.ScanPackageArchives"/> method with a known bad PackageArchive.
+        /// </summary>
         [Fact]
         public void ScanPackageArchivesInvalidArchive()
         {
