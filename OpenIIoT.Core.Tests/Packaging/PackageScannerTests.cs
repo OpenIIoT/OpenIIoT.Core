@@ -55,6 +55,10 @@ namespace OpenIIoT.Core.Tests.Packaging
     using OpenIIoT.Core.Packaging;
     using OpenIIoT.SDK.Platform;
     using Xunit;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using System.Collections.Generic;
+    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.Core.Platform;
 
     /// <summary>
     ///     Unit tests for the <see cref="PackageScanner"/> class.
@@ -68,13 +72,22 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// </summary>
         public PackageScannerTests()
         {
+            PlatformMock = new Mock<IPlatform>();
             PlatformManagerMock = new Mock<IPlatformManager>();
             PackageFactoryMock = new Mock<IPackageFactory>();
+            PackageArchiveMock = new Mock<IPackageArchive>();
+
+            SetupMocks();
         }
 
         #endregion Public Constructors
 
         #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the IPackageArchive mockup.
+        /// </summary>
+        private Mock<IPackageArchive> PackageArchiveMock { get; set; }
 
         /// <summary>
         ///     Gets or sets the IPlatformFactory mockup.
@@ -85,6 +98,11 @@ namespace OpenIIoT.Core.Tests.Packaging
         ///     Gets or sets the IPlatformManager mockup.
         /// </summary>
         private Mock<IPlatformManager> PlatformManagerMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPlatform mockup.
+        /// </summary>
+        private Mock<IPlatform> PlatformMock { get; set; }
 
         #endregion Private Properties
 
@@ -102,6 +120,34 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Null(ex);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackageScanner.ScanPackageArchives"/> method.
+        /// </summary>
+        [Fact]
+        public void ScanPackageArchives()
+        {
+            PackageScanner test = new PackageScanner(PlatformManagerMock.Object, PackageFactoryMock.Object);
+
+            IResult<IList<IPackageArchive>> result = test.ScanPackageArchives();
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(1, result.ReturnValue.Count);
+            Assert.Equal(PackageArchiveMock.Object, result.ReturnValue[0]);
+        }
+
+        [Fact]
+        public void ScanPackageArchivesInvalidArchive()
+        {
+            PackageFactoryMock.Setup(p => p.GetPackageArchive(It.IsAny<string>())).Returns(new Result<IPackageArchive>(ResultCode.Failure));
+
+            PackageScanner test = new PackageScanner(PlatformManagerMock.Object, PackageFactoryMock.Object);
+
+            IResult<IList<IPackageArchive>> result = test.ScanPackageArchives();
+
+            Assert.Equal(ResultCode.Warning, result.ResultCode);
+            Assert.Equal(0, result.ReturnValue.Count);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -111,6 +157,23 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// </summary>
         private void SetupMocks()
         {
+            IResult<IList<string>> listResult = new Result<IList<string>>()
+                .SetReturnValue(new List<string>(new[] { string.Empty }));
+
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>()))
+                .Returns(listResult);
+
+            Mock<IDirectories> directories = new Mock<IDirectories>();
+            directories.Setup(d => d.PackageArchives).Returns(string.Empty);
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+            PlatformManagerMock.Setup(p => p.Directories).Returns(directories.Object);
+
+            IResult<IPackageArchive> factoryResult = new Result<IPackageArchive>()
+                .SetReturnValue(PackageArchiveMock.Object);
+
+            PackageFactoryMock.Setup(p => p.GetPackageArchive(It.IsAny<string>()))
+                .Returns(factoryResult);
         }
 
         #endregion Private Methods
