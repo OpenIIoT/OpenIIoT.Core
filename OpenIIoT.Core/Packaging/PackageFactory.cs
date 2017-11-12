@@ -254,6 +254,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
+        [ExcludeFromCodeCoverage]
         private void ManifestExtractorUpdated(object sender, PackagingUpdateEventArgs e)
         {
             logger.Debug("     ManifestExtractor: " + e.Message);
@@ -264,6 +265,7 @@ namespace OpenIIoT.Core.Packaging
         /// </summary>
         /// <param name="sender">The event sender.</param>
         /// <param name="e">The event arguments.</param>
+        [ExcludeFromCodeCoverage]
         private void PackageVerifierUpdated(object sender, PackagingUpdateEventArgs e)
         {
             logger.Debug("     PackageVerifier: " + e.Message);

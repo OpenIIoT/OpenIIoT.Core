@@ -77,6 +77,9 @@ namespace OpenIIoT.Core.Tests.Packaging
             TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
             Directory.CreateDirectory(TempDirectory);
 
+            TempFile = Path.Combine(TempDirectory, "archive.zip");
+            File.WriteAllText(TempFile, string.Empty);
+
             PackageManifest = new PackageManifestBuilder().BuildDefault().Manifest;
 
             ManifestExtractorMock = new Mock<IManifestExtractor>();
@@ -133,6 +136,11 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// </summary>
         private string TempDirectory { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the temporary archive file.
+        /// </summary>
+        private string TempFile { get; set; }
+
         #endregion Private Properties
 
         #region Public Methods
@@ -173,6 +181,95 @@ namespace OpenIIoT.Core.Tests.Packaging
             Assert.Equal(ResultCode.Success, result.ResultCode);
             Assert.Equal(TempDirectory, result.ReturnValue.DirectoryName);
             Assert.Equal(fqn, result.ReturnValue.FQN);
+            Assert.Equal(PackageManifest.Name, result.ReturnValue.Manifest.Name);
+            Assert.Equal(PackageManifest.Namespace, result.ReturnValue.Manifest.Namespace);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageFactory.GetPackageArchive(string)"/> method.
+        /// </summary>
+        [Fact]
+        public void GetPackageArchive()
+        {
+            PackageFactory test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object);
+
+            IResult<IPackageArchive> result = test.GetPackageArchive(Guid.NewGuid().ToString());
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(PackageManifest.Name, result.ReturnValue.Manifest.Name);
+            Assert.Equal(PackageManifest.Namespace, result.ReturnValue.Manifest.Namespace);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageFactory.GetPackageArchive(string)"/> method with a simulated exception within the ManifestExtractor.
+        /// </summary>
+        [Fact]
+        public void GetPackageArchiveFailedExtraction()
+        {
+            ManifestExtractorMock.Setup(m => m.ExtractManifest(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(new Exception());
+
+            PackageFactory test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object);
+
+            IResult<IPackageArchive> result = test.GetPackageArchive(Guid.NewGuid().ToString());
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageFactory.GetPackageArchive(string)"/> method with with a PackageArchive which does not
+        ///     pass verification.
+        /// </summary>
+        [Fact]
+        public void GetPackageArchiveRefuted()
+        {
+            PackageVerifierMock.Setup(p => p.VerifyPackage(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(false);
+
+            PackageFactory test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object);
+
+            IResult<IPackageArchive> result = test.GetPackageArchive(Guid.NewGuid().ToString());
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(PackageVerification.Refuted, result.ReturnValue.Verification);
+            Assert.Equal(PackageManifest.Name, result.ReturnValue.Manifest.Name);
+            Assert.Equal(PackageManifest.Namespace, result.ReturnValue.Manifest.Namespace);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageFactory.GetPackageArchive(string)"/> method with a simulated exception within the PackageVerifier.
+        /// </summary>
+        [Fact]
+        public void GetPackageArchiveVerificationFailed()
+        {
+            PackageVerifierMock.Setup(p => p.VerifyPackage(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(new Exception());
+
+            PackageFactory test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object);
+
+            IResult<IPackageArchive> result = test.GetPackageArchive(Guid.NewGuid().ToString());
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(PackageVerification.Refuted, result.ReturnValue.Verification);
+            Assert.Equal(PackageManifest.Name, result.ReturnValue.Manifest.Name);
+            Assert.Equal(PackageManifest.Namespace, result.ReturnValue.Manifest.Namespace);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageFactory.GetPackageArchive(string)"/> method with a PackageArchive which passes verification.
+        /// </summary>
+        [Fact]
+        public void GetPackageArchiveVerified()
+        {
+            PackageVerifierMock.Setup(p => p.VerifyPackage(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(true);
+
+            PackageFactory test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object);
+
+            IResult<IPackageArchive> result = test.GetPackageArchive(Guid.NewGuid().ToString());
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(PackageVerification.Verified, result.ReturnValue.Verification);
             Assert.Equal(PackageManifest.Name, result.ReturnValue.Manifest.Name);
             Assert.Equal(PackageManifest.Namespace, result.ReturnValue.Manifest.Namespace);
         }
@@ -226,6 +323,9 @@ namespace OpenIIoT.Core.Tests.Packaging
             PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
 
             PackageMock.Setup(p => p.Manifest).Returns(PackageManifest);
+
+            ManifestExtractorMock.Setup(m => m.ExtractManifest(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(PackageManifest);
         }
 
         #endregion Private Methods
