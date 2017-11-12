@@ -119,7 +119,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         [Fact]
         public void ExtractManifest()
         {
-            PackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "package.zip"));
+            IPackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "package.zip"));
 
             Assert.NotNull(manifest);
             Assert.Equal("DefaultPlugin", manifest.Name);
@@ -223,7 +223,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
             string inputFile = Path.Combine(DataDirectory, "Package", "package.zip");
             string outputFile = Path.Combine(TempDirectory, "manifest.json");
 
-            PackageManifest manifest = Extractor.ExtractManifest(inputFile, outputFile);
+            IPackageManifest manifest = Extractor.ExtractManifest(inputFile, outputFile);
 
             Assert.True(File.Exists(outputFile));
         }
@@ -236,7 +236,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
         {
             Extractor.Updated += Extractor_Updated;
 
-            PackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "package.zip"));
+            IPackageManifest manifest = Extractor.ExtractManifest(Path.Combine(DataDirectory, "Package", "package.zip"));
 
             Assert.NotNull(manifest);
             Assert.Equal("DefaultPlugin", manifest.Name);

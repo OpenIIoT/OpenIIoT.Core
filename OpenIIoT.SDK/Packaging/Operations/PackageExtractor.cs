@@ -48,7 +48,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
     /// <summary>
     ///     Extracts Package files.
     /// </summary>
-    public class PackageExtractor : PackagingOperation
+    public class PackageExtractor : PackagingOperation, IPackageExtractor
     {
         #region Public Constructors
 

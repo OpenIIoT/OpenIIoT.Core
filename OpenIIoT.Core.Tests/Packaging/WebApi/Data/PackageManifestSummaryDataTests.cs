@@ -19,10 +19,19 @@
       █      ▄█    ███ ██   ██  ██  ██  ██  ██  ██  ██   ██   ██   ██  ██ ██   ██ ███   ▄███   ██   ██     ██      ██   ██
       █    ▄████████▀  ██████    █  ██  █    █  ██  █    ██   █▀   ██  ██  █████  ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used when returning Package Manifest objects.
+      █  Unit tests for the PackageManifestSummaryData class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,102 +57,114 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Packaging.WebApi.Data
+namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
 {
-    using System.Runtime.Serialization;
-    using Newtonsoft.Json;
-    using OpenIIoT.SDK.Common;
+    using Moq;
+    using OpenIIoT.Core.Packaging.WebApi.Data;
     using OpenIIoT.SDK.Packaging.Manifest;
+    using Xunit;
 
     /// <summary>
-    ///     Data Transfer Object used when returning Package Manifest objects.
+    ///     Unit tests for the <see cref="PackageManifestSummaryData"/> class.
     /// </summary>
-    [DataContract]
-    public class PackageManifestSummaryData
+    public class PackageManifestSummaryDataTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageManifestSummaryData"/> class with the specified <paramref name="packageManifest"/>.
+        ///     Initializes a new instance of the <see cref="PackageManifestSummaryDataTests"/> class.
         /// </summary>
-        /// <param name="packageManifest">The <see cref="IPackageManifest"/> instance from which to copy values.</param>
-        public PackageManifestSummaryData(IPackageManifest packageManifest)
+        public PackageManifestSummaryDataTests()
         {
-            this.CopyPropertyValuesFrom(packageManifest);
+            PackageManifestMock = new Mock<IPackageManifest>();
 
-            if (packageManifest.Signature != default(PackageManifestSignature))
-            {
-                Signature = new PackageManifestSummarySignatureData(packageManifest.Signature);
-            }
+            SetupMocks();
         }
 
         #endregion Public Constructors
 
-        #region Public Properties
+        #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the Package copyright.
+        ///     Gets or sets the IPackageManifest mockup.
         /// </summary>
-        [JsonProperty(Order = 6)]
-        [DataMember(Order = 6)]
-        public string Copyright { get; set; }
+        private Mock<IPackageManifest> PackageManifestMock { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
 
         /// <summary>
-        ///     Gets or sets the Package description.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        [JsonProperty(Order = 4)]
-        [DataMember(Order = 4)]
-        public string Description { get; set; }
+        [Fact]
+        public void Constructor()
+        {
+            PackageManifestSummaryData test = new PackageManifestSummaryData(PackageManifestMock.Object);
+
+            Assert.NotNull(test);
+            Assert.Equal("name", test.Name);
+            Assert.Equal("version", test.Version);
+            Assert.Equal("namespace", test.Namespace);
+            Assert.Equal("description", test.Description);
+            Assert.Equal("publisher", test.Publisher);
+            Assert.Equal("copyright", test.Copyright);
+            Assert.Equal("license", test.License);
+            Assert.Equal("url", test.Url);
+
+            Assert.NotNull(test.Signature);
+            Assert.Equal("issuer", test.Signature.Issuer);
+            Assert.Equal("subject", test.Signature.Subject);
+        }
 
         /// <summary>
-        ///     Gets or sets the Package license.
+        ///     Tests the constructor with a Manifest containing a null Signature.
         /// </summary>
-        [JsonProperty(Order = 7)]
-        [DataMember(Order = 7)]
-        public string License { get; set; }
+        [Fact]
+        public void ConstructorNullSignature()
+        {
+            PackageManifestMock.Setup(p => p.Signature).Returns(default(PackageManifestSignature));
+
+            PackageManifestSummaryData test = new PackageManifestSummaryData(PackageManifestMock.Object);
+
+            Assert.NotNull(test);
+            Assert.Equal("name", test.Name);
+            Assert.Equal("version", test.Version);
+            Assert.Equal("namespace", test.Namespace);
+            Assert.Equal("description", test.Description);
+            Assert.Equal("publisher", test.Publisher);
+            Assert.Equal("copyright", test.Copyright);
+            Assert.Equal("license", test.License);
+            Assert.Equal("url", test.Url);
+
+            Assert.Null(test.Signature);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         /// <summary>
-        ///     Gets or sets the Package name.
+        ///     Configures the mockups for the unit tests.
         /// </summary>
-        [JsonProperty(Order = 1)]
-        [DataMember(Order = 1)]
-        public string Name { get; set; }
+        private void SetupMocks()
+        {
+            PackageManifestMock.Setup(p => p.Name).Returns("name");
+            PackageManifestMock.Setup(p => p.Version).Returns("version");
+            PackageManifestMock.Setup(p => p.Namespace).Returns("namespace");
+            PackageManifestMock.Setup(p => p.Description).Returns("description");
+            PackageManifestMock.Setup(p => p.Publisher).Returns("publisher");
+            PackageManifestMock.Setup(p => p.Copyright).Returns("copyright");
+            PackageManifestMock.Setup(p => p.License).Returns("license");
+            PackageManifestMock.Setup(p => p.Url).Returns("url");
+            PackageManifestMock.Setup(p => p.Signature)
+                .Returns(new PackageManifestSignature()
+                {
+                    Issuer = "issuer",
+                    Subject = "subject",
+                });
+        }
 
-        /// <summary>
-        ///     Gets or sets the Package namespace.
-        /// </summary>
-        [JsonProperty(Order = 3)]
-        [DataMember(Order = 3)]
-        public string Namespace { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package publisher.
-        /// </summary>
-        [JsonProperty(Order = 5)]
-        [DataMember(Order = 5)]
-        public string Publisher { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package Signature.
-        /// </summary>
-        [JsonProperty(Order = 9)]
-        [DataMember(Order = 9)]
-        public PackageManifestSummarySignatureData Signature { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package url.
-        /// </summary>
-        [JsonProperty(Order = 8)]
-        [DataMember(Order = 8)]
-        public string Url { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package version.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        [DataMember(Order = 2)]
-        public string Version { get; set; }
-
-        #endregion Public Properties
+        #endregion Private Methods
     }
 }

@@ -41,6 +41,7 @@
 
 namespace OpenIIoT.SDK.Packaging
 {
+    using System.ComponentModel.DataAnnotations;
     using System.Runtime.Serialization;
     using Newtonsoft.Json;
 
@@ -64,6 +65,7 @@ namespace OpenIIoT.SDK.Packaging
         /// </summary>
         [JsonProperty(Order = 3)]
         [DataMember(Order = 3)]
+        [RegularExpression(PackagingConstants.KeyRegEx)]
         public string PublicKey { get; set; }
 
         /// <summary>

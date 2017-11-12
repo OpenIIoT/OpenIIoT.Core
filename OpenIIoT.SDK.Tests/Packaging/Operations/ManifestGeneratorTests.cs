@@ -136,7 +136,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
             File.WriteAllText(Path.Combine(TempDirectory, "binary.dll"), " ");
             File.WriteAllText(Path.Combine(TempDirectory, "resource.bmp"), " ");
 
-            PackageManifest manifest = Generator.GenerateManifest(TempDirectory, false);
+            IPackageManifest manifest = Generator.GenerateManifest(TempDirectory, false);
 
             Assert.NotEmpty(manifest.Files);
             Assert.Equal(3, manifest.Files.Count);
@@ -174,7 +174,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
             File.WriteAllText(Path.Combine(TempDirectory, "binary.dll"), " ");
             File.WriteAllText(Path.Combine(TempDirectory, "resource.bmp"), " ");
 
-            PackageManifest manifest = Generator.GenerateManifest(TempDirectory, true, Path.Combine(TempDirectory, "manifest.json"));
+            IPackageManifest manifest = Generator.GenerateManifest(TempDirectory, true, Path.Combine(TempDirectory, "manifest.json"));
 
             Assert.NotEmpty(manifest.Files);
             Assert.Equal(3, manifest.Files.Count);
@@ -195,7 +195,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
             File.WriteAllText(Path.Combine(TempDirectory, "binary.dll"), " ");
             File.WriteAllText(Path.Combine(TempDirectory, "resource.bmp"), " ");
 
-            PackageManifest manifest = Generator.GenerateManifest(TempDirectory, true);
+            IPackageManifest manifest = Generator.GenerateManifest(TempDirectory, true);
 
             Assert.NotEmpty(manifest.Files);
             Assert.Equal(3, manifest.Files.Count);
@@ -218,7 +218,7 @@ namespace OpenIIoT.SDK.Tests.Packaging.Operations
             File.WriteAllText(Path.Combine(TempDirectory, "binary.dll"), " ");
             File.WriteAllText(Path.Combine(TempDirectory, "resource.bmp"), " ");
 
-            PackageManifest manifest = Generator.GenerateManifest(TempDirectory);
+            IPackageManifest manifest = Generator.GenerateManifest(TempDirectory);
 
             Assert.NotEmpty(manifest.Files);
             Assert.Equal(3, manifest.Files.Count);

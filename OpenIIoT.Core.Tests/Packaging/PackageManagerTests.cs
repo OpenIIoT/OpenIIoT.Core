@@ -1025,6 +1025,9 @@ namespace OpenIIoT.Core.Tests.Packaging
 
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
 
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
+
             IResult result = test.Start();
 
             Assert.NotEqual(ResultCode.Failure, result.ResultCode);
@@ -1054,6 +1057,9 @@ namespace OpenIIoT.Core.Tests.Packaging
             ManagerMock.Setup(a => a.IsInState(State.Starting, State.Running)).Returns(true);
 
             IPackageManager test = PackageManager.Instantiate(ManagerMock.Object, PlatformManagerMock.Object);
+
+            test.Inject("PackageFactory", PackageFactoryMock.Object);
+            test.Inject("PackageScanner", PackageScannerMock.Object);
 
             IResult result = test.Start();
 

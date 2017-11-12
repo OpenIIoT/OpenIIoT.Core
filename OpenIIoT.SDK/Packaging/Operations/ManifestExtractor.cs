@@ -50,7 +50,7 @@ namespace OpenIIoT.SDK.Packaging.Operations
     using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
-    ///     Extracts <see cref="PackageManifest"/> objects from Packages.
+    ///     Extracts <see cref="IPackageManifest"/> objects from Packages.
     /// </summary>
     public class ManifestExtractor : PackagingOperation, IManifestExtractor
     {
@@ -69,12 +69,12 @@ namespace OpenIIoT.SDK.Packaging.Operations
         #region Public Methods
 
         /// <summary>
-        ///     Extracts the <see cref="PackageManifest"/> object from the specified Package file.
+        ///     Extracts the <see cref="IPackageManifest"/> object from the specified Package file.
         /// </summary>
         /// <param name="packageFile">The Package from which the manifest is to be extracted.</param>
         /// <param name="manifestFile">The filename of the file to which the manifest is to be saved.</param>
         /// <returns>The extracted manifest object.</returns>
-        public PackageManifest ExtractManifest(string packageFile, string manifestFile = "")
+        public IPackageManifest ExtractManifest(string packageFile, string manifestFile = "")
         {
             ArgumentValidator.ValidatePackageFileArgumentForReading(packageFile);
 

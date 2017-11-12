@@ -106,9 +106,13 @@
     <Compile Include="Packaging\Operations\ArgumentValidator.cs" />
     <Compile Include="Packaging\Operations\IManifestExtractor.cs" />
     <Compile Include="Packaging\Operations\ManifestExtractor.cs" />
+    <Compile Include="Packaging\Operations\IManifestGenerator.cs" />
     <Compile Include="Packaging\Operations\ManifestGenerator.cs" />
+    <Compile Include="Packaging\Operations\IPackageCreator.cs" />
     <Compile Include="Packaging\Operations\PackageCreator.cs" />
+    <Compile Include="Packaging\Operations\IPackageExtractor.cs" />
     <Compile Include="Packaging\Operations\PackageExtractor.cs" />
+    <Compile Include="Packaging\Operations\IPackageTruster.cs" />
     <Compile Include="Packaging\Operations\PackageTruster.cs" />
     <Compile Include="Packaging\Operations\IPackageVerifier.cs" />
     <Compile Include="Packaging\Operations\PackageVerifier.cs" />

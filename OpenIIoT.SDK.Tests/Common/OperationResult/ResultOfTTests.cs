@@ -48,12 +48,13 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Common.OperationResult.Tests
+namespace OpenIIoT.SDK.Tests.Common.OperationResult
 {
     using System.Linq;
     using NLog;
     using NLog.Config;
     using NLog.Targets;
+    using OpenIIoT.SDK.Common.OperationResult;
     using Xunit;
 
     /// <summary>

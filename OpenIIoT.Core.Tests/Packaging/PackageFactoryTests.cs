@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄
-      █    ▄██▀▀▀███▀▀▀██▄
-      █    ███   ███   ███    ▄█████   ▄█████   ▄█████   ▄█████     ▄████▄     ▄█████
-      █    ███   ███   ███   ██   █    ██  ▀    ██  ▀    ██   ██   ██    ▀    ██   █
-      █    ███   ███   ███  ▄██▄▄      ██       ██       ██   ██  ▄██        ▄██▄▄
-      █    ███   ███   ███ ▀▀██▀▀    ▀███████ ▀███████ ▀████████ ▀▀██ ███▄  ▀▀██▀▀
-      █    ███   ███   ███   ██   █     ▄  ██    ▄  ██   ██   ██   ██    ██   ██   █
-      █     ▀█   ███   █▀    ███████  ▄████▀   ▄████▀    ██   █▀   ██████▀    ███████
+      █      ▄███████▄                                                                 ▄████████
+      █     ███    ███                                                                ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████   ███    █▀    ▄█████   ▄██████     ██     ██████     █████ ▄█   ▄
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ▄███▄▄▄       ██   ██ ██    ██ ▀███████▄ ██    ██   ██  ██ ██   █▄
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄    ▀▀███▀▀▀       ██   ██ ██    ▀      ██  ▀ ██    ██  ▄██▄▄█▀ ▀▀▀▀▀██
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀      ███        ▀████████ ██    ▄      ██    ██    ██ ▀███████ ▄█   ██
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █    ███          ██   ██ ██    ██     ██    ██    ██   ██  ██ ██   ██
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ███          ██   █▀ ██████▀     ▄██▀    ██████    ██  ██  █████
       █
       █       ███
       █   ▀█████████▄
@@ -22,7 +22,7 @@
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Unit tests for the Message class.
+      █  Unit tests for the PackageFactory class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,51 +48,63 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.SDK.Tests.Common.OperationResult
+namespace OpenIIoT.Core.Tests.Packaging
 {
-    using OpenIIoT.SDK.Common.OperationResult;
+    using Moq;
+    using OpenIIoT.Core.Packaging;
+    using OpenIIoT.SDK.Packaging.Operations;
+    using OpenIIoT.SDK.Platform;
     using Xunit;
 
     /// <summary>
-    ///     Unit tests for the <see cref="Message"/> class.
+    ///     Unit tests for the <see cref="PackageFactory"/> class.
     /// </summary>
-    public class MessageTests
+    public class PackageFactoryTests
     {
-        #region Public Methods
+        #region Public Constructors
 
         /// <summary>
-        ///     Tests the constructor of <see cref="Message"/>.
+        ///     Initializes a new instance of the <see cref="PackageFactoryTests"/> class.
         /// </summary>
-        [Fact]
-        public void Constructor()
+        public PackageFactoryTests()
         {
-            Message testblank = new Message();
+            ManifestExtractorMock = new Mock<IManifestExtractor>();
+            PackageVerifierMock = new Mock<IPackageVerifier>();
+            PlatformManagerMock = new Mock<IPlatformManager>();
 
-            Assert.Equal(MessageType.Info, testblank.Type);
-            Assert.Equal(string.Empty, testblank.Text);
-
-            Message testtype = new Message(MessageType.Warning);
-
-            Assert.Equal(MessageType.Warning, testtype.Type);
-            Assert.Equal(string.Empty, testtype.Text);
-
-            Message test = new Message(MessageType.Error, "test!");
-
-            Assert.Equal(MessageType.Error, test.Type);
-            Assert.Equal("test!", test.Text);
+            SetupMocks();
         }
+
+        #endregion Public Constructors
+
+        #region Private Properties
 
         /// <summary>
-        ///     Tests <see cref="Message.ToString"/>.
+        ///     Gets or sets the IManifestExtractor mockup.
         /// </summary>
-        [Fact]
-        public void ToStringTest()
-        {
-            Message test = new Message(MessageType.Info, "Test");
+        private Mock<IManifestExtractor> ManifestExtractorMock { get; set; }
 
-            Assert.Equal("[INFO] Test", test.ToString());
+        /// <summary>
+        ///     Gets or sets the IPackageVerifier mockup.
+        /// </summary>
+        private Mock<IPackageVerifier> PackageVerifierMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets IPlatformManager mockup.
+        /// </summary>
+        private Mock<IPlatformManager> PlatformManagerMock { get; set; }
+
+        #endregion Private Properties
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Configures the mockups for the unit tests.
+        /// </summary>
+        private void SetupMocks()
+        {
         }
 
-        #endregion Public Methods
+        #endregion Private Methods
     }
 }

@@ -1,14 +1,14 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄███████▄                                                                 ▄▄▄▄███▄▄▄▄
-      █     ███    ███                                                               ▄██▀▀▀███▀▀▀██▄
-      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████  ███   ███   ███   ▄█████  ██▄▄▄▄   █     ▄█████    ▄█████   ▄█████     ██
-      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █   ███   ███   ███   ██   ██ ██▀▀▀█▄ ██    ██   ▀█   ██   █    ██  ▀  ▀███████▄
-      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄     ███   ███   ███   ██   ██ ██   ██ ██▌  ▄██▄▄     ▄██▄▄      ██         ██  ▀
-      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀     ███   ███   ███ ▀████████ ██   ██ ██  ▀▀██▀▀    ▀▀██▀▀    ▀███████     ██
-      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █   ███   ███   ███   ██   ██ ██   ██ ██    ██        ██   █     ▄  ██     ██
-      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████   ▀█   ███   █▀    ██   █▀  █   █  █     ██        ███████  ▄████▀     ▄██▀
+      █      ▄███████▄
+      █     ███    ███
+      █     ███    ███   ▄█████   ▄██████    █  █▄     ▄█████     ▄████▄     ▄█████
+      █     ███    ███   ██   ██ ██    ██   ██ ▄██▀    ██   ██   ██    ▀    ██   █
+      █   ▀█████████▀    ██   ██ ██    ▀    ██▐█▀      ██   ██  ▄██        ▄██▄▄
+      █     ███        ▀████████ ██    ▄  ▀▀████     ▀████████ ▀▀██ ███▄  ▀▀██▀▀
+      █     ███          ██   ██ ██    ██   ██ ▀██▄    ██   ██   ██    ██   ██   █
+      █    ▄████▀        ██   █▀ ██████▀    ▀█   ▀█▀   ██   █▀   ██████▀    ███████
       █
       █      ▄████████                                                            ████████▄
       █     ███    ███                                                            ███   ▀███
@@ -19,10 +19,19 @@
       █      ▄█    ███ ██   ██  ██  ██  ██  ██  ██  ██   ██   ██   ██  ██ ██   ██ ███   ▄███   ██   ██     ██      ██   ██
       █    ▄████████▀  ██████    █  ██  █    █  ██  █    ██   █▀   ██  ██  █████  ████████▀    ██   █▀    ▄██▀     ██   █▀
       █
+      █       ███
+      █   ▀█████████▄
+      █      ▀███▀▀██    ▄█████   ▄█████     ██      ▄█████
+      █       ███   ▀   ██   █    ██  ▀  ▀███████▄   ██  ▀
+      █       ███      ▄██▄▄      ██         ██  ▀   ██
+      █       ███     ▀▀██▀▀    ▀███████     ██    ▀███████
+      █       ███       ██   █     ▄  ██     ██       ▄  ██
+      █      ▄████▀     ███████  ▄████▀     ▄██▀    ▄████▀
+      █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object used when returning Package Manifest objects.
+      █  Unit tests for the PackageSummaryData class.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -48,102 +57,87 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Packaging.WebApi.Data
+namespace OpenIIoT.Core.Tests.Packaging.WebApi.Data
 {
-    using System.Runtime.Serialization;
-    using Newtonsoft.Json;
-    using OpenIIoT.SDK.Common;
+    using System;
+    using Moq;
+    using OpenIIoT.Core.Packaging.WebApi.Data;
+    using OpenIIoT.SDK.Packaging;
     using OpenIIoT.SDK.Packaging.Manifest;
+    using Xunit;
 
     /// <summary>
-    ///     Data Transfer Object used when returning Package Manifest objects.
+    ///     Unit tests for the <see cref="PackageSummaryData"/> class.
     /// </summary>
-    [DataContract]
-    public class PackageManifestSummaryData
+    public class PackageSummaryDataTests
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageManifestSummaryData"/> class with the specified <paramref name="packageManifest"/>.
+        ///     Initializes a new instance of the <see cref="PackageSummaryDataTests"/> class.
         /// </summary>
-        /// <param name="packageManifest">The <see cref="IPackageManifest"/> instance from which to copy values.</param>
-        public PackageManifestSummaryData(IPackageManifest packageManifest)
+        public PackageSummaryDataTests()
         {
-            this.CopyPropertyValuesFrom(packageManifest);
+            PackageManifestMock = new Mock<IPackageManifest>();
+            PackageMock = new Mock<IPackage>();
 
-            if (packageManifest.Signature != default(PackageManifestSignature))
-            {
-                Signature = new PackageManifestSummarySignatureData(packageManifest.Signature);
-            }
+            SetupMocks();
         }
 
         #endregion Public Constructors
 
-        #region Public Properties
+        #region Private Properties
 
         /// <summary>
-        ///     Gets or sets the Package copyright.
+        ///     Gets or sets the IPackageManifest mockup.
         /// </summary>
-        [JsonProperty(Order = 6)]
-        [DataMember(Order = 6)]
-        public string Copyright { get; set; }
+        private Mock<IPackageManifest> PackageManifestMock { get; set; }
 
         /// <summary>
-        ///     Gets or sets the Package description.
+        ///     Gets or sets the IPackage mockup.
         /// </summary>
-        [JsonProperty(Order = 4)]
-        [DataMember(Order = 4)]
-        public string Description { get; set; }
+        private Mock<IPackage> PackageMock { get; set; }
+
+        #endregion Private Properties
+
+        #region Public Methods
 
         /// <summary>
-        ///     Gets or sets the Package license.
+        ///     Tests the constructor and all properties.
         /// </summary>
-        [JsonProperty(Order = 7)]
-        [DataMember(Order = 7)]
-        public string License { get; set; }
+        [Fact]
+        public void Constructor()
+        {
+            PackageSummaryData test = new PackageSummaryData(PackageMock.Object);
+
+            Assert.IsType<PackageSummaryData>(test);
+            Assert.NotNull(test);
+
+            Assert.Equal("name.namespace", test.FQN);
+            Assert.Equal("directoryName", test.DirectoryName);
+            Assert.Equal(PackageMock.Object.InstalledOn, test.InstalledOn);
+            Assert.Equal("name", test.Manifest.Name);
+            Assert.Equal("namespace", test.Manifest.Namespace);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         /// <summary>
-        ///     Gets or sets the Package name.
+        ///     Configures the mockups for the unit tests.
         /// </summary>
-        [JsonProperty(Order = 1)]
-        [DataMember(Order = 1)]
-        public string Name { get; set; }
+        private void SetupMocks()
+        {
+            PackageManifestMock.Setup(p => p.Name).Returns("name");
+            PackageManifestMock.Setup(p => p.Namespace).Returns("namespace");
 
-        /// <summary>
-        ///     Gets or sets the Package namespace.
-        /// </summary>
-        [JsonProperty(Order = 3)]
-        [DataMember(Order = 3)]
-        public string Namespace { get; set; }
+            PackageMock.Setup(p => p.DirectoryName).Returns("directoryName");
+            PackageMock.Setup(p => p.FQN).Returns("name.namespace");
+            PackageMock.Setup(p => p.InstalledOn).Returns(DateTime.Now);
+            PackageMock.Setup(p => p.Manifest).Returns(PackageManifestMock.Object);
+        }
 
-        /// <summary>
-        ///     Gets or sets the Package publisher.
-        /// </summary>
-        [JsonProperty(Order = 5)]
-        [DataMember(Order = 5)]
-        public string Publisher { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package Signature.
-        /// </summary>
-        [JsonProperty(Order = 9)]
-        [DataMember(Order = 9)]
-        public PackageManifestSummarySignatureData Signature { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package url.
-        /// </summary>
-        [JsonProperty(Order = 8)]
-        [DataMember(Order = 8)]
-        public string Url { get; set; }
-
-        /// <summary>
-        ///     Gets or sets the Package version.
-        /// </summary>
-        [JsonProperty(Order = 2)]
-        [DataMember(Order = 2)]
-        public string Version { get; set; }
-
-        #endregion Public Properties
+        #endregion Private Methods
     }
 }

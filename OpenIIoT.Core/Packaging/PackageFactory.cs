@@ -51,8 +51,6 @@ namespace OpenIIoT.Core.Packaging
     using OpenIIoT.SDK.Packaging.Manifest;
     using OpenIIoT.SDK.Packaging.Operations;
     using OpenIIoT.SDK.Platform;
-    using NLog;
-    using System.Net;
 
     /// <summary>
     ///     Creates instances of <see cref="IPackage"/> and <see cref="IPackageFactory"/> from disk.
@@ -71,18 +69,10 @@ namespace OpenIIoT.Core.Packaging
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="PackageFactory"/> class.
-        /// </summary>
-        [ExcludeFromCodeCoverage]
-        public PackageFactory()
-            : this(ApplicationManager.GetInstance().GetManager<IPlatformManager>(), new ManifestExtractor(), new PackageVerifier())
-        {
-        }
-
-        /// <summary>
         ///     Initializes a new instance of the <see cref="PackageFactory"/> class with the specified <paramref name="platformManager"/>.
         /// </summary>
         /// <param name="platformManager">The <see cref="IPlatformManager"/> instance for the application.</param>
+        [ExcludeFromCodeCoverage]
         public PackageFactory(IPlatformManager platformManager)
             : this(platformManager, new ManifestExtractor(), new PackageVerifier())
         {
@@ -190,7 +180,7 @@ namespace OpenIIoT.Core.Packaging
 
             ManifestExtractor.Updated += ManifestExtractorUpdated;
 
-            PackageManifest manifest;
+            IPackageManifest manifest;
             FileInfo fileInfo;
 
             try

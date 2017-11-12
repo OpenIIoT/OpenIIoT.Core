@@ -42,8 +42,8 @@
 namespace OpenIIoT.SDK.Packaging
 {
     using System;
-    using OpenIIoT.SDK.Packaging.Manifest;
     using System.Collections.Generic;
+    using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
     ///     Represents an installable extension archive.
@@ -52,8 +52,14 @@ namespace OpenIIoT.SDK.Packaging
     {
         #region Public Properties
 
+        /// <summary>
+        ///     Gets the fully qualified name of the directory in which the Package resides.
+        /// </summary>
         string DirectoryName { get; }
 
+        /// <summary>
+        ///     Gets the list of files contained within the Package directory.
+        /// </summary>
         IList<string> Files { get; }
 
         /// <summary>
@@ -61,6 +67,9 @@ namespace OpenIIoT.SDK.Packaging
         /// </summary>
         string FQN { get; }
 
+        /// <summary>
+        ///     Gets the time at which the archive was last modified, according to the host filesystem.
+        /// </summary>
         DateTime InstalledOn { get; }
 
         /// <summary>
