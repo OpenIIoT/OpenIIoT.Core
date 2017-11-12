@@ -158,6 +158,23 @@ namespace OpenIIoT.Core.Tests.Packaging
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackageScanner.ScanPackageArchives"/> method with a failure to list files.
+        /// </summary>
+        [Fact]
+        public void ScanPackageArchivesListFailure()
+        {
+            PlatformMock.Setup(p => p.ListFiles(It.IsAny<string>()))
+                .Returns(new Result<IList<string>>(ResultCode.Failure));
+
+            PackageScanner test = new PackageScanner(PlatformManagerMock.Object, PackageFactoryMock.Object);
+
+            IResult<IList<IPackageArchive>> result = test.ScanPackageArchives();
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+            Assert.Equal(0, result.ReturnValue.Count);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackageScanner.ScanPackages"/> method.
         /// </summary>
         [Fact]
@@ -186,6 +203,23 @@ namespace OpenIIoT.Core.Tests.Packaging
             IResult<IList<IPackage>> result = test.ScanPackages();
 
             Assert.Equal(ResultCode.Warning, result.ResultCode);
+            Assert.Equal(0, result.ReturnValue.Count);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageScanner.ScanPackages"/> method with a failure to list directories.
+        /// </summary>
+        [Fact]
+        public void ScanPackagesListFailure()
+        {
+            PlatformMock.Setup(p => p.ListDirectories(It.IsAny<string>()))
+                .Returns(new Result<IList<string>>(ResultCode.Failure));
+
+            PackageScanner test = new PackageScanner(PlatformManagerMock.Object, PackageFactoryMock.Object);
+
+            IResult<IList<IPackage>> result = test.ScanPackages();
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
             Assert.Equal(0, result.ReturnValue.Count);
         }
 
