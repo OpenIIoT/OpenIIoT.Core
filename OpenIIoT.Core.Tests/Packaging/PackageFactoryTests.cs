@@ -50,8 +50,14 @@
 
 namespace OpenIIoT.Core.Tests.Packaging
 {
+    using System;
+    using System.IO;
     using Moq;
+    using Newtonsoft.Json;
     using OpenIIoT.Core.Packaging;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
     using OpenIIoT.SDK.Packaging.Operations;
     using OpenIIoT.SDK.Platform;
     using Xunit;
@@ -59,7 +65,7 @@ namespace OpenIIoT.Core.Tests.Packaging
     /// <summary>
     ///     Unit tests for the <see cref="PackageFactory"/> class.
     /// </summary>
-    public class PackageFactoryTests
+    public class PackageFactoryTests : IDisposable
     {
         #region Public Constructors
 
@@ -68,9 +74,17 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// </summary>
         public PackageFactoryTests()
         {
+            TempDirectory = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+            Directory.CreateDirectory(TempDirectory);
+
+            PackageManifest = new PackageManifestBuilder().BuildDefault().Manifest;
+
             ManifestExtractorMock = new Mock<IManifestExtractor>();
             PackageVerifierMock = new Mock<IPackageVerifier>();
+            PlatformMock = new Mock<IPlatform>();
             PlatformManagerMock = new Mock<IPlatformManager>();
+            PackageMock = new Mock<IPackage>();
+            PackageArchiveMock = new Mock<IPackageArchive>();
 
             SetupMocks();
         }
@@ -85,16 +99,117 @@ namespace OpenIIoT.Core.Tests.Packaging
         private Mock<IManifestExtractor> ManifestExtractorMock { get; set; }
 
         /// <summary>
+        ///     Gets or sets the IPackageArchive mockup.
+        /// </summary>
+        private Mock<IPackageArchive> PackageArchiveMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackageManifest instance.
+        /// </summary>
+        private IPackageManifest PackageManifest { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackage mockup.
+        /// </summary>
+        private Mock<IPackage> PackageMock { get; set; }
+
+        /// <summary>
         ///     Gets or sets the IPackageVerifier mockup.
         /// </summary>
         private Mock<IPackageVerifier> PackageVerifierMock { get; set; }
 
         /// <summary>
-        ///     Gets or sets IPlatformManager mockup.
+        ///     Gets or sets the IPlatformManager mockup.
         /// </summary>
         private Mock<IPlatformManager> PlatformManagerMock { get; set; }
 
+        /// <summary>
+        ///     Gets or sets the IPlatform mockup.
+        /// </summary>
+        private Mock<IPlatform> PlatformMock { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the temporary directory.
+        /// </summary>
+        private string TempDirectory { get; set; }
+
         #endregion Private Properties
+
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor and all properties.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            PackageFactory test;
+
+            Exception ex = Record.Exception(() => test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object));
+
+            Assert.Null(ex);
+        }
+
+        /// <summary>
+        ///     Disposes this instance.
+        /// </summary>
+        public void Dispose()
+        {
+            Directory.Delete(TempDirectory, true);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageFactory.GetPackage(string)"/> method.
+        /// </summary>
+        [Fact]
+        public void GetPackage()
+        {
+            PackageFactory test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object);
+
+            IResult<IPackage> result = test.GetPackage(TempDirectory);
+
+            string fqn = PackageManifest.Namespace + "." + PackageManifest.Name;
+
+            Assert.Equal(ResultCode.Success, result.ResultCode);
+            Assert.Equal(TempDirectory, result.ReturnValue.DirectoryName);
+            Assert.Equal(fqn, result.ReturnValue.FQN);
+            Assert.Equal(PackageManifest.Name, result.ReturnValue.Manifest.Name);
+            Assert.Equal(PackageManifest.Namespace, result.ReturnValue.Manifest.Namespace);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageFactory.GetPackage(string)"/> method with a known bad .manifest.json file.
+        /// </summary>
+        [Fact]
+        public void GetPackageBadManifest()
+        {
+            PlatformMock.Setup(p => p.ReadFileText(It.IsAny<string>()))
+                .Returns(new Result<string>().SetReturnValue("{"));
+
+            PackageFactory test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object);
+
+            IResult<IPackage> result = test.GetPackage(TempDirectory);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackageFactory.GetPackage(string)"/> method with a failing file read.
+        /// </summary>
+        [Fact]
+        public void GetPackageFailedManifestRead()
+        {
+            PlatformMock.Setup(p => p.ReadFileText(It.IsAny<string>()))
+                .Returns(new Result<string>(ResultCode.Failure));
+
+            PackageFactory test = new PackageFactory(PlatformManagerMock.Object, ManifestExtractorMock.Object, PackageVerifierMock.Object);
+
+            IResult<IPackage> result = test.GetPackage(TempDirectory);
+
+            Assert.Equal(ResultCode.Failure, result.ResultCode);
+        }
+
+        #endregion Public Methods
 
         #region Private Methods
 
@@ -103,6 +218,14 @@ namespace OpenIIoT.Core.Tests.Packaging
         /// </summary>
         private void SetupMocks()
         {
+            string manifestString = JsonConvert.SerializeObject(PackageManifest);
+
+            PlatformMock.Setup(p => p.ReadFileText(It.IsAny<string>()))
+                .Returns(new Result<string>().SetReturnValue(manifestString));
+
+            PlatformManagerMock.Setup(p => p.Platform).Returns(PlatformMock.Object);
+
+            PackageMock.Setup(p => p.Manifest).Returns(PackageManifest);
         }
 
         #endregion Private Methods
