@@ -50,7 +50,10 @@
 
 namespace OpenIIoT.Core.Tests.Packaging.WebApi
 {
+    using Moq;
     using OpenIIoT.Core.Packaging.WebApi;
+    using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Packaging;
     using Xunit;
 
     /// <summary>
@@ -58,5 +61,44 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
     /// </summary>
     public class PackagingControllerTests
     {
+        #region Public Constructors
+
+        /// <summary>
+        ///     Initializes a new instance of the <see cref="PackagingControllerTests"/> class.
+        /// </summary>
+        public PackagingControllerTests()
+        {
+            Manager = new Mock<IApplicationManager>();
+            PackageManager = new Mock<IPackageManager>();
+
+            SetupMocks();
+        }
+
+        #endregion Public Constructors
+
+        #region Private Properties
+
+        /// <summary>
+        ///     Gets or sets the <see cref="IApplicationManager"/> mockup.
+        /// </summary>
+        private Mock<IApplicationManager> Manager { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the <see cref="IPackageManager"/> mockup.
+        /// </summary>
+        private Mock<IPackageManager> PackageManager { get; set; }
+
+        #endregion Private Properties
+
+        #region Private Methods
+
+        /// <summary>
+        ///     Configures the mockups.
+        /// </summary>
+        private void SetupMocks()
+        {
+        }
+
+        #endregion Private Methods
     }
 }
