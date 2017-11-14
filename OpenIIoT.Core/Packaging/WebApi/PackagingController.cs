@@ -43,6 +43,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -66,26 +67,35 @@ namespace OpenIIoT.Core.Packaging.WebApi
     [RoutePrefix("v1/packaging")]
     public class PackagingController : ApiBaseController
     {
-        #region Private Fields
+        #region Public Constructors
 
         /// <summary>
-        ///     The default serialization properties for an AppPackage.
+        ///     Initializes a new instance of the <see cref="PackagingController"/> class.
         /// </summary>
-        private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { "Files" });
+        [ExcludeFromCodeCoverage]
+        public PackagingController()
+            : base(ApplicationManager.GetInstance())
+        {
+        }
 
         /// <summary>
-        ///     The ApplicationManager for the application.
+        ///     Initializes a new instance of the <see cref="PackagingController"/> class with the specified
+        ///     <see cref="IApplicationManager"/> instance.
         /// </summary>
-        private IApplicationManager manager = ApplicationManager.GetInstance();
+        /// <param name="manager">The IApplicationManager instance used to resolve dependencies.</param>
+        public PackagingController(IApplicationManager manager)
+            : base(manager)
+        {
+        }
 
-        #endregion Private Fields
+        #endregion Public Constructors
 
         #region Private Properties
 
         /// <summary>
         ///     Gets the PackageManager for the application.
         /// </summary>
-        private IPackageManager PackageManager => manager.GetManager<IPackageManager>();
+        private IPackageManager PackageManager => Manager.GetManager<IPackageManager>();
 
         #endregion Private Properties
 
@@ -372,7 +382,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if ((bool)scan)
             {
-                IResult scanResult = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
+                IResult scanResult = await PackageManager.ScanPackagesAsync();
 
                 if (scanResult.ResultCode == ResultCode.Failure)
                 {
