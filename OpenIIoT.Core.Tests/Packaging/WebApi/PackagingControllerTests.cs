@@ -50,11 +50,17 @@
 
 namespace OpenIIoT.Core.Tests.Packaging.WebApi
 {
+    using System;
     using Moq;
     using OpenIIoT.Core.Packaging.WebApi;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Packaging;
     using Xunit;
+    using System.Net.Http;
+    using OpenIIoT.SDK.Common.OperationResult;
+    using System.Net;
+    using OpenIIoT.Core.Packaging;
+    using System.Web.Http;
 
     /// <summary>
     ///     Unit tests for the <see cref="PackagingController"/> class.
@@ -70,6 +76,11 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         {
             Manager = new Mock<IApplicationManager>();
             PackageManager = new Mock<IPackageManager>();
+            PackageArchive = new Mock<IPackageArchive>();
+
+            Controller = new PackagingController(Manager.Object);
+            Controller.Request = new HttpRequestMessage();
+            Controller.Configuration = new HttpConfiguration();
 
             SetupMocks();
         }
@@ -79,9 +90,19 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         #region Private Properties
 
         /// <summary>
+        ///     Gets or sets the WebApi Controller under test.
+        /// </summary>
+        private PackagingController Controller { get; set; }
+
+        /// <summary>
         ///     Gets or sets the <see cref="IApplicationManager"/> mockup.
         /// </summary>
         private Mock<IApplicationManager> Manager { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackageArchive mockup.
+        /// </summary>
+        private Mock<IPackageArchive> PackageArchive { get; set; }
 
         /// <summary>
         ///     Gets or sets the <see cref="IPackageManager"/> mockup.
@@ -90,6 +111,78 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
 
         #endregion Private Properties
 
+        #region Public Methods
+
+        /// <summary>
+        ///     Tests the constructor.
+        /// </summary>
+        [Fact]
+        public void Constructor()
+        {
+            PackagingController test;
+
+            Exception ex = Record.Exception(() => test = new PackagingController(Manager.Object));
+
+            Assert.Null(ex);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesAdd(string)"/> method.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesAdd()
+        {
+            string data = "dGVzdA==";
+
+            HttpResponseMessage response = await Controller.PackageArchivesAdd(data);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesAdd(string)"/> method with known bad data.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesAddBadData()
+        {
+            string data = "not base64";
+
+            HttpResponseMessage response = await Controller.PackageArchivesAdd(data);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesAdd(string)"/> method with a simulated failure.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesAddFailure()
+        {
+            string data = "dGVzdA==";
+
+            PackageManager.Setup(p => p.AddPackageArchiveAsync(It.IsAny<byte[]>()))
+                .ReturnsAsync(new Result<IPackageArchive>(ResultCode.Failure));
+
+            HttpResponseMessage response = await Controller.PackageArchivesAdd(data);
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesAdd(string)"/> method with no data.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesAddNoData()
+        {
+            string data = string.Empty;
+
+            HttpResponseMessage response = await Controller.PackageArchivesAdd(data);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        #endregion Public Methods
+
         #region Private Methods
 
         /// <summary>
@@ -97,6 +190,10 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         /// </summary>
         private void SetupMocks()
         {
+            PackageManager.Setup(p => p.AddPackageArchiveAsync(It.IsAny<byte[]>()))
+                .ReturnsAsync(new Result<IPackageArchive>().SetReturnValue(PackageArchive.Object));
+
+            Manager.Setup(m => m.GetManager<IPackageManager>()).Returns(PackageManager.Object);
         }
 
         #endregion Private Methods
