@@ -204,6 +204,20 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesDelete(string)"/> method with a simulated deletion failure.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesDeleteFailed()
+        {
+            PackageManager.Setup(p => p.DeletePackageArchiveAsync(It.IsAny<IPackageArchive>()))
+                .ReturnsAsync(new Result(ResultCode.Failure));
+
+            HttpResponseMessage response = await Controller.PackageArchivesDelete("test");
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackagingController.PackageArchivesDelete(string)"/> method with a package which can not be found.
         /// </summary>
         [Fact]
