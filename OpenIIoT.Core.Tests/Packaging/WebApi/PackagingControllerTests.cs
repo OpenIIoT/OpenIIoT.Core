@@ -181,6 +181,42 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesDelete(string)"/> method.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesDelete()
+        {
+            HttpResponseMessage response = await Controller.PackageArchivesDelete("test");
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesDelete(string)"/> method with a bad fqn parameter.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesDeleteBadFqn()
+        {
+            HttpResponseMessage response = await Controller.PackageArchivesDelete(null);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesDelete(string)"/> method with a package which can not be found.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesDeleteNotFound()
+        {
+            PackageManager.Setup(p => p.FindPackageArchiveAsync(It.IsAny<string>()))
+                .ReturnsAsync(default(IPackageArchive));
+
+            HttpResponseMessage response = await Controller.PackageArchivesDelete("test");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -192,6 +228,12 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         {
             PackageManager.Setup(p => p.AddPackageArchiveAsync(It.IsAny<byte[]>()))
                 .ReturnsAsync(new Result<IPackageArchive>().SetReturnValue(PackageArchive.Object));
+
+            PackageManager.Setup(p => p.FindPackageArchiveAsync(It.IsAny<string>()))
+                .ReturnsAsync(PackageArchive.Object);
+
+            PackageManager.Setup(p => p.DeletePackageArchiveAsync(It.IsAny<IPackageArchive>()))
+                .ReturnsAsync(new Result());
 
             Manager.Setup(m => m.GetManager<IPackageManager>()).Returns(PackageManager.Object);
         }
