@@ -231,6 +231,43 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqn(string)"/> method.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesGetFqn()
+        {
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqn("test");
+
+            Assert.Equal(PackageArchive.Object, response.GetContent<IPackageArchive>());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqn(string)"/> method with a null FQN.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesGetFqnNullFqn()
+        {
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqn(null);
+
+            Assert.Equal(response.StatusCode, HttpStatusCode.BadRequest);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqn(string)"/> method with a package archive which is
+        ///     not found.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesGetFqnNullNotFound()
+        {
+            PackageManager.Setup(p => p.FindPackageArchiveAsync(It.IsAny<string>()))
+                .ReturnsAsync(default(IPackageArchive));
+
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqn("test");
+
+            Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
