@@ -265,7 +265,7 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
 
             HttpResponseMessage response = await Controller.PackageArchivesGetFqnFile("test");
 
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
         /// <summary>
