@@ -346,6 +346,9 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqnVerification(string, string)"/> method.
+        /// </summary>
         [Fact]
         public async void PackageArchivesGetFqnVerification()
         {
@@ -355,6 +358,10 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(PackageVerification.Verified, response.GetContent<PackageArchiveVerificationData>().Verification);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqnVerification(string, string)"/> method with a package
+        ///     archive which can not be found.
+        /// </summary>
         [Fact]
         public async void PackageArchivesGetFqnVerificationArchiveNotFound()
         {
@@ -366,6 +373,10 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqnVerification(string, string)"/> method with an
+        ///     explicit PGP key which is invalid.
+        /// </summary>
         [Fact]
         public async void PackageArchivesGetFqnVerificationBadPublicKey()
         {
@@ -375,6 +386,10 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqnVerification(string, string)"/> method with a
+        ///     simulated failure to determine verification.
+        /// </summary>
         [Fact]
         public async void PackageArchivesGetFqnVerificationFailure()
         {
@@ -386,6 +401,9 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqnVerification(string, string)"/> method with a null FQN.
+        /// </summary>
         [Fact]
         public async void PackageArchivesGetFqnVerificationNullFqn()
         {
@@ -394,6 +412,10 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqnVerification(string, string)"/> method with an
+        ///     explicit PGP key.
+        /// </summary>
         [Fact]
         public async void PackageArchivesGetFqnVerificationPublicKey()
         {
