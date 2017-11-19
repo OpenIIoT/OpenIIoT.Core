@@ -347,8 +347,6 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan = false)
         {
-            HttpResponseMessage retVal;
-
             if ((bool)scan)
             {
                 IResult scanResult = await PackageManager.ScanPackageArchivesAsync();
@@ -356,14 +354,12 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 if (scanResult.ResultCode == ResultCode.Failure)
                 {
                     HttpErrorResult err = new HttpErrorResult("Failed to refresh Package Archive list from disk", scanResult);
-                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
                 }
             }
 
             IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
-            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
-
-            return retVal;
+            return Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
         }
 
         /// <summary>
@@ -378,8 +374,6 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesGet(bool? scan = false)
         {
-            HttpResponseMessage retVal;
-
             if ((bool)scan)
             {
                 IResult scanResult = await PackageManager.ScanPackagesAsync();
@@ -387,14 +381,12 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 if (scanResult.ResultCode == ResultCode.Failure)
                 {
                     HttpErrorResult err = new HttpErrorResult("Failed to refresh Package list from disk", scanResult);
-                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
                 }
             }
 
             IReadOnlyList<PackageSummaryData> packages = PackageManager.Packages.Select(p => new PackageSummaryData(p)).ToList().AsReadOnly();
-            retVal = Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
-
-            return retVal;
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
         }
 
         /// <summary>
