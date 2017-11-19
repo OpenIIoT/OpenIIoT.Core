@@ -345,7 +345,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan)
+        public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan = false)
         {
             HttpResponseMessage retVal;
 
@@ -360,7 +360,8 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 }
             }
 
-            IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
+            IReadOnlyList<IPackageArchive> packageArchiveslist = PackageManager.PackageArchives;
+            var packageArchives = packageArchiveslist.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
             retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
 
             return retVal;
@@ -376,7 +377,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IList<PackageSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public async Task<HttpResponseMessage> PackagesGet(bool? scan)
+        public async Task<HttpResponseMessage> PackagesGet(bool? scan = false)
         {
             HttpResponseMessage retVal;
 
