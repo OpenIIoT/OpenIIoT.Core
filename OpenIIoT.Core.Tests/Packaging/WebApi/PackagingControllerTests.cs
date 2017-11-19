@@ -51,16 +51,18 @@
 namespace OpenIIoT.Core.Tests.Packaging.WebApi
 {
     using System;
+    using System.Collections.ObjectModel;
+    using System.Linq;
+    using System.Net;
+    using System.Net.Http;
+    using System.Web.Http;
     using Moq;
     using OpenIIoT.Core.Packaging.WebApi;
+    using OpenIIoT.Core.Packaging.WebApi.Data;
     using OpenIIoT.SDK;
+    using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
     using Xunit;
-    using System.Net.Http;
-    using OpenIIoT.SDK.Common.OperationResult;
-    using System.Net;
-    using OpenIIoT.Core.Packaging;
-    using System.Web.Http;
 
     /// <summary>
     ///     Unit tests for the <see cref="PackagingController"/> class.
@@ -232,6 +234,20 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesArchivesGet(bool?)"/> method.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesGet()
+        {
+            HttpResponseMessage response = await Controller.PackagesArchivesGet(false);
+
+            ReadOnlyCollection<PackageArchiveSummaryData> value = response.GetContent<ReadOnlyCollection<PackageArchiveSummaryData>>();
+
+            Assert.Equal(1, value.Count);
+            Assert.Equal(PackageArchive.Object.FQN, value[0].FQN);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackagingController.PackageArchivesGetFqn(string)"/> method.
         /// </summary>
         [Fact]
@@ -329,6 +345,11 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         /// </summary>
         private void SetupMocks()
         {
+            PackageArchive.Setup(p => p.FQN).Returns("fqn");
+
+            PackageManager.Setup(p => p.PackageArchives)
+                .Returns(new[] { PackageArchive.Object }.ToList().AsReadOnly());
+
             PackageManager.Setup(p => p.AddPackageArchiveAsync(It.IsAny<byte[]>()))
                 .ReturnsAsync(new Result<IPackageArchive>().SetReturnValue(PackageArchive.Object));
 
