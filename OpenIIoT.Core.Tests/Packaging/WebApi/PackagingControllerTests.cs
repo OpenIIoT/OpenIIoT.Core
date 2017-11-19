@@ -346,6 +346,64 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
         }
 
+        [Fact]
+        public async void PackageArchivesGetFqnVerification()
+        {
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqnVerification("test");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(PackageVerification.Verified, response.GetContent<PackageArchiveVerificationData>().Verification);
+        }
+
+        [Fact]
+        public async void PackageArchivesGetFqnVerificationArchiveNotFound()
+        {
+            PackageManager.Setup(p => p.FindPackageArchiveAsync(It.IsAny<string>()))
+                .ReturnsAsync(default(IPackageArchive));
+
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqnVerification("test");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async void PackageArchivesGetFqnVerificationBadPublicKey()
+        {
+            string key = "nope";
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqnVerification("test", key);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async void PackageArchivesGetFqnVerificationFailure()
+        {
+            PackageManager.Setup(p => p.VerifyPackageArchiveAsync(It.IsAny<IPackageArchive>()))
+                .ReturnsAsync(new Result<bool>(ResultCode.Failure));
+
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqnVerification("test");
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        [Fact]
+        public async void PackageArchivesGetFqnVerificationNullFqn()
+        {
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqnVerification(null);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async void PackageArchivesGetFqnVerificationPublicKey()
+        {
+            string key = "-----BEGIN PGP PUBLIC KEY BLOCK----- -----END PGP PUBLIC KEY BLOCK-----";
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqnVerification("test", key);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(PackageVerification.Verified, response.GetContent<PackageArchiveVerificationData>().Verification);
+        }
+
         /// <summary>
         ///     Tests the <see cref="PackagingController.PackagesArchivesGet(bool?)"/> method with a forced scan.
         /// </summary>
@@ -457,6 +515,9 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
 
             PackageManager.Setup(p => p.DeletePackageArchiveAsync(It.IsAny<IPackageArchive>()))
                 .ReturnsAsync(new Result());
+
+            PackageManager.Setup(p => p.VerifyPackageArchiveAsync(It.IsAny<IPackageArchive>()))
+                .ReturnsAsync(new Result<bool>().SetReturnValue(true));
 
             Manager.Setup(m => m.GetManager<IPackageManager>()).Returns(PackageManager.Object);
         }
