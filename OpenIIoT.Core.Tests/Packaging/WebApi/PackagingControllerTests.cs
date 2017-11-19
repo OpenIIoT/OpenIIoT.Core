@@ -321,6 +321,21 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqn(string)"/> method with a package archive which is
+        ///     not found.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesGetFqnNotFound()
+        {
+            PackageManager.Setup(p => p.FindPackageArchiveAsync(It.IsAny<string>()))
+                .ReturnsAsync(default(IPackageArchive));
+
+            HttpResponseMessage response = await Controller.PackageArchivesGetFqn("test");
+
+            Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackagingController.PackageArchivesGetFqn(string)"/> method with a null FQN.
         /// </summary>
         [Fact]
@@ -329,21 +344,6 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             HttpResponseMessage response = await Controller.PackageArchivesGetFqn(null);
 
             Assert.Equal(response.StatusCode, HttpStatusCode.BadRequest);
-        }
-
-        /// <summary>
-        ///     Tests the <see cref="PackagingController.PackageArchivesGetFqn(string)"/> method with a package archive which is
-        ///     not found.
-        /// </summary>
-        [Fact]
-        public async void PackageArchivesGetFqnNullNotFound()
-        {
-            PackageManager.Setup(p => p.FindPackageArchiveAsync(It.IsAny<string>()))
-                .ReturnsAsync(default(IPackageArchive));
-
-            HttpResponseMessage response = await Controller.PackageArchivesGetFqn("test");
-
-            Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
         }
 
         /// <summary>
@@ -473,6 +473,42 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         }
 
         /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesGetFqn(string)"/> method.
+        /// </summary>
+        [Fact]
+        public async void PackagesGetFqn()
+        {
+            HttpResponseMessage response = await Controller.PackagesGetFqn("test");
+
+            Assert.Equal(Package.Object, response.GetContent<IPackage>());
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesGetFqn(string)"/> method with a package which is not found.
+        /// </summary>
+        [Fact]
+        public async void PackagesGetFqnNotFound()
+        {
+            PackageManager.Setup(p => p.FindPackageAsync(It.IsAny<string>()))
+                .ReturnsAsync(default(IPackage));
+
+            HttpResponseMessage response = await Controller.PackagesGetFqn("test");
+
+            Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesGetFqn(string)"/> method with a null FQN.
+        /// </summary>
+        [Fact]
+        public async void PackagesGetFqnNullFqn()
+        {
+            HttpResponseMessage response = await Controller.PackagesGetFqn(null);
+
+            Assert.Equal(response.StatusCode, HttpStatusCode.BadRequest);
+        }
+
+        /// <summary>
         ///     Tests the <see cref="PackagingController.PackagesGet(bool?)"/> method with a forced scan.
         /// </summary>
         [Fact]
@@ -528,6 +564,9 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
 
             PackageManager.Setup(p => p.AddPackageArchiveAsync(It.IsAny<byte[]>()))
                 .ReturnsAsync(new Result<IPackageArchive>().SetReturnValue(PackageArchive.Object));
+
+            PackageManager.Setup(p => p.FindPackageAsync(It.IsAny<string>()))
+                .ReturnsAsync(Package.Object);
 
             PackageManager.Setup(p => p.FindPackageArchiveAsync(It.IsAny<string>()))
                 .ReturnsAsync(PackageArchive.Object);
