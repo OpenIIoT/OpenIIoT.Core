@@ -360,8 +360,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 }
             }
 
-            IReadOnlyList<IPackageArchive> packageArchiveslist = PackageManager.PackageArchives;
-            var packageArchives = packageArchiveslist.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
+            IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
             retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
 
             return retVal;
