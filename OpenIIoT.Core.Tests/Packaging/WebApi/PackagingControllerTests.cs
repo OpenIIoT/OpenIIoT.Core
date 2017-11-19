@@ -51,7 +51,7 @@
 namespace OpenIIoT.Core.Tests.Packaging.WebApi
 {
     using System;
-    using System.Collections.ObjectModel;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Net;
     using System.Net.Http;
@@ -63,7 +63,6 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
     using Xunit;
-    using System.Collections.Generic;
 
     /// <summary>
     ///     Unit tests for the <see cref="PackagingController"/> class.
@@ -79,11 +78,14 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         {
             Manager = new Mock<IApplicationManager>();
             PackageManager = new Mock<IPackageManager>();
+            Package = new Mock<IPackage>();
             PackageArchive = new Mock<IPackageArchive>();
 
-            Controller = new PackagingController(Manager.Object);
-            Controller.Request = new HttpRequestMessage();
-            Controller.Configuration = new HttpConfiguration();
+            Controller = new PackagingController(Manager.Object)
+            {
+                Request = new HttpRequestMessage(),
+                Configuration = new HttpConfiguration(),
+            };
 
             SetupMocks();
         }
@@ -101,6 +103,11 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         ///     Gets or sets the <see cref="IApplicationManager"/> mockup.
         /// </summary>
         private Mock<IApplicationManager> Manager { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the IPackage mockup.
+        /// </summary>
+        private Mock<IPackage> Package { get; set; }
 
         /// <summary>
         ///     Gets or sets the IPackageArchive mockup.
@@ -369,6 +376,52 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesGet(bool?)"/> method.
+        /// </summary>
+        [Fact]
+        public async void PackagesGet()
+        {
+            HttpResponseMessage response = await Controller.PackagesGet(false);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            IReadOnlyList<PackageSummaryData> value = response.GetContent<IReadOnlyList<PackageSummaryData>>();
+
+            Assert.Equal(1, value.Count);
+            Assert.Equal(Package.Object.FQN, value[0].FQN);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesGet(bool?)"/> method with a forced scan.
+        /// </summary>
+        [Fact]
+        public async void PackagesGetScan()
+        {
+            HttpResponseMessage response = await Controller.PackagesGet(true);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            IReadOnlyList<PackageSummaryData> value = response.GetContent<IReadOnlyList<PackageSummaryData>>();
+
+            Assert.Equal(1, value.Count);
+            Assert.Equal(PackageArchive.Object.FQN, value[0].FQN);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesGet(bool?)"/> method with a forced scan with a simulated failure.
+        /// </summary>
+        [Fact]
+        public async void PackagesGetScanFailure()
+        {
+            PackageManager.Setup(p => p.ScanPackagesAsync())
+                .ReturnsAsync(new Result<IList<IPackage>>(ResultCode.Failure));
+
+            HttpResponseMessage response = await Controller.PackagesGet(true);
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -378,10 +431,17 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         /// </summary>
         private void SetupMocks()
         {
+            Package.Setup(p => p.FQN).Returns("fqn");
             PackageArchive.Setup(p => p.FQN).Returns("fqn");
+
+            PackageManager.Setup(p => p.Packages)
+                .Returns(new[] { Package.Object }.ToList().AsReadOnly());
 
             PackageManager.Setup(p => p.PackageArchives)
                 .Returns(new[] { PackageArchive.Object }.ToList().AsReadOnly());
+
+            PackageManager.Setup(p => p.ScanPackagesAsync())
+                .ReturnsAsync(new Result<IList<IPackage>>());
 
             PackageManager.Setup(p => p.ScanPackageArchivesAsync())
                 .ReturnsAsync(new Result<IList<IPackageArchive>>());
