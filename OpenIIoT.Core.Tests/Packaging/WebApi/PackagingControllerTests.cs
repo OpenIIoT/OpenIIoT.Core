@@ -538,6 +538,79 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesInstall(string, PackageInstallationOptions)"/> method.
+        /// </summary>
+        [Fact]
+        public async void PackagesInstall()
+        {
+            PackageInstallationOptions options = new PackageInstallationOptions();
+
+            HttpResponseMessage response = await Controller.PackagesInstall("test", options);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesInstall(string, PackageInstallationOptions)"/> method with bad options.
+        /// </summary>
+        [Fact]
+        public async void PackagesInstallBadOptions()
+        {
+            Controller.ModelState.AddModelError("test", new Exception());
+
+            HttpResponseMessage response = await Controller.PackagesInstall("test", new PackageInstallationOptions());
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesInstall(string, PackageInstallationOptions)"/> method with a
+        ///     simulated installation failure.
+        /// </summary>
+        [Fact]
+        public async void PackagesInstallFailure()
+        {
+            PackageManager.Setup(p => p.InstallPackageAsync(It.IsAny<IPackageArchive>(), It.IsAny<PackageInstallationOptions>()))
+                .ReturnsAsync(new Result<IPackage>(ResultCode.Failure));
+
+            PackageInstallationOptions options = new PackageInstallationOptions();
+
+            HttpResponseMessage response = await Controller.PackagesInstall("test", options);
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesInstall(string, PackageInstallationOptions)"/> method with a
+        ///     package archive which can not be found.
+        /// </summary>
+        [Fact]
+        public async void PackagesInstallNotFound()
+        {
+            PackageManager.Setup(p => p.FindPackageArchiveAsync(It.IsAny<string>()))
+                .ReturnsAsync(default(IPackageArchive));
+
+            PackageInstallationOptions options = new PackageInstallationOptions();
+
+            HttpResponseMessage response = await Controller.PackagesInstall("test", options);
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesInstall(string, PackageInstallationOptions)"/> method with a null FQN.
+        /// </summary>
+        [Fact]
+        public async void PackagesInstallNullFqn()
+        {
+            PackageInstallationOptions options = new PackageInstallationOptions();
+
+            HttpResponseMessage response = await Controller.PackagesInstall(null, options);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -555,6 +628,9 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
 
             PackageManager.Setup(p => p.PackageArchives)
                 .Returns(new[] { PackageArchive.Object }.ToList().AsReadOnly());
+
+            PackageManager.Setup(p => p.InstallPackageAsync(It.IsAny<IPackageArchive>(), It.IsAny<PackageInstallationOptions>()))
+                .ReturnsAsync(new Result<IPackage>().SetReturnValue(Package.Object));
 
             PackageManager.Setup(p => p.ScanPackagesAsync())
                 .ReturnsAsync(new Result<IList<IPackage>>());
