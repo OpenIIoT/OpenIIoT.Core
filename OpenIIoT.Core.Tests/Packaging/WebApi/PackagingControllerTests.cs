@@ -63,6 +63,7 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
     using Xunit;
+    using System.Collections.Generic;
 
     /// <summary>
     ///     Unit tests for the <see cref="PackagingController"/> class.
@@ -241,7 +242,9 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
         {
             HttpResponseMessage response = await Controller.PackagesArchivesGet(false);
 
-            ReadOnlyCollection<PackageArchiveSummaryData> value = response.GetContent<ReadOnlyCollection<PackageArchiveSummaryData>>();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            IReadOnlyList<PackageArchiveSummaryData> value = response.GetContent<IReadOnlyList<PackageArchiveSummaryData>>();
 
             Assert.Equal(1, value.Count);
             Assert.Equal(PackageArchive.Object.FQN, value[0].FQN);
@@ -336,6 +339,36 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(response.StatusCode, HttpStatusCode.NotFound);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesArchivesGet(bool?)"/> method with a forced scan.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesGetScan()
+        {
+            HttpResponseMessage response = await Controller.PackagesArchivesGet(true);
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            IReadOnlyList<PackageArchiveSummaryData> value = response.GetContent<IReadOnlyList<PackageArchiveSummaryData>>();
+
+            Assert.Equal(1, value.Count);
+            Assert.Equal(PackageArchive.Object.FQN, value[0].FQN);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesArchivesGet(bool?)"/> method with a forced scan with a simulated failure.
+        /// </summary>
+        [Fact]
+        public async void PackageArchivesGetScanFailure()
+        {
+            PackageManager.Setup(p => p.ScanPackageArchivesAsync())
+                .ReturnsAsync(new Result<IList<IPackageArchive>>(ResultCode.Failure));
+
+            HttpResponseMessage response = await Controller.PackagesArchivesGet(true);
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -349,6 +382,9 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
 
             PackageManager.Setup(p => p.PackageArchives)
                 .Returns(new[] { PackageArchive.Object }.ToList().AsReadOnly());
+
+            PackageManager.Setup(p => p.ScanPackageArchivesAsync())
+                .ReturnsAsync(new Result<IList<IPackageArchive>>());
 
             PackageManager.Setup(p => p.AddPackageArchiveAsync(It.IsAny<byte[]>()))
                 .ReturnsAsync(new Result<IPackageArchive>().SetReturnValue(PackageArchive.Object));
