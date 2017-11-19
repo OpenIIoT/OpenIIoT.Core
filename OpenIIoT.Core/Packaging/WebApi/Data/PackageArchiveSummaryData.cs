@@ -55,6 +55,7 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
     using Newtonsoft.Json;
     using OpenIIoT.SDK.Common;
     using OpenIIoT.SDK.Packaging;
+    using OpenIIoT.SDK.Packaging.Manifest;
 
     /// <summary>
     ///     Data Transfer Object used when returning Package Archive objects.
@@ -72,7 +73,10 @@ namespace OpenIIoT.Core.Packaging.WebApi.Data
         {
             this.CopyPropertyValuesFrom(packageArchive);
 
-            Manifest = new PackageManifestSummaryData(packageArchive.Manifest);
+            if (packageArchive.Manifest != default(IPackageManifest))
+            {
+                Manifest = new PackageManifestSummaryData(packageArchive.Manifest);
+            }
         }
 
         #endregion Public Constructors
