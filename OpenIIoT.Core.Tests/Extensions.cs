@@ -79,14 +79,7 @@ namespace OpenIIoT.Core.Tests
         /// <returns>The typed Content, or default(T) if the Content can not be retrieved or cast.</returns>
         public static T GetContent<T>(this HttpResponseMessage response)
         {
-            try
-            {
-                return (T)((ObjectContent<T>)response.Content).Value;
-            }
-            catch (Exception)
-            {
-                return default(T);
-            }
+            return (T)((ObjectContent<T>)response.Content).Value;
         }
 
         /// <summary>

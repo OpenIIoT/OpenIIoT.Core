@@ -65,7 +65,7 @@ namespace OpenIIoT.SDK.Packaging
         /// <summary>
         ///     The regular expression to use when validating PGP keys.
         /// </summary>
-        public const string KeyRegEx = @"^(-{5}BEGIN PGP PUBLIC KEY BLOCK-{5})[a-zA-Z0-9=\/\+:\.\s\r\n]*(-{5}END PGP PUBLIC KEY BLOCK-{5})$";
+        public const string KeyRegEx = @"^(-{5}BEGIN PGP PUBLIC KEY BLOCK-{5})[a-zA-Z0-9=\/\+:\.\s\r\n]+(-{5}END PGP PUBLIC KEY BLOCK-{5})$";
 
         /// <summary>
         ///     The base url for retrieval of PGP public key information.

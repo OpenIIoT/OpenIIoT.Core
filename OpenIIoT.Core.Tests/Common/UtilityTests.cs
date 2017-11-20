@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Core.Tests.Common
 {
     using NLog;
     using NLog.Targets;

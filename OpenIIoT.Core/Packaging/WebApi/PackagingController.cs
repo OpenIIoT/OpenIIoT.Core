@@ -43,6 +43,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics.CodeAnalysis;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -66,26 +67,35 @@ namespace OpenIIoT.Core.Packaging.WebApi
     [RoutePrefix("v1/packaging")]
     public class PackagingController : ApiBaseController
     {
-        #region Private Fields
+        #region Public Constructors
 
         /// <summary>
-        ///     The default serialization properties for an AppPackage.
+        ///     Initializes a new instance of the <see cref="PackagingController"/> class.
         /// </summary>
-        private static List<string> pluginPackageSerializationProperties = new List<string>(new string[] { "Files" });
+        [ExcludeFromCodeCoverage]
+        public PackagingController()
+            : base(ApplicationManager.GetInstance())
+        {
+        }
 
         /// <summary>
-        ///     The ApplicationManager for the application.
+        ///     Initializes a new instance of the <see cref="PackagingController"/> class with the specified
+        ///     <see cref="IApplicationManager"/> instance.
         /// </summary>
-        private IApplicationManager manager = ApplicationManager.GetInstance();
+        /// <param name="manager">The IApplicationManager instance used to resolve dependencies.</param>
+        public PackagingController(IApplicationManager manager)
+            : base(manager)
+        {
+        }
 
-        #endregion Private Fields
+        #endregion Public Constructors
 
         #region Private Properties
 
         /// <summary>
         ///     Gets the PackageManager for the application.
         /// </summary>
-        private IPackageManager PackageManager => manager.GetManager<IPackageManager>();
+        private IPackageManager PackageManager => Manager.GetManager<IPackageManager>();
 
         #endregion Private Properties
 
@@ -335,10 +345,8 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan)
+        public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan = false)
         {
-            HttpResponseMessage retVal;
-
             if ((bool)scan)
             {
                 IResult scanResult = await PackageManager.ScanPackageArchivesAsync();
@@ -346,14 +354,12 @@ namespace OpenIIoT.Core.Packaging.WebApi
                 if (scanResult.ResultCode == ResultCode.Failure)
                 {
                     HttpErrorResult err = new HttpErrorResult("Failed to refresh Package Archive list from disk", scanResult);
-                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
                 }
             }
 
             IReadOnlyList<PackageArchiveSummaryData> packageArchives = PackageManager.PackageArchives.Select(p => new PackageArchiveSummaryData(p)).ToList().AsReadOnly();
-            retVal = Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
-
-            return retVal;
+            return Request.CreateResponse(HttpStatusCode.OK, packageArchives, JsonFormatter());
         }
 
         /// <summary>
@@ -366,25 +372,21 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IList<PackageSummaryData>))]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public async Task<HttpResponseMessage> PackagesGet(bool? scan)
+        public async Task<HttpResponseMessage> PackagesGet(bool? scan = false)
         {
-            HttpResponseMessage retVal;
-
             if ((bool)scan)
             {
-                IResult scanResult = await manager.GetManager<IPackageManager>().ScanPackagesAsync();
+                IResult scanResult = await PackageManager.ScanPackagesAsync();
 
                 if (scanResult.ResultCode == ResultCode.Failure)
                 {
                     HttpErrorResult err = new HttpErrorResult("Failed to refresh Package list from disk", scanResult);
-                    retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
+                    return Request.CreateResponse(HttpStatusCode.InternalServerError, err, JsonFormatter());
                 }
             }
 
             IReadOnlyList<PackageSummaryData> packages = PackageManager.Packages.Select(p => new PackageSummaryData(p)).ToList().AsReadOnly();
-            retVal = Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
-
-            return retVal;
+            return Request.CreateResponse(HttpStatusCode.OK, packages, JsonFormatter());
         }
 
         /// <summary>

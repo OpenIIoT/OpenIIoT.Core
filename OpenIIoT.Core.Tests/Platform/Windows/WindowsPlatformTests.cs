@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Core.Tests.Platform.Windows
 {
     using OpenIIoT.Core.Platform.Windows;
     using OpenIIoT.SDK.Common.Provider.ItemProvider;
