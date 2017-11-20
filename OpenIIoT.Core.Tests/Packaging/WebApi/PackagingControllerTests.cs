@@ -611,6 +611,56 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         }
 
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesUninstall(string)"/> method.
+        /// </summary>
+        [Fact]
+        public async void PackagesUninstall()
+        {
+            HttpResponseMessage response = await Controller.PackagesUninstall("test");
+
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesUninstall(string)"/> method with a simulated failure.
+        /// </summary>
+        [Fact]
+        public async void PackagesUninstallFailure()
+        {
+            PackageManager.Setup(p => p.UninstallPackageAsync(It.IsAny<IPackage>()))
+                .ReturnsAsync(new Result(ResultCode.Failure));
+
+            HttpResponseMessage response = await Controller.PackagesUninstall("test");
+
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesUninstall(string)"/> method with a package which can not be found.
+        /// </summary>
+        [Fact]
+        public async void PackagesUninstallNotFound()
+        {
+            PackageManager.Setup(p => p.FindPackageAsync(It.IsAny<string>()))
+                .ReturnsAsync(default(IPackage));
+
+            HttpResponseMessage response = await Controller.PackagesUninstall("test");
+
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        /// <summary>
+        ///     Tests the <see cref="PackagingController.PackagesUninstall(string)"/> method with a null FQN.
+        /// </summary>
+        [Fact]
+        public async void PackagesUninstallNullFqn()
+        {
+            HttpResponseMessage response = await Controller.PackagesUninstall(null);
+
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
         #endregion Public Methods
 
         #region Private Methods
@@ -628,6 +678,9 @@ namespace OpenIIoT.Core.Tests.Packaging.WebApi
 
             PackageManager.Setup(p => p.PackageArchives)
                 .Returns(new[] { PackageArchive.Object }.ToList().AsReadOnly());
+
+            PackageManager.Setup(p => p.UninstallPackageAsync(It.IsAny<IPackage>()))
+                .ReturnsAsync(new Result());
 
             PackageManager.Setup(p => p.InstallPackageAsync(It.IsAny<IPackageArchive>(), It.IsAny<PackageInstallationOptions>()))
                 .ReturnsAsync(new Result<IPackage>().SetReturnValue(Package.Object));
