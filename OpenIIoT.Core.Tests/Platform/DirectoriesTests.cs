@@ -48,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Tests
+namespace OpenIIoT.Core.Tests.Platform
 {
     using System;
     using System.Collections.Generic;
