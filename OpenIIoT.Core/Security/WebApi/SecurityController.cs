@@ -340,7 +340,7 @@ namespace OpenIIoT.Core.Security.WebApi
         public HttpResponseMessage UsersGet()
         {
             IReadOnlyList<UserData> users = SecurityManager.Users.Select(u => new UserData(u)).ToList().AsReadOnly();
-            return Request.CreateResponse(HttpStatusCode.OK, users);
+            return Request.CreateResponse(HttpStatusCode.OK, users, JsonFormatter());
         }
 
         /// <summary>
