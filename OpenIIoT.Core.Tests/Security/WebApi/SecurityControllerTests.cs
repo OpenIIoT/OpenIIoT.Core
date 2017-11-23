@@ -162,33 +162,33 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
         }
 
         /// <summary>
-        ///     Tests the <see cref="SecurityController.SessionsEnd"/> method.
+        ///     Tests the <see cref="SecurityController.SessionsEndCurrent"/> method.
         /// </summary>
         [Fact]
-        public void SessionsEnd()
+        public void SessionsEndCurrent()
         {
             SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, null));
             SecurityManager.Setup(s => s.EndSession(It.IsAny<ISession>())).Returns(new Result());
 
-            HttpResponseMessage response = Controller.SessionsEnd();
+            HttpResponseMessage response = Controller.SessionsEndCurrent();
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
 
             SecurityManager.Verify(s => s.FindSession(It.IsAny<string>()), Times.Once);
             SecurityManager.Verify(s => s.EndSession(It.IsAny<ISession>()), Times.Once);
         }
 
         /// <summary>
-        ///     Tests the <see cref="SecurityController.SessionsEnd"/> method with an <see cref="ISecurityManager"/> returning a
-        ///     failing result.
+        ///     Tests the <see cref="SecurityController.SessionsEndCurrent"/> method with an <see cref="ISecurityManager"/>
+        ///     returning a failing result.
         /// </summary>
         [Fact]
-        public void SessionsEndFailure()
+        public void SessionsEndCurrentFailure()
         {
             SecurityManager.Setup(s => s.FindSession(It.IsAny<string>())).Returns(new Session(User, null));
             SecurityManager.Setup(s => s.EndSession(It.IsAny<ISession>())).Returns(new Result(ResultCode.Failure));
 
-            HttpResponseMessage response = Controller.SessionsEnd();
+            HttpResponseMessage response = Controller.SessionsEndCurrent();
 
             Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
 
