@@ -133,7 +133,7 @@ namespace OpenIIoT.Core.Security.WebApi
         [SwaggerResponse(HttpStatusCode.NoContent, "The Session was successfully ended.")]
         [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
-        public HttpResponseMessage SessionsEnd()
+        public HttpResponseMessage SessionsEndCurrent()
         {
             HttpResponseMessage retVal;
 
@@ -143,11 +143,59 @@ namespace OpenIIoT.Core.Security.WebApi
 
             if (endSessionResult.ResultCode != ResultCode.Failure)
             {
-                retVal = Request.CreateResponse(HttpStatusCode.OK);
+                retVal = Request.CreateResponse(HttpStatusCode.NoContent);
             }
             else
             {
                 retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, new HttpErrorResult("Failed to end the Session.", endSessionResult), JsonFormatter());
+            }
+
+            return retVal;
+        }
+
+        /// <summary>
+        ///     Ends the specified Session.
+        /// </summary>
+        /// <param name="token">The toekn belonging to the Session to end.</param>
+        /// <returns>An HTTP response message.</returns>
+        [HttpDelete]
+        [Route("sessions/{token}")]
+        [Authorize(Roles = nameof(Role.Administrator))]
+        [SwaggerResponseRemoveDefaults]
+        [SwaggerResponse(HttpStatusCode.NoContent, "The Session was successfully ended.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.NotFound, "The User does not exist.")]
+        [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
+        public HttpResponseMessage SessionsEndToken(string token)
+        {
+            HttpResponseMessage retVal;
+
+            if (string.IsNullOrEmpty(token))
+            {
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified token is null or empty.", JsonFormatter());
+            }
+            else
+            {
+                ISession foundSession = SecurityManager.FindSession(token);
+
+                if (foundSession != default(ISession))
+                {
+                    IResult endSessionResult = SecurityManager.EndSession(foundSession);
+
+                    if (endSessionResult.ResultCode != ResultCode.Failure)
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.NoContent);
+                    }
+                    else
+                    {
+                        retVal = Request.CreateResponse(HttpStatusCode.InternalServerError, new HttpErrorResult("Failed to end the Session.", endSessionResult), JsonFormatter());
+                    }
+                }
+                else
+                {
+                    retVal = Request.CreateResponse(HttpStatusCode.NotFound);
+                }
             }
 
             return retVal;
