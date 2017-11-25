@@ -266,9 +266,9 @@
     <Compile Include="Service\WebApi\IHub.cs" />
     <Compile Include="Service\WebApi\Middleware\AuthenticationMiddleware.cs" />
     <Compile Include="Service\WebApi\Middleware\NotFoundRedirectionMiddleware.cs" />
-    <Compile Include="Service\WebApi\ModelValidation\ModelValidationField.cs" />
-    <Compile Include="Service\WebApi\ModelValidation\ModelValidationResult.cs" />
-    <Compile Include="Service\WebApi\ModelValidation\ModelValidator.cs" />
+    <Compile Include="Service\WebApi\ParameterValidation\ParameterValidationField.cs" />
+    <Compile Include="Service\WebApi\ParameterValidation\ParameterValidationResult.cs" />
+    <Compile Include="Service\WebApi\ParameterValidation\ParameterValidator.cs" />
     <Compile Include="Service\WebApi\Routes.cs" />
     <Compile Include="Service\WebApi\Middleware\LoggingMiddleware.cs" />
     <Compile Include="Service\WebApi\Swagger\MimeTypesOperationFilter.cs" />
