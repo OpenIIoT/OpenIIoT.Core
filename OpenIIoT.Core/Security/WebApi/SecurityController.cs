@@ -459,7 +459,7 @@ namespace OpenIIoT.Core.Security.WebApi
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.Result);
             }
-            else if (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null)
+            else if (data == null || (data.DisplayName == null && data.Email == null && data.Password == null && data.Role == null))
             {
                 retVal = Request.CreateResponse(HttpStatusCode.BadRequest, validator.AddError("data", "At least one updated field must be supplied.").Result);
             }
