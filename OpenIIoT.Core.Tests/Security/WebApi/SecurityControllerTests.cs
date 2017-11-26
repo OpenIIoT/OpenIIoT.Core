@@ -70,7 +70,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
     using OpenIIoT.Core.Security;
     using OpenIIoT.Core.Security.WebApi;
     using OpenIIoT.Core.Security.WebApi.Data;
-    using OpenIIoT.Core.Service.WebApi.ModelValidation;
+    using OpenIIoT.Core.Service.WebApi.ParameterValidation;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Security;
@@ -396,7 +396,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.UsersDelete(string.Empty);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.False(string.IsNullOrEmpty(response.GetContent<string>()));
+            Assert.False(string.IsNullOrEmpty(response.GetContent<ParameterValidationResult>().Message));
         }
 
         /// <summary>
@@ -574,7 +574,7 @@ namespace OpenIIoT.Core.Tests.Security.WebApi
             HttpResponseMessage response = Controller.UsersUpdate("user", new UserUpdateData() { Password = null, Role = null });
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.NotNull(response.GetContent<ModelValidationResult>());
+            Assert.NotNull(response.GetContent<ParameterValidationResult>());
         }
 
         /// <summary>
