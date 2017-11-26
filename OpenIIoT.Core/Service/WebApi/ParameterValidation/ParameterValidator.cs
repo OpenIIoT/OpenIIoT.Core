@@ -1,17 +1,17 @@
-﻿namespace OpenIIoT.Core.Service.WebApi.ModelValidation
+﻿namespace OpenIIoT.Core.Service.WebApi.ParameterValidation
 {
     using System;
     using System.Web.Http.ModelBinding;
 
-    public class ModelValidator
+    public class ParameterValidator
     {
         #region Public Constructors
 
-        public ModelValidator() : this(new ModelStateDictionary())
+        public ParameterValidator() : this(new ModelStateDictionary())
         {
         }
 
-        public ModelValidator(ModelStateDictionary state)
+        public ParameterValidator(ModelStateDictionary state)
         {
             State = state;
         }
@@ -20,13 +20,13 @@
 
         #region Public Methods
 
-        public ModelValidator AddError(string key, string errorMessage)
+        public ParameterValidator AddError(string key, string errorMessage)
         {
             State.AddModelError(key, errorMessage);
             return this;
         }
 
-        public ModelValidator AddError(string key, Exception exception)
+        public ParameterValidator AddError(string key, Exception exception)
         {
             State.AddModelError(key, exception);
             return this;
@@ -38,7 +38,7 @@
 
         public bool IsValid => State.IsValid;
 
-        public ModelValidationResult Result => CreateResult(State);
+        public ParameterValidationResult Result => CreateResult(State);
 
         #endregion Public Properties
 
@@ -56,13 +56,13 @@
         /// </summary>
         /// <param name="state">The <see cref="ModelStateDictionary"/> to transform.</param>
         /// <returns>The transformed model state dictionary.</returns>
-        private ModelValidationResult CreateResult(ModelStateDictionary state)
+        private ParameterValidationResult CreateResult(ModelStateDictionary state)
         {
-            ModelValidationResult retVal = new ModelValidationResult();
+            ParameterValidationResult retVal = new ParameterValidationResult();
 
             foreach (string key in state.Keys)
             {
-                ModelValidationField property = new ModelValidationField() { Field = key };
+                ParameterValidationField property = new ParameterValidationField() { Field = key };
 
                 foreach (ModelError error in state[key].Errors)
                 {
@@ -79,11 +79,11 @@
 
                 if (property.Messages.Count > 0)
                 {
-                    retVal.Model.Add(property);
+                    retVal.Parameters.Add(property);
                 }
             }
 
-            if (retVal.Model.Count > 0)
+            if (retVal.Parameters.Count > 0)
             {
                 retVal.Message = "The request data is invalid.";
             }

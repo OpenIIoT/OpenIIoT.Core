@@ -107,6 +107,8 @@ namespace OpenIIoT.Core.Service.WebApi
         /// </summary>
         public static readonly string[] AnonymousRoutes = { ApiRoutePrefix, SignalRRoutePrefix, HelpRoutePrefix, LoginRoutePrefix, NotFoundRoutePrefix, AssetPath, ModulePath };
 
+        public static readonly string[] CacheSuppressedExtensions = { ".html", ".htm" };
+
         /// <summary>
         ///     The list of routes for which the <see cref="SDK.Security.Session"/> will not be extended, regardless of configuration.
         /// </summary>

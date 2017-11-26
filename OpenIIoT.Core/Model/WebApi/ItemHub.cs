@@ -191,7 +191,7 @@
                 Clients.Caller.unsubscribeSuccess(castFQN);
 
                 logger.Info(GetLogPrefix() + "unsubscribed from '" + foundItem.FQN + "'.");
-                logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN).Count + " subscriber(s).");
+                logger.Info("SignalR Item '" + foundItem.FQN + "' now has " + hubManager.GetSubscriptions(foundItem.FQN)?.Count ?? 0 + " subscriber(s).");
             }
             else
             {

@@ -1,19 +1,28 @@
 ﻿/*
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀  ▀  ▀      ▀▀
       █
-      █      ▄▄▄▄███▄▄▄▄                                         ▄█    █▄                                                                              ▄████████
-      █    ▄██▀▀▀███▀▀▀██▄                                      ███    ███                                                                            ███    ███
-      █    ███   ███   ███  ██████  ██████▄     ▄█████  █       ███    ███   ▄█████   █        █  ██████▄    ▄█████      ██     █   ██████  ██▄▄▄▄   ▄███▄▄▄▄██▀    ▄█████   ▄█████ ██   █   █           ██
-      █    ███   ███   ███ ██    ██ ██   ▀██   ██   █  ██       ███    ███   ██   ██ ██       ██  ██   ▀██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄ ▀▀███▀▀▀▀▀     ██   █    ██  ▀  ██   ██ ██       ▀███████▄
-      █    ███   ███   ███ ██    ██ ██    ██  ▄██▄▄    ██       ███    ███   ██   ██ ██       ██▌ ██    ██   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀███████████  ▄██▄▄      ██     ██   ██ ██           ██  ▀
-      █    ███   ███   ███ ██    ██ ██    ██ ▀▀██▀▀    ██       ███    ███ ▀████████ ██       ██  ██    ██ ▀████████     ██    ██  ██    ██ ██   ██   ███    ███ ▀▀██▀▀    ▀███████ ██   ██ ██           ██
-      █    ███   ███   ███ ██    ██ ██   ▄██   ██   █  ██▌    ▄  ██▄  ▄██    ██   ██ ██▌    ▄ ██  ██   ▄██   ██   ██     ██    ██  ██    ██ ██   ██   ███    ███   ██   █     ▄  ██ ██   ██ ██▌    ▄     ██
-      █     ▀█   ███   █▀   ██████  ██████▀    ███████ ████▄▄██   ▀████▀     ██   █▀ ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █    ███    ███   ███████  ▄████▀  ██████  ████▄▄██    ▄██▀
+      █      ▄███████▄
+      █     ███    ███
+      █     ███    ███   ▄█████     █████   ▄█████     ▄▄██▄▄▄     ▄█████     ██       ▄█████    █████
+      █     ███    ███   ██   ██   ██  ██   ██   ██  ▄█▀▀██▀▀█▄   ██   █  ▀███████▄   ██   █    ██  ██
+      █   ▀█████████▀    ██   ██  ▄██▄▄█▀   ██   ██  ██  ██  ██  ▄██▄▄        ██  ▀  ▄██▄▄     ▄██▄▄█▀
+      █     ███        ▀████████ ▀███████ ▀████████  ██  ██  ██ ▀▀██▀▀        ██    ▀▀██▀▀    ▀███████
+      █     ███          ██   ██   ██  ██   ██   ██  ██  ██  ██   ██   █      ██      ██   █    ██  ██
+      █    ▄████▀        ██   █▀   ██  ██   ██   █▀   █  ██  █    ███████    ▄██▀     ███████   ██  ██
+      █
+      █    ▄█    █▄                                                                              ▄████████
+      █   ███    ███                                                                            ███    ███
+      █   ███    ███   ▄█████   █        █  ██████▄    ▄█████      ██     █   ██████  ██▄▄▄▄   ▄███▄▄▄▄██▀    ▄█████   ▄█████ ██   █   █           ██
+      █   ███    ███   ██   ██ ██       ██  ██   ▀██   ██   ██ ▀███████▄ ██  ██    ██ ██▀▀▀█▄ ▀▀███▀▀▀▀▀     ██   █    ██  ▀  ██   ██ ██       ▀███████▄
+      █   ███    ███   ██   ██ ██       ██▌ ██    ██   ██   ██     ██  ▀ ██▌ ██    ██ ██   ██ ▀███████████  ▄██▄▄      ██     ██   ██ ██           ██  ▀
+      █   ███    ███ ▀████████ ██       ██  ██    ██ ▀████████     ██    ██  ██    ██ ██   ██   ███    ███ ▀▀██▀▀    ▀███████ ██   ██ ██           ██
+      █    ██▄  ▄██    ██   ██ ██▌    ▄ ██  ██   ▄██   ██   ██     ██    ██  ██    ██ ██   ██   ███    ███   ██   █     ▄  ██ ██   ██ ██▌    ▄     ██
+      █     ▀████▀     ██   █▀ ████▄▄██ █   ██████▀    ██   █▀    ▄██▀   █    ██████   █   █    ███    ███   ███████  ▄████▀  ██████  ████▄▄██    ▄██▀
       █
  ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄▄  ▄▄ ▄▄   ▄▄▄▄ ▄▄     ▄▄     ▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄ ▄ ▄
  █████████████████████████████████████████████████████████████ ███████████████ ██  ██ ██   ████ ██     ██     ████████████████ █ █
       ▄
-      █  Data Transfer Object containing model validation information for a data model.
+      █  Data Transfer Object containing parameter validation information for a request.
       █
       █▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀ ▀▀▀▀▀▀▀▀▀▀▀ ▀ ▀▀▀     ▀▀               ▀
       █  The GNU Affero General Public License (GNU AGPL)
@@ -39,7 +48,7 @@
                                                                                                  ▀████▀
                                                                                                    ▀▀                            */
 
-namespace OpenIIoT.Core.Service.WebApi.ModelValidation
+namespace OpenIIoT.Core.Service.WebApi.ParameterValidation
 {
     using System.Collections.Generic;
     using System.Runtime.Serialization;
@@ -49,16 +58,16 @@ namespace OpenIIoT.Core.Service.WebApi.ModelValidation
     ///     Data Transfer Object containing model validation information for a data model.
     /// </summary>
     [DataContract]
-    public class ModelValidationResult
+    public class ParameterValidationResult
     {
         #region Public Constructors
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="ModelValidationResult"/> class.
+        ///     Initializes a new instance of the <see cref="ParameterValidationResult"/> class.
         /// </summary>
-        public ModelValidationResult()
+        public ParameterValidationResult()
         {
-            Model = new List<ModelValidationField>();
+            Parameters = new List<ParameterValidationField>();
         }
 
         #endregion Public Constructors
@@ -77,7 +86,7 @@ namespace OpenIIoT.Core.Service.WebApi.ModelValidation
         /// </summary>
         [DataMember(Order = 2)]
         [JsonProperty(Order = 2)]
-        public List<ModelValidationField> Model { get; set; }
+        public List<ParameterValidationField> Parameters { get; set; }
 
         #endregion Public Properties
     }

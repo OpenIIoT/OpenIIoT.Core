@@ -54,7 +54,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
     using System.Web.Http;
     using OpenIIoT.Core.Packaging.WebApi.Data;
     using OpenIIoT.Core.Service.WebApi;
-    using OpenIIoT.Core.Service.WebApi.ModelValidation;
+    using OpenIIoT.Core.Service.WebApi.ParameterValidation;
     using OpenIIoT.SDK;
     using OpenIIoT.SDK.Common.OperationResult;
     using OpenIIoT.SDK.Packaging;
@@ -106,11 +106,12 @@ namespace OpenIIoT.Core.Packaging.WebApi
         /// </summary>
         /// <param name="data">The base 64 encoded binary data of the Package Archive.</param>
         /// <returns>A Result containing the result of the operation and the created Package Archive.</returns>
-        [Authorize]
         [Route("archives")]
         [HttpPost]
+        [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was created or overwritten.", typeof(PackageArchive))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "The specified data is of zero length or is not base 64 encoded.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ParameterValidationResult))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesAdd([FromBody]string data)
         {
@@ -120,11 +121,11 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if (data.Length == 0)
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The data is of zero length.", JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("data", "The data is of zero length.").Result, JsonFormatter());
             }
             else if (decodedData == default(byte[]))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The data is not a valid base 64 encoded string.", JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("data", "The data is not a valid base 64 encoded string.").Result, JsonFormatter());
             }
             else
             {
@@ -154,9 +155,9 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Authorize]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.NoContent, "The Package Archive was successfully deleted.")]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ParameterValidationResult))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesDelete(string fqn)
         {
@@ -164,7 +165,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("fqn", "The specified Fully Qualified Name is null or empty.").Result, JsonFormatter());
             }
             else
             {
@@ -202,16 +203,16 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [HttpGet]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The Package Archive was retrieved successfully.", typeof(PackageArchive))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ParameterValidationResult))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The PackageArchive could not be found.")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
         public async Task<HttpResponseMessage> PackageArchivesGetFqn(string fqn)
         {
             HttpResponseMessage retVal;
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.", JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("fqn", "The specified Fully Qualified Name is null or empty.").Result, JsonFormatter());
             }
             else
             {
@@ -239,8 +240,8 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("archives/{fqn}/file")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The Package Archive file was retrieved successfully.", typeof(byte[]))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ParameterValidationResult))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesGetFqnFile(string fqn)
@@ -249,7 +250,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("fqn", "The specified Fully Qualified Name is null or empty.").Result, JsonFormatter());
             }
             else
             {
@@ -291,8 +292,8 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("archives/{fqn}/verification")]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The Package Archive verification completed successfully.", typeof(PackageArchiveVerificationData))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ParameterValidationResult))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package archive with the specified Fully Qualified Name could not be found.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackageArchivesGetFqnVerification(string fqn, string publicKey = default(string))
@@ -301,11 +302,11 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("fqn", "The specified Fully Qualified Name is null or empty.").Result, JsonFormatter());
             }
             else if (publicKey != default(string) && !new Regex(PackagingConstants.KeyRegEx).IsMatch(publicKey))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified PGP public key is not a valid key.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("publicKey", "The specified PGP public key is not a valid key.").Result, JsonFormatter());
             }
             else
             {
@@ -343,7 +344,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [HttpGet]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IReadOnlyList<PackageArchiveSummaryData>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesArchivesGet(bool? scan = false)
         {
@@ -370,7 +371,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("packages")]
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, "The list was retrieved successfully.", typeof(IList<PackageSummaryData>))]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesGet(bool? scan = false)
         {
@@ -398,16 +399,16 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [HttpGet]
         [Authorize]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was retrieved successfully.", typeof(Package))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ParameterValidationResult))]
         [SwaggerResponse(HttpStatusCode.NotFound, "The PackageArchive could not be found.")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
         public async Task<HttpResponseMessage> PackagesGetFqn(string fqn)
         {
             HttpResponseMessage retVal;
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("fqn", "The specified Fully Qualified Name is null or empty.").Result, JsonFormatter());
             }
             else
             {
@@ -436,18 +437,18 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [Route("packages/{fqn}")]
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.OK, "The Package was successfully installed.", typeof(Package))]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(ModelValidationResult))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ParameterValidationResult))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package Archive with the specified Fully Qualified Name could not be found.")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesInstall(string fqn, [FromBody]PackageInstallationOptions options)
         {
             HttpResponseMessage retVal;
-            ModelValidator validator = new ModelValidator(ModelState);
+            ParameterValidator validator = new ParameterValidator(ModelState);
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ModelValidationResult() { Message = "The specified Fully Qualified Name is null or empty." }, JsonFormatter());
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("fqn", "The specified Fully Qualified Name is null or empty.").Result, JsonFormatter());
             }
             else if (!validator.IsValid)
             {
@@ -497,9 +498,9 @@ namespace OpenIIoT.Core.Packaging.WebApi
         [HttpDelete]
         [SwaggerResponseRemoveDefaults]
         [SwaggerResponse(HttpStatusCode.NoContent, "The Package was successfully uninstalled.")]
-        [SwaggerResponse(HttpStatusCode.BadRequest, "One or more parameters are invalid.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.BadRequest, "The request data is invalid.", typeof(ParameterValidationResult))]
         [SwaggerResponse(HttpStatusCode.NotFound, "A Package with the specified Fully Qualified Name could not be found.")]
-        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.", typeof(string))]
+        [SwaggerResponse(HttpStatusCode.Unauthorized, "Authorization denied.")]
         [SwaggerResponse(HttpStatusCode.InternalServerError, "An unexpected error was encountered during the operation.", typeof(HttpErrorResult))]
         public async Task<HttpResponseMessage> PackagesUninstall(string fqn)
         {
@@ -507,7 +508,7 @@ namespace OpenIIoT.Core.Packaging.WebApi
 
             if (string.IsNullOrEmpty(fqn))
             {
-                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, "The specified Fully Qualified Name is null or empty.");
+                retVal = Request.CreateResponse(HttpStatusCode.BadRequest, new ParameterValidator().AddError("fqn", "The specified Fully Qualified Name is null or empty.").Result, JsonFormatter());
             }
             else
             {

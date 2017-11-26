@@ -58,6 +58,7 @@ namespace OpenIIoT.Core.Service.WebApi
     using OpenIIoT.SDK.Service.WebApi;
     using Owin;
     using Swashbuckle.Application;
+    using System.IO;
 
     /// <summary>
     ///     The <see cref="Owin"/> startup class.
@@ -124,6 +125,25 @@ namespace OpenIIoT.Core.Service.WebApi
                     handler: new RedirectHandler(SwaggerDocsConfig.DefaultRootUrlResolver, routes.Help));
 
             app.UseWebApi(config);
+
+            // suppress client side caching of files ending in .html/.htm this is necessary for the hacky beta of the front end;
+            // once a proper SPA is deployed this can be removed.
+            app.UseStaticFiles(new StaticFileOptions()
+            {
+                FileSystem = new PhysicalFileSystem(Manager.GetManager<IPlatformManager>().Directories.Web),
+                RequestPath = PathString.FromUriComponent($"/{routes.Root}".TrimEnd('/')),
+                OnPrepareResponse = staticFileResponseContext =>
+                {
+                    string extension = Path.GetExtension(staticFileResponseContext.File.Name);
+                    if (WebApiConstants.CacheSuppressedExtensions.Any(e => e == extension))
+                    {
+                        IHeaderDictionary headers = staticFileResponseContext.OwinContext.Response.Headers;
+                        headers.Add("Cache-Control", new[] { "no-cache" });
+                        headers.Add("Pragma", new[] { "no-cache" });
+                        headers.Add("Expires", new[] { "-1" });
+                    }
+                },
+            });
 
             app.UseFileServer(new FileServerOptions()
             {
